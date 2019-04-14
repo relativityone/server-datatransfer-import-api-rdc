@@ -16,11 +16,15 @@ properties {
     $ScriptsDir = Join-Path $Root "Scripts"
     $BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
     $TestResultsDir = Join-Path $Root "TestResults"
-    $UnitTestResultsXmlFile = Join-Path $TestResultsDir "test-results-unit.xml"
+    $DotCoverConfigFile = Join-Path $ScriptsDir "code-coverage-report.xml"
+    $DotCoverReportXmlFile = Join-Path $TestResultsDir "code-coverage-report.xml"
     $IntegrationTestResultsXmlFile = Join-Path $TestResultsDir "test-results-integration.xml"
+    $UnitTestResultsXmlFile = Join-Path $TestResultsDir "test-results-unit.xml"    
     $ExtentCliExe = Join-Path $PackagesDir "extent\tools\extent.exe"
     $GitVersionExe = Join-Path $PackagesDir "GitVersion.CommandLine\tools\GitVersion.exe"
     $NunitExe = Join-Path $PackagesDir "NUnit.ConsoleRunner\tools\nunit3-console.exe"
+    $DotCoverExe = Join-Path $PackagesDir "JetBrains.dotCover.CommandLineTools\tools\dotCover.exe"
+    $ReportGeneratorExe = Join-Path $PackagesDir "ReportGenerator\tools\net47\ReportGenerator.exe"
     $PaketExe = Join-Path $PaketDir "paket.exe"
     $ProgetUrl = "https://proget.kcura.corp/nuget/NuGet"
     $ProgetApiKey = "03abad83-912d-4f24-ae99-03b15444eec8"
@@ -97,18 +101,58 @@ task Clean -Description "Clean solution" {
     Initialize-Folder $LogsDir
     Initialize-Folder $TestResultsDir
     Write-Output "Running Clean target on $MasterSolution"
-    exec { msbuild $MasterSolution `
-            "/t:Clean" `
-            "/verbosity:$Verbosity" `
-            "/p:Configuration=$Configuration" `
-            "/nologo" `
+    exec { 
+        msbuild $MasterSolution `
+            "-t:Clean" `
+            "-verbosity:$Verbosity" `
+            "-p:Configuration=$Configuration" `
+            "-nologo" `
     }
 
-    exec { msbuild $InstallersSolution `
-            "/t:Clean" `
-            "/verbosity:$Verbosity" `
-            "/p:Configuration=$Configuration" `
-            "/nologo" `
+    exec { 
+        msbuild $InstallersSolution `
+            "-t:Clean" `
+            "-verbosity:$Verbosity" `
+            "-p:Configuration=$Configuration" `
+            "-nologo" `
+    }
+}
+
+task CodeCoverageReport -Description "Create a code coverage report" {
+    exec{
+        Initialize-Folder $TestResultsDir
+        $targetArgument = $Null
+        Write-Output "Searching for code coverage test assemblies..."
+
+        # Exclude all RDC related test assemblies because they're empty and will cause the CLI to fail.
+        $assemblies = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit*.dll -Exclude *Desktop*.dll,*TestFramework*.dll | Where-Object { $_.FullName -Match "\\bin" }
+        $assemblyCount = $assemblies.Length
+        if ($assemblyCount -le 0) {
+            Throw "The cover coverage report cannot be created because no NUnit test assemblies were found."
+        }
+
+        foreach ($assembly in $assemblies) {
+           $targetArgument += " " + $assembly.FullName
+        }
+
+        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "false", "Process")
+        Invoke-SetTestParametersByFile -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
+
+        # TODO: A strange issue exists attempting to use the configuration file. Using command line params for now...
+        Write-Output "Running code coverage on $assemblyCount test assemblies..."
+        & $DotCoverExe @(
+            ("cover"),
+            ("/TargetExecutable=""$NunitExe"""),
+            ("/TargetArguments=""$targetArgument"""),
+            ("/Output=""$DotCoverReportXmlFile"""),
+            ("/ReportType=""DetailedXML"""),
+            ("/Filters=""+:Relativity*;-:*NUnit*;-:*TestFramework*;-:*Controls*;"""))
+
+        Write-Output "Generating a code coverage report..."
+        & $ReportGeneratorExe @(
+            ("-reports:""$DotCoverReportXmlFile"""),
+            ("-targetdir:""$TestResultsDir"""),
+            ("-reporttypes:Html"))
     }
 }
 
@@ -199,11 +243,6 @@ task ExtendedCodeAnalysis -Description "Perform extended code analysis checks." 
     & "$ScriptsDir\Invoke-ExtendedCodeAnalysis.ps1" -SolutionFile $MasterSolution
 }
 
-task GenerateTestReport -Description "Generate a merged test report" {
-    # This will generate index.html within the test results directory.
-    exec { & $ExtentCliExe -d "$TestResultsDir/" -o "$TestResultsDir/" -r v3html --merge } -errorMessage "There was an error generating the test report."
-}
-
 task Help -Alias ? -Description "Display task information" {
     WriteDocumentation
 }
@@ -271,6 +310,11 @@ task PublishPackages -Depends BuildPackages -Description "Pushes package to NuGe
 }
 
 task SemanticVersions -Depends BuildVersion, PackageVersion -Description "Calculate and retrieve the semantic build and package versions" {
+}
+
+task TestResultsReport -Description "Create a merged test results report" {
+    # This will generate index.html within the test results directory.
+    exec { & $ExtentCliExe -d "$TestResultsDir/" -o "$TestResultsDir/" -r v3html --merge } -errorMessage "There was an error generating the test report."
 }
 
 task TestVMSetup -Description "Setup the test parameters for TestVM" {

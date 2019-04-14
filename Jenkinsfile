@@ -14,7 +14,8 @@ properties([
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
         booleanParam(defaultValue: true, description: "Enable or disable running unit tests", name: 'runUnitTests'),
-        booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests')
+        booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests'),
+        booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport')
     ])
 ])
 
@@ -122,10 +123,10 @@ timestamps
 
                     if (params.runUnitTests || params.runIntegrationTests)
                     {
-                        stage('Generate test report')
+                        stage('Test results report')
                         {
                             echo "Generating test report"
-                            powershell ".\\build.ps1 GenerateTestReport"
+                            powershell ".\\build.ps1 TestResultsReport"
                         }
                     }
 
@@ -190,13 +191,25 @@ timestamps
                         }
                     }
 
+                    if (params.createCodeCoverageReport)
+                    {
+                        stage('Code coverage report')
+                        {
+                            echo "Creating a code coverage report"
+                            output = powershell ".\\build.ps1 CodeCoverageReport"
+                            echo output
+                        }
+                    }
+
                     stage ('Publish packages to proget')
                     {
+                        echo "Publishing packages to proget"
                         powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}'"
                     }
 
                     stage('Publish build artifacts')
                     {
+                        echo "Publishing build artifacts"
                         output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${env.BRANCH_NAME}'"
                         echo output
                     }
