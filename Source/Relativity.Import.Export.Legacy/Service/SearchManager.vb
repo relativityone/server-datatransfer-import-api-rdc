@@ -47,7 +47,7 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.RetrieveImagesForSearch(caseContextArtifactID, documentArtifactIDs))
 		End Function
 
-		Public Function RetrieveProducedImagesForDocument(caseContextArtifactID As Integer, documentArtifactID As Integer) As DataSet Implements ISearchManager.RetrieveProducedImagesForDocument
+		Public Shadows Function RetrieveProducedImagesForDocument(caseContextArtifactID As Integer, documentArtifactID As Integer) As DataSet Implements ISearchManager.RetrieveProducedImagesForDocument
 			Return RetryOnReLoginException(Function() MyBase.RetrieveProducedImagesForDocument(caseContextArtifactID, documentArtifactID))
 		End Function
 
