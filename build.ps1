@@ -95,11 +95,11 @@ param(
     [String]$BuildPlatform = "Any CPU",
     [Parameter()]
     [string]$BuildUrl = "localhost",
-    [int]$TestTimeoutInMS = 90000,
+    [int]$TestTimeoutInMS = 300000,
     [Parameter()]
     [String]$TestParametersFile,
     [Parameter()]
-    [ValidateSet("hyperv")]
+    [ValidateSet("hyperv","e2e")]
     [String]$TestEnvironment,
     [Parameter()]
     [String]$TestVMName

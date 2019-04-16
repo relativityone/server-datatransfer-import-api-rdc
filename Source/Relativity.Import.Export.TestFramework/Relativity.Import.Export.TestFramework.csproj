@@ -52,6 +52,7 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CryptoHelper.cs" />
     <Compile Include="FileDto.cs" />
     <Compile Include="IntegrationTestHelper.cs" />
     <Compile Include="FieldHelper.cs" />
@@ -85,6 +86,8 @@
     </None>
     <None Include="app.manifest" />
     <None Include="paket.references" />
+    <EmbeddedResource Include="Resources\test-parameters-hyperv.json" />
+    <EmbeddedResource Include="Resources\test-parameters-e2e.json" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\buildtools\CustomDictionary.xml">
@@ -318,4 +321,5 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
 </Project>

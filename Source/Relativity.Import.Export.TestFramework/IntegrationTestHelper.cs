@@ -7,7 +7,6 @@
 namespace Relativity.Import.Export.TestFramework
 {
 	using System;
-	using System.Collections;
 	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Data;
@@ -17,8 +16,7 @@ namespace Relativity.Import.Export.TestFramework
 	using System.Net;
 	using System.Reflection;
 
-	using Relativity.Import.Export.Transfer;
-	using Relativity.Transfer;
+	using Newtonsoft.Json;
 
 	/// <summary>
 	/// Defines static methods to setup and teardown integration tests.
@@ -151,33 +149,87 @@ END";
 		private static IntegrationTestParameters GetIntegrationTestParameters()
 		{
 			Console.WriteLine("Retrieving and dumping all integration test parameters...");
+			bool decryptParameters = false;
 			IntegrationTestParameters parameters = new IntegrationTestParameters();
+			string testEnvironment = GetEnvironmentVariable("IAPI_INTEGRATION_TEST_ENV");
+			string jsonFile = GetEnvironmentVariable("IAPI_INTEGRATION_TEST_JSON_FILE");
+			if (!string.IsNullOrWhiteSpace(testEnvironment))
+			{
+				string resourceFile;
+				switch (testEnvironment.ToUpperInvariant())
+				{
+					case "HYPERV":
+						resourceFile = "test-parameters-hyperv.json";
+						break;
+
+					case "E2E":
+						resourceFile = "test-parameters-e2e.json";
+						break;
+
+					default:
+						throw new InvalidOperationException($"The test environment '{testEnvironment}' is not recognized or supported.");
+				}
+
+				using (Stream stream = ResourceFileHelper.ExtractToStream(
+					Assembly.GetExecutingAssembly(),
+					$"Relativity.Import.Export.TestFramework.Resources.{resourceFile}"))
+				{
+					StreamReader reader = new StreamReader(stream);
+					JsonSerializer serializer = new JsonSerializer();
+					parameters = serializer.Deserialize<IntegrationTestParameters>(new JsonTextReader(reader));
+					decryptParameters = true;
+				}
+			}
+			else if (!string.IsNullOrWhiteSpace(jsonFile))
+			{
+				parameters = JsonConvert.DeserializeObject<IntegrationTestParameters>(File.ReadAllText(jsonFile));
+				decryptParameters = true;
+			}
+			else
+			{
+				foreach (var prop in parameters.GetType().GetProperties())
+				{
+					IntegrationTestParameterAttribute attribute =
+						prop.GetCustomAttribute<IntegrationTestParameterAttribute>();
+					if (attribute == null || !attribute.IsMapped)
+					{
+						continue;
+					}
+
+					string value = GetConfigurationStringValue(prop.Name);
+					if (prop.PropertyType == typeof(string))
+					{
+						prop.SetValue(parameters, value);
+					}
+					else if (prop.PropertyType == typeof(bool))
+					{
+						prop.SetValue(parameters, bool.Parse(value));
+					}
+					else if (prop.PropertyType == typeof(Uri))
+					{
+						prop.SetValue(parameters, new Uri(value));
+					}
+					else
+					{
+						string message =
+							$"The integration test parameter '{prop.Name}' of type '{prop.PropertyType}' isn't supported by the integration test helper.";
+						throw new ConfigurationErrorsException(message);
+					}
+				}
+			}
+
+			if (decryptParameters)
+			{
+				DecryptTestParameters(parameters);
+			}
+
 			foreach (var prop in parameters.GetType().GetProperties())
 			{
-				IntegrationTestParameterAttribute attribute = prop.GetCustomAttribute<IntegrationTestParameterAttribute>();
+				IntegrationTestParameterAttribute attribute =
+					prop.GetCustomAttribute<IntegrationTestParameterAttribute>();
 				if (attribute == null || !attribute.IsMapped)
 				{
 					continue;
-				}
-
-				string value = GetConfigurationStringValue(prop.Name);
-				if (prop.PropertyType == typeof(string))
-				{
-					prop.SetValue(parameters, value);
-				}
-				else if (prop.PropertyType == typeof(bool))
-				{
-					prop.SetValue(parameters, bool.Parse(value));
-				}
-				else if (prop.PropertyType == typeof(Uri))
-				{
-					prop.SetValue(parameters, new Uri(value));
-				}
-				else
-				{
-					string message =
-						$"The integration test parameter '{prop.Name}' of type '{prop.PropertyType}' isn't supported by the integration test helper.";
-					throw new ConfigurationErrorsException(message);
 				}
 
 				if (attribute.IsSecret)
@@ -194,18 +246,58 @@ END";
 			return parameters;
 		}
 
+		private static void DecryptTestParameters(IntegrationTestParameters parameters)
+		{
+			if (!string.IsNullOrWhiteSpace(parameters.RelativityPassword))
+			{
+				parameters.RelativityPassword = CryptoHelper.Decrypt(parameters.RelativityPassword);
+			}
+
+			if (!string.IsNullOrWhiteSpace(parameters.RelativityUserName))
+			{
+				parameters.RelativityUserName = CryptoHelper.Decrypt(parameters.RelativityUserName);
+			}
+
+			if (!string.IsNullOrWhiteSpace(parameters.SqlAdminPassword))
+			{
+				parameters.SqlAdminPassword = CryptoHelper.Decrypt(parameters.SqlAdminPassword);
+			}
+
+			if (!string.IsNullOrWhiteSpace(parameters.SqlAdminUserName))
+			{
+				parameters.SqlAdminUserName = CryptoHelper.Decrypt(parameters.SqlAdminUserName);
+			}
+		}
+
 		private static string GetConfigurationStringValue(string key)
 		{
 			string envVariable = $"IAPI_INTEGRATION_{key.ToUpperInvariant()}";
+			string value = GetEnvironmentVariable(envVariable);
+			if (!string.IsNullOrWhiteSpace(value))
+			{
+				return value;
+			}
+
+			value = System.Configuration.ConfigurationManager.AppSettings.Get(key);
+			if (!string.IsNullOrEmpty(value))
+			{
+				return value;
+			}
+
+			throw new InvalidOperationException($"The '{key}' app.config setting or '{envVariable}' environment variable is not specified.");
+		}
+
+		private static string GetEnvironmentVariable(string envVariable)
+		{
 			if (EnvironmentVariablesEnabled)
 			{
 				// Note: these targets are intentionally ordered to favor process vars!
 				IEnumerable<EnvironmentVariableTarget> targets = new[]
-																	 {
-																		 EnvironmentVariableTarget.Process,
-																		 EnvironmentVariableTarget.User,
-																		 EnvironmentVariableTarget.Machine,
-																	 };
+					                                                 {
+						                                                 EnvironmentVariableTarget.Process,
+						                                                 EnvironmentVariableTarget.User,
+						                                                 EnvironmentVariableTarget.Machine,
+					                                                 };
 				foreach (EnvironmentVariableTarget target in targets)
 				{
 					string envValue = Environment.GetEnvironmentVariable(envVariable, target);
@@ -216,13 +308,7 @@ END";
 				}
 			}
 
-			string value = System.Configuration.ConfigurationManager.AppSettings.Get(key);
-			if (!string.IsNullOrEmpty(value))
-			{
-				return value;
-			}
-
-			throw new InvalidOperationException($"The '{key}' app.config setting or '{envVariable}' environment variable is not specified.");
+			return string.Empty;
 		}
 
 		private static void SetupServerCertificateValidation(IntegrationTestParameters parameters)

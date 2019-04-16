@@ -141,8 +141,7 @@ task CodeCoverageReport -Description "Create a code coverage report" {
            $targetArgument += " " + $assembly.FullName
         }
 
-        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "false", "Process")
-        Invoke-SetTestParametersByFile -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
+        Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
 
         # TODO: A strange issue exists attempting to use the configuration file. Using command line params for now...
         Write-Output "Running code coverage on $assemblyCount test assemblies..."
@@ -258,8 +257,7 @@ task IntegrationTests -Description "Run all integration tests" {
     Initialize-Folder $IntegrationTestsReportDir
     $OutputFile = Join-Path $IntegrationTestsReportDir "integration-test-output.txt"
     $testCategoryFilter = "--where=`"cat==Integration`""
-    [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "false", "Process")
-    Invoke-SetTestParametersByFile -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
+    Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
     exec { & $NunitExe $MasterSolution `
             "--labels=All" `
             "--agents=$NumberOfProcessors" `
@@ -381,8 +379,7 @@ task UnitTests -Description "Run all unit tests" {
     Initialize-Folder $UnitTestsReportDir
     $OutputFile = Join-Path $UnitTestsReportDir "unit-test-output.txt"
     $testCategoryFilter = "--where=`"cat!=Integration`""
-    [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "true", "Process")
-    Invoke-SetTestParametersByFile -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
+    Invoke-SetTestParameters -SkipIntegrationTests $true -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
     exec { & $NunitExe $MasterSolution `
             "--labels=All" `
             "--agents=$NumberOfProcessors" `
@@ -502,43 +499,20 @@ Function Invoke-DigitallSignFiles {
     }
 }
 
-Function Invoke-SetTestParametersByFile {
+Function Invoke-SetTestParameters {
     param(
+        [bool] $SkipIntegrationTests,
         [String] $TestParametersFile,
         [String] $TestEnvironment
     )
 
-    $jsonFile = $TestParametersFile
-    if ($TestEnvironment) {
-        switch ($TestEnvironment) {
-            "hyperv" {
-                $jsonFile = Join-Path $ScriptsDir "test-parameters-hyperv.json"
-                break
-            }
-
-            default {
-                Throw "The test environment '$TestEnvironment' isn't mapped to a JSON test file. Ensure a JSON file exists for this test environment."
-            }
-        }
+    [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", $SkipIntegrationTests, "Process")
+    if ($TestParametersFile) {
+		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_TEST_JSON_FILE", $TestParametersFile , "Process")
     }
 
-    if ($jsonFile) {
-        if (-Not (Test-Path $jsonFile -PathType Leaf)) {
-            Throw "The test parameters file '$jsonFile' was specified but doesn't exist."
-        }
-
-        $json = Get-Content -Raw -Path $jsonFile | ConvertFrom-Json
-        foreach ($property in $json.PSObject.Properties) {
-            $name = $property.Name
-            $value = $property.Value
-
-            # Ensure the parameters are in env var format.
-            if (-Not ($name.StartsWith("IAPI_INTEGRATION_"))) {
-                $name = "IAPI_INTEGRATION_" + $name.ToUpper()
-            }
-
-            [Environment]::SetEnvironmentVariable($name, $value , "Process")
-        }
+	if ($TestEnvironment) {
+		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_TEST_ENV", $TestEnvironment , "Process")
     }
 }
 
