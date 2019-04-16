@@ -1,4 +1,5 @@
 ﻿Imports kCura.WinEDDS
+Imports Relativity.Import.Export.Services
 Imports Relativity.Desktop.Client
 
 Public Class ImportOptions
@@ -20,12 +21,12 @@ Public Class ImportOptions
 		End Set
 	End Property
 
-	Private _selectedCaseInfo As Relativity.CaseInfo
-	Public Property SelectedCaseInfo As Relativity.CaseInfo
+	Private _selectedCaseInfo As CaseInfo
+	Public Property SelectedCaseInfo As CaseInfo
 		Get
 			Return _selectedCaseInfo
 		End Get
-		Private Set(value As Relativity.CaseInfo)
+		Private Set(value As CaseInfo)
 			_selectedCaseInfo = value
 		End Set
 	End Property
@@ -374,8 +375,8 @@ Public Class ImportOptions
 		End Try
 	End Function
 
-	Private Function EnsureSelectedFields(selectedFields As ViewFieldInfo(), allFields As ViewFieldInfo(), collectionName As String) As ViewFieldInfo()
-		Dim nameProvider As Func(Of ViewFieldInfo, String) = Function(f) f.DisplayName
+	Private Function EnsureSelectedFields(selectedFields As kCura.WinEDDS.ViewFieldInfo(), allFields As kCura.WinEDDS.ViewFieldInfo(), collectionName As String) As kCura.WinEDDS.ViewFieldInfo()
+		Dim nameProvider As Func(Of kCura.WinEDDS.ViewFieldInfo, String) = Function(f) f.DisplayName
 		Return EnsureSelectedFields(selectedFields, allFields, nameProvider, collectionName)
 	End Function
 

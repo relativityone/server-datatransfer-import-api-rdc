@@ -117,16 +117,16 @@ Namespace Relativity.Desktop.Client
 			Return retval
 		End Function
 
-		Public Shared Function FindFieldByName(listboxItems As ICollection(Of Object), field As ViewFieldInfo) As ViewFieldInfo
-			Return FindFieldBy(Function(x As ViewFieldInfo) x.DisplayName.Equals(field.DisplayName, StringComparison.InvariantCulture), listboxItems)
+		Public Shared Function FindFieldByName(listboxItems As ICollection(Of Object), field As Relativity.Import.Export.Services.ViewFieldInfo) As Relativity.Import.Export.Services.ViewFieldInfo
+			Return FindFieldBy(Function(x As Relativity.Import.Export.Services.ViewFieldInfo) x.DisplayName.Equals(field.DisplayName, StringComparison.InvariantCulture), listboxItems)
 		End Function
 
-		Public Shared Function FindFieldByArtifactId(listboxItems As ICollection(Of Object), field As ViewFieldInfo) As ViewFieldInfo
-			Return FindFieldBy(Function(x As ViewFieldInfo) x.FieldArtifactId = field.FieldArtifactId, listboxItems)
+		Public Shared Function FindFieldByArtifactId(listboxItems As ICollection(Of Object), field As Relativity.Import.Export.Services.ViewFieldInfo) As Relativity.Import.Export.Services.ViewFieldInfo
+			Return FindFieldBy(Function(x As Relativity.Import.Export.Services.ViewFieldInfo) x.FieldArtifactId = field.FieldArtifactId, listboxItems)
 		End Function
 
-		Public Shared Function FindFieldBy(predicate As Func(Of ViewFieldInfo, Boolean), listboxItems As ICollection(Of Object)) As ViewFieldInfo
-			For Each item As ViewFieldInfo In listboxItems
+		Public Shared Function FindFieldBy(predicate As Func(Of Relativity.Import.Export.Services.ViewFieldInfo, Boolean), listboxItems As ICollection(Of Object)) As Relativity.Import.Export.Services.ViewFieldInfo
+			For Each item As Relativity.Import.Export.Services.ViewFieldInfo In listboxItems
 				If predicate(item) Then
 					Return item
 				End If
@@ -142,12 +142,12 @@ Namespace Relativity.Desktop.Client
 		''' <param name="listboxItems">collections of all view fields from the workspace</param>
 		''' <param name="field">field from mappings from kwx file</param>
 		''' <returns></returns>
-		Public Shared Function FindCounterpartField(ByRef listboxItems As ICollection(Of Object), ByVal field As ViewFieldInfo) As ICollection(Of Object)
-			Dim fieldByName As ViewFieldInfo = FindFieldByName(listboxItems, field)
+		Public Shared Function FindCounterpartField(ByRef listboxItems As ICollection(Of Object), ByVal field As Relativity.Import.Export.Services.ViewFieldInfo) As ICollection(Of Object)
+			Dim fieldByName As Relativity.Import.Export.Services.ViewFieldInfo = FindFieldByName(listboxItems, field)
 			If fieldByName IsNot Nothing Then
 				Return New List(Of Object) From {fieldByName}
 			End If
-			Dim fieldByArtifactId As ViewFieldInfo = FindFieldByArtifactId(listboxItems, field)
+			Dim fieldByArtifactId As Relativity.Import.Export.Services.ViewFieldInfo = FindFieldByArtifactId(listboxItems, field)
 			If fieldByArtifactId IsNot Nothing Then
 				Return New List(Of Object) From {fieldByArtifactId}
 			End If

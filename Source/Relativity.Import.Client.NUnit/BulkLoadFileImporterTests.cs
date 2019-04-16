@@ -17,6 +17,9 @@ namespace Relativity.Import.Client.NUnit
 
 	using Moq;
 
+	using CaseInfo = Relativity.Import.Export.Services.CaseInfo;
+	using ExecutionSource = Relativity.Import.Export.Services.ExecutionSource;
+
 	/// <summary>
 	/// Represents <see cref="BulkLoadFileImporter"/> tests.
 	/// </summary>
@@ -262,7 +265,7 @@ namespace Relativity.Import.Client.NUnit
 				"S",
 				this.MockBulkImportManager.Object,
 				this.TokenSource,
-				Relativity.ExecutionSource.Unknown);
+				ExecutionSource.Unknown);
 		}
 	}
 }

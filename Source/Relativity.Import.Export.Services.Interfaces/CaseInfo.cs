@@ -4,6 +4,8 @@
 //------------------------------------------------------------------------------
 namespace Relativity.Import.Export.Services
 {
+	using System;
+
 	public class CaseInfo
 	{
 		public int ArtifactID { get; set; }
@@ -27,5 +29,26 @@ namespace Relativity.Import.Export.Services
 		public int StatusCodeArtifactID { get; set; }
 
 		public string DocumentPath { get; set; }
+
+		public CaseInfo()
+		{
+		}
+		public CaseInfo(System.Data.DataRow row)
+		{
+			if (row == null)
+			{
+				throw new ArgumentNullException(nameof(row));
+			}
+
+			this.ArtifactID = System.Convert.ToInt32(row["ArtifactID"]);
+			this.MatterArtifactID = System.Convert.ToInt32(row["MatterArtifactID"]);
+			this.Name = System.Convert.ToString(row["Name"]);
+			this.RootArtifactID = System.Convert.ToInt32(row["RootArtifactID"]);
+			this.RootFolderID = System.Convert.ToInt32(row["RootFolderID"]);
+			this.StatusCodeArtifactID = System.Convert.ToInt32(row["StatusCodeArtifactID"]);
+			this.EnableDataGrid = System.Convert.ToBoolean(row["EnableDataGrid"]);
+			this.DownloadHandlerURL = System.Convert.ToString(row["DownloadHandlerApplicationPath"]) + "/";
+			this.DocumentPath = System.Convert.ToString(row["DefaultFileLocationName"]);
+		}
 	}
 }

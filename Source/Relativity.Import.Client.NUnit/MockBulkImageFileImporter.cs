@@ -11,13 +11,13 @@ namespace Relativity.Import.Client.NUnit
 	using System.Text;
 	using System.Threading;
 
-	using kCura.EDDS.WebAPI.BulkImportManagerBase;
-	using kCura.EDDS.WebAPI.FieldManagerBase;
 	using kCura.WinEDDS;
 
 	using Relativity.Import.Export.Io;
 	using Relativity.Import.Export.Process;
 	using Relativity.Logging;
+
+	using ExecutionSource = Relativity.Import.Export.Services.ExecutionSource;
 
 	/// <summary>
 	/// Represents a mock class object for <see cref="BulkImageFileImporter"/>.
@@ -34,7 +34,7 @@ namespace Relativity.Import.Client.NUnit
 			kCura.WinEDDS.Service.IBulkImportManager manager,
 			kCura.WinEDDS.Api.IImageReader reader,
 			CancellationTokenSource tokenSource,
-			Relativity.ExecutionSource executionSource)
+			ExecutionSource executionSource)
 			: base(
 				0,
 				args,
@@ -49,7 +49,8 @@ namespace Relativity.Import.Client.NUnit
 		{
 			this._bulkImportManager = manager;
 			this._imageReader = reader;
-			this.ImportBatchSize = 500;
+
+			// this.ImportBatchSize = 500;
 			this.ImportBatchVolume = 1000000;
 			this.OutputFromStringWriter = new StringBuilder();
 		}
@@ -94,7 +95,7 @@ namespace Relativity.Import.Client.NUnit
 			this.LowerBatchSizeAndRetry(string.Empty, string.Empty, numberOfRecords);
 		}
 
-		public MassImportResults TryBulkImport(kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType overwrite)
+		public kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults TryBulkImport(kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType overwrite)
 		{
 			const bool UseBulk = false;
 			return this.RunBulkImport(overwrite, UseBulk);

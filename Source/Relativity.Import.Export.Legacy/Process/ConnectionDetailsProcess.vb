@@ -1,4 +1,5 @@
 Imports Relativity.Import.Export.Process
+Imports Relativity.Import.Export.Services
 Imports Relativity.Import.Export.Transfer
 
 Namespace kCura.WinEDDS
@@ -7,9 +8,9 @@ Namespace kCura.WinEDDS
 
 		Private ReadOnly _credential As Net.NetworkCredential
 		Private ReadOnly _cookieContainer As Net.CookieContainer
-		Private ReadOnly _caseInfo As Global.Relativity.CaseInfo
+		Private ReadOnly _caseInfo As CaseInfo
 
-		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As Global.Relativity.CaseInfo)
+		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As CaseInfo)
 			MyBase.New()
 
 			_credential = credential

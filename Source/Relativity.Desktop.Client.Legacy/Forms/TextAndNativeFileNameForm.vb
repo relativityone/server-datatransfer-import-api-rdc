@@ -36,7 +36,7 @@ Namespace Relativity.Desktop.Client
 			End Get
 		End Property
 
-		Public Sub Initialize(fields As ViewFieldInfo(), selection As IList(Of CustomFileNameSelectionPart))
+		Public Sub Initialize(fields As Relativity.Import.Export.Services.ViewFieldInfo(), selection As IList(Of CustomFileNameSelectionPart))
 			ClientSize = New Size(252 * FieldLimit - 75, 102)
 			InitializeAvailableFields(fields)
 			InitializeFieldControls()
@@ -45,7 +45,7 @@ Namespace Relativity.Desktop.Client
 			Me.MinimizeBox = False
 		End Sub
 
-		Private Sub InitializeAvailableFields(fields As IReadOnlyCollection(Of ViewFieldInfo))
+		Private Sub InitializeAvailableFields(fields As IReadOnlyCollection(Of Relativity.Import.Export.Services.ViewFieldInfo))
 			_availableFields = New List(Of FieldSelection) From {New FieldSelection(CustomTextOption, -1)}
 			Dim databaseFields = fields.
 				Where(Function(f) AllowedFieldTypes.Contains(f.FieldType)).
@@ -54,7 +54,7 @@ Namespace Relativity.Desktop.Client
 			InitializeFirstFields(fields)
 		End Sub
 
-		Private Sub InitializeFirstFields(databaseFields As IReadOnlyCollection(Of ViewFieldInfo))
+		Private Sub InitializeFirstFields(databaseFields As IReadOnlyCollection(Of Relativity.Import.Export.Services.ViewFieldInfo))
 			_firstFields = New List(Of FieldSelection)
 			_firstFields.Add(New FieldSelection(SelectFirstFieldText, FirstFieldIds.SelectField))
 			_firstFields.AddRange(databaseFields.

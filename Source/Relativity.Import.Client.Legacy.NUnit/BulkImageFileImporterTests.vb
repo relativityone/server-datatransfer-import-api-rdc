@@ -43,7 +43,6 @@ Namespace Relativity.Import.Client.NUnit
 			Dim mockAppSettings = New Mock(Of IAppSettings)()
 			Dim mockLogger = New Mock(Of ILog)()
 			_context = New ProcessContext(mockProcessEventWriter.Object, mockProcessErrorWriter.Object, mockAppSettings.Object, mockLogger.Object)
-			_overwrite = kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 			
 		    _logger = New NullLogger()
 			tokenSource = New CancellationTokenSource()
