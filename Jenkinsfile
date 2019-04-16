@@ -221,16 +221,22 @@ timestamps
                 {
                     echo "Publishing the build logs"
                     archiveArtifacts artifacts: 'Logs/**/*.*'
-                    if (params.runUnitTests || params.runIntegrationTests)
+                    if (params.runUnitTests)
                     {
-                        echo "Publishing the tests report"
-                        archiveArtifacts artifacts: 'Reports/tests/**/*.*'
+                        echo "Publishing the unit tests report"
+                        archiveArtifacts artifacts: 'TestReports/unit-tests/**/*.*'
+                    }
+
+                    if (params.runIntegrationTests)
+                    {
+                        echo "Publishing the integration tests report"
+                        archiveArtifacts artifacts: 'TestReports/integration-tests/**/*.*'
                     }
 
                     if (params.createCodeCoverageReport)
                     {
                         echo "Publishing the code coverage report"
-                        archiveArtifacts artifacts: 'Reports/code-coverage/**/*.*'
+                        archiveArtifacts artifacts: 'TestReports/code-coverage/**/*.*'
                     }
                 } 
             }
