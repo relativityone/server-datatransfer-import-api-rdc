@@ -11,7 +11,7 @@ You can use the Import API (IAPI) to build application components that import do
 
 ## Build requirements
 You must have the following installed in order to build the master solution.
-* Visual Studio 2017 and above
+* Visual Studio 2017/2019
 * NUnit 3 Test Adapter v3.12.0.0 (required to run NUnit3 tests)
 * Paket for Visual Studio v0.38.3 (required for IDE builds)
 * ConfigureAwait Checker Resharper Extension
@@ -29,7 +29,7 @@ Generally speaking, PowerShell is used to perform initial and pre-commit builds 
 ***Note:** The first parameter specifies the task to execute and defaults to the Build task. The examples below explicitly include Build for clarity.*
 
 ```bash
-# Cleans the solution
+# Cleans the solution.
 .\build.ps1 Clean
 ```
 
@@ -56,7 +56,7 @@ Generally speaking, PowerShell is used to perform initial and pre-commit builds 
 
 ***Note:** VS-based builds always run the standard CA checks and StyleCop analyzer. Extended CA checks are never run due to execution time.*
 
-## Unit and integration tests
+## Testing and code coverage
 Unit and integration tests can be executed via the Test Explorer window or the `PowerShell` build script. The following sections focus on `PowerShell` test execution, which relies on the NUnit 3 Console Runner.
 
 ***Note:** All test results are stored within the .\TestResults sub-folder.*
@@ -65,32 +65,60 @@ Unit and integration tests can be executed via the Test Explorer window or the `
 The unit tests are very straight-forward to execute and complete quickly.
 
 ```bash
-# Skips building the solution and only executes the unit tests
+# Run the unit tests.
 .\build.ps1 UnitTests
 ```
 
+```bash
+# Same as above but generate a test report underneath the .\TestReports\unit-tests sub-folder.
+.\build.ps1 UnitTests,TestReports
+```
+
 ### Integration tests
-The integration tests, by their very nature, perform "deeper" operations and take several minutes to complete. See [Test Parameters](#test-parameters) for details on how to target different test instances.
+The integration tests, by their very nature, perform "deeper" operations and take several minutes to complete. See [test parameters](#test-parameters) for details on how to target different test instances.
 
 ```bash
-# Skips building the solution and only executes the integration tests
+# Run the integration tests using either environment variables or modified app.config setting for all integration test parameters.
 .\build.ps1 IntegrationTests
+```
+
+```bash
+# Run the integration tests using the hyper-v internal test environment for all integration test parameters.
+.\build.ps1 IntegrationTests
+```
+
+```bash
+# Same as above but generate a test report underneath the .\TestReports\integration-tests sub-folder.
+.\build.ps1 IntegrationTests,TestReports
 ```
 
 ### TestVM support
 The build scripts make it very easy to run *all* integration tests with a TestVM.
 
 ```bash
-# Skips building the solution and only executes the integration tests using the first discovered TestVM
+# Run the integration tests using the first discovered TestVM.
 .\build.ps1 IntegrationTests -TestVM
 ```
 
 ```bash
-# Skips building the solution and only executes the integration tests using the specified TestVM
+# Same as above but use the specified TestVM.
 .\build.ps1 IntegrationTests -TestVM -TestVMName "P-DV-VM-NUN5BEE"
 ```
 
 ***Note:** When running integration tests on a `TestVM`, the test parameters are temporarily set via **process** environment variables only.*
+
+### Code coverage
+The build scripts extend the testing framework to include code coverage using the [dotCover](https://www.jetbrains.com/dotcover) CLI package. When performing a code coverage run, both unit and integration tests are used; therefore, [test parameters](#test-parameters) are required and the same options apply.
+
+```bash
+# Run a code coverage test and generate a coverage report underneath the .\TestReports\code-coverage sub-folder.
+.\build.ps1 CodeCoverageReport
+```
+
+```bash
+# Same as above but use The hyper-v internal test environment for all integration test parameters.
+.\build.ps1 CodeCoverageReport -TestEnvironment "hyperv"
+```
 
 ### Test categories
 To provide a convenient way to filter tests, `TestCategories` class exists within the `Relativity.Import.Export.TestFramework` assembly. The most important category is `Integration` because it's used as a filter when running unit or integration tests.
@@ -161,13 +189,13 @@ The `PowerShell` build scripts can support JSON-based test parameters as well.
 .\build.ps1 IntegrationTests -TestParametersFile "C:\Temp\test-parameters.json"
 ```
 
-#### Test Environment Build Parameter
+#### Test Environment Parameter
 Given the ability to use a JSON-based test parameters file, the repo includes test parameter files for *well-known* test environments. This simplifies running all integration tests against production-like Relativity instances without specifying the file path.
 
 ***Note:** The JSON test parameter files are located within the .\Scripts folder.*
 
 ```bash
-# Skips building the solution and only executes the integration tests using the Hyper-V test environment
+# Runs the integration tests using the Hyper-V test environment
 .\build.ps1 IntegrationTests -TestEnvironment hyperv
 ```
 

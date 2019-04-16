@@ -127,7 +127,7 @@ timestamps
                         stage('Test results report')
                         {
                             echo "Generating test report"
-                            powershell ".\\build.ps1 TestResultsReport"
+                            powershell ".\\build.ps1 TestReports"
                         }
                     }
 

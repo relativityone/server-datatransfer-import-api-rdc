@@ -290,7 +290,7 @@ build/
 /paket-files
 /Logs/*
 /PDBs/*
-/Reports/*
+/TestReports/*
 errors.xml
 
 # Allow vendor binaries

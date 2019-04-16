@@ -15,14 +15,14 @@ properties {
     $PackagesArtifactsDir = Join-Path $BuildArtifactsDir "packages"
     $ScriptsDir = Join-Path $Root "Scripts"
     $BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
-    $ReportsDir = Join-Path $Root "Reports"
-    $CodeCoverageReportDir = Join-Path $ReportsDir "code-coverage"
-    $TestsReportDir = Join-Path $ReportsDir "tests"
-    $TestResultsDir = Join-Path $Root "TestResults"
+    $TestReportsDir = Join-Path $Root "TestReports"
+    $CodeCoverageReportDir = Join-Path $TestReportsDir "code-coverage"        
     $DotCoverConfigFile = Join-Path $ScriptsDir "code-coverage-report.xml"
     $DotCoverReportXmlFile = Join-Path $CodeCoverageReportDir "code-coverage-report.xml"
-    $IntegrationTestResultsXmlFile = Join-Path $TestResultsDir "test-results-integration.xml"
-    $UnitTestResultsXmlFile = Join-Path $TestResultsDir "test-results-unit.xml"    
+    $IntegrationTestsReportDir = Join-Path $TestReportsDir "integration-tests"
+    $IntegrationTestsResultXmlFile = Join-Path $IntegrationTestsReportDir "test-results-integration.xml"
+    $UnitTestsReportDir = Join-Path $TestReportsDir "unit-tests"
+    $UnitTestsResultXmlFile = Join-Path $UnitTestsReportDir "test-results-unit.xml"
     $ExtentCliExe = Join-Path $PackagesDir "extent\tools\extent.exe"
     $GitVersionExe = Join-Path $PackagesDir "GitVersion.CommandLine\tools\GitVersion.exe"
     $NunitExe = Join-Path $PackagesDir "NUnit.ConsoleRunner\tools\nunit3-console.exe"
@@ -104,7 +104,7 @@ task Clean -Description "Clean solution" {
     Write-Output "Removing all build artifacts"
     Initialize-Folder $BuildArtifactsDir
     Initialize-Folder $LogsDir
-    Initialize-Folder $TestResultsDir
+    Initialize-Folder $TestReportsDir
     Write-Output "Running Clean target on $MasterSolution"
     exec { 
         msbuild $MasterSolution `
@@ -125,7 +125,7 @@ task Clean -Description "Clean solution" {
 
 task CodeCoverageReport -Description "Create a code coverage report" {
     exec {
-        Initialize-Folder $ReportsDir -Safe
+        Initialize-Folder $TestReportsDir -Safe
         Initialize-Folder $CodeCoverageReportDir
         $targetArgument = $Null
         Write-Output "Searching for code coverage test assemblies..."
@@ -254,8 +254,9 @@ task Help -Alias ? -Description "Display task information" {
 }
 
 task IntegrationTests -Description "Run all integration tests" {
-    Initialize-Folder $TestResultsDir -Safe
-    $OutputFile = Join-Path $TestResultsDir "integration-test-output.txt"
+    Initialize-Folder $TestReportsDir -Safe
+    Initialize-Folder $IntegrationTestsReportDir
+    $OutputFile = Join-Path $IntegrationTestsReportDir "integration-test-output.txt"
     $testCategoryFilter = "--where=`"cat==Integration`""
     [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "false", "Process")
     Invoke-SetTestParametersByFile -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
@@ -264,14 +265,14 @@ task IntegrationTests -Description "Run all integration tests" {
             "--agents=$NumberOfProcessors" `
             "--skipnontestassemblies" `
             "--timeout=$TestTimeoutInMS" `
-            "--result=$IntegrationTestResultsXmlFile" `
+            "--result=$IntegrationTestsResultXmlFile" `
             "--out=$OutputFile" `
             $testCategoryFilter `
     } -errorMessage "There was an error running the integration tests."
 }
 
 task IntegrationTestResults -Description "Retrieve the integration test results from the Xml file" {
-    Write-TestResultsOutput $IntegrationTestResultsXmlFile
+    Write-TestResultsOutput $IntegrationTestsResultXmlFile
 }
 
 task PackageVersion -Description "Retrieves the package version from GitVersion" {
@@ -290,7 +291,7 @@ task PublishBuildArtifacts -Description "Publish build artifacts" {
     Copy-Folder -SourceDir $BinariesArtifactsDir -TargetDir "$targetDir\binaries"
     Copy-Folder -SourceDir $InstallersArtifactsDir -TargetDir "$targetDir\installers"
     Copy-Folder -SourceDir $PackagesArtifactsDir -TargetDir "$targetDir\packages"
-    Copy-Folder -SourceDir $TestResultsDir -TargetDir "$targetDir\test-results"
+    Copy-Folder -SourceDir $TestReportsDir -TargetDir "$targetDir\test-reports"
 }
 
 task PublishPackages -Depends BuildPackages -Description "Pushes package to NuGet feed" {
@@ -318,14 +319,17 @@ task PublishPackages -Depends BuildPackages -Description "Pushes package to NuGe
 task SemanticVersions -Depends BuildVersion, PackageVersion -Description "Calculate and retrieve the semantic build and package versions" {
 }
 
-task TestResultsReport -Description "Create a merged test results report" {
-    Initialize-Folder $ReportsDir -Safe
-    Initialize-Folder $TestsReportDir
-
+task TestReports -Description "Create the test reports" {
     exec {
-        # This will generate index.html within the test results directory.
-         & $ExtentCliExe -d "$TestResultsDir/" -o "$TestsReportDir/" -r v3html --merge 
-    } -errorMessage "There was an error generating the test report."
+        # See this page for CLI docs: https://github.com/extent-framework/extentreports-dotnet-cli
+        if (Test-Path $UnitTestsResultXmlFile -PathType Leaf) {
+            & $ExtentCliExe -i "$UnitTestsResultXmlFile" -o "$UnitTestsReportDir/" -r v3html
+        }
+
+        if (Test-Path $IntegrationTestsResultXmlFile -PathType Leaf) {
+            & $ExtentCliExe -i "$IntegrationTestsResultXmlFile" -o "$IntegrationTestsReportDir/" -r v3html
+        }
+    } -errorMessage "There was an error creating the test reports."
 }
 
 task TestVMSetup -Description "Setup the test parameters for TestVM" {
@@ -373,8 +377,9 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
 }
 
 task UnitTests -Description "Run all unit tests" {
-    Initialize-Folder $TestResultsDir -Safe
-    $OutputFile = Join-Path $TestResultsDir "unit-test-output.txt"
+    Initialize-Folder $TestReportsDir -Safe
+    Initialize-Folder $UnitTestsReportDir
+    $OutputFile = Join-Path $UnitTestsReportDir "unit-test-output.txt"
     $testCategoryFilter = "--where=`"cat!=Integration`""
     [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "true", "Process")
     Invoke-SetTestParametersByFile -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
@@ -383,14 +388,14 @@ task UnitTests -Description "Run all unit tests" {
             "--agents=$NumberOfProcessors" `
             "--skipnontestassemblies" `
             "--timeout=$TestTimeoutInMS" `
-            "--result=$UnitTestResultsXmlFile" `
+            "--result=$UnitTestsResultXmlFile" `
             "--out=$OutputFile" `
             $testCategoryFilter `
     } -errorMessage "There was an error running the unit tests."
 }
 
 task UnitTestResults -Description "Retrieve the unit test results from the Xml file" {
-    Write-TestResultsOutput $UnitTestResultsXmlFile
+    Write-TestResultsOutput $UnitTestsResultXmlFile
 }
 
 task UpdateAssemblyInfo -Description "Update the AssemblySharedInfo files in \Version\" {
@@ -420,6 +425,10 @@ Function Initialize-Folder {
         [Parameter()]
         [switch] $Safe
     )
+
+    if (!$Path) {
+        Throw "You must specify a non-null path to initialize a folder. Check to make sure the path value or variable passed to this method is valid."
+    }
 
     if ((Test-Path $Path) -and $Safe) {
         Write-Host "The directory '$Path' already exists."
