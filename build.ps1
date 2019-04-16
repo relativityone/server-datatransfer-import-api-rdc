@@ -65,7 +65,7 @@ The optional TestVM used to execute all integration tests. This is only relevant
 [CmdletBinding()]
 param(
     [Parameter(Position=0)]
-    [string[]]$TaskList = @(),
+    [string[]]$TaskList = @("Build"),
     [ValidateSet("Build", "Rebuild")]
     [String]$Target = "Build",
     [Parameter()]

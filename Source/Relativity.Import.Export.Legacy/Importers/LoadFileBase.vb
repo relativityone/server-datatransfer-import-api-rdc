@@ -19,7 +19,7 @@ Namespace kCura.WinEDDS
 		Protected _codeManager As kCura.WinEDDS.Service.CodeManager
 		Protected _folderManager As kCura.WinEDDS.Service.FolderManager
 		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
-		Protected _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
+		Protected _bulkImportManager As kCura.WinEDDS.Service.IBulkImportManager
 		Protected _usermanager As kCura.WinEDDS.Service.UserManager
 		Protected _objectManager As kCura.WinEDDS.Service.ObjectManager
 
@@ -111,9 +111,11 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected Overridable ReadOnly Property BulkImportManager As kCura.WinEDDS.Service.BulkImportManager
+		Protected Overridable ReadOnly Property BulkImportManager As kCura.WinEDDS.Service.IBulkImportManager
 			Get
-				If _bulkImportManager Is Nothing Then _bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credentials, _settings.CookieContainer)
+				If _bulkImportManager Is Nothing Then
+					_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credentials, _settings.CookieContainer)
+				End If
 
 				Return _bulkImportManager
 			End Get
@@ -531,7 +533,7 @@ Namespace kCura.WinEDDS
 							Dim currentRetryAttempt As Integer = 0
 
 							' REL-272765: Added I/O resiliency and support document level errors.
-							Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(AppSettings.Instance)
+							Dim policy As IWaitAndRetryPolicy = Me.CreateWaitAndRetryPolicy()
 
 							' Note: a lambda can't modify a ref param; therefore, a policy block return value is used.
 							Dim returnCodePage As Integer? = policy.WaitAndRetry(

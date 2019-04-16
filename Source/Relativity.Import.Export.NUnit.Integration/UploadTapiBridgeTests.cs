@@ -17,11 +17,13 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 	using Relativity.Import.Export.TestFramework;
 	using Relativity.Import.Export.Transfer;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents <see cref="UploadTapiBridge"/> tests.
 	/// </summary>
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
@@ -32,13 +34,12 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 		protected override TapiBridgeBase TapiBridge => this.tapiBridge;
 
-		[Test]
-		[TestCase(TapiClient.None, false)]
-		[TestCase(TapiClient.Aspera, true)]
-		[TestCase(TapiClient.Aspera, false)]
-		[TestCase(TapiClient.Direct, true)]
-		[TestCase(TapiClient.Direct, false)]
-		[TestCase(TapiClient.Web, false)]
+		[IdentifiedTestCase("3b1d585f-a2ab-4a30-84ce-d0816e088333", TapiClient.None, false)]
+		[IdentifiedTestCase("49c40e14-0fe6-429b-9690-63438d1c6a2e", TapiClient.Aspera, true)]
+		[IdentifiedTestCase("f8cb64d1-4fe8-425c-8922-83a1646a5c9d", TapiClient.Aspera, false)]
+		[IdentifiedTestCase("f4e8bc35-bf4c-47d2-9166-0603f4f34008", TapiClient.Direct, true)]
+		[IdentifiedTestCase("c344b1c8-3c39-4aa1-97a1-6a32f1f1e18c", TapiClient.Direct, false)]
+		[IdentifiedTestCase("50f47046-f2d0-4ffb-ba29-3b986233330b", TapiClient.Web, false)]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
@@ -64,22 +65,22 @@ namespace Relativity.Import.Export.NUnit.Integration
 		protected override void CreateTapiBridge()
 		{
 			var parameters = new UploadTapiBridgeParameters
-				                 {
-					                 Credentials =
-						                 new NetworkCredential(
-							                 this.TestParameters.RelativityUserName,
-							                 this.TestParameters.RelativityPassword),
-					                 FileShare = this.TestParameters.FileShareUncPath,
+								 {
+									 Credentials =
+										 new NetworkCredential(
+											 this.TestParameters.RelativityUserName,
+											 this.TestParameters.RelativityPassword),
+									 FileShare = this.TestParameters.FileShareUncPath,
 									 MaxFilesPerFolder = this.MaxFilesPerFolder,
-					                 MaxJobParallelism = 1,
-					                 MaxJobRetryAttempts = 1,
-					                 PreserveFileTimestamps = this.PreserveFileTimestamps,
-					                 TargetPath = this.TargetPath,
-					                 WaitTimeBetweenRetryAttempts = 0,
-					                 WebCookieContainer = this.CookieContainer,
-					                 WebServiceUrl = this.TestParameters.RelativityWebApiUrl.ToString(),
-					                 WorkspaceId = this.TestParameters.WorkspaceId
-				                 };
+									 MaxJobParallelism = 1,
+									 MaxJobRetryAttempts = 1,
+									 PreserveFileTimestamps = this.PreserveFileTimestamps,
+									 TargetPath = this.TargetPath,
+									 WaitTimeBetweenRetryAttempts = 0,
+									 WebCookieContainer = this.CookieContainer,
+									 WebServiceUrl = this.TestParameters.RelativityWebApiUrl.ToString(),
+									 WorkspaceId = this.TestParameters.WorkspaceId
+								 };
 
 			this.SetupTapiBridgeParameters(parameters);
 			this.tapiBridge = new UploadTapiBridge(parameters, this.TransferLog, CancellationToken.None);

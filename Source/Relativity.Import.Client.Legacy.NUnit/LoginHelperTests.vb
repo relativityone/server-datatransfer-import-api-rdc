@@ -7,6 +7,7 @@
 Imports kCura.WinEDDS
 
 Imports NUnit.Framework
+Imports Relativity.Import.Export
 
 Namespace Relativity.Import.Client.NUnit
 
@@ -18,6 +19,7 @@ Namespace Relativity.Import.Client.NUnit
 		Public Sub SetUp()
 			_exception = Nothing
 			kCura.WinEDDS.Config.ConfigSettings(NameOf(Config.ApplicationName)) = String.Empty
+			AppSettings.Instance.EnforceVersionCompatibilityCheck = True
 		End Sub
 
 		<Test>

@@ -16,10 +16,15 @@ namespace Relativity.Import.Export
     /// </summary>
     public static class RelativityLogFactory
     {
+	    /// <summary>
+	    /// The default logging system.
+	    /// </summary>
+	    public const string DefaultSystem = "Data.Transfer";
+
 		/// <summary>
-		/// The default sub-system.
+		/// The default logging sub-system.
 		/// </summary>
-		public const string WinEDDSSubSystem = "WinEDDS";
+		public const string DefaultSubSystem = "Relativity.Import.Export";
 
 		/// <summary>
 		/// Creates a Relativity logging instance.
@@ -29,7 +34,7 @@ namespace Relativity.Import.Export
 		/// </returns>
 		public static Relativity.Logging.ILog CreateLog()
 		{
-			return CreateLog(WinEDDSSubSystem);
+			return CreateLog(DefaultSubSystem);
 		}
 
 		/// <summary>
@@ -62,7 +67,7 @@ namespace Relativity.Import.Export
 
 				    if (string.IsNullOrEmpty(options.System))
 				    {
-					    options.System = "WinEDDS";
+					    options.System = DefaultSubSystem;
 				    }
 
 				    if (string.IsNullOrEmpty(options.SubSystem))
@@ -81,8 +86,8 @@ namespace Relativity.Import.Export
 			    try
 			    {
 				    Relativity.Logging.Tools.InternalLogger.WriteFromExternal(
-					    $"Failed to setup WinEDDS logging. Exception: {e.ToString()}",
-					    new Relativity.Logging.LoggerOptions { System = "WinEDDS" });
+					    $"Failed to setup \"{DefaultSystem} - {DefaultSubSystem}\" logging. Exception: {e.ToString()}",
+					    new Relativity.Logging.LoggerOptions { System = DefaultSystem, SubSystem = DefaultSubSystem });
 			    }
 			    catch
 			    {

@@ -14,6 +14,8 @@ namespace Relativity.Import.Export.NUnit
 	using System.IO;
 	using System.Text;
 
+	using Castle.Components.DictionaryAdapter.Xml;
+
 	using global::NUnit.Framework;
 
 	using Relativity.Import.Export.Io;
@@ -481,6 +483,15 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(lines[0], Is.EqualTo("Line1"));
 			Assert.That(lines[1], Is.EqualTo("Line2"));
 			Assert.That(lines[2], Is.EqualTo("Line3"));
+		}
+
+		[Test]
+		public void ShouldReadAllText()
+		{
+			string file = RandomHelper.NextTextFile(100, 10000, this.tempDirectory.Directory, false);
+			string expected = System.IO.File.ReadAllText(file);
+			string actual = this.fileSystem.File.ReadAllText(file);
+			Assert.That(actual, Is.EqualTo(expected));
 		}
 
 		[Test]

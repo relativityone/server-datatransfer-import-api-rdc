@@ -47,6 +47,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -107,6 +108,11 @@
     <Content Include="oi\unmanaged\wvcore-R1.dll">
       <Paket>True</Paket>
     </Content>
+    <Compile Include="BulkFileImporterTestsBase.cs" />
+    <Compile Include="BulkImageFileImporterTests.cs" />
+    <Compile Include="MockBulkImageFileImporter.cs" />
+    <Compile Include="MockBulkLoadFileImporter.cs" />
+    <Compile Include="BulkLoadFileImporterTests.cs" />
     <Compile Include="DataReaderReaderTests.cs" />
     <Compile Include="ExceptionSerializationTests.cs" />
     <Compile Include="FolderCacheTests.cs" />

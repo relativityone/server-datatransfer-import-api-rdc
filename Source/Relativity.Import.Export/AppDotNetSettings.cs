@@ -258,6 +258,17 @@ namespace Relativity.Import.Export
 
 		/// <inheritdoc />
 		[AppSetting(
+			AppSettingsConstants.SectionImportExport,
+			AppSettingsConstants.EnforceVersionCompatibilityCheckKey,
+			AppSettingsConstants.EnforceVersionCompatibilityCheckDefaultValue)]
+		bool IAppSettings.EnforceVersionCompatibilityCheck
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.ExportBatchSizeKey,
 			AppSettingsConstants.ExportBatchSizeDefaultValue)]
@@ -947,6 +958,17 @@ namespace Relativity.Import.Export
 			AppSettingsConstants.UsePipeliningForNativeAndObjectImportsKey,
 			AppSettingsConstants.UsePipeliningForNativeAndObjectImportsDefaultValue)]
 		bool IAppSettings.UsePipeliningForNativeAndObjectImports
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionLegacykCuraConfig,
+			AppSettingsConstants.ValueRefreshThresholdKey,
+			AppSettingsConstants.ValueRefreshThresholdDefaultValue)]
+		int IAppSettings.ValueRefreshThreshold
 		{
 			get;
 			set;

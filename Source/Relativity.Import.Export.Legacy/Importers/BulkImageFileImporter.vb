@@ -14,10 +14,10 @@ Namespace kCura.WinEDDS
 		Inherits ImportExportTapiBase
 
 #Region "Members"
-		Private _imageReader As kCura.WinEDDS.Api.IImageReader
+		Protected _imageReader As kCura.WinEDDS.Api.IImageReader
 		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
 		Protected _productionManager As kCura.WinEDDS.Service.ProductionManager
-		Protected _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
+		Protected _bulkImportManager As kCura.WinEDDS.Service.IBulkImportManager
 		Protected _documentManager As kCura.WinEDDS.Service.DocumentManager
 		Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
 		Private _folderID As Int32

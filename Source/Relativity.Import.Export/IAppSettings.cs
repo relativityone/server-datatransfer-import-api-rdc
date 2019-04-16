@@ -211,6 +211,18 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to enforce the version compatibility check.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to enforce the version compatibility check; otherwise, <see langword="false" />.
+		/// </value>
+		bool EnforceVersionCompatibilityCheck
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the max number of records to export per batch.
 		/// </summary>
 		/// <value>
@@ -795,6 +807,18 @@ namespace Relativity.Import.Export
 		/// <see langword="true" /> to execute tasks in parallel; otherwise, <see langword="false" />.
 		/// </value>
 		bool UsePipeliningForNativeAndObjectImports
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the the refresh frequency, in milliseconds, to be used for updating configuration settings.
+		/// </summary>
+		/// <value>
+		/// The total number of milliseconds.
+		/// </value>
+		int ValueRefreshThreshold
 		{
 			get;
 			set;

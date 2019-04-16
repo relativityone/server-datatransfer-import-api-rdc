@@ -136,7 +136,6 @@
     </Compile>
     <Compile Include="BulkImageFileImporterTests.vb" />
     <Compile Include="BulkImportManagerTests.vb" />
-    <Compile Include="BulkLoadFileImporterTests.vb" />
     <Compile Include="CaseInsensitiveFilePathHelperTests.vb" />
     <Compile Include="CaseSensitiveFilePathHelperTests.vb" />
     <Compile Include="DataReaderReaderTests.vb" />
@@ -153,7 +152,6 @@
     <Compile Include="MockBulkImageFileImporter.vb" />
     <Compile Include="MockBulkImportManagerSqlExceptions.vb" />
     <Compile Include="MockBulkImportManagerWebExceptions.vb" />
-    <Compile Include="MockBulkLoadFileImporter.vb" />
     <Compile Include="MockForLoweBatchSizeBulkImageFileImporter.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="ObjectExportInfoTests.vb" />

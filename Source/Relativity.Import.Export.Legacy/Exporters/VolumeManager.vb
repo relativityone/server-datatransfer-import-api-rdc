@@ -151,7 +151,7 @@ Namespace kCura.WinEDDS
 			_directoryHelper = directoryHelper
 			_fileNameProvider = fileNameProvider
 
-			_logger = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
+			_logger = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
 
 			_timekeeper = t
 			_currentVolumeNumber = _settings.VolumeInfo.VolumeStartNumber

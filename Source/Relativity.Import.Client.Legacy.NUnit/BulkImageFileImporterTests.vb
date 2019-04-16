@@ -25,7 +25,6 @@ Namespace Relativity.Import.Client.NUnit
 		Dim _args As ImageLoadFile
 		Dim _guid As System.Guid
 		Dim _context As ProcessContext
-		Dim _overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType
 		Dim _keyPathExistsAlready As Boolean
 		Dim _keyValExistsAlready As Boolean
         Dim _ioReporter As IIoReporter
@@ -69,38 +68,8 @@ Namespace Relativity.Import.Client.NUnit
 		End Sub
 
 		<Test>
-		Public Sub BulkImportImageFile_NoException_NoRetries_CallsLowerBatchSize_False()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _context, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(False), tokenSource)
-			bulkImporter.TryBulkImport(_overwrite)
-			Assert.AreEqual(500, bulkImporter.BatchSize)
-			Assert.AreEqual(0, bulkImporter.PauseCalled)
-		End Sub
-
-		<Test>
-		Public Sub BulkImportImageFile_Lower_500BatchSize_to300()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _context, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
-			bulkImporter.BatchSize = 300
-			Assert.AreEqual(300, bulkImporter.BatchSize)
-		End Sub
-
-		<Test>
-		Public Sub BulkImportImageFile_Lower_500BatchSize_ToMinimum300()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _context, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
-			bulkImporter.MinimumBatch = 300
-			bulkImporter.BatchSize = 300
-			Assert.AreEqual(300, bulkImporter.BatchSize)
-		End Sub
-
-		<Test>
-		Public Sub BulkImportImageFile_Lower_500BatchSize_To200_PastMinimum300()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _context, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
-			bulkImporter.MinimumBatch = 300
-			bulkImporter.BatchSize = 200
-			Assert.AreEqual(300, bulkImporter.BatchSize)
-		End Sub
-
-		<Test>
 		Public Sub LowerBatchSizeAndRetry_Initial100Docs_Batch78_NewFileHas80()
+			' Preserving this test due to string formatting issues when converting to C#.
 			Dim originalBatchSizeWith100Images As String = <string>1,0,0,0,1,AS000001,AS000001,09ea36a7-6e04-45e5-8a89-79545589cb6f,AS000001.tif,0,0,35852,\\localhost\files\EDDS1015054\RV_55f36d7b-4eb9-4f7f-aba2-b9a7b6b460a3\09ea36a7-6e04-45e5-8a89-79545589cb6f,\\192.168.14.18\SvP_ExportII\VOL01\IMG001\AS000001.tif,þþKþþ
 1,0,0,0,2,AS000002,AS000002,684dabe5-1625-49fa-a5b3-7bf5c5106c71,AS000002.tif,0,0,256498,\\localhost\files\EDDS1015054\RV_55f36d7b-4eb9-4f7f-aba2-b9a7b6b460a3\684dabe5-1625-49fa-a5b3-7bf5c5106c71,\\192.168.14.18\SvP_ExportII\VOL01\IMG001\AS000002.tif,þþKþþ
 0,0,0,0,3,AS000002,AS000002_001,60254207-6cb3-49fd-8db8-ae278c00a1b7,AS000002_001.tif,1,0,87746,\\localhost\files\EDDS1015054\RV_55f36d7b-4eb9-4f7f-aba2-b9a7b6b460a3\60254207-6cb3-49fd-8db8-ae278c00a1b7,\\192.168.14.18\SvP_ExportII\VOL01\IMG001\AS000002_001.tif,þþKþþ

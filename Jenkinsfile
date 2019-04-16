@@ -32,14 +32,14 @@ timestamps
 {
     timeout(time: 3, unit: 'HOURS')
     {
-        try
+        node("PolandBuild")
         {
-            node("PolandBuild")
+            try
             {
                 stage('Checkout')
                 {
                     checkout scm
-                    this.notifyBitbucket('INPROGRESS')
+                    notifyBitbucket()
                 }
 
                 try
@@ -137,7 +137,7 @@ timestamps
                         echo output
                     }
 
-                    this.notifyBitbucket('SUCCESS')
+                    currentBuild.result = 'SUCCESS'
                 }
                 finally
                 {
@@ -149,18 +149,18 @@ timestamps
                     archiveArtifacts artifacts: 'TestResults/**/*.*'
                 }                    
             }
-        }
-        catch(err)
-        {
-            echo err.toString()
-            this.notifyBitbucket('FAILURE')
-            if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master')
+            catch(err)
             {
-               sendEmailAboutFailureToTeam()
-            }
-            else
-            {
-               sendEmailAboutFailureToAuthor() 
+                echo err.toString()
+                currentBuild.result = 'FAILED' 
+                if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master')
+                {
+                    sendEmailAboutFailureToTeam()
+                }
+                else
+                {
+                    sendEmailAboutFailureToAuthor() 
+                }
             }
         }
 
@@ -206,7 +206,7 @@ timestamps
                         // StashNotifier second call, passes currentBuild.result to BitBucket as build status 
                         BitBucketNotification:
                         { 
-                            notifyBitbucket(ignoreUnverifiedSSLPeer: true, considerUnstableAsSuccess: true)
+                            notifyBitbucket()
                         }
                     )
                 }
@@ -218,20 +218,6 @@ timestamps
             echo err.toString()
         }
     }
-}
-
-def setBuildState(String state)
-{
-    if ('SUCCESS' == state || 'FAILURE' == state) 
-    {
-        currentBuild.result = state 
-    }
-}
-
-def notifyBitbucket(String state) 
-{
-    setBuildState(state)
-    step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true]) 
 }
 
 def sendEmailAboutFailureToAuthor()

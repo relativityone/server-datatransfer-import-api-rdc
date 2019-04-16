@@ -98,13 +98,13 @@ Namespace kCura.WinEDDS
 		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 
-		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
+		Protected Overridable ReadOnly Property NumberOfRetries As Int32
 			Get
 				Return AppSettings.Instance.IoErrorNumberOfRetries
 			End Get
 		End Property
 
-		Protected ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
+		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts As Int32
 			Get
 				Return AppSettings.Instance.IoErrorWaitTimeInSeconds
 			End Get
@@ -865,7 +865,7 @@ Namespace kCura.WinEDDS
 									' REL-165493: Added OI resiliency and properly address FileNotFoundException scenarios.
 									Dim maxRetryAttempts As Integer = Me.NumberOfRetries
 									Dim currentRetryAttempt As Integer = 0
-									Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(AppSettings.Instance)
+									Dim policy As IWaitAndRetryPolicy = Me.CreateWaitAndRetryPolicy()
 									oixFileIdInfo = policy.WaitAndRetry(
 										Function(exception)
 											Dim outsideInException As FileIdException = TryCast(exception, FileIdException)
@@ -1668,8 +1668,7 @@ Namespace kCura.WinEDDS
 							Dim currentRetryAttempt As Integer = 0
 
 							' REL-272765: Added I/O resiliency and support document level errors.
-							Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(AppSettings.Instance)
-
+							Dim policy As IWaitAndRetryPolicy = Me.CreateWaitAndRetryPolicy()
 							' Note: a lambda can't modify a ref param; therefore, a policy block return value is used.
 							Dim returnEncoding As System.Text.Encoding = policy.WaitAndRetry(
 								RetryExceptionHelper.CreateRetryPredicate(Me.RetryOptions),

@@ -402,6 +402,7 @@
     <Compile Include="ImportExtension\ImageImport\ImageDataTableReader.vb" />
     <Compile Include="ImportExtension\NativeFileValidatedArtifactFieldCollection.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="Service\IBulkImportManager.vb" />
     <Compile Include="TempFileConstants.vb" />
     <Compile Include="TempFileBuilder.vb" />
     <Compile Include="Importers\TimeKeeper\DefaultTimeKeeperManager.vb" />
