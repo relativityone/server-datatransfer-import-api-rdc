@@ -4,7 +4,7 @@
 //------------------------------------------------------------------------------
 namespace Relativity.Import.Export.Services
 {
-	public enum FieldInfoImportBehaviorChoice
+	public enum ImportBehaviorChoice
 	{
 
 		LeaveBlankValuesUnchanged = 1,
