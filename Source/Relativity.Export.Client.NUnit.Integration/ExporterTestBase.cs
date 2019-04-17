@@ -20,8 +20,8 @@ namespace Relativity.Export.Client.NUnit.Integration
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Container;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Container;
+	using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS.Service.Export;
 
 	using Moq;
@@ -279,7 +279,7 @@ namespace Relativity.Export.Client.NUnit.Integration
 		/// Given the encoding.
 		/// </summary>
 		/// <param name="value">
-		/// The encoding
+		/// The encoding.
 		/// </param>
 		protected void GivenTheEncoding(Encoding value)
 		{
@@ -343,53 +343,53 @@ namespace Relativity.Export.Client.NUnit.Integration
 			using (var productionManager =
 				new kCura.WinEDDS.Service.ProductionManager(this.credentials, this.cookieContainer))
 			{
-                this.exportFile = new kCura.WinEDDS.ExtendedExportFile((int)ArtifactType.Document)
-                {
-                    // general settings
-                    ArtifactID = this.selectedFolderId,
-                    CaseInfo = caseInfo,
-                    CookieContainer = this.cookieContainer,
-                    Credential = this.credentials,
-                    TypeOfExport = this.exportType,
-                    FolderPath = this.tempDirectory.Directory,
+				this.exportFile = new kCura.WinEDDS.ExtendedExportFile((int)ArtifactType.Document)
+				{
+					// general settings
+					ArtifactID = this.selectedFolderId,
+					CaseInfo = caseInfo,
+					CookieContainer = this.cookieContainer,
+					Credential = this.credentials,
+					TypeOfExport = this.exportType,
+					FolderPath = this.tempDirectory.Directory,
 
-                    // settings for exporting natives
-                    ExportNative = true,
-                    TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Absolute,
-                    IdentifierColumnName = this.identifierColumnName,
-                    LoadFileEncoding = this.encoding,
-                    LoadFilesPrefix = "Documents",
-                    LoadFileExtension = "dat",
-                    MultiRecordDelimiter = ';',
-                    NestedValueDelimiter = '\\',
-                    NewlineDelimiter = '@',
-                    QuoteDelimiter = 'þ',
-                    ViewID = 1003684,
-                    SelectedViewFields = new ViewFieldInfo[] { },
+					// settings for exporting natives
+					ExportNative = true,
+					TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Absolute,
+					IdentifierColumnName = this.identifierColumnName,
+					LoadFileEncoding = this.encoding,
+					LoadFilesPrefix = "Documents",
+					LoadFileExtension = "dat",
+					MultiRecordDelimiter = ';',
+					NestedValueDelimiter = '\\',
+					NewlineDelimiter = '@',
+					QuoteDelimiter = 'þ',
+					ViewID = 1003684,
+					SelectedViewFields = new ViewFieldInfo[] { },
 
-                    // settings for exporting images
-                    ExportImages = true,
-                    LogFileFormat = LoadFileType.FileFormat.Opticon,
-                    TypeOfImage = ExportFile.ImageType.Pdf,
-                    ImagePrecedence = new Pair[]
-                    {
-                        new Pair("-1", "Original"),
-                        new Pair("-1", "Original")
-                    },
+					// settings for exporting images
+					ExportImages = true,
+					LogFileFormat = LoadFileType.FileFormat.Opticon,
+					TypeOfImage = ExportFile.ImageType.Pdf,
+					ImagePrecedence = new Pair[]
+					{
+						new Pair("-1", "Original"),
+						new Pair("-1", "Original"),
+					},
 
-                    // settings for volumes and subdirectories
-                    SubdirectoryDigitPadding = 3,
-                    VolumeDigitPadding = 2,
+					// settings for volumes and subdirectories
+					SubdirectoryDigitPadding = 3,
+					VolumeDigitPadding = 2,
 					VolumeInfo = new VolumeInfo
 					{
 						CopyImageFilesFromRepository = true,
 						CopyNativeFilesFromRepository = true,
-                        SubdirectoryStartNumber = 1,
-                        SubdirectoryMaxSize = 500,
-                        VolumeStartNumber = 1,
-                        VolumeMaxSize = 650,
-						VolumePrefix = "VOL"
-					}
+						SubdirectoryStartNumber = 1,
+						SubdirectoryMaxSize = 500,
+						VolumeStartNumber = 1,
+						VolumeMaxSize = 650,
+						VolumePrefix = "VOL",
+					},
 				};
 
 				this.exportFile.ObjectTypeName =
@@ -448,16 +448,16 @@ namespace Relativity.Export.Client.NUnit.Integration
 		/// </summary>
 		protected void WhenExecutingTheExportSearch()
 		{
-            ContainerFactoryProvider.ContainerFactory = new ContainerFactory();
-            var mockProcessEventWriter = new Mock<IProcessEventWriter>();
-            var mockProcessErrorWriter = new Mock<IProcessErrorWriter>();
-            var mockAppSettings = new Mock<IAppSettings>();
-            var mockLog = new Mock<ILog>();
-            var processContext = new ProcessContext(
-	            mockProcessEventWriter.Object,
-	            mockProcessErrorWriter.Object,
-	            mockAppSettings.Object,
-	            mockLog.Object);
+			ContainerFactoryProvider.ContainerFactory = new ContainerFactory();
+			var mockProcessEventWriter = new Mock<IProcessEventWriter>();
+			var mockProcessErrorWriter = new Mock<IProcessErrorWriter>();
+			var mockAppSettings = new Mock<IAppSettings>();
+			var mockLog = new Mock<ILog>();
+			var processContext = new ProcessContext(
+				mockProcessEventWriter.Object,
+				mockProcessErrorWriter.Object,
+				mockAppSettings.Object,
+				mockLog.Object);
 			var exporter = new Exporter(
 				this.exportFile,
 				processContext,

@@ -29,6 +29,14 @@ Skips building the solution, setup the integration test parameters using the spe
 .\build.ps1 UnitTests,IntegrationTests -TestParametersFile ".\Scripts\test-settings-e2e.json"
 Skips building the solution, setup the integration test parameters using the specified JSON file, and executes all unit and integration tests.
 
+.EXAMPLE
+.\build.ps1 UnitTests,IntegrationTests,TestReports -TestEnvironment "hyperv"
+Skips building the solution, setup the integration test parameters using the hyperv test environment, executes all unit and integration tests, and creates test reports within the ".\Reports" sub-folder.
+
+.EXAMPLE
+.\build.ps1 CodeCoverageReport -TestEnvironment "hyperv"
+Skips building the solution, setup the integration test parameters using the hyperv test environment, executes a code coverage report, and creates the code coverage report within the ".\Reports" sub-folder.
+
 .PARAMETER Target
 The target to build (e.g. Build, Rebuild).
 
@@ -55,6 +63,9 @@ Timeout for NUnit tests (in milliseconds).
 
 .PARAMETER TestParametersFile
 An optional test parameters JSON file that conforms to the standard App.Config file (e.g. Scripts\test-settings-sample.json)
+
+.PARAMETER TestEnvironment
+An optional test environment that maps to a test parameters JSON file.
 
 .PARAMETER TestVMName
 The optional TestVM used to execute all integration tests. This is only relevant for the IntegrationTests task.
@@ -84,9 +95,12 @@ param(
     [String]$BuildPlatform = "Any CPU",
     [Parameter()]
     [string]$BuildUrl = "localhost",
-    [int]$TestTimeoutInMS = 90000,
+    [int]$TestTimeoutInMS = 300000,
     [Parameter()]
     [String]$TestParametersFile,
+    [Parameter()]
+    [ValidateSet("hyperv","e2e")]
+    [String]$TestEnvironment,
     [Parameter()]
     [String]$TestVMName
 )
@@ -155,6 +169,7 @@ $Params = @{
         Verbosity = $Verbosity
         TestTimeoutInMS = $TestTimeoutInMS
         TestParametersFile = $TestParametersFile
+        TestEnvironment = $TestEnvironment
         TestVMName = $TestVMName
     }
 

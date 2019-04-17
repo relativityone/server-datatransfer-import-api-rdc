@@ -31,7 +31,7 @@ namespace Relativity.Import.Export
 
 		/// <summary>
 		/// Gets or sets the audit level applied to import jobs.
-		/// Valid values include: <code>FullAudit</code>, <code>NoSnapshot</code>, and <code>NoAudit</code>.
+		/// Valid values include: <c>FullAudit</c>, <c>NoSnapshot</c>, and <c>NoAudit</c>.
 		/// </summary>
 		/// <value>
 		/// The audit level.

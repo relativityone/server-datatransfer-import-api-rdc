@@ -66,14 +66,6 @@ Namespace kCura.WinEDDS.Exceptions
 		''' </value>
 		Public ReadOnly Property RowNumber As Long
 
-		''' <summary>
-		''' Gets the field name associated with the error.
-		''' </summary>
-		''' <value>
-		''' The row number.
-		''' </value>
-		Public ReadOnly Property FieldName As String
-
 		''' <inheritdoc />
 		<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
 		Public Overrides Sub GetObjectData(info As System.Runtime.Serialization.SerializationInfo, context As System.Runtime.Serialization.StreamingContext)

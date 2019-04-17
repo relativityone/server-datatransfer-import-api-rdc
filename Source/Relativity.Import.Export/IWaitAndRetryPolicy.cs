@@ -9,14 +9,14 @@
 
 namespace Relativity.Import.Export
 {
-    using System;
+	using System;
 	using System.Threading;
 
-    /// <summary>
-    /// Represents an abstract object to support resiliency and retry policies.
-    /// </summary>
-    public interface IWaitAndRetryPolicy
-    {
+	/// <summary>
+	/// Represents an abstract object to support resiliency and retry policies.
+	/// </summary>
+	public interface IWaitAndRetryPolicy
+	{
 		/// <summary>
 		/// Performs the synchronous retry operation using the specified retry duration function.
 		/// </summary>
@@ -36,11 +36,11 @@ namespace Relativity.Import.Export
 		/// The cancellation token used to stop the process upon request.
 		/// </param>
 		void WaitAndRetry<TException>(
-            Func<int, TimeSpan> retryDuration,
-            Action<Exception, TimeSpan> retryAction,
-            Action<CancellationToken> execFunc,
+			Func<int, TimeSpan> retryDuration,
+			Action<Exception, TimeSpan> retryAction,
+			Action<CancellationToken> execFunc,
 			CancellationToken token)
-	        where TException : Exception;
+			where TException : Exception;
 
 		/// <summary>
 		/// Performs the synchronous retry operation for the specified exception type and retry duration function.
@@ -64,12 +64,12 @@ namespace Relativity.Import.Export
 		/// The cancellation token used to stop the process upon request.
 		/// </param>
 		void WaitAndRetry<TException>(
-            int maxRetryCount,
-            Func<int, TimeSpan> retryDuration,
-            Action<Exception, TimeSpan> retryAction,
+			int maxRetryCount,
+			Func<int, TimeSpan> retryDuration,
+			Action<Exception, TimeSpan> retryAction,
 			Action<CancellationToken> execFunc,
 			CancellationToken token)
-	        where TException : Exception;
+			where TException : Exception;
 
 		/// <summary>
 		/// Performs the synchronous retry operation for the specified exception type and retry duration function and return a value.
@@ -96,15 +96,15 @@ namespace Relativity.Import.Export
 		/// The <typeparamref name="TResult"/> value.
 		/// </returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Microsoft.Design",
-            "CA1004:GenericMethodsShouldProvideTypeParameter",
-            Justification = "This is required to support return value.")]
-        TResult WaitAndRetry<TResult, TException>(
-            Func<int, TimeSpan> retryDuration,
-            Action<Exception, TimeSpan> retryAction,
-            Func<CancellationToken, TResult> execFunc,
-	        CancellationToken token)
-            where TException : Exception;
+			"Microsoft.Design",
+			"CA1004:GenericMethodsShouldProvideTypeParameter",
+			Justification = "This is required to support return value.")]
+		TResult WaitAndRetry<TResult, TException>(
+			Func<int, TimeSpan> retryDuration,
+			Action<Exception, TimeSpan> retryAction,
+			Func<CancellationToken, TResult> execFunc,
+			CancellationToken token)
+			where TException : Exception;
 
 		/// <summary>
 		/// Performs the synchronous retry operation for the specified exception and retry duration function and return a value.
@@ -169,15 +169,15 @@ namespace Relativity.Import.Export
 		/// The <typeparamref name="TResult"/> value.
 		/// </returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Microsoft.Design",
-            "CA1004:GenericMethodsShouldProvideTypeParameter",
-            Justification = "This is required to support return value.")]
-        TResult WaitAndRetry<TResult, TException>(
-            int maxRetryCount,
-            Func<int, TimeSpan> retryDuration,
-            Action<Exception, TimeSpan> retryAction,
-            Func<CancellationToken, TResult> execFunc,
-	        CancellationToken token)
-            where TException : Exception;
-    }
+			"Microsoft.Design",
+			"CA1004:GenericMethodsShouldProvideTypeParameter",
+			Justification = "This is required to support return value.")]
+		TResult WaitAndRetry<TResult, TException>(
+			int maxRetryCount,
+			Func<int, TimeSpan> retryDuration,
+			Action<Exception, TimeSpan> retryAction,
+			Func<CancellationToken, TResult> execFunc,
+			CancellationToken token)
+			where TException : Exception;
+	}
 }

@@ -19,6 +19,6 @@ namespace Relativity.Import.Export
 		/// <summary>
 		/// The byte order is always from the most significant byte to the least significant byte and used by Motorola.
 		/// </summary>
-		BigEndian
+		BigEndian,
 	}
 }

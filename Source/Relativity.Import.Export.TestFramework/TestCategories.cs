@@ -35,7 +35,7 @@ namespace Relativity.Import.Export.TestFramework
 		public const string Folder = "Folder";
 
 		/// <summary>
-		/// The Framework test category.
+		/// The framework test category.
 		/// </summary>
 		public const string Framework = "Framework";
 
@@ -73,6 +73,11 @@ namespace Relativity.Import.Export.TestFramework
 		/// The separate domain test category.
 		/// </summary>
 		public const string SeparateDomain = "SeparateDomain";
+
+		/// <summary>
+		/// The test framework test category.
+		/// </summary>
+		public const string TestFramework = "TestFramework";
 
 		/// <summary>
 		/// The transfer API test category.

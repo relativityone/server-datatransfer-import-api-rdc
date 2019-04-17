@@ -11,6 +11,7 @@ namespace Relativity.Import.Export
 	/// </summary>
 	public static class AppSettingsConstants
 	{
+#pragma warning disable SA1600
 		// All configuration sections go here.
 		public const string SectionLegacykCuraConfig = "kCura.Config";
 		public const string SectionLegacyWindowsProcess = "kCura.Windows.Process";
@@ -155,5 +156,6 @@ namespace Relativity.Import.Export
 		public const int WebBasedFileDownloadChunkSizeMinValue = 1024;
 		public const string WebApiServiceUrlKey = "WebServiceURL";
 		public const string WebApiServiceUrlDefaultValue = "";
+#pragma warning restore SA1600
 	}
 }

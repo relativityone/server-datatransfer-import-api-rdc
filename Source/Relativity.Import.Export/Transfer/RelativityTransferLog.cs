@@ -50,7 +50,7 @@ namespace Relativity.Import.Export.Transfer
                         System = "TAPI",
                         SubSystem = string.Empty,
                         Application = GlobalSettings.Instance.ApplicationName,
-                        ConnectionString = string.Empty
+                        ConnectionString = string.Empty,
                     });
                 this.disposeLogger = true;
                 this.IsEnabled = true;

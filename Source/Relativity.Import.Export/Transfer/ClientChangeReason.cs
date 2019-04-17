@@ -27,6 +27,6 @@ namespace Relativity.Import.Export.Transfer
         /// <summary>
         /// The client changed due to an HTTP fallback after a different client already failed.
         /// </summary>
-        HttpFallback
+        HttpFallback,
     }
 }

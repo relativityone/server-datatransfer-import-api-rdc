@@ -99,7 +99,7 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
-		/// Gets the name of the key for this individual setting. This corresponds with the key found in the <code>app.config</code> file.
+		/// Gets the name of the key for this individual setting. This corresponds with the key found in the <c>app.config</c> file.
 		/// </summary>
 		/// <value>
 		/// The key name.

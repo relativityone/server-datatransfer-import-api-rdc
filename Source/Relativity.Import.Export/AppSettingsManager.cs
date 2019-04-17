@@ -287,9 +287,74 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
-		/// Builds the attribute dictionary.
+		/// Gets the properties.
 		/// </summary>
-		public static void BuildAttributeDictionary()
+		/// <returns>IEnumerable&lt;PropertyInfo&gt;.</returns>
+		public static IEnumerable<PropertyInfo> GetProperties()
+		{
+			return typeof(AppDotNetSettings).GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+		}
+
+		/// <summary>
+		/// Gets the settings from the property.
+		/// </summary>
+		/// <param name="info">
+		/// The property information.
+		/// </param>
+		/// <returns>
+		/// The key name.
+		/// </returns>
+		public static string GetPropertyKey(PropertyInfo info)
+		{
+			return info.Name.ToUpperInvariant();
+		}
+
+		/// <summary>
+		/// Gets the section key associated with the setting attribute.
+		/// </summary>
+		/// <param name="setting">
+		/// The setting attribute.
+		/// </param>
+		/// <returns>
+		/// The key.
+		/// </returns>
+		public static string GetSectionKey(AppSettingAttribute setting)
+		{
+			return GetSectionKey(setting.Section);
+		}
+
+		/// <summary>
+		/// Gets the section key from the section name.
+		/// </summary>
+		/// <param name="section">
+		/// The section name.
+		/// </param>
+		/// <returns>
+		/// The key.
+		/// </returns>
+		public static string GetSectionKey(string section)
+		{
+			return section.ToUpperInvariant();
+		}
+
+		/// <summary>
+		/// Gets the section name value pair key name associated with the setting attribute.
+		/// </summary>
+		/// <param name="setting">
+		/// The setting attribute.
+		/// </param>
+		/// <returns>
+		/// The key.
+		/// </returns>
+		public static string GetSectionNameValuePairKey(AppSettingAttribute setting)
+		{
+			return setting.Key.ToUpperInvariant();
+		}
+
+		/// <summary>
+		/// Builds the internal dictionary that maps property names to custom attributes.
+		/// </summary>
+		internal static void BuildAttributeDictionary()
 		{
 			if (AppSettingAttributes.Count > 0)
 			{
@@ -310,40 +375,6 @@ namespace Relativity.Import.Export
 			{
 				throw new ConfigurationErrorsException("The settings object doesn't contain any application settings attributes.");
 			}
-		}
-
-		public static IEnumerable<PropertyInfo> GetProperties()
-		{
-			return typeof(AppDotNetSettings).GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-		}
-
-		/// <summary>
-		/// Gets the settings from the property.
-		/// </summary>
-		/// <param name="info">
-		/// The property information.
-		/// </param>
-		/// <returns>
-		/// The key name.
-		/// </returns>
-		public static string GetPropertyKey(PropertyInfo info)
-		{
-			return info.Name.ToUpperInvariant();
-		}
-
-		public static string GetSectionKey(AppSettingAttribute setting)
-		{
-			return GetSectionKey(setting.Section);
-		}
-
-		public static string GetSectionKey(string section)
-		{
-			return section.ToUpperInvariant();
-		}
-
-		public static string GetSectionNameValuePairKey(AppSettingAttribute setting)
-		{
-			return setting.Key.ToUpperInvariant();
 		}
 
 		private static void AssignPropertyValue(
@@ -634,7 +665,7 @@ namespace Relativity.Import.Export
 					                        AppSettingsConstants.SectionLegacyWindowsProcess,
 					                        AppSettingsConstants.SectionLegacyUtility,
 					                        AppSettingsConstants.SectionLegacyWinEdds,
-					                        AppSettingsConstants.SectionImportExport
+					                        AppSettingsConstants.SectionImportExport,
 				                        };
 			foreach (var sectionName in sectionNames)
 			{

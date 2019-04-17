@@ -6,13 +6,13 @@
 
 namespace Relativity.Import.Client.NUnit
 {
-    using System.Globalization;
+	using System.Globalization;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
-    [TestFixture]
+	[TestFixture]
 	public class LoadFileReaderTests
 	{
 		private const decimal ExpectedDecimal = 10.05m;

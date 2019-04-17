@@ -32,6 +32,6 @@ namespace Relativity.Import.Export.Io
 		/// <summary>
 		/// Both leading and trailing whitespace is trimmed.
 		/// </summary>
-		Both
+		Both,
 	}
 }

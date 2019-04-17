@@ -32,7 +32,7 @@ Namespace kCura.WinEDDS.Service
 				End Function)
 		End Function
 
-		Public Function RetrieveResultsBlockForProductionStartingFromIndex(appID As Integer, runId As Guid, artifactTypeID As Integer, avfIds As Integer(), chunkSize As Integer, displayMulticodesAsNested As Boolean, multiValueDelimiter As Char, nestedValueDelimiter As Char, textPrecedenceAvfIds As Integer(), productionId As Integer, index As Integer) As Object() Implements IExportManager.RetrieveResultsBlockForProductionStartingFromIndex
+		Public Shadows Function RetrieveResultsBlockForProductionStartingFromIndex(appID As Integer, runId As Guid, artifactTypeID As Integer, avfIds As Integer(), chunkSize As Integer, displayMulticodesAsNested As Boolean, multiValueDelimiter As Char, nestedValueDelimiter As Char, textPrecedenceAvfIds As Integer(), productionId As Integer, index As Integer) As Object() Implements IExportManager.RetrieveResultsBlockForProductionStartingFromIndex
 			Dim retval As Object() = MakeCallAttemptReLogin(Function() MyBase.RetrieveResultsBlockForProductionStartingFromIndex(appID, runId, artifactTypeID, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter, textPrecedenceAvfIds, productionId, index))
 			RehydrateStrings(retval)
 			Return retval
@@ -56,7 +56,7 @@ Namespace kCura.WinEDDS.Service
 			Return retval
 		End Function
 
-		Public Function RetrieveResultsBlockStartingFromIndex(appID As Integer, runId As Guid, artifactTypeID As Integer, avfIds As Integer(), chunkSize As Integer, displayMulticodesAsNested As Boolean, multiValueDelimiter As Char, nestedValueDelimiter As Char, textPrecedenceAvfIds As Integer(), index As Integer) As Object() Implements IExportManager.RetrieveResultsBlockStartingFromIndex
+		Public Shadows Function RetrieveResultsBlockStartingFromIndex(appID As Integer, runId As Guid, artifactTypeID As Integer, avfIds As Integer(), chunkSize As Integer, displayMulticodesAsNested As Boolean, multiValueDelimiter As Char, nestedValueDelimiter As Char, textPrecedenceAvfIds As Integer(), index As Integer) As Object() Implements IExportManager.RetrieveResultsBlockStartingFromIndex
 			Dim retval As Object() = MakeCallAttemptReLogin(Function() MyBase.RetrieveResultsBlockStartingFromIndex(appID, runId, artifactTypeID, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter, textPrecedenceAvfIds, index))
 			RehydrateStrings(retval)
 			Return retval

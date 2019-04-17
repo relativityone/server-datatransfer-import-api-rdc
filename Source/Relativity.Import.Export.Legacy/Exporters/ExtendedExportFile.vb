@@ -8,7 +8,7 @@ Namespace kCura.WinEDDS
 
 		Public SelectedNativesNameViewFields As IList(Of ViewFieldInfo)
 
-		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
+		Public Shadows Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
 			info.AddValue("SelectedNativesNameViewFields", Me.SelectedNativesNameViewFields.ToArray(), GetType(ViewFieldInfo()))
 			MyBase.GetObjectData(info, context)
 		End Sub

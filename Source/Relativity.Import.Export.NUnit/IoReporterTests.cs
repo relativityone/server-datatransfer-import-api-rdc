@@ -9,40 +9,40 @@
 
 namespace Relativity.Import.Export.NUnit
 {
-    using System;
-    using System.Collections;
+	using System;
+	using System.Collections;
 	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using Moq;
 
-    using Relativity.Import.Export.Io;
-    using Relativity.Logging;
+	using Relativity.Import.Export.Io;
+	using Relativity.Logging;
 
-    /// <summary>
-    /// Represents <see cref="IoReporter"/> tests.
-    /// </summary>
-    [TestFixture]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Microsoft.Design",
-        "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
-        Justification = "The test class handles the disposal.")]
-    public class IoReporterTests
+	/// <summary>
+	/// Represents <see cref="IoReporter"/> tests.
+	/// </summary>
+	[TestFixture]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage(
+		"Microsoft.Design",
+		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
+		Justification = "The test class handles the disposal.")]
+	public class IoReporterTests
 	{
 		private const string TestFileName = "TestFileName";
 		private const string ExpectedDefaultExceptionMessage = "Expected exception message";
 		private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 		private IIoReporter ioReporterInstance;
-        private Mock<IFileSystem> mockFileSystem;
-        private Mock<IWaitAndRetryPolicy> mockWaitAndRetryPolicy;
-        private Mock<IAppSettings> mockAppSettings;
+		private Mock<IFileSystem> mockFileSystem;
+		private Mock<IWaitAndRetryPolicy> mockWaitAndRetryPolicy;
+		private Mock<IAppSettings> mockAppSettings;
 		private IWaitAndRetryPolicy waitAndRetry;
-        private Mock<ILog> mockLogger;
-        private IoReporterContext context;
-        private long actualFileLength;
-        private Func<int, TimeSpan> actualRetryDuractionFunc = null;
-        private Exception expectedException;
+		private Mock<ILog> mockLogger;
+		private IoReporterContext context;
+		private long actualFileLength;
+		private Func<int, TimeSpan> actualRetryDuractionFunc = null;
+		private Exception expectedException;
 		private bool actualFileExists;
 		private Exception actualLoggedWarningException;
 		private string actualLoggedWarningMessage;
@@ -139,9 +139,9 @@ namespace Relativity.Import.Export.NUnit
 							this.mockAppSettings.Object.DisableThrowOnIllegalCharacters;
 					}).Returns(this.cachedAppSettings);
 			this.mockFileSystem = new Mock<IFileSystem>();
-            this.mockWaitAndRetryPolicy = new Mock<IWaitAndRetryPolicy>();
-            this.waitAndRetry = null;
-            this.mockLogger = new Mock<ILog>();
+			this.mockWaitAndRetryPolicy = new Mock<IWaitAndRetryPolicy>();
+			this.waitAndRetry = null;
+			this.mockLogger = new Mock<ILog>();
 			this.mockLogger.Setup(
 					log => log.LogWarning(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()))
 				.Callback<Exception, string, object[]>(
@@ -164,9 +164,10 @@ namespace Relativity.Import.Export.NUnit
 					this.actualLoggedInformationMessage = logInformationMessage;
 				});
 			this.context = new IoReporterContext(
-				               this.mockFileSystem.Object,
-				               this.mockAppSettings.Object,
-				               this.mockWaitAndRetryPolicy.Object) { RetryOptions = RetryOptions.Io };
+							   this.mockFileSystem.Object,
+							   this.mockAppSettings.Object,
+							   this.mockWaitAndRetryPolicy.Object)
+			{ RetryOptions = RetryOptions.Io };
 		}
 
 		[Test]
@@ -238,29 +239,29 @@ namespace Relativity.Import.Export.NUnit
 		[TestCase(1299)]
 		public void ItShouldGetTheFileLength(int expectedLength)
 		{
-            this.GivenTheRealWaitAndRetryPolicy(1);
-            this.GivenTheMockFileSystemCreateFileInfoReturns(expectedLength, true);
+			this.GivenTheRealWaitAndRetryPolicy(1);
+			this.GivenTheMockFileSystemCreateFileInfoReturns(expectedLength, true);
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheIoReportInstanceIsConstructed();
 			this.WhenCallingTheFileLengthReporterMethod();
-            this.ThenTheActualFileLengthShouldEqual(expectedLength);
+			this.ThenTheActualFileLengthShouldEqual(expectedLength);
 		}
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public void ItShouldGetTheFileExists(bool expectedFileExists)
-        {
-            this.GivenTheRealWaitAndRetryPolicy(1);
-            this.GivenTheMockFileSystemCreateFileInfoReturns(1, expectedFileExists);
-            this.GivenTheDisableNativeLocationValidationConfigSetting(false);
-            this.GivenTheRetryOptions(RetryOptions.Io);
-            this.GivenTheIoReportInstanceIsConstructed();
-            this.WhenCallingTheGetFileExistsReporterMethod();
-            this.ThenTheActualFileExistsShouldEqual(expectedFileExists);
-        }
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldGetTheFileExists(bool expectedFileExists)
+		{
+			this.GivenTheRealWaitAndRetryPolicy(1);
+			this.GivenTheMockFileSystemCreateFileInfoReturns(1, expectedFileExists);
+			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
+			this.GivenTheRetryOptions(RetryOptions.Io);
+			this.GivenTheIoReportInstanceIsConstructed();
+			this.WhenCallingTheGetFileExistsReporterMethod();
+			this.ThenTheActualFileExistsShouldEqual(expectedFileExists);
+		}
 
-        [TestCase(1, 1)]
+		[TestCase(1, 1)]
 		[TestCase(2, 1)]
 		[TestCase(2, 2)]
 		[TestCase(3, 10)]
@@ -268,8 +269,8 @@ namespace Relativity.Import.Export.NUnit
 		[TestCase(2, 0)]
 		public void ItShouldCalculateTheProperRetryDuration(int retryAttempt, int waitTimeBetweenRetryAttempts)
 		{
-            this.GivenTheMockWaitAndRetryReturns(waitTimeBetweenRetryAttempts);
-            this.GivenTheMockWaitAndRetryPolicyCallback();
+			this.GivenTheMockWaitAndRetryReturns(waitTimeBetweenRetryAttempts);
+			this.GivenTheMockWaitAndRetryPolicyCallback();
 			this.GivenTheMockFileSystemCreateFileInfoReturns(1000, true);
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.Io);
@@ -327,7 +328,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.Throws(testException.GetType(), this.WhenCallingTheGetFileExistsReporterMethod);
 			this.ThenTheLoggerErrorShouldBeInvoked(0, localExpectedException);
 			this.ThenTheLoggerWarningShouldBeInvoked(testExpectedRetryCount, localExpectedException);
-            this.ResetMockLogger();
+			this.ResetMockLogger();
 		}
 
 		[Test]
@@ -339,8 +340,8 @@ namespace Relativity.Import.Export.NUnit
 			this.GivenTheDisableNativeLocationValidationConfigSetting(testValue);
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheExpectedException(exception);
-		    this.GivenTheMockFileSystemCreateFileInfoThrows(exception);
-		    this.GivenTheMockWaitAndRetryCallback();
+			this.GivenTheMockFileSystemCreateFileInfoThrows(exception);
+			this.GivenTheMockWaitAndRetryCallback();
 			this.GivenTheIoReportInstanceIsConstructed();
 			if (testValue)
 			{
@@ -372,41 +373,41 @@ namespace Relativity.Import.Export.NUnit
 			this.mockAppSettings.SetupGet(x => x.IoErrorNumberOfRetries).Returns(maxRetryAttempts);
 			this.mockAppSettings.SetupGet(x => x.IoErrorWaitTimeInSeconds).Returns(0);
 			this.waitAndRetry = new WaitAndRetryPolicy(this.mockAppSettings.Object);
-        }
+		}
 
-        private void GivenTheMockWaitAndRetryPolicyCallback()
-        {
+		private void GivenTheMockWaitAndRetryPolicyCallback()
+		{
 			this.mockWaitAndRetryPolicy
-		        .Setup(
-			        obj => obj.WaitAndRetry(
-				        It.IsAny<Func<Exception, bool>>(),
-				        It.IsAny<Func<int, TimeSpan>>(),
-				        It.IsAny<Action<Exception, TimeSpan>>(),
-				        It.IsAny<Func<CancellationToken, long>>(),
-				        It.IsAny<CancellationToken>()))
-		        .Callback<
-			        Func<Exception, bool>,
-			        Func<int, TimeSpan>,
-			        Action<Exception, TimeSpan>,
-			        Func<CancellationToken, long>,
-			        CancellationToken>(
-			        (exceptionPredicate, retryDuration, retryAction, execFunc, token) =>
-			        {
-				        this.actualRetryDuractionFunc = retryDuration;
-				        retryAction(this.expectedException, TimeSpan.Zero);
-				        execFunc(token);
-			        });
-        }
+				.Setup(
+					obj => obj.WaitAndRetry(
+						It.IsAny<Func<Exception, bool>>(),
+						It.IsAny<Func<int, TimeSpan>>(),
+						It.IsAny<Action<Exception, TimeSpan>>(),
+						It.IsAny<Func<CancellationToken, long>>(),
+						It.IsAny<CancellationToken>()))
+				.Callback<
+					Func<Exception, bool>,
+					Func<int, TimeSpan>,
+					Action<Exception, TimeSpan>,
+					Func<CancellationToken, long>,
+					CancellationToken>(
+					(exceptionPredicate, retryDuration, retryAction, execFunc, token) =>
+					{
+						this.actualRetryDuractionFunc = retryDuration;
+						retryAction(this.expectedException, TimeSpan.Zero);
+						execFunc(token);
+					});
+		}
 
 		private void GivenTheMockFileSystemCreateFileInfoReturns(int expectedLength, bool expectedFileExists)
 		{
 			var mockFileInfo = new Mock<IFileInfo>();
 			mockFileInfo.Setup(x => x.Length).Returns(expectedLength);
-            mockFileInfo.Setup(x => x.Exists).Returns(expectedFileExists);
-            this.mockFileSystem.Setup(x => x.CreateFileInfo(TestFileName)).Returns(mockFileInfo.Object);
+			mockFileInfo.Setup(x => x.Exists).Returns(expectedFileExists);
+			this.mockFileSystem.Setup(x => x.CreateFileInfo(TestFileName)).Returns(mockFileInfo.Object);
 		}
 
-        private void GivenTheMockFileSystemCreateFileInfoThrows(Exception exception)
+		private void GivenTheMockFileSystemCreateFileInfoThrows(Exception exception)
 		{
 			this.mockFileSystem.Setup(x => x.CreateFileInfo(It.IsAny<string>())).Throws(exception);
 		}
@@ -419,24 +420,24 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		private void GivenTheMockWaitAndRetryCallback()
-        {
-	        this.mockWaitAndRetryPolicy
-		        .Setup(
-			        obj => obj.WaitAndRetry(
-				        It.IsAny<Func<Exception, bool>>(),
-				        It.IsAny<Func<int, TimeSpan>>(),
-				        It.IsAny<Action<Exception, TimeSpan>>(),
-				        It.IsAny<Func<CancellationToken, long>>(),
-				        It.IsAny<CancellationToken>()))
-		        .Callback<Func<Exception, bool>, Func<int, TimeSpan>, Action<Exception, TimeSpan>,
-			        Func<CancellationToken, long>, CancellationToken>(
-			        (exceptionPredicate, retryDuration, retryAction, execFunc, token) =>
-			        {
+		{
+			this.mockWaitAndRetryPolicy
+				.Setup(
+					obj => obj.WaitAndRetry(
+						It.IsAny<Func<Exception, bool>>(),
+						It.IsAny<Func<int, TimeSpan>>(),
+						It.IsAny<Action<Exception, TimeSpan>>(),
+						It.IsAny<Func<CancellationToken, long>>(),
+						It.IsAny<CancellationToken>()))
+				.Callback<Func<Exception, bool>, Func<int, TimeSpan>, Action<Exception, TimeSpan>,
+					Func<CancellationToken, long>, CancellationToken>(
+					(exceptionPredicate, retryDuration, retryAction, execFunc, token) =>
+					{
 						this.actualRetryDuractionFunc = retryDuration;
-				        retryAction(null, TimeSpan.Zero);
-				        execFunc(token);
-			        });
-        }
+						retryAction(null, TimeSpan.Zero);
+						execFunc(token);
+					});
+		}
 
 		private void GivenTheExpectedException(Exception exception)
 		{
@@ -464,7 +465,7 @@ namespace Relativity.Import.Export.NUnit
 
 		private void WhenCallingTheFileLengthReporterMethod()
 		{
-            this.actualFileLength = this.ioReporterInstance.GetFileLength(TestFileName, 0);
+			this.actualFileLength = this.ioReporterInstance.GetFileLength(TestFileName, 0);
 		}
 
 		private void WhenCallingTheGetFileExistsReporterMethod()
@@ -479,23 +480,23 @@ namespace Relativity.Import.Export.NUnit
 
 		private void ThenTheActualRetryDurationShouldCalculated(int retryAttempt, int waitTimeBetweenRetryAttempts)
 		{
-            TimeSpan actualRetryDuraction = this.actualRetryDuractionFunc(retryAttempt);
-            Assert.That(
-	            actualRetryDuraction,
-	            retryAttempt == 1 ? Is.EqualTo(TimeSpan.FromSeconds(0)) : Is.EqualTo(TimeSpan.FromSeconds(waitTimeBetweenRetryAttempts)));
+			TimeSpan actualRetryDuraction = this.actualRetryDuractionFunc(retryAttempt);
+			Assert.That(
+				actualRetryDuraction,
+				retryAttempt == 1 ? Is.EqualTo(TimeSpan.FromSeconds(0)) : Is.EqualTo(TimeSpan.FromSeconds(waitTimeBetweenRetryAttempts)));
 		}
 
 		private void ThenTheActualFileLengthShouldEqual(int expectedLength)
 		{
-            Assert.That(this.actualFileLength, Is.EqualTo(expectedLength));
+			Assert.That(this.actualFileLength, Is.EqualTo(expectedLength));
 		}
 
-        private void ThenTheActualFileExistsShouldEqual(bool expectedFileExists)
-        {
-            Assert.That(this.actualFileExists, Is.EqualTo(expectedFileExists));
-        }
+		private void ThenTheActualFileExistsShouldEqual(bool expectedFileExists)
+		{
+			Assert.That(this.actualFileExists, Is.EqualTo(expectedFileExists));
+		}
 
-        private void ThenTheLoggerWarningShouldBeInvoked(int expectedCount, bool expectedLogException)
+		private void ThenTheLoggerWarningShouldBeInvoked(int expectedCount, bool expectedLogException)
 		{
 			this.mockLogger.Verify(logger => logger.LogWarning(It.IsAny<Exception>(), It.IsAny<string>()), Times.Exactly(expectedCount));
 			if (expectedCount == 0)

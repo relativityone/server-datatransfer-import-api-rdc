@@ -6,7 +6,7 @@
 
 namespace Relativity.Import.Export.Transfer
 {
-    using System.Globalization;
+	using System.Globalization;
 
 	using Relativity.Import.Export.Resources;
 	using Relativity.Transfer;
@@ -16,10 +16,10 @@ namespace Relativity.Import.Export.Transfer
 	/// </summary>
 	public sealed class TapiJobRetryListener : TapiListenerBase
 	{
-        /// <summary>
-        /// The max retry count.
-        /// </summary>
-        private readonly int maxRetryCount;
+		/// <summary>
+		/// The max retry count.
+		/// </summary>
+		private readonly int maxRetryCount;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TapiJobRetryListener"/> class.
@@ -34,20 +34,20 @@ namespace Relativity.Import.Export.Transfer
 		/// The transfer context.
 		/// </param>
 		public TapiJobRetryListener(ITransferLog log, int maxRetryCount, TransferContext context)
-            : base(log, context)
-        {
-            this.maxRetryCount = maxRetryCount;
-        }
+			: base(log, context)
+		{
+			this.maxRetryCount = maxRetryCount;
+		}
 
-        /// <inheritdoc />
-        protected override void OnTransferJobRetryEvent(object sender, TransferJobRetryEventArgs e)
-        {
-            var message = string.Format(
-                CultureInfo.CurrentCulture,
-                Strings.RetryJobMessage,
-                e.Count,
-                this.maxRetryCount);
-            this.PublishStatusMessage(message, TapiConstants.NoLineNumber);
-        }
-    }
+		/// <inheritdoc />
+		protected override void OnTransferJobRetryEvent(object sender, TransferJobRetryEventArgs e)
+		{
+			var message = string.Format(
+				CultureInfo.CurrentCulture,
+				Strings.RetryJobMessage,
+				e.Count,
+				this.maxRetryCount);
+			this.PublishStatusMessage(message, TapiConstants.NoLineNumber);
+		}
+	}
 }

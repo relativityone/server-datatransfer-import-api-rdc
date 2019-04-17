@@ -222,7 +222,7 @@ namespace Relativity.Import.Export
 				var oiConfiguration = new OutsideInConfig
 					                      {
 						                      InstallLocation = new System.IO.DirectoryInfo(path),
-						                      IdleWorkerTimeout = Convert.ToUInt32(this.timeout)
+						                      IdleWorkerTimeout = Convert.ToUInt32(this.timeout),
 					                      };
 				OutsideIn.SetConfiguration(oiConfiguration);
 				this.configuration.Timeout = Convert.ToInt32(oiConfiguration.IdleWorkerTimeout);

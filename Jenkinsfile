@@ -12,7 +12,11 @@ properties([
         choice(choices: buildTypeCoicesStr, description: 'The type of build to execute', name: 'buildType'),
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-        string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel')
+        string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
+        booleanParam(defaultValue: true, description: "Enable or disable running unit tests", name: 'runUnitTests'),
+        booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests'),
+        booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport'),
+        choice(defaultValue: 'hyperv', choices: ["hyperv"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment')
     ])
 ])
 
@@ -23,9 +27,9 @@ def sessionID = System.currentTimeMillis().toString()
 def eventHash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
 def buildVersion = ""
 def packageVersion = ""
-def testResultsPassed = 0
-def testResultsFailed = 0
-def testResultsSkipped = 0
+def int testResultsPassed = 0
+def int testResultsFailed = 0
+def int testResultsSkipped = 0
 build = params.build
 
 timestamps
@@ -66,7 +70,14 @@ timestamps
                     stage('Build binaries')
                     {
                         echo "Building the binaries for version $buildVersion"
-                        output = powershell ".\\build.ps1 Build -Configuration '${params.buildConfig}' -Version '$buildVersion' -Verbosity '${params.buildVerbosity}'"
+                        output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}'"
+                        echo output
+                    }
+
+                    stage('Digitally sign binaries')
+                    {
+                        echo "Digitally signing all binaries"
+                        output = powershell ".\\build.ps1 DigitallySignBinaries -Verbosity '${params.buildVerbosity}'"
                         echo output
                     }
 
@@ -77,6 +88,13 @@ timestamps
                         echo output
                     }
 
+                    stage('Digitally sign installers')
+                    {
+                        echo "Digitally signing all installers"
+                        output = powershell ".\\build.ps1 DigitallySignInstallers -Verbosity '${params.buildVerbosity}'"
+                        echo output
+                    }
+
                     stage('Extended code analysis')
                     {
                         echo "Extending code analysis"
@@ -84,55 +102,115 @@ timestamps
                         echo output
                     }
 
-                    stage('Run unit tests')
+                    if (params.runUnitTests)
                     {
-                        try
+                        stage('Run unit tests')
                         {
-                            // Wrapped in a try/finally to ensure the test results are generated.
                             echo "Running the unit tests"
                             output = powershell ".\\build.ps1 UnitTests"
                             echo output
                         }
-                        finally
+                    }
+
+                    if (params.runIntegrationTests)
+                    {
+                        stage('Run integration tests')
                         {
-                            echo "Generating unit test results"
-                            powershell ".\\build.ps1 GenerateTestReport"
+                            echo "Running the integration tests"
+                            output = powershell ".\\build.ps1 IntegrationTests -TestEnvironment $params.testEnvironment"
+                            echo output
                         }
                     }
 
-                    stage('Retrieve unit test results')
+                    if (params.runUnitTests || params.runIntegrationTests)
                     {
-                        // Let the build script retrieve the values.
-                        echo "Retrieving the unit test results"
-                        def outputString = runCommandWithOutput(".\\build.ps1 UnitTestResults -Verbosity '${params.buildVerbosity}'")
-                        echo "Retrieved the unit test results"
-
-                        // Search for specific tokens within the response.
-                        echo "Extracting the unit test result parameters"
-                        testResultsPassed = extractValue("testResultsPassed", outputString)
-                        testResultsFailed = extractValue("testResultsFailed", outputString)
-                        testResultsSkipped = extractValue("testResultsSkipped", outputString)
-                        echo "Extracted the unit test result parameters"
-
-                        // Dump the test results
-                        echo "Total passed: $testResultsPassed"
-                        echo "Total failed: $testResultsFailed"
-                        echo "Total skipped: $testResultsSkipped"
+                        stage('Test results report')
+                        {
+                            echo "Generating test report"
+                            powershell ".\\build.ps1 TestReports"
+                        }
                     }
 
-                    stage('Digitally sign binaries')
+                    if (params.runUnitTests || params.runIntegrationTests)
                     {
-                        output = powershell ".\\build.ps1 DigitallySign -Verbosity '${params.buildVerbosity}'"
-                        echo output
+                        stage('Retrieve test results')
+                        {
+                            def taskCandidates = []
+                            if (params.runUnitTests)
+                            {
+                                taskCandidates.add("UnitTestResults")
+                            }
+
+                            if (params.runIntegrationTests)
+                            {
+                                taskCandidates.add("IntegrationTestResults")
+                            }
+
+                            taskCandidates.eachWithIndex { task, index ->
+                                def testDescription = ""
+                                switch (index)
+                                {
+                                    case 0:
+                                        testDescription = "unit"
+                                        break
+
+                                    case 1:
+                                        testDescription = "integration"
+                                        break
+
+                                    default:
+                                        throw new Exception("The test result type $index is not mapped.")
+                                }
+
+                                // Let the build script retrieve the unit test result values.
+                                echo "Retrieving the $testDescription-test results"
+                                def testResultOutputString = runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}'")
+                                echo "Retrieved the $testDescription-test results"
+
+                                // Search for specific tokens within the response.
+                                echo "Extracting the $testDescription-test result parameters"
+                                def int passed = extractValue("testResultsPassed", testResultOutputString)
+                                def int failed = extractValue("testResultsFailed", testResultOutputString)
+                                def int skipped = extractValue("testResultsSkipped", testResultOutputString)
+                                echo "Extracted the $testDescription-test result parameters"
+
+                                // Dump the individual test results
+                                echo "$testDescription-test passed: $passed"
+                                echo "$testDescription-test failed: $failed"
+                                echo "$testDescription-test skipped: $skipped"
+                                
+                                // Now add to the final test results
+                                testResultsPassed += passed
+                                testResultsFailed += failed
+                                testResultsSkipped += skipped
+                            }
+
+                            // Dump the final test results
+                            echo "Total passed: $testResultsPassed"
+                            echo "Total failed: $testResultsFailed"
+                            echo "Total skipped: $testResultsSkipped"
+                        }
+                    }
+
+                    if (params.createCodeCoverageReport)
+                    {
+                        stage('Code coverage report')
+                        {
+                            echo "Creating a code coverage report"
+                            output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment $params.testEnvironment"
+                            echo output
+                        }
                     }
 
                     stage ('Publish packages to proget')
                     {
+                        echo "Publishing packages to proget"
                         powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}'"
                     }
 
                     stage('Publish build artifacts')
                     {
+                        echo "Publishing build artifacts"
                         output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${env.BRANCH_NAME}'"
                         echo output
                     }
@@ -141,13 +219,26 @@ timestamps
                 }
                 finally
                 {
-                    echo "Gathering unit test results"
-
-                    // TODO: Figure out wy this keeps failing.
-                    // nunit testResultsPattern: "test-results-unit.xml"
+                    echo "Publishing the build logs"
                     archiveArtifacts artifacts: 'Logs/**/*.*'
-                    archiveArtifacts artifacts: 'TestResults/**/*.*'
-                }                    
+                    if (params.runUnitTests)
+                    {
+                        echo "Publishing the unit tests report"
+                        archiveArtifacts artifacts: 'TestReports/unit-tests/**/*.*'
+                    }
+
+                    if (params.runIntegrationTests)
+                    {
+                        echo "Publishing the integration tests report"
+                        archiveArtifacts artifacts: 'TestReports/integration-tests/**/*.*'
+                    }
+
+                    if (params.createCodeCoverageReport)
+                    {
+                        echo "Publishing the code coverage report"
+                        archiveArtifacts artifacts: 'TestReports/code-coverage/**/*.*'
+                    }
+                } 
             }
             catch(err)
             {
