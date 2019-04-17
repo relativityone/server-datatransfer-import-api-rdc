@@ -50,7 +50,6 @@ namespace Relativity.Import.Client.NUnit
 			this._bulkImportManager = manager;
 			this._imageReader = reader;
 
-			// this.ImportBatchSize = 500;
 			this.ImportBatchVolume = 1000000;
 			this.OutputFromStringWriter = new StringBuilder();
 		}
@@ -89,6 +88,11 @@ namespace Relativity.Import.Client.NUnit
 		protected override int NumberOfRetries => 3;
 
 		protected override int WaitTimeBetweenRetryAttempts => 0;
+
+		public void SetImportBatchSize(int size)
+		{
+			this.ImportBatchSize = size;
+		}
 
 		public void MockLowerBatchSizeAndRetry(int numberOfRecords)
 		{

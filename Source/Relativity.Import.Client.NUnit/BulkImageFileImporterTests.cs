@@ -88,6 +88,8 @@ namespace Relativity.Import.Client.NUnit
 				this.mockImageReader.Object,
 				this.TokenSource,
 				ExecutionSource.Unknown);
+
+			this.importer.SetImportBatchSize(500);
 		}
 	}
 }

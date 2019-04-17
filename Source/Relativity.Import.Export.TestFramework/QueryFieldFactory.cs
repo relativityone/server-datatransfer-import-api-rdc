@@ -12,9 +12,6 @@ namespace Relativity.Import.Export.TestFramework
 
     using Relativity.Import.Export.Services;
 
-    using FieldCategory = kCura.EDDS.WebAPI.FieldManagerBase.FieldCategory;
-    using FieldType = kCura.EDDS.WebAPI.FieldManagerBase.FieldType;
-
     public class QueryFieldFactory
     {
         private DataTable table;

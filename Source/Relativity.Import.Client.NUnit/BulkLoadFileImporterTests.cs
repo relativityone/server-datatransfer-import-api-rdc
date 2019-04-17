@@ -12,13 +12,11 @@ namespace Relativity.Import.Client.NUnit
 
 	using global::NUnit.Framework;
 
-	using kCura.EDDS.WebAPI.BulkImportManagerBase;
 	using kCura.WinEDDS;
 
 	using Moq;
 
-	using CaseInfo = Relativity.Import.Export.Services.CaseInfo;
-	using ExecutionSource = Relativity.Import.Export.Services.ExecutionSource;
+	using Relativity.Import.Export.Services;
 
 	/// <summary>
 	/// Represents <see cref="BulkLoadFileImporter"/> tests.
@@ -47,7 +45,7 @@ namespace Relativity.Import.Client.NUnit
 		[Test]
 		public void ShouldBulkImport()
 		{
-			MassImportResults results =
+			kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults results =
 				this.importer.TryBulkImport(new kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo());
 			Assert.That(results, Is.Not.Null);
 			Assert.That(this.importer.BatchSize, Is.EqualTo(500));
@@ -107,7 +105,7 @@ namespace Relativity.Import.Client.NUnit
 			// ImportBehavior is non-null because 1 of the fields is mapped to the specified artifact identifiers.
 			fields = this.importer.GetMappedFields(1, new List<int> { 1, 22 });
 			Assert.That(fields.Length, Is.EqualTo(2));
-			Assert.That(fields[0].ImportBehavior, Is.EqualTo(ImportBehaviorChoice.ObjectFieldContainsArtifactId));
+			Assert.That(fields[0].ImportBehavior, Is.EqualTo(kCura.EDDS.WebAPI.BulkImportManagerBase.ImportBehaviorChoice.ObjectFieldContainsArtifactId));
 			Assert.That(fields[1].ImportBehavior, Is.Null);
 
 			// ImportBehavior is null because none of the field types are Object or Objects.
@@ -156,7 +154,7 @@ namespace Relativity.Import.Client.NUnit
 			{
 				if (i < 2)
 				{
-					Assert.That(fields[i].ImportBehavior, Is.EqualTo(ImportBehaviorChoice.ObjectFieldContainsArtifactId));
+					Assert.That(fields[i].ImportBehavior, Is.EqualTo(kCura.EDDS.WebAPI.BulkImportManagerBase.ImportBehaviorChoice.ObjectFieldContainsArtifactId));
 				}
 				else
 				{

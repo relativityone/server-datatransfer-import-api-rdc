@@ -19,6 +19,10 @@ namespace Relativity.Import.Export.Services
 
 		public string ExceptionType { get; set; }
 
+		public SoapExceptionDetail()
+		{
+		}
+
 		public SoapExceptionDetail(Exception ex)
 		{
 			if (ex == null)

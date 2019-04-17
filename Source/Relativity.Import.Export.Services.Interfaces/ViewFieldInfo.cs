@@ -109,7 +109,7 @@ namespace Relativity.Import.Export.Services
 
 			FieldArtifactId = System.Convert.ToInt32(row["FieldArtifactID"]);
 			AvfId = System.Convert.ToInt32(row["AvfID"]);
-			Category = (FieldCategory)row["FieldCategoryID"];
+			Category = (FieldCategory)System.Convert.ToInt32(row["FieldCategoryID"]);
 			DisplayName = row["DisplayName"].ToString();
 			AvfColumnName = row["AvfColumnName"].ToString();
 			AvfHeaderName = row["AvfHeaderName"].ToString();
@@ -121,8 +121,8 @@ namespace Relativity.Import.Export.Services
 			ConnectorFieldArtifactID = System.Convert.ToInt32(row["ConnectorFieldArtifactID"]);
 			SourceFieldArtifactTypeTableName = row["SourceFieldArtifactTypeTableName"].ToString();
 			ConnectorFieldName = row["ConnectorFieldName"].ToString();
-			FieldType = (FieldType)row["FieldTypeID"];
-			ConnectorFieldCategory = (FieldCategory)row["ConnectorFieldCategoryID"];
+			FieldType = (FieldType)System.Convert.ToInt32(row["FieldTypeID"]);
+			ConnectorFieldCategory = (FieldCategory)System.Convert.ToInt32(row["ConnectorFieldCategoryID"]);
 			IsLinked = System.Convert.ToBoolean(row["IsLinked"]);
 			FieldCodeTypeID = System.Convert.ToInt32(row["FieldCodeTypeID"]);
 			ArtifactTypeID = System.Convert.ToInt32(row["ArtifactTypeID"]);
@@ -141,7 +141,7 @@ namespace Relativity.Import.Export.Services
 
 			if (row.Table.Columns.Contains("ParentReflectionType"))
 			{
-				ParentReflectionType = (ParentReflectionType)row["ParentReflectionType"];
+				ParentReflectionType = (ParentReflectionType)System.Convert.ToInt32(row["ParentReflectionType"]);
 				ReflectedFieldArtifactTypeTableName = System.Convert.ToString(row["ReflectedFieldArtifactTypeTableName"]);
 				ReflectedFieldIdentifierColumnName = System.Convert.ToString(row["ReflectedFieldArtifactTypeIdentifierColumnName"]);
 				ReflectedFieldConnectorFieldName = System.Convert.ToString(row["ReflectedFieldArtifactTypeConnectorFieldName"]);
