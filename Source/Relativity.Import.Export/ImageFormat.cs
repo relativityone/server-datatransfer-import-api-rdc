@@ -197,6 +197,6 @@ namespace Relativity.Import.Export
 		/// <summary>
 		/// The RAW image format.
 		/// </summary>
-		Raw
+		Raw,
 	}
 }

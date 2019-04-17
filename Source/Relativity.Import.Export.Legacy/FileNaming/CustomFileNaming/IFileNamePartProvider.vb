@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 	Public Interface IFileNamePartProvider(Of In T)
 		Inherits IFileNamePartProvider
 
-		Function GetPartName(descriptorPart As T, exportObject As ObjectExportInfo) As String
+		Shadows Function GetPartName(descriptorPart As T, exportObject As ObjectExportInfo) As String
 
 	End Interface
 End Namespace

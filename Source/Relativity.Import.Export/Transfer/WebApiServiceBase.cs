@@ -20,7 +20,7 @@ namespace Relativity.Import.Export.Transfer
 	internal abstract class WebApiServiceBase
 	{
 		/// <summary>
-		/// The logger
+		/// The logger instance.
 		/// </summary>
 		private readonly Relativity.Logging.ILog logger;
 

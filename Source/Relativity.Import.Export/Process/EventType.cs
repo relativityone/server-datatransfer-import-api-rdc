@@ -54,6 +54,6 @@ namespace Relativity.Import.Export.Process
 		/// <summary>
 		/// The statistics event.
 		/// </summary>
-		Statistics
+		Statistics,
 	}
 }

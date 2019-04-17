@@ -9,27 +9,27 @@
 
 namespace Relativity.Import.Export.NUnit
 {
-    using System;
-    using System.Net;
-    using System.Threading;
+	using System;
+	using System.Net;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using Moq;
+	using Moq;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.TestFramework;
 	using Relativity.Import.Export.Transfer;
-    using Relativity.Transfer;
+	using Relativity.Transfer;
 
-    /// <summary>
+	/// <summary>
 	/// Represents <see cref="UploadTapiBridge"/> tests.
 	/// </summary>
 	[TestFixture]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Microsoft.Design",
-        "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
-        Justification = "The test class handles the disposal.")]
-    public class UploadTapiBridgeTests : TapiBridgeTestsBase<UploadTapiBridge>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage(
+		"Microsoft.Design",
+		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
+		Justification = "The test class handles the disposal.")]
+	public class UploadTapiBridgeTests : TapiBridgeTestsBase<UploadTapiBridge>
 	{
 		[Test]
 		[Category(TestCategories.TransferApi)]
@@ -130,11 +130,11 @@ namespace Relativity.Import.Export.NUnit
 		private UploadTapiBridgeParameters CreateUploadTapiBridgeParameters(WellKnownTransferClient client)
 		{
 			UploadTapiBridgeParameters parameters = new UploadTapiBridgeParameters
-				                                        {
-					                                        Credentials = new NetworkCredential(),
-					                                        WebServiceUrl = "https://relativity.one.com",
-					                                        WorkspaceId = this.TestWorkspaceId
-				                                        };
+			{
+				Credentials = new NetworkCredential(),
+				WebServiceUrl = "https://relativity.one.com",
+				WorkspaceId = this.TestWorkspaceId,
+			};
 			this.ConfigureTapiBridgeParameters(parameters, client);
 			return parameters;
 		}

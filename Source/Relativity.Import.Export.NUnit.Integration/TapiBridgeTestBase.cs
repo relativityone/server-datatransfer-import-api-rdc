@@ -25,12 +25,12 @@ namespace Relativity.Import.Export.NUnit.Integration
 	public abstract class TapiBridgeTestBase
 	{
 		/// <summary>
-		/// The minimum test file length [1KB]
+		/// The minimum test file length [1KB].
 		/// </summary>
 		private const int MinTestFileLength = 1024;
 
 		/// <summary>
-		/// The maximum test file length [10KB]
+		/// The maximum test file length [10KB].
 		/// </summary>
 		private const int MaxTestFileLength = 10 * MinTestFileLength;
 
@@ -55,7 +55,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 		private int warnings;
 
 		/// <summary>
-		/// The total number of fatal errors
+		/// The total number of fatal errors.
 		/// </summary>
 		private int fatalErrors;
 
@@ -438,7 +438,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 		protected virtual void CheckSkipTest(TapiClient client)
 		{
 			if ((client == TapiClient.Aspera && this.TestParameters.SkipAsperaModeTests) ||
-			    (client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
+				(client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
 			{
 				Assert.Ignore(TestStrings.SkipTestMessage, $"{client}");
 			}

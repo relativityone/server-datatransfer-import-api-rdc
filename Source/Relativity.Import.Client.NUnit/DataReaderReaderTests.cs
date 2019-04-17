@@ -6,14 +6,14 @@
 
 namespace Relativity.Import.Client.NUnit
 {
-    using System.Collections.Generic;
-    using System.Linq;
+	using System.Collections.Generic;
+	using System.Linq;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
-    [TestFixture]
+	[TestFixture]
 	public class DataReaderReaderTests
 	{
 		[Test]

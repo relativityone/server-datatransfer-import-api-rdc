@@ -59,8 +59,8 @@ namespace Relativity.Import.Export.NUnit
 		[TestCase(false)]
 		[Category(TestCategories.Framework)]
 		public void ShouldOnlyTrackTimeWhenTheLogAllEventsSettingIsTrue(bool logAllEvents)
-        {
-	        this.mockAppSettings.Invocations.Clear();
+		{
+			this.mockAppSettings.Invocations.Clear();
 			this.mockAppSettings.SetupGet(x => x.LogAllEvents).Returns(logAllEvents);
 			this.timekeeper.MarkStart("a");
 			System.Threading.Thread.Sleep(100);

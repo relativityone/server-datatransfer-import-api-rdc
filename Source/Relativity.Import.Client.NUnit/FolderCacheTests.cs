@@ -28,7 +28,7 @@ namespace Relativity.Import.Client.NUnit
 	/// Represents <see cref="FolderCache"/> tests.
 	/// </summary>
 	[TestFixture]
-    public class FolderCacheTests
+	public class FolderCacheTests
 	{
 		private const int TestRootFolderId = 100000;
 		private const int TestWorkspaceId = 2000000;

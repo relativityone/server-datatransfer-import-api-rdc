@@ -274,7 +274,7 @@ namespace Relativity.Import.Export.Transfer
 			var configuration = new ClientConfiguration
 			{
 				CookieContainer = parameters.WebCookieContainer,
-				ClientId = this.GetClientId(parameters)
+				ClientId = this.GetClientId(parameters),
 			};
 
 			try

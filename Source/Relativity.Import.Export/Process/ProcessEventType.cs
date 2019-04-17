@@ -24,6 +24,6 @@ namespace Relativity.Import.Export.Process
 		/// <summary>
 		/// The process event includes an error message.
 		/// </summary>
-		Error
+		Error,
 	}
 }

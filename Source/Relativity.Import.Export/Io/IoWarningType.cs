@@ -27,6 +27,6 @@ namespace Relativity.Import.Export.Io
 		/// <summary>
 		/// The current thread waits a period of time before being retried.
 		/// </summary>
-		WaitRetryError
+		WaitRetryError,
 	}
 }

@@ -80,7 +80,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 									 WaitTimeBetweenRetryAttempts = 0,
 									 WebCookieContainer = this.CookieContainer,
 									 WebServiceUrl = this.TestParameters.RelativityWebApiUrl.ToString(),
-									 WorkspaceId = this.TestParameters.WorkspaceId
+									 WorkspaceId = this.TestParameters.WorkspaceId,
 								 };
 
 			this.SetupTapiBridgeParameters(parameters);
@@ -96,7 +96,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 				{
 					Order = order,
 					SourcePath = sourcePath,
-					TargetPath = this.tapiBridge.TargetPath
+					TargetPath = this.tapiBridge.TargetPath,
 				});
 			}
 

@@ -9,7 +9,7 @@ namespace Relativity.Import.Export.Io
 	using System;
 
 	/// <summary>
-	/// Class for IO warning event arguments
+	/// Class for IO warning event arguments.
 	/// </summary>
 	public sealed class IoWarningEventArgs : EventArgs
 	{
@@ -50,7 +50,7 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <summary>
-		/// Gets the current line number
+		/// Gets the current line number.
 		/// </summary>
 		/// <value>
 		/// The line number.

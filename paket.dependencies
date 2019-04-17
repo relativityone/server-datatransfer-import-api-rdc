@@ -7,37 +7,39 @@ nuget csvhelper = 12.1.2
 # This is used strictly for producing unit test results.
 nuget extent = 0.0.3
 nuget gitversion.commandline = 4.0.0
+nuget jetbrains.dotcover.commandlinetools = 2019.1.0-eap06
 nuget microsoft.build.logging.structuredlogger = 1.0.89
 nuget moq = 4.10.1
 nuget nbuilder = 6.0.0
 
 # Be even more careful with this library. This resolves a package conflict with the Azure Data Movement library.
 nuget newtonsoft.json = 6.0.8
-nuget nsubstitute = 3.1.0
+nuget nsubstitute = 4.0.0
 
 # Note: periodically update NUnit to the latest version.
 nuget nunit = 3.11.0
-nuget nunit.consolerunner = 3.9.0
+nuget nunit.consolerunner = 3.10.0
 nuget nunit.extension.vsprojectloader = 3.8.0
 
 # Polly is explicitly listed to avoid conflicts between TAPI and Relatativity.
 nuget polly = 5.7.0.0
 nuget psake = 4.7.4
-nuget rhinomocks  = 3.6.0
-nuget stylecop.analyzers = 1.0.2
+nuget reportgenerator = 4.1.2
+nuget rhinomocks  = 3.6.1
+nuget stylecop.analyzers = 1.1.1-rc.114
 nuget zetalongpaths = 1.0.0.27
 
 # Proget packages are below.
 source https://proget.kcura.corp/NuGet/NuGet
-nuget kcura.outsidein.fi.win32 = 2018.9.1
+nuget kcura.outsidein.fi.win32 = 2019.2.0
 nuget kcura.relativity.client = 10.2.32.58-DEV
 
 # TODO: Remove Relativity as soon as it has been replaced.
 nuget relativity = 10.2.32.58-DEV
 nuget relativity.dataTransfer.messageService = 10.2.0
-nuget relativity.logging = 2018.11.5
-nuget relativity.logging.interfaces = 2018.11.5
-nuget relativity.kepler = 1.0.1.609
+nuget relativity.logging = 2019.4.4
+nuget relativity.logging.interfaces = 2019.4.4
+nuget relativity.kepler = 1.0.1.627
 nuget relativity.kepler.client = 1.0.1.609
 nuget relativity.oauth2client = 1.0.27
 nuget relativity.oauth2client.implicit = 1.0.27
@@ -50,4 +52,4 @@ nuget relativity.telemetry.apm = 2019.1.0
 nuget relativity.telemetry.datacontracts.shared = 2019.1.0
 nuget relativity.telemetry.services.interface = 2019.1.0
 nuget relativity.testing.identification ~> 1.5.0
-nuget relativity.transfer.client = 6.0.3
+nuget relativity.transfer.client = 6.0.13

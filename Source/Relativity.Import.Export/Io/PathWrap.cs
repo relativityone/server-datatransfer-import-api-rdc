@@ -27,7 +27,7 @@ namespace Relativity.Import.Export.Io
 		public static readonly string UncSignature = string.Empty.PadLeft(2, System.IO.Path.DirectorySeparatorChar);
 
 		/// <summary>
-		/// The Windows append file name length
+		/// The Windows append file name length.
 		/// </summary>
 		private const int WindowsAppendFileNameLength = 12;
 

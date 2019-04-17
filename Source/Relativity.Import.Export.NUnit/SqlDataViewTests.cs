@@ -60,21 +60,21 @@ namespace Relativity.Import.Export.NUnit
 		[Test]
 		[Category(TestCategories.Framework)]
 		public static void ShouldVerifyTheEnumerableInterface()
-        {
-	        using (DataTable table = new DataTable())
-	        {
-		        table.Locale = CultureInfo.CurrentCulture;
-		        table.Columns.Add("Name", typeof(string));
-		        table.Rows.Add("abc");
-		        SqlDataView view = new SqlDataView(table);
-		        Assert.That(view.Table, Is.EqualTo(table));
-		        Assert.That(view.Count, Is.EqualTo(1));
-		        SqlDataRow sqlDataRow = view[0];
+		{
+			using (DataTable table = new DataTable())
+			{
+				table.Locale = CultureInfo.CurrentCulture;
+				table.Columns.Add("Name", typeof(string));
+				table.Rows.Add("abc");
+				SqlDataView view = new SqlDataView(table);
+				Assert.That(view.Table, Is.EqualTo(table));
+				Assert.That(view.Count, Is.EqualTo(1));
+				SqlDataRow sqlDataRow = view[0];
 				Assert.That(sqlDataRow, Is.Not.Null);
 				Assert.That(sqlDataRow[0], Is.EqualTo("abc"));
-		        foreach (DataRowView dataRow in view)
-		        {
-			        Assert.That(dataRow, Is.Not.Null);
+				foreach (DataRowView dataRow in view)
+				{
+					Assert.That(dataRow, Is.Not.Null);
 				}
 			}
 		}

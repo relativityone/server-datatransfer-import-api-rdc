@@ -9,34 +9,34 @@
 
 namespace Relativity.Import.Export.NUnit
 {
-    using System;
-    using System.Collections.Generic;
+	using System;
+	using System.Collections.Generic;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using Relativity.Import.Export.Io;
+	using Relativity.Import.Export.Io;
 
-    [TestFixture]
-    public class IoReporterContextTests
+	[TestFixture]
+	public class IoReporterContextTests
 	{
-        private IoReporterContext context;
+		private IoReporterContext context;
 		private Dictionary<long, string> results;
 
-        [SetUp]
-        public void Setup()
-        {
+		[SetUp]
+		public void Setup()
+		{
 			this.results = new Dictionary<long, string>();
-        }
+		}
 
-        [TestCase("Event message", 10)]
-        [TestCase("Event message from huge load file", 3000000000)]
-        public void ItShouldPublishWarningMessage(string message, long lineNubmer)
-        {
-	        this.GivenTheInstanceOfPublisher();
-	        this.GivenTheMethodWhichHandlesTheEvent(this.TestEventHandler);
-	        this.WhenEventOccursWithMessageAndLineNumber(message, lineNubmer);
-	        this.ResultsDictionaryContains(message, lineNubmer);
-        }
+		[TestCase("Event message", 10)]
+		[TestCase("Event message from huge load file", 3000000000)]
+		public void ItShouldPublishWarningMessage(string message, long lineNubmer)
+		{
+			this.GivenTheInstanceOfPublisher();
+			this.GivenTheMethodWhichHandlesTheEvent(this.TestEventHandler);
+			this.WhenEventOccursWithMessageAndLineNumber(message, lineNubmer);
+			this.ResultsDictionaryContains(message, lineNubmer);
+		}
 
 		private void WhenEventOccursWithMessageAndLineNumber(string message, long lineNumber)
 		{

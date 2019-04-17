@@ -20,7 +20,7 @@ namespace Relativity.Import.Export.NUnit
 	/// Represents <see cref="StringExtensions"/> tests.
 	/// </summary>
 	[TestFixture]
-    public static class StringExtensionsTests
+	public static class StringExtensionsTests
 	{
 		[Test]
 		[Category(TestCategories.ExtensionMethods)]
@@ -52,8 +52,8 @@ namespace Relativity.Import.Export.NUnit
 		[TestCase("'tok1' 'tok2'\r\n", "'", "", "\''tok1'' ''tok2''")]
 		[Category(TestCategories.ExtensionMethods)]
 		public static void ShouldConvertToDelimitedFileCellContents(string input, string bound, string newlineProxy, string expected)
-        {
-	        string value = input.ToDelimitedFileCellContents(bound, newlineProxy);
+		{
+			string value = input.ToDelimitedFileCellContents(bound, newlineProxy);
 			Assert.That(value, Is.EqualTo(expected));
 		}
 

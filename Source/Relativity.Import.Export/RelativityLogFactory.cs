@@ -12,14 +12,14 @@ namespace Relativity.Import.Export
 	using System;
 
 	/// <summary>
-    /// Represents a wait and retry policy class objects with a default back-off time strategy.
-    /// </summary>
-    public static class RelativityLogFactory
-    {
-	    /// <summary>
-	    /// The default logging system.
-	    /// </summary>
-	    public const string DefaultSystem = "Data.Transfer";
+	/// Represents a wait and retry policy class objects with a default back-off time strategy.
+	/// </summary>
+	public static class RelativityLogFactory
+	{
+		/// <summary>
+		/// The default logging system.
+		/// </summary>
+		public const string DefaultSystem = "Data.Transfer";
 
 		/// <summary>
 		/// The default logging sub-system.
@@ -47,56 +47,56 @@ namespace Relativity.Import.Export
 		/// The <see cref="Relativity.Logging.ILog"/> instance.
 		/// </returns>
 		public static Relativity.Logging.ILog CreateLog(string subSystem)
-	    {
-		    try
-		    {
-			    Relativity.Logging.ILog log = Relativity.Logging.Log.Logger;
-			    if (log == null || log is Relativity.Logging.NullLogger)
-			    {
-				    Relativity.Logging.LoggerOptions options =
-					    Relativity.Logging.Factory.LogFactory.GetOptionsFromAppDomain();
-				    if (options == null)
-				    {
-					    options = new Relativity.Logging.LoggerOptions();
+		{
+			try
+			{
+				Relativity.Logging.ILog log = Relativity.Logging.Log.Logger;
+				if (log == null || log is Relativity.Logging.NullLogger)
+				{
+					Relativity.Logging.LoggerOptions options =
+						Relativity.Logging.Factory.LogFactory.GetOptionsFromAppDomain();
+					if (options == null)
+					{
+						options = new Relativity.Logging.LoggerOptions();
 					}
 
-				    if (string.IsNullOrEmpty(options.ConfigurationFileLocation))
-				    {
-					    options.ConfigurationFileLocation = GetLogConfigFilePath(AppSettings.Instance.LogConfigXmlFileName);
-				    }
+					if (string.IsNullOrEmpty(options.ConfigurationFileLocation))
+					{
+						options.ConfigurationFileLocation = GetLogConfigFilePath(AppSettings.Instance.LogConfigXmlFileName);
+					}
 
-				    if (string.IsNullOrEmpty(options.System))
-				    {
-					    options.System = DefaultSubSystem;
-				    }
+					if (string.IsNullOrEmpty(options.System))
+					{
+						options.System = DefaultSubSystem;
+					}
 
-				    if (string.IsNullOrEmpty(options.SubSystem))
-				    {
-					    options.SubSystem = subSystem;
-				    }
+					if (string.IsNullOrEmpty(options.SubSystem))
+					{
+						options.SubSystem = subSystem;
+					}
 
-				    log = Relativity.Logging.Factory.LogFactory.GetLogger(options);
-				    Relativity.Logging.Log.Logger = log;
-			    }
+					log = Relativity.Logging.Factory.LogFactory.GetLogger(options);
+					Relativity.Logging.Log.Logger = log;
+				}
 
-			    return log;
-		    }
-		    catch (Exception e)
-		    {
-			    try
-			    {
-				    Relativity.Logging.Tools.InternalLogger.WriteFromExternal(
-					    $"Failed to setup \"{DefaultSystem} - {DefaultSubSystem}\" logging. Exception: {e.ToString()}",
-					    new Relativity.Logging.LoggerOptions { System = DefaultSystem, SubSystem = DefaultSubSystem });
-			    }
-			    catch
-			    {
+				return log;
+			}
+			catch (Exception e)
+			{
+				try
+				{
+					Relativity.Logging.Tools.InternalLogger.WriteFromExternal(
+						$"Failed to setup \"{DefaultSystem} - {DefaultSubSystem}\" logging. Exception: {e.ToString()}",
+						new Relativity.Logging.LoggerOptions { System = DefaultSystem, SubSystem = DefaultSubSystem });
+				}
+				catch
+				{
 					// Being overly cautious to ensure no fatal errors occur due to logging.
 				}
 
-			    return Relativity.Logging.Factory.LogFactory.GetNullLogger();
-		    }
-	    }
+				return Relativity.Logging.Factory.LogFactory.GetNullLogger();
+			}
+		}
 
 		/// <summary>
 		/// Gets the logger configuration file path.

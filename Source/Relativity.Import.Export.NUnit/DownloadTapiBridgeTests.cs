@@ -9,26 +9,26 @@
 
 namespace Relativity.Import.Export.NUnit
 {
-    using System;
-    using System.Threading;
+	using System;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using Moq;
+	using Moq;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.TestFramework;
 	using Relativity.Import.Export.Transfer;
-    using Relativity.Transfer;
+	using Relativity.Transfer;
 
 	/// <summary>
 	/// Represents <see cref="DownloadTapiBridge"/> tests.
 	/// </summary>
 	[TestFixture]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Microsoft.Design",
-        "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
-        Justification = "The test class handles the disposal.")]
-    public class DownloadTapiBridgeTests : TapiBridgeTestsBase<DownloadTapiBridge>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage(
+		"Microsoft.Design",
+		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
+		Justification = "The test class handles the disposal.")]
+	public class DownloadTapiBridgeTests : TapiBridgeTestsBase<DownloadTapiBridge>
 	{
 		[Test]
 		[Category(TestCategories.TransferApi)]

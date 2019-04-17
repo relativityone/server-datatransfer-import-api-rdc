@@ -21,32 +21,32 @@ namespace Relativity.Import.Export.NUnit
 	/// Represents <see cref="CollectionExtensions"/> tests.
 	/// </summary>
 	[TestFixture]
-    public static class CollectionExtensionsTests
+	public static class CollectionExtensionsTests
 	{
-        [Test]
-        [Category(TestCategories.ExtensionMethods)]
+		[Test]
+		[Category(TestCategories.ExtensionMethods)]
 		public static void ShouldGetTheCsvString()
-        {
-	        IEnumerable<string> sequence = new[] { "a", "b", "c", "d" };
-	        string value1 = sequence.ToCsv();
-	        Assert.That(value1, Is.EqualTo("a,b,c,d"));
-	        string value2 = sequence.ToCsv(s => s.ToUpperInvariant());
-	        Assert.That(value2, Is.EqualTo("A,B,C,D"));
+		{
+			IEnumerable<string> sequence = new[] { "a", "b", "c", "d" };
+			string value1 = sequence.ToCsv();
+			Assert.That(value1, Is.EqualTo("a,b,c,d"));
+			string value2 = sequence.ToCsv(s => s.ToUpperInvariant());
+			Assert.That(value2, Is.EqualTo("A,B,C,D"));
 			string value3 = new string[] { }.ToCsv();
 			Assert.That(value3, Is.EqualTo(string.Empty));
 			Assert.Throws<ArgumentNullException>(() => sequence.ToCsv(null));
 		}
 
-        [Test]
-        [Category(TestCategories.ExtensionMethods)]
+		[Test]
+		[Category(TestCategories.ExtensionMethods)]
 		public static void ShouldGetTheDelimitedString()
-        {
-	        IEnumerable<string> sequence = new[] { "a", "b", "c", "d" };
-	        string value1 = sequence.ToDelimitedString();
-	        Assert.That(value1, Is.EqualTo("a,b,c,d"));
-	        string value2 = sequence.ToDelimitedString(";");
-	        Assert.That(value2, Is.EqualTo("a;b;c;d"));
-	        string value3 = sequence.ToDelimitedString(";", s => s.ToUpperInvariant());
+		{
+			IEnumerable<string> sequence = new[] { "a", "b", "c", "d" };
+			string value1 = sequence.ToDelimitedString();
+			Assert.That(value1, Is.EqualTo("a,b,c,d"));
+			string value2 = sequence.ToDelimitedString(";");
+			Assert.That(value2, Is.EqualTo("a;b;c;d"));
+			string value3 = sequence.ToDelimitedString(";", s => s.ToUpperInvariant());
 			Assert.That(value3, Is.EqualTo("A;B;C;D"));
 			string value4 = sequence.ToDelimitedString(";", ".");
 			Assert.That(value4, Is.EqualTo(".a.;.b.;.c.;.d."));

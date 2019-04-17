@@ -72,7 +72,7 @@ namespace Relativity.Import.Export.Transfer
 		}
 
 		/// <summary>
-		/// Fatal error message for downloading files
+		/// Fatal error message for downloading files.
 		/// </summary>
 		/// <returns>
 		/// The error message.
@@ -83,7 +83,7 @@ namespace Relativity.Import.Export.Transfer
 		}
 
 		/// <summary>
-		/// Creates transfer request for download job
+		/// Creates transfer request for download job.
 		/// </summary>
 		/// <param name="context">
 		/// The transfer context.

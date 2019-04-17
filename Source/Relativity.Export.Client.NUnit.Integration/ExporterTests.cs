@@ -17,7 +17,7 @@ namespace Relativity.Export.Client.NUnit.Integration
 
 	using kCura.WinEDDS;
 
-    using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Services;
 	using Relativity.Import.Export.TestFramework;
 
 	using Relativity.Testing.Identification;

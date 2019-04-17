@@ -65,22 +65,22 @@ namespace Relativity.Import.Export.NUnit.Integration
 		protected override void CreateTapiBridge()
 		{
 			var parameters = new UploadTapiBridgeParameters
-								 {
-									 Credentials =
+			{
+				Credentials =
 										 new NetworkCredential(
 											 this.TestParameters.RelativityUserName,
 											 this.TestParameters.RelativityPassword),
-									 FileShare = this.TestParameters.FileShareUncPath,
-									 MaxFilesPerFolder = this.MaxFilesPerFolder,
-									 MaxJobParallelism = 1,
-									 MaxJobRetryAttempts = 1,
-									 PreserveFileTimestamps = this.PreserveFileTimestamps,
-									 TargetPath = this.TargetPath,
-									 WaitTimeBetweenRetryAttempts = 0,
-									 WebCookieContainer = this.CookieContainer,
-									 WebServiceUrl = this.TestParameters.RelativityWebApiUrl.ToString(),
-									 WorkspaceId = this.TestParameters.WorkspaceId
-								 };
+				FileShare = this.TestParameters.FileShareUncPath,
+				MaxFilesPerFolder = this.MaxFilesPerFolder,
+				MaxJobParallelism = 1,
+				MaxJobRetryAttempts = 1,
+				PreserveFileTimestamps = this.PreserveFileTimestamps,
+				TargetPath = this.TargetPath,
+				WaitTimeBetweenRetryAttempts = 0,
+				WebCookieContainer = this.CookieContainer,
+				WebServiceUrl = this.TestParameters.RelativityWebApiUrl.ToString(),
+				WorkspaceId = this.TestParameters.WorkspaceId,
+			};
 
 			this.SetupTapiBridgeParameters(parameters);
 			this.tapiBridge = new UploadTapiBridge(parameters, this.TransferLog, CancellationToken.None);

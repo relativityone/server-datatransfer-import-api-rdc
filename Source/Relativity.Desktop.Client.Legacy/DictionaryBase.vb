@@ -5,7 +5,7 @@ Namespace Relativity.Desktop.Client
 	''' Base class for all DictionaryBase types. 
 	''' 
 	''' This class is responsible for ensuring data does not go stale. On value access, if the dictionary has not been accessed in a period 
-	''' of time specified by <see cref="Config.ValueRefreshThreshold"/>, the values will be refreshed by a call to the abstract UpdateValues().
+	''' of time specified by <see cref="Relativity.Import.Export.IAppSettings.ValueRefreshThreshold"/>, the values will be refreshed by a call to the abstract UpdateValues().
 	''' </summary>
 	Public MustInherit Class DictionaryBase
 		Implements IDictionary

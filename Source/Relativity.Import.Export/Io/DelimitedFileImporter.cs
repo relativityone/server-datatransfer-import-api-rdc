@@ -49,7 +49,7 @@ namespace Relativity.Import.Export.Io
 		private const int EofChar = -1;
 
 		/// <summary>
-		/// The newline proxy string
+		/// The newline proxy string.
 		/// </summary>
 		private string newlineProxyString;
 

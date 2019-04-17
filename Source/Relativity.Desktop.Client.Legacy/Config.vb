@@ -60,7 +60,7 @@ Namespace Relativity.Desktop.Client
 		''' Gets a string that is used to split fields in bulk load files. Line delimiters are this
 		''' value plus a line feed.
 		''' </summary>
-		''' <exception cref="kCura.Config.ConfigurationException">
+		''' <exception cref="Relativity.Desktop.Client.ConfigurationException">
 		''' Thrown if the BulkLoadFileFieldDelimiter configuration setting is not set
 		''' </exception>
 		Public Shared ReadOnly Property BulkLoadFileFieldDelimiter() As String

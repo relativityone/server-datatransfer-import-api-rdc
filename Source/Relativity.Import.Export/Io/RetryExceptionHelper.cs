@@ -9,7 +9,7 @@
 
 namespace Relativity.Import.Export.Io
 {
-    using System;
+	using System;
 
 	/// <summary>
 	/// Defines commonly used static retry helper functions to decide whether an exception should be retried.

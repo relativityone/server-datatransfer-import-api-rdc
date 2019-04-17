@@ -13,13 +13,13 @@ namespace Relativity.Import.Export.NUnit
 	using System.Net;
 	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using Moq;
 
-    using Relativity.Import.Export.TestFramework;
-    using Relativity.Import.Export.Transfer;
-    using Relativity.Transfer;
+	using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.Transfer;
+	using Relativity.Transfer;
 
 	/// <summary>
 	/// Represents a base class for <see cref="TapiBridgeBase"/> derived classes.
@@ -172,14 +172,14 @@ namespace Relativity.Import.Export.NUnit
 		protected TapiBridgeParameters CreateTapiBridgeParameters(WellKnownTransferClient client)
 		{
 			TapiBridgeParameters parameters = new TapiBridgeParameters
-				                                  {
-					                                  Credentials = new NetworkCredential(),
-					                                  WebServiceUrl = "https://relativity.one.com",
-					                                  WorkspaceId = this.TestWorkspaceId,
-					                                  ForceAsperaClient = false,
-					                                  ForceHttpClient = false,
-					                                  ForceFileShareClient = false
-				                                  };
+			{
+				Credentials = new NetworkCredential(),
+				WebServiceUrl = "https://relativity.one.com",
+				WorkspaceId = this.TestWorkspaceId,
+				ForceAsperaClient = false,
+				ForceHttpClient = false,
+				ForceFileShareClient = false,
+			};
 			this.ConfigureTapiBridgeParameters(parameters, client);
 			return parameters;
 		}

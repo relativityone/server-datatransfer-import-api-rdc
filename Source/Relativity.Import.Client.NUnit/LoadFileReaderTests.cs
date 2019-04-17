@@ -6,13 +6,13 @@
 
 namespace Relativity.Import.Client.NUnit
 {
-    using System.Globalization;
+	using System.Globalization;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
-    using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Services;
 
 	[TestFixture]
 	public class LoadFileReaderTests

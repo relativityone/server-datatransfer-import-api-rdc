@@ -9,7 +9,7 @@
 
 namespace Relativity.Import.Export.Io
 {
-    using System;
+	using System;
 
 	/// <summary>
 	/// Defines a set of configurable flags to control retry behavior.
@@ -50,6 +50,6 @@ namespace Relativity.Import.Export.Io
 		/// <summary>
 		/// Retry all operations that fail.
 		/// </summary>
-		All = FileNotFound | DirectoryNotFound | DiskFull | Io | Permissions
+		All = FileNotFound | DirectoryNotFound | DiskFull | Io | Permissions,
 	}
 }
