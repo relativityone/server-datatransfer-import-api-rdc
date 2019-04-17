@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+	<Fragment>
+    <!-- Visual C++ General Note.                                                                                    -->
+    <!-- Starting with VC++ 2015 and extending to 2019, all VC++ installations share the same major version number!  -->
+    <!-- The approach that most take where you simply check the "Installed" Registry value can no longer be used.    -->
+    <!-- This is why explicit major.minor.bld condition checks are performed.                                        -->
+    <!--                                                                                                             -->
+    <!-- Note: The most important aspect of the version check seen below is the "#" prefix. MSI has                  -->
+    <!--       the most legacy and convoluted syntax for doing basic things. But in essence, RegistrySearch is going -->
+    <!--       to return a DWORD with the "#" prefix and will cause major issues with the condition operators.       -->
+    <!--       It turns out that including the prefix with the operand "just works" and eliminates a ton of          -->
+    <!--       frustration and potential custom action.                                                              -->
+
+    <!-- iTextSharp/Aspera requires the 2010 x86 runtime for all platforms. -->
+    <Property Id="VCPP2010X86REDIST">
+      <RegistrySearch Id="VCPP2010X86REDIST"
+                      Type="raw"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\VisualStudio\10.0\VC\VCRedist\x86"
+                      Name="Installed"
+                      Win64="no"/>
+    </Property>
+    <Condition Message="!(loc.Vcpp2010x86RuntimeRequired)">
+      <![CDATA[Installed OR VCPP2010X86REDIST]]>
+    </Condition>
+
+    <!-- iTextSharp requires the 2010 x64 runtime for just the x64 platform. -->
+    <?if $(var.Platform) = "x64" ?>
+    <Property Id="VCPP2010X64REDIST">
+      <RegistrySearch Id="VCPP2010X64REDIST"
+                      Type="raw"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\VisualStudio\10.0\VC\VCRedist\x64"
+                      Name="Installed"
+                      Win64="no"/>
+    </Property>
+    <Condition Message="!(loc.Vcpp2010x64RuntimeRequired)">
+      <![CDATA[Installed OR VCPP2010X64REDIST]]>
+    </Condition>
+    <?endif ?>
+
+    <!-- Outside In requires the the 2015 x86 runtime for all platforms. -->
+    <Property Id="VCPP2015X86REDISTMAJOR">
+      <RegistrySearch Id="VCPP2015X86REDISTMAJOR"
+                      Type="raw"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86"
+                      Name="Major"
+                      Win64="no"/>
+    </Property>
+    <Property Id="VCPP2015X86REDISTMINOR">
+      <RegistrySearch Id="VCPP2015X86REDISTMINOR"
+                      Type="raw"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86"
+                      Name="Minor"
+                      Win64="no"/>
+    </Property>
+    <Property Id="VCPP2015X86REDISTBLD">
+      <RegistrySearch Id="VCPP2015X86REDISTBLD"
+                      Type="raw"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86"
+                      Name="Bld"
+                      Win64="no"/>
+    </Property>    
+    <Condition Message="!(loc.Vcpp2015x86RuntimeRequired)">
+      <![CDATA[Installed OR (VCPP2015X86REDISTMAJOR >= "#14" AND VCPP2015X86REDISTMINOR >= "#0" AND VCPP2015X86REDISTBLD >= "#23506")]]>
+    </Condition>
+
+    <!-- FreeImage requires the 2017 x86 runtime for just the x86 platform. -->
+    <?if $(var.Platform) = "x86" ?>
+    <Property Id="VCPP2017X86REDISTMAJOR">
+      <RegistrySearch Id="VCPP2017X86REDISTMAJOR"
+                      Type="raw"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86"
+                      Name="Major"
+                      Win64="no"/>
+    </Property>
+    <Property Id="VCPP2017X86REDISTMINOR">
+      <RegistrySearch Id="VCPP2017X86REDISTMINOR"
+                      Type="raw"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86"
+                      Name="Minor"
+                      Win64="no"/>
+    </Property>
+    <Property Id="VCPP2017X86REDISTBLD">
+      <RegistrySearch Id="VCPP2017X86REDISTBLD"
+                      Type="raw"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86"
+                      Name="Bld"
+                      Win64="no"/>
+    </Property>
+    <Condition Message="!(loc.Vcpp2017x86RuntimeRequired)">
+      <![CDATA[Installed OR (VCPP2017X86REDISTMAJOR >= "#14" AND VCPP2017X86REDISTMINOR >= "#15" AND VCPP2017X86REDISTBLD >= "#26706")]]>
+    </Condition>
+    <?endif?>
+
+    <?if $(var.Platform) = "x64" ?>
+    <!-- FreeImage requires the 2017 x64 runtime for just the x64 platform. -->
+    <Property Id="VCPP2017X64REDISTMAJOR">
+      <RegistrySearch Id="VCPP2017X64REMAJOR"
+                      Type="raw"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64"
+                      Name="Major"
+                      Win64="no"/>
+    </Property>
+    <Property Id="VCPP2017X64REDISTMINOR">
+      <RegistrySearch Id="VCPP2017X64REMINOR"
+                      Type="raw"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64"
+                      Name="Minor"
+                      Win64="no"/>
+    </Property>
+    <Property Id="VCPP2017X64REDISTBLD">
+      <RegistrySearch Id="VCPP2017X64REBLD"
+                      Type="raw"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64"
+                      Name="Bld"
+                      Win64="no"/>
+    </Property>
+    <Condition Message="!(loc.Vcpp2017x64RuntimeRequired)">
+      <![CDATA[Installed OR (VCPP2017X64REDISTMAJOR >= "#14" AND VCPP2017X64REDISTMINOR >= "#15" AND VCPP2017X64REDISTBLD >= "#26706")]]>
+    </Condition>
+    <?endif?>
+	</Fragment>
+</Wix>

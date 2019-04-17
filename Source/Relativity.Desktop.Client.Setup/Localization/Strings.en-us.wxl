@@ -3,4 +3,10 @@
 	<String Id="en_us">1033</String>
 	<String Id="AdminPrivilegesRequired" Localizable="yes" Overridable="yes">You need to be an Administrator to install [ProductName].</String>
   <String Id="DowngradeErrorMessage" Localizable="yes" Overridable="yes">A newer version of [ProductName] is already installed. If you wish to install this version, please uninstall the newer version first. Click OK to exit the wizard.</String>
+  <String Id="DotNet46NotInstalled" Localizable="yes" Overridable="yes">[ProductName] requires .NET Framework 4.6.2. Please install the .NET Framework then run this installer again.</String>
+  <String Id="Vcpp2010x86RuntimeRequired" Localizable="yes" Overridable="yes">The Microsoft Visual C++ 2010 Redistributable for Visual Studio 2010 (x86) is required for this application to work properly.</String>
+  <String Id="Vcpp2010x64RuntimeRequired" Localizable="yes" Overridable="yes">The Microsoft Visual C++ 2010 Redistributable for Visual Studio 2010 (x64) is required for this application to work properly.</String>
+  <String Id="Vcpp2015x86RuntimeRequired" Localizable="yes" Overridable="yes">The Microsoft Visual C++ 2015 Redistributable for Visual Studio 2015 (x86) is required for this application to work properly.</String>
+  <String Id="Vcpp2017x86RuntimeRequired" Localizable="yes" Overridable="yes">The Microsoft Visual C++ 2017 Redistributable for Visual Studio 2017 (x86) is required for this application to work properly.</String>
+  <String Id="Vcpp2017x64RuntimeRequired" Localizable="yes" Overridable="yes">The Microsoft Visual C++ 2017 Redistributable for Visual Studio 2017 (x64) is required for this application to work properly.</String>
 </WixLocalization>
