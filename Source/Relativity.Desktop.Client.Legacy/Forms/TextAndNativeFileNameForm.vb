@@ -1,5 +1,7 @@
 ﻿Imports System.IO
 Imports System.Text
+Imports Relativity.Import.Export.Services
+
 
 Namespace Relativity.Desktop.Client
 	Public Class TextAndNativeFileNameForm
@@ -9,13 +11,13 @@ Namespace Relativity.Desktop.Client
 		Private Const SelectFirstFieldText As String = "Select..."
 		Private Const FieldLimit = 3
 		Private Const NumberOfFieldsInFieldsGroup = 3
-		Private ReadOnly AllowedFieldTypes As FieldTypeHelper.FieldType() = New FieldTypeHelper.FieldType() {
-			FieldTypeHelper.FieldType.Varchar,
-			FieldTypeHelper.FieldType.Date,
-			FieldTypeHelper.FieldType.Integer,
-			FieldTypeHelper.FieldType.Decimal,
-			FieldTypeHelper.FieldType.Boolean,
-			FieldTypeHelper.FieldType.Code
+		Private ReadOnly AllowedFieldTypes As FieldType() = New FieldType() {
+			FieldType.Varchar,
+			FieldType.Date,
+			FieldType.Integer,
+			FieldType.Decimal,
+			FieldType.Boolean,
+			FieldType.Code
 		}
 
 		Private ReadOnly Separators As SeparatorSelection() = New SeparatorSelection() {

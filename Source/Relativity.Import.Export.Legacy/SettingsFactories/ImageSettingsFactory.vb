@@ -25,7 +25,7 @@ Namespace kCura.WinEDDS
 			_loadFile.Credential = Me.Credential
 			_loadFile.ForProduction = False
 			_loadFile.FullTextEncoding = System.Text.Encoding.Default
-			_loadFile.Overwrite = Global.Relativity.ImportOverwriteType.Append.ToString
+			_loadFile.Overwrite = ImportOverwriteType.Append.ToString
 			_loadFile.ProductionArtifactID = 0
 			_loadFile.ProductionTable = Nothing
 			_loadFile.ReplaceFullText = False
@@ -111,11 +111,11 @@ Namespace kCura.WinEDDS
 			Set(ByVal value As OverwriteType)
 				Select Case value
 					Case SettingsFactoryBase.OverwriteType.Append
-						_loadFile.Overwrite = Global.Relativity.ImportOverwriteType.Append.ToString
+						_loadFile.Overwrite = ImportOverwriteType.Append.ToString
 					Case SettingsFactoryBase.OverwriteType.AppendOverlay
-						_loadFile.Overwrite = Global.Relativity.ImportOverwriteType.AppendOverlay.ToString
+						_loadFile.Overwrite = ImportOverwriteType.AppendOverlay.ToString
 					Case SettingsFactoryBase.OverwriteType.Overlay
-						_loadFile.Overwrite = Global.Relativity.ImportOverwriteType.Overlay.ToString
+						_loadFile.Overwrite = ImportOverwriteType.Overlay.ToString
 				End Select
 			End Set
 		End Property

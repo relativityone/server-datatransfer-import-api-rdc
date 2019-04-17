@@ -15,7 +15,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.Export.VolumeManagerV2.Settings;
 	using Relativity.Logging;
 
-    using ExportConstants = Relativity.Export.Constants;
+    using ExportConstants = Relativity.Import.Export.Services.ExportConstants;
 
     [TestFixture]
 	public class ColumnsOrdinalLookupFactoryTests

@@ -1,4 +1,5 @@
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS.Service
 	Public Class ProductionManager
@@ -29,7 +30,7 @@ Namespace kCura.WinEDDS.Service
 
 		Public Shadows Function RetrieveBatesByProductionAndDocument(caseContextArtifactID As Int32, productionIds As Int32(), documentIds As Int32()) As Object()() Implements Export.IProductionManager.RetrieveBatesByProductionAndDocument
 			Dim retval As Object()() = RetryOnReLoginException(Function() MyBase.RetrieveBatesByProductionAndDocument(caseContextArtifactID, productionIds, documentIds))
-			Global.Relativity.Export.ProductionDocumentBatesHelper.CleanupSerialization(retval)
+			ProductionDocumentBatesHelper.CleanupSerialization(retval)
 			Return retval
 		End Function
 

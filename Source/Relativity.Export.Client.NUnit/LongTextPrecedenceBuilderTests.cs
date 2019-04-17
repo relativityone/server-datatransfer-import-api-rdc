@@ -26,9 +26,10 @@ namespace Relativity.Export.NUnit
 	using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
-    using ExportConstants = Relativity.Export.Constants;
+    using ExportConstants = Relativity.Import.Export.Services.ExportConstants;
+    using RelativityConstants = Relativity.Import.Export.Services.Constants;
 
-    [TestFixture]
+	[TestFixture]
 	public class LongTextPrecedenceBuilderTests
 	{
 		private LongTextPrecedenceBuilder _instance;
@@ -148,7 +149,7 @@ namespace Relativity.Export.NUnit
 		[Test]
 		public void ItShouldHandleTooLongTextToLoadFile()
 		{
-			const string tooLongText = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			const string tooLongText = RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
 			_exportSettings.ExportFullTextAsFile = false;
 
@@ -173,7 +174,7 @@ namespace Relativity.Export.NUnit
 		[Test]
 		public void ItShouldHandleTooLongTextToFile()
 		{
-			const string tooLongText = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			const string tooLongText = RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
 			_exportSettings.ExportFullTextAsFile = true;
 
@@ -201,7 +202,7 @@ namespace Relativity.Export.NUnit
 		[Test]
 		public void ItShouldHandleTooLongTextToFile_FileAlreadyExists()
 		{
-			const string tooLongText = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			const string tooLongText = RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
 			_exportSettings.ExportFullTextAsFile = true;
 

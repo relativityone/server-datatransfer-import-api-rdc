@@ -12,8 +12,6 @@
 
 	using Relativity.Logging;
 
-	using ViewFieldInfo = Relativity.ViewFieldInfo;
-
 	public class TooLongTextToLoadFile : ILongTextHandler
 	{
 		private readonly LongTextHelper _longTextHelper;

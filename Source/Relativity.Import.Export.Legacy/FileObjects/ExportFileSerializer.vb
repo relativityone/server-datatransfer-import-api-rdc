@@ -1,4 +1,6 @@
 ﻿Imports System.Xml.Linq
+Imports Relativity.Import.Export.Services
+
 Namespace kCura.WinEDDS
 	Public Class ExportFileSerializer
 
@@ -51,7 +53,7 @@ Namespace kCura.WinEDDS
 			If currentExportFile.ObjectTypeName = CUSTODIAN_OBJECT_TYPE_NAME AndAlso deserializedExportFile.ObjectTypeName = ENTITY_OBJECT_TYPE_NAME Then
 				Return True
 			End If
-			Return Global.Relativity.SqlNameHelper.GetSqlFriendlyName(currentExportFile.ObjectTypeName) = Global.Relativity.SqlNameHelper.GetSqlFriendlyName(deserializedExportFile.ObjectTypeName)
+			Return SqlNameHelper.GetSqlFriendlyName(currentExportFile.ObjectTypeName) = SqlNameHelper.GetSqlFriendlyName(deserializedExportFile.ObjectTypeName)
 		End Function
 
 		Private Function PropertyIsReadFromExisting(ByVal p As System.Reflection.PropertyInfo) As Boolean

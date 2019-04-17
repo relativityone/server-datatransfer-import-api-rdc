@@ -321,7 +321,7 @@ Namespace Relativity.Desktop.Client
 		Private Function IdentifierFieldIsMappedButNotKey(ByVal fieldMap As kCura.WinEDDS.LoadFileFieldMap, ByVal keyFieldID As Int32) As Boolean
 			Dim idField As DocumentField = Nothing
 			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In fieldMap
-				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 And item.DocumentField.FieldCategory = Global.Relativity.FieldCategory.Identifier Then
+				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 And item.DocumentField.FieldCategory = FieldCategory.Identifier Then
 					idField = item.DocumentField
 					Exit For
 				End If
@@ -582,7 +582,7 @@ Namespace Relativity.Desktop.Client
 			Dim docFieldCollection As DocumentFieldCollection = Await CurrentFields(artifactTypeID, refresh)
 			Dim allFields As ICollection = docFieldCollection.AllFields
 			For Each field As DocumentField In allFields
-				If field.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.File Then
+				If field.FieldTypeID = FieldType.File Then
 					retval = True
 				End If
 			Next
@@ -803,7 +803,7 @@ Namespace Relativity.Desktop.Client
 			Dim loadFile As New LoadFile
 			frm._application = Me
 			loadFile.SelectedCasePath = caseInfo.DocumentPath
-			If Me.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+			If Me.ArtifactTypeID = ArtifactType.Document Then
 				loadFile.DestinationFolderID = destinationArtifactID
 			Else
 				loadFile.DestinationFolderID = caseInfo.RootArtifactID
@@ -813,7 +813,7 @@ Namespace Relativity.Desktop.Client
 			loadFile.CaseInfo = caseInfo
 			loadFile.Credentials = Await Me.GetCredentialsAsync()
 			loadFile.CookieContainer = Me.CookieContainer
-			loadFile.OverwriteDestination = Global.Relativity.ImportOverwriteType.Append.ToString
+			loadFile.OverwriteDestination = ImportOverwriteType.Append.ToString
 			loadFile.ArtifactTypeID = Me.ArtifactTypeID
 			frm.LoadFile = loadFile
 			Await frm.LoadFormControls(False)
@@ -883,7 +883,7 @@ Namespace Relativity.Desktop.Client
 				ids.Add(row("ArtifactID"))
 			Next
 			For Each field As DocumentField In Await Me.CurrentFields(exportFile.ArtifactTypeID, True)
-				If field.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.File Then
+				If field.FieldTypeID = FieldType.File Then
 					exportFile.FileField = field
 					Exit For
 				End If
@@ -1111,7 +1111,7 @@ Namespace Relativity.Desktop.Client
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 					importer.CloudInstance = Config.CloudInstance
 					importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
-					importer.ExecutionSource = Global.Relativity.ExecutionSource.Rdc
+					importer.ExecutionSource = ExecutionSource.Rdc
 					SetWorkingDirectory(loadFile.FilePath)
 					frm.Context = importer.Context
 					frm.StopImportButtonText = "Stop"
@@ -1161,7 +1161,7 @@ Namespace Relativity.Desktop.Client
 			importer.ImageLoadFile = ImageLoadFile
 			importer.CloudInstance = Config.CloudInstance
 			importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
-			importer.ExecutionSource = Global.Relativity.ExecutionSource.Rdc
+			importer.ExecutionSource = ExecutionSource.Rdc
 			SetWorkingDirectory(ImageLoadFile.FileName)
 			frm.Context = importer.Context
 			frm.Text = "Import Image File Progress ..."

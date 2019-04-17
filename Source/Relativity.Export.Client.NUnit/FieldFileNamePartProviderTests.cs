@@ -18,9 +18,9 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-    using Relativity;
+	using Relativity.Import.Export.Services;
 
-    public class FieldFileNamePartProviderTests
+	public class FieldFileNamePartProviderTests
 	{
 		private const int _AVF_ID = 1;
 		private const string _NAME = "ColName";
@@ -50,7 +50,7 @@ namespace Relativity.Export.NUnit
 				.Build()
 				.WithAvfId(_AVF_ID)
 				.WithAvfName(_NAME)
-				.WithFieldType(FieldTypeHelper.FieldType.Date)
+				.WithFieldType(FieldType.Date)
 				.WithFormatString("o")
 				.Create();
 
@@ -83,7 +83,7 @@ namespace Relativity.Export.NUnit
 				.Build()
 				.WithAvfId(_AVF_ID)
 				.WithAvfName(_NAME)
-				.WithFieldType(FieldTypeHelper.FieldType.Code)
+				.WithFieldType(FieldType.Code)
 				.Create();
 
 			// first column represent col in load File, second column will refer to field value taken part in creation of native file name
@@ -116,7 +116,7 @@ namespace Relativity.Export.NUnit
 				.Build()
 				.WithAvfId(_AVF_ID)
 				.WithAvfName(_NAME)
-				.WithFieldType(FieldTypeHelper.FieldType.Boolean)
+				.WithFieldType(FieldType.Boolean)
 				.WithDisplayName(displayName)
 				.Create();
 
@@ -146,7 +146,7 @@ namespace Relativity.Export.NUnit
 				.Build()
 				.WithAvfId(_AVF_ID)
 				.WithAvfName(_NAME)
-				.WithFieldType(FieldTypeHelper.FieldType.Varchar)
+				.WithFieldType(FieldType.Varchar)
 				.WithDisplayName(displayName)
 				.Create();
 

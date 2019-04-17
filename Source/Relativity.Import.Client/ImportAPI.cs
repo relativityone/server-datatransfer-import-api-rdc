@@ -9,7 +9,7 @@ using kCura.WinEDDS;
 using kCura.WinEDDS.Service;
 using kCura.Relativity.DataReaderClient;
 using kCura.WinEDDS.Exceptions;
-using Relativity;
+using Relativity.Import.Export.Services;
 
 namespace kCura.Relativity.ImportAPI
 {

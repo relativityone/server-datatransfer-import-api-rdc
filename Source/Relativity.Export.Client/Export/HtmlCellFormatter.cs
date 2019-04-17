@@ -7,6 +7,7 @@
 	using kCura.WinEDDS.Exporters;
 
 	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Import.Export.Services;
 
 	public class HtmlCellFormatter : ILoadFileCellFormatter
 	{

@@ -4,6 +4,8 @@
 
 	using kCura.WinEDDS;
 
+	using Relativity.Import.Export.Services;
+
 	public class ImageLoadFileFactory
 	{
 		public IImageLoadFile Create(ExportFile exportSettings, IWindsorContainer container)

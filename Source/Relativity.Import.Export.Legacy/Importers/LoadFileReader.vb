@@ -83,7 +83,7 @@ Namespace kCura.WinEDDS
 			_startLineNumber = args.StartLineNumber
 			_executionSource = executionSource
 			MulticodeMatrix = New System.Collections.Hashtable
-			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
+			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> ImportOverwriteType.Overlay.ToString.ToLower Then
 				_keyFieldID = -1
 			End If
 			If _keyFieldID = -1 Then

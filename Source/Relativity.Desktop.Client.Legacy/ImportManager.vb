@@ -1,6 +1,7 @@
 ﻿Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Exporters
 Imports Relativity.Export
+Imports Relativity.Import.Export.Services
 
 Namespace Relativity.Desktop.Client
 
@@ -38,7 +39,7 @@ Namespace Relativity.Desktop.Client
 			importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 			importer.CloudInstance = Config.CloudInstance
 			importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
-			importer.ExecutionSource = Global.Relativity.ExecutionSource.Rdc
+			importer.ExecutionSource = ExecutionSource.Rdc
 			_application.SetWorkingDirectory(importOptions.SelectedNativeLoadFile.FilePath)
 			Dim executor As New CommandLineProcessRunner(importer.Context, importOptions.ErrorLoadFileLocation, importOptions.ErrorReportFileLocation)
 			_application.StartProcess(importer)
@@ -60,8 +61,8 @@ Namespace Relativity.Desktop.Client
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 					importer.CloudInstance = Config.CloudInstance
 					importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
-					importer.ExecutionSource = Global.Relativity.ExecutionSource.Rdc
-					importOptions.SelectedNativeLoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document
+					importer.ExecutionSource = ExecutionSource.Rdc
+					importOptions.SelectedNativeLoadFile.ArtifactTypeID = ArtifactType.Document
 					_application.SetWorkingDirectory(importOptions.SelectedNativeLoadFile.FilePath)
 					Dim executor As New CommandLineProcessRunner(importer.Context, importOptions.ErrorLoadFileLocation, importOptions.ErrorReportFileLocation)
 					_application.StartProcess(importer)

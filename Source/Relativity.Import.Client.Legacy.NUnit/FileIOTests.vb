@@ -11,6 +11,8 @@ Imports Rhino.Mocks
 
 Imports NUnit.Framework
 
+Imports Relativity.Import.Export.Services
+
 Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture>

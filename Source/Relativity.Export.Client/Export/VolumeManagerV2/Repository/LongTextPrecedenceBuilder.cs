@@ -16,10 +16,6 @@
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Export.VolumeManagerV2.Statistics;
 	using Relativity.Import.Export.Services;
-	using Relativity.Logging;
-
-	using Constants = Relativity.Export.Constants;
-	using ViewFieldInfo = Relativity.ViewFieldInfo;
 
 	public class LongTextPrecedenceBuilder : ILongTextBuilder
 	{
@@ -28,12 +24,12 @@
 		private readonly IFieldService _fieldService;
 		private readonly LongTextHelper _longTextHelper;
 		private readonly IFileNameProvider _fileNameProvider;
-		private readonly ILog _logger;
+		private readonly Relativity.Logging.ILog _logger;
 		private readonly IExportFileValidator _exportFileValidator;
 		private readonly IMetadataProcessingStatistics _metadataProcessingStatistics;
 
 		public LongTextPrecedenceBuilder(ExportFile exportSettings, LongTextFilePathProvider filePathProvider, IFieldService fieldService, LongTextHelper longTextHelper,
-			IFileNameProvider fileNameProvider, ILog logger, IExportFileValidator exportFileValidator, IMetadataProcessingStatistics metadataProcessingStatistics) : this(exportSettings,
+			IFileNameProvider fileNameProvider, Relativity.Logging.ILog logger, IExportFileValidator exportFileValidator, IMetadataProcessingStatistics metadataProcessingStatistics) : this(exportSettings,
 			(IFilePathProvider) filePathProvider, fieldService, longTextHelper, fileNameProvider, logger, exportFileValidator, metadataProcessingStatistics)
 		{
 		}
@@ -51,7 +47,7 @@
 		/// <param name="metadataProcessingStatistics"></param>
 		[DoNotSelect]
 		public LongTextPrecedenceBuilder(ExportFile exportSettings, IFilePathProvider filePathProvider, IFieldService fieldService, LongTextHelper longTextHelper,
-			IFileNameProvider fileNameProvider, ILog logger, IExportFileValidator exportFileValidator, IMetadataProcessingStatistics metadataProcessingStatistics)
+			IFileNameProvider fileNameProvider, Relativity.Logging.ILog logger, IExportFileValidator exportFileValidator, IMetadataProcessingStatistics metadataProcessingStatistics)
 		{
 			_exportSettings = exportSettings;
 			_filePathProvider = filePathProvider;
@@ -76,7 +72,7 @@
 
 			_logger.LogVerbose("Text Precedence is stored in field {fieldName}:{fieldId}.", field.AvfColumnName, field.FieldArtifactId);
 
-			if (_longTextHelper.IsTextTooLong(artifact, Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
+			if (_longTextHelper.IsTextTooLong(artifact, ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
 			{
 				return CreateForTooLongText(artifact, field).InList();
 			}
@@ -111,7 +107,7 @@
 
 		private LongText CreateForLongText(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field)
 		{
-			string longTextValue = _longTextHelper.GetTextFromField(artifact, Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME);
+			string longTextValue = _longTextHelper.GetTextFromField(artifact, ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME);
 
 			if (_exportSettings.ExportFullTextAsFile)
 			{
@@ -151,13 +147,13 @@
 
 		private kCura.WinEDDS.ViewFieldInfo GetFieldForLongTextPrecedenceDownload(ObjectExportInfo artifact)
 		{
-			int fieldArtifactId = (int) artifact.Metadata[_fieldService.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)];
+			int fieldArtifactId = (int) artifact.Metadata[_fieldService.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)];
 			return _exportSettings.SelectedTextFields.First(x => x.FieldArtifactId == fieldArtifactId);
 		}
 
 		private kCura.WinEDDS.ViewFieldInfo GetFieldForLongTextPrecedenceDownload(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field)
 		{
-			if (field == null || field.AvfColumnName == Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)
+			if (field == null || field.AvfColumnName == ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)
 			{
 				return GetFieldForLongTextPrecedenceDownload(artifact);
 			}

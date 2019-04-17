@@ -10,8 +10,6 @@
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Import.Export.Services;
 
-	using ExportConstants = Relativity.Export.Constants;
-
 	public class TextExportableSize
 	{
 		private const long _EXTRACTED_TEXT_SIZE_NAIVE = 2097152;

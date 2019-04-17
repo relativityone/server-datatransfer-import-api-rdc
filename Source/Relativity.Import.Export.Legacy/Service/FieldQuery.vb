@@ -71,7 +71,7 @@ Namespace kCura.WinEDDS.Service
 							.Guids = guids.ToArray()
 						End With
 						If field.FieldType = EDDS.WebAPI.DocumentManagerBase.FieldType.Object OrElse field.FieldType = EDDS.WebAPI.DocumentManagerBase.FieldType.Objects OrElse field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.MultiReflected OrElse field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Reflected Then
-							If field.AssociativeArtifactTypeID.HasValue AndAlso Global.Relativity.ArtifactTypeHelper.IsDynamic(field.AssociativeArtifactTypeID.Value) Then fields.Add(field)
+							If field.AssociativeArtifactTypeID.HasValue AndAlso ArtifactTypeHelper.IsDynamic(field.AssociativeArtifactTypeID.Value) Then fields.Add(field)
 						Else
 							fields.Add(field)
 						End If
@@ -84,7 +84,7 @@ Namespace kCura.WinEDDS.Service
 
 		Private Function ConvertImportBehaviorEnum(ByVal input As Int32?) As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?
 			If Not input.HasValue Then Return Nothing
-			Dim ibc As Global.Relativity.FieldInfo.ImportBehaviorChoice = CType(input, Global.Relativity.FieldInfo.ImportBehaviorChoice)
+			Dim ibc As ImportBehaviorChoice = CType(input, ImportBehaviorChoice)
 			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice), ibc.ToString), kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice)
 		End Function
 

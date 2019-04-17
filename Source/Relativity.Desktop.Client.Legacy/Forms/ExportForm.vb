@@ -3,6 +3,7 @@ Imports FileNaming.CustomFileNaming
 Imports kCura.WinEDDS
 Imports Relativity.Desktop.Client
 Imports Relativity.Desktop.Client.Legacy.Controls
+Imports Relativity.Import.Export.Services
 
 Public Class ExportForm
 	Inherits System.Windows.Forms.Form
@@ -1262,7 +1263,7 @@ Public Class ExportForm
 	Protected _exportFile As kCura.WinEDDS.ExportFile
 	Protected WithEvents _precedenceForm As ProductionPrecedenceForm
 	Protected WithEvents _textFieldPrecedenceForm As TextPrecedenceForm
-	Private _allExportableFields As Relativity.ViewFieldInfo
+	Private _allExportableFields As kCura.WinEDDS.ViewFieldInfo
 	Private _dataSourceIsSet As Boolean = False
 	Private _objectTypeName As String = ""
 	Private _isLoadingExport As Boolean = False
@@ -1482,10 +1483,10 @@ Public Class ExportForm
 		_exportFile.ImagePrecedence = Me.GetImagePrecedence
 		_exportFile.TypeOfImage = Me.GetSelectedImageType
 		Dim selectedViewFields As New System.Collections.ArrayList
-		For Each field As ViewFieldInfo In _columnSelector.RightSearchableListItems
+		For Each field As kCura.WinEDDS.ViewFieldInfo In _columnSelector.RightSearchableListItems
 			selectedViewFields.Add(field)
 		Next
-		_exportFile.SelectedViewFields = DirectCast(selectedViewFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo())
+		_exportFile.SelectedViewFields = DirectCast(selectedViewFields.ToArray(GetType(kCura.WinEDDS.ViewFieldInfo)), kCura.WinEDDS.ViewFieldInfo())
 		If _textFieldPrecedencePicker.SelectedFields.Count > 0 Then
 			_exportFile.SelectedTextFields = _textFieldPrecedencePicker.SelectedFields.ToArray()
 			_exportFile.ExportFullText = True
@@ -1671,16 +1672,16 @@ Public Class ExportForm
 					_metadataGroupBox.Enabled = False
 					If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
 					For Each defaultSelectedId As Int32 In defaultSelectedIds
-						For Each field As ViewFieldInfo In ef.AllExportableFields
+						For Each field As kCura.WinEDDS.ViewFieldInfo In ef.AllExportableFields
 							If field.AvfId = defaultSelectedId Then
 								Dim avfNumber = field.AvfId
 								Dim found As Boolean = ef.SelectedViewFields.Any(Function(addedItem) avfNumber = addedItem.AvfId)
 								If Not found Then
-									If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
-										_columnSelector.RightSearchableList.AddField(New ViewFieldInfo(field))
+									If Me.ExportFile.ArtifactTypeID = ArtifactType.Document Then
+										_columnSelector.RightSearchableList.AddField(New kCura.WinEDDS.ViewFieldInfo(field))
 										Exit For
-									ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
-										_columnSelector.RightSearchableList.AddField(New ViewFieldInfo(field))
+									ElseIf field.FieldType <> FieldType.File Then
+										_columnSelector.RightSearchableList.AddField(New kCura.WinEDDS.ViewFieldInfo(field))
 										Exit For
 									End If
 								End If
@@ -1886,7 +1887,7 @@ Public Class ExportForm
 			Case ExportFile.ExportType.ParentSearch, ExportFile.ExportType.AncestorSearch
 				_filters.Text = "Views"
 				_filtersBox.Text = "Views"
-				If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
+				If Me.ExportFile.ArtifactTypeID = ArtifactType.Document Then
 					Me.Text = "Relativity Desktop Client | Export Folder"
 					If Me.ExportFile.TypeOfExport = ExportFile.ExportType.AncestorSearch Then
 						Me.Text = "Relativity Desktop Client | Export Folder and Subfolders"
@@ -1901,7 +1902,7 @@ Public Class ExportForm
 				Me.Text = "Relativity Desktop Client | Export Production Set"
 				_productionPrecedenceBox.Visible = False
 		End Select
-		If Not Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
+		If Not Me.ExportFile.ArtifactTypeID = ArtifactType.Document Then
 			_productionPrecedenceBox.Visible = False
 			LabelNativePrefix.Text = "File Prefix"
 			GroupBoxTextAndNativeFileNames.Text = "Text and File Names"
@@ -1926,7 +1927,7 @@ Public Class ExportForm
 	Private Sub _searchList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filters.SelectedIndexChanged
 		If Not _isLoadingExport AndAlso _dataSourceIsSet AndAlso Not _filters.SelectedItem Is Nothing Then Me.InitializeColumnSelecter()
 		If _textFieldPrecedencePicker IsNot Nothing Then
-			Dim textFields As List(Of ViewFieldInfo) = GetAllLongTextFields()
+			Dim textFields As List(Of kCura.WinEDDS.ViewFieldInfo) = GetAllLongTextFields()
 			textFields.Sort()
 			_textFieldPrecedencePicker.AllAvailableLongTextFields = textFields
 			_textFieldPrecedencePicker.SelectDefaultTextField(Nothing)
@@ -1934,7 +1935,7 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub InitializeFileControls()
-		If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then Exit Sub
+		If Me.ExportFile.ArtifactTypeID = ArtifactType.Document Then Exit Sub
 		_exportImages.Checked = False
 		_exportImages.Enabled = False
 		GroupBoxImage.Visible = False
@@ -1956,23 +1957,23 @@ Public Class ExportForm
 		If defaultSelectedIds Is Nothing Then
 			defaultSelectedIds = New ArrayList()
 		End If
-		For Each field As ViewFieldInfo In Me.ExportFile.AllExportableFields
+		For Each field As kCura.WinEDDS.ViewFieldInfo In Me.ExportFile.AllExportableFields
 			If Not defaultSelectedIds.Contains(field.AvfId) Then
-				If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
-					leftListBoxItems.Add(New ViewFieldInfo(field))
-				ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
-					leftListBoxItems.Add(New ViewFieldInfo(field))
+				If Me.ExportFile.ArtifactTypeID = ArtifactType.Document Then
+					leftListBoxItems.Add(New kCura.WinEDDS.ViewFieldInfo(field))
+				ElseIf field.FieldType <> FieldType.File Then
+					leftListBoxItems.Add(New kCura.WinEDDS.ViewFieldInfo(field))
 				End If
 			End If
 		Next
 		For Each defaultSelectedId As Int32 In defaultSelectedIds
-			For Each field As ViewFieldInfo In Me.ExportFile.AllExportableFields
+			For Each field As kCura.WinEDDS.ViewFieldInfo In Me.ExportFile.AllExportableFields
 				If field.AvfId = defaultSelectedId Then
-					If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
-						_columnSelector.RightSearchableList.AddField(New ViewFieldInfo(field))
+					If Me.ExportFile.ArtifactTypeID = ArtifactType.Document Then
+						_columnSelector.RightSearchableList.AddField(New kCura.WinEDDS.ViewFieldInfo(field))
 						Exit For
-					ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
-						_columnSelector.RightSearchableList.AddField(New ViewFieldInfo(field))
+					ElseIf field.FieldType <> FieldType.File Then
+						_columnSelector.RightSearchableList.AddField(New kCura.WinEDDS.ViewFieldInfo(field))
 						Exit For
 					End If
 				End If
@@ -2136,28 +2137,28 @@ Public Class ExportForm
 	End Sub
 
 	Private Sub ManagePotentialTextFields()
-		Dim textFields As List(Of ViewFieldInfo) = GetAllLongTextFields()
+		Dim textFields As List(Of kCura.WinEDDS.ViewFieldInfo) = GetAllLongTextFields()
 		textFields.Sort()
 		_textFieldPrecedencePicker.AllAvailableLongTextFields = textFields
 	End Sub
 
-	Private Function GetAllLongTextFields() As List(Of ViewFieldInfo)
-		Dim textFields As New List(Of ViewFieldInfo)
+	Private Function GetAllLongTextFields() As List(Of kCura.WinEDDS.ViewFieldInfo)
+		Dim textFields As New List(Of kCura.WinEDDS.ViewFieldInfo)
 		textFields.AddRange(Me.GetRightColumnTextFields())
 		textFields.AddRange(Me.GetLeftColumnTextFields())
 		Return textFields
 	End Function
 
-	Private Function GetRightColumnTextFields() As List(Of ViewFieldInfo)
-		Return GetTextFields(_columnSelector.RightSearchableListItems.Cast(Of ViewFieldInfo).ToList())
+	Private Function GetRightColumnTextFields() As List(Of kCura.WinEDDS.ViewFieldInfo)
+		Return GetTextFields(_columnSelector.RightSearchableListItems.Cast(Of kCura.WinEDDS.ViewFieldInfo).ToList())
 	End Function
 
-	Private Function GetLeftColumnTextFields() As List(Of ViewFieldInfo)
-		Return GetTextFields(_columnSelector.LeftSearchableListItems.Cast(Of ViewFieldInfo)().ToList())
+	Private Function GetLeftColumnTextFields() As List(Of kCura.WinEDDS.ViewFieldInfo)
+		Return GetTextFields(_columnSelector.LeftSearchableListItems.Cast(Of kCura.WinEDDS.ViewFieldInfo)().ToList())
 	End Function
 
-	Private Function GetTextFields(ByVal unfilteredList As List(Of ViewFieldInfo)) As List(Of ViewFieldInfo)
-		Return (From field In unfilteredList Where field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Select field).ToList()
+	Private Function GetTextFields(ByVal unfilteredList As List(Of kCura.WinEDDS.ViewFieldInfo)) As List(Of kCura.WinEDDS.ViewFieldInfo)
+		Return (From field In unfilteredList Where field.FieldType = FieldType.Text OrElse field.FieldType = FieldType.OffTableText Select field).ToList()
 	End Function
 
 	Private Async Sub RefreshMenu_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles RefreshMenu.Click
@@ -2210,7 +2211,7 @@ Public Class ExportForm
 		End If
 		_dataSourceIsSet = True
 		_filters.SelectedIndex = selectedindex
-		Dim allLongTextFields As List(Of ViewFieldInfo) = GetAllLongTextFields()
+		Dim allLongTextFields As List(Of kCura.WinEDDS.ViewFieldInfo) = GetAllLongTextFields()
 		allLongTextFields.Sort()
 		If allLongTextFields.Count > 0 Then
 			_textFieldPrecedencePicker.AllAvailableLongTextFields = allLongTextFields
@@ -2221,17 +2222,17 @@ Public Class ExportForm
 		Dim al As New System.Collections.ArrayList(_exportFile.AllExportableFields)
 		al.Sort()
 		_columnSelector.LeftSearchableList.AddFields(al.ToArray())
-		For Each field As ViewFieldInfo In selectedColumns
+		For Each field As kCura.WinEDDS.ViewFieldInfo In selectedColumns
 			Dim itemToShiftIndex As Int32 = -1
 			For i As Int32 = 0 To _columnSelector.LeftSearchableListItems.Count - 1
-				Dim item As ViewFieldInfo = DirectCast(_columnSelector.LeftSearchableListItems(i), ViewFieldInfo)
+				Dim item As kCura.WinEDDS.ViewFieldInfo = DirectCast(_columnSelector.LeftSearchableListItems(i), kCura.WinEDDS.ViewFieldInfo)
 				If item.AvfId = field.AvfId Then
 					itemToShiftIndex = i
 					Exit For
 				End If
 			Next
 			If itemToShiftIndex >= 0 Then
-				Dim item As ViewFieldInfo = DirectCast(_columnSelector.LeftSearchableListItems(itemToShiftIndex), ViewFieldInfo)
+				Dim item As kCura.WinEDDS.ViewFieldInfo = DirectCast(_columnSelector.LeftSearchableListItems(itemToShiftIndex), kCura.WinEDDS.ViewFieldInfo)
 				_columnSelector.LeftSearchableList.RemoveField(item)
 				_columnSelector.RightSearchableList.AddField(item)
 			End If

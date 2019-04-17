@@ -6,6 +6,7 @@
 
 	using Relativity.Export.VolumeManagerV2.Directories;
 	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.Import.Export.Services;
 	using Relativity.Logging;
 
 	public class NativeRepositoryBuilderFactory

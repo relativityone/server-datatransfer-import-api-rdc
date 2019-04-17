@@ -248,7 +248,7 @@ Namespace kCura.WinEDDS
 
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 				With _fieldManager.Read(Me.Settings.CaseArtifactID, _productionExportProduction.BeginBatesReflectedFieldId)
-					_beginBatesColumn = Global.Relativity.SqlNameHelper.GetSqlFriendlyName(.DisplayName)
+					_beginBatesColumn = SqlNameHelper.GetSqlFriendlyName(.DisplayName)
 					If Not allAvfIds.Contains(.ArtifactViewFieldID) Then allAvfIds.Add(.ArtifactViewFieldID)
 				End With
 			End If
@@ -521,7 +521,7 @@ Namespace kCura.WinEDDS
 			If FieldLookupService.ContainsFieldName(_beginBatesColumn) Then
 				beginBatesColumnIndex = FieldLookupService.GetOrdinalIndex(_beginBatesColumn)
 			End If
-			Dim identifierColumnName As String = Global.Relativity.SqlNameHelper.GetSqlFriendlyName(Me.Settings.IdentifierColumnName)
+			Dim identifierColumnName As String = SqlNameHelper.GetSqlFriendlyName(Me.Settings.IdentifierColumnName)
 			Dim identifierColumnIndex As Int32 = FieldLookupService.GetOrdinalIndex(identifierColumnName)
 			'TODO: come back to this
 			Dim productionPrecedenceArtifactIds As Int32() = Settings.ImagePrecedence.Select(Function(pair) CInt(pair.Value)).ToArray()

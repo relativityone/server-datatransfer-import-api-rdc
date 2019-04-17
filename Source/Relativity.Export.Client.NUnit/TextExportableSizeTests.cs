@@ -16,14 +16,13 @@ namespace Relativity.Export.NUnit
 
 	using Moq;
 
-	using Relativity;
 	using Relativity.Export.VolumeManagerV2.DataSize;
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Import.Export.Services;
 	using Relativity.Import.Export.TestFramework;
 
-	using ExportConstants = Relativity.Export.Constants;
-	using RelativityConstants = Relativity.Constants;
+	using ExportConstants = Relativity.Import.Export.Services.ExportConstants;
+	using RelativityConstants = Relativity.Import.Export.Services.Constants;
 
 	[TestFixture]
 	public class TextExportableSizeTests
@@ -124,8 +123,8 @@ namespace Relativity.Export.NUnit
 		}
 
 		[Test]
-		[TestCase(FieldTypeHelper.FieldType.Text)]
-		[TestCase(FieldTypeHelper.FieldType.OffTableText)]
+		[TestCase(FieldType.Text)]
+		[TestCase(FieldType.OffTableText)]
 		public void ItShouldUpdatePredictionsForTextField(FieldType fieldType)
 		{
 			const string fieldTextValue = "Lorem ipsum dolor sit amet enim. Etiam ullamcorper.";
@@ -228,7 +227,7 @@ namespace Relativity.Export.NUnit
 			{
 				Metadata = new object[]
 				{
-					Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN,
+					Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN,
 					textSize
 				}
 			};
@@ -261,7 +260,7 @@ namespace Relativity.Export.NUnit
 			{
 				Metadata = new object[]
 				{
-					Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN
+					Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN
 				}
 			};
 

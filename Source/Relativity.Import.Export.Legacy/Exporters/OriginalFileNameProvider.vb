@@ -1,5 +1,5 @@
 ﻿Imports System.Collections.Generic
-Imports Relativity
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS.Exporters
 
@@ -48,7 +48,7 @@ Namespace kCura.WinEDDS.Exporters
 		End Function
 
 		Private Shared Function IsFileNameField(field As ViewFieldInfo) As Boolean
-			Return field.AvfColumnName.Equals(_FILE_NAME_FIELD_COLUMN_NAME) AndAlso field.FieldType.Equals(FieldTypeHelper.FieldType.Varchar)
+			Return field.AvfColumnName.Equals(_FILE_NAME_FIELD_COLUMN_NAME) AndAlso field.FieldType.Equals(FieldType.Varchar)
 		End Function
 
 		Private Shared Function IsFileNameValid(ByVal fileName as String) as Boolean

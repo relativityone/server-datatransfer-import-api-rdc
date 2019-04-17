@@ -23,7 +23,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
-    using RelativityConstants = Relativity.Constants;
+    using RelativityConstants = Relativity.Import.Export.Services.Constants;
 
     [TestFixture]
 	public class LongTextFromFieldBuilderTests

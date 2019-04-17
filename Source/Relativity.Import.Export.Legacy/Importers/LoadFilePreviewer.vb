@@ -215,7 +215,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			' only do this if we are NOT in Overlay mode
-			If _settings.OverwriteDestination.ToLower <> Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
+			If _settings.OverwriteDestination.ToLower <> ImportOverwriteType.Overlay.ToString.ToLower Then
 				If Not identifierField Is Nothing And _artifactTypeID = ArtifactType.Document Then
 					For Each field As Api.ArtifactField In unmappedRelationalNoBlankFields.Values
 						If record.IdentifierField IsNot Nothing Then

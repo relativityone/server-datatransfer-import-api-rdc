@@ -1,4 +1,5 @@
 ﻿Imports System.Net
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS.Service
 	Public Interface IBulkImportManager
@@ -10,8 +11,8 @@ Namespace kCura.WinEDDS.Service
 		Function BulkImportObjects(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 		Function DisposeTempTables(ByVal appID As Int32, ByVal runId As String) As Object
 		Function ImageRunHasErrors(artifactID As Integer, runId As String) As Boolean
-		Function GenerateImageErrorFiles(ByVal appID As Integer, ByVal importKey As String, ByVal writeHeader As Boolean, ByVal keyFieldID As Integer) As Global.Relativity.MassImport.ErrorFileKey
-		Function GenerateNonImageErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal artifactTypeID As Integer, ByVal writeHeader As Boolean, ByVal keyFieldID As Integer) As Global.Relativity.MassImport.ErrorFileKey
+		Function GenerateImageErrorFiles(ByVal appID As Integer, ByVal importKey As String, ByVal writeHeader As Boolean, ByVal keyFieldID As Integer) As ErrorFileKey
+		Function GenerateNonImageErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal artifactTypeID As Integer, ByVal writeHeader As Boolean, ByVal keyFieldID As Integer) As ErrorFileKey
 		Function NativeRunHasErrors(ByVal appID As Integer, ByVal runId As String) As Boolean
 	End Interface
 End Namespace

@@ -291,7 +291,7 @@ namespace Relativity.Export.Client.NUnit.Integration
 		/// When asynchronously getting the workspace information.
 		/// </summary>
 		/// <returns>
-		/// The <see cref="Relativity.CaseInfo"/> instance.
+		/// The <see cref="CaseInfo"/> instance.
 		/// </returns>
 		protected Task<CaseInfo> WhenGettingTheWorkspaceInfoAsync()
 		{
@@ -419,7 +419,7 @@ namespace Relativity.Export.Client.NUnit.Integration
 				var fields = this.GetFieldsAsync(this.exportFile.ArtifactTypeID);
 				foreach (DocumentField field in fields)
 				{
-					if (field.FieldTypeID == (int)Relativity.FieldTypeHelper.FieldType.File)
+					if (field.FieldTypeID == (int)FieldType.File)
 					{
 						this.exportFile.FileField = field;
 						break;

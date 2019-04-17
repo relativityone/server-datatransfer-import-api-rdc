@@ -28,7 +28,7 @@ Namespace kCura.WinEDDS.CodeValidator
 			'TODO: Is this ever actually hit? ------ 'If field.CodeTypeID.IsNull Then Throw New kCura.WinEDDS.LoadFileBase.MissingCodeTypeException(Me.CurrentLineNumber, column)
 			If Not _lookup.Contains(field.CodeTypeID) Then Me.InitializeLookupForCodeType(field.CodeTypeID)
 			Dim typeLookup As kCura.WinEDDS.Types.SingleChoiceCollection = DirectCast(_lookup(field.CodeTypeID), kCura.WinEDDS.Types.SingleChoiceCollection)
-			Dim choice As Global.Relativity.ChoiceInfo = typeLookup(codeName)
+			Dim choice As ChoiceInfo = typeLookup(codeName)
 			If Not choice Is Nothing Then Return New Nullable(Of Int32)(choice.ArtifactID)
 			If Me.DoRealtimeDatabaseLookup Then choice = Me.CodeManager.RetrieveCodeByNameAndTypeID(Me.CaseInfo.ArtifactID, field.CodeTypeID, codeName.Trim)
 			If choice Is Nothing Then
@@ -49,7 +49,7 @@ Namespace kCura.WinEDDS.CodeValidator
 			Dim subLookup As New kCura.WinEDDS.Types.SingleChoiceCollection
 			_lookup.Add(codeTypeID, subLookup)
 			Try
-				For Each choice As Global.Relativity.ChoiceInfo In Me.CodeManager.RetrieveAllCodesOfType(Me.CaseInfo.ArtifactID, codeTypeID)
+				For Each choice As ChoiceInfo In Me.CodeManager.RetrieveAllCodesOfType(Me.CaseInfo.ArtifactID, codeTypeID)
 					subLookup.Add(choice)
 				Next
 			Catch

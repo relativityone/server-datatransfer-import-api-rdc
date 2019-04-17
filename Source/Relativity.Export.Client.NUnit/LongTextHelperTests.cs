@@ -22,7 +22,8 @@ namespace Relativity.Export.NUnit
 	using Relativity.Import.Export.TestFramework;
 	using Relativity.Logging;
 
-    using RelativityConstants = Relativity.Constants;
+    using ExportConstants = Relativity.Import.Export.Services.ExportConstants;
+    using RelativityConstants = Relativity.Import.Export.Services.Constants;
 
     [TestFixture]
 	public class LongTextHelperTests
@@ -278,7 +279,7 @@ namespace Relativity.Export.NUnit
 
 			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { field2ArtifactId } };
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
+			_fieldService.Setup(x => x.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
 
             // ACT
             kCura.WinEDDS.ViewFieldInfo textPrecedenceField = _instance.GetTextPrecedenceField(artifact);

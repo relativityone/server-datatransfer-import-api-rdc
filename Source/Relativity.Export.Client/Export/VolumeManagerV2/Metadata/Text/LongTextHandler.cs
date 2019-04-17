@@ -9,8 +9,6 @@
 	using Relativity.Export.VolumeManagerV2.Metadata.Text.Delimiter;
 	using Relativity.Logging;
 
-	using ViewFieldInfo = Relativity.ViewFieldInfo;
-
 	public class LongTextHandler : ILongTextHandler
 	{
 		private readonly ILongTextHandler _textPrecedenceHandler;

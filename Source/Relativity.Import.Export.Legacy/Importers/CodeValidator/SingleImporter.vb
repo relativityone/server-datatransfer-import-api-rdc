@@ -34,7 +34,7 @@ Namespace kCura.WinEDDS.CodeValidator
 				Case -200
 					Throw New CodeCreationException(True, "This choice field is not enabled as unicode.  Upload halted.")
 			End Select
-			Dim codeInfo As New Global.Relativity.ChoiceInfo
+			Dim codeInfo As New ChoiceInfo
 			codeInfo.ArtifactID = codeArtifactID
 			codeInfo.CodeTypeID = code.CodeType
 			codeInfo.Name = code.Name

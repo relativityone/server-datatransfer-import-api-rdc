@@ -10,10 +10,6 @@
 	using Relativity.Export.VolumeManagerV2.Repository;
 	using Relativity.Import.Export.Services;
 
-	using ExportConstants = Relativity.Export.Constants;
-	using RelativityConstants = Relativity.Constants;
-
-
 	public class LongTextHelper
 	{
 		private const int _MISSING_EXTRACTED_TEXT_FIELD_ID = -1;
@@ -60,7 +56,7 @@
 
 		public bool IsTextTooLong(string text)
 		{
-			return text == RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			return text == Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 		}
 
 		public bool IsTextTooLong(ObjectExportInfo artifact, string fieldName)

@@ -1,5 +1,6 @@
 Imports kCura.WinEDDS
 Imports Relativity.Desktop.Client.Legacy.Controls
+Imports Relativity.Import.Export.Services
 
 Namespace Relativity.Desktop.Client
 	Public Class Utility
@@ -91,11 +92,11 @@ Namespace Relativity.Desktop.Client
 		Public Shared Function ConvertOverwriteDestinationToLegacyValues(ByVal loadfile As LoadFile) As LoadFile
 			Dim overwriteDestination = loadfile.OverwriteDestination
 			Select Case overwriteDestination.ToLower()
-				Case Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower
+				Case ImportOverwriteType.Overlay.ToString.ToLower
 					loadfile.OverwriteDestination = "Strict"
-				Case Global.Relativity.ImportOverwriteType.AppendOverlay.ToString.ToLower
+				Case ImportOverwriteType.AppendOverlay.ToString.ToLower
 					loadfile.OverwriteDestination = "Append"
-				Case Global.Relativity.ImportOverwriteType.Append.ToString.ToLower
+				Case ImportOverwriteType.Append.ToString.ToLower
 					loadfile.OverwriteDestination = "None"
 			End Select
 			Return loadfile
@@ -107,11 +108,11 @@ Namespace Relativity.Desktop.Client
 
 				Select Case overWriteDestination.ToLower
 					Case "strict"
-						retval = Global.Relativity.ImportOverwriteType.Overlay.ToString
+						retval = ImportOverwriteType.Overlay.ToString
 					Case "append"
-						retval = Global.Relativity.ImportOverwriteType.AppendOverlay.ToString
+						retval = ImportOverwriteType.AppendOverlay.ToString
 					Case "none"
-						retval = Global.Relativity.ImportOverwriteType.Append.ToString
+						retval = ImportOverwriteType.Append.ToString
 				End Select
 			End If
 			Return retval

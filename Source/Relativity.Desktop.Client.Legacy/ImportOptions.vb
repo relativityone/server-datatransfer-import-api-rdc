@@ -284,7 +284,7 @@ Public Class ImportOptions
 					tempLoadFile.SourceFileEncoding = System.Text.Encoding.Default
 					Dim artifactTypeID As Int32
 					If currentLoadMode = LoadMode.Native Then
-						artifactTypeID = Relativity.ArtifactType.Document
+						artifactTypeID = ArtifactType.Document
 					Else
 						artifactTypeID = tempLoadFile.ArtifactTypeID
 					End If

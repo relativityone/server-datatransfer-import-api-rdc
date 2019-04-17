@@ -35,7 +35,7 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _createErrorForEmptyNativeFile As Boolean
 		Private ReadOnly _enforceDocumentLimit As Boolean
 
-		Protected Overwrite As Global.Relativity.ImportOverwriteType
+		Protected Overwrite As ImportOverwriteType
 		Protected AuditManager As Service.AuditManager
 		Protected RelativityManager As Service.RelativityManager
 
@@ -411,9 +411,9 @@ Namespace kCura.WinEDDS
 
 			ShouldImport = True
 			If (String.IsNullOrEmpty(args.OverwriteDestination)) Then
-				Overwrite = Global.Relativity.ImportOverwriteType.Append
+				Overwrite = ImportOverwriteType.Append
 			Else
-				Overwrite = CType([Enum].Parse(GetType(Global.Relativity.ImportOverwriteType), args.OverwriteDestination, True), Global.Relativity.ImportOverwriteType)
+				Overwrite = CType([Enum].Parse(GetType(ImportOverwriteType), args.OverwriteDestination, True), ImportOverwriteType)
 			End If
 			If args.CopyFilesToDocumentRepository Then
 				'DEFECT: SF#226211, repositories without trailing \ caused import to fail. Changed to use Path.Combine. -tmh
@@ -598,7 +598,7 @@ Namespace kCura.WinEDDS
 					End Using
 
 					If (_enforceDocumentLimit) Then
-						If (Overwrite = Global.Relativity.ImportOverwriteType.Append And _artifactTypeID = ArtifactType.Document) Then
+						If (Overwrite = ImportOverwriteType.Append And _artifactTypeID = ArtifactType.Document) Then
 							Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
 							Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
 							Dim fileLineStart As Long = _startLineNumber
@@ -837,12 +837,12 @@ Namespace kCura.WinEDDS
 					End If
 
 					If filename <> String.Empty AndAlso Not fileExists Then
-						lineStatus += Global.Relativity.MassImport.ImportStatus.FileSpecifiedDne
+						lineStatus += ImportStatus.FileSpecifiedDne
 					End If
 					If fileExists AndAlso Not Me.DisableNativeLocationValidation Then
 						If Me.GetFileLength(filename, retry) = 0 Then
 							If _createErrorForEmptyNativeFile Then
-								lineStatus += Global.Relativity.MassImport.ImportStatus.EmptyFile
+								lineStatus += ImportStatus.EmptyFile
 							Else
 								WriteWarning($"Note that file {filename} has been detected as empty, metadata and the native file will be loaded.")
 							End If
@@ -963,7 +963,7 @@ Namespace kCura.WinEDDS
 						'TODO: If we are going to do this for more than documents, fix this as well...
 						Dim textIdentifier As String = NullableTypesHelper.ToEmptyStringOrValue(NullableTypesHelper.DBNullString(record.FieldList(FieldCategory.ParentArtifact)(0).Value.ToString))
 						If textIdentifier = "" Then
-							If Overwrite = Global.Relativity.ImportOverwriteType.Overlay OrElse Overwrite = Global.Relativity.ImportOverwriteType.AppendOverlay Then
+							If Overwrite = ImportOverwriteType.Overlay OrElse Overwrite = ImportOverwriteType.AppendOverlay Then
 								parentFolderID = -1
 							End If
 							Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, DestinationFolderColumnIndex)
@@ -1383,9 +1383,9 @@ Namespace kCura.WinEDDS
 			settings.OverlayBehavior = Me.GetMassImportOverlayBehavior(_settings.OverlayBehavior)
 			settings.MoveDocumentsInAppendOverlayMode = _settings.MoveDocumentsInAppendOverlayMode
 			Select Case Overwrite
-				Case Global.Relativity.ImportOverwriteType.Overlay
+				Case ImportOverwriteType.Overlay
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
-				Case Global.Relativity.ImportOverwriteType.AppendOverlay
+				Case ImportOverwriteType.AppendOverlay
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 				Case Else
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append

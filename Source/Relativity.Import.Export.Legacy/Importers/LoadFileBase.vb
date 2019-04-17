@@ -209,7 +209,7 @@ Namespace kCura.WinEDDS
 			_codeValidator = Me.GetSingleCodeValidator()
 
 			MulticodeMatrix = New System.Collections.Hashtable
-			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower AndAlso args.ArtifactTypeID = ArtifactType.Document Then
+			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> ImportOverwriteType.Overlay.ToString.ToLower AndAlso args.ArtifactTypeID = ArtifactType.Document Then
 				_keyFieldID = -1
 			End If
 			If _keyFieldID = -1 Then

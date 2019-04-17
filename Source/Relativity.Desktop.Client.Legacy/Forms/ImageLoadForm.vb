@@ -1,4 +1,5 @@
 Imports System.Threading.Tasks
+Imports Relativity.Import.Export.Services
 
 Namespace Relativity.Desktop.Client
 	Public Class ImageLoad
@@ -461,7 +462,7 @@ Namespace Relativity.Desktop.Client
 			ImageLoadFile.FullTextEncoding = _encodingPicker.SelectedEncoding
 			ImageLoadFile.Overwrite = Me.GetOverwrite.ToString
 			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
-			ImageLoadFile.ControlKeyField = (Await _application.GetCaseIdentifierFields(Global.Relativity.ArtifactType.Document))(0)
+			ImageLoadFile.ControlKeyField = (Await _application.GetCaseIdentifierFields(ArtifactType.Document))(0)
 			ImageLoadFile.AutoNumberImages = _autoNumberingOn.Checked
 			If ImageLoadFile.ForProduction Then
 				ImageLoadFile.ProductionArtifactID = CType(_productionDropdown.SelectedValue, Int32)
@@ -469,14 +470,14 @@ Namespace Relativity.Desktop.Client
 				Me.ImageLoadFile.BeginBatesFieldArtifactID = CType(_beginBatesDropdown.SelectedValue, Int32)
 			Else
 				'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-				If Me.GetOverwrite = Global.Relativity.ImportOverwriteType.Overlay Then
+				If Me.GetOverwrite = ImportOverwriteType.Overlay Then
 					Me.ImageLoadFile.IdentityFieldId = CType(_beginBatesDropdown.SelectedValue, Int32)
 				Else
 					Me.ImageLoadFile.IdentityFieldId = -1
 				End If
 				Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
 			End If
-			If Me.ImageLoadFile.IdentityFieldId = -1 Then Me.ImageLoadFile.IdentityFieldId = (Await _application.CurrentFields(Global.Relativity.ArtifactType.Document)).IdentifierFields(0).FieldID
+			If Me.ImageLoadFile.IdentityFieldId = -1 Then Me.ImageLoadFile.IdentityFieldId = (Await _application.CurrentFields(ArtifactType.Document)).IdentifierFields(0).FieldID
 			Me.ImageLoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
 			Me.ImageLoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
 			ImageLoadFile.StartLineNumber = CType(_startLineNumber.Value, Int64)
@@ -484,26 +485,26 @@ Namespace Relativity.Desktop.Client
 			Return True
 		End Function
 
-		Private Function GetOverwrite() As Global.Relativity.ImportOverwriteType
+		Private Function GetOverwrite() As ImportOverwriteType
 			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
 				Case "append only"
-					Return Global.Relativity.ImportOverwriteType.Append
+					Return ImportOverwriteType.Append
 				Case "overlay only"
-					Return Global.Relativity.ImportOverwriteType.Overlay
+					Return ImportOverwriteType.Overlay
 				Case "append/overlay"
-					Return Global.Relativity.ImportOverwriteType.AppendOverlay
+					Return ImportOverwriteType.AppendOverlay
 				Case Else
 					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
 			End Select
 		End Function
 
 		Private Function GetOverwriteDropdownItem(ByVal input As String) As String
-			Select Case CType([Enum].Parse(GetType(Global.Relativity.ImportOverwriteType), input, True), Global.Relativity.ImportOverwriteType)
-				Case Global.Relativity.ImportOverwriteType.Append
+			Select Case CType([Enum].Parse(GetType(ImportOverwriteType), input, True), ImportOverwriteType)
+				Case ImportOverwriteType.Append
 					Return "Append Only"
-				Case Global.Relativity.ImportOverwriteType.Overlay
+				Case ImportOverwriteType.Overlay
 					Return "Overlay Only"
-				Case Global.Relativity.ImportOverwriteType.AppendOverlay
+				Case ImportOverwriteType.AppendOverlay
 					Return "Append/Overlay"
 				Case Else
 					Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
@@ -518,7 +519,7 @@ Namespace Relativity.Desktop.Client
 			End If
 			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(Await _application.GetCredentialsAsync(), _application.CookieContainer).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
 			For Each identifierRow As System.Data.DataRow In dt.Rows
-				If CType(identifierRow("FieldCategoryID"), Global.Relativity.FieldCategory) = Global.Relativity.FieldCategory.Identifier Then
+				If CType(identifierRow("FieldCategoryID"), FieldCategory) = FieldCategory.Identifier Then
 					_identifierFieldArtifactID = CType(identifierRow("ArtifactID"), Int32)
 				End If
 			Next

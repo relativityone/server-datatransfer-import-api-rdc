@@ -4,9 +4,8 @@
 
 	using kCura.WinEDDS;
 
+	using Relativity.Import.Export.Services;
 	using Relativity.Logging;
-
-	using ExportConstants = Relativity.Export.Constants;
 
 	public class ColumnsOrdinalLookupFactory : IColumnsOrdinalLookupFactory
 	{

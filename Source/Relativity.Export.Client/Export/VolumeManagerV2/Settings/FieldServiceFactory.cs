@@ -9,8 +9,6 @@
 	using Relativity.Logging;
 	using Relativity.Import.Export.Services;
 
-	using ViewFieldInfo = Relativity.ViewFieldInfo;
-
 	public class FieldServiceFactory
 	{
 		private readonly ILoadFileHeaderFormatter _formatter;

@@ -17,7 +17,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Logging;
-    using RelativityConstants = Relativity.Export.Constants;
+    using RelativityConstants = Relativity.Import.Export.Services.ExportConstants;
 
     [TestFixture]
 	public class IproFullTextWithPrecedenceLoadFileEntryTests : IproFullTextLoadFileEntryTests
