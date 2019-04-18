@@ -11,12 +11,48 @@ namespace Relativity.Import.Export.Services
 	public class CaseInfo
 	{
 		private string documentPath;
+		private string downloadHandlerURL;
+
+		public CaseInfo()
+		{
+		}
+
+		public CaseInfo(System.Data.DataRow row)
+		{
+			if (row == null)
+			{
+				throw new ArgumentNullException(nameof(row));
+			}
+
+			this.ArtifactID = System.Convert.ToInt32(row["ArtifactID"]);
+			this.AsImportAllowed = System.Convert.ToBoolean(row["AsImportAllowed"]);
+			this.DocumentPath = System.Convert.ToString(row["DefaultFileLocationName"]);
+			this.DownloadHandlerURL = System.Convert.ToString(row["DownloadHandlerApplicationPath"]);
+			this.EnableDataGrid = System.Convert.ToBoolean(row["EnableDataGrid"]);
+			this.ExportAllowed = System.Convert.ToBoolean(row["ExportAllowed"]);
+			this.MatterArtifactID = System.Convert.ToInt32(row["MatterArtifactID"]);
+			this.Name = System.Convert.ToString(row["Name"]);
+			this.RootArtifactID = System.Convert.ToInt32(row["RootArtifactID"]);
+			this.RootFolderID = System.Convert.ToInt32(row["RootFolderID"]);
+			this.StatusCodeArtifactID = System.Convert.ToInt32(row["StatusCodeArtifactID"]);
+		}
 
 		public int ArtifactID { get; set; }
 
 		public bool AsImportAllowed { get; set; }
 
-		public string DownloadHandlerURL { get; set; }
+		public string DownloadHandlerURL
+		{
+			get
+			{
+				return this.downloadHandlerURL;
+			}
+
+			set
+			{
+				this.downloadHandlerURL = AppendTrailingSlash(value, '/');
+			}
+		}
 
 		public bool EnableDataGrid { get; set; }
 
@@ -41,34 +77,19 @@ namespace Relativity.Import.Export.Services
 
 			set
 			{
-				this.documentPath = value;
-				if (this.documentPath != null && 
-				    this.documentPath.LastIndexOf('\\') != this.documentPath.Length - 1)
-				{
-					this.documentPath += "\\";
-				}
+				this.documentPath = AppendTrailingSlash(value, '\\');
 			}
 		}
 
-		public CaseInfo()
+		private static string AppendTrailingSlash(string value, char slash)
 		{
-		}
-		public CaseInfo(System.Data.DataRow row)
-		{
-			if (row == null)
+			if (value != null &&
+			    value.LastIndexOf(slash) != value.Length - 1)
 			{
-				throw new ArgumentNullException(nameof(row));
+				value += slash;
 			}
 
-			this.ArtifactID = System.Convert.ToInt32(row["ArtifactID"]);
-			this.MatterArtifactID = System.Convert.ToInt32(row["MatterArtifactID"]);
-			this.Name = System.Convert.ToString(row["Name"]);
-			this.RootArtifactID = System.Convert.ToInt32(row["RootArtifactID"]);
-			this.RootFolderID = System.Convert.ToInt32(row["RootFolderID"]);
-			this.StatusCodeArtifactID = System.Convert.ToInt32(row["StatusCodeArtifactID"]);
-			this.EnableDataGrid = System.Convert.ToBoolean(row["EnableDataGrid"]);
-			this.DownloadHandlerURL = System.Convert.ToString(row["DownloadHandlerApplicationPath"]) + "/";
-			this.DocumentPath = System.Convert.ToString(row["DefaultFileLocationName"]);
+			return value;
 		}
 	}
 }
