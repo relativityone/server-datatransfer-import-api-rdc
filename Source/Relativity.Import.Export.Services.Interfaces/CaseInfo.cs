@@ -6,8 +6,11 @@ namespace Relativity.Import.Export.Services
 {
 	using System;
 
+	[Serializable]
 	public class CaseInfo
 	{
+		private string documentPath;
+
 		public int ArtifactID { get; set; }
 
 		public bool AsImportAllowed { get; set; }
@@ -28,7 +31,23 @@ namespace Relativity.Import.Export.Services
 
 		public int StatusCodeArtifactID { get; set; }
 
-		public string DocumentPath { get; set; }
+		public string DocumentPath
+		{
+			get
+			{
+				return this.documentPath;
+			}
+
+			set
+			{
+				this.documentPath = value;
+				if (this.documentPath != null && 
+				    this.documentPath.LastIndexOf('\\') != this.documentPath.Length - 1)
+				{
+					this.documentPath += "\\";
+				}
+			}
+		}
 
 		public CaseInfo()
 		{

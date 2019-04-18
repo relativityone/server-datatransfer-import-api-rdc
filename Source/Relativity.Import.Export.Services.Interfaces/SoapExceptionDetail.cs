@@ -7,16 +7,24 @@ using System;
 
 namespace Relativity.Import.Export.Services
 {
+	[System.Xml.Serialization.XmlType("SoapExceptionDetail")]
+	[System.Xml.Serialization.XmlRoot(ElementName ="detail")]
+	[Serializable]
 	public class SoapExceptionDetail
 	{
+		[System.Xml.Serialization.XmlElement("Details")]
 		public string[] Details { get; set; }
 
+		[System.Xml.Serialization.XmlElement("ExceptionFullText")]
 		public string ExceptionFullText { get; set; }
 
+		[System.Xml.Serialization.XmlElement("ExceptionMessage")]
 		public string ExceptionMessage { get; set; }
 
+		[System.Xml.Serialization.XmlElement("ExceptionTrace")]
 		public string ExceptionTrace { get; set; }
 
+		[System.Xml.Serialization.XmlElement("ExceptionType")]
 		public string ExceptionType { get; set; }
 
 		public SoapExceptionDetail()
@@ -53,6 +61,5 @@ namespace Relativity.Import.Export.Services
 			}
 			return sb;
 		}
-
 	}
 }
