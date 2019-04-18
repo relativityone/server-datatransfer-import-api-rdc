@@ -475,9 +475,6 @@ copy "$(SolutionDir)..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll" $(TargetDir)<
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
-  </Choose>
-  <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Relativity.DataTransfer.MessageService">

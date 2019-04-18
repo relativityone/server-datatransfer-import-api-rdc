@@ -3,7 +3,6 @@ kcura.outsidein.fi.win32
 moq
 newtonsoft.json
 nunit
-relativity
 relativity.logging
 relativity.logging.interfaces
 relativity.testing.identification

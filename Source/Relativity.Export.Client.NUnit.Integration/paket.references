@@ -5,7 +5,6 @@ moq
 nbuilder
 newtonsoft.json
 nunit
-relativity
 relativity.logging
 relativity.logging.interfaces
 relativity.testing.identification
