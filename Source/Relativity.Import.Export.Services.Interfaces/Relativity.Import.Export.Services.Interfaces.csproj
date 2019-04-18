@@ -44,6 +44,7 @@
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -59,10 +60,8 @@
     <Compile Include="ArtifactTypeHelper.cs" />
     <Compile Include="ChoiceInfo.cs" />
     <Compile Include="CaseInfo.cs" />
-    <Compile Include="Claims.cs" />
-    <Compile Include="ClaimsLookUp.cs" />
+    <Compile Include="ClaimsExtensions.cs" />
     <Compile Include="ColumnSourceType.cs" />
-    <Compile Include="AppGuidConstants.cs" />
     <Compile Include="ExportConstants.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ErrorFileKey.cs" />
