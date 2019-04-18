@@ -1,7 +1,9 @@
+Imports System.IO
 Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
+Imports System.Runtime.Serialization.Formatters.Soap
 Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Monitoring
@@ -1272,7 +1274,11 @@ Namespace Relativity.Desktop.Client
 
 			Try
 				Dim scrubbed As String = Me.CleanLoadFile(xmlDoc)
-				tempLoadFile = Global.Relativity.Import.Export.SerializationHelper.DeserializeFromSoap(Of kCura.WinEDDS.LoadFile)(scrubbed)
+				Dim soapFormatter As SoapFormatter = SoapFormatterFactory.Create()
+
+				Using ms As System.IO.MemoryStream = New System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(scrubbed))
+					tempLoadFile = CType(soapFormatter.Deserialize(ms), kCura.WinEDDS.LoadFile)
+				End Using
 			Catch ex As System.Exception
 				If Not isSilent Then MsgBox("Load Failed", MsgBoxStyle.Critical, "Relativity Desktop Client")
 				'TODO: Log Exception
@@ -1328,11 +1334,11 @@ Namespace Relativity.Desktop.Client
 
 		Public Async Function ReadImageLoadFile(ByVal path As String) As Task(Of ImageLoadFile)
 			kCura.WinEDDS.Service.Settings.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
-			Dim sr As New System.IO.StreamReader(path)
+			Dim sr As System.IO.Stream = File.Open(path, FileMode.Open)
 			Dim retval As ImageLoadFile
-			Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			Dim deserializer As SoapFormatter = SoapFormatterFactory.Create()
 			Try
-				retval = DirectCast(deserializer.Deserialize(sr.BaseStream), ImageLoadFile)
+				retval = DirectCast(deserializer.Deserialize(sr), ImageLoadFile)
 				sr.Close()
 			Catch ex As System.Exception
 				MsgBox("Load Failed", MsgBoxStyle.Critical, "Relativity Desktop Client")
