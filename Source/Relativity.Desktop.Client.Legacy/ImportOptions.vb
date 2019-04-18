@@ -261,12 +261,8 @@ Public Class ImportOptions
 					Dim xmlDoc As New System.Xml.XmlDocument
 					xmlDoc.LoadXml(doc)
 
-					sr = New System.IO.StreamReader(path)
-					Dim stringr As New System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(Global.Relativity.Desktop.Client.Application.Instance.CleanLoadFile(xmlDoc)))
-					Dim tempLoadFile As LoadFile
-					Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-					tempLoadFile = DirectCast(deserializer.Deserialize(stringr), LoadFile)
-					sr.Close()
+					Dim soap As String = Global.Relativity.Desktop.Client.Application.Instance.CleanLoadFile(xmlDoc)
+					Dim tempLoadFile As LoadFile = Relativity.Import.Export.SerializationHelper.DeserializeFromSoap(Of LoadFile)(soap)
 					If Not String.IsNullOrEmpty(LoadFilePath) Then
 						tempLoadFile.FilePath = LoadFilePath
 					Else

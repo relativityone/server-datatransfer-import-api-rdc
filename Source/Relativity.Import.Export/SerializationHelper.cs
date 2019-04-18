@@ -6,6 +6,7 @@
 
 namespace Relativity.Import.Export
 {
+	using System.IO;
 	using System.Runtime.Serialization;
 
 	/// <summary>
@@ -17,6 +18,41 @@ namespace Relativity.Import.Export
 		/// The SOAP formatter instance.
 		/// </summary>
 		private static readonly System.Runtime.Serialization.Formatters.Soap.SoapFormatter SoapFormatter = new System.Runtime.Serialization.Formatters.Soap.SoapFormatter();
+
+		/// <summary>
+		/// Serializes the specified object to a file.
+		/// </summary>
+		/// <param name="value">
+		/// The object to serialize.
+		/// </param>
+		/// <param name="file">
+		/// The file to persist the serialized object graph.
+		/// </param>
+		public static void SerializeToSoapFile(object value, string file)
+		{
+			using (System.IO.StreamWriter writer = new System.IO.StreamWriter(file))
+			{
+				SoapFormatter.Serialize(writer.BaseStream, value);
+			}
+		}
+
+		/// <summary>
+		/// Deserializes the SOAP file content to an object of the specified type.
+		/// </summary>
+		/// <typeparam name="T">
+		/// The object type to deserialize to.
+		/// </typeparam>
+		/// <param name="file">
+		/// The full path to the file.
+		/// </param>
+		/// <returns>
+		/// The <typeparamref name="T"/> instance.
+		/// </returns>
+		public static T DeserializeFromSoapFile<T>(string file)
+		{
+			string soap = File.ReadAllText(file);
+			return DeserializeFromSoap<T>(soap);
+		}
 
 		/// <summary>
 		/// Deserializes the SOAP content to an object of the specified type.

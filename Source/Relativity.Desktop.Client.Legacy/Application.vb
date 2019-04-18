@@ -1229,17 +1229,10 @@ Namespace Relativity.Desktop.Client
 
 
 		Private Sub SaveFileObject(ByVal fileObject As Object, ByVal path As String)
-			Dim sw As New System.IO.StreamWriter(path)
-			Dim serializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
 			Try
-				serializer.Serialize(sw.BaseStream, fileObject)
-				sw.Close()
+				Relativity.Import.Export.SerializationHelper.SerializeToSoapFile(fileObject, path)				
 			Catch ex As System.Exception
 				MsgBox("Save Failed" + vbCrLf + ex.Message, MsgBoxStyle.Critical)
-				Try
-					sw.Close()
-				Catch
-				End Try
 			End Try
 		End Sub
 
@@ -1328,12 +1321,9 @@ Namespace Relativity.Desktop.Client
 
 		Public Async Function ReadImageLoadFile(ByVal path As String) As Task(Of ImageLoadFile)
 			kCura.WinEDDS.Service.Settings.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
-			Dim sr As New System.IO.StreamReader(path)
-			Dim retval As ImageLoadFile
-			Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			Dim retval As ImageLoadFile			
 			Try
-				retval = DirectCast(deserializer.Deserialize(sr.BaseStream), ImageLoadFile)
-				sr.Close()
+				retval = Relativity.Import.Export.SerializationHelper.DeserializeFromSoapFile(Of ImageLoadFile)(path)
 			Catch ex As System.Exception
 				MsgBox("Load Failed", MsgBoxStyle.Critical, "Relativity Desktop Client")
 				'TODO: Log Exception

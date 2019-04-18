@@ -109,11 +109,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub SaveObject(ByVal location As String, ByVal settings As Object)
-			Dim sw As New System.IO.StreamWriter(location)
-			Dim serializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
 			Try
-				serializer.Serialize(sw.BaseStream, settings)
-				sw.Close()
+				Global.Relativity.Import.Export.SerializationHelper.SerializeToSoapFile(settings, location)
 			Catch ex As System.Exception
 				Throw New System.Exception("Settings object save failed", ex)
 			End Try
