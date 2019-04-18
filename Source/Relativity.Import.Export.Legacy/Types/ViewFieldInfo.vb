@@ -6,7 +6,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(ByVal row As System.Data.DataRow)
 			MyBase.New(row)
 		End Sub
-		Public Sub New(ByVal vfi As ViewFieldInfo)
+		Public Sub New(ByVal vfi As Global.Relativity.Import.Export.Services.ViewFieldInfo)
 			MyBase.New(vfi)
 		End Sub
 

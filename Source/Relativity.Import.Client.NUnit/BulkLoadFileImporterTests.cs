@@ -248,7 +248,7 @@ namespace Relativity.Import.Client.NUnit
 		protected override void OnSetup()
 		{
 			this.args = new LoadFile();
-			this.args.CaseInfo = new CaseInfo();
+			this.args.CaseInfo = new Relativity.Import.Export.Services.CaseInfo();
 			this.args.CaseInfo.RootArtifactID = -1;
 			this.importer = new MockBulkLoadFileImporter(
 				this.args,

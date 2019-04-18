@@ -17,7 +17,7 @@ namespace Relativity.Export.NUnit
 		{
 		}
 
-		public FieldStub(kCura.WinEDDS.ViewFieldInfo vfi)
+		public FieldStub(Relativity.Import.Export.Services.ViewFieldInfo vfi)
 			: base(vfi)
 		{
 		}

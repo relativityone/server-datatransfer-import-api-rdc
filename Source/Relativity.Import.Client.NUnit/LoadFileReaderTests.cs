@@ -28,7 +28,7 @@ namespace Relativity.Import.Client.NUnit
 		public void Setup()
 		{
 			CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-			this.loadFileArgs = new LoadFile { CaseInfo = new CaseInfo() };
+			this.loadFileArgs = new LoadFile { CaseInfo = new Relativity.Import.Export.Services.CaseInfo() };
 		}
 
 		[Test]

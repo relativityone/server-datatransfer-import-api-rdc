@@ -1263,7 +1263,7 @@ Public Class ExportForm
 	Protected _exportFile As kCura.WinEDDS.ExportFile
 	Protected WithEvents _precedenceForm As ProductionPrecedenceForm
 	Protected WithEvents _textFieldPrecedenceForm As TextPrecedenceForm
-	Private _allExportableFields As kCura.WinEDDS.ViewFieldInfo
+	Private _allExportableFields As Relativity.Import.Export.Services.ViewFieldInfo
 	Private _dataSourceIsSet As Boolean = False
 	Private _objectTypeName As String = ""
 	Private _isLoadingExport As Boolean = False
