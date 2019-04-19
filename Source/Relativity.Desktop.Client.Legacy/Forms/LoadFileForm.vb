@@ -1,5 +1,6 @@
 Imports kCura.WinEDDS
 Imports Relativity.Desktop.Client.Legacy.Controls
+Imports Relativity.Import.Export.Services
 
 Namespace Relativity.Desktop.Client
 	Public Class LoadFileForm
@@ -36,7 +37,7 @@ Namespace Relativity.Desktop.Client
 				Dim container As DocumentFieldCollection = Await _application.CurrentNonFileFields(_application.ArtifactTypeID, False)
 				_multiObjectMultiChoiceCache = New DocumentFieldCollection()
 				For Each docInfo As DocumentField In container
-					If docInfo.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.MultiCode OrElse docInfo.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.Objects Then
+					If docInfo.FieldTypeID = FieldType.MultiCode OrElse docInfo.FieldTypeID = FieldType.Objects Then
 						_multiObjectMultiChoiceCache.Add(docInfo)
 					End If
 				Next
@@ -52,7 +53,7 @@ Namespace Relativity.Desktop.Client
 
 		Private Async Function InitializeDocumentSpecificComponents() As Task
 			If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
-			If Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+			If Me.LoadFile.ArtifactTypeID = ArtifactType.Document Then
 				Me.GroupBoxNativeFileBehavior.Enabled = True
 				Me.GroupBoxExtractedText.Enabled = True
 				Me.GroupBoxFolderInfo.Text = "Folder Info"
@@ -869,27 +870,27 @@ Namespace Relativity.Desktop.Client
 			End Get
 		End Property
 
-		Private Function GetOverwrite() As Global.Relativity.ImportOverwriteType
-			If _overwriteDropdown.SelectedItem Is Nothing Then Return Global.Relativity.ImportOverwriteType.Append
+		Private Function GetOverwrite() As ImportOverwriteType
+			If _overwriteDropdown.SelectedItem Is Nothing Then Return ImportOverwriteType.Append
 			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
 				Case "append only"
-					Return Global.Relativity.ImportOverwriteType.Append
+					Return ImportOverwriteType.Append
 				Case "overlay only"
-					Return Global.Relativity.ImportOverwriteType.Overlay
+					Return ImportOverwriteType.Overlay
 				Case "append/overlay"
-					Return Global.Relativity.ImportOverwriteType.AppendOverlay
+					Return ImportOverwriteType.AppendOverlay
 				Case Else
 					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
 			End Select
 		End Function
 
 		Private Function GetOverwriteDropdownItem(ByVal input As String) As String
-			Select Case CType([Enum].Parse(GetType(Global.Relativity.ImportOverwriteType), input, True), Global.Relativity.ImportOverwriteType)
-				Case Global.Relativity.ImportOverwriteType.Append
+			Select Case CType([Enum].Parse(GetType(ImportOverwriteType), input, True), ImportOverwriteType)
+				Case ImportOverwriteType.Append
 					Return "Append Only"
-				Case Global.Relativity.ImportOverwriteType.Overlay
+				Case ImportOverwriteType.Overlay
 					Return "Overlay Only"
-				Case Global.Relativity.ImportOverwriteType.AppendOverlay
+				Case ImportOverwriteType.AppendOverlay
 					Return "Append/Overlay"
 				Case Else
 					Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
@@ -929,8 +930,8 @@ Namespace Relativity.Desktop.Client
 		Private Async Function GetSuitableKeyFields() As Task(Of kCura.WinEDDS.DocumentField())
 			Dim retval As New System.Collections.ArrayList
 			For Each field As kCura.WinEDDS.DocumentField In Await _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
-				If (field.FieldCategory = Global.Relativity.FieldCategory.Generic OrElse field.FieldCategory = Global.Relativity.FieldCategory.Identifier) AndAlso field.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.Varchar Then
-					If field.FieldCategory = Global.Relativity.FieldCategory.Identifier Then field.FieldName &= " [Identifier]"
+				If (field.FieldCategory = FieldCategory.Generic OrElse field.FieldCategory = FieldCategory.Identifier) AndAlso field.FieldTypeID = FieldType.Varchar Then
+					If field.FieldCategory = FieldCategory.Identifier Then field.FieldName &= " [Identifier]"
 					retval.Add(field)
 				End If
 			Next
@@ -942,7 +943,7 @@ Namespace Relativity.Desktop.Client
 			Dim container As DocumentFieldCollection = Await _application.CurrentNonFileFields(_application.ArtifactTypeID, False)
 			Dim longTextFields = New DocumentFieldCollection()
 			For Each docInfo As DocumentField In container
-				If docInfo.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.Text Then
+				If docInfo.FieldTypeID = FieldType.Text Then
 					longTextFields.Add(docInfo)
 				End If
 			Next
@@ -973,7 +974,7 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Async Function IsOverlayBehaviorEnabled() As Task(Of Boolean)
-			If GetOverwrite() = Global.Relativity.ImportOverwriteType.Append Then
+			If GetOverwrite() = ImportOverwriteType.Append Then
 				Return False
 			End If
 			For Each fieldName As String In Me._fieldMap.FieldColumns.RightSearchableListItems
@@ -991,7 +992,7 @@ Namespace Relativity.Desktop.Client
 
 				If Not Await Me.EnsureConnection() Then Return False
 				If _loadNativeFiles.Checked AndAlso _nativeFilePathField.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Native file field unselected")
-				If Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+				If Me.LoadFile.ArtifactTypeID = ArtifactType.Document Then
 					If _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Folder information unselected")
 				Else
 					If Me.IsChildObject Then
@@ -1075,16 +1076,16 @@ Namespace Relativity.Desktop.Client
 
 			LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
 			If CheckIfExtractedTextValueContainsFileLocationFieldIsEnabledAndChecked() AndAlso _fullTextFileEncodingPicker.SelectedEncoding IsNot Nothing Then
-				LoadFile.ExtractedTextFileEncodingName = Global.Relativity.SqlNameHelper.GetSqlFriendlyName(_fullTextFileEncodingPicker.SelectedEncoding.EncodingName).ToLower
+				LoadFile.ExtractedTextFileEncodingName = SqlNameHelper.GetSqlFriendlyName(_fullTextFileEncodingPicker.SelectedEncoding.EncodingName).ToLower
 			End If
 			LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
 			If _overwriteDropdown.SelectedItem Is Nothing Then
-				LoadFile.OverwriteDestination = Global.Relativity.ImportOverwriteType.Append.ToString
+				LoadFile.OverwriteDestination = ImportOverwriteType.Append.ToString
 			Else
 				LoadFile.OverwriteDestination = Me.GetOverwrite.ToString
 			End If
 			'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-			If LoadFile.OverwriteDestination = Global.Relativity.ImportOverwriteType.Overlay.ToString Then
+			If LoadFile.OverwriteDestination = ImportOverwriteType.Overlay.ToString Then
 				LoadFile.IdentityFieldId = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
 			Else
 				LoadFile.IdentityFieldId = -1
@@ -1108,9 +1109,9 @@ Namespace Relativity.Desktop.Client
 					LoadFile.NativeFilePathColumn = Nothing
 				End If
 				'Add the file field as a mapped field for non document object types
-				If Me.LoadFile.ArtifactTypeID <> Global.Relativity.ArtifactType.Document Then
+				If Me.LoadFile.ArtifactTypeID <> ArtifactType.Document Then
 					For Each field As DocumentField In currentFields.AllFields
-						If field.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.File Then
+						If field.FieldTypeID = FieldType.File Then
 							Dim openParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf("("c) + 1
 							Dim closeParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf(")"c)
 							Dim nativePathColumn As Int32 = Int32.Parse(LoadFile.NativeFilePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
@@ -1121,7 +1122,7 @@ Namespace Relativity.Desktop.Client
 			End If
 			LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
 			'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-			If LoadFile.OverwriteDestination.ToLower <> Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
+			If LoadFile.OverwriteDestination.ToLower <> ImportOverwriteType.Overlay.ToString.ToLower Then
 				If LoadFile.CreateFolderStructure Then
 					If Not _destinationFolderPath.SelectedItem Is Nothing Then
 						LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
@@ -1152,7 +1153,7 @@ Namespace Relativity.Desktop.Client
 			Me.LoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
 			Me.LoadFile.ForceFolderPreview = _importMenuForceFolderPreviewItem.Checked
 
-			Me.LoadFile.MoveDocumentsInAppendOverlayMode = String.Equals(Me.LoadFile.OverwriteDestination, Global.Relativity.ImportOverwriteType.AppendOverlay.ToString()) AndAlso Not String.IsNullOrEmpty(Me.LoadFile.FolderStructureContainedInColumn)
+			Me.LoadFile.MoveDocumentsInAppendOverlayMode = String.Equals(Me.LoadFile.OverwriteDestination, ImportOverwriteType.AppendOverlay.ToString()) AndAlso Not String.IsNullOrEmpty(Me.LoadFile.FolderStructureContainedInColumn)
 
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 			Return True
@@ -1233,7 +1234,7 @@ Namespace Relativity.Desktop.Client
 			_importMenuForceFolderPreviewItem.Checked = Me.LoadFile.ForceFolderPreview
 			If Not loadFileObjectUpdatedFromFile Then
 				For Each item As DocumentField In _overlayIdentifier.Items
-					If item.FieldCategory = Global.Relativity.FieldCategory.Identifier Then
+					If item.FieldCategory = FieldCategory.Identifier Then
 						_overlayIdentifier.SelectedItem = item
 						Exit For
 					End If
@@ -1247,7 +1248,7 @@ Namespace Relativity.Desktop.Client
 				Next
 			End If
 
-			If Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+			If Me.LoadFile.ArtifactTypeID = ArtifactType.Document Then
 				If _overwriteDropdown.SelectedItem Is Nothing Then
 					_destinationFolderPath.Enabled = _buildFolderStructure.Checked
 				Else
@@ -1290,7 +1291,7 @@ Namespace Relativity.Desktop.Client
 			'	'_identifiersDropDown.SelectedItem = LoadFile.GroupIdentifierColumn
 			'End If
 
-			If Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+			If Me.LoadFile.ArtifactTypeID = ArtifactType.Document Then
 				_extractedTextValueContainsFileLocation.Enabled = Await Me.AnyLongTextIsMapped
 			End If
 
@@ -1615,7 +1616,7 @@ Namespace Relativity.Desktop.Client
 			_loadFileEncodingPicker.InitializeDropdown()
 			_fullTextFileEncodingPicker.InitializeDropdown()
 			_importMenuForceFolderPreviewItem.Checked = _application.TemporaryForceFolderPreview
-			If LoadFile.ArtifactTypeID <> Global.Relativity.ArtifactType.Document Then
+			If LoadFile.ArtifactTypeID <> ArtifactType.Document Then
 				_importMenuForceFolderPreviewItem.Checked = False
 				_importMenuForceFolderPreviewItem.Enabled = False
 			End If
@@ -1638,22 +1639,22 @@ Namespace Relativity.Desktop.Client
 
 		Private Async Sub _overwriteDestination_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
 			LoadFile.OverwriteDestination = Me.GetOverwrite.ToString
-			If LoadFile.OverwriteDestination.ToLower <> Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
+			If LoadFile.OverwriteDestination.ToLower <> ImportOverwriteType.Overlay.ToString.ToLower Then
 				For Each field As DocumentField In _overlayIdentifier.Items
-					If field.FieldCategory = Global.Relativity.FieldCategory.Identifier Then
+					If field.FieldCategory = FieldCategory.Identifier Then
 						_overlayIdentifier.SelectedItem = field
 						Exit For
 					End If
 				Next
 			End If
-			Dim overwriteDestination As Global.Relativity.ImportOverwriteType = CType([Enum].Parse(GetType(Global.Relativity.ImportOverwriteType), LoadFile.OverwriteDestination, True), Global.Relativity.ImportOverwriteType)
-			If Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+			Dim overwriteDestination As ImportOverwriteType = CType([Enum].Parse(GetType(ImportOverwriteType), LoadFile.OverwriteDestination, True), ImportOverwriteType)
+			If Me.LoadFile.ArtifactTypeID = ArtifactType.Document Then
 				Select Case overwriteDestination
-					Case Global.Relativity.ImportOverwriteType.Append
+					Case ImportOverwriteType.Append
 						_buildFolderStructure.Enabled = True
 						_destinationFolderPath.Enabled = _buildFolderStructure.Checked
 						_overlayIdentifier.Enabled = False
-					Case Global.Relativity.ImportOverwriteType.Overlay
+					Case ImportOverwriteType.Overlay
 						_destinationFolderPath.Enabled = False
 						_buildFolderStructure.Checked = False
 						_buildFolderStructure.Enabled = False
@@ -1670,12 +1671,12 @@ Namespace Relativity.Desktop.Client
 				End Select
 			ElseIf Me.IsChildObject Then
 				Select Case overwriteDestination
-					Case Global.Relativity.ImportOverwriteType.Append
+					Case ImportOverwriteType.Append
 						_destinationFolderPath.Enabled = True
 						_buildFolderStructure.Checked = True
 						_buildFolderStructure.Enabled = False
 						_overlayIdentifier.Enabled = False
-					Case Global.Relativity.ImportOverwriteType.Overlay
+					Case ImportOverwriteType.Overlay
 						_destinationFolderPath.Enabled = False
 						_buildFolderStructure.Checked = False
 						_buildFolderStructure.Enabled = True
@@ -1693,7 +1694,7 @@ Namespace Relativity.Desktop.Client
 				_destinationFolderPath.SelectedItem = Nothing
 				_destinationFolderPath.Text = "Select ..."
 				Select Case overwriteDestination
-					Case Global.Relativity.ImportOverwriteType.Overlay
+					Case ImportOverwriteType.Overlay
 						_overlayIdentifier.Enabled = True
 					Case Else
 						_overlayIdentifier.Enabled = False
@@ -1735,7 +1736,7 @@ Namespace Relativity.Desktop.Client
 		Private Async Sub _loadFieldMapDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _loadFieldMapDialog.FileOk
 			Dim newLoadFile As LoadFile = Await _application.ReadLoadFile(Me.LoadFile, _loadFieldMapDialog.FileName, False)
 			If Not newLoadFile Is Nothing Then
-				If newLoadFile.ArtifactTypeID <> Global.Relativity.ArtifactType.Document Then
+				If newLoadFile.ArtifactTypeID <> ArtifactType.Document Then
 					newLoadFile.ForceFolderPreview = False
 				End If
 				_loadFile = newLoadFile
@@ -1809,13 +1810,13 @@ Namespace Relativity.Desktop.Client
 				Return ImportFileMenu.Enabled AndAlso
 				PreviewMenuFile.Enabled AndAlso
 				_importMenuPreviewErrorsItem.Enabled AndAlso
-				((_importMenuPreviewFoldersAndCodesItem.Enabled AndAlso Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document) OrElse Me.LoadFile.ArtifactTypeID <> Global.Relativity.ArtifactType.Document)
+				((_importMenuPreviewFoldersAndCodesItem.Enabled AndAlso Me.LoadFile.ArtifactTypeID = ArtifactType.Document) OrElse Me.LoadFile.ArtifactTypeID <> ArtifactType.Document)
 			End Get
 			Set(ByVal value As Boolean)
 				ImportFileMenu.Enabled = value
 				PreviewMenuFile.Enabled = value
 				_importMenuPreviewErrorsItem.Enabled = value
-				If Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+				If Me.LoadFile.ArtifactTypeID = ArtifactType.Document Then
 					_importMenuPreviewFoldersAndCodesItem.Enabled = value
 				Else
 					_importMenuPreviewFoldersAndCodesItem.Enabled = False
@@ -1881,7 +1882,7 @@ Namespace Relativity.Desktop.Client
 				 item.NativeFileColumnIndex < columnHeaders.Length Then
 					Dim documentField As DocumentField = caseFieldsCollection.FirstOrDefault(Function(x) x.FieldID = item.DocumentField.FieldID)
 					If Not documentField Is Nothing Then
-						If documentField.FieldCategoryID = Global.Relativity.FieldCategory.Identifier Then
+						If documentField.FieldCategoryID = FieldCategory.Identifier Then
 							selectedFieldNameList.Add(documentField.FieldName & " [Identifier]")
 						Else
 							selectedFieldNameList.Add(documentField.FieldName)
@@ -1896,7 +1897,7 @@ Namespace Relativity.Desktop.Client
 					columnHeaders.Length = 0 Then
 					Dim documentField As DocumentField = caseFieldsCollection.FirstOrDefault(Function(x) x.FieldID = item.DocumentField.FieldID)
 					If Not documentField Is Nothing Then
-						If documentField.FieldCategoryID = Global.Relativity.FieldCategory.Identifier Then
+						If documentField.FieldCategoryID = FieldCategory.Identifier Then
 							selectedFieldNameList.Add(documentField.FieldName & " [Identifier]")
 						Else
 							selectedFieldNameList.Add(documentField.FieldName)
@@ -1913,7 +1914,7 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Sub _buildFolderStructure_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _buildFolderStructure.CheckedChanged
-			If Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+			If Me.LoadFile.ArtifactTypeID = ArtifactType.Document Then
 				If _buildFolderStructure.Checked Then
 					_destinationFolderPath.Enabled = True
 				Else
@@ -1923,11 +1924,11 @@ Namespace Relativity.Desktop.Client
 				End If
 			ElseIf Me.IsChildObject Then
 				Select Case Me.GetOverwrite
-					Case Global.Relativity.ImportOverwriteType.Append, Global.Relativity.ImportOverwriteType.AppendOverlay
+					Case ImportOverwriteType.Append, ImportOverwriteType.AppendOverlay
 						_destinationFolderPath.Enabled = True
 						_destinationFolderPath.SelectedItem = Nothing
 						_destinationFolderPath.Text = "Select ..."
-					Case Global.Relativity.ImportOverwriteType.Overlay
+					Case ImportOverwriteType.Overlay
 						If _buildFolderStructure.Checked Then
 							_destinationFolderPath.Enabled = True
 						Else
@@ -1989,7 +1990,7 @@ Namespace Relativity.Desktop.Client
 			Next
 			If _overlayIdentifier.SelectedItem Is Nothing Then
 				For Each field As DocumentField In _overlayIdentifier.Items
-					If field.FieldCategory = Global.Relativity.FieldCategory.Identifier Then
+					If field.FieldCategory = FieldCategory.Identifier Then
 						_overlayIdentifier.SelectedItem = field
 						Exit For
 					End If
@@ -2047,7 +2048,7 @@ Namespace Relativity.Desktop.Client
 		Private Sub SetExtractedTextAsDefault()
 			For Each field As DocumentField In _overlayExtractedText.Items
 				'Is Extracted Text field
-				If field.FieldCategory = Global.Relativity.FieldCategory.FullText Then
+				If field.FieldCategory = FieldCategory.FullText Then
 					_overlayExtractedText.SelectedItem = field
 				End If
 			Next

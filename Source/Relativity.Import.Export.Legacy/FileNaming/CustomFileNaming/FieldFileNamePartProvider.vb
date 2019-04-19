@@ -2,6 +2,7 @@
 Imports FileNaming.CustomFileNaming
 Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Helpers
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 	Public Class FieldFileNamePartProvider
@@ -19,9 +20,9 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 
 		Private Function GetProperPartNameBasedOnFieldType(viewFieldInfo As ViewFieldInfo, fieldValueText As String) As String
 			Select Case viewFieldInfo.FieldType
-				Case Global.Relativity.FieldTypeHelper.FieldType.Boolean
+				Case FieldType.Boolean
 					Return GetYesNoFieldValue(viewFieldInfo, fieldValueText)
-				Case Global.Relativity.FieldTypeHelper.FieldType.Varchar
+				Case FieldType.Varchar
 					Return CleanUpFieldValueFromObjectTags(fieldValueText)
 				Case Else
 					Return fieldValueText

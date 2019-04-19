@@ -1,5 +1,6 @@
 Imports kCura.WinEDDS
 Imports Relativity.Desktop.Client.Legacy.Controls
+Imports Relativity.Import.Export.Services
 
 Namespace Relativity.Desktop.Client
 	Public Class Utility
@@ -91,11 +92,11 @@ Namespace Relativity.Desktop.Client
 		Public Shared Function ConvertOverwriteDestinationToLegacyValues(ByVal loadfile As LoadFile) As LoadFile
 			Dim overwriteDestination = loadfile.OverwriteDestination
 			Select Case overwriteDestination.ToLower()
-				Case Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower
+				Case ImportOverwriteType.Overlay.ToString.ToLower
 					loadfile.OverwriteDestination = "Strict"
-				Case Global.Relativity.ImportOverwriteType.AppendOverlay.ToString.ToLower
+				Case ImportOverwriteType.AppendOverlay.ToString.ToLower
 					loadfile.OverwriteDestination = "Append"
-				Case Global.Relativity.ImportOverwriteType.Append.ToString.ToLower
+				Case ImportOverwriteType.Append.ToString.ToLower
 					loadfile.OverwriteDestination = "None"
 			End Select
 			Return loadfile
@@ -107,26 +108,26 @@ Namespace Relativity.Desktop.Client
 
 				Select Case overWriteDestination.ToLower
 					Case "strict"
-						retval = Global.Relativity.ImportOverwriteType.Overlay.ToString
+						retval = ImportOverwriteType.Overlay.ToString
 					Case "append"
-						retval = Global.Relativity.ImportOverwriteType.AppendOverlay.ToString
+						retval = ImportOverwriteType.AppendOverlay.ToString
 					Case "none"
-						retval = Global.Relativity.ImportOverwriteType.Append.ToString
+						retval = ImportOverwriteType.Append.ToString
 				End Select
 			End If
 			Return retval
 		End Function
 
-		Public Shared Function FindFieldByName(listboxItems As ICollection(Of Object), field As ViewFieldInfo) As ViewFieldInfo
-			Return FindFieldBy(Function(x As ViewFieldInfo) x.DisplayName.Equals(field.DisplayName, StringComparison.InvariantCulture), listboxItems)
+		Public Shared Function FindFieldByName(listboxItems As ICollection(Of Object), field As kCura.WinEDDS.ViewFieldInfo) As kCura.WinEDDS.ViewFieldInfo
+			Return FindFieldBy(Function(x As kCura.WinEDDS.ViewFieldInfo) x.DisplayName.Equals(field.DisplayName, StringComparison.InvariantCulture), listboxItems)
 		End Function
 
-		Public Shared Function FindFieldByArtifactId(listboxItems As ICollection(Of Object), field As ViewFieldInfo) As ViewFieldInfo
-			Return FindFieldBy(Function(x As ViewFieldInfo) x.FieldArtifactId = field.FieldArtifactId, listboxItems)
+		Public Shared Function FindFieldByArtifactId(listboxItems As ICollection(Of Object), field As kCura.WinEDDS.ViewFieldInfo) As kCura.WinEDDS.ViewFieldInfo
+			Return FindFieldBy(Function(x As kCura.WinEDDS.ViewFieldInfo) x.FieldArtifactId = field.FieldArtifactId, listboxItems)
 		End Function
 
-		Public Shared Function FindFieldBy(predicate As Func(Of ViewFieldInfo, Boolean), listboxItems As ICollection(Of Object)) As ViewFieldInfo
-			For Each item As ViewFieldInfo In listboxItems
+		Public Shared Function FindFieldBy(predicate As Func(Of kCura.WinEDDS.ViewFieldInfo, Boolean), listboxItems As ICollection(Of Object)) As kCura.WinEDDS.ViewFieldInfo
+			For Each item As kCura.WinEDDS.ViewFieldInfo In listboxItems
 				If predicate(item) Then
 					Return item
 				End If
@@ -142,12 +143,12 @@ Namespace Relativity.Desktop.Client
 		''' <param name="listboxItems">collections of all view fields from the workspace</param>
 		''' <param name="field">field from mappings from kwx file</param>
 		''' <returns></returns>
-		Public Shared Function FindCounterpartField(ByRef listboxItems As ICollection(Of Object), ByVal field As ViewFieldInfo) As ICollection(Of Object)
-			Dim fieldByName As ViewFieldInfo = FindFieldByName(listboxItems, field)
+		Public Shared Function FindCounterpartField(ByRef listboxItems As ICollection(Of Object), ByVal field As kCura.WinEDDS.ViewFieldInfo) As ICollection(Of Object)
+			Dim fieldByName As kCura.WinEDDS.ViewFieldInfo = FindFieldByName(listboxItems, field)
 			If fieldByName IsNot Nothing Then
 				Return New List(Of Object) From {fieldByName}
 			End If
-			Dim fieldByArtifactId As ViewFieldInfo = FindFieldByArtifactId(listboxItems, field)
+			Dim fieldByArtifactId As kCura.WinEDDS.ViewFieldInfo = FindFieldByArtifactId(listboxItems, field)
 			If fieldByArtifactId IsNot Nothing Then
 				Return New List(Of Object) From {fieldByArtifactId}
 			End If

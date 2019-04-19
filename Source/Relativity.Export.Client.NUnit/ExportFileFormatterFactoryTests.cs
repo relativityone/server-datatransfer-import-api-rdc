@@ -15,7 +15,9 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-    public class ExportFileFormatterFactoryTests
+    using Relativity.Import.Export.Services;
+
+	public class ExportFileFormatterFactoryTests
 	{
 		private Mock<IFieldNameProvider> _fieldNameProviderMock;
 		private ExportFileFormatterFactory _subjectUnderTest;

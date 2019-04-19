@@ -1,5 +1,6 @@
 Imports System.Runtime.Caching
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS.Service
 
@@ -158,14 +159,14 @@ Namespace kCura.WinEDDS.Service
 
 		Public Shared Function ParseExceptionForMoreInfo(ByVal ex As Exception) As System.Exception
 			Dim resultException As System.Exception = ex
-			Dim detailedException As Global.Relativity.SoapExceptionDetail = Nothing
+			Dim detailedException As SoapExceptionDetail = Nothing
 			If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
 				Dim soapException As System.Web.Services.Protocols.SoapException = DirectCast(ex, System.Web.Services.Protocols.SoapException)
-				Dim xs As New Xml.Serialization.XmlSerializer(GetType(Global.Relativity.SoapExceptionDetail))
+				Dim xs As New Xml.Serialization.XmlSerializer(GetType(SoapExceptionDetail))
 				Dim doc As New System.Xml.XmlDocument
 				doc.LoadXml(soapException.Detail.OuterXml)
 				Dim xr As Xml.XmlReader = doc.CreateNavigator.ReadSubtree
-				detailedException = TryCast(xs.Deserialize(xr), Global.Relativity.SoapExceptionDetail)
+				detailedException = TryCast(xs.Deserialize(xr), SoapExceptionDetail)
 			End If
 
 			If detailedException IsNot Nothing Then

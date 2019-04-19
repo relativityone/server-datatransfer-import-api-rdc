@@ -2,6 +2,7 @@ Imports System.Net
 Imports kCura.WinEDDS
 Imports Relativity.Desktop.Client.Legacy.Controls
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Services
 Imports Relativity.OAuth2Client.Exceptions
 
 Namespace Relativity.Desktop.Client
@@ -561,7 +562,7 @@ Namespace Relativity.Desktop.Client
 		Private Async Function PopulateObjectTypeDropDown() As Task
 			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync().ConfigureAwait(True), _application.CookieContainer)
 			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
-			Dim selectedObjectTypeID As Int32 = Global.Relativity.ArtifactType.Document
+			Dim selectedObjectTypeID As Int32 = ArtifactType.Document
 			If _objectTypeDropDown.Items.Count > 0 Then
 				selectedObjectTypeID = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem).Value
 			End If
@@ -590,7 +591,7 @@ Namespace Relativity.Desktop.Client
 			ImportMenu.Visible = selectedObjectType.UserCanAdd
 			ToolsImportLoadFileMenu.Visible = selectedObjectType.UserCanAdd
 			ExportMenu.Visible = True
-			If selectedItemValue = Global.Relativity.ArtifactType.Document Then
+			If selectedItemValue = ArtifactType.Document Then
 				_caseFolderExplorer.Visible = True
 				ToolsImportImageFileMenu.Visible = selectedObjectType.UserCanAdd
 				ToolsImportProductionFileMenu.Visible = selectedObjectType.UserCanAdd

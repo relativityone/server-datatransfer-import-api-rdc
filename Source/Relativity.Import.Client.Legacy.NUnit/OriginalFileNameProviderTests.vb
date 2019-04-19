@@ -14,6 +14,8 @@ Imports NSubstitute
 
 Imports NUnit.Framework
 
+Imports Relativity.Import.Export.Services
+
 Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture>
@@ -314,21 +316,21 @@ Namespace Relativity.Import.Client.NUnit
 
 		Private Function CreateMappableFieldsArrayWithoutFileName() As kCura.WinEDDS.ViewFieldInfo()
 			Return New kCura.WinEDDS.ViewFieldInfo() {
-				CreateViewFieldInfo("Id", "Id", FieldTypeHelper.FieldType.Integer),
-				CreateViewFieldInfo("Extracted Text", "ExtractedText", FieldTypeHelper.FieldType.Text),
-				CreateViewFieldInfo("File Size", "FileSize", FieldTypeHelper.FieldType.Integer)
+				CreateViewFieldInfo("Id", "Id", FieldType.Integer),
+				CreateViewFieldInfo("Extracted Text", "ExtractedText", FieldType.Text),
+				CreateViewFieldInfo("File Size", "FileSize", FieldType.Integer)
 			}
 		End Function
 
 		Private Function CreateMappableFieldsArrayWithFileName() As kCura.WinEDDS.ViewFieldInfo()
-			Return CreateMappableFieldsArrayWithFileName(FieldTypeHelper.FieldType.Varchar)
+			Return CreateMappableFieldsArrayWithFileName(FieldType.Varchar)
 		End Function
 
 		Private Function CreateMappableFieldsArrayWithLongTextFileName() As kCura.WinEDDS.ViewFieldInfo()
-			Return CreateMappableFieldsArrayWithFileName(FieldTypeHelper.FieldType.Text)
+			Return CreateMappableFieldsArrayWithFileName(FieldType.Text)
 		End Function
 
-		Private Function CreateMappableFieldsArrayWithFileName(fieldType As FieldTypeHelper.FieldType) As kCura.WinEDDS.ViewFieldInfo()
+		Private Function CreateMappableFieldsArrayWithFileName(fieldType As FieldType) As kCura.WinEDDS.ViewFieldInfo()
 			Dim viewFieldInfos As List(Of kCura.WinEDDS.ViewFieldInfo) = CreateMappableFieldsArrayWithoutFileName().ToList()
 			viewFieldInfos.Add(CreateViewFieldInfo("File Name", "FileName", fieldType))
 			Return viewFieldInfos.ToArray()
@@ -342,7 +344,7 @@ Namespace Relativity.Import.Client.NUnit
 			Return New List(Of Integer) From {1, 2, _FILE_NAME_FIELD_ARTIFACT_ID, 7, 3}
 		End Function
 
-		Private Function CreateViewFieldInfo(displayName As String, avfColumnName As String, fieldType As FieldTypeHelper.FieldType) As kCura.WinEDDS.ViewFieldInfo
+		Private Function CreateViewFieldInfo(displayName As String, avfColumnName As String, fieldType As FieldType) As kCura.WinEDDS.ViewFieldInfo
 			Dim dr As DataRow = CreateViewFieldInfoDataRowWithDefaultValues()
 			dr("DisplayName") = displayName
 			dr("AvfColumnName") = avfColumnName

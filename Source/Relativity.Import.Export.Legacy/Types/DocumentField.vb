@@ -1,6 +1,7 @@
 Imports System.Runtime.Serialization
 Imports System.Collections.Generic
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class DocumentField
@@ -96,11 +97,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property FieldCategory() As Global.Relativity.FieldCategory
+		Public Property FieldCategory() As FieldCategory
 			Get
-				Return CType(_fieldCategoryID, Global.Relativity.FieldCategory)
+				Return CType(_fieldCategoryID, FieldCategory)
 			End Get
-			Set(ByVal value As Global.Relativity.FieldCategory)
+			Set(ByVal value As FieldCategory)
 				_fieldCategoryID = value
 			End Set
 		End Property
@@ -210,7 +211,7 @@ Namespace kCura.WinEDDS
 
 		'HACK: This blows, but is necessary because the WSDL generator is mad-retarded re: enums with set numbers
 		Private Function ConvertFieldTypeEnum(ByVal fieldtypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType
-			Dim ft As Global.Relativity.FieldTypeHelper.FieldType = CType(fieldtypeID, Global.Relativity.FieldTypeHelper.FieldType)
+			Dim ft As FieldType = CType(fieldtypeID, FieldType)
 			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType), ft.ToString), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
 		End Function
 

@@ -1,8 +1,10 @@
+Imports Relativity.Import.Export.Services
+
 Namespace kCura.WinEDDS.CodeValidator
 	Public MustInherit Class Base
 		Private _codeManager As kCura.WinEDDS.Service.CodeManager
 		Private _lookup As New System.Collections.Hashtable
-		Private _caseInfo As Global.Relativity.CaseInfo
+		Private _caseInfo As CaseInfo
 
 		Protected ReadOnly Property CodeManager() As kCura.WinEDDS.Service.CodeManager
 			Get
@@ -10,13 +12,13 @@ Namespace kCura.WinEDDS.CodeValidator
 			End Get
 		End Property
 
-		Protected ReadOnly Property CaseInfo() As Global.Relativity.CaseInfo
+		Protected ReadOnly Property CaseInfo() As CaseInfo
 			Get
 				Return _caseInfo
 			End Get
 		End Property
 
-		Protected Sub New(ByVal caseInfo As Global.Relativity.CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
+		Protected Sub New(ByVal caseInfo As CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
 			_codeManager = codeManager
 			_caseInfo = caseInfo
 		End Sub
@@ -26,7 +28,7 @@ Namespace kCura.WinEDDS.CodeValidator
 			'TODO: Is this ever actually hit? ------ 'If field.CodeTypeID.IsNull Then Throw New kCura.WinEDDS.LoadFileBase.MissingCodeTypeException(Me.CurrentLineNumber, column)
 			If Not _lookup.Contains(field.CodeTypeID) Then Me.InitializeLookupForCodeType(field.CodeTypeID)
 			Dim typeLookup As kCura.WinEDDS.Types.SingleChoiceCollection = DirectCast(_lookup(field.CodeTypeID), kCura.WinEDDS.Types.SingleChoiceCollection)
-			Dim choice As Global.Relativity.ChoiceInfo = typeLookup(codeName)
+			Dim choice As ChoiceInfo = typeLookup(codeName)
 			If Not choice Is Nothing Then Return New Nullable(Of Int32)(choice.ArtifactID)
 			If Me.DoRealtimeDatabaseLookup Then choice = Me.CodeManager.RetrieveCodeByNameAndTypeID(Me.CaseInfo.ArtifactID, field.CodeTypeID, codeName.Trim)
 			If choice Is Nothing Then
@@ -47,7 +49,7 @@ Namespace kCura.WinEDDS.CodeValidator
 			Dim subLookup As New kCura.WinEDDS.Types.SingleChoiceCollection
 			_lookup.Add(codeTypeID, subLookup)
 			Try
-				For Each choice As Global.Relativity.ChoiceInfo In Me.CodeManager.RetrieveAllCodesOfType(Me.CaseInfo.ArtifactID, codeTypeID)
+				For Each choice As ChoiceInfo In Me.CodeManager.RetrieveAllCodesOfType(Me.CaseInfo.ArtifactID, codeTypeID)
 					subLookup.Add(choice)
 				Next
 			Catch

@@ -6,6 +6,7 @@
 
 	using kCura.WinEDDS;
 
+	using Relativity.Import.Export.Services;
 	using Relativity.Logging;
 
 	public class ImagesRollupFactory

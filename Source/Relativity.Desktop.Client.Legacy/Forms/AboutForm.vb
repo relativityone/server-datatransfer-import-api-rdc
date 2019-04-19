@@ -1,4 +1,5 @@
 ﻿Imports System
+Imports Relativity.Import.Export.Services
 
 Public Class AboutForm
 	Inherits System.Windows.Forms.Form
@@ -26,7 +27,7 @@ Public Class AboutForm
 
 		sb.Append(String.Format("Relativity Desktop Client {0} {1}", bitness, nl))
 		sb.Append("Version " & System.Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString & nl)
-		sb.Append(Relativity.Constants.LICENSE_AGREEMENT_TEXT & nl)
+		sb.Append(Constants.LICENSE_AGREEMENT_TEXT & nl)
 		sb.Append("Copyright © " & System.DateTime.Now.Year & " Relativity ODA LLC")
 		Me.MainTextLabel.Text = sb.ToString()
 

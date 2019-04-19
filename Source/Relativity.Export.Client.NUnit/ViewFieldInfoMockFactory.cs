@@ -9,10 +9,9 @@ namespace Relativity.Export.NUnit
     using System;
     using System.Collections.Generic;
     using System.Data;
+	using Relativity.Import.Export.Services;
 
-    using Relativity;
-
-    internal class ViewFieldInfoMockFactory
+	internal class ViewFieldInfoMockFactory
 	{
 		private DataRow _dataRow;
 
@@ -65,7 +64,7 @@ namespace Relativity.Export.NUnit
 			return this;
 		}
 
-		public ViewFieldInfoMockFactory WithFieldType(FieldTypeHelper.FieldType fieldType)
+		public ViewFieldInfoMockFactory WithFieldType(FieldType fieldType)
 		{
 			_dataRow["FieldTypeID"] = fieldType;
 			return this;
@@ -98,7 +97,7 @@ namespace Relativity.Export.NUnit
 			dataTable.Columns.Add("ConnectorFieldArtifactID", typeof(int));
 			dataTable.Columns["ConnectorFieldArtifactID"].DefaultValue = 1;
 			dataTable.Columns.Add("FieldTypeID", typeof(int));
-			dataTable.Columns["FieldTypeID"].DefaultValue = FieldTypeHelper.FieldType.Empty;
+			dataTable.Columns["FieldTypeID"].DefaultValue = FieldType.Empty;
 			dataTable.Columns.Add("ConnectorFieldCategoryID", typeof(int));
 			dataTable.Columns["ConnectorFieldCategoryID"].DefaultValue = 1;
 			dataTable.Columns.Add("IsLinked", typeof(bool));

@@ -9,7 +9,7 @@ Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.IO
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Process
-Imports Relativity.Logging
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 	Public Class VolumeManager
@@ -58,7 +58,7 @@ Namespace kCura.WinEDDS
 		Private _directoryHelper As Global.Relativity.Import.Export.Io.IDirectory
 		Private _fileNameProvider As IFileNameProvider
 		
-		Private _logger As ILog
+		Private _logger As Global.Relativity.Logging.ILog
 #End Region
 
 		Private Enum ExportFileType
@@ -214,9 +214,9 @@ Namespace kCura.WinEDDS
 			Next
 			If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then
 				Dim newindex As Int32 = _ordinalLookup.Count
-				_ordinalLookup.Add(Global.Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME, newindex)
-				_ordinalLookup.Add(Global.Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newindex + 1)
-				_ordinalLookup.Add(Global.Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE, newindex + 2)
+				_ordinalLookup.Add(ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME, newindex)
+				_ordinalLookup.Add(ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newindex + 1)
+				_ordinalLookup.Add(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE, newindex + 2)
 			End If
 
 		End Sub
@@ -263,7 +263,7 @@ Namespace kCura.WinEDDS
 					Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 					columnName = field.AvfColumnName
 					Dim fieldValue As Object = artifact.Metadata(_ordinalLookup(columnName))
-					If field.FieldType = Global.Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Global.Relativity.FieldTypeHelper.FieldType.OffTableText Then
+					If field.FieldType = FieldType.Text OrElse field.FieldType = FieldType.OffTableText Then
 						If Me.Settings.SelectedTextFields IsNot Nothing AndAlso TypeOf field Is CoalescedTextViewField Then
 							prediction.TextFileCount += 1
 							If TypeOf fieldValue Is Byte() Then
@@ -271,9 +271,9 @@ Namespace kCura.WinEDDS
 							End If
 							If fieldValue Is Nothing Then fieldValue = String.Empty
 							Dim textValue As String = fieldValue.ToString
-							If textValue = Global.Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
+							If textValue = Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 								'This isn't ideal, because encoding can be different than Unicode - this is fixed in new export
-								prediction.TextFilesSize += CType(artifact.Metadata(_ordinalLookup(Global.Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)), long)
+								prediction.TextFilesSize += CType(artifact.Metadata(_ordinalLookup(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)), long)
 							Else
 								prediction.TextFilesSize += Me.Settings.TextFileEncoding.GetByteCount(textValue)
 							End If
@@ -492,13 +492,13 @@ Namespace kCura.WinEDDS
 
 		Private Function CopySelectedLongTextToFile(ByVal artifact As Exporters.ObjectExportInfo, ByRef len As Int64) As String
 			Dim field As ViewFieldInfo = Me.GetFieldForLongTextPrecedenceDownload(Nothing, artifact)
-			If Not Me.OrdinalLookup.ContainsKey(Global.Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME) Then
+			If Not Me.OrdinalLookup.ContainsKey(ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME) Then
 				Return String.Empty
 			End If
-			Dim text As Object = artifact.Metadata(Me.OrdinalLookup(Global.Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
+			Dim text As Object = artifact.Metadata(Me.OrdinalLookup(ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
 			If text Is Nothing Then text = String.Empty
 			Dim longText As String = text.ToString
-			If longText = Global.Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
+			If longText = Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 				Dim filePath As String = Me.DownloadTextFieldAsFile(artifact, field)
 				len += _fileHelper.GetFileSize(filePath)
 				Return filePath
@@ -593,7 +593,7 @@ Namespace kCura.WinEDDS
 					Dim start As Int64 = System.DateTime.Now.Ticks
 					'BigData_ET_1037768
 					Dim val As String = artifact.Metadata(Me.OrdinalLookup("ExtractedText")).ToString
-					If val <> Global.Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
+					If val <> Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 						Dim tempLocalIproFileStream As FileStream = _fileStreamFactory.Create(tempLocalIproFullTextFilePath, False)
 						Dim sw As New System.IO.StreamWriter(tempLocalIproFileStream, System.Text.Encoding.Unicode)
 						sw.Write(val)
@@ -625,7 +625,7 @@ Namespace kCura.WinEDDS
 						tempLocalIproFullTextFilePath = TempFileBuilder.GetTempFileName(TempFileConstants.IProFileNameSuffix)
 						Dim tempLocalIproFileStream As FileStream = _fileStreamFactory.Create(tempLocalIproFullTextFilePath, False)
 						Dim sw As New System.IO.StreamWriter(tempLocalIproFileStream, System.Text.Encoding.Unicode)
-						Dim val As String = artifact.Metadata(Me.OrdinalLookup(Global.Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).ToString
+						Dim val As String = artifact.Metadata(Me.OrdinalLookup(ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).ToString
 						sw.Write(val)
 						sw.Close()
 					End If
@@ -694,9 +694,9 @@ Namespace kCura.WinEDDS
 
 		Private Function GetFieldForLongTextPrecedenceDownload(ByVal input As ViewFieldInfo, ByVal artifact As WinEDDS.Exporters.ObjectExportInfo) As ViewFieldInfo
 			Dim retval As ViewFieldInfo = input
-			If input Is Nothing OrElse input.AvfColumnName = Global.Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME Then
+			If input Is Nothing OrElse input.AvfColumnName = ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME Then
 				If Me.Settings.SelectedTextFields IsNot Nothing Then
-					retval = (From f In Me.Settings.SelectedTextFields Where f.FieldArtifactId = CInt(artifact.Metadata(_ordinalLookup(Global.Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)))).First
+					retval = (From f In Me.Settings.SelectedTextFields Where f.FieldArtifactId = CInt(artifact.Metadata(_ordinalLookup(ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)))).First
 				End If
 			End If
 			Return retval
@@ -711,7 +711,7 @@ Namespace kCura.WinEDDS
 				tries += 1
 				Try
 					webServiceRequestTime = Stopwatch.StartNew()
-					If Me.Settings.ArtifactTypeID = Global.Relativity.ArtifactType.Document AndAlso field.Category = Global.Relativity.FieldCategory.FullText AndAlso Not TypeOf field Is CoalescedTextViewField Then
+					If Me.Settings.ArtifactTypeID = ArtifactType.Document AndAlso field.Category = FieldCategory.FullText AndAlso Not TypeOf field Is CoalescedTextViewField Then
 						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 					Else
 						Dim fieldToActuallyExportFrom As ViewFieldInfo = Me.GetFieldForLongTextPrecedenceDownload(field, artifact)
@@ -1031,8 +1031,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function DownloadNative(ByVal artifact As Exporters.ObjectExportInfo, ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer) As Int64
-			If Me.Settings.ArtifactTypeID = Global.Relativity.ArtifactType.Document AndAlso artifact.NativeFileGuid = "" Then Return 0
-			If Not Me.Settings.ArtifactTypeID = Global.Relativity.ArtifactType.Document AndAlso (Not artifact.FileID > 0 OrElse artifact.NativeSourceLocation.Trim = String.Empty) Then Return 0
+			If Me.Settings.ArtifactTypeID = ArtifactType.Document AndAlso artifact.NativeFileGuid = "" Then Return 0
+			If Not Me.Settings.ArtifactTypeID = ArtifactType.Document AndAlso (Not artifact.FileID > 0 OrElse artifact.NativeSourceLocation.Trim = String.Empty) Then Return 0
 			Dim nativeFileName As String = Me.GetNativeFileName(artifact)
 			Dim tempFile As String = Me.GetLocalNativeFilePath(artifact, nativeFileName, currentVolumeNumber, currentSubDirectoryNumber)
 			
@@ -1053,7 +1053,7 @@ Namespace kCura.WinEDDS
 				tries += 1
 				Try
 					artifact.NativeTempLocation = tempFile
-					If Me.Settings.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+					If Me.Settings.ArtifactTypeID = ArtifactType.Document Then
 						_downloadManager.DownloadFileForDocument(tempFile, artifact.NativeFileGuid, artifact.NativeSourceLocation, artifact.ArtifactID, _settings.CaseArtifactID.ToString)
 					Else
 						_downloadManager.DownloadFileForDynamicObject(tempFile, artifact.NativeSourceLocation, artifact.ArtifactID, _settings.CaseArtifactID.ToString, artifact.FileID, Me.Settings.FileField.FieldID)
@@ -1121,7 +1121,7 @@ Namespace kCura.WinEDDS
 			Dim source As System.IO.TextReader
 			Dim destination As System.IO.TextWriter = Nothing
 			Dim downloadedFileExists As Boolean = Not String.IsNullOrEmpty(downloadedTextFilePath) AndAlso _fileHelper.Exists(downloadedTextFilePath)
-			If textValue = Global.Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then 'Text was too long and needs to be downloaded to a file instead
+			If textValue = Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then 'Text was too long and needs to be downloaded to a file instead
 				If Me.Settings.SelectedTextFields IsNot Nothing AndAlso TypeOf textField Is CoalescedTextViewField AndAlso downloadedFileExists Then
 					If Settings.SelectedTextFields.Count = 1 Then
 						source = Me.GetLongTextStream(downloadedTextFilePath, textField)
@@ -1226,7 +1226,7 @@ Namespace kCura.WinEDDS
 				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				Dim val As Object = record(_ordinalLookup(columnName))
-				If field.FieldType = Global.Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Global.Relativity.FieldTypeHelper.FieldType.OffTableText Then
+				If field.FieldType = FieldType.Text OrElse field.FieldType = FieldType.OffTableText Then
                     Dim downloadedTextTempFile As String = Nothing
                     If TypeOf field Is CoalescedTextViewField Then
                         downloadedTextTempFile = fullTextTempFile

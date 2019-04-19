@@ -10,8 +10,6 @@
 	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Logging;
 
-	using ViewFieldInfo = Relativity.ViewFieldInfo;
-
 	public class NotTooLongTextToLoadFile : ILongTextHandler
 	{
 		private readonly ExportFile _exportSettings;

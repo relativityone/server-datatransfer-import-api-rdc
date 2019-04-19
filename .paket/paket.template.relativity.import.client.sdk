@@ -41,7 +41,6 @@ dependencies
 	Newtonsoft.Json >= 6.0.8
 	Polly >= 5.3.1
 	kCura.OutsideIn.FI.Win32 >= 2019.2.0
-	Relativity >= 10.2.0.0
 	Relativity.DataTransfer.MessageService >= 10.2.0
 	Relativity.Kepler.Client >= 1.0.1.627
 	Relativity.Logging >= 2019.4.4

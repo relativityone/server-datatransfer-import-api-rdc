@@ -16,13 +16,14 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-    using Relativity;
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Export.VolumeManagerV2.Repository;
+    using Relativity.Import.Export.Services;
 	using Relativity.Import.Export.TestFramework;
-    using Relativity.Logging;
+	using Relativity.Logging;
 
-    using RelativityConstants = Relativity.Constants;
+    using ExportConstants = Relativity.Import.Export.Services.ExportConstants;
+    using RelativityConstants = Relativity.Import.Export.Services.Constants;
 
     [TestFixture]
 	public class LongTextHelperTests
@@ -46,23 +47,23 @@ namespace Relativity.Export.NUnit
 		}
 
 		[Test]
-		[TestCase(FieldTypeHelper.FieldType.Text, true)]
-		[TestCase(FieldTypeHelper.FieldType.OffTableText, true)]
-		[TestCase(FieldTypeHelper.FieldType.Object, false)]
-		[TestCase(FieldTypeHelper.FieldType.Boolean, false)]
-		[TestCase(FieldTypeHelper.FieldType.Code, false)]
-		[TestCase(FieldTypeHelper.FieldType.Currency, false)]
-		[TestCase(FieldTypeHelper.FieldType.Date, false)]
-		[TestCase(FieldTypeHelper.FieldType.Decimal, false)]
-		[TestCase(FieldTypeHelper.FieldType.Empty, false)]
-		[TestCase(FieldTypeHelper.FieldType.File, false)]
-		[TestCase(FieldTypeHelper.FieldType.Integer, false)]
-		[TestCase(FieldTypeHelper.FieldType.LayoutText, false)]
-		[TestCase(FieldTypeHelper.FieldType.MultiCode, false)]
-		[TestCase(FieldTypeHelper.FieldType.Objects, false)]
-		[TestCase(FieldTypeHelper.FieldType.User, false)]
-		[TestCase(FieldTypeHelper.FieldType.Varchar, false)]
-		public void ItShouldDecideIfFieldIsLongText(FieldTypeHelper.FieldType fieldType, bool expectedResult)
+		[TestCase(FieldType.Text, true)]
+		[TestCase(FieldType.OffTableText, true)]
+		[TestCase(FieldType.Object, false)]
+		[TestCase(FieldType.Boolean, false)]
+		[TestCase(FieldType.Code, false)]
+		[TestCase(FieldType.Currency, false)]
+		[TestCase(FieldType.Date, false)]
+		[TestCase(FieldType.Decimal, false)]
+		[TestCase(FieldType.Empty, false)]
+		[TestCase(FieldType.File, false)]
+		[TestCase(FieldType.Integer, false)]
+		[TestCase(FieldType.LayoutText, false)]
+		[TestCase(FieldType.MultiCode, false)]
+		[TestCase(FieldType.Objects, false)]
+		[TestCase(FieldType.User, false)]
+		[TestCase(FieldType.Varchar, false)]
+		public void ItShouldDecideIfFieldIsLongText(FieldType fieldType, bool expectedResult)
 		{
 			FieldStub field = new FieldStub(_fieldFactory.GetArtifactIdField());
 			field.SetType(fieldType);
@@ -278,7 +279,7 @@ namespace Relativity.Export.NUnit
 
 			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { field2ArtifactId } };
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
+			_fieldService.Setup(x => x.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
 
             // ACT
             kCura.WinEDDS.ViewFieldInfo textPrecedenceField = _instance.GetTextPrecedenceField(artifact);

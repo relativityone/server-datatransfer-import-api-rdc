@@ -2,8 +2,6 @@
 {
 	using kCura.WinEDDS;
 
-	using ViewFieldInfo = Relativity.ViewFieldInfo;
-
 	public interface IColumnsFactory
 	{
 		kCura.WinEDDS.ViewFieldInfo[] CreateColumns(ExportFile exportSettings);

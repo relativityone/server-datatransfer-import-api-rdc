@@ -1,7 +1,6 @@
 castle.core
 castle.windsor
 newtonsoft.json
-relativity
 relativity.logging
 relativity.logging.interfaces
 relativity.transfer.client

@@ -1,6 +1,7 @@
 Imports System.Runtime.Serialization
 Imports FileNaming.CustomFileNaming
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 	''' <summary>
@@ -14,7 +15,7 @@ Namespace kCura.WinEDDS
 
 #Region " Members "
 
-		Protected _caseInfo As Global.Relativity.CaseInfo
+		Protected _caseInfo As CaseInfo
 		Protected _dataTable As System.Data.DataTable
 		Protected _typeOfExport As ExportType
 		Protected _folderPath As String
@@ -85,11 +86,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		<ReadFromExisting()> Public Property CaseInfo() As Global.Relativity.CaseInfo
+		<ReadFromExisting()> Public Property CaseInfo() As CaseInfo
 			Get
 				Return _caseInfo
 			End Get
-			Set(ByVal value As Global.Relativity.CaseInfo)
+			Set(ByVal value As CaseInfo)
 				_caseInfo = value
 			End Set
 		End Property

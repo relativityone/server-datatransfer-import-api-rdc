@@ -17,9 +17,9 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-    using Relativity;
 	using Relativity.Export.VolumeManagerV2.Metadata.Natives;
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+    using Relativity.Import.Export.Services;
 	using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
@@ -104,7 +104,7 @@ namespace Relativity.Export.NUnit
             kCura.WinEDDS.ViewFieldInfo[] allDocumentFields =
                 _queryFieldFactory.GetAllDocumentFields().ToArray();
 			List<kCura.WinEDDS.ViewFieldInfo> fields = allDocumentFields
-				.Where(x => x.FieldType != FieldTypeHelper.FieldType.Text && x.FieldType != FieldTypeHelper.FieldType.OffTableText).ToList();
+				.Where(x => x.FieldType != FieldType.Text && x.FieldType != FieldType.OffTableText).ToList();
 
 			List<string> fieldValues = new List<string>();
 			foreach (var field in fields)

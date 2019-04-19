@@ -7,10 +7,8 @@
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity;
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-
-	using ExportConstants = Relativity.Export.Constants;
+	using Relativity.Import.Export.Services;
 
 	public class TextExportableSize
 	{
@@ -78,7 +76,7 @@
 
 		private bool IsTextPrecedenceField(kCura.WinEDDS.ViewFieldInfo field)
 		{
-			return (field.FieldType == FieldTypeHelper.FieldType.Text || field.FieldType == FieldTypeHelper.FieldType.OffTableText) && field is CoalescedTextViewField;
+			return (field.FieldType == FieldType.Text || field.FieldType == FieldType.OffTableText) && field is CoalescedTextViewField;
 		}
 	}
 }

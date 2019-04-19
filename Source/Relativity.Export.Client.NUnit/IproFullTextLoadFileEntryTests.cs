@@ -22,7 +22,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.Export.VolumeManagerV2.Repository;
 	using Relativity.Import.Export.Io;
     using Relativity.Logging;
-    using RelativityConstants = Relativity.Constants;
+    using RelativityConstants = Relativity.Import.Export.Services.Constants;
 
     [TestFixture]
 	public abstract class IproFullTextLoadFileEntryTests

@@ -1,13 +1,12 @@
 Imports System.Collections.Generic
 Imports System.Threading
-Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.WinEDDS.Service
 Imports kCura.WinEDDS.Helpers
-Imports Relativity
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Io
 Imports Relativity.Import.Export.Process
 Imports Relativity.Import.Export.Transfer
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 	Public Class BulkImageFileImporter
@@ -22,7 +21,7 @@ Namespace kCura.WinEDDS
 		Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
 		Private _folderID As Int32
 		Private _productionArtifactID As Int32
-		Private _overwrite As Global.Relativity.ImportOverwriteType
+		Private _overwrite As ImportOverwriteType
 		Private _filePath As String
 		Private _recordCount As Int64
 		Private _replaceFullText As Boolean
@@ -34,9 +33,9 @@ Namespace kCura.WinEDDS
 		Private _autoNumberImages As Boolean
 		Private _copyFilesToRepository As Boolean
 		Private _defaultDestinationFolderPath As String
-		Private _caseInfo As Global.Relativity.CaseInfo
+		Private _caseInfo As CaseInfo
 		Private _overlayArtifactID As Int32
-		Private _executionSource As Global.Relativity.ExecutionSource
+		Private _executionSource As ExecutionSource
 		Private _lastRunMetadataImport As Int64 = 0
 
 		Private WithEvents _processContext As ProcessContext
@@ -189,12 +188,12 @@ Namespace kCura.WinEDDS
 		               args As ImageLoadFile, _
 		               context As ProcessContext, _
 		               reporter As IIoReporter, _
-		               logger As Logging.ILog, _
+		               logger As Global.Relativity.Logging.ILog, _
 		               processID As Guid, _
 		               doRetryLogic As Boolean, _
 		               enforceDocumentLimit As Boolean, _
 		               tokenSource As CancellationTokenSource, _
-		               Optional ByVal executionSource As Global.Relativity.ExecutionSource = Global.Relativity.ExecutionSource.Unknown)
+		               Optional ByVal executionSource As ExecutionSource = ExecutionSource.Unknown)
 			MyBase.New(reporter, logger, tokenSource)
 
 			_executionSource = executionSource
@@ -213,9 +212,9 @@ Namespace kCura.WinEDDS
 			_productionArtifactID = args.ProductionArtifactID
 			InitializeDTOs(args)
 			If(args.Overwrite.IsNullOrEmpty)
-				_overwrite = Global.Relativity.ImportOverwriteType.Append
+				_overwrite = ImportOverwriteType.Append
 			Else 
-				_overwrite = CType([Enum].Parse(GetType(Global.Relativity.ImportOverwriteType),args.Overwrite, True), Global.Relativity.ImportOverwriteType)
+				_overwrite = CType([Enum].Parse(GetType(ImportOverwriteType),args.Overwrite, True), ImportOverwriteType)
 			End If
 			_replaceFullText = args.ReplaceFullText
 			_processContext = context
@@ -231,7 +230,7 @@ Namespace kCura.WinEDDS
 			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
 
 			If args.ReplaceFullText Then
-				_fullTextStorageIsInSql = (_fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Global.Relativity.ArtifactType.Document).FullText.EnableDataGrid = False)
+				_fullTextStorageIsInSql = (_fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, ArtifactType.Document).FullText.EnableDataGrid = False)
 			End If
 		End Sub
 
@@ -292,7 +291,7 @@ Namespace kCura.WinEDDS
 			ElseIf args.IdentityFieldId > 0 Then
 				_keyFieldDto = fieldManager.Read(args.CaseInfo.ArtifactID, args.IdentityFieldId)
 			Else
-				Dim fieldID As Int32 = _fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Global.Relativity.ArtifactType.Document).IdentifierFields(0).FieldID
+				Dim fieldID As Int32 = _fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, ArtifactType.Document).IdentifierFields(0).FieldID
 				_keyFieldDto = fieldManager.Read(args.CaseInfo.ArtifactID, fieldID)
 			End If
 		End Sub
@@ -358,8 +357,8 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function BulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean) As MassImportResults
-			Dim retval As MassImportResults
+		Private Function BulkImport(ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal useBulk As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo = Me.GetSettingsObject
 			settings.UseBulkDataImport = useBulk
 			settings.Overlay = overwrite
@@ -467,7 +466,7 @@ Namespace kCura.WinEDDS
 		Protected Sub LowerBatchSizeAndRetry(ByVal oldBulkLoadFilePath As String, ByVal dataGridFilePath As String, ByVal totalRecords As Int32)
 			'NOTE: we are not cutting a new/smaller data grid bulk file because it will be chunked as it is loaded into the data grid
 			Dim newBulkLoadFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.NativeLoadFileNameSuffix)
-			Dim limit As String = Global.Relativity.Constants.ENDLINETERMSTRING
+			Dim limit As String = Constants.ENDLINETERMSTRING
 			Dim last As New System.Collections.Generic.Queue(Of Char)
 			Dim recordsProcessed As Int32 = 0
 			Dim charactersSuccessfullyProcessed As Int64 = 0
@@ -591,9 +590,9 @@ Namespace kCura.WinEDDS
 
 			Dim overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType
 			Select Case _overwrite
-				Case Global.Relativity.ImportOverwriteType.AppendOverlay
+				Case ImportOverwriteType.AppendOverlay
 					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
-				Case Global.Relativity.ImportOverwriteType.Overlay
+				Case ImportOverwriteType.Overlay
 					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
 				Case Else
 					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
@@ -640,7 +639,7 @@ Namespace kCura.WinEDDS
 				_imageReader.Initialize()
 				_recordCount = _imageReader.CountRecords
 
-				If (_enforceDocumentLimit AndAlso _overwrite = Global.Relativity.ImportOverwriteType.Append) Then
+				If (_enforceDocumentLimit AndAlso _overwrite = ImportOverwriteType.Append) Then
 
 					Me.LogInformation("Preparing to determine the number of images to import...")
 					Dim tempImageReader As OpticonFileReader = New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
@@ -782,12 +781,12 @@ Namespace kCura.WinEDDS
 
 #Region "Worker Methods"
 
-		Public Function ProcessImageLine(ByVal imageRecord As Api.ImageRecord) As Global.Relativity.MassImport.ImportStatus
+		Public Function ProcessImageLine(ByVal imageRecord As Api.ImageRecord) As ImportStatus
 			_totalValidated += 1			
 			'check for existence
 			If imageRecord.BatesNumber.Trim = "" Then
 				Me.RaiseStatusEvent(EventType.Error, "No image file or identifier specified on line.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-				Return Global.Relativity.MassImport.ImportStatus.NoImageSpecifiedOnLine
+				Return ImportStatus.NoImageSpecifiedOnLine
 			End If
 
 			Dim imageFilePath As String = BulkImageFileImporter.GetFileLocation(imageRecord)
@@ -799,7 +798,7 @@ Namespace kCura.WinEDDS
 
 				If Not fileExists
 					Me.RaiseStatusEvent(EventType.Error, $"Image file specified ( {imageRecord.FileLocation} ) does not exist.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-					Return Global.Relativity.MassImport.ImportStatus.FileSpecifiedDne
+					Return ImportStatus.FileSpecifiedDne
 				End If
 
 				If Not String.Equals(imageFilePath, foundFileName)
@@ -808,7 +807,7 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 
-			Dim retval As Global.Relativity.MassImport.ImportStatus = Global.Relativity.MassImport.ImportStatus.Pending
+			Dim retval As ImportStatus = ImportStatus.Pending
 			Dim validator As New FreeImageIdService
 
 			Try
@@ -820,7 +819,7 @@ Namespace kCura.WinEDDS
 			Catch ex As Exception
 				If TypeOf ex Is ImageIdException Then
 				Me.LogError(ex, "Failed to validate the {Path} image.", imageFilePath)
-					retval = Global.Relativity.MassImport.ImportStatus.InvalidImageFormat
+					retval = ImportStatus.InvalidImageFormat
 					_verboseErrorCollection.AddError(imageRecord.OriginalIndex, ex)
 				Else
 				Me.LogFatal(ex, "Unexpected failure to validate the {Path} image file.", imageFilePath)
@@ -850,7 +849,7 @@ Namespace kCura.WinEDDS
 					_fileIdentifierLookup.Add(line.BatesNumber.Trim, line.BatesNumber.Trim)
 				End If
 			Next
-			If hasFileIdentifierProblem Then status += Global.Relativity.MassImport.ImportStatus.IdentifierOverlap
+			If hasFileIdentifierProblem Then status += ImportStatus.IdentifierOverlap
 
 			Dim record As Api.ImageRecord = lines(0)
 			Dim textFileList As New System.Collections.ArrayList
@@ -924,9 +923,9 @@ Namespace kCura.WinEDDS
 				_bulkLoadFileWriter.Write($"{(-1)}{lastDivider}")
 			End If
 				
-			_bulkLoadFileWriter.Write(Global.Relativity.Constants.ENDLINETERMSTRING)
+			_bulkLoadFileWriter.Write(Constants.ENDLINETERMSTRING)
 			If _replaceFullText AndAlso Not _fullTextStorageIsInSql Then
-				_dataGridFileWriter.Write(Global.Relativity.Constants.ENDLINETERMSTRING)
+				_dataGridFileWriter.Write(Constants.ENDLINETERMSTRING)
 			End If
 		End Sub
 
@@ -1021,7 +1020,7 @@ Namespace kCura.WinEDDS
 				_bulkLoadFileWriter.Write("-1,")
 			End If
 			If writeLineTermination Then
-				_bulkLoadFileWriter.Write(Global.Relativity.Constants.ENDLINETERMSTRING)
+				_bulkLoadFileWriter.Write(Constants.ENDLINETERMSTRING)
 			End If
 		End Sub
 #End Region
@@ -1193,7 +1192,7 @@ Namespace kCura.WinEDDS
 							If _verboseErrorCollection.ContainsLine(originalIndex) Then
 								Dim sb As New System.Text.StringBuilder
 								For Each message As String In _verboseErrorCollection(originalIndex)
-									sb.Append(Global.Relativity.MassImport.ImportStatusHelper.ConvertToMessageLineInCell(message))
+									sb.Append(ImportStatusHelper.ConvertToMessageLineInCell(message))
 								Next
 								errorMessages = sb.ToString.TrimEnd(ChrW(10))
 							End If

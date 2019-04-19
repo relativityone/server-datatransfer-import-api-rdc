@@ -1,7 +1,6 @@
 kCura.relativity.client
 nbuilder
 newtonsoft.json
-relativity
 relativity.logging
 relativity.logging.interfaces
 relativity.objectmanager

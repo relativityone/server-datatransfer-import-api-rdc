@@ -1,3 +1,5 @@
+Imports Relativity.Import.Export.Services
+
 Namespace kCura.WinEDDS.Types
 	Public Class SingleChoiceCollection
 		Implements ICollection
@@ -10,15 +12,15 @@ Namespace kCura.WinEDDS.Types
 			End Get
 		End Property
 
-		Default Public ReadOnly Property Item(ByVal name As String) As Global.Relativity.ChoiceInfo
+		Default Public ReadOnly Property Item(ByVal name As String) As ChoiceInfo
 			Get
 				Dim retval As Object = _ht(name.ToLower.Trim)
 				If retval Is Nothing Then Return Nothing
-				Return DirectCast(retval, Global.Relativity.ChoiceInfo)
+				Return DirectCast(retval, ChoiceInfo)
 			End Get
 		End Property
 
-		Public Sub Add(ByVal value As Global.Relativity.ChoiceInfo)
+		Public Sub Add(ByVal value As ChoiceInfo)
 			Dim key As String = value.Name.ToLower.Trim
 			If Not _ht.ContainsKey(key) Then _ht.Add(key, value)
 			_maxOrder = System.Math.Max(value.Order, _maxOrder)

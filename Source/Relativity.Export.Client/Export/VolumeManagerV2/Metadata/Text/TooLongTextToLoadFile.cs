@@ -12,8 +12,6 @@
 
 	using Relativity.Logging;
 
-	using ViewFieldInfo = Relativity.ViewFieldInfo;
-
 	public class TooLongTextToLoadFile : ILongTextHandler
 	{
 		private readonly LongTextHelper _longTextHelper;
@@ -44,7 +42,7 @@
 
 		public void HandleLongText(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field, DeferredEntry lineEntry)
 		{
-			ViewFieldInfo fieldToGetValueFrom;
+			kCura.WinEDDS.ViewFieldInfo fieldToGetValueFrom;
 			if (field is CoalescedTextViewField)
 			{
 				fieldToGetValueFrom = _longTextHelper.GetTextPrecedenceTrueField(artifact, field);

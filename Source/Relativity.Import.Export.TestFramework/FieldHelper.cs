@@ -100,7 +100,7 @@ namespace Relativity.Import.Export.TestFramework
 							                                     },
 						                            ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
 					                            };
-				Services.Objects.DataContracts.QueryResult result = client.QueryAsync(
+				Relativity.Services.Objects.DataContracts.QueryResult result = client.QueryAsync(
 					parameters.WorkspaceId,
 					queryRequest,
 					1,

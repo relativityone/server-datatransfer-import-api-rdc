@@ -12,9 +12,9 @@ namespace Relativity.Export.NUnit
 
     using global::NUnit.Framework;
 
-    using Relativity;
+    using Relativity.Import.Export.Services;
 
-    public class HtmlExportFileFormatterTests : ExportFileFormatterSetUp<HtmlExportFileFormatter>
+	public class HtmlExportFileFormatterTests : ExportFileFormatterSetUp<HtmlExportFileFormatter>
 	{
 		private const string _WKSP_NAME = "WkspName";
 		private const string _HTML_TH = "<th>";

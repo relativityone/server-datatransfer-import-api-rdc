@@ -1,4 +1,5 @@
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS.Service
 	Public Class FileManager
@@ -50,16 +51,16 @@ Namespace kCura.WinEDDS.Service
 			Return files
 		End Function
 
-		Public Shared Function WebAPIFileInfotoFileInfo(ByVal file As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase) As Global.Relativity.FileInfoBase
-			Dim fileInfo As New Global.Relativity.FileInfoBase
+		Public Shared Function WebAPIFileInfotoFileInfo(ByVal file As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase) As FileInfoBase
+			Dim fileInfo As New FileInfoBase
 
 			fileInfo.FileName = file.FileName
 			fileInfo.FileGuid = file.FileGuid
 			Return fileInfo
 		End Function
 
-		Public Shared Function WebAPIFileInfostoFileInfos(ByVal files As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()) As Global.Relativity.FileInfoBase()
-			Dim fileInfos(files.Length - 1) As Global.Relativity.FileInfoBase
+		Public Shared Function WebAPIFileInfostoFileInfos(ByVal files As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()) As FileInfoBase()
+			Dim fileInfos(files.Length - 1) As FileInfoBase
 
 			Dim i As Int32
 			For i = 0 To fileInfos.Length - 1

@@ -133,80 +133,80 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.IsNull(test.SelectedViewFields)
 		End Sub
 
-		<Category(TestCategories.SeparateDomain)>
-		<Test()> Public Sub DeserializeExportFile_Pre_9_0_NoStorageLocation()
-			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(Pre_9_0_NoStorageLocation))
-			Assert.Pass()
-		End Sub
+		'<Category(TestCategories.SeparateDomain)>
+		'<Test()> Public Sub DeserializeExportFile_Pre_9_0_NoStorageLocation()
+		'	Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(Pre_9_0_NoStorageLocation))
+		'	Assert.Pass()
+		'End Sub
 
-		<Category(TestCategories.SeparateDomain)>
-		<Test()> Public Sub AdditionalViewFieldInfoProperties()
-			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(AdditionalViewFieldInfoProperties_9_5))
-			Assert.Pass()
-		End Sub
+		'<Category(TestCategories.SeparateDomain)>
+		'<Test()> Public Sub AdditionalViewFieldInfoProperties()
+		'	Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(AdditionalViewFieldInfoProperties_9_5))
+		'	Assert.Pass()
+		'End Sub
 
 
-		<Category(TestCategories.SeparateDomain)>
-		<Test()> Public Sub DeserializeExportFile_EverythingSet_7_2()
-			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(EverythingSet_7_2))
-			Compare(test)
-			Assert.IsNotNull(test.VolumeInfo)
-			Dim info As kCura.WinEDDS.Exporters.VolumeInfo = test.VolumeInfo
-			Assert.AreEqual(True, test.VolumeInfo.CopyImageFilesFromRepository)
-			Assert.AreEqual(True, test.VolumeInfo.CopyNativeFilesFromRepository)
-			Assert.AreEqual(10, test.VolumeInfo.SubdirectoryMaxSize)
-			Assert.AreEqual(1, test.VolumeInfo.SubdirectoryStartNumber)
-			Assert.AreEqual("TXT", test.VolumeInfo.SubdirectoryFullTextPrefix(False))
-			Assert.AreEqual("TEXT\TXT", test.VolumeInfo.SubdirectoryFullTextPrefix(True))
-			Assert.AreEqual("NAT", info.SubdirectoryNativePrefix(False))
-			Assert.AreEqual("NATIVES\NAT", info.SubdirectoryNativePrefix(True))
-			Assert.AreEqual("IMG", info.SubdirectoryImagePrefix(False))
-			Assert.AreEqual("IMAGES\IMG", info.SubdirectoryImagePrefix(True))
-			Assert.AreEqual(100, info.VolumeMaxSize)
-			Assert.AreEqual(1000, info.VolumeStartNumber)
-			Assert.IsNull(info.VolumePrefix)
+		'<Category(TestCategories.SeparateDomain)>
+		'<Test()> Public Sub DeserializeExportFile_EverythingSet_7_2()
+		'	Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(EverythingSet_7_2))
+		'	Compare(test)
+		'	Assert.IsNotNull(test.VolumeInfo)
+		'	Dim info As kCura.WinEDDS.Exporters.VolumeInfo = test.VolumeInfo
+		'	Assert.AreEqual(True, test.VolumeInfo.CopyImageFilesFromRepository)
+		'	Assert.AreEqual(True, test.VolumeInfo.CopyNativeFilesFromRepository)
+		'	Assert.AreEqual(10, test.VolumeInfo.SubdirectoryMaxSize)
+		'	Assert.AreEqual(1, test.VolumeInfo.SubdirectoryStartNumber)
+		'	Assert.AreEqual("TXT", test.VolumeInfo.SubdirectoryFullTextPrefix(False))
+		'	Assert.AreEqual("TEXT\TXT", test.VolumeInfo.SubdirectoryFullTextPrefix(True))
+		'	Assert.AreEqual("NAT", info.SubdirectoryNativePrefix(False))
+		'	Assert.AreEqual("NATIVES\NAT", info.SubdirectoryNativePrefix(True))
+		'	Assert.AreEqual("IMG", info.SubdirectoryImagePrefix(False))
+		'	Assert.AreEqual("IMAGES\IMG", info.SubdirectoryImagePrefix(True))
+		'	Assert.AreEqual(100, info.VolumeMaxSize)
+		'	Assert.AreEqual(1000, info.VolumeStartNumber)
+		'	Assert.IsNull(info.VolumePrefix)
 
-			Assert.IsNotNull(test.SelectedTextFields)
-			'BigData_ET_#
-			Assert.AreEqual("ExtractedText", test.SelectedTextFields(0).AvfColumnName)
-			Assert.AreEqual(1000187, test.SelectedTextFields(0).AvfId)
-			'BigData_ET_#
-			Assert.AreEqual("Extracted Text", test.SelectedTextFields(0).DisplayName)
-			Assert.AreEqual("1", test.ImagePrecedence(0).Value)
-			Assert.AreEqual("2", test.ImagePrecedence(1).Value)
+		'	Assert.IsNotNull(test.SelectedTextFields)
+		'	'BigData_ET_#
+		'	Assert.AreEqual("ExtractedText", test.SelectedTextFields(0).AvfColumnName)
+		'	Assert.AreEqual(1000187, test.SelectedTextFields(0).AvfId)
+		'	'BigData_ET_#
+		'	Assert.AreEqual("Extracted Text", test.SelectedTextFields(0).DisplayName)
+		'	Assert.AreEqual("1", test.ImagePrecedence(0).Value)
+		'	Assert.AreEqual("2", test.ImagePrecedence(1).Value)
 
-			Assert.IsNotNull(test.SelectedViewFields)
-		End Sub
+		'	Assert.IsNotNull(test.SelectedViewFields)
+		'End Sub
 
-		<Category(TestCategories.SeparateDomain)>
-		<Test()> Public Sub DeserializeExportFile_EverythingSet_7_4()
-			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(EverythingSet_7_4))
-			Compare(test)
-			Assert.IsNotNull(test.VolumeInfo)
-			Dim info As kCura.WinEDDS.Exporters.VolumeInfo = test.VolumeInfo
-			Assert.AreEqual(True, test.VolumeInfo.CopyImageFilesFromRepository)
-			Assert.AreEqual(True, test.VolumeInfo.CopyNativeFilesFromRepository)
-			Assert.AreEqual(10, test.VolumeInfo.SubdirectoryMaxSize)
-			Assert.AreEqual(1, test.VolumeInfo.SubdirectoryStartNumber)
-			Assert.AreEqual("TXT", test.VolumeInfo.SubdirectoryFullTextPrefix(False))
-			Assert.AreEqual("TEXT\TXT", test.VolumeInfo.SubdirectoryFullTextPrefix(True))
-			Assert.AreEqual("NAT", info.SubdirectoryNativePrefix(False))
-			Assert.AreEqual("NATIVES\NAT", info.SubdirectoryNativePrefix(True))
-			Assert.AreEqual("IMG", info.SubdirectoryImagePrefix(False))
-			Assert.AreEqual("IMAGES\IMG", info.SubdirectoryImagePrefix(True))
-			Assert.AreEqual(100, info.VolumeMaxSize)
-			Assert.AreEqual(1000, info.VolumeStartNumber)
-			Assert.IsNull(info.VolumePrefix)
+		'<Category(TestCategories.SeparateDomain)>
+		'<Test()> Public Sub DeserializeExportFile_EverythingSet_7_4()
+		'	Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(EverythingSet_7_4))
+		'	Compare(test)
+		'	Assert.IsNotNull(test.VolumeInfo)
+		'	Dim info As kCura.WinEDDS.Exporters.VolumeInfo = test.VolumeInfo
+		'	Assert.AreEqual(True, test.VolumeInfo.CopyImageFilesFromRepository)
+		'	Assert.AreEqual(True, test.VolumeInfo.CopyNativeFilesFromRepository)
+		'	Assert.AreEqual(10, test.VolumeInfo.SubdirectoryMaxSize)
+		'	Assert.AreEqual(1, test.VolumeInfo.SubdirectoryStartNumber)
+		'	Assert.AreEqual("TXT", test.VolumeInfo.SubdirectoryFullTextPrefix(False))
+		'	Assert.AreEqual("TEXT\TXT", test.VolumeInfo.SubdirectoryFullTextPrefix(True))
+		'	Assert.AreEqual("NAT", info.SubdirectoryNativePrefix(False))
+		'	Assert.AreEqual("NATIVES\NAT", info.SubdirectoryNativePrefix(True))
+		'	Assert.AreEqual("IMG", info.SubdirectoryImagePrefix(False))
+		'	Assert.AreEqual("IMAGES\IMG", info.SubdirectoryImagePrefix(True))
+		'	Assert.AreEqual(100, info.VolumeMaxSize)
+		'	Assert.AreEqual(1000, info.VolumeStartNumber)
+		'	Assert.IsNull(info.VolumePrefix)
 
-			Assert.IsNotNull(test.SelectedTextFields)
-			Assert.AreEqual("ExtractedText", test.SelectedTextFields(0).AvfColumnName)
-			Assert.AreEqual(1000187, test.SelectedTextFields(0).AvfId)
-			Assert.AreEqual("Extracted Text", test.SelectedTextFields(0).DisplayName)
-			Assert.AreEqual("1", test.ImagePrecedence(0).Value)
-			Assert.AreEqual("2", test.ImagePrecedence(1).Value)
+		'	Assert.IsNotNull(test.SelectedTextFields)
+		'	Assert.AreEqual("ExtractedText", test.SelectedTextFields(0).AvfColumnName)
+		'	Assert.AreEqual(1000187, test.SelectedTextFields(0).AvfId)
+		'	Assert.AreEqual("Extracted Text", test.SelectedTextFields(0).DisplayName)
+		'	Assert.AreEqual("1", test.ImagePrecedence(0).Value)
+		'	Assert.AreEqual("2", test.ImagePrecedence(1).Value)
 
-			Assert.IsNotNull(test.SelectedViewFields)
-		End Sub
+		'	Assert.IsNotNull(test.SelectedViewFields)
+		'End Sub
 
 		<Category(TestCategories.SeparateDomain)>
 		<Test()> Public Sub DeserializeExportFile_LogFileFormat_Unselected()

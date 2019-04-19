@@ -17,6 +17,7 @@ namespace Relativity.Export.Client.NUnit.Integration
 
 	using kCura.WinEDDS;
 
+	using Relativity.Import.Export.Services;
 	using Relativity.Import.Export.TestFramework;
 
 	using Relativity.Testing.Identification;
@@ -42,7 +43,7 @@ namespace Relativity.Export.Client.NUnit.Integration
 				new List<string> { ResourceFileHelper.GetDocsResourceFilePath(SampleDocPdfFileName) };
 
 			this.GivenTheExportType(ExportFile.ExportType.ParentSearch);
-			Relativity.CaseInfo caseInfo = await this.WhenGettingTheWorkspaceInfoAsync().ConfigureAwait(false);
+			CaseInfo caseInfo = await this.WhenGettingTheWorkspaceInfoAsync().ConfigureAwait(false);
 			this.GivenTheFilesAreImported(sampleDocFileNames);
 			this.GivenTheSelectedFolderId(caseInfo.RootFolderID);
 			this.GivenTheIdentifierColumnName(WellKnownFields.ControlNumber);

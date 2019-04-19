@@ -1,7 +1,8 @@
 Imports System.Threading
-Imports Relativity
 Imports Relativity.Import.Export.Io
 Imports Relativity.Import.Export.Process
+Imports Relativity.Import.Export.Services
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImageImporter
@@ -13,12 +14,12 @@ Namespace kCura.WinEDDS.ImportExtension
 		               ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, _
 		               ByVal context As ProcessContext, _
 		               ByVal ioReporterInstance As IIoReporter, 
-		               ByVal logger As Logging.ILog, _
+		               ByVal logger As ILog, _
 		               ByVal processID As System.Guid, _
 		               ByVal sourceDataReader As System.Data.DataTable, _
 		               ByVal enforceDocumentLimit As Boolean, _
 		               ByVal tokenSource As CancellationTokenSource,
-		               Optional executionSource As Global.Relativity.ExecutionSource = Global.Relativity.ExecutionSource.Unknown)
+		               Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
 			MyBase.New(folderId, _
 			           imageLoadFile, _
 			           context, _

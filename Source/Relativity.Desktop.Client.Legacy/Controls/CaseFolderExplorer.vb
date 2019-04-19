@@ -164,7 +164,7 @@ Namespace Relativity.Desktop.Client
 
 		Private _contextMenuTreeNode As System.Windows.Forms.TreeNode
 
-		Private Async Function LoadCase(ByVal caseInfo As Global.Relativity.CaseInfo) As Task
+		Private Async Function LoadCase(ByVal caseInfo As Relativity.Import.Export.Services.CaseInfo) As Task
 			'check import/export permissions for the case
 			Await _application.LoadWorkspacePermissions()
 

@@ -1,9 +1,10 @@
 Imports System.Threading
-Imports Relativity
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Data
 Imports Relativity.Import.Export.Io
 Imports Relativity.Logging
+Imports Relativity.Import.Export.Services
+
 
 Namespace kCura.WinEDDS
 	Public MustInherit Class LoadFileBase
@@ -54,7 +55,7 @@ Namespace kCura.WinEDDS
 		Protected _settings As kCura.WinEDDS.LoadFile
 		Private _codeValidator As CodeValidator.Base
 		Protected WithEvents _artifactReader As Api.IArtifactReader
-		Protected _executionSource As Global.Relativity.ExecutionSource
+		Protected _executionSource As ExecutionSource
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property LoadImportedFullTextFromServer As Boolean
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
@@ -208,12 +209,12 @@ Namespace kCura.WinEDDS
 			_codeValidator = Me.GetSingleCodeValidator()
 
 			MulticodeMatrix = New System.Collections.Hashtable
-			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower AndAlso args.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> ImportOverwriteType.Overlay.ToString.ToLower AndAlso args.ArtifactTypeID = ArtifactType.Document Then
 				_keyFieldID = -1
 			End If
 			If _keyFieldID = -1 Then
 				For Each field As DocumentField In _docFields
-					If field.FieldCategory = Global.Relativity.FieldCategory.Identifier Then
+					If field.FieldCategory = FieldCategory.Identifier Then
 						_keyFieldID = field.FieldID
 						Exit For
 					End If
@@ -376,7 +377,7 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Protected Function FieldValueContainsTextFileLocation(field As Api.ArtifactField) As Boolean
-			Dim containsFileLocation As Boolean = (_fullTextColumnMapsToFileLocation AndAlso field.Category = Global.Relativity.FieldCategory.FullText)
+			Dim containsFileLocation As Boolean = (_fullTextColumnMapsToFileLocation AndAlso field.Category = FieldCategory.FullText)
 			If Not containsFileLocation Then
 				containsFileLocation = field.DisplayName.Equals(_settings.LongTextColumnThatContainsPathToFullText, StringComparison.InvariantCultureIgnoreCase)
 			End If
@@ -390,19 +391,19 @@ Namespace kCura.WinEDDS
 			End If
 
 			Select Case field.Type
-				Case Global.Relativity.FieldTypeHelper.FieldType.Boolean
+				Case FieldType.Boolean
 					field.Value = NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Boolean)))
 
-				Case Global.Relativity.FieldTypeHelper.FieldType.Integer
+				Case FieldType.Integer
 					field.Value = NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Int32)))
 
-				Case Global.Relativity.FieldTypeHelper.FieldType.Currency, Global.Relativity.FieldTypeHelper.FieldType.Decimal
+				Case FieldType.Currency, FieldType.Decimal
 					field.Value = NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Decimal)))
 
-				Case Global.Relativity.FieldTypeHelper.FieldType.Date
+				Case FieldType.Date
 					field.Value = NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of DateTime)), True)
 
-				Case Global.Relativity.FieldTypeHelper.FieldType.User
+				Case FieldType.User
 					Dim previewValue As String = String.Empty
 					If field.Value Is Nothing Then
 						field.Value = String.Empty
@@ -412,7 +413,7 @@ Namespace kCura.WinEDDS
 					End If
 					If forPreview Then field.Value = previewValue
 
-				Case Global.Relativity.FieldTypeHelper.FieldType.Code
+				Case FieldType.Code
 					Dim fieldValue As String
 					If field.Value Is Nothing Then
 						fieldValue = String.Empty
@@ -442,7 +443,7 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 
-				Case Global.Relativity.FieldTypeHelper.FieldType.MultiCode
+				Case FieldType.MultiCode
 					Dim value As String() = Nothing
 					If Not field.Value Is Nothing Then value = DirectCast(field.Value, String())
 					If field.Value Is Nothing Then value = New System.String() {}
@@ -495,28 +496,28 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 
-				Case Global.Relativity.FieldTypeHelper.FieldType.Varchar
+				Case FieldType.Varchar
 					If field.Value Is Nothing Then field.Value = String.Empty
 					field.Value = NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(field.ValueAsString, columnIndex, field.TextLength, field.DisplayName))
-					If field.Category = Global.Relativity.FieldCategory.Relational Then
+					If field.Category = FieldCategory.Relational Then
 						If field.Value.ToString = String.Empty AndAlso importBehavior.HasValue AndAlso importBehavior.Value = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
 							field.Value = NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(identityValue, columnIndex, field.TextLength, field.DisplayName))
 						End If
 					End If
 
-				Case Global.Relativity.FieldTypeHelper.FieldType.Object
+				Case FieldType.Object
 					If field.Value Is Nothing Then field.Value = String.Empty
 					field.Value = NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(field.Value.ToString, columnIndex, field.TextLength, field.DisplayName))
 					If forPreview Then field.Value = field.Value.ToString.Trim
 
-				Case Global.Relativity.FieldTypeHelper.FieldType.Objects
+				Case FieldType.Objects
 					If (Not Me._settings.ObjectFieldIdListContainsArtifactId Is Nothing) AndAlso Me._settings.ObjectFieldIdListContainsArtifactId.Contains(field.ArtifactID) Then
 						SetFieldValueObjectsByArtifactID(field, columnIndex, forPreview, identityValue)
 					Else
 						SetFieldValueObjectsByName(field, columnIndex, forPreview, identityValue)
 					End If
 
-				Case Global.Relativity.FieldTypeHelper.FieldType.Text, Global.Relativity.FieldTypeHelper.FieldType.OffTableText
+				Case FieldType.Text, FieldType.OffTableText
 					If FieldValueContainsTextFileLocation(field) Then
 						Dim value As String = field.ValueAsString
 						Dim performExtractedTextFileLocationValidation As Boolean = Not DisableExtractedTextFileLocationValidation

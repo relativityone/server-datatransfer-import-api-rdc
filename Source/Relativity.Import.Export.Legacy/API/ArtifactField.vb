@@ -1,8 +1,8 @@
-Imports Relativity
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS.Api
 	Public Class ArtifactField
-		Inherits Global.Relativity.FieldInfoBase
+		Inherits FieldInfoBase
 		Private _value As Object
 		Private _associatedObjectTypeID As Int32
 		Public Property Value() As Object
@@ -29,7 +29,7 @@ Namespace kCura.WinEDDS.Api
 				Return _value.ToString
 			End Get
 		End Property
-		Public Sub New(ByVal displayName As String, ByVal artifactID As Int32, ByVal fieldTypeID As FieldTypeHelper.FieldType, ByVal fieldCategoryID As FieldCategory, ByVal codeTypeID As Nullable(Of Int32), ByVal textLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal enableDataGrid As Boolean)
+		Public Sub New(ByVal displayName As String, ByVal artifactID As Int32, ByVal fieldTypeID As FieldType, ByVal fieldCategoryID As FieldCategory, ByVal codeTypeID As Nullable(Of Int32), ByVal textLength As Nullable(Of Int32), ByVal associatedObjectTypeID As Nullable(Of Int32), ByVal enableDataGrid As Boolean)
 			MyBase.New()
 			Me.DisplayName = displayName
 			Me.ArtifactID = artifactID
@@ -47,23 +47,23 @@ Namespace kCura.WinEDDS.Api
 
 		Public Sub New(ByVal field As DocumentField)
 			Me.ArtifactID = field.FieldID
-			Me.Category = CType(field.FieldCategoryID, Global.Relativity.FieldCategory)
+			Me.Category = CType(field.FieldCategoryID, FieldCategory)
 			If Not field.CodeTypeID Is Nothing Then Me.CodeTypeID = field.CodeTypeID.Value
 			Me.DisplayName = field.FieldName
 			If Not field.FieldLength Is Nothing Then Me.TextLength = field.FieldLength.Value
 			If Not field.AssociatedObjectTypeID Is Nothing Then Me.AssociatedObjectTypeID = field.AssociatedObjectTypeID.Value
-			Me.Type = CType(field.FieldTypeID, Global.Relativity.FieldTypeHelper.FieldType)
+			Me.Type = CType(field.FieldTypeID, FieldType)
 			Me.EnableDataGrid = field.EnableDataGrid
 		End Sub
 
 		Public Sub New(ByVal field As kCura.EDDS.WebAPI.DocumentManagerBase.Field)
 			Me.ArtifactID = field.ArtifactID
-			Me.Category = CType(field.FieldCategoryID, Global.Relativity.FieldCategory)
+			Me.Category = CType(field.FieldCategoryID, FieldCategory)
 			If Not field.CodeTypeID Is Nothing Then Me.CodeTypeID = field.CodeTypeID.Value
 			Me.DisplayName = field.DisplayName
 			If Not field.MaxLength Is Nothing Then Me.TextLength = field.MaxLength.Value
 			If Not field.AssociativeArtifactTypeID Is Nothing Then Me.AssociatedObjectTypeID = field.AssociativeArtifactTypeID.Value
-			Me.Type = CType(field.FieldTypeID, Global.Relativity.FieldTypeHelper.FieldType)
+			Me.Type = CType(field.FieldTypeID, FieldType)
 			Me.EnableDataGrid = field.EnableDataGrid
 		End Sub
 	End Class

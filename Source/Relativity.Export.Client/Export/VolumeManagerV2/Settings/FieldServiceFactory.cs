@@ -7,8 +7,7 @@
 	using kCura.WinEDDS.Exporters;
 
 	using Relativity.Logging;
-
-	using ViewFieldInfo = Relativity.ViewFieldInfo;
+	using Relativity.Import.Export.Services;
 
 	public class FieldServiceFactory
 	{

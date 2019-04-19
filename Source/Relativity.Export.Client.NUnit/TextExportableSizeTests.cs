@@ -16,13 +16,13 @@ namespace Relativity.Export.NUnit
 
 	using Moq;
 
-	using Relativity;
 	using Relativity.Export.VolumeManagerV2.DataSize;
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Import.Export.Services;
 	using Relativity.Import.Export.TestFramework;
 
-	using ExportConstants = Relativity.Export.Constants;
-	using RelativityConstants = Relativity.Constants;
+	using ExportConstants = Relativity.Import.Export.Services.ExportConstants;
+	using RelativityConstants = Relativity.Import.Export.Services.Constants;
 
 	[TestFixture]
 	public class TextExportableSizeTests
@@ -123,9 +123,9 @@ namespace Relativity.Export.NUnit
 		}
 
 		[Test]
-		[TestCase(FieldTypeHelper.FieldType.Text)]
-		[TestCase(FieldTypeHelper.FieldType.OffTableText)]
-		public void ItShouldUpdatePredictionsForTextField(FieldTypeHelper.FieldType fieldType)
+		[TestCase(FieldType.Text)]
+		[TestCase(FieldType.OffTableText)]
+		public void ItShouldUpdatePredictionsForTextField(FieldType fieldType)
 		{
 			const string fieldTextValue = "Lorem ipsum dolor sit amet enim. Etiam ullamcorper.";
 
@@ -154,7 +154,7 @@ namespace Relativity.Export.NUnit
 		{
 			const string fieldTextValue = "Lorem ipsum dolor sit amet enim. Etiam ullamcorper.";
 
-			SetUpMocksForField(FieldTypeHelper.FieldType.Text, encoding);
+			SetUpMocksForField(FieldType.Text, encoding);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -178,7 +178,7 @@ namespace Relativity.Export.NUnit
 		{
 			const long textSize = 280402;
 
-			SetUpMocksForField(FieldTypeHelper.FieldType.Text, Encoding.Unicode);
+			SetUpMocksForField(FieldType.Text, Encoding.Unicode);
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
 			_fieldService.Setup(x => x.ContainsFieldName(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
@@ -212,7 +212,7 @@ namespace Relativity.Export.NUnit
 		{
 			const long textSize = 893212;
 
-			SetUpMocksForField(FieldTypeHelper.FieldType.Text, encoding);
+			SetUpMocksForField(FieldType.Text, encoding);
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
 			_fieldService.Setup(x => x.ContainsFieldName(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
@@ -227,7 +227,7 @@ namespace Relativity.Export.NUnit
 			{
 				Metadata = new object[]
 				{
-					Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN,
+					Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN,
 					textSize
 				}
 			};
@@ -246,7 +246,7 @@ namespace Relativity.Export.NUnit
 		{
 			const long extractedTextSizeNaive = 2097152;
 
-			SetUpMocksForField(FieldTypeHelper.FieldType.Text, Encoding.Unicode);
+			SetUpMocksForField(FieldType.Text, Encoding.Unicode);
 
 			_fieldService.Setup(x => x.ContainsFieldName(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(false);
 
@@ -260,7 +260,7 @@ namespace Relativity.Export.NUnit
 			{
 				Metadata = new object[]
 				{
-					Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN
+					Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN
 				}
 			};
 
@@ -276,8 +276,8 @@ namespace Relativity.Export.NUnit
 			IEnumerable<kCura.WinEDDS.ViewFieldInfo> fields = fieldFactory.GetAllDocumentFields();
 			foreach (kCura.WinEDDS.ViewFieldInfo field in fields)
 			{
-				if (field.FieldType == FieldTypeHelper.FieldType.Text
-				    || field.FieldType == FieldTypeHelper.FieldType.OffTableText)
+				if (field.FieldType == FieldType.Text
+				    || field.FieldType == FieldType.OffTableText)
 				{
 					continue;
 				}
@@ -305,7 +305,7 @@ namespace Relativity.Export.NUnit
 			};
 		}
 
-		private void SetUpMocksForField(FieldTypeHelper.FieldType fieldType, Encoding encoding)
+		private void SetUpMocksForField(FieldType fieldType, Encoding encoding)
 		{
 			SetExportingTextAsFiles();
 			_exportSettings.TextFileEncoding = encoding;

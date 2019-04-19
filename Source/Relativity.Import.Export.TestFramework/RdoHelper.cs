@@ -81,7 +81,7 @@ namespace Relativity.Import.Export.TestFramework
 														Value = fields[key],
 													}),
 				};
-				Services.Objects.DataContracts.CreateResult result =
+				Relativity.Services.Objects.DataContracts.CreateResult result =
 					objectManager.CreateAsync(parameters.WorkspaceId, request).GetAwaiter().GetResult();
 				List<InvalidOperationException> innerExceptions = result.EventHandlerStatuses.Where(x => !x.Success)
 					.Select(status => new InvalidOperationException(status.Message)).ToList();
@@ -109,7 +109,7 @@ namespace Relativity.Import.Export.TestFramework
 					Object = new RelativityObjectRef { ArtifactID = artifactId },
 				};
 
-				Services.Objects.DataContracts.DeleteResult result =
+				Relativity.Services.Objects.DataContracts.DeleteResult result =
 					objectManager.DeleteAsync(parameters.WorkspaceId, request).GetAwaiter().GetResult();
 				if (result.Report.DeletedItems.Count == 0)
 				{
@@ -134,7 +134,7 @@ namespace Relativity.Import.Export.TestFramework
 					Condition = $"'Name' == '{objectTypeName}'",
 				};
 
-				Services.Objects.DataContracts.QueryResult result = objectManager
+				Relativity.Services.Objects.DataContracts.QueryResult result = objectManager
 					.QueryAsync(parameters.WorkspaceId, queryRequest, 0, 1).GetAwaiter().GetResult();
 				if (result.TotalCount != 1)
 				{
@@ -158,7 +158,7 @@ namespace Relativity.Import.Export.TestFramework
 				{
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId },
 				};
-				Services.Objects.DataContracts.QueryResult result = client.QueryAsync(
+				Relativity.Services.Objects.DataContracts.QueryResult result = client.QueryAsync(
 					parameters.WorkspaceId,
 					queryRequest,
 					1,
@@ -204,7 +204,7 @@ namespace Relativity.Import.Export.TestFramework
 					Fields = fields?.Select(x => new FieldRef { Name = x }),
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId },
 				};
-				Services.Objects.DataContracts.QueryResult result = client.QueryAsync(
+				Relativity.Services.Objects.DataContracts.QueryResult result = client.QueryAsync(
 					parameters.WorkspaceId,
 					queryRequest,
 					1,
@@ -262,7 +262,7 @@ namespace Relativity.Import.Export.TestFramework
 					Object = new RelativityObjectRef { ArtifactID = artifactId },
 				};
 
-				Services.Objects.DataContracts.ReadResult result = client.ReadAsync(parameters.WorkspaceId, readRequest)
+				Relativity.Services.Objects.DataContracts.ReadResult result = client.ReadAsync(parameters.WorkspaceId, readRequest)
 					.GetAwaiter().GetResult();
 				return result.Object;
 			}

@@ -11,6 +11,8 @@ Imports kCura.WinEDDS
 
 Imports Rhino.Mocks
 
+Imports Relativity.Import.Export.Services
+
 Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture>
@@ -34,7 +36,7 @@ Namespace Relativity.Import.Client.NUnit
 			Dim _testReader As New StubDataReaderReader(New DataReaderReaderInitializationArgs(Nothing, 0), Nothing, _stubReader)
 
 			' integer
-			Dim field As New Api.ArtifactField("Test", 1, FieldTypeHelper.FieldType.Integer, 0, 0, 20, 0, False)
+			Dim field As New Api.ArtifactField("Test", 1, FieldType.Integer, 0, 0, 20, 0, False)
 			_testReader.SetFieldValueTest(field, "12345")
 			Assert.True(field.Value.Equals(12345))
 
@@ -49,7 +51,7 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.True(field.Value Is Nothing)
 
 			' boolean
-			field.Type = FieldTypeHelper.FieldType.Boolean
+			field.Type = FieldType.Boolean
 			_testReader.SetFieldValueTest(field, "true")
 			Assert.True(field.Value.Equals(True))
 
@@ -60,7 +62,7 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.True(field.Value Is Nothing)
 
 			' currency
-			field.Type = FieldTypeHelper.FieldType.Currency
+			field.Type = FieldType.Currency
 			_testReader.SetFieldValueTest(field, "109.37")
 			Assert.True(field.Value.Equals(109.37D))
 
@@ -76,7 +78,7 @@ Namespace Relativity.Import.Client.NUnit
 
 
 			' date
-			field.Type = FieldTypeHelper.FieldType.Date
+			field.Type = FieldType.Date
 			_testReader.SetFieldValueTest(field, "10/31/2005")
 			Assert.True(field.Value.Equals(New DateTime(2005, 10, 31)))
 
@@ -97,7 +99,7 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.True(field.Value Is Nothing)
 
 			' decimal
-			field.Type = FieldTypeHelper.FieldType.Decimal
+			field.Type = FieldType.Decimal
 			_testReader.SetFieldValueTest(field, "3.1415926")
 			Assert.True(field.Value.Equals(3.1415926D))
 
@@ -121,7 +123,7 @@ Namespace Relativity.Import.Client.NUnit
 			Dim rdr As New StubDataReaderReader(New DataReaderReaderInitializationArgs(Nothing, 0), Nothing, _stubReader)
 
 			Dim displayName As String = "theNameIsInteresting"
-			Dim field As New Api.ArtifactField(displayName, 1, FieldTypeHelper.FieldType.Integer, 0, 0, 20, 0, False)
+			Dim field As New Api.ArtifactField(displayName, 1, FieldType.Integer, 0, 0, 20, 0, False)
 
 			Dim lineNum As Long = 1313
 

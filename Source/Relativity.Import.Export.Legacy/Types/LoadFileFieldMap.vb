@@ -1,3 +1,5 @@
+Imports Relativity.Import.Export.Services
+
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class LoadFileFieldMap
 		Implements IEnumerable
@@ -60,7 +62,7 @@ Namespace kCura.WinEDDS
 			Get
 				Dim item As LoadFileFieldMapItem
 				For Each item In _al
-					If item.DocumentField.FieldCategory = Global.Relativity.FieldCategory.Identifier Then
+					If item.DocumentField.FieldCategory = FieldCategory.Identifier Then
 						Return item
 					End If
 				Next

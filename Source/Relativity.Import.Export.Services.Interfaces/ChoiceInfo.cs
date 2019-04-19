@@ -4,6 +4,8 @@
 //------------------------------------------------------------------------------
 namespace Relativity.Import.Export.Services
 {
+	using System;
+
 	public class ChoiceInfo
 	{
 		public int ArtifactID { get; set; }
@@ -15,5 +17,23 @@ namespace Relativity.Import.Export.Services
 		public int Order { get; set; }
 
 		public int ParentArtifactID { get; set; }
+
+		public ChoiceInfo()
+		{
+		}
+
+		public ChoiceInfo(System.Data.DataRow row)
+		{
+			if (row == null)
+			{
+				throw new ArgumentNullException(nameof(row));
+			}
+
+			Order = System.Convert.ToInt32(row["Order"]);
+			CodeTypeID = System.Convert.ToInt32(row["CodeTypeID"]);
+			Name = System.Convert.ToString(row["Name"]);
+			ArtifactID = System.Convert.ToInt32(row["ArtifactID"]);
+			ParentArtifactID = System.Convert.ToInt32(row["ParentArtifactID"]);
+		}
 	}
 }

@@ -40,7 +40,6 @@ NUGET
   remote: https://proget.kcura.corp/NuGet/NuGet
     kCura.OutsideIn.FI.Win32 (2019.2.0)
     kCura.Relativity.Client (10.2.32.58-DEV)
-    Relativity (10.2.32.58-DEV)
     Relativity.DataTransfer.MessageService (10.2.0)
       Relativity.Kepler.Client (>= 1.0.1.445)
       Relativity.Telemetry.DataContracts.Shared (>= 9.4.159)

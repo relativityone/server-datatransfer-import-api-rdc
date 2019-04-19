@@ -12,6 +12,7 @@ Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.Service.Export
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Process
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
@@ -218,14 +219,14 @@ Namespace kCura.WinEDDS
 
 		Private Function IsExtractedTextSelected() As Boolean
 			For Each vfi As ViewFieldInfo In Me.Settings.SelectedViewFields
-				If vfi.Category = Global.Relativity.FieldCategory.FullText Then Return True
+				If vfi.Category = FieldCategory.FullText Then Return True
 			Next
 			Return False
 		End Function
 
 		Private Function ExtractedTextField() As ViewFieldInfo
 			For Each v As ViewFieldInfo In Me.Settings.AllExportableFields
-				If v.Category = Global.Relativity.FieldCategory.FullText Then Return v
+				If v.Category = FieldCategory.FullText Then Return v
 			Next
 			Throw New System.Exception("Full text field somehow not in all fields")
 		End Function
@@ -247,7 +248,7 @@ Namespace kCura.WinEDDS
 
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 				With _fieldManager.Read(Me.Settings.CaseArtifactID, _productionExportProduction.BeginBatesReflectedFieldId)
-					_beginBatesColumn = Global.Relativity.SqlNameHelper.GetSqlFriendlyName(.DisplayName)
+					_beginBatesColumn = SqlNameHelper.GetSqlFriendlyName(.DisplayName)
 					If Not allAvfIds.Contains(.ArtifactViewFieldID) Then allAvfIds.Add(.ArtifactViewFieldID)
 				End With
 			End If
@@ -520,7 +521,7 @@ Namespace kCura.WinEDDS
 			If FieldLookupService.ContainsFieldName(_beginBatesColumn) Then
 				beginBatesColumnIndex = FieldLookupService.GetOrdinalIndex(_beginBatesColumn)
 			End If
-			Dim identifierColumnName As String = Global.Relativity.SqlNameHelper.GetSqlFriendlyName(Me.Settings.IdentifierColumnName)
+			Dim identifierColumnName As String = SqlNameHelper.GetSqlFriendlyName(Me.Settings.IdentifierColumnName)
 			Dim identifierColumnIndex As Int32 = FieldLookupService.GetOrdinalIndex(identifierColumnName)
 			'TODO: come back to this
 			Dim productionPrecedenceArtifactIds As Int32() = Settings.ImagePrecedence.Select(Function(pair) CInt(pair.Value)).ToArray()
@@ -585,7 +586,7 @@ Namespace kCura.WinEDDS
 							start = System.DateTime.Now.Ticks
 							If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 								natives.Table = CallServerWithRetry(Function() _searchManager.RetrieveNativesForProduction(Me.Settings.CaseArtifactID, productionArtifactID, documentArtifactIDs.ToCsv()).Tables(0), maxTries)
-							ElseIf Me.Settings.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+							ElseIf Me.Settings.ArtifactTypeID = ArtifactType.Document Then
 								natives.Table = CallServerWithRetry(Function() _searchManager.RetrieveNativesForSearch(Me.Settings.CaseArtifactID, documentArtifactIDs.ToCsv()).Tables(0), maxTries)
 							Else
 								Dim dt As System.Data.DataTable = CallServerWithRetry(Function() _searchManager.RetrieveFilesForDynamicObjects(Me.Settings.CaseArtifactID, Me.Settings.FileField.FieldID, documentArtifactIDs).Tables(0), maxTries)
@@ -678,7 +679,7 @@ Namespace kCura.WinEDDS
 			Else
 				artifact.OriginalFileName = _originalFileNameProvider.GetOriginalFileName(record, nativeRow)
 				artifact.NativeSourceLocation = nativeRow("Location").ToString
-				If Me.Settings.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+				If Me.Settings.ArtifactTypeID = ArtifactType.Document Then
 					artifact.NativeFileGuid = nativeRow("Guid").ToString
 				Else
 					artifact.FileID = CType(nativeRow("FileID"), Int32)
@@ -916,12 +917,12 @@ Namespace kCura.WinEDDS
 		''' <remarks></remarks>
 		Private Function LoadColumns() As String
 			For Each field As WinEDDS.ViewFieldInfo In Me.Settings.SelectedViewFields
-				Me.Settings.ExportFullText = Me.Settings.ExportFullText OrElse field.Category = Global.Relativity.FieldCategory.FullText
+				Me.Settings.ExportFullText = Me.Settings.ExportFullText OrElse field.Category = FieldCategory.FullText
 			Next
 			_columns = New System.Collections.ArrayList(Me.Settings.SelectedViewFields)
 			If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then
 				Dim longTextSelectedViewFields As New List(Of ViewFieldInfo)()
-				longTextSelectedViewFields.AddRange(Me.Settings.SelectedViewFields.Where(Function(f As ViewFieldInfo) f.FieldType = Global.Relativity.FieldTypeHelper.FieldType.Text OrElse f.FieldType = Global.Relativity.FieldTypeHelper.FieldType.OffTableText))
+				longTextSelectedViewFields.AddRange(Me.Settings.SelectedViewFields.Where(Function(f As ViewFieldInfo) f.FieldType = FieldType.Text OrElse f.FieldType = FieldType.OffTableText))
 				If (Me.Settings.SelectedTextFields.Count = 1) AndAlso longTextSelectedViewFields.Exists(Function(f As ViewFieldInfo) f.Equals(Me.Settings.SelectedTextFields.First)) Then
 					Dim selectedViewFieldToRemove As ViewFieldInfo = longTextSelectedViewFields.Find(Function(f As ViewFieldInfo) f.Equals(Me.Settings.SelectedTextFields.First))
 					If selectedViewFieldToRemove IsNot Nothing Then
@@ -1096,7 +1097,7 @@ Namespace kCura.WinEDDS
 			'args.TextAndNativeFilesNamedAfterFieldID = Me.ExportNativesToFileNamedFrom
 			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier Then
 				For Each field As ViewFieldInfo In Me.Settings.AllExportableFields
-					If field.Category = Global.Relativity.FieldCategory.Identifier Then
+					If field.Category = FieldCategory.Identifier Then
 						args.TextAndNativeFilesNamedAfterFieldID = field.FieldArtifactId
 						Exit For
 					End If

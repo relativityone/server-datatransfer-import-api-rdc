@@ -24,7 +24,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
-    using ExportConstants = Relativity.Export.Constants;
+    using ExportConstants = Relativity.Import.Export.Services.ExportConstants;
 
     [TestFixture]
 	public class TooLongTextToLoadFileTests

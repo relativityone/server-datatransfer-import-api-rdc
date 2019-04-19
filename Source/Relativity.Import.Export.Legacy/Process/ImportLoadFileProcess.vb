@@ -3,6 +3,7 @@ Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Io
 Imports Relativity.Import.Export.Process
 Imports Relativity.Import.Export.Transfer
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 
@@ -93,7 +94,7 @@ Namespace kCura.WinEDDS
 
 		Public Property EnforceDocumentLimit() As Boolean
 
-		Public Property ExecutionSource() As Global.Relativity.ExecutionSource
+		Public Property ExecutionSource() As ExecutionSource
 
 		Public Property TimeZoneOffset() As Int32
 			Get
@@ -197,13 +198,13 @@ Namespace kCura.WinEDDS
 				retval.Delimiter = LoadFile.RecordDelimiter
 				retval.NestedValueDelimiter = LoadFile.HierarchicalValueDelimiter
 				retval.DestinationFolderArtifactID = LoadFile.DestinationFolderID
-				If LoadFile.ArtifactTypeID <> Global.Relativity.ArtifactType.Document Then retval.DestinationFolderArtifactID = -1
+				If LoadFile.ArtifactTypeID <> ArtifactType.Document Then retval.DestinationFolderArtifactID = -1
 				Dim fieldMap As New System.Collections.ArrayList
 				Dim mappedExtractedText As Boolean = False
 				For Each item As WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In LoadFile.FieldMap
 					If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 Then
 						fieldMap.Add(New Int32() {item.NativeFileColumnIndex, item.DocumentField.FieldID})
-						If item.DocumentField.FieldCategory = Global.Relativity.FieldCategory.FullText Then mappedExtractedText = True
+						If item.DocumentField.FieldCategory = FieldCategory.FullText Then mappedExtractedText = True
 					End If
 				Next
 				retval.ExtractedTextPointsToFile = LoadFile.FullTextColumnContainsFileLocation AndAlso mappedExtractedText
@@ -239,10 +240,10 @@ Namespace kCura.WinEDDS
 				If Not LoadFile.ExtractedTextFileEncoding Is Nothing Then
 					retval.ExtractedTextFileEncodingCodePageID = LoadFile.ExtractedTextFileEncoding.CodePage
 				End If
-				Select Case CType([Enum].Parse(GetType(Global.Relativity.ImportOverwriteType), LoadFile.OverwriteDestination, True), Global.Relativity.ImportOverwriteType)
-					Case Global.Relativity.ImportOverwriteType.Overlay
+				Select Case CType([Enum].Parse(GetType(ImportOverwriteType), LoadFile.OverwriteDestination, True), ImportOverwriteType)
+					Case ImportOverwriteType.Overlay
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Overlay
-					Case Global.Relativity.ImportOverwriteType.AppendOverlay
+					Case ImportOverwriteType.AppendOverlay
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Both
 					Case Else
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append

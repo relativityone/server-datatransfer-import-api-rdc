@@ -24,7 +24,9 @@ namespace Relativity.Export.NUnit
 	using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
-    [TestFixture]
+    using Constants = Relativity.Import.Export.Services.ExportConstants;
+
+	[TestFixture]
 	public class LongTextToFileTests
 	{
 		private LongTextToFile _instance;
@@ -114,7 +116,7 @@ namespace Relativity.Export.NUnit
 			const string expectedResult = "file_location";
 
 			FieldStub textPrecedenceField = new FieldStub(_fieldFactory.GetArtifactIdField());
-			textPrecedenceField.SetAvfColumnName(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME);
+			textPrecedenceField.SetAvfColumnName(Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME);
 
 			ViewFieldInfo trueTextPrecedenceField = _fieldFactory.GetArtifactIdField();
 
@@ -125,7 +127,7 @@ namespace Relativity.Export.NUnit
 
 			_exportSettings.SelectedTextFields = new[] { trueTextPrecedenceField };
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
+			_fieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
 
 			LongText longText = LongText.CreateFromMissingValue(
 				artifact.ArtifactID,

@@ -7,6 +7,10 @@
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 
+	using Relativity.Import.Export.Services;
+
+	using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
+
 	public class HtmlExportFileFormatter  : ExportFileFormatterBase
 	{
 		public HtmlExportFileFormatter(ExportFile exportSettings, IFieldNameProvider fieldNameProvider) : base(exportSettings, fieldNameProvider)

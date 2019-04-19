@@ -20,7 +20,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected _hasFatalErrorOccured As Boolean
 	Protected _tapiClientName As String = TapiClient.None.ToString()
 
-	Public Property CaseInfo As Global.Relativity.CaseInfo
+	Public Property CaseInfo As Relativity.Import.Export.Services.CaseInfo
 
 	Public Sub New(messageService As IMessageService)
 		Me.MessageService = messageService

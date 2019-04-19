@@ -1,4 +1,5 @@
 ﻿Imports Relativity.Desktop.Client.Legacy.Controls
+Imports Relativity.Import.Export.Services
 
 Namespace Relativity.Desktop.Client
 	Public Class TextPrecedenceForm

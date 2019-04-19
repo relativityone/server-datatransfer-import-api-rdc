@@ -1,4 +1,5 @@
 ﻿Imports kCura.WinEDDS
+Imports Relativity.Import.Export.Services
 Imports Relativity.Desktop.Client
 
 Public Class ImportOptions
@@ -20,12 +21,12 @@ Public Class ImportOptions
 		End Set
 	End Property
 
-	Private _selectedCaseInfo As Relativity.CaseInfo
-	Public Property SelectedCaseInfo As Relativity.CaseInfo
+	Private _selectedCaseInfo As CaseInfo
+	Public Property SelectedCaseInfo As CaseInfo
 		Get
 			Return _selectedCaseInfo
 		End Get
-		Private Set(value As Relativity.CaseInfo)
+		Private Set(value As CaseInfo)
 			_selectedCaseInfo = value
 		End Set
 	End Property
@@ -260,12 +261,8 @@ Public Class ImportOptions
 					Dim xmlDoc As New System.Xml.XmlDocument
 					xmlDoc.LoadXml(doc)
 
-					sr = New System.IO.StreamReader(path)
-					Dim stringr As New System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(Global.Relativity.Desktop.Client.Application.Instance.CleanLoadFile(xmlDoc)))
-					Dim tempLoadFile As LoadFile
-					Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-					tempLoadFile = DirectCast(deserializer.Deserialize(stringr), LoadFile)
-					sr.Close()
+					Dim soap As String = Global.Relativity.Desktop.Client.Application.Instance.CleanLoadFile(xmlDoc)
+					Dim tempLoadFile As LoadFile = Relativity.Import.Export.SerializationHelper.DeserializeFromSoap(Of LoadFile)(soap)
 					If Not String.IsNullOrEmpty(LoadFilePath) Then
 						tempLoadFile.FilePath = LoadFilePath
 					Else
@@ -283,7 +280,7 @@ Public Class ImportOptions
 					tempLoadFile.SourceFileEncoding = System.Text.Encoding.Default
 					Dim artifactTypeID As Int32
 					If currentLoadMode = LoadMode.Native Then
-						artifactTypeID = Relativity.ArtifactType.Document
+						artifactTypeID = ArtifactType.Document
 					Else
 						artifactTypeID = tempLoadFile.ArtifactTypeID
 					End If
@@ -374,8 +371,8 @@ Public Class ImportOptions
 		End Try
 	End Function
 
-	Private Function EnsureSelectedFields(selectedFields As ViewFieldInfo(), allFields As ViewFieldInfo(), collectionName As String) As ViewFieldInfo()
-		Dim nameProvider As Func(Of ViewFieldInfo, String) = Function(f) f.DisplayName
+	Private Function EnsureSelectedFields(selectedFields As kCura.WinEDDS.ViewFieldInfo(), allFields As kCura.WinEDDS.ViewFieldInfo(), collectionName As String) As kCura.WinEDDS.ViewFieldInfo()
+		Dim nameProvider As Func(Of kCura.WinEDDS.ViewFieldInfo, String) = Function(f) f.DisplayName
 		Return EnsureSelectedFields(selectedFields, allFields, nameProvider, collectionName)
 	End Function
 

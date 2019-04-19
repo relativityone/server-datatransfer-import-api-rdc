@@ -9,6 +9,8 @@ Imports kCura.WinEDDS.Api
 
 Imports NUnit.Framework
 
+Imports Relativity.Import.Export.Services
+
 Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture>
@@ -53,12 +55,12 @@ Namespace Relativity.Import.Client.NUnit
 				For i As Int32 = 0 To 4
 					Dim docIdentifier As Int32 = i
 					Dim fieldCat As FieldCategory = FieldCategory.Generic
-					Dim fieldTypeId As FieldTypeHelper.FieldType = FieldTypeHelper.FieldType.Text
+					Dim fieldTypeId As FieldType = FieldType.Text
 					'setting the first column as the identifier
 					If (i = 0) Then
 						fieldCat = FieldCategory.Identifier
 					ElseIf (i = 2 Or i = 3) Then 'Set these fields as choices
-						fieldTypeId = FieldTypeHelper.FieldType.Code
+						fieldTypeId = FieldType.Code
 					ElseIf (i = 4) Then 'the 4th column will contain our folder path information
 						fieldCat = FieldCategory.ParentArtifact
 						docIdentifier = -2

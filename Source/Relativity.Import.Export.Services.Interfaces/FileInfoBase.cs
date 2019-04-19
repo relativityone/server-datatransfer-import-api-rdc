@@ -4,6 +4,9 @@
 //------------------------------------------------------------------------------
 namespace Relativity.Import.Export.Services
 {
+	using System;
+
+	[Serializable]
 	public class FileInfoBase
 	{
 		public string FileGuid { get; set; }

@@ -3,10 +3,10 @@
 	using System.IO;
 	using System.Reflection;
 
-	using global::Relativity;
 	using global::Relativity.Import.Export;
 	using global::Relativity.Logging;
 	using global::Relativity.Logging.Factory;
+	using Relativity.Import.Export.Services;
 
 	public class LoggerFactory
 	{

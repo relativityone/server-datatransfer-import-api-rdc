@@ -10,6 +10,8 @@ namespace Relativity.Import.Export.TestFramework
 	using System.Data;
 	using System.Globalization;
 
+	using Relativity.Import.Export.Services;
+
 	public class QueryFieldFactory
 	{
 		private DataTable table;
@@ -18,7 +20,7 @@ namespace Relativity.Import.Export.TestFramework
 			int fieldArtifactID,
 			int avfId,
 			FieldCategory fieldCategory,
-			FieldTypeHelper.FieldType fieldType,
+			FieldType fieldType,
 			int artifactTypeId,
 			string artifactTypeTableName,
 			int fieldCodeTypeID,
@@ -26,7 +28,7 @@ namespace Relativity.Import.Export.TestFramework
 			string displayName,
 			string avfColumnName,
 			string avfHeaderName,
-			string formatString,
+			string formatStr,
 			int associativeArtifactTypeID,
 			bool isUnicodeEnabled,
 			bool allowHtml,
@@ -65,7 +67,7 @@ namespace Relativity.Import.Export.TestFramework
 			row["DisplayName"] = displayName;
 			row["AvfColumnName"] = avfColumnName;
 			row["AvfHeaderName"] = avfHeaderName;
-			row["FormatString"] = formatString;
+			row["FormatString"] = formatStr;
 			row["AssociativeArtifactTypeID"] = associativeArtifactTypeID;
 			row["IsUnicodeEnabled"] = isUnicodeEnabled;
 			row["AllowHtml"] = allowHtml;
@@ -100,7 +102,7 @@ namespace Relativity.Import.Export.TestFramework
 				5,
 				1000186,
 				FieldCategory.Identifier,
-				FieldTypeHelper.FieldType.Varchar,
+				FieldType.Varchar,
 				10,
 				"Document",
 				-1,
@@ -142,7 +144,7 @@ namespace Relativity.Import.Export.TestFramework
 				6,
 				1000187,
 				FieldCategory.FullText,
-				FieldTypeHelper.FieldType.Text,
+				FieldType.Text,
 				10,
 				"Document",
 				-1,
@@ -184,7 +186,7 @@ namespace Relativity.Import.Export.TestFramework
 				6,
 				1001440,
 				FieldCategory.FullText,
-				FieldTypeHelper.FieldType.Text,
+				FieldType.Text,
 				10,
 				"Document",
 				-1,
@@ -226,7 +228,7 @@ namespace Relativity.Import.Export.TestFramework
 				6,
 				1001440,
 				FieldCategory.FullText,
-				FieldTypeHelper.FieldType.Text,
+				FieldType.Text,
 				10,
 				"Document",
 				-1,
@@ -268,7 +270,7 @@ namespace Relativity.Import.Export.TestFramework
 				14497,
 				1000357,
 				FieldCategory.Generic,
-				FieldTypeHelper.FieldType.Boolean,
+				FieldType.Boolean,
 				10,
 				"Document",
 				-1,
@@ -310,7 +312,7 @@ namespace Relativity.Import.Export.TestFramework
 				391085,
 				1001118,
 				FieldCategory.Generic,
-				FieldTypeHelper.FieldType.Code,
+				FieldType.Code,
 				10,
 				"Document",
 				1000097,
@@ -352,7 +354,7 @@ namespace Relativity.Import.Export.TestFramework
 				391081,
 				1001117,
 				FieldCategory.Generic,
-				FieldTypeHelper.FieldType.MultiCode,
+				FieldType.MultiCode,
 				10,
 				"Document",
 				1000096,
@@ -394,7 +396,7 @@ namespace Relativity.Import.Export.TestFramework
 				13090,
 				1000248,
 				FieldCategory.Generic,
-				FieldTypeHelper.FieldType.Integer,
+				FieldType.Integer,
 				10,
 				"Document",
 				-1,
@@ -430,7 +432,7 @@ namespace Relativity.Import.Export.TestFramework
 				false);
 		}
 
-		public kCura.WinEDDS.ViewFieldInfo GetGenericNumericField(FieldTypeHelper.FieldType type)
+		public kCura.WinEDDS.ViewFieldInfo GetGenericNumericField(FieldType type)
 		{
 			return this.GenerateQueryField(
 				13090,
@@ -478,7 +480,7 @@ namespace Relativity.Import.Export.TestFramework
 				14490,
 				1000353,
 				FieldCategory.Generic,
-				FieldTypeHelper.FieldType.User,
+				FieldType.User,
 				10,
 				"Document",
 				-1,
@@ -520,7 +522,7 @@ namespace Relativity.Import.Export.TestFramework
 				504869,
 				1001267,
 				FieldCategory.Generic,
-				FieldTypeHelper.FieldType.Object,
+				FieldType.Object,
 				10,
 				"Document",
 				-1,
@@ -562,7 +564,7 @@ namespace Relativity.Import.Export.TestFramework
 				505158,
 				1001278,
 				FieldCategory.Generic,
-				FieldTypeHelper.FieldType.Objects,
+				FieldType.Objects,
 				10,
 				"Document",
 				-1,
@@ -604,7 +606,7 @@ namespace Relativity.Import.Export.TestFramework
 				505162,
 				1001282,
 				FieldCategory.MultiReflected,
-				FieldTypeHelper.FieldType.User,
+				FieldType.User,
 				10,
 				"Document",
 				-1,
@@ -646,7 +648,7 @@ namespace Relativity.Import.Export.TestFramework
 				504869,
 				1001267,
 				FieldCategory.Generic,
-				FieldTypeHelper.FieldType.Date,
+				FieldType.Date,
 				10,
 				"Document",
 				-1,
@@ -688,7 +690,7 @@ namespace Relativity.Import.Export.TestFramework
 				504869,
 				1001267,
 				FieldCategory.Generic,
-				FieldTypeHelper.FieldType.Date,
+				FieldType.Date,
 				10,
 				"Document",
 				-1,
@@ -730,7 +732,7 @@ namespace Relativity.Import.Export.TestFramework
 				15,
 				1000196,
 				FieldCategory.FolderName,
-				FieldTypeHelper.FieldType.Varchar,
+				FieldType.Varchar,
 				10,
 				"Document",
 				-1,
@@ -776,9 +778,9 @@ namespace Relativity.Import.Export.TestFramework
 				this.GetGenericSingleCodeField(),
 				this.GetGenericMultiCodeField(),
 				this.GetArtifactIdField(),
-				this.GetGenericNumericField(FieldTypeHelper.FieldType.Currency),
-				this.GetGenericNumericField(FieldTypeHelper.FieldType.Decimal),
-				this.GetGenericNumericField(FieldTypeHelper.FieldType.Integer),
+				this.GetGenericNumericField(FieldType.Currency),
+				this.GetGenericNumericField(FieldType.Decimal),
+				this.GetGenericNumericField(FieldType.Integer),
 				this.GetGenericUserField(),
 				this.GetGenericObjectField(),
 				this.GetGenericObjectsField(),
