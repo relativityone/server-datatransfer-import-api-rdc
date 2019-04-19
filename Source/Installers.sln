@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{D26F3FE9-F1F2-49F6-AE41-1CDD4D4ECA64}"
 	ProjectSection(SolutionItems) = preProject
 		..\paket.dependencies = ..\paket.dependencies
+		..\.paket\paket.template.relativity.desktop.client = ..\.paket\paket.template.relativity.desktop.client
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Desktop.Client.CustomActions", "Relativity.Desktop.Client.CustomActions\Relativity.Desktop.Client.CustomActions.csproj", "{B57C3966-8EF3-4952-AE19-3455C0B049A8}"

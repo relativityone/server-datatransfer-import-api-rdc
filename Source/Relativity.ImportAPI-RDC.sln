@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{44D52970-C80E-4D2F-A986-2EB046DCB96B}"
 	ProjectSection(SolutionItems) = preProject
 		..\paket.dependencies = ..\paket.dependencies
+		..\.paket\paket.template.relativity.desktop.client = ..\.paket\paket.template.relativity.desktop.client
 		..\.paket\paket.template.relativity.import.client.sdk = ..\.paket\paket.template.relativity.import.client.sdk
 		..\.paket\Relativity.Import.Client.SDK.targets = ..\.paket\Relativity.Import.Client.SDK.targets
 	EndProjectSection

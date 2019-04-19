@@ -45,6 +45,7 @@ properties {
     $TestParametersFile = $Null
     $TestEnvironment = $Null
     $TestVMName = $Null
+    $PackageTemplateRegex = $Null
 }
 
 task Build -Description "Builds the source code" -Depends CompileMasterSolution {
@@ -64,16 +65,16 @@ task BuildPackages -Description "Builds all NuGet packages" {
     Write-Host "Pre-release label: $preReleaseLabel"
     Write-Host "Working directory: $PSScriptRoot"
     $packageLogFile = Join-Path $LogsDir "package-build.log"
-    Write-Host "Creating packages for all package templates contained within '$PaketDir' matching '$templateRegex' with version '$PackageVersion' and outputting to '$PackagesArtifactsDir'."
+    Write-Host "Creating packages for all package templates contained within '$PaketDir' matching '$PackageTemplateRegex' with version '$PackageVersion' and outputting to '$PackagesArtifactsDir'."
     foreach ($file in Get-ChildItem $PaketDir) {
-        if (!($file.Name -match [regex]"paket.template.*$")) {
+        if (!($file.Name -match [regex]$PackageTemplateRegex)) {
+            Write-Host "Package template $($file.Name) doesn't match the package template regular expression."
             continue
         }
 
-        $templateFile = $file.FullName
-        Write-Host "Creating package for template '$templateFile' and outputting to '$PackagesArtifactsDir'."
+        Write-Host "Creating package for template '$($file.FullName)' and outputting to '$PackagesArtifactsDir'."
         exec {
-             & $PaketExe pack --template `"$templateFile`" --version $PackageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" 
+             & $PaketExe pack --template `"$($file.FullName)`" --version $PackageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" 
         } -errorMessage "There was an error creating the package."
     }
 }
@@ -292,7 +293,7 @@ task PublishBuildArtifacts -Description "Publish build artifacts" {
     Copy-Folder -SourceDir $TestReportsDir -TargetDir "$targetDir\test-reports"
 }
 
-task PublishPackages -Depends BuildPackages -Description "Pushes package to NuGet feed" {
+task PublishPackages -Depends BuildPackages -Description "Builds all package templates and pushes each to the NuGet feed" {
     Assert ($Branch -ne "") "Branch is a required argument for publishing packages"
     Assert ($PackageVersion -ne "") "PackageVersion is a required argument for publishing packages"
     if (($Branch -ne "master" -and (-not $Branch -like "hotfix-*")) -and [string]::IsNullOrWhiteSpace($preReleaseLabel)) {

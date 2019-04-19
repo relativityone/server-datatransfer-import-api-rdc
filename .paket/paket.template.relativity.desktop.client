@@ -1,0 +1,33 @@
+﻿type
+	file
+id
+	Relativity.Desktop.Client
+version
+	1.0.0.0
+title
+	Relativity.Desktop.Client
+authors
+	Relativity
+owners
+	Relativity ODA LLC
+licenseUrl
+	https://www.relativity.com/nugetLicense.txt
+projectUrl
+	https://platform.relativity.com
+description
+	The Relativity desktop client MSI package.
+summary
+	The Relativity desktop client package provides the x86 and x64 MSI's referenced by Relativity to build a properly versioned bootstrapper.
+releaseNotes
+	https://platform.relativity.com/9.7/Content/Import_API/Import_API_release_notes.htm
+requireLicenseAcceptance
+	true
+iconUrl
+	https://www.relativity.com/images/relativity-nuget-logo.png
+copyright
+	Copyright (c) Relativity
+tags
+	relativity desktop client RDC
+files
+    ../Artifacts/installers/en-us/Relativity.Desktop.Client.x64.msi ==> tools
+	../Artifacts/installers/en-us/Relativity.Desktop.Client.x86.msi ==> tools
