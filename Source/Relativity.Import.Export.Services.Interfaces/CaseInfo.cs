@@ -24,12 +24,11 @@ namespace Relativity.Import.Export.Services
 				throw new ArgumentNullException(nameof(row));
 			}
 
+			// Note: AsImportAllowed/ExportAllowed are NOT mapped.
 			this.ArtifactID = System.Convert.ToInt32(row["ArtifactID"]);
-			this.AsImportAllowed = System.Convert.ToBoolean(row["AsImportAllowed"]);
 			this.DocumentPath = System.Convert.ToString(row["DefaultFileLocationName"]);
 			this.DownloadHandlerURL = System.Convert.ToString(row["DownloadHandlerApplicationPath"]);
 			this.EnableDataGrid = System.Convert.ToBoolean(row["EnableDataGrid"]);
-			this.ExportAllowed = System.Convert.ToBoolean(row["ExportAllowed"]);
 			this.MatterArtifactID = System.Convert.ToInt32(row["MatterArtifactID"]);
 			this.Name = System.Convert.ToString(row["Name"]);
 			this.RootArtifactID = System.Convert.ToInt32(row["RootArtifactID"]);
@@ -40,6 +39,19 @@ namespace Relativity.Import.Export.Services
 		public int ArtifactID { get; set; }
 
 		public bool AsImportAllowed { get; set; }
+
+		public string DocumentPath
+		{
+			get
+			{
+				return this.documentPath;
+			}
+
+			set
+			{
+				this.documentPath = AppendTrailingSlash(value, '\\');
+			}
+		}
 
 		public string DownloadHandlerURL
 		{
@@ -67,19 +79,6 @@ namespace Relativity.Import.Export.Services
 		public int RootFolderID { get; set; }
 
 		public int StatusCodeArtifactID { get; set; }
-
-		public string DocumentPath
-		{
-			get
-			{
-				return this.documentPath;
-			}
-
-			set
-			{
-				this.documentPath = AppendTrailingSlash(value, '\\');
-			}
-		}
 
 		private static string AppendTrailingSlash(string value, char slash)
 		{

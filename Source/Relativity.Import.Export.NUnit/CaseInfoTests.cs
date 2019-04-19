@@ -47,11 +47,9 @@ namespace Relativity.Import.Export.NUnit
 			CaseInfo expected = new CaseInfo
 			{
 				ArtifactID = 10,
-				AsImportAllowed = true,
 				DocumentPath = @"\\files",
 				DownloadHandlerURL = "https://relativity.one",
 				EnableDataGrid = true,
-				ExportAllowed = true,
 				MatterArtifactID = 99,
 				Name = "Test",
 				RootArtifactID = 199,
@@ -70,15 +68,14 @@ namespace Relativity.Import.Export.NUnit
 		[Test]
 		public static void ShouldMapTheDataRow()
 		{
+			// Note: AsImportAllowed/ExportAllowed are NOT mapped.
 			using (DataTable table = new DataTable())
 			{
 				table.Locale = CultureInfo.CurrentCulture;
 				table.Columns.Add("ArtifactID", typeof(int));
-				table.Columns.Add("AsImportAllowed", typeof(bool));
 				table.Columns.Add("DefaultFileLocationName", typeof(string));
 				table.Columns.Add("DownloadHandlerApplicationPath", typeof(string));
 				table.Columns.Add("EnableDataGrid", typeof(bool));
-				table.Columns.Add("ExportAllowed", typeof(bool));
 				table.Columns.Add("MatterArtifactID", typeof(int));
 				table.Columns.Add("Name", typeof(string));
 				table.Columns.Add("RootArtifactID", typeof(int));
@@ -86,11 +83,9 @@ namespace Relativity.Import.Export.NUnit
 				table.Columns.Add("StatusCodeArtifactID", typeof(int));
 				DataRow row = table.NewRow();
 				row["ArtifactID"] = 10;
-				row["AsImportAllowed"] = true;
 				row["DefaultFileLocationName"] = @"\\files";
 				row["DownloadHandlerApplicationPath"] = "https://relativity.one";
 				row["EnableDataGrid"] = true;
-				row["ExportAllowed"] = true;
 				row["MatterArtifactID"] = 99;
 				row["Name"] = "Test";
 				row["RootArtifactID"] = 199;
@@ -104,13 +99,11 @@ namespace Relativity.Import.Export.NUnit
 
 		private static void ValidatePropertyValues(CaseInfo actual)
 		{
+			// Note: AsImportAllowed/ExportAllowed are NOT mapped.
 			Assert.That(actual.ArtifactID, Is.EqualTo(10));
-			Assert.That(actual.AsImportAllowed, Is.True);
-			Assert.That(actual.AsImportAllowed, Is.True);
 			Assert.That(actual.DocumentPath, Is.EqualTo(@"\\files\"));
 			Assert.That(actual.DownloadHandlerURL, Is.EqualTo("https://relativity.one/"));
 			Assert.That(actual.EnableDataGrid, Is.True);
-			Assert.That(actual.ExportAllowed, Is.True);
 			Assert.That(actual.MatterArtifactID, Is.EqualTo(99));
 			Assert.That(actual.Name, Is.EqualTo("Test"));
 			Assert.That(actual.RootArtifactID, Is.EqualTo(199));
