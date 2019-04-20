@@ -7,6 +7,7 @@ nuget csvhelper = 12.1.2
 # This is used strictly for producing unit test results.
 nuget extent = 0.0.3
 nuget gitversion.commandline = 4.0.0
+nuget ilmerge = 3.0.29
 nuget jetbrains.dotcover.commandlinetools = 2019.1.0-eap06
 nuget microsoft.build.logging.structuredlogger = 1.0.89
 nuget moq = 4.10.1

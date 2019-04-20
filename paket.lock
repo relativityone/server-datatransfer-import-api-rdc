@@ -8,6 +8,7 @@ NUGET
       System.ValueTuple (>= 4.4)
     extent (0.0.3)
     GitVersion.CommandLine (4.0)
+    ILMerge (3.0.29)
     JetBrains.dotCover.CommandLineTools (2019.1.0-eap06)
     Microsoft.Build.Logging.StructuredLogger (1.0.89)
     Moq (4.10.1)
