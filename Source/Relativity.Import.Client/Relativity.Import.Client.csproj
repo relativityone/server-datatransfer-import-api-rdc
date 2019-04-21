@@ -39,8 +39,33 @@
     <NoWarn>1591</NoWarn>
     <DocumentationFile>bin\Relativity.Import.Client.xml</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DocumentationFile>bin\Relativity.Import.Client.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591;0649</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DocumentationFile>bin\Relativity.Import.Client.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591;0649</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FreeImageNET">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -133,9 +158,19 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll" $(TargetDir)
-copy "$(SolutionDir)..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll" $(TargetDir)</PostBuildEvent>
+    <PostBuildEvent>@echo on
+set ilmerge=false
+if $(ConfigurationName) == Debug-ILMerge set ilmerge=true
+if $(ConfigurationName) == Release-ILMerge set ilmerge=true
+if "%25ilmerge%25" == "true" (
+   echo Merging SDK assemblies.
+   "$(SolutionDir)..\packages\ILMerge\tools\net452\ilmerge.exe" /log:"$(SolutionDir)..\Logs\ilmerge-build.log" /targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2" /closed /xmldocs /out:"$(SolutionDir)..\Artifacts\binaries\sdk\Relativity.Import.Export.Client.Sdk.dll" "$(SolutionDir)Relativity.Import.Export\bin\Relativity.Import.Export.dll" "$(SolutionDir)Relativity.Import.Export.Legacy\bin\Relativity.Import.Export.Legacy.dll" "$(SolutionDir)Relativity.Import.Export.Services.Interfaces\bin\Relativity.Import.Export.Services.Interfaces.dll" "$(SolutionDir)Relativity.Import.Client\bin\Relativity.Import.Client.dll" "$(SolutionDir)Relativity.Export.Client\bin\Relativity.Export.Client.dll"
+) ELSE (
+   echo Skipping ILMerge command.
+)
+</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj">

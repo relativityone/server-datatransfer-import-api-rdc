@@ -7,12 +7,14 @@ properties {
     $PaketDir = Join-Path $Root ".paket"
     $SourceDir = Join-Path $Root "Source"
     $InstallersSolution = Join-Path $SourceDir "Installers.sln"
-    $MasterSolution = Join-Path $SourceDir "Relativity.ImportAPI-RDC.sln"
+    $MasterSolution = Join-Path $SourceDir "Master.sln"
+    $MasterILMergeSolution = Join-Path $SourceDir "Master-ILMerge.sln"
     $NumberOfProcessors = (Get-ChildItem env:"NUMBER_OF_PROCESSORS").Value
     $BuildArtifactsDir = Join-Path $Root "Artifacts"
     $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
     $InstallersArtifactsDir = Join-Path $BuildArtifactsDir "installers"
     $PackagesArtifactsDir = Join-Path $BuildArtifactsDir "packages"
+    $SdkBinariesArtifactsDir = Join-Path $BinariesArtifactsDir "sdk"
     $ScriptsDir = Join-Path $Root "Scripts"
     $BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
     $TestReportsDir = Join-Path $Root "TestReports"
@@ -46,12 +48,89 @@ properties {
     $TestEnvironment = $Null
     $TestVMName = $Null
     $PackageTemplateRegex = $Null
+    $ILMerge = $Null
 }
 
-task Build -Description "Builds the source code" -Depends CompileMasterSolution {
+task Build -Description "Builds the source code"  {
+    Initialize-Folder $LogsDir -Safe
+    $SolutionFile = $MasterSolution
+    $SolutionConfiguration = $Configuration
+    if (!$BuildPlatform) {
+        $BuildPlatform = "Any CPU"
+    }
+
+    if ($ILMerge) {
+        Initialize-Folder $SdkBinariesArtifactsDir
+        $SolutionFile = $MasterILMergeSolution
+        $SolutionConfiguration = "$SolutionConfiguration-ILMerge"
+    }
+
+    Write-Output "Solution: $SolutionFile"
+    Write-Output "Configuration: $SolutionConfiguration"
+    Write-Output "Build platform: $BuildPlatform"
+    Write-Output "Target: $Target"
+    Write-Output "Verbosity: $Verbosity"
+    $lwrConfiguration = $SolutionConfiguration.ToLower()
+    $LogFilePath = Join-Path $LogsDir "master-buildsummary-$lwrConfiguration.log"
+    $ErrorFilePath = Join-Path $LogsDir "master-builderrors-$lwrConfiguration.log"
+
+    try
+    {
+        exec {            
+            msbuild @(($SolutionFile),
+                    ("-t:$Target"),
+                    ("-v:$Verbosity"),
+                    ("-p:Platform=$BuildPlatform"),
+                    ("-p:Configuration=$SolutionConfiguration"),
+                    ("-p:BuildProjectReferences=true"),
+                    ("-p:CopyArtifacts=true"),
+                    ("-clp:Summary"),
+                    ("-nodeReuse:false"),
+                    ("-nologo"),
+                    ("-maxcpucount"),
+                    ("-flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity"),
+                    ("-flp2:errorsonly;LogFile=`"$ErrorFilePath`""))
+        } -errorMessage "There was an error building the master solution."
+    }
+    finally {
+        Remove-EmptyLogFile $ErrorFilePath
+    }
 }
 
-task BuildInstallers -Description "Builds all installers" -Depends CompileInstallerSolution {
+task BuildInstallers -Description "Builds all installers" {
+    Initialize-Folder $LogsDir -Safe
+    $BuildPlatforms = @("x86", "x64")
+    foreach ($platform in $BuildPlatforms) {
+        Write-Output "Solution: $InstallersSolution"
+        Write-Output "Configuration: $Configuration"
+        Write-Output "Build platform: $platform"
+        Write-Output "Target: $Target"
+        Write-Output "Verbosity: $Verbosity"
+        $LogFilePath = Join-Path $LogsDir "installers-buildsummary-$platform.log"
+        $ErrorFilePath = Join-Path $LogsDir "installers-builderrors-$platform.log"
+        
+        try {
+            exec { 
+                # Note: BuildProjectReferences must be disabled to prevent overwriting digitally signed binaries!
+                msbuild @(($InstallersSolution),
+                        ("-t:$Target"),
+                        ("-v:$Verbosity"),
+                        ("-p:Platform=$platform"),
+                        ("-p:Configuration=$Configuration"),
+                        ("-p:BuildProjectReferences=false"),
+                        ("-p:CopyArtifacts=true"),
+                        ("-clp:Summary"),
+                        ("-nodeReuse:false"),
+                        ("-nologo"),
+                        ("-maxcpucount"),
+                        ("-flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity"),
+                        ("-flp2:errorsonly;LogFile=`"$ErrorFilePath`""))
+            } -errorMessage "There was an error building the installer solution."
+        }
+        finally {
+            Remove-EmptyLogFile $ErrorFilePath
+        }
+    }
 }
 
 task BuildPackages -Description "Builds all NuGet packages" {
@@ -162,72 +241,6 @@ task CodeCoverageReport -Description "Create a code coverage report" {
     } -errorMessage "There was an error creating a code coverage report."
 }
 
-task CompileMasterSolution -Description "Compile the master solution" {
-
-    if (!$BuildPlatform) {
-        $BuildPlatform = "Any CPU"
-    }
-
-    Write-Output "Solution: $MasterSolution"
-    Write-Output "Configuration: $Configuration"
-    Write-Output "Build platform: $BuildPlatform"
-    Write-Output "Target: $Target"
-    Write-Output "Verbosity: $Verbosity"
-    Initialize-Folder $LogsDir -Safe
-    $LogFilePath = Join-Path $LogsDir "master-buildsummary.log"
-    $ErrorFilePath = Join-Path $LogsDir "master-builderrors.log"
-    exec {
-        
-        msbuild @(($MasterSolution),
-                  ("-t:$Target"),
-                  ("-v:$Verbosity"),
-                  ("-p:Platform=$BuildPlatform"),
-                  ("-p:Configuration=$Configuration"),
-                  ("-p:BuildProjectReferences=true"),
-                  ("-p:CopyArtifacts=true"),
-                  ("-clp:Summary"),
-                  ("-nodeReuse:false"),
-                  ("-nologo"),
-                  ("-maxcpucount"),
-                  ("-flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity"),
-                  ("-flp2:errorsonly;LogFile=`"$ErrorFilePath`""))
-    } -errorMessage "There was an error building the master solution."
-
-    Remove-EmptyLogFile $ErrorFilePath
-}
-
-task CompileInstallerSolution -Description "Compile the installer solution" {
-    Initialize-Folder $LogsDir -Safe
-    $BuildPlatforms = @("x86", "x64")
-    foreach ($platform in $BuildPlatforms) {
-        Write-Output "Solution: $InstallersSolution"
-        Write-Output "Configuration: $Configuration"
-        Write-Output "Build platform: $platform"
-        Write-Output "Target: $Target"
-        Write-Output "Verbosity: $Verbosity"
-        $LogFilePath = Join-Path $LogsDir "installers-buildsummary-$platform.log"
-        $ErrorFilePath = Join-Path $LogsDir "installers-builderrors-$platform.log"
-        exec { 
-            # Note: BuildProjectReferences must be disabled to prevent overwriting digitally signed binaries!
-            msbuild @(($InstallersSolution),
-                      ("-t:$Target"),
-                      ("-v:$Verbosity"),
-                      ("-p:Platform=$platform"),
-                      ("-p:Configuration=$Configuration"),
-                      ("-p:BuildProjectReferences=false"),
-                      ("-p:CopyArtifacts=true"),
-                      ("-clp:Summary"),
-                      ("-nodeReuse:false"),
-                      ("-nologo"),
-                      ("-maxcpucount"),
-                      ("-flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity"),
-                      ("-flp2:errorsonly;LogFile=`"$ErrorFilePath`""))
-        } -errorMessage "There was an error building the installer solution."
-
-        Remove-EmptyLogFile $ErrorFilePath
-    }
-}
-
 task DigitallySignBinaries -Description "Digitally sign all binaries" {
     # To reduce spending a significant amount of time signing unnecessary files, limit the candidate folders.
     $directoryCandidates =  @(
@@ -246,7 +259,9 @@ task DigitallySignInstallers -Description "Digitally sign all installers" {
 }
 
 task ExtendedCodeAnalysis -Description "Perform extended code analysis checks." {
-    & "$ScriptsDir\Invoke-ExtendedCodeAnalysis.ps1" -SolutionFile $MasterSolution
+    exec { 
+        & "$ScriptsDir\Invoke-ExtendedCodeAnalysis.ps1" -SolutionFile $MasterSolution
+    } -errorMessage "There was an error running the extended code analysis checks."
 }
 
 task Help -Alias ? -Description "Display task information" {
@@ -522,6 +537,10 @@ Function Remove-EmptyLogFile {
         [String] $LogFile
     )
 
+    if (!$LogFile) {
+        Throw "You must specify a non-null path to remove the empty logfile. Check to make sure the path value or variable passed to this method is valid."
+    }
+
     # Remove the error log when none exist.
     if (Test-Path $LogFile -PathType Leaf) {
         if ((Get-Item $LogFile).length -eq 0) {
@@ -534,6 +553,10 @@ Function Write-TestResultsOutput {
     param(
         [String] $TestResultsXmlFile
     )
+
+    if (!$TestResultsXmlFile) {
+        Throw "You must specify a non-null path to retrieve the test results XML file. Check to make sure the path value or variable passed to this method is valid."
+    }
 
     if (-Not (Test-Path $TestResultsXmlFile -PathType Leaf)) {
         Throw "The test results cannot be retrieved because the Xml tests file '$TestResultsXmlFile' doesn't exist."

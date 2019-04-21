@@ -46,7 +46,37 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DocumentationFile>bin\Relativity.Export.Client.NUnit.Integration.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DocumentationFile>bin\Relativity.Export.Client.NUnit.Integration.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FreeImageNET">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -188,30 +218,11 @@
   </Target>
   -->
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.DynamicReferences.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Relativity.Export.Client\Relativity.Export.Client.csproj">
-      <Project>{410ba79b-df60-4eda-86b3-608f3dee38f5}</Project>
-      <Name>Relativity.Export.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Client\Relativity.Import.Client.csproj">
-      <Project>{ab2cba4c-f2eb-41d7-8cdc-ae6d9e1d885d}</Project>
-      <Name>Relativity.Import.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj">
-      <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
-      <Name>Relativity.Import.Export.Legacy</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export.Services.Interfaces\Relativity.Import.Export.Services.Interfaces.csproj">
-      <Project>{b2a59009-0da3-42d4-ae60-d2e964d8d165}</Project>
-      <Name>Relativity.Import.Export.Services.Interfaces</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Relativity.Import.Export.TestFramework\Relativity.Import.Export.TestFramework.csproj">
       <Project>{fed61746-80ec-40cb-998e-9299b804ce7d}</Project>
       <Name>Relativity.Import.Export.TestFramework</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
-      <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
-      <Name>Relativity.Import.Export</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
@@ -250,6 +261,17 @@
       <ItemGroup>
         <Reference Include="oi">
           <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura.Relativity.Client">
+          <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -325,8 +347,41 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.MessageService">
+          <HintPath>..\..\packages\Relativity.DataTransfer.MessageService\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="FaspManager">
           <HintPath>..\..\packages\relativity.faspmanager\lib\net40\FaspManager.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Kepler">
+          <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -349,6 +404,50 @@
       <ItemGroup>
         <Reference Include="Relativity.Logging.Interfaces">
           <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.DataContracts">
+          <HintPath>..\..\packages\Relativity.Services.DataContracts\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.Interfaces">
+          <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+          <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.Services.Interface">
+          <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

@@ -29,10 +29,8 @@ copyright
 tags
 	relativity dtx import api client IAPI
 files
-	../Artifacts/binaries/Relativity.Import.Client/Relativity.Import.Client.dll ==> lib/net462
-	../Artifacts/binaries/Relativity.Import.Client/Relativity.Import.Client.xml ==> lib/net462
-	../Artifacts/binaries/Relativity.Import.Client/Relativity.Import.Export.dll ==> lib/net462
-	../Artifacts/binaries/Relativity.Import.Client/Relativity.Import.Export.Legacy.dll ==> lib/net462
+	../Artifacts/sdk/Relativity.Import.Export.Client.Sdk.dll ==> lib/net462
+	../Artifacts/sdk/Relativity.Import.Export.Client.Sdk.xml ==> lib/net462
 	../Artifacts/binaries/Relativity.Import.Client/FreeImageNET.dll ==> lib/net462
 	../Artifacts/binaries/Relativity.Import.Client/FreeImage.dll ==> lib/native
     ./Relativity.Import.Client.SDK.targets ==> build

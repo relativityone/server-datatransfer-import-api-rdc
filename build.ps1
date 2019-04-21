@@ -72,6 +72,9 @@ The optional TestVM used to execute all integration tests. This is only relevant
 
 .PARAMETER PackageTemplateRegex
 The optional regular expression used to determine which package templates to build.
+
+.PARAMETER ILMerge
+The optional parameter to apply ILMerge configurations to the build.
 #>
 
 #Requires -Version 5.0
@@ -107,7 +110,9 @@ param(
     [Parameter()]
     [String]$TestVMName,
     [Parameter()]
-    [String]$PackageTemplateRegex = "paket.template.*$"
+    [String]$PackageTemplateRegex = "paket.template.*$",
+    [Parameter()]
+    [Switch]$ILMerge
 )
 
 $BaseDir = $PSScriptRoot
@@ -177,6 +182,7 @@ $Params = @{
         TestEnvironment = $TestEnvironment
         TestVMName = $TestVMName
         PackageTemplateRegex = $PackageTemplateRegex
+        ILMerge = $ILMerge
     }
 
     Verbose = $VerbosePreference

@@ -45,12 +45,38 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DocumentationFile>bin\Relativity.Import.Export.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591;0649</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DocumentationFile>bin\Relativity.Import.Export.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591;0649</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FreeImageNET, Version=3.18.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="FreeImageNET">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
     </Reference>
-    <Reference Include="itextsharp, Version=5.5.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+    <Reference Include="itextsharp">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll</HintPath>
     </Reference>
