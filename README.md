@@ -86,6 +86,18 @@ The implementation details are as follows:
   * Decides whether to append "-ILMerge" to the specified build configuration
 
 
+***Note:** Master.sln should **not** be used to build/test the ILMERGE'd SDK assembly because it's configured for project references!*
+
+```bash
+# Build the solution, ILMERGE the SDK assembly, and use assembly file references.
+.\build.ps1 -ILMerge
+```
+
+```bash
+# Same as above but run the unit and integration tests.
+.\build.ps1 Build,UnitTests,IntegrationTests -ILMerge
+```
+
 ## Testing and code coverage
 Unit and integration tests can be executed via the Test Explorer window or the `PowerShell` build script. The following sections focus on `PowerShell` test execution, which relies on the NUnit 3 Console Runner.
 
