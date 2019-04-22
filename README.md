@@ -49,12 +49,42 @@ Generally speaking, PowerShell is used to perform initial and pre-commit builds 
 ```
 
 ### Visual Studio
-1. Open the *Relativity.ImportAPI-RDC.sln* solution
+1. Open the *Master.sln* solution
 2. Open the .paket solution folder
 3. Right-click the paket.dependencies file and click the Restore menu item
 4. Click CTRL+SHIFT+B to build the solution
 
 ***Note:** VS-based builds always run the standard CA checks and StyleCop analyzer. Extended CA checks are never run due to execution time.*
+
+### ILMerge and SDK Assembly
+When IAPI was decoupled from Relativity, a key objective was to simplify deployment by reducing the number of package assemblies from 11 all the way down to a **single lightweight assembly**. To achieve this goal, a combination of MSBUILD "tricks" and ILMERGE is used to produce the new ligthweight SDK assembly.
+
+The implementation details are as follows:
+
+* New build configurations added to drive overall build behavior
+  * **Debug|Release**: Only project references used (no change in behavior)
+  * **Debug-ILMerge|Release-ILMerge**: Force assembly references and build a single SDK assembly
+* .\buildtools\Relativity.Build.DynamicReferences.targets
+  * Dynamically switches project/assembly references via build configuration
+  * Unit and integration tests import this custom targets file
+* .\Scripts\Invoke-ILMerge.ps1
+  * Performs all ILMERGE functionality
+  * The final assembly is stored in the .\Artifacts\binaries\sdk sub-folder
+* .\.paket\paket.template.relativity.import.client.sdk
+  * Represents the new SDK package template
+  * References the ILMERGE'd assembly file
+* Relativity.Export.Client.csproj
+  * Post-build event calls Invoke-ILMerge.ps1
+  * MSBUILD parameters are passed
+  * **Debug|Release**: Do nothing; otherwise, execute ILMERGE
+* Master-ILMerge.sln
+  * The new solution was added to force **solution dependencies**
+  * **A 2nd solution file ensures project reference behavior is *not* impacted**
+* .\build.ps1
+  * **-ILMerge** switch parameter drives build behavior
+  * Decides which solution file to use
+  * Decides whether to append "-ILMerge" to the specified build configuration
+
 
 ## Testing and code coverage
 Unit and integration tests can be executed via the Test Explorer window or the `PowerShell` build script. The following sections focus on `PowerShell` test execution, which relies on the NUnit 3 Console Runner.
@@ -258,8 +288,9 @@ The project structure is similar to other repos. Important folders and files are
 │   ├───Relativity.Import.Export.TestFramework
 │   │
 │   │   Installers.sln
-│   │   Relativity.ImportAPI-RDC.sln
-│   │   Relativity.ImportAPI-RDC.sln.DotSettings
+│   │   Master.sln
+│   │   Master.sln.DotSettings
+│   │   Master-ILMerge.sln
 ├───Vendor
 │   │
 │   │   iTextSharp
@@ -305,7 +336,7 @@ The project structure is similar to other repos. Important folders and files are
 |Relativity.Import.Export.TestFramework         |     C#     |         |The import/export test framework projecty.                                                                                  |
 
 ### Resharper Team Shared Layer
-To ensure that all team members use the same `Resharper` settings, `Relativity.ImportAPI-RDC.sln.DotSettings` is added to source control and adjacent to the master solution file.
+To ensure that all team members use the same `Resharper` settings, `Master.sln.DotSettings` is added to source control and adjacent to the master solution file.
 
 ### Paket and NuGet Packages
 The bootstrapped tools and master solution build uses [Paket](https://fsprojects.github.io/Paket/) to support all package requirements. The repo contains 3 key Paket file types:
