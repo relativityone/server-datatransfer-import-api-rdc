@@ -37,7 +37,7 @@ $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
 $SdkBinariesArtifactsDir = Join-Path $BinariesArtifactsDir "sdk"
 $LogsDir = Join-Path $Root "Logs"
 $LogFile = Join-Path $LogsDir "ilmerge-build.log"
-$MergedSdkFile = Join-Path $SdkBinariesArtifactsDir "Relativity.Import.Client.Sdk.dll"
+$MergedSdkFile = Join-Path $SdkBinariesArtifactsDir "Relativity.Import.Export.Client.dll"
 
 if (Test-Path $SdkBinariesArtifactsDir -PathType Container) {
     Get-ChildItem $SdkBinariesArtifactsDir -Recurse | Remove-Item -Recurse
@@ -53,6 +53,7 @@ Write-Host "Merging SDK assemblies..."
     ("/targetplatform:""v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2"""),
     ("/closed"),
     ("/copyattrs"),
+    ("/xmldocs"),
     ("/out:""$MergedSdkFile"""),
     ("""$SolutionDir\Relativity.Import.Export\bin\Relativity.Import.Export.dll"""),
     ("""$SolutionDir\Relativity.Import.Export.Legacy\bin\Relativity.Import.Export.Legacy.dll"""),
@@ -61,11 +62,6 @@ Write-Host "Merging SDK assemblies..."
     ("""$SolutionDir\Relativity.Import.Client\bin\Relativity.Import.Client.dll"""))
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Successfully merged SDK assemblies."
-    
-    # Because we don't want to merge in Xml docs, 
-    $SdkXmlSourceFile = "$SolutionDir\Relativity.Import.Client\bin\Relativity.Import.Client.xml"
-    $SdkXmlTargetFile = "$SdkBinariesArtifactsDir\Relativity.Import.Client.xml"
-    Copy-Item $SdkXmlSourceFile -Destination $SdkXmlTargetFile
     exit 0
 }
 else {
