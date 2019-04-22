@@ -16,9 +16,9 @@ The current build configuration.
 #>
 [CmdletBinding()]
 Param(
-    [Parameter(Mandatory=$True,Position=0)]
+    [Parameter(Mandatory=$True)]
     [string]$SolutionDir,
-    [Parameter(Mandatory=$True,Position=1)]
+    [Parameter(Mandatory=$True)]
     [string]$Configuration
 )
 
@@ -53,6 +53,7 @@ Write-Host "Merging SDK assemblies..."
     ("/targetplatform:""v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2"""),
     ("/closed"),
     ("/copyattrs"),
+    ("/allowMultiple"),
     ("/xmldocs"),
     ("/out:""$MergedSdkFile"""),
     ("""$SolutionDir\Relativity.Import.Export\bin\Relativity.Import.Export.dll"""),

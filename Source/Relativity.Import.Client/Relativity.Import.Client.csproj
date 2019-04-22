@@ -161,15 +161,8 @@
   <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
   <PropertyGroup>
     <PostBuildEvent>@echo on
-set ilmerge=false
-if $(ConfigurationName) == Debug-ILMerge set ilmerge=true
-if $(ConfigurationName) == Release-ILMerge set ilmerge=true
-if "%25ilmerge%25" == "true" (
-   echo Merging SDK assemblies.
-   "$(SolutionDir)..\packages\ILMerge\tools\net452\ilmerge.exe" /log:"$(SolutionDir)..\Logs\ilmerge-build.log" /targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2" /closed /xmldocs /out:"$(SolutionDir)..\Artifacts\binaries\sdk\Relativity.Import.Export.Client.Sdk.dll" "$(SolutionDir)Relativity.Import.Export\bin\Relativity.Import.Export.dll" "$(SolutionDir)Relativity.Import.Export.Legacy\bin\Relativity.Import.Export.Legacy.dll" "$(SolutionDir)Relativity.Import.Export.Services.Interfaces\bin\Relativity.Import.Export.Services.Interfaces.dll" "$(SolutionDir)Relativity.Import.Client\bin\Relativity.Import.Client.dll" "$(SolutionDir)Relativity.Export.Client\bin\Relativity.Export.Client.dll"
-) ELSE (
-   echo Skipping ILMerge command.
-)
+REM Be careful with trailing slashes!
+powershell.exe -ExecutionPolicy Bypass -NonInteractive -file "$(SolutionDir)..\Scripts\Invoke-ILMerge.ps1" -SolutionDir "$(SolutionDir.TrimEnd('\'))" -Configuration "$(ConfigurationName)"
 </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
