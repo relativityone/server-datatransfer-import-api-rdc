@@ -11,7 +11,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Defines static <see cref="DateTime"/> extension methods.
 	/// </summary>
-	public static class DateTimeExtensions
+	internal static class DateTimeExtensions
 	{
 		/// <summary>
 		/// The SQL culture neutral format string.

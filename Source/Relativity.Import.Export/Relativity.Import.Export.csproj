@@ -132,6 +132,7 @@
     <Compile Include="StringExtensions.cs" />
     <Compile Include="TimekeeperEntry.cs" />
     <Compile Include="Timekeeper.cs" />
+    <Compile Include="Transfer\TapiBridgeBase.cs" />
     <Compile Include="VisualBasicConstants.cs" />
     <Compile Include="CollectionExtensions.cs" />
     <Compile Include="ConvertToMultiPagePdfException.cs" />
@@ -191,7 +192,6 @@
     <Compile Include="Transfer\DownloadTapiBridge.cs" />
     <Compile Include="Transfer\RelativityManagerService.cs" />
     <Compile Include="Transfer\RelativityTransferLog.cs" />
-    <Compile Include="Transfer\TapiBridgeBase.cs" />
     <Compile Include="Transfer\ITapiObjectService.cs" />
     <Compile Include="Transfer\TapiBridgeFactory.cs" />
     <Compile Include="Transfer\TapiBridgeParameters.cs" />

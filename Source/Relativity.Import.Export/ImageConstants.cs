@@ -9,7 +9,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Defines image related constants.
 	/// </summary>
-	public static class ImageConstants
+	internal static class ImageConstants
 	{
 		/// <summary>
 		/// The group 3 1-dimensional TIFF encoding.

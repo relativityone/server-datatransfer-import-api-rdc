@@ -21,7 +21,7 @@ namespace Relativity.Import.Export
 		"Microsoft.Design",
 		"CA1035:ICollectionImplementationsHaveStronglyTypedMembers",
 		Justification = "This isn't required.")]
-	public class AppSettingsDictionary : IDictionary
+	internal class AppSettingsDictionary : IDictionary
 	{
 		private readonly Dictionary<object, object> dictionary = new Dictionary<object, object>();
 		private readonly IAppSettings settings;

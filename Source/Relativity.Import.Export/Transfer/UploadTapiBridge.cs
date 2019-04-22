@@ -90,23 +90,6 @@ namespace Relativity.Import.Export.Transfer
 		public string TargetFolderName => this.pathManager.CurrentTargetFolderName;
 
 		/// <summary>
-		/// Gets a value indicating whether there are transfers pending.
-		/// </summary>
-		/// <remarks>
-		/// The RequestTransferPathCount property was added to avoid costly hits to the repository.
-		/// </remarks>
-		public bool TransfersPending => this.TransferJob != null
-										&& this.TransferJob.JobService.RequestTransferPathCount > 0;
-
-		/// <summary>
-		/// Gets the workspace artifact unique identifier.
-		/// </summary>
-		/// <value>
-		/// The unique identifier.
-		/// </value>
-		public int WorkspaceId => this.parameters.WorkspaceId;
-
-		/// <summary>
 		/// Adds the path to a transfer job.
 		/// </summary>
 		/// <param name="sourceFile">

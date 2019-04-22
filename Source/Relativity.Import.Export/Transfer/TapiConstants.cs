@@ -6,10 +6,10 @@
 
 namespace Relativity.Import.Export.Transfer
 {
-    /// <summary>
-    /// The Transfer API constants.
-    /// </summary>
-    public class TapiConstants
+	/// <summary>
+	/// The Transfer API constants.
+	/// </summary>
+	internal class TapiConstants
     {
         /// <summary>
         /// The numeric value used to indicate no associated line number exists.

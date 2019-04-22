@@ -15,7 +15,7 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Represents a file share path manager class object.
 	/// </summary>
-	public class FileSharePathManager
+	internal class FileSharePathManager
 	{
 		/// <summary>
 		/// The maximum volume size backing.
