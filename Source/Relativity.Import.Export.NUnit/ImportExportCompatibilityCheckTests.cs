@@ -1,0 +1,54 @@
+﻿// -----------------------------------------------------------------------------------------------------
+// <copyright file="ImportExportCompatibilityCheckTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// -----------------------------------------------------------------------------------------------------
+
+namespace Relativity.Import.Export.NUnit
+{
+	using System;
+
+	using global::NUnit.Framework;
+
+	using Moq;
+
+	using Relativity.Import.Export.Versioning;
+	using Relativity.Logging;
+
+	public class ImportExportCompatibilityCheckTests
+	{
+		private Mock<IRelativityVersionService> relativityVersionServiceMock;
+		private Mock<ILog> logMock;
+
+		[SetUp]
+		public void Setup()
+		{
+			this.relativityVersionServiceMock = new Mock<IRelativityVersionService>();
+			this.logMock = new Mock<ILog>();
+		}
+
+		[Test]
+		[TestCase("9.7.228.0", false)]
+		[TestCase("9.7.229.0", true)]
+		[TestCase("10.1.2.0", true)]
+		[TestCase("10.3.0.0", true)]
+		[TestCase("10.3.0.0", true)]
+		[TestCase("10.4.0.0", false)]
+		public void VerifyIApiClientAndServerVersionCompatibility(
+			string relativityVersion,
+			bool expectedResult)
+		{
+			// arrange
+			Version relativityVer = new Version(relativityVersion);
+			this.relativityVersionServiceMock.Setup(x => x.RetrieveRelativityVersion()).Returns(relativityVer);
+
+			ImportExportCompatibilityCheck subjectUnderTest = new ImportExportCompatibilityCheck(this.relativityVersionServiceMock.Object, this.logMock.Object);
+
+			// act
+			var actualResult = subjectUnderTest.ValidateCompatibility();
+
+			// assert
+			Assert.That(actualResult, Is.EqualTo(expectedResult));
+		}
+	}
+}

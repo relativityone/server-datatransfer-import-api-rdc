@@ -116,6 +116,7 @@
     <Compile Include="ChoiceInfoTests.cs" />
     <Compile Include="SoapExceptionDetailTests.cs" />
     <Compile Include="SerializationTestsBase.cs" />
+    <Compile Include="ImportExportCompatibilityCheckTests.cs" />
     <Compile Include="ViewFieldInfoTests.cs" />
     <Compile Include="CaseInfoTests.cs" />
     <Compile Include="CryptoHelperTests.cs" />
