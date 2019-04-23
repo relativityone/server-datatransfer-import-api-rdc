@@ -12,7 +12,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Represents extension methods for common dictionary-based operations.
 	/// </summary>
-	public static class DictionaryExtensions
+	internal static class DictionaryExtensions
 	{
 		/// <summary>
 		/// Gets the string value.

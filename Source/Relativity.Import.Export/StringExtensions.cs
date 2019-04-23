@@ -12,7 +12,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Defines static <see cref="string"/> extension methods.
 	/// </summary>
-	public static class StringExtensions
+	internal static class StringExtensions
 	{
 		/// <summary>
 		/// Converts the input string to replace the system newline characters with the provided new line proxy; doubles any existing bound strings in the input.

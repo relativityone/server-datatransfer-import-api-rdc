@@ -79,8 +79,11 @@ namespace Relativity.Import.Export
 			}
 			catch (SerializationException)
 			{
+				System.Type t = typeof(T);
+				string assemblyName = t.Assembly.GetName().Name;
+
 				// HACK! This is a temporary workaround to address serialization compatibility until a proper solution is in place.
-				soap = soap.Replace("/kCura.WinEDDS%2C%20Version%3D", "/Relativity.Import.Export.Legacy%2C%20Version%3D");
+				soap = soap.Replace("/kCura.WinEDDS%2C%20Version%3D", $"/{assemblyName}%2C%20Version%3D");
 				return SoapFormatterDeserialize<T>(soap);
 			}
 		}

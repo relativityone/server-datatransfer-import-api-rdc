@@ -9,7 +9,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Represents the well-known byte ordering values.
 	/// </summary>
-	public enum ByteOrdering
+	internal enum ByteOrdering
 	{
 		/// <summary>
 		/// The byte order is always from the least significant byte to the most significant byte and used by Intel.

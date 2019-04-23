@@ -13,7 +13,7 @@ namespace Relativity.Import.Export.Process
 	/// <summary>
 	/// Represents a class object to manage 1 or more <see cref="IRunnable"/> objects.
 	/// </summary>
-	public sealed class ProcessPool
+	internal sealed class ProcessPool
 	{
 		/// <summary>
 		/// The dictionary that maps runnable processes to a thread.

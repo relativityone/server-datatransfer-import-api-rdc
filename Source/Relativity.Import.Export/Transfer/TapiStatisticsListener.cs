@@ -16,7 +16,7 @@ namespace Relativity.Import.Export.Transfer
 	/// <summary>
 	/// Represents an object that listens for Transfer API statistics events.
 	/// </summary>
-	public sealed class TapiStatisticsListener : TapiListenerBase
+	internal sealed class TapiStatisticsListener : TapiListenerBase
 	{
 		/// <summary>
 		/// The thread synchronization root backing.

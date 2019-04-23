@@ -14,7 +14,7 @@ namespace Relativity.Import.Export.Transfer
 	/// <summary>
 	/// Represents an object that listens for Transfer API job retry events.
 	/// </summary>
-	public sealed class TapiJobRetryListener : TapiListenerBase
+	internal sealed class TapiJobRetryListener : TapiListenerBase
 	{
 		/// <summary>
 		/// The max retry count.
