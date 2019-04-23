@@ -205,7 +205,7 @@
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\PdfImagesRollup.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\SinglePageImagesRollup.cs" />
     <Compile Include="Export\VolumeManagerV2\IRelativityFileShareSettings.cs" />
-    <Compile Include="Export\VolumeManagerV2\ListHelper.cs" />
+    <Compile Include="Export\VolumeManagerV2\ListExtensions.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\EmptyImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFileMetadataBuilder.cs" />
@@ -387,7 +387,8 @@
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
   <PropertyGroup>
-    <PostBuildEvent></PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

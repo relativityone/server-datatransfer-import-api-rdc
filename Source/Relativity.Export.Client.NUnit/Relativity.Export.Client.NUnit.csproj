@@ -119,7 +119,7 @@
     <Compile Include="ColumnsOrdinalLookupFactoryTests.cs" />
     <Compile Include="CustomFileNameProviderTest.cs" />
     <Compile Include="CustomTextFileNamePartProviderTests.cs" />
-    <Compile Include="DeferredEntryHelper.cs" />
+    <Compile Include="DeferredEntryExtensions.cs" />
     <Compile Include="DestinationPathTests.cs" />
     <Compile Include="DownloaderTests.cs" />
     <Compile Include="DownloadProgressManagerTests.cs" />

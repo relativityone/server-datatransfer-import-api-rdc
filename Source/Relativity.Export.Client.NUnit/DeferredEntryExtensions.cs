@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------
-// <copyright file="DeferredEntryHelper.cs" company="Relativity ODA LLC">
+// <copyright file="DeferredEntryExtensions.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
@@ -11,7 +11,7 @@ namespace Relativity.Export.NUnit
 
     using kCura.WinEDDS.LoadFileEntry;
 
-    public static class DeferredEntryHelper
+    public static class DeferredEntryExtensions
 	{
 		public static string GetTextFromEntry(this DeferredEntry entry)
 		{

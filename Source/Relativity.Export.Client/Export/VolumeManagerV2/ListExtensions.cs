@@ -2,7 +2,7 @@
 {
 	using System.Collections.Generic;
 
-	public static class ListHelper
+	public static class ListExtensions
 	{
 		public static IList<T> InList<T>(this T item)
 		{

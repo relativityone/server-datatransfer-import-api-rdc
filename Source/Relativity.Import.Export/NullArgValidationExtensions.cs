@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents a class object to provide a Transfer API bridge to existing WinEDDS code for downloading.
+//   Extension to check null pointer arguments on the function call
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 namespace Relativity.Import.Export
