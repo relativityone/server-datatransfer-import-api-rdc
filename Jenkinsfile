@@ -15,8 +15,10 @@ properties([
         string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
         booleanParam(defaultValue: true, description: "Enable or disable running unit tests", name: 'runUnitTests'),
         booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests'),
-        booleanParam(defaultValue: false, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport'),
-        choice(defaultValue: 'hyperv', choices: ["hyperv"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment')
+        booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport'),
+        choice(defaultValue: 'hyperv', choices: ["hyperv"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment'),
+        booleanParam(defaultValue: true, description: "Enable or disable publishing NuGet packages", name: 'publishPackages'),
+        booleanParam(defaultValue: true, description: "Enable or disable publishing an RDC MSI NuGet package", name: 'publishRdcPackage')
     ])
 ])
 
@@ -70,7 +72,7 @@ timestamps
                     stage('Build binaries')
                     {
                         echo "Building the binaries for version $buildVersion"
-                        output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}'"
+                        output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge"
                         echo output
                     }
 
@@ -102,93 +104,98 @@ timestamps
                         echo output
                     }
 
-                    if (params.runUnitTests)
+                    try
                     {
-                        stage('Run unit tests')
+                        if (params.runUnitTests)
                         {
-                            echo "Running the unit tests"
-                            output = powershell ".\\build.ps1 UnitTests"
-                            echo output
-                        }
-                    }
-
-                    if (params.runIntegrationTests)
-                    {
-                        stage('Run integration tests')
-                        {
-                            echo "Running the integration tests"
-                            output = powershell ".\\build.ps1 IntegrationTests -TestEnvironment $params.testEnvironment"
-                            echo output
-                        }
-                    }
-
-                    if (params.runUnitTests || params.runIntegrationTests)
-                    {
-                        stage('Test results report')
-                        {
-                            echo "Generating test report"
-                            powershell ".\\build.ps1 TestReports"
-                        }
-                    }
-
-                    if (params.runUnitTests || params.runIntegrationTests)
-                    {
-                        stage('Retrieve test results')
-                        {
-                            def taskCandidates = []
-                            if (params.runUnitTests)
+                            stage('Run unit tests')
                             {
-                                taskCandidates.add("UnitTestResults")
+                                echo "Running the unit tests"
+                                output = powershell ".\\build.ps1 UnitTests"
+                                echo output
                             }
+                        }
 
-                            if (params.runIntegrationTests)
+                        if (params.runIntegrationTests)
+                        {
+                            stage('Run integration tests')
                             {
-                                taskCandidates.add("IntegrationTestResults")
+                                echo "Running the integration tests"
+                                output = powershell ".\\build.ps1 IntegrationTests -TestEnvironment $params.testEnvironment"
+                                echo output
                             }
+                        }
+                    }
+                    finally
+                    {
+                        if (params.runUnitTests || params.runIntegrationTests)
+                        {
+                            stage('Test results report')
+                            {
+                                echo "Generating test report"
+                                powershell ".\\build.ps1 TestReports"
+                            }
+                        }
 
-                            taskCandidates.eachWithIndex { task, index ->
-                                def testDescription = ""
-                                switch (index)
+                        if (params.runUnitTests || params.runIntegrationTests)
+                        {
+                            stage('Retrieve test results')
+                            {
+                                def taskCandidates = []
+                                if (params.runUnitTests)
                                 {
-                                    case 0:
-                                        testDescription = "unit"
-                                        break
-
-                                    case 1:
-                                        testDescription = "integration"
-                                        break
-
-                                    default:
-                                        throw new Exception("The test result type $index is not mapped.")
+                                    taskCandidates.add("UnitTestResults")
                                 }
 
-                                // Let the build script retrieve the unit test result values.
-                                echo "Retrieving the $testDescription-test results"
-                                def testResultOutputString = runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}'")
-                                echo "Retrieved the $testDescription-test results"
+                                if (params.runIntegrationTests)
+                                {
+                                    taskCandidates.add("IntegrationTestResults")
+                                }
 
-                                // Search for specific tokens within the response.
-                                echo "Extracting the $testDescription-test result parameters"
-                                def int passed = extractValue("testResultsPassed", testResultOutputString)
-                                def int failed = extractValue("testResultsFailed", testResultOutputString)
-                                def int skipped = extractValue("testResultsSkipped", testResultOutputString)
-                                echo "Extracted the $testDescription-test result parameters"
+                                taskCandidates.eachWithIndex { task, index ->
+                                    def testDescription = ""
+                                    switch (index)
+                                    {
+                                        case 0:
+                                            testDescription = "unit"
+                                            break
 
-                                // Dump the individual test results
-                                echo "$testDescription-test passed: $passed"
-                                echo "$testDescription-test failed: $failed"
-                                echo "$testDescription-test skipped: $skipped"
-                                
-                                // Now add to the final test results
-                                testResultsPassed += passed
-                                testResultsFailed += failed
-                                testResultsSkipped += skipped
+                                        case 1:
+                                            testDescription = "integration"
+                                            break
+
+                                        default:
+                                            throw new Exception("The test result type $index is not mapped.")
+                                    }
+
+                                    // Let the build script retrieve the unit test result values.
+                                    echo "Retrieving the $testDescription-test results"
+                                    def testResultOutputString = runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}'")
+                                    echo "Retrieved the $testDescription-test results"
+
+                                    // Search for specific tokens within the response.
+                                    echo "Extracting the $testDescription-test result parameters"
+                                    def int passed = extractValue("testResultsPassed", testResultOutputString)
+                                    def int failed = extractValue("testResultsFailed", testResultOutputString)
+                                    def int skipped = extractValue("testResultsSkipped", testResultOutputString)
+                                    echo "Extracted the $testDescription-test result parameters"
+
+                                    // Dump the individual test results
+                                    echo "$testDescription-test passed: $passed"
+                                    echo "$testDescription-test failed: $failed"
+                                    echo "$testDescription-test skipped: $skipped"
+                                    
+                                    // Now add to the final test results
+                                    testResultsPassed += passed
+                                    testResultsFailed += failed
+                                    testResultsSkipped += skipped
+                                }
+
+                                // Dump the final test results
+                                echo "Total passed: $testResultsPassed"
+                                echo "Total failed: $testResultsFailed"
+                                echo "Total skipped: $testResultsSkipped"
                             }
-
-                            // Dump the final test results
-                            echo "Total passed: $testResultsPassed"
-                            echo "Total failed: $testResultsFailed"
-                            echo "Total skipped: $testResultsSkipped"
                         }
                     }
 
@@ -202,10 +209,22 @@ timestamps
                         }
                     }
 
-                    stage ('Publish packages to proget')
+                    if (params.publishPackages)
                     {
-                        echo "Publishing packages to proget"
-                        powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}'"
+                        stage ('Publish packages to proget')
+                        {
+                            // Only need to publish large RDC MSI packages for official releases or by request.
+                            if (env.BRANCH_NAME == 'master' || params.publishRdcPackage)
+                            {
+                                echo "Publishing the SDK and RDC packages to Proget"
+                                powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}'"
+                            }
+                            else
+                            {
+                                echo "Publishing only the SDK package to Proget"
+                                powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}' -PackageTemplateRegex "^paket.template.relativity.import.client.sdk$""
+                            }
+                        }
                     }
 
                     stage('Publish build artifacts')
@@ -253,60 +272,59 @@ timestamps
                     sendEmailAboutFailureToAuthor() 
                 }
             }
-        }
-
-        try
-        {
-            stage('Reporting and Cleanup')
+            finally
             {
-                node("PolandBuild")
+                try
                 {
-                    parallel(
-                        SlackNotification: 
-                        {
-                            def script = this
-                            def String serverUnderTestName = ""
-                            def String version = buildVersion
-                            def String branch = env.BRANCH_NAME
-                            def String buildType = params.buildType
-                            def String slackChannel = params.slackChannel
-                            def String email = "slack_svc@relativity.com"
-                            def int numberOfFailedTests = testResultsFailed
-                            def int numberOfPassedTests = testResultsPassed
-                            def int numberOfSkippedTests = testResultsSkipped
-                            def String message = env.BUILD_TAG
-                            echo "*************************************************" +
-                                "\n" +
-                                "\n" + "sendCDSlackNotification Parameters: " +
-                                "\n" +
-                                "\n" + "script: " + script +
-                                "\n" + "serverUnderTestName: " + serverUnderTestName +
-                                "\n" + "version: " + version +
-                                "\n" + "branch: " + branch +
-                                "\n" + "buildType: " + buildType +
-                                "\n" + "slackChannel: " + slackChannel +
-                                "\n" + "email: " + email +
-                                "\n" + "numberOfFailedTests: " + numberOfFailedTests +
-                                "\n" + "numberOfPassedTests: " + numberOfPassedTests +
-                                "\n" + "numberOfSkippedTests: " + numberOfSkippedTests +
-                                "\n" + "message: " + message +
-                                "\n" +
-                                "\n*************************************************"
-                            sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, numberOfFailedTests, numberOfPassedTests, numberOfSkippedTests, message)
-                        },
-                        // StashNotifier second call, passes currentBuild.result to BitBucket as build status 
-                        BitBucketNotification:
-                        { 
-                            notifyBitbucket()
-                        }
-                    )
+                    stage('Reporting and Cleanup')
+                    {
+                        parallel(
+                            SlackNotification: 
+                            {
+                                def script = this
+                                def String serverUnderTestName = ""
+                                def String version = buildVersion
+                                def String branch = env.BRANCH_NAME
+                                def String buildType = params.buildType
+                                def String slackChannel = params.slackChannel
+                                def String email = "slack_svc@relativity.com"
+                                def int numberOfFailedTests = testResultsFailed
+                                def int numberOfPassedTests = testResultsPassed
+                                def int numberOfSkippedTests = testResultsSkipped
+                                def String message = env.BUILD_TAG
+                                echo "*************************************************" +
+                                    "\n" +
+                                    "\n" + "sendCDSlackNotification Parameters: " +
+                                    "\n" +
+                                    "\n" + "script: " + script +
+                                    "\n" + "serverUnderTestName: " + serverUnderTestName +
+                                    "\n" + "version: " + version +
+                                    "\n" + "branch: " + branch +
+                                    "\n" + "buildType: " + buildType +
+                                    "\n" + "slackChannel: " + slackChannel +
+                                    "\n" + "email: " + email +
+                                    "\n" + "numberOfFailedTests: " + numberOfFailedTests +
+                                    "\n" + "numberOfPassedTests: " + numberOfPassedTests +
+                                    "\n" + "numberOfSkippedTests: " + numberOfSkippedTests +
+                                    "\n" + "message: " + message +
+                                    "\n" +
+                                    "\n*************************************************"
+                                sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, numberOfFailedTests, numberOfPassedTests, numberOfSkippedTests, message)
+                            },
+                            // StashNotifier second call, passes currentBuild.result to BitBucket as build status 
+                            BitBucketNotification:
+                            { 
+                                notifyBitbucket()
+                            }
+                        )
+                    }
+                }
+                catch (err)
+                {
+                    // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
+                    echo err.toString()
                 }
             }
-        }
-        catch (err)
-        {
-            // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
-            echo err.toString()
         }
     }
 }

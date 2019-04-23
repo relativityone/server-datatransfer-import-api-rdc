@@ -12,7 +12,6 @@ namespace Relativity.Import.Export.NUnit
 
 	using Moq;
 
-	using Relativity.Import.Export.Versioning;
 	using Relativity.Logging;
 
 	public class ImportExportCompatibilityCheckTests
@@ -28,19 +27,23 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
-		[TestCase("9.7.228.0", false)]
-		[TestCase("9.7.229.0", true)]
-		[TestCase("10.1.2.0", true)]
-		[TestCase("10.3.0.0", true)]
-		[TestCase("10.3.0.0", true)]
-		[TestCase("10.4.0.0", false)]
+		[TestCase("9.7.228.0", "0.0", false)]
+		[TestCase("9.7.229.0", "0.0", true)]
+		[TestCase("10.1.2.0", "0.0", true)]
+		[TestCase("10.3.0.0", "1.0", true)]
+		[TestCase("10.3.0.0", "1.5", true)]
+		[TestCase("10.4.0.0", "2.0", false)]
 		public void VerifyIApiClientAndServerVersionCompatibility(
 			string relativityVersion,
+			string webApiVersion,
 			bool expectedResult)
 		{
 			// arrange
-			Version relativityVer = new Version(relativityVersion);
+			Version relativityVer = Version.Parse(relativityVersion);
+			Version webApiVer = Version.Parse(webApiVersion);
+
 			this.relativityVersionServiceMock.Setup(x => x.RetrieveRelativityVersion()).Returns(relativityVer);
+			this.relativityVersionServiceMock.Setup(x => x.RetrieveImportExportWebApiVersion()).Returns(webApiVer);
 
 			ImportExportCompatibilityCheck subjectUnderTest = new ImportExportCompatibilityCheck(this.relativityVersionServiceMock.Object, this.logMock.Object);
 
@@ -48,6 +51,15 @@ namespace Relativity.Import.Export.NUnit
 			var actualResult = subjectUnderTest.ValidateCompatibility();
 
 			// assert
+			if (relativityVer < MinimalCompatibleRelativitySemanticVersion.Version)
+			{// we don't expect to call web api for its version for old Relativity instance
+				this.relativityVersionServiceMock.Verify(x => x.RetrieveImportExportWebApiVersion(), Times.Never);
+			}
+			else
+			{
+				this.relativityVersionServiceMock.Verify(x => x.RetrieveImportExportWebApiVersion(), Times.Once);
+			}
+
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
 		}
 	}

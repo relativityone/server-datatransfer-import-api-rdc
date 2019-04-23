@@ -29,13 +29,27 @@
     <UIRef Id="WixUI_MondoNoLicense" />
     <UIRef Id="WixUI_ErrorProgressText" />
 
-    <!-- The following condition blocks installation if .NET Framework 4.6.2 is not present on the machine -->
-    <!-- NETFRAMEWORK45 >= "#394802" checks for .NET 4.6.2. Check https://docs.microsoft.com/en-gb/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed for version numbers -->
-    <!-- TODO: after WIX update to 3.11 version please use WIX_IS_NETFRAMEWORK_462_OR_LATER_INSTALLED property -->
-    <PropertyRef Id="NETFRAMEWORK45" />
-    <Condition Message="This application requires .NET Framework 4.6.2. Please install the .NET Framework then run this installer again.">
-      <![CDATA[Installed OR (NETFRAMEWORK45 AND NETFRAMEWORK45 >= "#394802")]]>
-    </Condition>
+    <!-- Prerequisites -->
+    <PropertyRef Id="DOTNET46_INSTALLED"/>
+
+    <!-- VC++ 2010/2015 x86 is required for both platforms. -->
+    <PropertyRef Id="VCPP2010X86REDIST"/>
+    <PropertyRef Id="VCPP2015X86REDISTMAJOR"/>
+    <PropertyRef Id="VCPP2015X86REDISTMINOR"/>
+    <PropertyRef Id="VCPP2015X86REDISTBLD"/>
+
+    <?if $(var.Platform) = "x64" ?>
+    <!-- VC++ 2010/2017 x64 is required for just the x64 platform. -->
+    <PropertyRef Id="VCPP2010X64REDIST"/>
+    <PropertyRef Id="VCPP2017X64REDISTMAJOR"/>
+    <PropertyRef Id="VCPP2017X64REDISTMINOR"/>
+    <PropertyRef Id="VCPP2017X64REDISTBLD"/>
+    <?else?>
+    <!-- VC++ 2017 x86 is required for just the x86 platform. -->
+    <PropertyRef Id="VCPP2017X86REDISTMAJOR"/>
+    <PropertyRef Id="VCPP2017X86REDISTMINOR"/>
+    <PropertyRef Id="VCPP2017X86REDISTBLD"/>
+    <?endif?>
 
     <!-- Set the icon for the msi and Add/Remove programs -->
     <Icon Id="relativity_1.exe" SourceFile="$(var.ProjectDir)..\..\Images\relativity-icon.ICO" />
@@ -163,30 +177,6 @@
       <Feature Id="Licensing3rdPartyFeature" Title="Licensing_3rdParty" Description="Licensing and attribution for 3rd party libraries." Level="1">
         <ComponentGroupRef Id="LicensingFor3rdPartyGroup" />
       </Feature>
-    </Feature>
-
-    <!-- PREREQ: VC++ 2010 Redist for x64 -->
-    <?if $(var.Platform) = "x64" ?>
-      <DirectoryRef Id="TARGETDIR">
-        <Merge Id="VCRedistATL.x64" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_ATL_x64.msm" DiskId="1" Language="0"/>
-        <Merge Id="VCRedistCRT.x64" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_CRT_x64.msm" DiskId="1" Language="0"/>
-        <Merge Id="VCRedistMFC.x64" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_MFC_x64.msm" DiskId="1" Language="0"/>
-        <Merge Id="VCRedistOpenMP.x64" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_OpenMP_x64.msm" DiskId="1" Language="0"/>
-      </DirectoryRef>
-      <Feature Id="VCRedist.x64" Title="Visual C++ 2010 x64 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
-        <MergeRef Id="VCRedistATL.x64"/>
-        <MergeRef Id="VCRedistCRT.x64"/>
-        <MergeRef Id="VCRedistMFC.x64"/>
-        <MergeRef Id="VCRedistOpenMP.x64"/>
-      </Feature>
-    <?endif ?>
-
-    <!-- PREREQ: VC++ 2010 Redist for x86. This is required for for Aspera integration for BOTH x86 and x64 platforms. -->
-    <DirectoryRef Id="TARGETDIR">
-      <Merge Id="VCRedistCRT.x86" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_CRT_x86.msm" DiskId="1" Language="0"/>
-    </DirectoryRef>
-    <Feature Id="VCRedist.x86" Title="Visual C++ 2010 x86 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
-      <MergeRef Id="VCRedistCRT.x86"/>
     </Feature>
 
     <!-- Don't overwrite the existing app.config during the upgrade! -->

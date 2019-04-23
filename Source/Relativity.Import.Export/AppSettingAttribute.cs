@@ -12,7 +12,7 @@ namespace Relativity.Import.Export
 	/// Represents an application setting property-based attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
-	public sealed class AppSettingAttribute : Attribute
+	internal sealed class AppSettingAttribute : Attribute
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AppSettingAttribute"/> class.

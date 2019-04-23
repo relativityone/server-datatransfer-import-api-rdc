@@ -9,7 +9,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Defines all application settings constant keys and default values.
 	/// </summary>
-	public static class AppSettingsConstants
+	internal static class AppSettingsConstants
 	{
 #pragma warning disable SA1600
 		// All configuration sections go here.

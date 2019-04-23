@@ -45,12 +45,38 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DocumentationFile>bin\Relativity.Import.Export.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591;0649</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DocumentationFile>bin\Relativity.Import.Export.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591;0649</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FreeImageNET, Version=3.18.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="FreeImageNET">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
     </Reference>
-    <Reference Include="itextsharp, Version=5.5.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+    <Reference Include="itextsharp">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll</HintPath>
     </Reference>
@@ -75,6 +101,7 @@
     <Compile Include="Data\SqlDataView.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="AppSettingAttribute.cs" />
+    <Compile Include="NullableTypesHelper.cs" />
     <Compile Include="NullArgValidationExtensions.cs" />
     <Compile Include="Io\BooleanImporterException.cs" />
     <Compile Include="Io\CellImporterException.cs" />
@@ -107,11 +134,12 @@
     <Compile Include="StringExtensions.cs" />
     <Compile Include="TimekeeperEntry.cs" />
     <Compile Include="Timekeeper.cs" />
-    <Compile Include="Versioning\ImportExportCompatibilityCheck.cs" />
-    <Compile Include="Versioning\IRelativityVersionService.cs" />
-    <Compile Include="Versioning\MinimalCompatibleRelativitySemanticVersion.cs" />
-    <Compile Include="Versioning\ImportExportApiClientVersion.cs" />
-    <Compile Include="Versioning\MinimalCompatibleRelativityVersion.cs" />
+    <Compile Include="ImportExportCompatibilityCheck.cs" />
+    <Compile Include="IRelativityVersionService.cs" />
+    <Compile Include="MinimalCompatibleRelativitySemanticVersion.cs" />
+    <Compile Include="ImportExportApiClientVersion.cs" />
+    <Compile Include="MinimalCompatibleRelativityVersion.cs" />
+    <Compile Include="Transfer\TapiBridgeBase.cs" />
     <Compile Include="VisualBasicConstants.cs" />
     <Compile Include="CollectionExtensions.cs" />
     <Compile Include="ConvertToMultiPagePdfException.cs" />
@@ -120,7 +148,6 @@
     <Compile Include="IImageConversionService.cs" />
     <Compile Include="ImageRollupException.cs" />
     <Compile Include="Io\IoReporterContext.cs" />
-    <Compile Include="NullableTypesExtension.cs" />
     <Compile Include="ImportExportException.cs" />
     <Compile Include="IAppSettings.cs" />
     <Compile Include="ByteOrdering.cs" />
@@ -171,7 +198,6 @@
     <Compile Include="Transfer\DownloadTapiBridge.cs" />
     <Compile Include="Transfer\RelativityManagerService.cs" />
     <Compile Include="Transfer\RelativityTransferLog.cs" />
-    <Compile Include="Transfer\TapiBridgeBase.cs" />
     <Compile Include="Transfer\ITapiObjectService.cs" />
     <Compile Include="Transfer\TapiBridgeFactory.cs" />
     <Compile Include="Transfer\TapiBridgeParameters.cs" />

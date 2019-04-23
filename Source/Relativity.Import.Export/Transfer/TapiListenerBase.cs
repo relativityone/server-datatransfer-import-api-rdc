@@ -14,7 +14,7 @@ namespace Relativity.Import.Export.Transfer
 	/// <summary>
 	/// Base class for transfer event listeners.
 	/// </summary>
-	public abstract class TapiListenerBase : IDisposable
+	internal abstract class TapiListenerBase : IDisposable
 	{
 		/// <summary>
 		/// The disposed backing.

@@ -1,10 +1,17 @@
 castle.windsor
 kcura.outsidein.fi.win32
+kCura.relativity.client
 moq
 newtonsoft.json
 nunit
+relativity.dataTransfer.messageService
+relativity.kepler
+relativity.kepler.client
 relativity.logging
 relativity.logging.interfaces
+relativity.productions.services.interfaces
+relativity.services.datacontracts
+relativity.services.interfaces
 relativity.testing.identification
 relativity.transfer.client
 stylecop.analyzers
