@@ -25,7 +25,7 @@ Imports System.Xml.Serialization
 Namespace kCura.EDDS.WebAPI.RelativityManagerBase
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code"),  _
      System.Web.Services.WebServiceBindingAttribute(Name:="RelativityManagerSoap", [Namespace]:="http://www.kCura.com/EDDS/RelativityManager")>  _
@@ -35,6 +35,8 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
         Private RetrieveCurrencySymbolOperationCompleted As System.Threading.SendOrPostCallback
         
         Private RetrieveRelativityVersionOperationCompleted As System.Threading.SendOrPostCallback
+        
+        Private GetImportExportWebApiVersionOperationCompleted As System.Threading.SendOrPostCallback
         
         Private ValidateSuccessfulLoginOperationCompleted As System.Threading.SendOrPostCallback
         
@@ -97,6 +99,9 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
         
         '''<remarks/>
         Public Event RetrieveRelativityVersionCompleted As RetrieveRelativityVersionCompletedEventHandler
+        
+        '''<remarks/>
+        Public Event GetImportExportWebApiVersionCompleted As GetImportExportWebApiVersionCompletedEventHandler
         
         '''<remarks/>
         Public Event ValidateSuccessfulLoginCompleted As ValidateSuccessfulLoginCompletedEventHandler
@@ -198,6 +203,44 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
             If (Not (Me.RetrieveRelativityVersionCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
                 RaiseEvent RetrieveRelativityVersionCompleted(Me, New RetrieveRelativityVersionCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+            End If
+        End Sub
+        
+        '''<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/RelativityManager/GetImportExportWebApiVersion", RequestNamespace:="http://www.kCura.com/EDDS/RelativityManager", ResponseNamespace:="http://www.kCura.com/EDDS/RelativityManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function GetImportExportWebApiVersion() As String
+            Dim results() As Object = Me.Invoke("GetImportExportWebApiVersion", New Object(-1) {})
+            Return CType(results(0),String)
+        End Function
+        
+        '''<remarks/>
+        Public Function BeginGetImportExportWebApiVersion(ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("GetImportExportWebApiVersion", New Object(-1) {}, callback, asyncState)
+        End Function
+        
+        '''<remarks/>
+        Public Function EndGetImportExportWebApiVersion(ByVal asyncResult As System.IAsyncResult) As String
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),String)
+        End Function
+        
+        '''<remarks/>
+        Public Overloads Sub GetImportExportWebApiVersionAsync()
+            Me.GetImportExportWebApiVersionAsync(Nothing)
+        End Sub
+        
+        '''<remarks/>
+        Public Overloads Sub GetImportExportWebApiVersionAsync(ByVal userState As Object)
+            If (Me.GetImportExportWebApiVersionOperationCompleted Is Nothing) Then
+                Me.GetImportExportWebApiVersionOperationCompleted = AddressOf Me.OnGetImportExportWebApiVersionOperationCompleted
+            End If
+            Me.InvokeAsync("GetImportExportWebApiVersion", New Object(-1) {}, Me.GetImportExportWebApiVersionOperationCompleted, userState)
+        End Sub
+        
+        Private Sub OnGetImportExportWebApiVersionOperationCompleted(ByVal arg As Object)
+            If (Not (Me.GetImportExportWebApiVersionCompletedEvent) Is Nothing) Then
+                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
+                RaiseEvent GetImportExportWebApiVersionCompleted(Me, New GetImportExportWebApiVersionCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -563,11 +606,11 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0")>  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0")>  _
     Public Delegate Sub RetrieveCurrencySymbolCompletedEventHandler(ByVal sender As Object, ByVal e As RetrieveCurrencySymbolCompletedEventArgs)
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class RetrieveCurrencySymbolCompletedEventArgs
@@ -590,11 +633,11 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0")>  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0")>  _
     Public Delegate Sub RetrieveRelativityVersionCompletedEventHandler(ByVal sender As Object, ByVal e As RetrieveRelativityVersionCompletedEventArgs)
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class RetrieveRelativityVersionCompletedEventArgs
@@ -617,11 +660,38 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0")>  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0")>  _
+    Public Delegate Sub GetImportExportWebApiVersionCompletedEventHandler(ByVal sender As Object, ByVal e As GetImportExportWebApiVersionCompletedEventArgs)
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0"),  _
+     System.Diagnostics.DebuggerStepThroughAttribute(),  _
+     System.ComponentModel.DesignerCategoryAttribute("code")>  _
+    Partial Public Class GetImportExportWebApiVersionCompletedEventArgs
+        Inherits System.ComponentModel.AsyncCompletedEventArgs
+        
+        Private results() As Object
+        
+        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
+            MyBase.New(exception, cancelled, userState)
+            Me.results = results
+        End Sub
+        
+        '''<remarks/>
+        Public ReadOnly Property Result() As String
+            Get
+                Me.RaiseExceptionIfNecessary
+                Return CType(Me.results(0),String)
+            End Get
+        End Property
+    End Class
+    
+    '''<remarks/>
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0")>  _
     Public Delegate Sub ValidateSuccessfulLoginCompletedEventHandler(ByVal sender As Object, ByVal e As ValidateSuccessfulLoginCompletedEventArgs)
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class ValidateSuccessfulLoginCompletedEventArgs
@@ -644,11 +714,11 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0")>  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0")>  _
     Public Delegate Sub GetServerTimezoneOffsetCompletedEventHandler(ByVal sender As Object, ByVal e As GetServerTimezoneOffsetCompletedEventArgs)
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class GetServerTimezoneOffsetCompletedEventArgs
@@ -671,11 +741,11 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0")>  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0")>  _
     Public Delegate Sub IsAuditingEnabledCompletedEventHandler(ByVal sender As Object, ByVal e As IsAuditingEnabledCompletedEventArgs)
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class IsAuditingEnabledCompletedEventArgs
@@ -698,11 +768,11 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0")>  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0")>  _
     Public Delegate Sub IsImportEmailNotificationEnabledCompletedEventHandler(ByVal sender As Object, ByVal e As IsImportEmailNotificationEnabledCompletedEventArgs)
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class IsImportEmailNotificationEnabledCompletedEventArgs
@@ -725,11 +795,11 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0")>  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0")>  _
     Public Delegate Sub RetrieveRdcConfigurationCompletedEventHandler(ByVal sender As Object, ByVal e As RetrieveRdcConfigurationCompletedEventArgs)
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class RetrieveRdcConfigurationCompletedEventArgs
@@ -752,11 +822,11 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0")>  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0")>  _
     Public Delegate Sub PingCompletedEventHandler(ByVal sender As Object, ByVal e As PingCompletedEventArgs)
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class PingCompletedEventArgs
@@ -779,11 +849,11 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0")>  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0")>  _
     Public Delegate Sub ReceiveTextCompletedEventHandler(ByVal sender As Object, ByVal e As ReceiveTextCompletedEventArgs)
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class ReceiveTextCompletedEventArgs
@@ -806,11 +876,11 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0")>  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0")>  _
     Public Delegate Sub GetInstanceInformationCompletedEventHandler(ByVal sender As Object, ByVal e As GetInstanceInformationCompletedEventArgs)
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class GetInstanceInformationCompletedEventArgs
@@ -833,11 +903,11 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
     End Class
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0")>  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0")>  _
     Public Delegate Sub GetRelativityUrlCompletedEventHandler(ByVal sender As Object, ByVal e As GetRelativityUrlCompletedEventArgs)
     
     '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0"),  _
+    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3062.0"),  _
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class GetRelativityUrlCompletedEventArgs

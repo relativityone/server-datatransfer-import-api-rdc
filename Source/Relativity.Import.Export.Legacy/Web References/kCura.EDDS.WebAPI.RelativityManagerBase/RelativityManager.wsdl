@@ -22,6 +22,16 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetImportExportWebApiVersion">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetImportExportWebApiVersionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetImportExportWebApiVersionResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="ValidateSuccessfulLogin">
         <s:complexType />
       </s:element>
@@ -123,6 +133,17 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="string" nillable="true" type="s:string" />
+      <s:element name="boolean" type="s:boolean" />
+      <s:element name="int" type="s:int" />
+      <s:element name="DataSet" nillable="true">
+        <s:complexType>
+          <s:sequence>
+            <s:element ref="s:schema" />
+            <s:any />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="RetrieveCurrencySymbolSoapIn">
@@ -136,6 +157,12 @@
   </wsdl:message>
   <wsdl:message name="RetrieveRelativityVersionSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveRelativityVersionResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetImportExportWebApiVersionSoapIn">
+    <wsdl:part name="parameters" element="tns:GetImportExportWebApiVersion" />
+  </wsdl:message>
+  <wsdl:message name="GetImportExportWebApiVersionSoapOut">
+    <wsdl:part name="parameters" element="tns:GetImportExportWebApiVersionResponse" />
   </wsdl:message>
   <wsdl:message name="ValidateSuccessfulLoginSoapIn">
     <wsdl:part name="parameters" element="tns:ValidateSuccessfulLogin" />
@@ -191,6 +218,56 @@
   <wsdl:message name="GetRelativityUrlSoapOut">
     <wsdl:part name="parameters" element="tns:GetRelativityUrlResponse" />
   </wsdl:message>
+  <wsdl:message name="RetrieveCurrencySymbolHttpPostIn" />
+  <wsdl:message name="RetrieveCurrencySymbolHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveRelativityVersionHttpPostIn" />
+  <wsdl:message name="RetrieveRelativityVersionHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetImportExportWebApiVersionHttpPostIn" />
+  <wsdl:message name="GetImportExportWebApiVersionHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ValidateSuccessfulLoginHttpPostIn" />
+  <wsdl:message name="ValidateSuccessfulLoginHttpPostOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="GetServerTimezoneOffsetHttpPostIn" />
+  <wsdl:message name="GetServerTimezoneOffsetHttpPostOut">
+    <wsdl:part name="Body" element="tns:int" />
+  </wsdl:message>
+  <wsdl:message name="IsAuditingEnabledHttpPostIn" />
+  <wsdl:message name="IsAuditingEnabledHttpPostOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="IsImportEmailNotificationEnabledHttpPostIn" />
+  <wsdl:message name="IsImportEmailNotificationEnabledHttpPostOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveRdcConfigurationHttpPostIn" />
+  <wsdl:message name="RetrieveRdcConfigurationHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="PingHttpPostIn" />
+  <wsdl:message name="PingHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveTextHttpPostIn">
+    <wsdl:part name="text" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveTextHttpPostOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="GetInstanceInformationHttpPostIn" />
+  <wsdl:message name="GetInstanceInformationHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetRelativityUrlHttpPostIn" />
+  <wsdl:message name="GetRelativityUrlHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
   <wsdl:portType name="RelativityManagerSoap">
     <wsdl:operation name="RetrieveCurrencySymbol">
       <wsdl:input message="tns:RetrieveCurrencySymbolSoapIn" />
@@ -199,6 +276,10 @@
     <wsdl:operation name="RetrieveRelativityVersion">
       <wsdl:input message="tns:RetrieveRelativityVersionSoapIn" />
       <wsdl:output message="tns:RetrieveRelativityVersionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetImportExportWebApiVersion">
+      <wsdl:input message="tns:GetImportExportWebApiVersionSoapIn" />
+      <wsdl:output message="tns:GetImportExportWebApiVersionSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ValidateSuccessfulLogin">
       <wsdl:input message="tns:ValidateSuccessfulLoginSoapIn" />
@@ -237,6 +318,56 @@
       <wsdl:output message="tns:GetRelativityUrlSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
+  <wsdl:portType name="RelativityManagerHttpPost">
+    <wsdl:operation name="RetrieveCurrencySymbol">
+      <wsdl:input message="tns:RetrieveCurrencySymbolHttpPostIn" />
+      <wsdl:output message="tns:RetrieveCurrencySymbolHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveRelativityVersion">
+      <wsdl:input message="tns:RetrieveRelativityVersionHttpPostIn" />
+      <wsdl:output message="tns:RetrieveRelativityVersionHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetImportExportWebApiVersion">
+      <wsdl:input message="tns:GetImportExportWebApiVersionHttpPostIn" />
+      <wsdl:output message="tns:GetImportExportWebApiVersionHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateSuccessfulLogin">
+      <wsdl:input message="tns:ValidateSuccessfulLoginHttpPostIn" />
+      <wsdl:output message="tns:ValidateSuccessfulLoginHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetServerTimezoneOffset">
+      <wsdl:input message="tns:GetServerTimezoneOffsetHttpPostIn" />
+      <wsdl:output message="tns:GetServerTimezoneOffsetHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsAuditingEnabled">
+      <wsdl:input message="tns:IsAuditingEnabledHttpPostIn" />
+      <wsdl:output message="tns:IsAuditingEnabledHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsImportEmailNotificationEnabled">
+      <wsdl:input message="tns:IsImportEmailNotificationEnabledHttpPostIn" />
+      <wsdl:output message="tns:IsImportEmailNotificationEnabledHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveRdcConfiguration">
+      <wsdl:input message="tns:RetrieveRdcConfigurationHttpPostIn" />
+      <wsdl:output message="tns:RetrieveRdcConfigurationHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Ping">
+      <wsdl:input message="tns:PingHttpPostIn" />
+      <wsdl:output message="tns:PingHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveText">
+      <wsdl:input message="tns:ReceiveTextHttpPostIn" />
+      <wsdl:output message="tns:ReceiveTextHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetInstanceInformation">
+      <wsdl:input message="tns:GetInstanceInformationHttpPostIn" />
+      <wsdl:output message="tns:GetInstanceInformationHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRelativityUrl">
+      <wsdl:input message="tns:GetRelativityUrlHttpPostIn" />
+      <wsdl:output message="tns:GetRelativityUrlHttpPostOut" />
+    </wsdl:operation>
+  </wsdl:portType>
   <wsdl:binding name="RelativityManagerSoap" type="tns:RelativityManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="RetrieveCurrencySymbol">
@@ -250,6 +381,15 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveRelativityVersion">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/RetrieveRelativityVersion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetImportExportWebApiVersion">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/GetImportExportWebApiVersion" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -359,6 +499,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetImportExportWebApiVersion">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/GetImportExportWebApiVersion" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ValidateSuccessfulLogin">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/ValidateSuccessfulLogin" style="document" />
       <wsdl:input>
@@ -441,12 +590,126 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="RelativityManagerHttpPost" type="tns:RelativityManagerHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="RetrieveCurrencySymbol">
+      <http:operation location="/RetrieveCurrencySymbol" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveRelativityVersion">
+      <http:operation location="/RetrieveRelativityVersion" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetImportExportWebApiVersion">
+      <http:operation location="/GetImportExportWebApiVersion" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateSuccessfulLogin">
+      <http:operation location="/ValidateSuccessfulLogin" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetServerTimezoneOffset">
+      <http:operation location="/GetServerTimezoneOffset" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsAuditingEnabled">
+      <http:operation location="/IsAuditingEnabled" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsImportEmailNotificationEnabled">
+      <http:operation location="/IsImportEmailNotificationEnabled" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveRdcConfiguration">
+      <http:operation location="/RetrieveRdcConfiguration" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Ping">
+      <http:operation location="/Ping" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveText">
+      <http:operation location="/ReceiveText" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetInstanceInformation">
+      <http:operation location="/GetInstanceInformation" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRelativityUrl">
+      <http:operation location="/GetRelativityUrl" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="RelativityManager">
     <wsdl:port name="RelativityManagerSoap" binding="tns:RelativityManagerSoap">
       <soap:address location="http://localhost/RelativityWebApi/RelativityManager.asmx" />
     </wsdl:port>
     <wsdl:port name="RelativityManagerSoap12" binding="tns:RelativityManagerSoap12">
       <soap12:address location="http://localhost/RelativityWebApi/RelativityManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="RelativityManagerHttpPost" binding="tns:RelativityManagerHttpPost">
+      <http:address location="http://localhost/RelativityWebApi/RelativityManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

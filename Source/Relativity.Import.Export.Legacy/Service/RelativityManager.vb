@@ -35,5 +35,9 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function RetrieveRdcConfiguration() As System.Data.DataSet
 			Return RetryOnReLoginException(Function() MyBase.RetrieveRdcConfiguration())
 		End Function
+
+		Public Shadows Function GetImportExportWebApiVersion() As String
+			Return RetryOnReLoginException(Function() MyBase.GetImportExportWebApiVersion())
+		End Function
 	End Class
 End Namespace

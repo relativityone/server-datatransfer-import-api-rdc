@@ -140,6 +140,7 @@
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblySetup.cs" />
+    <Compile Include="RelativityManagerWebServiceTests.cs" />
     <Compile Include="WebServiceTestsBase.cs" />
     <Compile Include="CaseManagerWebServiceTests.cs" />
     <Compile Include="DownloadTapiBridgeTests.cs" />
@@ -192,7 +193,8 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent></PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
