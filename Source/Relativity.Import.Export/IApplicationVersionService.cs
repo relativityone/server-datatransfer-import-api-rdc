@@ -13,13 +13,13 @@ namespace Relativity.Import.Export
 	public interface IRelativityVersionService
 	{
 		/// <summary>
-		/// It retrieve Relativity instance version.
+		/// It retrieves Relativity instance version.
 		/// </summary>
 		/// <returns>Version object.</returns>
 		Version RetrieveRelativityVersion();
 
 		/// <summary>
-		/// It retrieve Relativity instance version.
+		/// It retrieves Web Api version.
 		/// </summary>
 		/// <returns>Version object.</returns>
 		Version RetrieveImportExportWebApiVersion();
