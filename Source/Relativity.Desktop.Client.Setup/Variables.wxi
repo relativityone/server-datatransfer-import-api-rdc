@@ -4,8 +4,8 @@
   <?define RdcEventLogEntryName="Logging_RDC" ?>
   <?define Logname="kCura"?>
   <?define ProductName="Relativity Desktop Client" ?>
-  <?define UpgradeCode="{3A6B5185-D58E-4956-AE8C-C90465C02310}" ?>
+  <?define UpgradeCode="{5AC5909F-9E1D-4E2F-A3E2-55E50AD4F072}" ?>
   <?define RegistryKey="Software\kCura\RelativityDesktopClient" ?>
   <?define ConfigFile="$(var.Relativity.Desktop.Client.Legacy.TargetFileName).config"?>
-  <?define ProcessName="Relativity.StagingExplorer"?>
+  <?define ProcessName="Relativity.Desktop.Client"?>
 </Include>
