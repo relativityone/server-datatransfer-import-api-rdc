@@ -8,4 +8,6 @@
   <?define RegistryKey="Software\kCura\RelativityDesktopClient" ?>
   <?define ConfigFile="$(var.Relativity.Desktop.Client.Legacy.TargetFileName).config"?>
   <?define ProcessName="Relativity.Desktop.Client"?>
+  <!-- This represents the old RDC installer upgrade code. -->
+  <?define LegacyUpgradeCode="{E32BA6D3-7C36-4D52-B93B-302E360B20B3}" ?>
 </Include>
