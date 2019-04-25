@@ -16,13 +16,13 @@ namespace Relativity.Import.Export.NUnit
 
 	public class ImportExportCompatibilityCheckTests
 	{
-		private Mock<IRelativityVersionService> relativityVersionServiceMock;
+		private Mock<IApplicationVersionService> relativityVersionServiceMock;
 		private Mock<ILog> logMock;
 
 		[SetUp]
 		public void Setup()
 		{
-			this.relativityVersionServiceMock = new Mock<IRelativityVersionService>();
+			this.relativityVersionServiceMock = new Mock<IApplicationVersionService>();
 			this.logMock = new Mock<ILog>();
 		}
 

@@ -19,21 +19,21 @@ namespace Relativity.Import.Export
 	{
 		private readonly ILog log;
 
-		private IRelativityVersionService relativityVersionService;
+		private IApplicationVersionService applicationVersionService;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ImportExportCompatibilityCheck"/> class.
 		/// </summary>
-		/// /// <param name="relativityVersionService">
+		/// /// <param name="applicationVersionService">
 		/// Relativity version service object.
 		/// </param>
 		/// <param name="log">
 		/// the log object.
 		/// </param>
-		public ImportExportCompatibilityCheck(IRelativityVersionService relativityVersionService, ILog log)
+		public ImportExportCompatibilityCheck(IApplicationVersionService applicationVersionService, ILog log)
 		{
 			this.log = log.ThrowIfNull(nameof(log));
-			this.relativityVersionService = relativityVersionService.ThrowIfNull(nameof(relativityVersionService));
+			this.applicationVersionService = applicationVersionService.ThrowIfNull(nameof(applicationVersionService));
 		}
 
 		/// <summary>
@@ -44,14 +44,14 @@ namespace Relativity.Import.Export
 		{
 			this.log.LogDebug("Retrieving Relativity version from WebApi");
 
-			Version relativityVersion = this.relativityVersionService.RetrieveRelativityVersion();
+			Version relativityVersion = this.applicationVersionService.RetrieveRelativityVersion();
 
 			if (VerifySemanticVersionCheckAvailable(relativityVersion))
 			{
 				this.log.LogDebug("Trying to get ImportExportWebApiVersion setting");
 
 				// Now we know we can call WebApi to grab it's version
-				Version importExportWebApiVersion = this.relativityVersionService.RetrieveImportExportWebApiVersion();
+				Version importExportWebApiVersion = this.applicationVersionService.RetrieveImportExportWebApiVersion();
 
 				return CheckSemanticVersionsCompability(ImportExportApiClientVersion.Version, importExportWebApiVersion);
 			}

@@ -136,6 +136,12 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="kCura.Relativity.Client">
+      <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.Interfaces">
+      <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -412,6 +418,7 @@
     <Compile Include="ImportExtension\NativeFileValidatedArtifactFieldCollection.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Service\IBulkImportManager.vb" />
+    <Compile Include="Service\ApplicationVersionService.vb" />
     <Compile Include="TempFileConstants.vb" />
     <Compile Include="TempFileBuilder.vb" />
     <Compile Include="Importers\TimeKeeper\DefaultTimeKeeperManager.vb" />

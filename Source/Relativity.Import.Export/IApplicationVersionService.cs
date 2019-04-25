@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="IRelativityVersionService.cs" company="Relativity ODA LLC">
+// <copyright file="IApplicationVersionService.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -10,7 +10,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Represents abstract object that retrieve Relativity and ImportExportWebApi versions.
 	/// </summary>
-	public interface IRelativityVersionService
+	public interface IApplicationVersionService
 	{
 		/// <summary>
 		/// It retrieves Relativity instance version.
