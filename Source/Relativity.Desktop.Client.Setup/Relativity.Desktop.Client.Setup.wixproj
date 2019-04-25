@@ -78,7 +78,7 @@
       <ComponentGroupName>PrimaryComponentGroup</ComponentGroupName>
       <SuppressRegistry>True</SuppressRegistry>
       <SuppressRootDirectory>True</SuppressRootDirectory>
-      <DirectoryRefId>INSTALLDIR</DirectoryRefId>
+      <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
       <PreprocessorVariable>var.RelativityDesktopClientPath</PreprocessorVariable>
       <Visible>false</Visible>
       <Transforms>Relativity.Desktop.Client.Setup.xsl</Transforms>

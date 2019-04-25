@@ -26,7 +26,16 @@ Public Class AboutForm
 		End If
 
 		sb.Append(String.Format("Relativity Desktop Client {0} {1}", bitness, nl))
-		sb.Append("Version " & System.Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString & nl)
+		Dim version As System.Version = Relativity.Desktop.Client.Application.GetRelativityBuildVersion()
+		If (Not version Is Nothing) Then
+			' Prefer displaying the Relativity version...
+			sb.Append($"Version {version.ToString()}" & nl)
+		Else
+			' Otherwise, use the assembly version for stand-alone installations.
+			version = Relativity.Desktop.Client.Application.GetAssemblyVersion()
+			sb.Append($"Version {version.ToString()} (stand-alone)" & nl)
+		End If
+
 		sb.Append(Constants.LICENSE_AGREEMENT_TEXT & nl)
 		sb.Append("Copyright © " & System.DateTime.Now.Year & " Relativity ODA LLC")
 		Me.MainTextLabel.Text = sb.ToString()

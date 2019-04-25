@@ -6,7 +6,6 @@
   <String Id="DotNet46NotInstalled" Localizable="yes" Overridable="yes">[ProductName] requires .NET Framework 4.6.2. Please install the .NET Framework then run this installer again.</String>
   <String Id="Vcpp2010x86RuntimeRequired" Localizable="yes" Overridable="yes">The Microsoft Visual C++ 2010 Redistributable for Visual Studio 2010 (x86) is required for this application to work properly.</String>
   <String Id="Vcpp2010x64RuntimeRequired" Localizable="yes" Overridable="yes">The Microsoft Visual C++ 2010 Redistributable for Visual Studio 2010 (x64) is required for this application to work properly.</String>
-  <String Id="Vcpp2015x86RuntimeRequired" Localizable="yes" Overridable="yes">The Microsoft Visual C++ 2015 Redistributable for Visual Studio 2015 (x86) is required for this application to work properly.</String>
   <String Id="Vcpp2017x86RuntimeRequired" Localizable="yes" Overridable="yes">The Microsoft Visual C++ 2017 Redistributable for Visual Studio 2017 (x86) is required for this application to work properly.</String>
   <String Id="Vcpp2017x64RuntimeRequired" Localizable="yes" Overridable="yes">The Microsoft Visual C++ 2017 Redistributable for Visual Studio 2017 (x64) is required for this application to work properly.</String>
 </WixLocalization>

@@ -1347,7 +1347,6 @@ Namespace Relativity.Desktop.Client
 		End Enum
 
 		Private _lastCredentialCheckResult As CredentialCheckResult = CredentialCheckResult.NotSet
-		Private _relativityVersion As Version
 
 		Public ReadOnly Property LastCredentialCheckResult As CredentialCheckResult
 			Get
@@ -1637,12 +1636,47 @@ Namespace Relativity.Desktop.Client
 #End Region
 
 #Region "System Configuration"
-		Public Function GetDisplayAssemblyVersion() As String
-			Return System.Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString
+
+		Public Shared Function GetRelativityBuildVersion() As System.Version
+			Try
+				' Never throw unnecessarily from this method.
+				Using key As Microsoft.Win32.RegistryKey = GetRegistryKey()
+					If Not key Is Nothing Then
+						Dim value As String = key.GetValue("RelativityBuildVersion", String.Empty)
+						Dim version As System.Version = Nothing
+						If Not String.IsNullOrWhiteSpace(value) AndAlso System.Version.TryParse(value, version) Then
+							Return version
+						End If
+					End If
+					Return Nothing
+				End Using
+			Catch e As Exception
+				Return Nothing
+			End Try
+		End Function
+
+		Public Shared Function GetExecutingAssembly() As System.Reflection.Assembly
+			Return System.Reflection.Assembly.GetExecutingAssembly()
+		End Function
+
+		Public Shared Function GetAssemblyVersion() As System.Version
+			Return GetExecutingAssembly().GetName.Version()
 		End Function
 
 		Public Async Function GetSystemConfiguration() As Task(Of System.Data.DataTable)
 			Return New kCura.WinEDDS.Service.RelativityManager(Await Me.GetCredentialsAsync(), Me.CookieContainer).RetrieveRdcConfiguration().Tables(0)
+		End Function
+
+		Private Shared Function GetRegistryKey() As Microsoft.Win32.RegistryKey
+			Try
+				' Never throw unnecessarily from this method.
+				Const RegistrySubKeyName As String = "SOFTWARE\kCura\RelativityDesktopClient"
+				Const Write As Boolean = False
+				Dim key As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(RegistrySubKeyName, Write)
+				Return key
+			Catch ex As Exception
+				Return Nothing
+			End Try
 		End Function
 #End Region
 
@@ -1684,11 +1718,13 @@ Namespace Relativity.Desktop.Client
 			Dim urlPrefix As String = "https://help.kcura.com/"
 
 			'Go to appropriate documentation site
-			If cloudIsEnabled Then
+			Dim relativityVersion As System.Version = GetRelativityBuildVersion()
+
+			' Always direct the user to the R1 site when this application is installed stand-alone.
+			If cloudIsEnabled OrElse relativityVersion Is Nothing Then
 				System.Diagnostics.Process.Start(urlPrefix & "RelativityOne/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
 			Else
-				Dim v As System.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
-				Dim majMin As String = $"{v.Major}.{v.Minor}"
+				Dim majMin As String = $"{relativityVersion.Major}.{relativityVersion.Minor}"
 				System.Diagnostics.Process.Start(urlPrefix & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
 			End If
 

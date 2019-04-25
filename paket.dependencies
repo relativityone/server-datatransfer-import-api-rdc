@@ -50,4 +50,4 @@ nuget kcura.relativity.client = 10.2.102.15-DEV
 nuget relativity.productions.services.interfaces = 10.2.22
 nuget relativity.services.datacontracts = 10.2.102.15-DEV
 nuget relativity.services.interfaces = 10.2.102.15-DEV
-nuget relativity.testing.identification ~> 1.5.0
+nuget relativity.testing.identification ~> 1.6.0
