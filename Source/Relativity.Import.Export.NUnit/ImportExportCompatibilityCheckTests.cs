@@ -7,6 +7,7 @@
 namespace Relativity.Import.Export.NUnit
 {
 	using System;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
@@ -42,8 +43,8 @@ namespace Relativity.Import.Export.NUnit
 			Version relativityVer = Version.Parse(relativityVersion);
 			Version webApiVer = Version.Parse(webApiVersion);
 
-			this.relativityVersionServiceMock.Setup(x => x.RetrieveRelativityVersion()).Returns(relativityVer);
-			this.relativityVersionServiceMock.Setup(x => x.RetrieveImportExportWebApiVersion()).Returns(webApiVer);
+			this.relativityVersionServiceMock.Setup(x => x.RetrieveRelativityVersion()).Returns(Task.FromResult(relativityVer));
+			this.relativityVersionServiceMock.Setup(x => x.RetrieveImportExportWebApiVersion()).Returns(Task.FromResult(webApiVer));
 
 			ImportExportCompatibilityCheck subjectUnderTest = new ImportExportCompatibilityCheck(this.relativityVersionServiceMock.Object, this.logMock.Object);
 

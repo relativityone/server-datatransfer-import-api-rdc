@@ -39,7 +39,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 			string basicHeader = string.Format(CultureInfo.InvariantCulture, "Basic {0}", Convert.ToBase64String(Encoding.ASCII.GetBytes(value)));
 			var queryUrl = new Uri(this.TestParameters.RelativityRestUrl, InstanceDetailsServiceRelPath);
 
-			var response = subjectUnderTests.DoPost(queryUrl, basicHeader, string.Empty);
+			var response = subjectUnderTests.DoPost(queryUrl, basicHeader, string.Empty).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			// Act
 			string version = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult()

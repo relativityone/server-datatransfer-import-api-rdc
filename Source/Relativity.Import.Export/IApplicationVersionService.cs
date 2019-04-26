@@ -6,6 +6,7 @@
 namespace Relativity.Import.Export
 {
 	using System;
+	using System.Threading.Tasks;
 
 	/// <summary>
 	/// Represents abstract object that retrieve Relativity and ImportExportWebApi versions.
@@ -16,12 +17,12 @@ namespace Relativity.Import.Export
 		/// It retrieves Relativity instance version.
 		/// </summary>
 		/// <returns>Version object.</returns>
-		Version RetrieveRelativityVersion();
+		Task<Version> RetrieveRelativityVersion();
 
 		/// <summary>
 		/// It retrieves Web Api version.
 		/// </summary>
 		/// <returns>Version object.</returns>
-		Version RetrieveImportExportWebApiVersion();
+		Task<Version> RetrieveImportExportWebApiVersion();
 	}
 }

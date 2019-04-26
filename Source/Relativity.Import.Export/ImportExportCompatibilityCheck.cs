@@ -9,6 +9,7 @@
 namespace Relativity.Import.Export
 {
 	using System;
+	using System.Threading.Tasks;
 
 	using Relativity.Logging;
 
@@ -44,18 +45,25 @@ namespace Relativity.Import.Export
 		{
 			this.log.LogDebug("Retrieving Relativity version from WebApi");
 
-			Version relativityVersion = this.applicationVersionService.RetrieveRelativityVersion();
+			Version relativityVersion = this.applicationVersionService.RetrieveRelativityVersion().ConfigureAwait(false).GetAwaiter().GetResult();
+
+			this.log.LogInformation($"Connected to Relativity {relativityVersion} version");
 
 			if (VerifySemanticVersionCheckAvailable(relativityVersion))
 			{
 				this.log.LogDebug("Trying to get ImportExportWebApiVersion setting");
 
 				// Now we know we can call WebApi to grab it's version
-				Version importExportWebApiVersion = this.applicationVersionService.RetrieveImportExportWebApiVersion();
+				Version importExportWebApiVersion = this.applicationVersionService.RetrieveImportExportWebApiVersion().ConfigureAwait(false).GetAwaiter().GetResult();
+
+				this.log.LogInformation($"Connected to WebApi {importExportWebApiVersion} version");
+
+				this.log.LogDebug("Trying to perform semantic version compatibility check with WebApi");
 
 				return CheckSemanticVersionsCompability(ImportExportApiClientVersion.Version, importExportWebApiVersion);
 			}
 
+			this.log.LogDebug("Trying to get perform compatibility version check with Relativity");
 			return CheckMinimalCompatibleRelativityVersion(relativityVersion);
 		}
 

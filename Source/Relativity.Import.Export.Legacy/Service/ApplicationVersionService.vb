@@ -1,54 +1,71 @@
-﻿Imports System.Collections.Generic
+﻿Imports System.Globalization
 Imports System.Net
-Imports kCura.Relativity.Client.DTOs
+Imports System.Net.Http
+Imports System.Text
+Imports System.Threading.Tasks
+Imports kCura.WinEDDS.Service
 Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Services
-Imports Relativity.Services.Objects
-Imports Relativity.Services.Objects.DataContracts
-Imports Relativity.Services.Pipeline
-Imports Relativity.Services.ServiceProxy
 
 Public Class ApplicationVersionService 
 	Implements IApplicationVersionService
 
-	Private ReadOnly _cred As Credentials
-	Private ReadOnly _webApiUrl As String
-	Private ReadOnly _restApiUrl As String
-	Private ReadOnly _rsApiUrl As String
+	Private Const InstanceDetailsServiceRelPath As String = "/Relativity.Rest/api/Relativity.Services.InstanceDetails.IInstanceDetailsModule/InstanceDetailsService/GetRelativityVersionAsync"
 
-	Public Sub New(cred As Credentials, webApiUrl As String,  restApiUrl As String, rsApiUrl As String)
-		_cred = cred
+	Private ReadOnly _credentials As NetworkCredential
+	Private ReadOnly _webApiUrl As String
+	Private ReadOnly _restApiUrl As Uri
+
+	Public Sub New(credentials As NetworkCredential, webApiUrl As String)
+		_credentials = credentials
 		_webApiUrl = webApiUrl
-		_restApiUrl = restApiUrl
-		_rsApiUrl = rsApiUrl
+
+		Dim webServerBaseUrlString As String = New Uri(webApiUrl).GetLeftPart(UriPartial.Authority)
+		Dim webServerBaseUrl As New Uri(webServerBaseUrlString)
+
+		' create url to instance details kepler service
+		_restApiUrl = New Uri(webServerBaseUrl, InstanceDetailsServiceRelPath)
 	End Sub
 
-	Public Function RetrieveRelativityVersion() As Version Implements IApplicationVersionService.RetrieveRelativityVersion
-		System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 OR SecurityProtocolType.Tls OR SecurityProtocolType.Tls11 OR SecurityProtocolType.Tls12
+	Public Async Function RetrieveRelativityVersion() As Task(Of Version) Implements IApplicationVersionService.RetrieveRelativityVersion
 
-		Dim serviceFactorySettings As ServiceFactorySettings = new ServiceFactorySettings(
-			New Uri(_rsApiUrl), New Uri(_restApiUrl), _cred) With 
-		{
-			.ProtocolVersion = WireProtocolVersion.V2
-		}
+		Dim httpClientHelper As New HttpClientHelper()
 
-		Dim serviceFactory As ServiceFactory = new ServiceFactory(serviceFactorySettings)
+		Dim authorizationHeader As String = GetAuthorizationHeader(_credentials)
+		Dim httpResponse As HttpResponseMessage
+		Try
+			httpResponse = Await httpClientHelper.DoPost(_restApiUrl, authorizationHeader, string.Empty)
 
-		Using objectManager As IObjectManager = serviceFactory.CreateProxy(Of IObjectManager)()
-			Dim queryRequest As QueryRequest = New QueryRequest() With
-				{
-					.Fields = New List(Of FieldRef) From { New FieldRef() With {.Name = FieldFieldNames.Name} },
-					.ObjectType = New ObjectTypeRef() With { .ArtifactTypeID = ArtifactType.InstanceSetting }
-				}
-		
-			Dim result As QueryResult  = objectManager.QueryAsync(-1, queryRequest, 1, 100).GetAwaiter().GetResult()
+		Catch ex As Exception
+			Throw New HttpServiceException($"Can not connect to Kepler servivce: {_restApiUrl.ToString()}", ex)
+		End Try
 
-			Console.WriteLine($"{result.Objects(0) }")
-			Return New Version()
-		End Using
+		If Not httpResponse.IsSuccessStatusCode
+			Throw New HttpServiceException(String.Format($"Can not retrieve Relativity version from Kepler servivce: {_restApiUrl.ToString()}. Staus code {httpResponse.StatusCode}"))
+		End If
+
+		' Relativity version is stored in additional quotation marks
+		Dim relVersionString As String = httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult().TrimStart(""""c).TrimEnd(""""c)
+
+		Return Version.Parse(relVersionString)
 	End Function
 
-	Public Function RetrieveImportExportWebApiVersion() As Version Implements IApplicationVersionService.RetrieveImportExportWebApiVersion
-		Throw New NotImplementedException
+	Public Async Function RetrieveImportExportWebApiVersion() As Task(Of Version) Implements IApplicationVersionService.RetrieveImportExportWebApiVersion
+		Try
+			Dim relativityManager As New RelativityManager(_credentials, New CookieContainer(), _webApiUrl)
+			Dim ver As String = Await Task.Run(Function() relativityManager.GetImportExportWebApiVersion()).ConfigureAwait(false)
+		Return Version.Parse(ver)
+		Catch ex As Exception
+			Throw New HttpServiceException("Test222", ex)
+		End Try
 	End Function
+
+	Private Function GetAuthorizationHeader(cred As NetworkCredential) As String
+		If _credentials.UserName = kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName Then
+			Return string.Format(CultureInfo.InvariantCulture, "Bearer {0}", cred.Password)
+		Else
+			Dim plainUserPwd As String = String.Format(CultureInfo.InvariantCulture, "{0}:{1}", cred.UserName, cred.Password)
+			Return string.Format(CultureInfo.InvariantCulture, "Basic ", Convert.ToBase64String(Encoding.ASCII.GetBytes(plainUserPwd)))
+		End If
+	End Function
+
 End Class

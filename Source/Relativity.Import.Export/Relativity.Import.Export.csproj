@@ -103,6 +103,7 @@
     <Compile Include="Data\SqlDataView.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="AppSettingAttribute.cs" />
+    <Compile Include="HttpServiceException.cs" />
     <Compile Include="NullableTypesHelper.cs" />
     <Compile Include="NullArgValidationExtensions.cs" />
     <Compile Include="Io\BooleanImporterException.cs" />
