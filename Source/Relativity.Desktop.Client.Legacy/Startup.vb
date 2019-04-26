@@ -176,8 +176,7 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Sub GetHelpPage()
-			Dim assembly As System.Reflection.Assembly = System.Reflection.Assembly.GetExecutingAssembly()
-			Dim resourceManager As System.Resources.ResourceManager = New System.Resources.ResourceManager("StringConstants", assembly)
+			Dim resourceManager As System.Resources.ResourceManager = New System.Resources.ResourceManager("StringConstants", Application.GetExecutingAssembly())
 			Dim contents = resourceManager.GetString("HelpPage")
 			Console.WriteLine(contents)
 		End Sub

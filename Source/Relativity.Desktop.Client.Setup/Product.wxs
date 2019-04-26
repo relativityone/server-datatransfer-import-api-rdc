@@ -25,6 +25,16 @@
                   Schedule="afterInstallInitialize"
                   AllowDowngrades="no"/>
 
+    <!-- Force the old RDC to uninstall. -->
+    <Upgrade Id ="$(var.LegacyUpgradeCode)">
+      <UpgradeVersion Property="OLDRDCFOUND"
+                      Minimum="1.0.0"
+                      IncludeMinimum="yes"
+                      OnlyDetect="no"
+                      IgnoreRemoveFailure="no"
+                      MigrateFeatures="no" />
+    </Upgrade>
+
     <!-- UI Extensions -->
     <UIRef Id="WixUI_MondoNoLicense" />
     <UIRef Id="WixUI_ErrorProgressText" />
@@ -32,71 +42,94 @@
     <!-- Prerequisites -->
     <PropertyRef Id="DOTNET46_INSTALLED"/>
 
-    <!-- VC++ 2010/2015 x86 is required for both platforms. -->
+    <!-- VC++ 2010 x86 is required for both platforms. -->
     <PropertyRef Id="VCPP2010X86REDIST"/>
-    <PropertyRef Id="VCPP2015X86REDISTMAJOR"/>
-    <PropertyRef Id="VCPP2015X86REDISTMINOR"/>
-    <PropertyRef Id="VCPP2015X86REDISTBLD"/>
 
-    <?if $(var.Platform) = "x64" ?>
-    <!-- VC++ 2010/2017 x64 is required for just the x64 platform. -->
-    <PropertyRef Id="VCPP2010X64REDIST"/>
-    <PropertyRef Id="VCPP2017X64REDISTMAJOR"/>
-    <PropertyRef Id="VCPP2017X64REDISTMINOR"/>
-    <PropertyRef Id="VCPP2017X64REDISTBLD"/>
-    <?else?>
-    <!-- VC++ 2017 x86 is required for just the x86 platform. -->
+    <!-- VC++ 2017 x86 is required for both platforms. -->
     <PropertyRef Id="VCPP2017X86REDISTMAJOR"/>
     <PropertyRef Id="VCPP2017X86REDISTMINOR"/>
     <PropertyRef Id="VCPP2017X86REDISTBLD"/>
+
+    <?if $(var.Platform) = "x64" ?>
+    <!-- VC++ 2010 x64 is required for just the x64 platform. -->
+    <PropertyRef Id="VCPP2010X64REDIST"/>
+
+    <!-- VC++ 2017 x64 is required for just the x64 platform. -->
+    <PropertyRef Id="VCPP2017X64REDISTMAJOR"/>
+    <PropertyRef Id="VCPP2017X64REDISTMINOR"/>
+    <PropertyRef Id="VCPP2017X64REDISTBLD"/>
     <?endif?>
 
     <!-- Set the icon for the msi and Add/Remove programs -->
-    <Icon Id="relativity_1.exe" SourceFile="$(var.ProjectDir)..\..\Images\relativity-icon.ICO" />
-    <Property Id="ARPPRODUCTICON" Value="relativity_1.exe" />
-    <Property Id="REINSTALLMODE" Value="amus"/>
-    <Property Id="SETFIREWALL" Value="1" />
-    <Property Id="AppProcessName" Value="$(var.ProcessName)"/>
+    <Icon Id="relativity_1.exe"
+          SourceFile="$(var.ProjectDir)..\..\Images\relativity-icon.ICO" />
+    <Property Id="ARPPRODUCTICON"
+              Value="relativity_1.exe" />
+    <Property Id="REINSTALLMODE"
+              Value="amus"/>
+    <Property Id="INSTALLFWRULES"
+              Value="1" />
+    <Property Id="AppProcessName"
+              Value="$(var.ProcessName)"/>
+
+    <!-- This represents the actual Relativity build version when the MSI is bundled with the bootstrapper. -->
+    <Property Id="RELATIVITYBUILDVERSION" Value="(stand-alone)"/>
 
     <!-- We always want verbose logging -->
     <Property Id="MsiLogging" Value="v" />
 
     <!-- Perform the proper upgrade checks -->
-    <Media Id="1" Cabinet="Relativity.Desktop.Client.cab" EmbedCab="yes" />
-    <Property Id="DiskPrompt" Value="kCura $(var.ProductName) $(var.ProductVersion) Installation [1]" />
-    <Property Id="SOURCEAPPCONFIGFILE" Secure="yes">
+    <Media Id="1"
+           Cabinet="Relativity.Desktop.Client.cab"
+           EmbedCab="yes" />
+    <Property Id="DiskPrompt"
+              Value="kCura $(var.ProductName) $(var.ProductVersion) Installation [1]" />
+    <Property Id="SOURCEAPPCONFIGFILE"
+              Secure="yes">
       <RegistrySearch Id="InstallDirSearch"
                       Root="HKLM"
                       Key="$(var.RegistryKey)"
                       Name="InstallDir"
                       Type="directory">
-        <DirectorySearch Id='InstallPathDirectory' Depth='0'>
-          <FileSearch Id='InstallPathFile' Name='$(var.ConfigFile)'/>
+        <DirectorySearch Id="InstallPathDirectory"
+                         Depth="0">
+          <FileSearch Id="InstallPathFile"
+                      Name="$(var.ConfigFile)"/>
         </DirectorySearch>
       </RegistrySearch>
     </Property>
 
-    <Directory Id="TARGETDIR" Name="SourceDir">
+    <Directory Id="TARGETDIR"
+               Name="SourceDir">
       <Directory Id="DesktopFolder" />
       <Directory Id="ProgramMenuFolder">
-        <Directory Id="ProgramMenuDir" Name="$(var.ProductName) $(var.ProductVersion)"/>
+        <Directory Id="ProgramMenuDir"
+                   Name="$(var.ProductName) $(var.ProductVersion)"/>
       </Directory>
-      <Directory Id="ProgramFilesFolder" Name="PFiles">
+      <Directory Id="ProgramFilesFolder"
+                 Name="PFiles">
         <?if $(var.Platform) = "x64" ?>
       </Directory>
-      <Directory Id="ProgramFiles64Folder" Name="PFiles">
+      <Directory Id="ProgramFiles64Folder"
+                 Name="PFiles">
         <?endif ?>
-        <Directory Id="kCuraCorp" Name="kCura Corporation">
-          <Directory Id="INSTALLDIR" Name="$(var.ProductName)">
-            <Directory Id="Images" Name="Images"/>
-            <Directory Id="Licensing3rdPartyFolder" Name="Licenses" />
+        <Directory Id="kCuraCorp"
+                   Name="kCura Corporation">
+          <Directory Id="INSTALLFOLDER"
+                     Name="$(var.ProductName)">
+            <Directory Id="Images"
+                       Name="Images"/>
+            <Directory Id="Licensing3rdPartyFolder"
+                       Name="Licenses" />
           </Directory>
         </Directory>
       </Directory>
     </Directory>
 
     <!-- Components -->
-    <Component Id="AppDesktopShortcut" Directory="DesktopFolder" Guid="{A0009955-253F-4C27-B904-846DBD3681B3}">
+    <Component Id="AppDesktopShortcut"
+               Directory="DesktopFolder"
+               Guid="{2803A897-3AFE-4BE5-A530-59BA24453C8C}">
       <Shortcut Id="RdcDesktop"
                 Directory="DesktopFolder"
                 Name="$(var.ProductName)"
@@ -104,65 +137,138 @@
                 Icon="relativity_1.exe"
                 Description="desktop"
                 IconIndex="0" />
-      <RemoveFolder Id="DesktopFolder" On="uninstall"/>
-      <RegistryValue Root="HKCU"  Key="$(var.RegistryKey)" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes"/>
+      <RemoveFolder Id="DesktopFolder"
+                    On="uninstall"/>
+      <RegistryValue Root="HKCU"
+                     Key="$(var.RegistryKey)"
+                     Name="DesktopShortcut"
+                     Type="integer"
+                     Value="1"
+                     KeyPath="yes"/>
     </Component>
-    <Component Id="AppStartMenuShortcut" Directory="ProgramMenuDir" Guid="{D2A7F341-1DE6-40A0-AC26-8DE59892001F}">
+    <Component Id="AppStartMenuShortcut"
+               Directory="ProgramMenuDir"
+               Guid="{73ECF262-0E7A-422A-8526-83948AF2B0BA}">
       <Shortcut Id="RdcStartMenu"
                 Directory="ProgramMenuFolder"
                 Target="[#Relativity.Desktop.Client.exe]"
                 Name="$(var.ProductName)"
                 Icon="relativity_1.exe" IconIndex="0" />
-      <RemoveFolder Id="ProgramMenuDir" On="uninstall" />
-      <RegistryValue Root="HKCU" Key="$(var.RegistryKey)" Name="AppMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
+      <RemoveFolder Id="ProgramMenuDir"
+                    On="uninstall" />
+      <RegistryValue Root="HKCU"
+                     Key="$(var.RegistryKey)"
+                     Name="AppMenuShortcut"
+                     Type="integer"
+                     Value="1"
+                     KeyPath="yes" />
     </Component>
-    <Component Id="Relativity.Desktop.Client.exe" Directory="INSTALLDIR" Guid="{878031B1-50D3-48DD-9856-AE3DA2C43463}">
-      <File Id="Relativity.Desktop.Client.exe" Name="Relativity.Desktop.Client.exe" DiskId="1" Source="$(var.Relativity.Desktop.Client.Legacy.TargetPath)" KeyPath="yes"/>
+    <Component Id="Relativity.Desktop.Client.exe"
+               Directory="INSTALLFOLDER"
+               Guid="{DB6B10E6-5CF6-4C94-ABDB-7F69B3558494}">
+      <File Id="Relativity.Desktop.Client.exe"
+            Name="Relativity.Desktop.Client.exe"
+            DiskId="1"
+            Source="$(var.Relativity.Desktop.Client.Legacy.TargetPath)"
+            KeyPath="yes"/>
     </Component>
-    <Component Id='Relativity.Desktop.Client.Config' Directory="INSTALLDIR" Guid='{4D607A93-7721-4EC6-A2EE-FD8FE79F2178}' KeyPath='yes'>
-      <File Id='Relativity.Desktop.Client.Config' Source='$(var.Relativity.Desktop.Client.Legacy.TargetPath).config' Vital='yes' />
+    <Component Id="Relativity.Desktop.Client.Config"
+               Directory="INSTALLFOLDER"
+               Guid="{38EA6E0E-55A3-4139-9FBE-E2279ACEB682}"
+               KeyPath="yes">
+      <File Id="Relativity.Desktop.Client.Config"
+            Source="$(var.Relativity.Desktop.Client.Legacy.TargetPath).config"
+            Vital="yes" />
     </Component>
-    <Component Id="RDCFirewall" Directory="INSTALLDIR" Guid="{31BF5FEF-EAC6-4554-B397-16BCD75B6B94}" KeyPath="yes">
-      <Condition>SETFIREWALL=1</Condition>
+    <Component Id="RDCFirewall"
+               Directory="INSTALLFOLDER"
+               Guid="{598D0624-3FD8-4549-9127-4FD252F8DE61}"
+               KeyPath="yes">
+      <Condition>INSTALLFWRULES=1</Condition>
       <!--Adding firewall exceptions to support Aspera. -->
       <fw:FirewallException
-				Id="RdcClientTCPInbound"
-				File="Relativity.Desktop.Client.exe"
-				Protocol="tcp"
-				Name="Relativity Desktop Client TCP"
-				Port="*"
-				Scope="any"
-				IgnoreFailure="no"
-				Profile="all"/>
+        Id="RdcClientTCPInbound"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="tcp"
+        Name="Relativity Desktop Client TCP"
+        Port="*"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
       <fw:FirewallException
-				Id="RdcClientUDPInbound"
-				File="Relativity.Desktop.Client.exe"
-				Protocol="udp"
-				Name="Relativity Desktop Client UDP"
-				Port="*"
-				Scope="any"
-				IgnoreFailure="no"
-				Profile="all"/>
+        Id="RdcClientUDPInbound"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP"
+        Port="*"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
     </Component>
-    <Component Id="NativeDependencies" Directory="INSTALLDIR" Guid="{7C02F4C7-9DC9-403E-9242-124F71C39CEB}" KeyPath="yes">
-      <File Id='Primary.itextsharp' Name='itextsharp.dll' DiskId='1' Source='..\..\Vendor\iTextSharp\5.1.2\$(var.Platform)\itextsharp.dll' />
-      <File Id='Primary.FreeImageNET' Name='FreeImageNET.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.18.0\$(var.Platform)\FreeImageNET.dll' />
-      <File Id='Primary.FreeImage' Name='FreeImage.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.18.0\$(var.Platform)\FreeImage.dll' />
+    <Component Id="NativeDependencies"
+               Directory="INSTALLFOLDER"
+               Guid="{2983D37E-B66F-49D2-BD02-5E058C73F405}"
+               KeyPath="yes">
+      <File Id="Primary.itextsharp"
+            Name="itextsharp.dll"
+            DiskId="1"
+            Source="..\..\Vendor\iTextSharp\5.1.2\$(var.Platform)\itextsharp.dll" />
+      <File Id="Primary.FreeImageNET"
+            Name="FreeImageNET.dll"
+            DiskId="1"
+            Source="..\..\Vendor\FreeImage\3.18.0\$(var.Platform)\FreeImageNET.dll" />
+      <File Id="Primary.FreeImage"
+            Name="FreeImage.dll"
+            DiskId="1"
+            Source="..\..\Vendor\FreeImage\3.18.0\$(var.Platform)\FreeImage.dll" />
     </Component>
-    <Component Id="RegistryEntries"  Directory="INSTALLDIR" Guid="{A20005D6-52D7-485B-9A2D-D0C335B0302B}">
-      <RegistryKey Root="HKLM" Key="$(var.RegistryKey)" ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
-        <RegistryValue Type="string" Name="Path" Value="[INSTALLDIR]Relativity.Desktop.Client.exe" KeyPath="yes" />
-        <RegistryValue Type="string" Name="InstallDir" Value="[INSTALLDIR]" KeyPath="no" />
+    <Component Id="RegistryEntries"
+               Directory="INSTALLFOLDER"
+               Guid="{E7396839-3D4B-498C-9333-B46DDDCB90C2}">
+      <RegistryKey Root="HKLM"
+                   Key="$(var.RegistryKey)"
+                   ForceCreateOnInstall="yes"
+                   ForceDeleteOnUninstall="yes">
+        <RegistryValue Type="string"
+                       Name="Path"
+                       Value="[INSTALLFOLDER]Relativity.Desktop.Client.exe"
+                       KeyPath="yes" />
+        <RegistryValue Type="string"
+                       Name="InstallDir"
+                       Value="[INSTALLFOLDER]"
+                       KeyPath="no" />
+        <RegistryValue Type="string"
+                       Name="RelativityBuildVersion"
+                       Value="[RELATIVITYBUILDVERSION]"
+                       KeyPath="no" />
       </RegistryKey>
     </Component>
-    <Component Id="ImagesComponent" Directory="Images" Guid="{F1A3AE41-6B1C-4C3F-804D-03AA128CB748}" KeyPath="yes">
-      <File Id="folderclosed" Name="folderclosed.ICO" DiskId="1" Source="$(var.Relativity.Desktop.Client.Legacy.ProjectDir)\..\..\Images\folderclosed.ICO" />
-      <File Id="relativity" Name="relativity.ICO" DiskId="1" Source="$(var.ProjectDir)..\..\Images\relativity-icon.ICO" />
+    <Component Id="ImagesComponent"
+               Directory="Images"
+               Guid="{4DDBF4F4-7942-42E1-B2C5-B4B85729EAC7}"
+               KeyPath="yes">
+      <File Id="folderclosed"
+            Name="folderclosed.ICO"
+            DiskId="1"
+            Source="$(var.Relativity.Desktop.Client.Legacy.ProjectDir)\..\..\Images\folderclosed.ICO" />
+      <File Id="relativity"
+            Name="relativity.ICO"
+            DiskId="1"
+            Source="$(var.ProjectDir)..\..\Images\relativity-icon.ICO" />
     </Component>
-
+    
     <!-- Features -->
-    <Feature Id="Complete" Title="$(var.ProductName) $(var.ProductVersion)" Description="The complete package." Display="expand" Level="1" ConfigurableDirectory="INSTALLDIR">
-      <Feature Id="MainProgram" Title="Program Files" Description="Main Relativity executable files." Level="1" Absent="disallow">
+    <Feature Id="Complete"
+             Title="$(var.ProductName) $(var.ProductVersion)"
+             Description="The complete package."
+             Display="expand"
+             Level="1"
+             ConfigurableDirectory="INSTALLFOLDER">
+      <Feature Id="MainProgram"
+               Title="Program Files"
+               Description="Main Relativity executable files."
+               Level="1"
+               Absent="disallow">
         <ComponentRef Id="NativeDependencies" />
         <ComponentRef Id="RegistryEntries" />
         <ComponentRef Id="Relativity.Desktop.Client.exe" />
@@ -174,7 +280,10 @@
         <ComponentGroupRef Id="PrimaryComponentGroup" />
         <ComponentRef Id="RDCFirewall" />
       </Feature>
-      <Feature Id="Licensing3rdPartyFeature" Title="Licensing_3rdParty" Description="Licensing and attribution for 3rd party libraries." Level="1">
+      <Feature Id="Licensing3rdPartyFeature"
+               Title="Licensing_3rdParty"
+               Description="Licensing and attribution for 3rd party libraries."
+               Level="1">
         <ComponentGroupRef Id="LicensingFor3rdPartyGroup" />
       </Feature>
     </Feature>
@@ -200,9 +309,9 @@
     <!-- Sequences -->
     <InstallExecuteSequence>     
       <Custom Action="CloseRunningApplications" After="InstallInitialize">1</Custom>
-      <Custom Action="BackupConfiguration" After="CloseRunningApplications">WIX_UPGRADE_DETECTED</Custom>
-      <Custom Action="RestoreConfiguration" After="WriteRegistryValues">WIX_UPGRADE_DETECTED</Custom>
-      <Custom Action="Cleanup" After="RestoreConfiguration">WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="BackupConfiguration" After="CloseRunningApplications">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="RestoreConfiguration" After="WriteRegistryValues">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="Cleanup" After="RestoreConfiguration">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</Custom>
     </InstallExecuteSequence>
   </Product>
 </Wix>
