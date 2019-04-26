@@ -53,7 +53,7 @@ namespace Relativity.Import.Export
 		/// <param name="authorizationHeader">authentication header (Basic/Token).</param>
 		/// <param name="content">http content.</param>
 		/// <returns>Http Response Message on successful call.</returns>
-		public Task<HttpResponseMessage> DoPost(Uri queryUrl, string authorizationHeader, string content)
+		public async Task<HttpResponseMessage> DoPost(Uri queryUrl, string authorizationHeader, string content)
 		{
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
 
@@ -71,7 +71,7 @@ namespace Relativity.Import.Export
 					Encoding.UTF8,
 					"application/json"))
 				{
-					return client.PostAsync(queryUrl, stringContent);
+					return await client.PostAsync(queryUrl, stringContent);
 				}
 			}
 		}

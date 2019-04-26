@@ -9,18 +9,16 @@
 namespace Relativity.Import.Export
 {
 	using System;
-	using System.Threading.Tasks;
-
 	using Relativity.Logging;
 
 	/// <summary>
 	/// This class represents version compatibility validation methods between IAPI client and Relativity/WebAPi.
 	/// </summary>
-	internal class ImportExportCompatibilityCheck
+	internal class ImportExportCompatibilityCheck : IImportExportCompatibilityCheck
 	{
 		private readonly ILog log;
 
-		private IApplicationVersionService applicationVersionService;
+		private readonly IApplicationVersionService applicationVersionService;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ImportExportCompatibilityCheck"/> class.
@@ -40,12 +38,16 @@ namespace Relativity.Import.Export
 		/// <summary>
 		/// This method checks compatibility between IAPI client represented by <see cref="ImportExportApiClientVersion"/> and Relativity/WebApi service.
 		/// </summary>
-		/// <returns>true if IAPI client compatible with WebAPI service.</returns>
-		public bool ValidateCompatibility()
+		/// <returns>Result of version compatibility check represented by <see cref="VersionCompatibilityCheckResult"/>.</returns>
+		public VersionCompatibilityCheckResult ValidateCompatibility()
 		{
+			VersionCompatibilityCheckResult versionCompatibilityCheckResult = new VersionCompatibilityCheckResult();
+
 			this.log.LogDebug("Retrieving Relativity version from WebApi");
 
 			Version relativityVersion = this.applicationVersionService.RetrieveRelativityVersion().ConfigureAwait(false).GetAwaiter().GetResult();
+
+			versionCompatibilityCheckResult.RelativityVersion = relativityVersion;
 
 			this.log.LogInformation($"Connected to Relativity {relativityVersion} version");
 
@@ -58,13 +60,17 @@ namespace Relativity.Import.Export
 
 				this.log.LogInformation($"Connected to WebApi {importExportWebApiVersion} version");
 
+				versionCompatibilityCheckResult.WebApiVersion = importExportWebApiVersion;
+
 				this.log.LogDebug("Trying to perform semantic version compatibility check with WebApi");
 
-				return CheckSemanticVersionsCompability(ImportExportApiClientVersion.Version, importExportWebApiVersion);
+				versionCompatibilityCheckResult.CompatibilityResult = CheckSemanticVersionsCompability(ImportExportApiClientVersion.Version, importExportWebApiVersion);
+				return versionCompatibilityCheckResult;
 			}
 
 			this.log.LogDebug("Trying to get perform compatibility version check with Relativity");
-			return CheckMinimalCompatibleRelativityVersion(relativityVersion);
+			versionCompatibilityCheckResult.CompatibilityResult = CheckMinimalCompatibleRelativityVersion(relativityVersion);
+			return versionCompatibilityCheckResult;
 		}
 
 		private static bool CheckMinimalCompatibleRelativityVersion(Version relativityVersion)

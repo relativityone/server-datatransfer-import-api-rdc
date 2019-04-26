@@ -104,6 +104,7 @@
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="AppSettingAttribute.cs" />
     <Compile Include="HttpServiceException.cs" />
+    <Compile Include="IImportExportCompatibilityCheck.cs" />
     <Compile Include="NullableTypesHelper.cs" />
     <Compile Include="NullArgValidationExtensions.cs" />
     <Compile Include="Io\BooleanImporterException.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="ImportExportApiClientVersion.cs" />
     <Compile Include="MinimalCompatibleRelativityVersion.cs" />
     <Compile Include="Transfer\TapiBridgeBase.cs" />
+    <Compile Include="VersionCompatibilityCheckResult.cs" />
     <Compile Include="VisualBasicConstants.cs" />
     <Compile Include="CollectionExtensions.cs" />
     <Compile Include="ConvertToMultiPagePdfException.cs" />

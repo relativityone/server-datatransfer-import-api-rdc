@@ -36,7 +36,7 @@ Public Class ApplicationVersionService
 			httpResponse = Await httpClientHelper.DoPost(_restApiUrl, authorizationHeader, string.Empty)
 
 		Catch ex As Exception
-			Throw New HttpServiceException($"Can not connect to Kepler servivce: {_restApiUrl.ToString()}", ex)
+			Throw New HttpServiceException($"Can not connect to Kepler service: {_restApiUrl.ToString()}", ex)
 		End Try
 
 		If Not httpResponse.IsSuccessStatusCode
@@ -55,7 +55,7 @@ Public Class ApplicationVersionService
 			Dim ver As String = Await Task.Run(Function() relativityManager.GetImportExportWebApiVersion()).ConfigureAwait(false)
 		Return Version.Parse(ver)
 		Catch ex As Exception
-			Throw New HttpServiceException("Test222", ex)
+			Throw New HttpServiceException("Can not connect to WebApi service", ex)
 		End Try
 	End Function
 
@@ -64,7 +64,7 @@ Public Class ApplicationVersionService
 			Return string.Format(CultureInfo.InvariantCulture, "Bearer {0}", cred.Password)
 		Else
 			Dim plainUserPwd As String = String.Format(CultureInfo.InvariantCulture, "{0}:{1}", cred.UserName, cred.Password)
-			Return string.Format(CultureInfo.InvariantCulture, "Basic ", Convert.ToBase64String(Encoding.ASCII.GetBytes(plainUserPwd)))
+			Return string.Format(CultureInfo.InvariantCulture, "Basic {0}", Convert.ToBase64String(Encoding.ASCII.GetBytes(plainUserPwd)))
 		End If
 	End Function
 

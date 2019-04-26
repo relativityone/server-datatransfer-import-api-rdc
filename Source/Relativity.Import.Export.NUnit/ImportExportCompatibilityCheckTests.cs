@@ -55,13 +55,16 @@ namespace Relativity.Import.Export.NUnit
 			if (relativityVer < MinimalCompatibleRelativitySemanticVersion.Version)
 			{// we don't expect to call web api for its version for old Relativity instance
 				this.relativityVersionServiceMock.Verify(x => x.RetrieveImportExportWebApiVersion(), Times.Never);
+				Assert.That(actualResult.WebApiVersion, Is.Null);
 			}
 			else
 			{
 				this.relativityVersionServiceMock.Verify(x => x.RetrieveImportExportWebApiVersion(), Times.Once);
+				Assert.That(actualResult.WebApiVersion, Is.EqualTo(webApiVersion));
 			}
 
-			Assert.That(actualResult, Is.EqualTo(expectedResult));
+			Assert.That(actualResult.CompatibilityResult, Is.EqualTo(expectedResult));
+			Assert.That(actualResult.RelativityVersion, Is.EqualTo(relativityVersion));
 		}
 	}
 }

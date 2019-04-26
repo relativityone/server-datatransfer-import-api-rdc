@@ -1,5 +1,7 @@
-﻿Imports kCura.WinEDDS.Credentials
+﻿Imports System.Net
+Imports kCura.WinEDDS.Credentials
 Imports Relativity.Import.Export
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS.Api
 	Public Class LoginHelper
@@ -12,6 +14,8 @@ Namespace kCura.WinEDDS.Api
 		''' The default version used when a null or empty value is specified.
 		''' </summary>
 		Friend Const DefaultUnknownVersion As String = "0.0.0.0"
+
+		Private Shared ReadOnly _logger As ILog = RelativityLogFactory.CreateLog()
 
 		Private Shared relativityManager As kCura.WinEDDS.Service.RelativityManager
 
@@ -51,7 +55,7 @@ Namespace kCura.WinEDDS.Api
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, cookieContainer, webServiceUrl)
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, cookieContainer, webServiceUrl)
 
-			CheckVersion(relativityManager)
+			CheckVersion2(credential)
 			If userManager.Login(username, password) Then
 				Initialize(relativityManager, webServiceUrl)
 				Return credential
@@ -151,6 +155,17 @@ Namespace kCura.WinEDDS.Api
 			If Not match Then
 				Throw CreateRelativityVersionMismatchException(relVersionString)
 			End If
+		End Sub
+
+		Private Shared Sub CheckVersion2(credentials As NetworkCredential)
+
+			Dim applicationVersionService As New ApplicationVersionService(DirectCast(credentials, System.Net.NetworkCredential), AppSettings.Instance.ValidateUriFormat(AppSettings.Instance.WebApiServiceUrl))
+
+			Dim compatibilityCheck As New ImportExportCompatibilityCheck(applicationVersionService, _logger)
+
+			Dim checker As VersionCompatibilityChecker = New VersionCompatibilityChecker(AppSettings.Instance, compatibilityCheck)
+
+			checker.Verify()
 		End Sub
 	End Class
 End Namespace
