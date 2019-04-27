@@ -67,13 +67,16 @@
               Value="relativity_1.exe" />
     <Property Id="REINSTALLMODE"
               Value="amus"/>
-    <Property Id="INSTALLFWRULES"
-              Value="1" />
     <Property Id="AppProcessName"
               Value="$(var.ProcessName)"/>
 
+    <!-- This represents whether the RDC is used for RelativityOne environments. -->
+    <Property Id="RELATIVITYONE_ENV"
+              Value="1" />
+
     <!-- This represents the actual Relativity build version when the MSI is bundled with the bootstrapper. -->
-    <Property Id="RELATIVITYBUILDVERSION" Value="(stand-alone)"/>
+    <Property Id="RELATIVITY_BUILD_VERSION"
+              Value="(stand-alone)"/>
 
     <!-- We always want verbose logging -->
     <Property Id="MsiLogging" Value="v" />
@@ -184,7 +187,7 @@
                Directory="INSTALLFOLDER"
                Guid="{598D0624-3FD8-4549-9127-4FD252F8DE61}"
                KeyPath="yes">
-      <Condition>INSTALLFWRULES=1</Condition>
+      <Condition>RELATIVITYONE_ENV=1</Condition>
       <!--Adding firewall exceptions to support Aspera. -->
       <fw:FirewallException
         Id="RdcClientTCPInbound"
@@ -237,9 +240,13 @@
                        Name="InstallDir"
                        Value="[INSTALLFOLDER]"
                        KeyPath="no" />
+        <RegistryValue Type="integer"
+                       Name="RelativityOneEnv"
+                       Value="[RELATIVITYONE_ENV]"
+                       KeyPath="no" />
         <RegistryValue Type="string"
                        Name="RelativityBuildVersion"
-                       Value="[RELATIVITYBUILDVERSION]"
+                       Value="[RELATIVITY_BUILD_VERSION]"
                        KeyPath="no" />
       </RegistryKey>
     </Component>

@@ -4,7 +4,7 @@
     <UI>
       <Dialog Id="FirewallDlg" Width="370" Height="270" Title="Firewall Settings" NoMinimize="yes">
         <Control Id="FirewallCheckbox" Type="CheckBox" X="10" Y="50" Width="150" Height="17"
-                 Property='INSTALLFWRULES' CheckBoxValue='1' Text='!(loc.FirewallDlg_CheckboxTitle)'>
+                 Property='RELATIVITYONE_ENV' CheckBoxValue='1' Text='!(loc.FirewallDlg_CheckboxTitle)'>
         </Control>
         <Control Id="FirewallDescription" Type="Text" X="30" Y="60" Width="270" Height="100" Transparent="yes" NoPrefix="yes"
 								 Text='!(loc.FirewallDlg_Description)'>

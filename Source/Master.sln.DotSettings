@@ -589,7 +589,7 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/PredefinedNamingRules/=TypeParameters/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="T" Suffix="" Style="AaBb" /&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/PredefinedNamingRules/=TypesAndNamespaces/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb" /&gt;</s:String>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=411A79016579224C9DD3E58AA01A247C/@KeyIndexDefined">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=411A79016579224C9DD3E58AA01A247C/AbsolutePath/@EntryValue">S:\SourceCode\DataTransfer\import-api-rdc\Source\Relativity.ImportAPI-RDC.sln.DotSettings</s:String>
+	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=411A79016579224C9DD3E58AA01A247C/AbsolutePath/@EntryValue">S:\SourceCode\DataTransfer\import-api-rdc\Source\Master.sln.DotSettings</s:String>
 	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=411A79016579224C9DD3E58AA01A247C/RelativePath/@EntryValue"></s:String>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File411A79016579224C9DD3E58AA01A247C/@KeyIndexDefined">True</s:Boolean>
 	<s:Double x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File411A79016579224C9DD3E58AA01A247C/RelativePriority/@EntryValue">1</s:Double>
