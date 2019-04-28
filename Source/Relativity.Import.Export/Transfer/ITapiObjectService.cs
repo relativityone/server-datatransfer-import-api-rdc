@@ -12,8 +12,6 @@ namespace Relativity.Import.Export.Transfer
 	using System;
 	using System.Threading.Tasks;
 
-	using Relativity.Transfer;
-
 	/// <summary>
 	/// Represents an abstract object to provide Transfer API object services to the transfer bridges.
 	/// </summary>
@@ -34,9 +32,9 @@ namespace Relativity.Import.Export.Transfer
 		/// Creates the file system service.
 		/// </summary>
 		/// <returns>
-		/// The <see cref="IFileSystemService"/> instance.
+		/// The <see cref="Relativity.Transfer.IFileSystemService"/> instance.
 		/// </returns>
-		IFileSystemService CreateFileSystemService();
+		Relativity.Transfer.IFileSystemService CreateFileSystemService();
 
 		/// <summary>
 		/// Creates a Relativity connection information object and validates the endpoints.
@@ -45,9 +43,9 @@ namespace Relativity.Import.Export.Transfer
 		/// The Transfer API bridge parameters.
 		/// </param>
 		/// <returns>
-		/// The <see cref="RelativityConnectionInfo"/> instance.
+		/// The <see cref="Relativity.Transfer.RelativityConnectionInfo"/> instance.
 		/// </returns>
-		RelativityConnectionInfo CreateRelativityConnectionInfo(TapiBridgeParameters parameters);
+		Relativity.Transfer.RelativityConnectionInfo CreateRelativityConnectionInfo(TapiBridgeParameters parameters);
 
 		/// <summary>
 		/// Creates the relativity transfer host object.
@@ -59,9 +57,9 @@ namespace Relativity.Import.Export.Transfer
 		/// The transfer log.
 		/// </param>
 		/// <returns>
-		/// The <see cref="IRelativityTransferHost"/> instance.
+		/// The <see cref="Relativity.Transfer.IRelativityTransferHost"/> instance.
 		/// </returns>
-		IRelativityTransferHost CreateRelativityTransferHost(RelativityConnectionInfo connectionInfo, ITransferLog log);
+		Relativity.Transfer.IRelativityTransferHost CreateRelativityTransferHost(Relativity.Transfer.RelativityConnectionInfo connectionInfo, Relativity.Transfer.ITransferLog log);
 
 		/// <summary>
 		/// Gets the client display name associated with the specified transfer client identifier.
