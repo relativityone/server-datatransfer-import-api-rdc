@@ -140,6 +140,7 @@
     </Compile>
     <Compile Include="AppSettingsTests.cs" />
     <Compile Include="ChoiceInfoTests.cs" />
+    <Compile Include="HttpServiceExceptionTests.cs" />
     <Compile Include="SoapExceptionDetailTests.cs" />
     <Compile Include="SerializationTestsBase.cs" />
     <Compile Include="ImportExportCompatibilityCheckTests.cs" />
@@ -300,7 +301,8 @@
     </Content>
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent></PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
