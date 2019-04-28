@@ -83,10 +83,10 @@ namespace Relativity.Import.Export.NUnit
 						It.IsAny<CancellationToken>())).ReturnsAsync(this.MockTransferClient.Object);
 			this.MockTapiObjectService = new Mock<ITapiObjectService>();
 			this.MockTapiObjectService.Setup(
-					x => x.CreateRelativityTransferHost(It.IsAny<RelativityConnectionInfo>(), It.IsAny<ITransferLog>()))
+					x => x.CreateRelativityTransferHost(It.IsAny<Relativity.Transfer.RelativityConnectionInfo>(), It.IsAny<ITransferLog>()))
 				.Returns(this.MockRelativityTransferHost.Object);
 			this.MockTapiObjectService.Setup(x => x.CreateRelativityConnectionInfo(It.IsAny<TapiBridgeParameters>()))
-				.Returns(new RelativityConnectionInfo());
+				.Returns(new Relativity.Transfer.RelativityConnectionInfo());
 			this.MockTapiObjectService.Setup(x => x.CreateFileSystemService())
 				.Returns(this.MockTransferFileSystemService.Object);
 			this.MockTapiObjectService.Setup(x => x.GetClientId(It.IsAny<TapiBridgeParameters>())).Returns(
@@ -128,7 +128,7 @@ namespace Relativity.Import.Export.NUnit
 			// Adding a transfer path is expected to construct a transfer host, client, and job.
 			this.TapiBridgeInstance.AddPath(new TransferPath());
 			this.MockTapiObjectService.Verify(
-				x => x.CreateRelativityTransferHost(It.IsAny<RelativityConnectionInfo>(), It.IsAny<ITransferLog>()));
+				x => x.CreateRelativityTransferHost(It.IsAny<Relativity.Transfer.RelativityConnectionInfo>(), It.IsAny<ITransferLog>()));
 			this.MockRelativityTransferHost.Verify(
 				x => x.CreateClientAsync(
 					It.IsAny<ClientConfiguration>(),
@@ -153,7 +153,7 @@ namespace Relativity.Import.Export.NUnit
 			// 3. Construct a transfer job
 			this.TapiBridgeInstance.AddPath(new TransferPath());
 			this.MockTapiObjectService.Verify(
-				x => x.CreateRelativityTransferHost(It.IsAny<RelativityConnectionInfo>(), It.IsAny<ITransferLog>()));
+				x => x.CreateRelativityTransferHost(It.IsAny<Relativity.Transfer.RelativityConnectionInfo>(), It.IsAny<ITransferLog>()));
 			this.MockRelativityTransferHost.Verify(x => x.CreateClient(It.IsAny<ClientConfiguration>()));
 			this.MockTransferClient.Verify(
 				x => x.CreateJobAsync(It.IsAny<ITransferRequest>(), It.IsAny<CancellationToken>()));
