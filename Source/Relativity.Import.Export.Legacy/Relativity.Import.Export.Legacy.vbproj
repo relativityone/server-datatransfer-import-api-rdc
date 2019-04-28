@@ -418,6 +418,11 @@
     <Compile Include="ImportExtension\ImageImport\ImageDataTableReader.vb" />
     <Compile Include="ImportExtension\NativeFileValidatedArtifactFieldCollection.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="Resources\Strings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
     <Compile Include="Service\IBulkImportManager.vb" />
     <Compile Include="Service\ApplicationVersionService.vb" />
     <Compile Include="TempFileConstants.vb" />
@@ -1152,6 +1157,14 @@
       <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
       <Name>Relativity.Import.Export</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Strings.resx">
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.vb</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <Choose>

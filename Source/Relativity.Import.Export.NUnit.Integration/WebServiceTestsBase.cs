@@ -7,8 +7,11 @@
 namespace Relativity.Import.Export.NUnit.Integration
 {
 	using System.Net;
+	using System.Threading;
 
 	using global::NUnit.Framework;
+
+	using Moq;
 
 	using Relativity.Import.Export.TestFramework;
 
@@ -23,51 +26,51 @@ namespace Relativity.Import.Export.NUnit.Integration
 		protected const int DefaultTimeOutMilliseconds = 600000;
 
 		/// <summary>
-		/// Gets the cookie container.
+		/// Gets the Relativity instance.
 		/// </summary>
 		/// <value>
-		/// The <see cref="CookieContainer"/> value.
+		/// The <see cref="RelativityInstance"/> value.
 		/// </value>
-		protected CookieContainer CookieContainer
+		internal RelativityInstanceInfo RelativityInstance
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Gets the credentials.
+		/// Gets the application settings.
 		/// </summary>
 		/// <value>
-		/// The <see cref="ICredentials"/> value.
+		/// The <see cref="IAppSettings"/> instance.
 		/// </value>
-		protected ICredentials Credentials
+		protected IAppSettings AppSettings
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Gets the Relativity WebAPI URL and ensure the URL includes a trailing slash.
+		/// Gets the cancellation token source.
 		/// </summary>
 		/// <value>
-		/// The URL string.
+		/// The <see cref="CancellationTokenSource"/> instance.
 		/// </value>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage(
-			"Microsoft.Design",
-			"CA1056:UriPropertiesShouldNotBeStrings",
-			Justification = "A string data type is being used due to numerous existing expectations.")]
-		protected string RelativityWebApiUrl
+		protected CancellationTokenSource CancellationTokenSource
 		{
-			get
-			{
-				string url = this.TestParameters.RelativityWebApiUrl.ToString();
-				if (url.LastIndexOf('/') != url.Length - 1)
-				{
-					url += '/';
-				}
+			get;
+			private set;
+		}
 
-				return url;
-			}
+		/// <summary>
+		/// Gets the mocked Relativity Logging logger.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Relativity.Logging.ILog"/> mock instance.
+		/// </value>
+		protected Mock<Relativity.Logging.ILog> Logger
+		{
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -91,13 +94,30 @@ namespace Relativity.Import.Export.NUnit.Integration
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
-			this.CookieContainer = new CookieContainer();
 			this.AssignTestSettings();
-			this.Credentials = new NetworkCredential(this.TestParameters.RelativityUserName, this.TestParameters.RelativityPassword);
+			this.AppSettings = AppSettingsManager.Create(true);
+			this.CancellationTokenSource = new CancellationTokenSource();
+			this.Logger = new Mock<Relativity.Logging.ILog>();
+			this.RelativityInstance = new RelativityInstanceInfo
+				                          {
+					                          Credentials = new NetworkCredential(
+						                          this.TestParameters.RelativityUserName,
+						                          this.TestParameters.RelativityPassword),
+					                          Host = this.TestParameters.RelativityUrl,
+					                          WebApiServiceUrl = this.TestParameters.RelativityWebApiUrl,
+				                          };
 			Assert.That(
 				this.TestParameters.WorkspaceId,
 				Is.Positive,
 				() => "The test workspace must be created or specified in order to run this integration test.");
+			this.OnSetup();
+		}
+
+		/// <summary>
+		/// Called when the test setup is executed.
+		/// </summary>
+		protected virtual void OnSetup()
+		{
 		}
 
 		/// <summary>

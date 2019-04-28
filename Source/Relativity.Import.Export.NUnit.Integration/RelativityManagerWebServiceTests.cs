@@ -30,9 +30,9 @@ namespace Relativity.Import.Export.NUnit.Integration
 		public void ShouldReadTheCaseInfo()
 		{
 			using (RelativityManager relativityManager = new RelativityManager(
-				this.Credentials,
-				this.CookieContainer,
-				this.RelativityWebApiUrl))
+				this.RelativityInstance.Credentials,
+				this.RelativityInstance.CookieContainer,
+				this.RelativityInstance.WebApiServiceUrl.ToString()))
 			{
 				string returnedValue = relativityManager.GetImportExportWebApiVersion();
 

@@ -1,4 +1,4 @@
-﻿Imports System.Net
+﻿Imports System.Threading
 Imports kCura.WinEDDS.Credentials
 Imports Relativity.Import.Export
 Imports Relativity.Logging
@@ -50,17 +50,23 @@ Namespace kCura.WinEDDS.Api
 
 		Public Shared Function LoginUsernamePassword(ByVal username As String, ByVal password As String, ByVal cookieContainer As Net.CookieContainer, ByVal webServiceUrl As String) As System.Net.NetworkCredential
 			webServiceUrl = AppSettings.Instance.ValidateUriFormat(webServiceUrl)
-			If cookieContainer Is Nothing Then Throw New ArgumentException("Cookie container not set")
-			Dim credential As New Net.NetworkCredential(username, password)
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, cookieContainer, webServiceUrl)
-			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, cookieContainer, webServiceUrl)
-
-			CheckVersion2(credential)
-			If userManager.Login(username, password) Then
-				Initialize(relativityManager, webServiceUrl)
-				Return credential
+			If cookieContainer Is Nothing Then
+				Throw New ArgumentException("Cookie container not set")
 			End If
-			Return Nothing
+
+			' Note: Do NOT perform the compatibility check until all legacy initializations are complete.
+			Dim credential As New Net.NetworkCredential(username, password)
+			Using userManager As New kCura.WinEDDS.Service.UserManager(credential, cookieContainer, webServiceUrl)
+				If Not userManager.Login(username, password) Then
+					Return Nothing
+				End If
+			End Using
+
+			Using relManager As New kCura.WinEDDS.Service.RelativityManager(credential, cookieContainer, webServiceUrl)
+				Initialize(relManager, webServiceUrl)
+				CheckVersion2(credential, cookieContainer, webServiceUrl)
+				Return credential
+			End Using
 		End Function
 
 		Public Shared Function CreateRelativityVersionMismatchMessage(ByVal relativityVersion As String, ByVal clientVersion As String, ByVal applicationName As String) As String
@@ -157,16 +163,20 @@ Namespace kCura.WinEDDS.Api
 			End If
 		End Sub
 
-		Private Shared Sub CheckVersion2(credentials As NetworkCredential)
+		Private Shared Sub CheckVersion2(ByVal credential As System.Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal webServiceUrl As String)
+			Dim instance As New RelativityInstanceInfo With
+					{
+					.Credentials = credential,
+					.CookieContainer = cookieContainer,
+					.WebApiServiceUrl = New Uri(webServiceUrl)
+					}
 
-			Dim applicationVersionService As New ApplicationVersionService(DirectCast(credentials, System.Net.NetworkCredential), AppSettings.Instance.ValidateUriFormat(AppSettings.Instance.WebApiServiceUrl))
-
-			Dim compatibilityCheck As New ImportExportCompatibilityCheck(applicationVersionService, _logger)
-
-			Dim checker As VersionCompatibilityChecker = New VersionCompatibilityChecker(AppSettings.Instance, compatibilityCheck)
-
-			checker.Verify()
+			' Automatically throws RelativityNotSupportedException when the validation fails. 
+			Dim compatibilityCheck As IImportExportCompatibilityCheck = New ImportExportCompatibilityCheck(
+				instance,
+				New kCura.WinEDDS.Service.ApplicationVersionService(instance, AppSettings.Instance, _logger),
+				_logger)
+			compatibilityCheck.ValidateAsync(CancellationToken.None).GetAwaiter().GetResult()
 		End Sub
 	End Class
 End Namespace
-

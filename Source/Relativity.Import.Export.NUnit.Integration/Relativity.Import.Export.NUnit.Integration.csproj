@@ -141,7 +141,8 @@
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblySetup.cs" />
-    <Compile Include="HttpClientHelperTests.cs" />
+    <Compile Include="ApplicationVersionServiceTests.cs" />
+    <Compile Include="RestClientTests.cs" />
     <Compile Include="RelativityManagerWebServiceTests.cs" />
     <Compile Include="WebServiceTestsBase.cs" />
     <Compile Include="CaseManagerWebServiceTests.cs" />

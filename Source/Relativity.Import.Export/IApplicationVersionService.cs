@@ -3,26 +3,44 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
+
 namespace Relativity.Import.Export
 {
 	using System;
+	using System.Threading;
 	using System.Threading.Tasks;
 
 	/// <summary>
-	/// Represents abstract object that retrieve Relativity and ImportExportWebApi versions.
+	/// Represents abstract object that retrieve Relativity and import/export WebAPI version information.
 	/// </summary>
 	public interface IApplicationVersionService
 	{
 		/// <summary>
-		/// It retrieves Relativity instance version.
+		/// Asynchronously retrieves the Relativity instance version.
 		/// </summary>
-		/// <returns>Version object.</returns>
-		Task<Version> RetrieveRelativityVersion();
+		/// <param name="token">
+		/// The token used to cancel the request.
+		/// </param>
+		/// <returns>
+		/// The <see cref="Version"/> instance.
+		/// </returns>
+		/// <exception cref="HttpServiceException">
+		/// The exception thrown when a serious failure occurs retrieving the version.
+		/// </exception>
+		Task<Version> GetRelativityVersionAsync(CancellationToken token);
 
 		/// <summary>
-		/// It retrieves Web Api version.
+		/// Asynchronously retrieves the import/export WebAPI version.
 		/// </summary>
-		/// <returns>Version object.</returns>
-		Task<Version> RetrieveImportExportWebApiVersion();
+		/// <param name="token">
+		/// The token used to cancel the request.
+		/// </param>
+		/// <returns>
+		/// The <see cref="Version"/> instance.
+		/// </returns>
+		/// <exception cref="HttpServiceException">
+		/// The exception thrown when a serious failure occurs retrieving the version or the web service doesn't exist.
+		/// </exception>
+		Task<Version> GetImportExportWebApiVersionAsync(CancellationToken token);
 	}
 }

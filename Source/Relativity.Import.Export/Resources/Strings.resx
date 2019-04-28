@@ -297,4 +297,68 @@
   <data name="OutsideInNotAvailableError" xml:space="preserve">
     <value>This operation cannot be performed because the Outside In file identification library located at '{0}' isn't available and suggests a serious configuration or environmental issue.</value>
   </data>
+  <data name="NoEndpointProvided" xml:space="preserve">
+    <value>(no endpoint was provided)</value>
+  </data>
+  <data name="NoMessageProvided" xml:space="preserve">
+    <value>(no message was provided)</value>
+  </data>
+  <data name="HttpBadRequestFatalMessage" xml:space="preserve">
+    <value>This error is considered fatal and suggests either an authentication issue or a version incompatibility between the client and server.</value>
+  </data>
+  <data name="HttpForbiddenFatalMessage" xml:space="preserve">
+    <value>This error is considered fatal and suggests the client is forbidden from making the HTTP Web service call and is likely a problem with expired credentials or authentication.</value>
+  </data>
+  <data name="HttpNotFoundFatalMessage" xml:space="preserve">
+    <value>This error is considered fatal and suggests the HTTP Web service endpoint is not found and a potential version incompatibility exists between the client and server.</value>
+  </data>
+  <data name="HttpUnauthorizedFatalMessage" xml:space="preserve">
+    <value>This error is considered fatal and suggests the client is unauthorized from making the HTTP Web service call and is likely a problem with expired credentials or authentication.</value>
+  </data>
+  <data name="WebExceptionTrustFailureMessage" xml:space="preserve">
+    <value>This error is considered fatal and suggests a server has not been properly setup with an SSL certificate or the SSL certificate is no longer valid.</value>
+  </data>
+  <data name="HttpExceptionMessage" xml:space="preserve">
+    <value>The '{0}' HTTP Web service '{1}' method failed with an HTTP {2} status code.
+
+Error: {3}
+
+Detail: {4}</value>
+  </data>
+  <data name="HttpNoStatusExceptionMessage" xml:space="preserve">
+    <value>The '{0}' HTTP '{1}' Web service method failed.
+
+Error: {2}
+
+Detail: {3}</value>
+  </data>
+  <data name="WebExceptionMessage" xml:space="preserve">
+    <value>The '{0}' HTTP Web service '{1}' method failed with a web exception {2} status code.
+
+Error: {3}
+
+Detail: {4}</value>
+  </data>
+  <data name="HttpTimeoutExceptionMessage" xml:space="preserve">
+    <value>The '{0}' HTTP Web service '{1}' method failed because it exceeded the {2} second timeout.
+
+Error: {3}
+
+Detail: {4}</value>
+  </data>
+  <data name="HttpCredentialNotSupportedExceptionMessage" xml:space="preserve">
+    <value>The '{0}' HTTP Web service could not be called because the supplied Import API credential type '{1}' doesn't contain an authorization header and is unsupported.</value>
+  </data>
+  <data name="RelativtyMinVersionExceptionMessage" xml:space="preserve">
+    <value>This application cannot be used with Relativity instance {0} because version v{1} doesn't meet or exceed the minimum version v{2}. Review the 'Importing and exporting' compatibility page on help.relativity.com for more details.</value>
+  </data>
+  <data name="RelativtyMinVersionInvalidExceptionMessage" xml:space="preserve">
+    <value>This application cannot be used with Relativity instance {0} because the instance version was successfully retrieved but invalid. Contact your system administrator for assistance if this problem persists.</value>
+  </data>
+  <data name="ImportExportWebApiVersionNotSupportedExceptionMessage" xml:space="preserve">
+    <value>This application cannot be used with Relativity instance {0} because the import/export web-services version isn't supported. Review the 'Importing and exporting' compatibility page on help.relativity.com for more details.</value>
+  </data>
+  <data name="ImportExportWebApiVersionInvalidExceptionMessage" xml:space="preserve">
+    <value>This application cannot be used with Relativity instance {0} because the import/export web-services version was successfully retrieved but invalid. Contact your system administrator for assistance if this problem persists.</value>
+  </data>
 </root>

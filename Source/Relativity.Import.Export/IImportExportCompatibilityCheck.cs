@@ -3,20 +3,35 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   This class represents abstraction of the validation methods between IAPI client and Relativity/WebAPi.
+//   Represents an abstract object to perform compatibility checks between the client API and Relativity.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+
 namespace Relativity.Import.Export
 {
+	using System.Threading;
+	using System.Threading.Tasks;
+
 	/// <summary>
-	/// This class represents abstraction of the validation methods between IAPI client and Relativity/WebAPi.
+	/// Represents an abstract object to perform compatibility checks between the client API and Relativity.
 	/// </summary>
 	public interface IImportExportCompatibilityCheck
 	{
 		/// <summary>
-		/// This method checks compatibility between IAPI client represented by <see cref="ImportExportApiClientVersion"/> and Relativity/WebApi service.
+		/// Asynchronously checks whether the client API and target Relativity instance versions are compatible and throws <see cref="RelativityNotSupportedException"/> when the validation check fails.
 		/// </summary>
-		/// <returns>Result of version compatibility check represented by <see cref="VersionCompatibilityCheckResult"/>.</returns>
-		VersionCompatibilityCheckResult ValidateCompatibility();
+		/// <param name="token">
+		/// The token used to cancel the request.
+		/// </param>
+		/// <returns>
+		/// The <see cref="Task"/> instance.
+		/// </returns>
+		/// <exception cref="HttpServiceException">
+		/// The exception thrown when a serious HTTP failure occurs calling web-services.
+		/// </exception>
+		/// <exception cref="RelativityNotSupportedException">
+		/// The exception thrown when Relativity isn't supported.
+		/// </exception>
+		Task ValidateAsync(CancellationToken token);
 	}
 }

@@ -27,9 +27,9 @@ namespace Relativity.Import.Export.NUnit.Integration
 		public void ShouldReadTheCaseInfo()
 		{
 			using (kCura.WinEDDS.Service.CaseManager caseManager = new kCura.WinEDDS.Service.CaseManager(
-				this.Credentials,
-				this.CookieContainer,
-				this.RelativityWebApiUrl,
+				this.RelativityInstance.Credentials,
+				this.RelativityInstance.CookieContainer,
+				this.RelativityInstance.WebApiServiceUrl.ToString(),
 				DefaultTimeOutMilliseconds))
 			{
 				Relativity.Import.Export.Services.CaseInfo caseInfo = caseManager.Read(this.TestParameters.WorkspaceId);

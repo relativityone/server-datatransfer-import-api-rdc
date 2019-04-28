@@ -19,7 +19,7 @@ namespace Relativity.Import.Export.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Strings {
@@ -142,6 +142,37 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This error is considered fatal and suggests either an authentication issue or a version incompatibility between the client and server..
+        /// </summary>
+        internal static string HttpBadRequestFatalMessage {
+            get {
+                return ResourceManager.GetString("HttpBadRequestFatalMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; HTTP Web service could not be called because the supplied Import API credential type &apos;{1}&apos; doesn&apos;t contain an authorization header and is unsupported..
+        /// </summary>
+        internal static string HttpCredentialNotSupportedExceptionMessage {
+            get {
+                return ResourceManager.GetString("HttpCredentialNotSupportedExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; HTTP Web service &apos;{1}&apos; method failed with an HTTP {2} status code.
+        ///
+        ///Error: {3}
+        ///
+        ///Detail: {4}.
+        /// </summary>
+        internal static string HttpExceptionMessage {
+            get {
+                return ResourceManager.GetString("HttpExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A serious error has occurred attempting to transfer files over HTTP..
         /// </summary>
         internal static string HttpFallbackExceptionMessage {
@@ -156,6 +187,59 @@ namespace Relativity.Import.Export.Resources {
         internal static string HttpFallbackWarningMessage {
             get {
                 return ResourceManager.GetString("HttpFallbackWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This error is considered fatal and suggests the client is forbidden from making the HTTP Web service call and is likely a problem with expired credentials or authentication..
+        /// </summary>
+        internal static string HttpForbiddenFatalMessage {
+            get {
+                return ResourceManager.GetString("HttpForbiddenFatalMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; HTTP &apos;{1}&apos; Web service method failed.
+        ///
+        ///Error: {2}
+        ///
+        ///Detail: {3}.
+        /// </summary>
+        internal static string HttpNoStatusExceptionMessage {
+            get {
+                return ResourceManager.GetString("HttpNoStatusExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This error is considered fatal and suggests the HTTP Web service endpoint is not found and a potential version incompatibility exists between the client and server..
+        /// </summary>
+        internal static string HttpNotFoundFatalMessage {
+            get {
+                return ResourceManager.GetString("HttpNotFoundFatalMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; HTTP Web service &apos;{1}&apos; method failed because it exceeded the {2} second timeout.
+        ///
+        ///Error: {3}
+        ///
+        ///Detail: {4}.
+        /// </summary>
+        internal static string HttpTimeoutExceptionMessage {
+            get {
+                return ResourceManager.GetString("HttpTimeoutExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This error is considered fatal and suggests the client is unauthorized from making the HTTP Web service call and is likely a problem with expired credentials or authentication..
+        /// </summary>
+        internal static string HttpUnauthorizedFatalMessage {
+            get {
+                return ResourceManager.GetString("HttpUnauthorizedFatalMessage", resourceCulture);
             }
         }
         
@@ -232,6 +316,24 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This application cannot be used with Relativity instance {0} because the import/export web-services version was successfully retrieved but invalid. Contact your system administrator for assistance if this problem persists..
+        /// </summary>
+        internal static string ImportExportWebApiVersionInvalidExceptionMessage {
+            get {
+                return ResourceManager.GetString("ImportExportWebApiVersionInvalidExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This application cannot be used with Relativity instance {0} because the import/export web-services version isn&apos;t supported. Review the &apos;Importing and exporting&apos; compatibility page on help.relativity.com for more details..
+        /// </summary>
+        internal static string ImportExportWebApiVersionNotSupportedExceptionMessage {
+            get {
+                return ResourceManager.GetString("ImportExportWebApiVersionNotSupportedExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file {0} cannot be imported because it contains illegal characters within the path..
         /// </summary>
         internal static string ImportInvalidPathCharactersExceptionMessage {
@@ -291,6 +393,24 @@ namespace Relativity.Import.Export.Resources {
         internal static string LineNumberOutOfRangeExceptionMessage {
             get {
                 return ResourceManager.GetString("LineNumberOutOfRangeExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (no endpoint was provided).
+        /// </summary>
+        internal static string NoEndpointProvided {
+            get {
+                return ResourceManager.GetString("NoEndpointProvided", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (no message was provided).
+        /// </summary>
+        internal static string NoMessageProvided {
+            get {
+                return ResourceManager.GetString("NoMessageProvided", resourceCulture);
             }
         }
         
@@ -363,6 +483,24 @@ namespace Relativity.Import.Export.Resources {
         internal static string ReinitializeReaderNotFileStreamError {
             get {
                 return ResourceManager.GetString("ReinitializeReaderNotFileStreamError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This application cannot be used with Relativity instance {0} because version v{1} doesn&apos;t meet or exceed the minimum version v{2}. Review the &apos;Importing and exporting&apos; compatibility page on help.relativity.com for more details..
+        /// </summary>
+        internal static string RelativtyMinVersionExceptionMessage {
+            get {
+                return ResourceManager.GetString("RelativtyMinVersionExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This application cannot be used with Relativity instance {0} because the instance version was successfully retrieved but invalid. Contact your system administrator for assistance if this problem persists..
+        /// </summary>
+        internal static string RelativtyMinVersionInvalidExceptionMessage {
+            get {
+                return ResourceManager.GetString("RelativtyMinVersionInvalidExceptionMessage", resourceCulture);
             }
         }
         
@@ -588,6 +726,28 @@ namespace Relativity.Import.Export.Resources {
         internal static string TransferJobUploadWarningMessage {
             get {
                 return ResourceManager.GetString("TransferJobUploadWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; HTTP Web service &apos;{1}&apos; method failed with a web exception {2} status code.
+        ///
+        ///Error: {3}
+        ///
+        ///Detail: {4}.
+        /// </summary>
+        internal static string WebExceptionMessage {
+            get {
+                return ResourceManager.GetString("WebExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This error is considered fatal and suggests a server has not been properly setup with an SSL certificate or the SSL certificate is no longer valid..
+        /// </summary>
+        internal static string WebExceptionTrustFailureMessage {
+            get {
+                return ResourceManager.GetString("WebExceptionTrustFailureMessage", resourceCulture);
             }
         }
         

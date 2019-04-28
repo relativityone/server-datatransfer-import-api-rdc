@@ -1,71 +1,68 @@
-﻿Imports System.Globalization
-Imports System.Net
-Imports System.Net.Http
-Imports System.Text
+﻿Imports System.Net
+Imports System.Threading
 Imports System.Threading.Tasks
-Imports kCura.WinEDDS.Service
+Imports System.Web.Services.Protocols
 Imports Relativity.Import.Export
 
-Public Class ApplicationVersionService 
-	Implements IApplicationVersionService
+Namespace kCura.WinEDDS.Service
+	Friend Class ApplicationVersionService
+		Implements IApplicationVersionService
 
-	Private Const InstanceDetailsServiceRelPath As String = "/Relativity.Rest/api/Relativity.Services.InstanceDetails.IInstanceDetailsModule/InstanceDetailsService/GetRelativityVersionAsync"
+		Private Const InstanceDetailsServiceRelPath As String = "/Relativity.Rest/api/Relativity.Services.InstanceDetails.IInstanceDetailsModule/InstanceDetailsService/GetRelativityVersionAsync"
 
-	Private ReadOnly _credentials As NetworkCredential
-	Private ReadOnly _webApiUrl As String
-	Private ReadOnly _restApiUrl As Uri
+		Private ReadOnly _appSettings As IAppSettings
+		Private ReadOnly _logger As Global.Relativity.Logging.ILog
+		Private ReadOnly _instance As RelativityInstanceInfo
 
-	Public Sub New(credentials As NetworkCredential, webApiUrl As String)
-		_credentials = credentials
-		_webApiUrl = webApiUrl
+		Public Sub New(instance As RelativityInstanceInfo, appSettings As IAppSettings, logger As Global.Relativity.Logging.ILog)
+			_instance = instance
+			_appSettings = appSettings
+			_logger = logger
+		End Sub
 
-		Dim webServerBaseUrlString As String = New Uri(webApiUrl).GetLeftPart(UriPartial.Authority)
-		Dim webServerBaseUrl As New Uri(webServerBaseUrlString)
+		Public Async Function GetRelativityVersionAsync(ByVal token As CancellationToken) As Task(Of Version) Implements IApplicationVersionService.GetRelativityVersionAsync
+			Dim client As New RestClient(_instance, _logger, _appSettings.HttpTimeoutSeconds, _appSettings.IoErrorNumberOfRetries)
+			Dim relVersionString As String = Await client.RequestPostStringAsync(
+			InstanceDetailsServiceRelPath,
+			String.Empty,
+			Function(retryAttempt)
+				Return TimeSpan.FromSeconds(_appSettings.HttpTimeoutSeconds)
+			End Function,
+			Sub(exception, timespan, context)
+				_logger.LogError(exception, "Retry - {Timespan} - Failed to retrieve the Relativity Version.", timespan)
+			End Sub,
+			Function(code)
+				Return "query Relativity get version"
+			End Function,
+			Function(code)
+				Return My.Resources.Strings.GetRelativityVersionFailedExceptionMessage
+			End Function,
+			token).ConfigureAwait(False)
 
-		' create url to instance details kepler service
-		_restApiUrl = New Uri(webServerBaseUrl, InstanceDetailsServiceRelPath)
-	End Sub
+			' Relativity version is stored in additional quotation marks
+			relVersionString = relVersionString.TrimStart(""""c).TrimEnd(""""c)
+			Return Version.Parse(relVersionString)
+		End Function
 
-	Public Async Function RetrieveRelativityVersion() As Task(Of Version) Implements IApplicationVersionService.RetrieveRelativityVersion
+		Public Async Function GetImportExportWebApiVersionAsync(ByVal token As CancellationToken) As Task(Of Version) Implements IApplicationVersionService.GetImportExportWebApiVersionAsync
+			Try
+				Using relativityManager As New RelativityManager(
+				_instance.Credentials,
+				_instance.CookieContainer,
+				_instance.WebApiServiceUrl.ToString(),
+				_appSettings.WebApiOperationTimeout)
+					Dim version As String = Await Task.FromResult(relativityManager.GetImportExportWebApiVersion()).ConfigureAwait(False)
+					Return System.Version.Parse(version)
+				End Using
+			Catch e As SoapException
+				If IsWebServiceUnavailable(e, NameOf(RelativityManager.GetImportExportWebApiVersion)) Then
+					Throw New HttpServiceException(My.Resources.Strings.GetImportExportWebApiVersionNotFoundExceptionMessage, e, HttpStatusCode.NotFound, False)
+				End If
 
-		Dim httpClientHelper As New HttpClientHelper()
-
-		Dim authorizationHeader As String = GetAuthorizationHeader(_credentials)
-		Dim httpResponse As HttpResponseMessage
-		Try
-			httpResponse = Await httpClientHelper.DoPost(_restApiUrl, authorizationHeader, string.Empty)
-
-		Catch ex As Exception
-			Throw New HttpServiceException($"Can not connect to Kepler service: {_restApiUrl.ToString()}", ex)
-		End Try
-
-		If Not httpResponse.IsSuccessStatusCode
-			Throw New HttpServiceException(String.Format($"Can not retrieve Relativity version from Kepler servivce: {_restApiUrl.ToString()}. Staus code {httpResponse.StatusCode}"))
-		End If
-
-		' Relativity version is stored in additional quotation marks
-		Dim relVersionString As String = httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult().TrimStart(""""c).TrimEnd(""""c)
-
-		Return Version.Parse(relVersionString)
-	End Function
-
-	Public Async Function RetrieveImportExportWebApiVersion() As Task(Of Version) Implements IApplicationVersionService.RetrieveImportExportWebApiVersion
-		Try
-			Dim relativityManager As New RelativityManager(_credentials, New CookieContainer(), _webApiUrl)
-			Dim ver As String = Await Task.Run(Function() relativityManager.GetImportExportWebApiVersion()).ConfigureAwait(false)
-		Return Version.Parse(ver)
-		Catch ex As Exception
-			Throw New HttpServiceException("Can not connect to WebApi service", ex)
-		End Try
-	End Function
-
-	Private Function GetAuthorizationHeader(cred As NetworkCredential) As String
-		If _credentials.UserName = kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName Then
-			Return string.Format(CultureInfo.InvariantCulture, "Bearer {0}", cred.Password)
-		Else
-			Dim plainUserPwd As String = String.Format(CultureInfo.InvariantCulture, "{0}:{1}", cred.UserName, cred.Password)
-			Return string.Format(CultureInfo.InvariantCulture, "Basic {0}", Convert.ToBase64String(Encoding.ASCII.GetBytes(plainUserPwd)))
-		End If
-	End Function
-
-End Class
+				Throw New HttpServiceException(My.Resources.Strings.GetImportExportWebApiVersionExceptionMessage, e, True)
+			Catch e As Exception
+				Throw New HttpServiceException(My.Resources.Strings.GetImportExportWebApiVersionExceptionMessage, e, True)
+			End Try
+		End Function
+	End Class
+End Namespace
