@@ -11,7 +11,6 @@ namespace Relativity.Import.Export
 {
 	using System;
 	using System.Globalization;
-	using System.Net;
 	using System.Threading;
 	using System.Threading.Tasks;
 
@@ -125,7 +124,7 @@ namespace Relativity.Import.Export
 				"Retrieving the Relativity version for Relativity instance {RelativityHost}...",
 				this.instanceInfo.Host);
 			Version relativityVersion = await this.applicationVersionService
-				                            .GetRelativityVersionAsync(token).ConfigureAwait(false);
+											.GetRelativityVersionAsync(token).ConfigureAwait(false);
 			this.log.LogInformation(
 				"Successfully retrieved Relativity version {RelativityVersion} for Relativity instance {RelativityHost}.",
 				relativityVersion,
@@ -136,7 +135,7 @@ namespace Relativity.Import.Export
 
 			try
 			{
-				await this.PerformValidationAsync(token, relativityVersion, item, cacheKey);
+				await this.PerformValidationAsync(token, relativityVersion, item, cacheKey).ConfigureAwait(false);
 			}
 			catch (RelativityNotSupportedException e)
 			{
@@ -169,7 +168,7 @@ namespace Relativity.Import.Export
 			}
 			else
 			{
-				await this.ValidateWebApiVersion(token, relativityVersion, item, cacheKey);
+				await this.ValidateWebApiVersion(token, relativityVersion, item, cacheKey).ConfigureAwait(false);
 			}
 		}
 
@@ -183,7 +182,7 @@ namespace Relativity.Import.Export
 				"Retrieving the import/export WebAPI version for Relativity instance {RelativityHost}...",
 				this.instanceInfo.Host);
 			Version importExportWebApiVersion = await this.applicationVersionService
-				                                    .GetImportExportWebApiVersionAsync(token).ConfigureAwait(false);
+													.GetImportExportWebApiVersionAsync(token).ConfigureAwait(false);
 			this.log.LogInformation(
 				"Successfully retrieved the import/export WebAPI version {ImportExportWebApiVersion} for Relativity instance {RelativityHost}.",
 				importExportWebApiVersion,
