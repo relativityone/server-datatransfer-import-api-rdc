@@ -34,10 +34,10 @@ namespace Relativity.Import.Export.NUnit
 			this.relativityVersionServiceMock = new Mock<IApplicationVersionService>();
 			this.logMock = new Mock<ILog>();
 			this.instanceInfo = new RelativityInstanceInfo
-				                    {
-					                    Host = new Uri("https://relativity.one"),
-					                    WebApiServiceUrl = new Uri("https://relativity.one/RelativityWebAPI/")
-				                    };
+			{
+				Host = new Uri("https://relativity.one"),
+				WebApiServiceUrl = new Uri("https://relativity.one/RelativityWebAPI/")
+			};
 			this.objectCacheRepository = new MemoryCacheRepository(TimeSpan.FromSeconds(0));
 		}
 
@@ -49,7 +49,7 @@ namespace Relativity.Import.Export.NUnit
 
 		[Test]
 		[TestCase("0.0.0.0", "1.0")]
-		[TestCase("10.0.0.0", "0.0")]
+		[TestCase("10.3.0.0", "0.0")]
 		public void ShouldThrowWhenTheRelativityOrImportExportWebApiVersionIsInvalid(string mockRelativityVersion, string mockWebApiVersion)
 		{
 			// arrange
@@ -63,6 +63,7 @@ namespace Relativity.Import.Export.NUnit
 				this.logMock.Object,
 				new Version(9, 7, 0, 0),
 				new Version(1, 0),
+				new Version(10, 3),
 				this.objectCacheRepository);
 
 			// act
@@ -74,14 +75,18 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
-		[TestCase("10.0.0.0", "9.7.228.0", false)]
-		[TestCase("10.1.0.0", "10.0.1.0", false)]
-		[TestCase("10.1.0.0", "10.0.0.1", false)]
-		[TestCase("10.0.0.0", "10.0.0.0", true)]
-		[TestCase("10.0.0.0", "10.1.0.0", true)]
-		[TestCase("10.0.0.0", "10.0.1.0", true)]
-		[TestCase("10.0.0.0", "10.0.0.1", true)]
-		public async Task ShouldValidateWhenRelativityDoesNotSupportTheWebApiVersionCheck(string minRelativityVersion, string mockRelativityVersion, bool expectedResult)
+		[TestCase("10.0.0.0", "9.7.228.0", "9.7.228.0", false)]
+		[TestCase("10.1.0.0", "10.0.1.0", "10.0.", false)]
+		[TestCase("10.1.0.0", "10.0.0.1", "10.0", false)]
+		[TestCase("10.0.0.0", "10.0.0.0", "10.0.0.1", true)]
+		[TestCase("10.0.0.0", "10.1.0.0", "10.1.0.1", true)]
+		[TestCase("10.0.0.0", "10.0.1.0", "10.0.1.1", true)]
+		[TestCase("10.0.0.0", "10.0.0.1", "10.0.0.2", true)]
+		public async Task ShouldValidateWhenRelativityDoesNotSupportTheWebApiVersionCheck(
+		    string minRelativityVersion,
+			string mockRelativityVersion,
+			string webApiStartFromRelativityVersion,
+			bool expectedResult)
 		{
 			// arrange
 			Version relativityVersion = Version.Parse(mockRelativityVersion);
@@ -94,6 +99,7 @@ namespace Relativity.Import.Export.NUnit
 				this.logMock.Object,
 				new Version(minRelativityVersion),
 				VersionConstants.RequiredWebApiVersion,
+				new Version(10, 3),
 				this.objectCacheRepository);
 
 			// act
@@ -111,23 +117,24 @@ namespace Relativity.Import.Export.NUnit
 			}
 
 			// assert
-			this.relativityVersionServiceMock.Verify(x => x.GetImportExportWebApiVersionAsync(CancellationToken.None), Times.Once);
+			this.relativityVersionServiceMock.Verify(x => x.GetImportExportWebApiVersionAsync(CancellationToken.None), Times.Never);
 			this.relativityVersionServiceMock.Verify(x => x.GetRelativityVersionAsync(CancellationToken.None), Times.Once);
 		}
 
 		[Test]
-		[TestCase("10.0.0.0", "9.7.228.0", "1.0", "1.0", true)]
-		[TestCase("10.0.0.0", "9.7.228.0", "1.0", "1.5", true)]
-		[TestCase("10.0.0.0", "9.7.228.0", "1.0", "2.0", false)]
-		[TestCase("10.1.0.0", "10.1.0.0",  "1.0", "1.0", true)]
-		[TestCase("10.1.0.0", "10.0.1.0",  "1.0", "1.0", true)]
-		[TestCase("10.1.0.0", "10.0.0.1",  "1.0", "1.0", true)]
-		[TestCase("10.1.0.0", "10.0.0.1",  "1.5", "1.0", true)]
-		[TestCase("10.1.0.0", "10.0.0.1",  "1.0", "1.5", true)]
-		[TestCase("10.1.0.0", "10.0.0.1",  "1.0", "2.0", false)]
+		[TestCase("9.7.228.0", "10.0.0.0", "10.0.0.0", "1.0", "2.0", false)]
+		[TestCase("9.7.228.0", "10.0.0.0", "10.0.0.0", "1.0", "1.0", true)]
+		[TestCase("9.7.228.0", "10.0.0.0", "10.0.0.0", "1.0", "1.2", true)]
+		[TestCase("9.7.228.0", "10.2.0.0", "10.1.0.0", "1.0", "1.1", true)]
+		[TestCase("9.7.228.0", "10.2.0.0", "10.1.0.0", "1.2", "1.0", true)]
+		[TestCase("10.0.0.0", "10.2.0.0", "10.1.0.0", "1.2", "1.0", true)]
+		[TestCase("10.0.0.0", "10.2.0.0", "10.1.0.0", "1.2", "2.0", false)]
+		[TestCase("10.0.0.0", "10.2.0.0", "10.1.0.0", "2.0", "1.0", false)]
+		[TestCase("10.0.0.0", "10.2.0.0", "10.1.0.0", "2.0", "1.2", false)]
 		public async Task ShouldValidateWhenTheRelativityAndWebApiVersionsAreRetrievedAsync(
 			string minRelativityVersion,
 			string relativityVersion,
+			string webApiStartFromRelativityVersion,
 			string webApiVersion,
 			string minWebApiVersion,
 			bool expectedResult)
@@ -136,15 +143,7 @@ namespace Relativity.Import.Export.NUnit
 			Version relativityVer = Version.Parse(relativityVersion);
 			Version webApiVer = Version.Parse(webApiVersion);
 			this.relativityVersionServiceMock.Setup(x => x.GetRelativityVersionAsync(CancellationToken.None)).Returns(Task.FromResult(relativityVer));
-			if (webApiVer.Major == 0)
-			{
-				this.relativityVersionServiceMock.Setup(x => x.GetImportExportWebApiVersionAsync(CancellationToken.None))
-					.Throws(new HttpServiceException("Not found", HttpStatusCode.NotFound, false));
-			}
-			else
-			{
-				this.relativityVersionServiceMock.Setup(x => x.GetImportExportWebApiVersionAsync(CancellationToken.None)).Returns(Task.FromResult(webApiVer));
-			}
+			this.relativityVersionServiceMock.Setup(x => x.GetImportExportWebApiVersionAsync(CancellationToken.None)).Returns(Task.FromResult(webApiVer));
 
 			ImportExportCompatibilityCheck subjectUnderTest = new ImportExportCompatibilityCheck(
 				this.instanceInfo,
@@ -152,7 +151,8 @@ namespace Relativity.Import.Export.NUnit
 				this.logMock.Object,
 				new Version(minRelativityVersion),
 				new Version(minWebApiVersion),
-				this.objectCacheRepository);
+				new Version(webApiStartFromRelativityVersion),
+			this.objectCacheRepository);
 
 			// act
 			if (expectedResult)

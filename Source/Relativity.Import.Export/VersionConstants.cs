@@ -33,5 +33,13 @@ namespace Relativity.Import.Export
 		/// TODO: Must validate that the Goatsbeard Import API release can support all versions from Bluestem through Goatsbeard.
 		/// </remarks>
 		public static Version MinRelativityVersion { get; } = new Version(9, 7);
+
+		/// <summary>
+		/// Gets the Relativity version from which it supports the new WebAPI version endpoint.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Version"/> instance.
+		/// </value>
+		public static Version WebApiStartFromRelativityVersion { get; } = new Version(10, 3);
 	}
 }
