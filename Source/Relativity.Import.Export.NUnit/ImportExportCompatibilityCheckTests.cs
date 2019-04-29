@@ -17,11 +17,16 @@ namespace Relativity.Import.Export.NUnit
 
 	using Relativity.Logging;
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage(
+		"Microsoft.Design",
+		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
+		Justification = "The test class handles the disposal.")]
 	public class ImportExportCompatibilityCheckTests
 	{
 		private Mock<IApplicationVersionService> relativityVersionServiceMock;
 		private Mock<ILog> logMock;
 		private RelativityInstanceInfo instanceInfo;
+		private IObjectCacheRepository objectCacheRepository;
 
 		[SetUp]
 		public void Setup()
@@ -33,6 +38,13 @@ namespace Relativity.Import.Export.NUnit
 					                    Host = new Uri("https://relativity.one"),
 					                    WebApiServiceUrl = new Uri("https://relativity.one/RelativityWebAPI/")
 				                    };
+			this.objectCacheRepository = new MemoryCacheRepository(TimeSpan.FromSeconds(0));
+		}
+
+		[TearDown]
+		public void Teardown()
+		{
+			this.objectCacheRepository.Dispose();
 		}
 
 		[Test]
@@ -50,7 +62,8 @@ namespace Relativity.Import.Export.NUnit
 				this.relativityVersionServiceMock.Object,
 				this.logMock.Object,
 				new Version(9, 7, 0, 0),
-				new Version(1, 0));
+				new Version(1, 0),
+				this.objectCacheRepository);
 
 			// act
 			RelativityNotSupportedException exception = Assert.ThrowsAsync<RelativityNotSupportedException>(
@@ -80,7 +93,8 @@ namespace Relativity.Import.Export.NUnit
 				this.relativityVersionServiceMock.Object,
 				this.logMock.Object,
 				new Version(minRelativityVersion),
-				VersionConstants.MinWebApiVersion);
+				VersionConstants.RequiredWebApiVersion,
+				this.objectCacheRepository);
 
 			// act
 			if (expectedResult)
@@ -137,7 +151,8 @@ namespace Relativity.Import.Export.NUnit
 				this.relativityVersionServiceMock.Object,
 				this.logMock.Object,
 				new Version(minRelativityVersion),
-				new Version(minWebApiVersion));
+				new Version(minWebApiVersion),
+				this.objectCacheRepository);
 
 			// act
 			if (expectedResult)

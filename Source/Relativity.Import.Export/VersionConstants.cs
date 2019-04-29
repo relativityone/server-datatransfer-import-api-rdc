@@ -11,18 +11,24 @@ namespace Relativity.Import.Export
 	using System;
 
 	/// <summary>
-	/// Represents the WebAPI and Relativity version constants.
+	/// Defines static import/export version constants.
 	/// </summary>
 	internal static class VersionConstants
 	{
 		/// <summary>
-		/// Gets the minimum WebAPI version.
+		/// Gets the required WebAPI version.
 		/// </summary>
-		public static Version MinWebApiVersion { get; } = new Version(1, 0);
+		/// <value>
+		/// The <see cref="Version"/> instance.
+		/// </value>
+		public static Version RequiredWebApiVersion { get; } = new Version(1, 0);
 
 		/// <summary>
 		/// Gets the minimum Relativity version when the instance doesn't support the new WebAPI version endpoint.
 		/// </summary>
+		/// <value>
+		/// The <see cref="Version"/> instance.
+		/// </value>
 		/// <remarks>
 		/// TODO: Must validate that the Goatsbeard Import API release can support all versions from Bluestem through Goatsbeard.
 		/// </remarks>

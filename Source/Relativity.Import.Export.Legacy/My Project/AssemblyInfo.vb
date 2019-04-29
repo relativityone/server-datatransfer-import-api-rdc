@@ -22,3 +22,4 @@ Imports System.Runtime.InteropServices
 <Assembly: InternalsVisibleTo("Relativity.Import.Client")>
 <Assembly: InternalsVisibleTo("Relativity.Import.Export.NUnit")>
 <Assembly: InternalsVisibleTo("Relativity.Import.Export.NUnit.Integration")>
+<Assembly: InternalsVisibleTo("Relativity.Desktop.Client")>

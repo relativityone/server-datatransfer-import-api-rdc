@@ -316,7 +316,7 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This application cannot be used with Relativity instance {0} because the import/export web-services version was successfully retrieved but invalid. Contact your system administrator for assistance if this problem persists..
+        ///   Looks up a localized string similar to This application cannot be used with Relativity instance {0} because the import/export web-services version is invalid. Contact your system administrator for assistance if this problem persists..
         /// </summary>
         internal static string ImportExportWebApiVersionInvalidExceptionMessage {
             get {
@@ -496,7 +496,7 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This application cannot be used with Relativity instance {0} because the instance version was successfully retrieved but invalid. Contact your system administrator for assistance if this problem persists..
+        ///   Looks up a localized string similar to This application cannot be used with Relativity instance {0} because the instance version is invalid. Contact your system administrator for assistance if this problem persists..
         /// </summary>
         internal static string RelativtyMinVersionInvalidExceptionMessage {
             get {

@@ -353,12 +353,12 @@ Detail: {4}</value>
     <value>This application cannot be used with Relativity instance {0} because version v{1} doesn't meet or exceed the minimum version v{2}. Review the 'Importing and exporting' compatibility page on help.relativity.com for more details.</value>
   </data>
   <data name="RelativtyMinVersionInvalidExceptionMessage" xml:space="preserve">
-    <value>This application cannot be used with Relativity instance {0} because the instance version was successfully retrieved but invalid. Contact your system administrator for assistance if this problem persists.</value>
+    <value>This application cannot be used with Relativity instance {0} because the instance version is invalid. Contact your system administrator for assistance if this problem persists.</value>
   </data>
   <data name="ImportExportWebApiVersionNotSupportedExceptionMessage" xml:space="preserve">
     <value>This application cannot be used with Relativity instance {0} because the import/export web-services version isn't supported. Review the 'Importing and exporting' compatibility page on help.relativity.com for more details.</value>
   </data>
   <data name="ImportExportWebApiVersionInvalidExceptionMessage" xml:space="preserve">
-    <value>This application cannot be used with Relativity instance {0} because the import/export web-services version was successfully retrieved but invalid. Contact your system administrator for assistance if this problem persists.</value>
+    <value>This application cannot be used with Relativity instance {0} because the import/export web-services version is invalid. Contact your system administrator for assistance if this problem persists.</value>
   </data>
 </root>
