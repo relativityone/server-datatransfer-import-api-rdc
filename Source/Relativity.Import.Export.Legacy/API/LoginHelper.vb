@@ -163,7 +163,7 @@ Namespace kCura.WinEDDS.Api
 			End If
 		End Sub
 
-		Private Shared Sub CheckVersion2(ByVal credential As System.Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal webServiceUrl As String)
+		Public Shared Sub CheckVersion2(ByVal credential As System.Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal webServiceUrl As String)
 			Dim instance As New RelativityInstanceInfo With
 					{
 					.Credentials = credential,

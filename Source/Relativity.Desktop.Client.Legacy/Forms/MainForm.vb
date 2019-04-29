@@ -470,6 +470,7 @@ Namespace Relativity.Desktop.Client
 			Catch ex As WebException
 				_application.HandleWebException(ex)
 			Catch ex As RelativityVersionMismatchException
+			Catch ex As RelativityNotSupportedException
 				_application.ChangeWebServiceUrl(ex.Message + " Try a new URL?")
 			End Try
 

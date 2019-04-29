@@ -3,6 +3,7 @@ Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
 Imports kCura.WinEDDS
+Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Monitoring
 Imports Relativity.DataTransfer.MessageService
@@ -1029,7 +1030,9 @@ Namespace Relativity.Desktop.Client
 		Public Async Function NewLoginAsync(Optional ByVal openCaseSelector As Boolean = True) As Task
 			Try
 				Me.OpenCaseSelector = openCaseSelector
-				Await Me.GetCredentialsAsync()
+				Dim credentials As NetworkCredential = Await Me.GetCredentialsAsync()
+
+				LoginHelper.CheckVersion2(credentials, New CookieContainer(), AppSettings.Instance.WebApiServiceUrl)
 			Catch ex As LoginCanceledException
 				'Login form was closed, ignore
 			End Try

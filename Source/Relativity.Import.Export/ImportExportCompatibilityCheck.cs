@@ -164,32 +164,41 @@ namespace Relativity.Import.Export
 		{
 			if (relativityVersion < this.webApiStartFromRelativityVersion)
 			{
-				// Perfrom validation for older Relativity Version - this code should be removed on compatibility break change
+				// Perform validation for older Relativity Version - this code should be removed on compatibility break change
 				this.ValidateRelativityVersion(relativityVersion);
 			}
 			else
 			{
-				this.log.LogInformation(
-					"Retrieving the import/export WebAPI version for Relativity instance {RelativityHost}...",
-					this.instanceInfo.Host);
-				Version importExportWebApiVersion = await this.applicationVersionService
-					                                    .GetImportExportWebApiVersionAsync(token).ConfigureAwait(false);
-				this.log.LogInformation(
-					"Successfully retrieved the import/export WebAPI version {ImportExportWebApiVersion} for Relativity instance {RelativityHost}.",
-					importExportWebApiVersion,
-					this.instanceInfo.Host);
-				item.ImportExportWebApiVersion = importExportWebApiVersion;
-				this.log.LogInformation(
-					"Preparing to perform the client/server API version compatibility check for Relativity instance {RelativityHost}...",
-					this.instanceInfo.Host);
-				this.VerifyImportExportWebApiVersion(relativityVersion, importExportWebApiVersion);
-				this.log.LogInformation(
-					"Successfully performed the client/server API version compatibility check for Relativity instance {RelativityHost}.",
-					this.instanceInfo.Host);
-				item.Validated = true;
-				item.Exception = null;
-				this.objectCacheRepository.Upsert(cacheKey, item);
+				await this.ValidateWebApiVersion(token, relativityVersion, item, cacheKey);
 			}
+		}
+
+		private async Task ValidateWebApiVersion(
+			CancellationToken token,
+			Version relativityVersion,
+			InstanceCheckCacheItem item,
+			string cacheKey)
+		{
+			this.log.LogInformation(
+				"Retrieving the import/export WebAPI version for Relativity instance {RelativityHost}...",
+				this.instanceInfo.Host);
+			Version importExportWebApiVersion = await this.applicationVersionService
+				                                    .GetImportExportWebApiVersionAsync(token).ConfigureAwait(false);
+			this.log.LogInformation(
+				"Successfully retrieved the import/export WebAPI version {ImportExportWebApiVersion} for Relativity instance {RelativityHost}.",
+				importExportWebApiVersion,
+				this.instanceInfo.Host);
+			item.ImportExportWebApiVersion = importExportWebApiVersion;
+			this.log.LogInformation(
+				"Preparing to perform the client/server API version compatibility check for Relativity instance {RelativityHost}...",
+				this.instanceInfo.Host);
+			this.VerifyImportExportWebApiVersion(relativityVersion, importExportWebApiVersion);
+			this.log.LogInformation(
+				"Successfully performed the client/server API version compatibility check for Relativity instance {RelativityHost}.",
+				this.instanceInfo.Host);
+			item.Validated = true;
+			item.Exception = null;
+			this.objectCacheRepository.Upsert(cacheKey, item);
 		}
 
 		private void VerifyRelativityVersionFormat(Version relativityVersion, InstanceCheckCacheItem item, string cacheKey)
