@@ -3,6 +3,7 @@ Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
 Imports kCura.WinEDDS
+Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Monitoring
 Imports Relativity.DataTransfer.MessageService
@@ -45,13 +46,14 @@ Namespace Relativity.Desktop.Client
 		Public Event ChangeCursor(ByVal cursorStyle As System.Windows.Forms.Cursor)
 		Public Event ReCheckCertificate()
 
-		Public OpenCaseSelector As Boolean = True
-
 		Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
 		Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
 		Public Const RDC_TITLE As String = "Relativity Desktop Client"
 
-		Private _caseSelected As Boolean = True
+		' TODO: Propagate the cancellation token source throughout.
+		Private ReadOnly _cancellationTokenSource As System.Threading.CancellationTokenSource = New System.Threading.CancellationTokenSource()
+		Private _isCaseFolderSelected As Boolean = True
+		Private _showCaseSelectDialog As Boolean = True
 		Private _processPool As ProcessPool
 		Private _selectedCaseInfo As Relativity.Import.Export.Services.CaseInfo
 		Private _selectedCaseFolderID As Int32
@@ -76,7 +78,7 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Private Function CreateOAuth2ImplicitCredentialsHelper() As OAuth2ImplicitCredentialsHelper
-			Return New OAuth2ImplicitCredentialsHelper(AddressOf GetIdentityServerLocation, AddressOf On_TokenRetrieved)
+			Return New OAuth2ImplicitCredentialsHelper(AddressOf GetIdentityServerLocation, AddressOf OnOAuth2ImplicitAccessTokenRetrieved)
 		End Function
 
 		Private Async Function GetFieldProviderCacheAsync() As Task(Of IFieldProviderCache)
@@ -85,6 +87,24 @@ Namespace Relativity.Desktop.Client
 			End If
 			Return _fieldProviderCache
 		End Function
+
+		Public Property IsCaseFolderSelected As Boolean
+			Get
+				Return _isCaseFolderSelected
+			End Get
+			Set
+				_isCaseFolderSelected = Value
+			End Set
+		End Property
+
+		Public Property ShowCaseSelectDialog As Boolean
+			Get
+				Return _showCaseSelectDialog
+			End Get
+			Set
+				_showCaseSelectDialog = Value
+			End Set
+		End Property
 
 		Public Property TimeZoneOffset() As Int32
 			Get
@@ -197,7 +217,7 @@ Namespace Relativity.Desktop.Client
 		Public Sub UpdateWebServiceURL(ByVal relogin As Boolean)
 			If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = String.Empty AndAlso Not Me.TemporaryWebServiceURL.Equals(AppSettings.Instance.WebApiServiceUrl) Then
 				AppSettings.Instance.WebApiServiceUrl = Me.TemporaryWebServiceURL
-				_caseSelected = False
+				Me.IsCaseFolderSelected = False
 				'' Turn off our trust of bad certificates! This needs to happen here (references need to be added to add it to MainForm - bad practice).
 				ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) sslPolicyErrors.Equals(SslPolicyErrors.None)
 				RaiseEvent ReCheckCertificate()
@@ -451,24 +471,30 @@ Namespace Relativity.Desktop.Client
 		Public Sub SelectCaseFolder(ByVal folderInfo As kCura.WinEDDS.FolderInfo)
 			_selectedCaseFolderID = folderInfo.ArtifactID
 			_selectedCaseFolderPath = folderInfo.Path
-			_caseSelected = True
+			Me.IsCaseFolderSelected = True
 			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.WorkspaceFolderSelected))
-			_caseSelected = True
+			Me.IsCaseFolderSelected = True
 		End Sub
 
-		Public Async Function OpenCaseAsync() As Task
+		Public Async Function ShowCaseSelectDialogAsync() As Task
+
 			Try
-				Dim caseInfo As Relativity.Import.Export.Services.CaseInfo = Me.GetCase
-				If Not caseInfo Is Nothing Then
-					_selectedCaseInfo = caseInfo
-					Try
-						CursorWaitWhichWorks()
-						Await RefreshSelectedCaseInfoAsync().ConfigureAwait(False)
-					Finally
-						CursorDefaultWhichWorks()
-					End Try
-					RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
-				End If
+				Using frm As New CaseSelectForm
+					frm.MultiSelect = False
+					frm.ShowDialog()
+					If Not frm.SelectedCaseInfo Is Nothing AndAlso frm.SelectedCaseInfo.Count > 0 Then
+						Dim caseInfo As CaseInfo = frm.SelectedCaseInfo.Item(0)
+						_selectedCaseInfo = caseInfo
+
+						Try
+							CursorWaitWhichWorks()
+							Await RefreshSelectedCaseInfoAsync().ConfigureAwait(False)
+						Finally
+							CursorDefaultWhichWorks()
+						End Try
+						RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
+					End If
+				End Using
 			Catch MrSoapy As SoapException
 				Select Case MrSoapy.Detail("ExceptionType").InnerText
 					Case "Relativity.Core.Exception.WorkspaceVersion"
@@ -485,17 +511,6 @@ Namespace Relativity.Desktop.Client
 			Catch ex As System.Exception
 				Throw
 			End Try
-		End Function
-
-		Public Function GetCase() As Relativity.Import.Export.Services.CaseInfo
-			Dim frm As New CaseSelectForm
-			frm.MultiSelect = False
-			frm.ShowDialog()
-			If frm.SelectedCaseInfo Is Nothing OrElse frm.SelectedCaseInfo.Count = 0 Then
-				Return Nothing
-			Else
-				Return frm.SelectedCaseInfo.Item(0)
-			End If
 		End Function
 
 		Public Async Function GetConnectionStatus() As Task(Of String)
@@ -1022,13 +1037,13 @@ Namespace Relativity.Desktop.Client
 			CursorDefault()
 		End Sub
 
-		Public Sub NewLogin(Optional ByVal openCaseSelector As Boolean = True)
-			NewLoginAsync(openCaseSelector).Wait()
+		Public Sub NewLogin(Optional ByVal caseSelectDialog As Boolean = True)
+			NewLoginAsync(caseSelectDialog).Wait()
 		End Sub
 
-		Public Async Function NewLoginAsync(Optional ByVal openCaseSelector As Boolean = True) As Task
+		Public Async Function NewLoginAsync(Optional ByVal caseSelectDialog As Boolean = True) As Task
 			Try
-				Me.OpenCaseSelector = openCaseSelector
+				Me.ShowCaseSelectDialog = caseSelectDialog
 				Await Me.GetCredentialsAsync()
 			Catch ex As LoginCanceledException
 				'Login form was closed, ignore
@@ -1230,7 +1245,7 @@ Namespace Relativity.Desktop.Client
 
 		Private Sub SaveFileObject(ByVal fileObject As Object, ByVal path As String)
 			Try
-				Relativity.Import.Export.SerializationHelper.SerializeToSoapFile(fileObject, path)				
+				Relativity.Import.Export.SerializationHelper.SerializeToSoapFile(fileObject, path)
 			Catch ex As System.Exception
 				MsgBox("Save Failed" + vbCrLf + ex.Message, MsgBoxStyle.Critical)
 			End Try
@@ -1321,7 +1336,7 @@ Namespace Relativity.Desktop.Client
 
 		Public Async Function ReadImageLoadFile(ByVal path As String) As Task(Of ImageLoadFile)
 			kCura.WinEDDS.Service.Settings.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
-			Dim retval As ImageLoadFile			
+			Dim retval As ImageLoadFile
 			Try
 				retval = Relativity.Import.Export.SerializationHelper.DeserializeFromSoapFile(Of ImageLoadFile)(path)
 			Catch ex As System.Exception
@@ -1368,12 +1383,11 @@ Namespace Relativity.Desktop.Client
 				Case Application.CredentialCheckResult.AccessDisabled
 					MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
 				Case Application.CredentialCheckResult.Fail
-					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
 					Await NewLoginAsync()
 				Case Application.CredentialCheckResult.Success
 					LogOn()
-					If (Not _caseSelected) Then
-						Await OpenCaseAsync().ConfigureAwait(False)
+					If (Not Me.IsCaseFolderSelected) Then
+						Await ShowCaseSelectDialogAsync().ConfigureAwait(False)
 					End If
 					EnhancedMenuProvider.Hook(callingForm)
 			End Select
@@ -1397,8 +1411,8 @@ Namespace Relativity.Desktop.Client
 			myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
 			Try
 				relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, _CookieContainer)
-				If relativityManager.ValidateSuccessfulLogin Then
-					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
+				If relativityManager.ValidateSuccessfulLogin() Then
+					' TODO: Add version check here.
 					RelativityWebApiCredentialsProvider.Instance().SetProvider(New UserCredentialsProvider(cred))
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = New kCura.WinEDDS.Service.UserManager(cred, _CookieContainer).GenerateDistributedAuthenticationToken()
 					_lastCredentialCheckResult = CredentialCheckResult.Success
@@ -1435,14 +1449,17 @@ Namespace Relativity.Desktop.Client
 			Await AttemptLogin(_certificatePromptForm)
 		End Sub
 
-		Private Async Sub On_TokenRetrieved(source As ITokenProvider, args As ITokenResponseEventArgs)
+		Private Async Sub OnOAuth2ImplicitAccessTokenRetrieved(source As ITokenProvider, args As ITokenResponseEventArgs)
 			Dim credential = Await GetCredentialsAsync()
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, _CookieContainer)
-			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, _CookieContainer)
+
 			Try
-				CheckVersion(credential)
+				Await Me.ValidateVersionCompatibilityAsync(credential).ConfigureAwait(False)
 			Catch ex As System.Net.WebException
 				HandleWebException(ex)
+				_lastCredentialCheckResult = CredentialCheckResult.Fail
+				Return
+			Catch ex As Relativity.Import.Export.RelativityNotSupportedException
+				Me.HandleRelativityNotSupportedException(ex)
 				_lastCredentialCheckResult = CredentialCheckResult.Fail
 				Return
 			Catch ex As System.Exception
@@ -1452,22 +1469,29 @@ Namespace Relativity.Desktop.Client
 			End Try
 
 			Try
-				If userManager.Login(credential.UserName, credential.Password) Then
+				Using userManager As New kCura.WinEDDS.Service.UserManager(credential, _CookieContainer),
+					  relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, _CookieContainer)
 
-					Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
-					locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
-					System.Threading.Thread.CurrentThread.CurrentCulture = locale
+					If userManager.Login(credential.UserName, credential.Password) Then
+						Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
+						locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
+						System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
-					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-					If OpenCaseSelector Then Await OpenCaseAsync().ConfigureAwait(False)
-					_timeZoneOffset = 0
-					_lastCredentialCheckResult = CredentialCheckResult.Success
-					'This was created specifically for raising an event after login success for RDC forms authentication 
-					LogOnForm()
-				Else
-					Await Me.NewLoginAsync()
-					_lastCredentialCheckResult = CredentialCheckResult.Fail
-				End If
+						kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
+						If Me.ShowCaseSelectDialog Then
+							Await ShowCaseSelectDialogAsync().ConfigureAwait(False)
+						End If
+
+						_timeZoneOffset = 0
+						_lastCredentialCheckResult = CredentialCheckResult.Success
+
+						'This was created specifically for raising an event after login success for RDC forms authentication 
+						LogOnForm()
+					Else
+						Await Me.NewLoginAsync()
+						_lastCredentialCheckResult = CredentialCheckResult.Fail
+					End If
+				End Using
 			Catch ex As System.Exception
 				Dim errorDialog As New ErrorDialog
 				If IsAccessDisabledException(ex) Then
@@ -1507,6 +1531,10 @@ Namespace Relativity.Desktop.Client
 			End If
 		End Sub
 
+		Public Sub HandleRelativityNotSupportedException(exception As Relativity.Import.Export.RelativityNotSupportedException)
+			ChangeWebServiceUrl(exception.Message + vbCrLf + vbCrLf + "Try a new URL?")
+		End Sub
+
 		Public Function IsAccessDisabledException(ByVal ex As System.Exception) As Boolean
 			If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
 				Dim soapEx As System.Web.Services.Protocols.SoapException = DirectCast(ex, System.Web.Services.Protocols.SoapException)
@@ -1525,10 +1553,9 @@ Namespace Relativity.Desktop.Client
 
 		Public Function DoLogin() As CredentialCheckResult
 			Try
-				Dim netCreds As System.Net.NetworkCredential = RelativityWebApiCredentialsProvider.Instance.GetCredentials()
-				Dim userManager As New kCura.WinEDDS.Service.UserManager(netCreds, _CookieContainer)
-				CheckVersion(netCreds)
-				If userManager.Login(netCreds.UserName, netCreds.Password) Then
+				Dim credentials As System.Net.NetworkCredential = RelativityWebApiCredentialsProvider.Instance.GetCredentials()
+				Dim userManager As New kCura.WinEDDS.Service.UserManager(credentials, _CookieContainer)
+				If userManager.Login(credentials.UserName, credentials.Password) Then
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 					_timeZoneOffset = 0
 					_lastCredentialCheckResult = CredentialCheckResult.Success
@@ -1588,38 +1615,13 @@ Namespace Relativity.Desktop.Client
 				Dim url As String = InputBox("Enter New URL:", Title:="Set Relativity URL", DefaultResponse:=AppSettings.Instance.WebApiServiceUrl)
 				If url <> String.Empty Then
 					AppSettings.Instance.WebApiServiceUrl = url
-					OpenCaseSelector = True
+					ShowCaseSelectDialog = True
 					RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOnRequested))
 				Else
 					ExitApplication()
 				End If
 			Else
 				ExitApplication()
-			End If
-		End Sub
-
-		Private Sub CheckVersion(ByVal credential As Net.ICredentials)
-			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(DirectCast(credential, System.Net.NetworkCredential), _CookieContainer)
-			Dim winVersionString As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
-			Dim winRelativityVersion As String() = winVersionString.Split("."c)
-			Dim relVersionString As String = relativityManager.RetrieveRelativityVersion
-			Dim relativityWebVersion As String() = relVersionString.Split("."c)
-			Dim match As Boolean = True
-			Dim i As Int32
-			For i = 0 To System.Math.Max(winRelativityVersion.Length - 1, relativityWebVersion.Length - 1)
-				Dim winv As String = "*"
-				Dim relv As String = "*"
-				If i <= winRelativityVersion.Length - 1 Then winv = winRelativityVersion(i)
-				If i <= relativityWebVersion.Length - 1 Then relv = relativityWebVersion(i)
-				If Not (relv = "*" OrElse winv = "*" OrElse relv.ToLower = winv.ToLower) Then
-					match = False
-					Exit For
-				End If
-			Next
-			If Not match Then
-				Throw kCura.WinEDDS.Api.LoginHelper.CreateRelativityVersionMismatchException(relVersionString)
-			Else
-				Exit Sub
 			End If
 		End Sub
 #End Region
@@ -1791,6 +1793,24 @@ Namespace Relativity.Desktop.Client
 			Return _messageService
 		End Function
 
-
+		Private Async Function ValidateVersionCompatibilityAsync(ByVal credential As System.Net.NetworkCredential) As Task
+			Try
+				' Note: This method is called from the UI thread.
+				Me.CursorWaitWhichWorks()
+				Await Task.Run(
+					Function()
+						Dim instanceInfo As New RelativityInstanceInfo With
+								{
+								.Credentials = credential,
+								.CookieContainer = _CookieContainer,
+								.WebApiServiceUrl = New Uri(AppSettings.Instance.WebApiServiceUrl)
+								}
+						Return LoginHelper.ValidateVersionCompatibilityAsync(instanceInfo, _cancellationTokenSource.Token)
+					End Function,
+					_cancellationTokenSource.Token).ConfigureAwait(False)
+			Finally
+				Me.CursorDefaultWhichWorks()
+			End Try
+		End Function
 	End Class
 End Namespace

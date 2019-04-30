@@ -353,19 +353,18 @@ Namespace Relativity.Desktop.Client
 					If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
 						MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
 					ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
-
 						_application.NewLogin()
 					Else
-						_application.OpenCaseSelector = False
+						_application.ShowCaseSelectDialog = False
 						Await _application.GetCredentialsAsync()
 						_application.LogOn()
-						Await _application.OpenCaseAsync().ConfigureAwait(False)
+						Await _application.ShowCaseSelectDialogAsync().ConfigureAwait(False)
 						EnhancedMenuProvider.Hook(Me)
 					End If
 				Else
-					_application.OpenCaseSelector = False
+					_application.ShowCaseSelectDialog = False
 					Await _application.GetCredentialsAsync()
-					Await _application.OpenCaseAsync().ConfigureAwait(False)
+					Await _application.ShowCaseSelectDialogAsync().ConfigureAwait(False)
 				End If
 			Catch ex As LoginCanceledException
 				'user close the login window, do nothing
@@ -396,7 +395,7 @@ Namespace Relativity.Desktop.Client
 					_isConnecting = False
 					_optionsMenuCheckConnectivityItem.Enabled = True
 					ToggleImportExportMenu()
-					_application.OpenCaseSelector = False
+					_application.ShowCaseSelectDialog = False
 				Case AppEvent.AppEventType.LogOnForm
 					'Enable help once logged into Relativity via RDC login form
 					Me._helpMenuItem.Enabled = True
@@ -469,8 +468,8 @@ Namespace Relativity.Desktop.Client
 				End If
 			Catch ex As WebException
 				_application.HandleWebException(ex)
-			Catch ex As RelativityVersionMismatchException
-				_application.ChangeWebServiceUrl(ex.Message + " Try a new URL?")
+			Catch ex As RelativityNotSupportedException
+				_application.HandleRelativityNotSupportedException(ex)
 			End Try
 
 		End Function
