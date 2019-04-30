@@ -49,12 +49,6 @@ namespace Relativity.Import.Client.NUnit
 				yield return new TestCaseData(
 					new kCura.WinEDDS.Exceptions.InvalidLoginException("Message", new InvalidOperationException()),
 					validateNoOp);
-				yield return new TestCaseData(
-					new kCura.WinEDDS.RelativityVersionMismatchException(
-						"Message",
-						"RelativityVersion",
-						"ClientVersion"),
-					validateNoOp);
 				yield return new TestCaseData(new kCura.WinEDDS.Exceptions.WebApiException("Message"), validateNoOp);
 				yield return new TestCaseData(
 					new kCura.WinEDDS.Exceptions.WebApiException("Message", new InvalidOperationException()),

@@ -75,9 +75,9 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
-		[TestCase("10.0.0.0", "9.7.228.0", "9.7.228.0", false)]
-		[TestCase("10.1.0.0", "10.0.1.0", "10.0.", false)]
-		[TestCase("10.1.0.0", "10.0.0.1", "10.0", false)]
+		[TestCase("10.0.0.0", "9.7.228.0", "10.0.0.1", false)]
+		[TestCase("10.1.0.0", "10.0.1.0", "10.1.0.1", false)]
+		[TestCase("10.1.0.0", "10.0.0.1", "10.1.0.1", false)]
 		[TestCase("10.0.0.0", "10.0.0.0", "10.0.0.1", true)]
 		[TestCase("10.0.0.0", "10.1.0.0", "10.1.0.1", true)]
 		[TestCase("10.0.0.0", "10.0.1.0", "10.0.1.1", true)]
@@ -99,7 +99,7 @@ namespace Relativity.Import.Export.NUnit
 				this.logMock.Object,
 				new Version(minRelativityVersion),
 				VersionConstants.RequiredWebApiVersion,
-				new Version(10, 3),
+				new Version(webApiStartFromRelativityVersion),
 				this.objectCacheRepository);
 
 			// act

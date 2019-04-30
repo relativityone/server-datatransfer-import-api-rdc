@@ -178,7 +178,6 @@
     <Compile Include="GlobalSuppressions.vb" />
     <Compile Include="LoadFileBaseTests.vb" />
     <Compile Include="LoadFileTypeTests.vb" />
-    <Compile Include="LoginHelperTests.vb" />
     <Compile Include="MockBulkImageFileImporter.vb" />
     <Compile Include="MockBulkImportManagerSqlExceptions.vb" />
     <Compile Include="MockBulkImportManagerWebExceptions.vb" />

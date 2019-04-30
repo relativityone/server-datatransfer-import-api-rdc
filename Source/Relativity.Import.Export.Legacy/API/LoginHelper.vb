@@ -92,43 +92,6 @@ Namespace kCura.WinEDDS.Api
 			Return message
 		End Function
 
-		Public Shared Function CreateRelativityVersionMismatchException(ByVal relativityVersion As String) As RelativityVersionMismatchException
-
-			' Rely on the process executable to craft a more accurate exception message.
-			Dim assembly As System.Reflection.Assembly = System.Reflection.Assembly.GetEntryAssembly()
-			If assembly Is Nothing Then
-				assembly = System.Reflection.Assembly.GetExecutingAssembly()
-			End If
-
-			Return CreateRelativityVersionMismatchException(relativityVersion, assembly)
-		End Function
-
-		Public Shared Function CreateRelativityVersionMismatchException(ByVal relativityVersion As String, ByVal assembly As System.Reflection.Assembly) As RelativityVersionMismatchException
-
-			If assembly Is Nothing Then
-				Throw New ArgumentNullException(NameOf(assembly))
-			End If
-
-			' Favor the supplied application name
-			Dim applicationName As String = AppSettings.Instance.ApplicationName
-			If String.IsNullOrEmpty(applicationName) Then
-				' Just in case the App.Config setting is removed or cleared.
-				If assembly.GetName.Name.StartsWith("kCura.EDDS.WinForm", StringComparison.OrdinalIgnoreCase) Then
-					applicationName = "Relativity Desktop Client"
-				Else
-					applicationName = DefaultApplicationName
-				End If
-			End If
-
-			Dim clientVersion As String = assembly.GetName.Version.ToString()
-			Return CreateRelativityVersionMismatchException(relativityVersion, clientVersion, applicationName)
-		End Function
-
-		Public Shared Function CreateRelativityVersionMismatchException(ByVal relativityVersion As String, ByVal clientVersion As String, ByVal applicationName As String) As RelativityVersionMismatchException
-			Dim message As String = CreateRelativityVersionMismatchMessage(relativityVersion, clientVersion, applicationName)
-			Return New RelativityVersionMismatchException(message, relativityVersion, clientVersion)
-		End Function
-
 		Public Shared Sub ValidateVersionCompatibility(ByVal credential As System.Net.NetworkCredential,
 													   ByVal cookieContainer As Net.CookieContainer,
 													   ByVal webServiceUrl As String,
