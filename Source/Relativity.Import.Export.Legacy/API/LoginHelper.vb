@@ -69,7 +69,10 @@ Namespace kCura.WinEDDS.Api
 			Return Nothing
 		End Function
 
-		Public Shared Function LoginWindowsAuthTapi() As System.Net.NetworkCredential
+		Public Shared Function LoginWindowsAuthTapi(ByVal cookieContainer As System.Net.CookieContainer,
+		                                            ByVal webServiceUrl As String,
+		                                            ByVal token As CancellationToken,
+		                                            ByVal logger As Global.Relativity.Logging.ILog) As System.Net.NetworkCredential
 			' Commit 21e69fd0 introduced the expectation that LoginWindowsAuth was called right before this method.
 			If _windowsAuthRelativityManager Is Nothing Then
 				Throw New InvalidOperationException("This operation cannot be completed because a Windows authentication logic error exists.")
@@ -77,7 +80,9 @@ Namespace kCura.WinEDDS.Api
 
 			Try
 				Dim provider As IntegratedAuthenticationOAuthCredentialsProvider = New IntegratedAuthenticationOAuthCredentialsProvider(_windowsAuthRelativityManager)
-				Return provider.LoginWindowsAuthTapi()
+				Dim credentials As System.Net.NetworkCredential = provider.LoginWindowsAuthTapi()
+				ValidateVersionCompatibility(credentials, cookieContainer, webServiceUrl, token, logger)
+				Return credentials
 			Finally
 				_windowsAuthRelativityManager.Dispose()
 				_windowsAuthRelativityManager = Nothing

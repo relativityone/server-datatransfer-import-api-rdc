@@ -62,7 +62,7 @@ Friend Class ImportCredentialManager
 				Try
 					If String.IsNullOrEmpty(UserName) Then
 						creds = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster, WebServiceURL, token, logger)
-						credsTapi = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuthTapi()
+						credsTapi = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuthTapi(cookieMonster, WebServiceURL, token, logger)
 					Else
 						creds = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(UserName.Trim(), Password.Trim(), cookieMonster, WebServiceURL, token, logger)
 						credsTapi = creds
