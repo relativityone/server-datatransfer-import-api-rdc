@@ -29,6 +29,7 @@ Namespace Relativity.Desktop.Client
 			_processPool = New ProcessPool
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_CookieContainer = New System.Net.CookieContainer
+			_logger = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
 		End Sub
 
 		Public Shared ReadOnly Property Instance() As Application
@@ -64,7 +65,9 @@ Namespace Relativity.Desktop.Client
 		Private WithEvents _optionsForm As OptionsForm
 		Private _messageService As IMessageService
 		Private _documentRepositoryList As String()
+		Private ReadOnly _logger As Relativity.Logging.ILog
 		Private ReadOnly oAuth2ImplicitCredentialsHelper As Lazy(Of OAuth2ImplicitCredentialsHelper) = New Lazy(Of OAuth2ImplicitCredentialsHelper)(AddressOf CreateOAuth2ImplicitCredentialsHelper)
+
 #End Region
 
 #Region "Properties"
@@ -617,11 +620,10 @@ Namespace Relativity.Desktop.Client
 
 		Public Function GetColumnHeadersFromLoadFile(ByVal loadfile As kCura.WinEDDS.LoadFile, ByVal firstLineContainsColumnHeaders As Boolean) As String()
 			loadfile.CookieContainer = Me.CookieContainer
-			Dim logger As Global.Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
 			Dim importer As kCura.WinEDDS.BulkLoadFileImporter = Nothing
 
 			Try
-				importer = New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, Nothing, logger, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Config.EnforceDocumentLimit, Nothing, ExecutionSource.Rdc)
+				importer = New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, Nothing, _logger, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Config.EnforceDocumentLimit, Nothing, ExecutionSource.Rdc)
 				Return importer.GetColumnNames(loadfile)
 			Finally
 				' All load files are auto-generated when the importer is constructed. This prevents excessive temp files from accumulating.
@@ -1402,23 +1404,19 @@ Namespace Relativity.Desktop.Client
 		''' true if successful, else false
 		''' </returns>
 		Friend Function AttemptWindowsAuthentication() As CredentialCheckResult
-			Dim myHttpWebRequest As System.Net.HttpWebRequest
-			Dim cred As System.Net.NetworkCredential
-			Dim relativityManager As kCura.WinEDDS.Service.RelativityManager
+			Dim credentials As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 
-			cred = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
-			myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(AppSettings.Instance.WebApiServiceUrl & "\RelativityManager.asmx"), System.Net.HttpWebRequest)
-			myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
 			Try
-				relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, _CookieContainer)
-				If relativityManager.ValidateSuccessfulLogin() Then
-					' TODO: Add version check here.
-					RelativityWebApiCredentialsProvider.Instance().SetProvider(New UserCredentialsProvider(cred))
-					kCura.WinEDDS.Service.Settings.AuthenticationToken = New kCura.WinEDDS.Service.UserManager(cred, _CookieContainer).GenerateDistributedAuthenticationToken()
-					_lastCredentialCheckResult = CredentialCheckResult.Success
-				Else
-					_lastCredentialCheckResult = CredentialCheckResult.Fail
-				End If
+				Using relativityManager As kCura.WinEDDS.Service.RelativityManager = New kCura.WinEDDS.Service.RelativityManager(credentials, _CookieContainer)
+					If relativityManager.ValidateSuccessfulLogin() Then
+						' Note: the compatibility check cannot be executed via integrated security; rather, the OAuth token handler addresses it.
+						RelativityWebApiCredentialsProvider.Instance().SetProvider(New UserCredentialsProvider(credentials))
+						kCura.WinEDDS.Service.Settings.AuthenticationToken = New kCura.WinEDDS.Service.UserManager(credentials, _CookieContainer).GenerateDistributedAuthenticationToken()
+						_lastCredentialCheckResult = CredentialCheckResult.Success
+					Else
+						_lastCredentialCheckResult = CredentialCheckResult.Fail
+					End If
+				End Using
 			Catch ex As System.Exception
 				If IsAccessDisabledException(ex) Then
 					_lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
@@ -1595,19 +1593,18 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Public Function GetIdentityServerLocation() As String
-			Dim tempCred As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
-			Dim relManager As Service.RelativityManager = New Service.RelativityManager(tempCred, _CookieContainer)
-			Dim urlString As String = $"{relManager.GetRelativityUrl()}/{"Identity"}"
+
+			Dim instanceInfo As New RelativityInstanceInfo With
+				    {
+				    .Credentials = System.Net.CredentialCache.DefaultCredentials,
+				    .CookieContainer = _CookieContainer,
+				    .WebApiServiceUrl = New Uri(AppSettings.Instance.WebApiServiceUrl)
+				    }
+
+			Dim service As RelativityManagerService = New RelativityManagerService(instanceInfo)
+			Dim relativityUrl As Uri = service.GetRelativityUrl()
+			Dim urlString As String = $"{relativityUrl.ToString().TrimTrailingSlashFromUrl()}/{"Identity"}"
 			Return urlString
-		End Function
-
-		Private Async Function Reconnect() As Task
-			Dim credentials As NetworkCredential = Await GetCredentialsAsync()
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(credentials, _CookieContainer)
-			If userManager.Login(credentials.UserName, credentials.Password) Then
-				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-			End If
-
 		End Function
 
 		Public Sub ChangeWebServiceUrl(ByVal message As String)
@@ -1805,7 +1802,8 @@ Namespace Relativity.Desktop.Client
 								.CookieContainer = _CookieContainer,
 								.WebApiServiceUrl = New Uri(AppSettings.Instance.WebApiServiceUrl)
 								}
-						Return LoginHelper.ValidateVersionCompatibilityAsync(instanceInfo, _cancellationTokenSource.Token)
+
+						Return LoginHelper.ValidateVersionCompatibilityAsync(instanceInfo, _cancellationTokenSource.Token, _logger)
 					End Function,
 					_cancellationTokenSource.Token).ConfigureAwait(False)
 			Finally

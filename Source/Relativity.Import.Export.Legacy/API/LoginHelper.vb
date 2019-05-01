@@ -1,128 +1,140 @@
 ﻿Imports System.Threading
 Imports kCura.WinEDDS.Credentials
 Imports Relativity.Import.Export
-Imports Relativity.Logging
 
 Namespace kCura.WinEDDS.Api
 	Public Class LoginHelper
-		''' <summary>
-		''' The default application name used when a null or empty value is specified.
-		''' </summary>
-		Friend Const DefaultApplicationName As String = "Import API"
 
-		''' <summary>
-		''' The default version used when a null or empty value is specified.
-		''' </summary>
-		Friend Const DefaultUnknownVersion As String = "0.0.0.0"
-
-		Private Shared ReadOnly _logger As ILog = RelativityLogFactory.CreateLog()
-
-		Private Shared relativityManager As kCura.WinEDDS.Service.RelativityManager
-
-		Public Shared Function LoginWindowsAuth(ByVal cookieContainer As System.Net.CookieContainer) As System.Net.NetworkCredential
-			If cookieContainer Is Nothing Then Throw New ArgumentException("Cookie container not set")
-			Dim myHttpWebRequest As System.Net.HttpWebRequest
-			Dim cred As System.Net.NetworkCredential
-
-			cred = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
-
-			Dim requestURIString As String = AppSettings.Instance.WebApiServiceUrl & "RelativityManager.asmx"
-			myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(requestURIString), System.Net.HttpWebRequest)
-			myHttpWebRequest.Credentials = cred
-			relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, cookieContainer)
-
-			If relativityManager.ValidateSuccesfulLogin Then
-				Initialize(relativityManager, AppSettings.Instance.WebApiServiceUrl)
-				Return cred
-			End If
-			Return Nothing
-		End Function
-
-		Public Shared Function LoginWindowsAuthTapi() As System.Net.NetworkCredential
-			Dim provider As IntegratedAuthenticationOAuthCredentialsProvider = New IntegratedAuthenticationOAuthCredentialsProvider(relativityManager)
-			Return provider.LoginWindowsAuthTapi()
-		End Function
-
-		Public Shared Function LoginUsernamePassword(ByVal username As String, ByVal password As String, ByVal cookieContainer As Net.CookieContainer) As System.Net.NetworkCredential
-			Return LoginUsernamePassword(username, password, cookieContainer, AppSettings.Instance.WebApiServiceUrl)
-		End Function
+		Private Shared _windowsAuthRelativityManager As kCura.WinEDDS.Service.RelativityManager
 
 		Public Shared Function LoginUsernamePassword(ByVal username As String,
 													 ByVal password As String,
 													 ByVal cookieContainer As Net.CookieContainer,
-													 ByVal webServiceUrl As String) As System.Net.NetworkCredential
-			webServiceUrl = AppSettings.Instance.ValidateUriFormat(webServiceUrl)
+													 ByVal webServiceUrl As String,
+													 ByVal token As CancellationToken,
+													 ByVal logger As Global.Relativity.Logging.ILog) As System.Net.NetworkCredential
 			If cookieContainer Is Nothing Then
-				Throw New ArgumentException("Cookie container not set")
+				Throw New ArgumentException(NameOf(cookieContainer))
 			End If
 
+			If String.IsNullOrEmpty(webServiceUrl) Then
+				Throw New ArgumentException(NameOf(webServiceUrl))
+			End If
+
+			If logger Is Nothing Then
+				Throw New ArgumentException(NameOf(logger))
+			End If
+
+			webServiceUrl = AppSettings.Instance.ValidateUriFormat(webServiceUrl)
+
 			' Note: Do NOT perform the compatibility check until all legacy initializations are complete.
-			Dim credential As New Net.NetworkCredential(username, password)
-			Using userManager As New kCura.WinEDDS.Service.UserManager(credential, cookieContainer, webServiceUrl)
+			Dim credentials As New Net.NetworkCredential(username, password)
+			Using userManager As New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer, webServiceUrl)
 				If Not userManager.Login(username, password) Then
 					Return Nothing
 				End If
 			End Using
 
-			Using relManager As New kCura.WinEDDS.Service.RelativityManager(credential, cookieContainer, webServiceUrl)
+			Using relManager As New kCura.WinEDDS.Service.RelativityManager(credentials, cookieContainer, webServiceUrl)
 				Initialize(relManager, webServiceUrl)
-				ValidateVersionCompatibility(credential, cookieContainer, webServiceUrl, CancellationToken.None)
-				Return credential
+				ValidateVersionCompatibility(credentials, cookieContainer, webServiceUrl, token, logger)
+				Return credentials
 			End Using
 		End Function
 
-		Public Shared Function CreateRelativityVersionMismatchMessage(ByVal relativityVersion As String, ByVal clientVersion As String, ByVal applicationName As String) As String
-
-			' Because this is existing code, avoid arg checks and just supply a default value.
-			If String.IsNullOrEmpty(relativityVersion) Then
-				relativityVersion = DefaultUnknownVersion
+		Public Shared Function LoginWindowsAuth(ByVal cookieContainer As System.Net.CookieContainer,
+												ByVal webServiceUrl As String,
+												ByVal token As CancellationToken,
+												ByVal logger As Global.Relativity.Logging.ILog) As System.Net.NetworkCredential
+			If cookieContainer Is Nothing Then
+				Throw New ArgumentException(NameOf(cookieContainer))
 			End If
 
-			If String.IsNullOrEmpty(clientVersion) Then
-				clientVersion = DefaultUnknownVersion
+			If String.IsNullOrEmpty(webServiceUrl) Then
+				Throw New ArgumentException(NameOf(webServiceUrl))
 			End If
 
-			If String.IsNullOrEmpty(applicationName) Then
-				applicationName = DefaultApplicationName
+			Dim credentials As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
+			webServiceUrl = AppSettings.Instance.ValidateUriFormat(webServiceUrl)
+			if (Not _windowsAuthRelativityManager Is Nothing)
+				_windowsAuthRelativityManager.Dispose()
 			End If
 
-			Dim message As String = $"Your version of {applicationName} ({clientVersion _
-					}) is out of date. Please make sure you're running the correct version ({relativityVersion _
-					}) or the correct Relativity WebService URL is specified."
-			Return message
+			_windowsAuthRelativityManager = New kCura.WinEDDS.Service.RelativityManager(credentials, cookieContainer, webServiceUrl)
+			If _windowsAuthRelativityManager.ValidateSuccesfulLogin() Then
+				Initialize(_windowsAuthRelativityManager, webServiceUrl)
+				ValidateVersionCompatibility(credentials, cookieContainer, webServiceUrl, token, logger)
+				Return credentials
+			End If
+			Return Nothing
+		End Function
+
+		Public Shared Function LoginWindowsAuthTapi() As System.Net.NetworkCredential
+			' Commit 21e69fd0 introduced the expectation that LoginWindowsAuth was called right before this method.
+			If _windowsAuthRelativityManager Is Nothing Then
+				Throw New InvalidOperationException("This operation cannot be completed because a Windows authentication logic error exists.")
+			End If
+
+			Try
+				Dim provider As IntegratedAuthenticationOAuthCredentialsProvider = New IntegratedAuthenticationOAuthCredentialsProvider(_windowsAuthRelativityManager)
+				Return provider.LoginWindowsAuthTapi()
+			Finally
+				_windowsAuthRelativityManager.Dispose()
+				_windowsAuthRelativityManager = Nothing
+			End Try
 		End Function
 
 		Public Shared Sub ValidateVersionCompatibility(ByVal credential As System.Net.NetworkCredential,
 													   ByVal cookieContainer As Net.CookieContainer,
 													   ByVal webServiceUrl As String,
-													   ByVal token As CancellationToken)
+													   ByVal token As CancellationToken,
+													   ByVal logger As Global.Relativity.Logging.ILog)
+			If credential Is Nothing Then
+				Throw New ArgumentException(NameOf(credential))
+			End If
+
+			If cookieContainer Is Nothing Then
+				Throw New ArgumentException(NameOf(cookieContainer))
+			End If
+
+			If String.IsNullOrEmpty(webServiceUrl) Then
+				Throw New ArgumentException(NameOf(webServiceUrl))
+			End If
+
+			If logger Is Nothing Then
+				Throw New ArgumentException(NameOf(logger))
+			End If
+
 			' This method is executed synchronously.
+			webServiceUrl = AppSettings.Instance.ValidateUriFormat(webServiceUrl)
 			Dim instanceInfo As New RelativityInstanceInfo With
 					{
 					.Credentials = credential,
 					.CookieContainer = cookieContainer,
 					.WebApiServiceUrl = New Uri(webServiceUrl)
 					}
-			ValidateVersionCompatibilityAsync(instanceInfo, token).GetAwaiter().GetResult()
+			ValidateVersionCompatibilityAsync(instanceInfo, token, logger).GetAwaiter().GetResult()
 		End Sub
 
-		Friend Shared Function ValidateVersionCompatibilityAsync(ByVal instanceInfo As RelativityInstanceInfo, ByVal token As CancellationToken) As System.Threading.Tasks.Task
+		Friend Shared Function ValidateVersionCompatibilityAsync(ByVal instanceInfo As RelativityInstanceInfo,
+																 ByVal token As CancellationToken,
+																 ByVal logger As Global.Relativity.Logging.ILog) As System.Threading.Tasks.Task
 			' Automatically throws RelativityNotSupportedException when the validation fails. 
 			Dim compatibilityCheck As IImportExportCompatibilityCheck = New ImportExportCompatibilityCheck(
 				instanceInfo,
-				New kCura.WinEDDS.Service.ApplicationVersionService(instanceInfo, AppSettings.Instance, _logger),
-				_logger)
+				New kCura.WinEDDS.Service.ApplicationVersionService(instanceInfo, AppSettings.Instance, logger),
+				logger)
 			Return compatibilityCheck.ValidateAsync(token)
 		End Function
 
 		Private Shared Sub Initialize(ByVal relativityManager As kCura.WinEDDS.Service.RelativityManager, ByVal webServiceUrl As String)
 			Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
-			locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
+			locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol()
 			System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
-			Dim userMan As kCura.WinEDDS.Service.UserManager = New kCura.WinEDDS.Service.UserManager(relativityManager.Credentials, relativityManager.CookieContainer, webServiceUrl)
-
-			kCura.WinEDDS.Service.Settings.AuthenticationToken = userMan.GenerateDistributedAuthenticationToken()
+			Using userManager As kCura.WinEDDS.Service.UserManager = New kCura.WinEDDS.Service.UserManager(relativityManager.Credentials, relativityManager.CookieContainer, webServiceUrl)
+				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
+			End Using
 		End Sub
 	End Class
 End Namespace
