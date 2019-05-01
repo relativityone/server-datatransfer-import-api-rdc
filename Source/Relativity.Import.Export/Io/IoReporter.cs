@@ -277,7 +277,7 @@ namespace Relativity.Import.Export.Io
 		private bool ThrowFileInfoInvalidPathException(Exception exception)
 		{
 			return this.CachedAppSettings.DisableThrowOnIllegalCharacters
-				   && RetryExceptionHelper.IsIllegalCharactersInPathException(exception);
+				   && ExceptionHelper.IsIllegalCharactersInPathException(exception);
 		}
 
 		private FileInfoInvalidPathException CreateFileInfoInvalidPathException(Exception exception, string fileName)

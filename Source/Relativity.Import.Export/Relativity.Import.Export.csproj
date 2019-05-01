@@ -94,6 +94,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheKeys.cs" />
+    <Compile Include="ExceptionHelper.cs" />
     <Compile Include="IObjectCacheRepository.cs" />
     <Compile Include="MemoryCacheRepository.cs" />
     <Compile Include="RestClient.cs" />

@@ -1753,7 +1753,7 @@ Namespace kCura.WinEDDS
 						Throw New ExtractedTextFileNotFoundException()
 					Catch ex As System.IO.IOException
 						' Running out of disk space should always be treated as a fatal exception.
-						If RetryExceptionHelper.IsOutOfDiskSpaceException(ex) Then
+						If ExceptionHelper.IsOutOfDiskSpaceException(ex) Then
 							Throw
 						End If
 

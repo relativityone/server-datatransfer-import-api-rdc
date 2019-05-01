@@ -7,9 +7,7 @@
 namespace Relativity.Import.Export
 {
 	using System;
-	using System.Collections.Generic;
 	using System.Globalization;
-	using System.Linq;
 	using System.Net;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
@@ -111,80 +109,6 @@ namespace Relativity.Import.Export
 		public double TimeoutSeconds
 		{
 			get;
-		}
-
-		/// <summary>
-		/// Gets the default HTTP status codes that are considered fatal [BadRequest,Forbidden,Unauthorized].
-		/// </summary>
-		private static IEnumerable<HttpStatusCode> DefaultFatalHttpStatusCodes => new List<HttpStatusCode>(
-			new[]
-				{
-					HttpStatusCode.BadRequest,
-					HttpStatusCode.NotFound,
-					HttpStatusCode.Forbidden,
-					HttpStatusCode.Unauthorized,
-				});
-
-		/// <summary>
-		/// Gets the default web exception status codes that are considered fatal [TrustFailure].
-		/// </summary>
-		private static IEnumerable<WebExceptionStatus> DefaultFatalWebExceptionStatusCodes => new List<WebExceptionStatus>(
-			new[] { WebExceptionStatus.TrustFailure });
-
-		/// <summary>
-		/// Gets the default function used to retrieve HTTP fatal status code messages.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage(
-			"Microsoft.Usage",
-			"CA2211:NonConstantFieldsShouldNotBeVisible",
-			Justification = "This is OK.")]
-		private static Func<HttpStatusCode, string> DefaultFatalHttpStatusCodeDetailedMessage => statusCode =>
-			{
-				switch (statusCode)
-				{
-					case HttpStatusCode.BadRequest:
-						return Strings.HttpBadRequestFatalMessage;
-					case HttpStatusCode.NotFound:
-						return Strings.HttpNotFoundFatalMessage;
-					case HttpStatusCode.Forbidden:
-						return Strings.HttpForbiddenFatalMessage;
-					case HttpStatusCode.Unauthorized:
-						return Strings.HttpUnauthorizedFatalMessage;
-					default:
-						return string.Empty;
-				}
-			};
-
-		/// <summary>
-		/// Gets the default function used to retrieve the web exception fatal status code messages.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage(
-			"Microsoft.Usage",
-			"CA2211:NonConstantFieldsShouldNotBeVisible",
-			Justification = "This is OK.")]
-		private static Func<WebExceptionStatus, string> DefaultFatalWebExceptionStatusCodeDetailedMessage => statusCode =>
-			{
-				switch (statusCode)
-				{
-					case WebExceptionStatus.TrustFailure:
-						return Strings.WebExceptionTrustFailureMessage;
-					default:
-						return string.Empty;
-				}
-			};
-
-		/// <summary>
-		/// Gets a value indicating whether the specified HTTP status code is a fatal error.
-		/// </summary>
-		/// <param name="statusCode">
-		/// The HTTP status code to check.
-		/// </param>
-		/// <returns>
-		/// <see langword="true" /> when the HTTP status code is a fatal error; otherwise, <see langword="false" />.
-		/// </returns>
-		public static bool IsHttpStatusCodeFatalError(HttpStatusCode statusCode)
-		{
-			return DefaultFatalHttpStatusCodes.Any(x => x == statusCode);
 		}
 
 		/// <summary>
@@ -418,7 +342,7 @@ namespace Relativity.Import.Export
 											   if (webException != null)
 											   {
 												   // Force a fatal exception to avoid retry attempts that can never succeed.
-												   if (DefaultFatalWebExceptionStatusCodes.Any(x => x == webException.Status))
+												   if (ExceptionHelper.IsWebExceptionStatusCodeFatalError(webException.Status))
 												   {
 													   const bool FatalWebException = true;
 													   throw this.CreateHttpServiceException(
@@ -434,7 +358,7 @@ namespace Relativity.Import.Export
 												   var response = webException.Response as HttpWebResponse;
 												   if (response != null)
 												   {
-													   if (IsHttpStatusCodeFatalError(response.StatusCode))
+													   if (ExceptionHelper.IsHttpStatusCodeFatalError(response.StatusCode))
 													   {
 														   const bool FatalHttpStatusException = true;
 														   throw this.CreateHttpServiceException(
@@ -530,7 +454,7 @@ namespace Relativity.Import.Export
 			}
 			catch (Exception e)
 			{
-				var fatal = IsHttpStatusCodeFatalError(response.StatusCode);
+				var fatal = ExceptionHelper.IsHttpStatusCodeFatalError(response.StatusCode);
 				throw this.CreateHttpServiceException(
 					endpoint.ToString(),
 					methodName,
@@ -602,7 +526,7 @@ namespace Relativity.Import.Export
 				errorMessage = Strings.NoMessageProvided;
 			}
 
-			var detailedErrorMessage = DefaultFatalHttpStatusCodeDetailedMessage(statusCode);
+			var detailedErrorMessage = ExceptionHelper.GetDetailedFatalMessage(statusCode);
 			if (string.IsNullOrEmpty(detailedErrorMessage))
 			{
 				detailedErrorMessage = exception.Message;
@@ -691,7 +615,7 @@ namespace Relativity.Import.Export
 				errorMessage = Strings.NoMessageProvided;
 			}
 
-			var detailedErrorMessage = DefaultFatalWebExceptionStatusCodeDetailedMessage(exception.Status);
+			var detailedErrorMessage = ExceptionHelper.GetDetailedFatalMessage(exception.Status);
 			if (string.IsNullOrEmpty(detailedErrorMessage))
 			{
 				detailedErrorMessage = exception.Message;

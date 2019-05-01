@@ -13,12 +13,15 @@ namespace Relativity.Import.Export.Transfer
 	using System.Net;
 
 	using Relativity.Logging;
+	using Relativity.Transfer;
 
 	/// <summary>
 	/// Represents an abstract class service object for WebAPI-based wrappers.
 	/// </summary>
 	internal abstract class WebApiServiceBase
 	{
+		private static readonly IObjectCacheRepository DefaultObjectCacheRepository = new MemoryCacheRepository();
+
 		/// <summary>
 		/// The logger instance.
 		/// </summary>
@@ -32,197 +35,95 @@ namespace Relativity.Import.Export.Transfer
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebApiServiceBase"/> class.
 		/// </summary>
-		/// <param name="parameters">
-		/// The Transfer API bridge parameters.
+		/// <param name="instanceInfo">
+		/// The Relativity instance information.
 		/// </param>
-		protected WebApiServiceBase(TapiBridgeParameters parameters)
+		protected WebApiServiceBase(RelativityInstanceInfo instanceInfo)
+			: this(instanceInfo, DefaultObjectCacheRepository, Relativity.Import.Export.AppSettings.Instance)
 		{
-			if (parameters == null)
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="WebApiServiceBase"/> class.
+		/// </summary>
+		/// <param name="instanceInfo">
+		/// The Relativity instance information.
+		/// </param>
+		/// <param name="repository">
+		/// The object cache repository.
+		/// </param>
+		/// <param name="appSettings">
+		/// The application settings.
+		/// </param>
+		protected WebApiServiceBase(RelativityInstanceInfo instanceInfo, IObjectCacheRepository repository, IAppSettings appSettings)
+		{
+			if (instanceInfo == null)
 			{
-				throw new ArgumentNullException(nameof(parameters));
+				throw new ArgumentNullException(nameof(instanceInfo));
 			}
 
-			if (string.IsNullOrEmpty(parameters.WebServiceUrl))
+			if (repository == null)
 			{
-				throw new ArgumentException("The WebServiceUrl must be non-null or empty.", nameof(parameters));
+				throw new ArgumentNullException(nameof(repository));
 			}
 
-			if (parameters.WorkspaceId < 1)
+			if (appSettings == null)
 			{
-				throw new ArgumentException("The WorkspaceId must be non-zero.", nameof(parameters));
+				throw new ArgumentNullException(nameof(appSettings));
 			}
 
-			if (parameters.Credentials == null)
+			if (instanceInfo.WebApiServiceUrl == null)
 			{
-				throw new ArgumentException("The Credentials must be non-null.", nameof(parameters));
+				throw new ArgumentException("The WebApiServiceUrl must be non-null.", nameof(instanceInfo));
 			}
 
-			if (parameters.WebCookieContainer == null)
+			if (instanceInfo.Credentials == null)
 			{
-				throw new ArgumentException("The WebCookieContainer must be non-null.", nameof(parameters));
+				throw new ArgumentException("The Credentials must be non-null.", nameof(instanceInfo));
 			}
 
-			this.Parameters = parameters;
+			if (instanceInfo.CookieContainer == null)
+			{
+				throw new ArgumentException("The CookieContainer must be non-null.", nameof(instanceInfo));
+			}
 
-			// This is assumed throughout WinEDDS.
+			this.AppSettings = appSettings;
+			this.CacheRepository = repository;
+			this.InstanceInfo = instanceInfo;
 			this.logger = Relativity.Logging.Log.Logger ?? new NullLogger();
 		}
 
 		/// <summary>
-		/// Gets the WebAPI credential.
+		/// Gets the application settings.
 		/// </summary>
 		/// <returns>
-		/// The <see cref="NetworkCredential"/> instance.
+		/// The <see cref="IAppSettings"/> instance.
 		/// </returns>
-		protected NetworkCredential Credential
-		{
-			get
-			{
-				var value = this.Parameters.Credentials;
-				return value;
-			}
-		}
-
-		/// <summary>
-		/// Gets the cookie container.
-		/// </summary>
-		/// <returns>
-		/// The <see cref="CookieContainer"/> instance.
-		/// </returns>
-		protected CookieContainer CookieContainer
-		{
-			get
-			{
-				var value = this.Parameters.WebCookieContainer;
-				return value;
-			}
-		}
-
-		/// <summary>
-		/// Gets the cache expiration in minutes.
-		/// </summary>
-		/// <value>
-		/// The total number of minutes.
-		/// </value>
-		protected int ExpirationMinutes
-		{
-			get
-			{
-				// TODO: This is NOT currently exposed by config settings.
-				const int Value = 60;
-				return Value;
-			}
-		}
-
-		/// <summary>
-		/// Gets the maximum number of retry attempts.
-		/// </summary>
-		/// <value>
-		/// The total number of retry attempts.
-		/// </value>
-		protected int MaxRetryAttempts
-		{
-			get
-			{
-				// TODO: This is NOT currently exposed by config settings.
-				const int Value = 20;
-				return Value;
-			}
-		}
-
-		/// <summary>
-		/// Gets the HTTP timeout in seconds.
-		/// </summary>
-		/// <value>
-		/// The total number of seconds.
-		/// </value>
-		protected int TimeoutSeconds
-		{
-			get
-			{
-				var value = this.Parameters.TimeoutSeconds;
-				if (value <= 0)
-				{
-					value = 600;
-				}
-
-				return value;
-			}
-		}
-
-		/// <summary>
-		/// Gets the wait time, in seconds, between retry attempts.
-		/// </summary>
-		/// <value>
-		/// The total number of seconds.
-		/// </value>
-		protected int WaitTimeBetweenRetryAttempts
-		{
-			get
-			{
-				var value = this.Parameters.WaitTimeBetweenRetryAttempts;
-				if (value <= 0)
-				{
-					value = 15;
-				}
-
-				return value;
-			}
-		}
-
-		/// <summary>
-		/// Gets the HTTP timeout in seconds.
-		/// </summary>
-		/// <value>
-		/// The total number of seconds.
-		/// </value>
-		protected string WebServiceUrl
-		{
-			get
-			{
-				var value = this.Parameters.WebServiceUrl;
-				return value;
-			}
-		}
-
-		/// <summary>
-		/// Gets the Transfer API bridge parameters.
-		/// </summary>
-		/// <value>
-		/// The <see cref="TapiBridgeParameters"/> instance.
-		/// </value>
-		private TapiBridgeParameters Parameters
+		protected IAppSettings AppSettings
 		{
 			get;
 		}
 
 		/// <summary>
-		/// Safely combines the specified URL and the value into a new <see cref="Uri"/> instance.
+		/// Gets the object cache repository.
 		/// </summary>
-		/// <param name="url">
-		/// The URL.
-		/// </param>
-		/// <param name="value">
-		/// The value.
-		/// </param>
 		/// <returns>
-		/// The <see cref="Uri"/> instance.
+		/// The <see cref="IObjectCacheRepository"/> instance.
 		/// </returns>
-		public static string Combine(string url, string value)
+		protected IObjectCacheRepository CacheRepository
 		{
-			if (url == null)
-			{
-				throw new ArgumentNullException(nameof(url));
-			}
+			get;
+		}
 
-			if (string.IsNullOrEmpty(value))
-			{
-				throw new ArgumentNullException(nameof(value));
-			}
-
-			// The base URL must include the slash to combine correctly.
-			var urlString = url.TrimEnd('/') + "/" + value;
-			return urlString;
+		/// <summary>
+		/// Gets the Relativity instance information.
+		/// </summary>
+		/// <value>
+		/// The <see cref="RelativityInstanceInfo"/> instance.
+		/// </value>
+		protected RelativityInstanceInfo InstanceInfo
+		{
+			get;
 		}
 
 		/// <summary>

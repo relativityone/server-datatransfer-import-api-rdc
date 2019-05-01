@@ -59,7 +59,7 @@ Namespace kCura.WinEDDS.Service
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					ElseIf TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.Message.IndexOf("Server did not recognize the value of HTTP Header") <> -1 AndAlso encode Then
+					ElseIf TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ExceptionHelper.IsSoapEndpointNotFound(ex) AndAlso encode Then
 						'DAM202: This error only occurs if the RDC is newer than the RelativityWebAPI and the new method (CreateEncoded) does not exist in the WebAPI.
 						'We do not want to use a relogin try when this error occurs.
 						tries -= 1
@@ -86,7 +86,7 @@ Namespace kCura.WinEDDS.Service
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					ElseIf TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.Message.IndexOf("Server did not recognize the value of HTTP Header") <> -1 AndAlso encode Then
+					ElseIf TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ExceptionHelper.IsSoapEndpointNotFound(ex) AndAlso encode Then
 						tries -= 1
 						encode = False
 					Else
@@ -139,7 +139,7 @@ Namespace kCura.WinEDDS.Service
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					ElseIf TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.Message.IndexOf("Server did not recognize the value of HTTP Header") <> -1 AndAlso encode Then
+					ElseIf TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ExceptionHelper.IsSoapEndpointNotFound(ex) AndAlso encode Then
 						tries -= 1
 						encode = False
 					Else

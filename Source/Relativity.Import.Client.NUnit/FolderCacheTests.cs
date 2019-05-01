@@ -16,12 +16,12 @@ namespace Relativity.Import.Client.NUnit
 
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exceptions;
-	using kCura.WinEDDS.Helpers;
 	using kCura.WinEDDS.Importers;
 	using kCura.WinEDDS.Service;
 
 	using Moq;
 
+	using Relativity.Import.Export;
 	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>

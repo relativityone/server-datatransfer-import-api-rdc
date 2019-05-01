@@ -59,13 +59,6 @@ Namespace kCura.WinEDDS.Service
 			End While
 		End Sub
 
-		Public Function IsWebServiceUnavailable(exception As SoapException, method As String) As Boolean
-			Dim headerResult As Boolean = exception.Message.IndexOf("Server did not recognize the value of HTTP Header", StringComparison.CurrentCultureIgnoreCase) >= 0
-			Dim methodResult As Boolean = exception.Message.IndexOf(method, StringComparison.CurrentCultureIgnoreCase) >= 0
-			Dim result As Boolean = headerResult AndAlso methodResult
-			Return result
-		End Function
-
 		Private Sub LogFailedServiceCall(exception As Exception, tries As Int32, retryOnFailure As Boolean)
             Dim maxRetries As Int32 = AppSettings.Instance.MaxReloginTries
             Dim token As String = kCura.WinEDDS.Service.Settings.AuthenticationToken

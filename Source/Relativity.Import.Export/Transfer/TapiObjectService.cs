@@ -103,7 +103,14 @@ namespace Relativity.Import.Export.Transfer
 
 			// REL-281370: Due to high SOI, this method takes on more responsibility
 			//             than it should but it limits the URL fetch to a single method.
-			RelativityManagerService service = new RelativityManagerService(parameters);
+			RelativityInstanceInfo instanceInfo = new RelativityInstanceInfo
+				                                      {
+					                                      CookieContainer = parameters.WebCookieContainer,
+					                                      Credentials = parameters.Credentials,
+					                                      WebApiServiceUrl = new Uri(parameters.WebServiceUrl),
+				                                      };
+
+			RelativityManagerService service = new RelativityManagerService(instanceInfo);
 			Uri relativityUrl = service.GetRelativityUrl();
 
 			// REL-286484: There are several expectations on a normalized URL - especially extracted text downloads.

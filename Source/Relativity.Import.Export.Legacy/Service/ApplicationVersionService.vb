@@ -55,7 +55,7 @@ Namespace kCura.WinEDDS.Service
 					Return System.Version.Parse(version)
 				End Using
 			Catch e As SoapException
-				If IsWebServiceUnavailable(e, NameOf(RelativityManager.GetImportExportWebApiVersion)) Then
+				If ExceptionHelper.IsEndpointNotFound(e, NameOf(RelativityManager.GetImportExportWebApiVersion)) Then
 					Throw New HttpServiceException(My.Resources.Strings.GetImportExportWebApiVersionNotFoundExceptionMessage, e, HttpStatusCode.NotFound, False)
 				End If
 

@@ -74,7 +74,7 @@ namespace Relativity.Import.Export
 					return null;
 				}
 
-				url = AppendTrailingSlash(url);
+				url = url.AppendTrailingSlashToUrl();
 				return new Uri(url);
 			}
 
@@ -100,7 +100,7 @@ namespace Relativity.Import.Export
 					return null;
 				}
 
-				url = AppendTrailingSlash(url);
+				url = url.AppendTrailingSlashToUrl();
 				return new Uri(url);
 			}
 
@@ -108,17 +108,6 @@ namespace Relativity.Import.Export
 			{
 				this.webApiServiceUrl = value;
 			}
-		}
-
-		private static string AppendTrailingSlash(string value)
-		{
-			if (value != null &&
-			    value.LastIndexOf('/') != value.Length - 1)
-			{
-				value += '/';
-			}
-
-			return value;
 		}
 	}
 }

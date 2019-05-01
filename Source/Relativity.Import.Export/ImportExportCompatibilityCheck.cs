@@ -21,7 +21,7 @@ namespace Relativity.Import.Export
 	/// </summary>
 	internal class ImportExportCompatibilityCheck : IImportExportCompatibilityCheck
 	{
-		private static readonly IObjectCacheRepository DefaultObjectCacheRepository = new MemoryCacheRepository(TimeSpan.FromMinutes(15));
+		private static readonly IObjectCacheRepository DefaultObjectCacheRepository = new MemoryCacheRepository();
 		private readonly RelativityInstanceInfo instanceInfo;
 		private readonly ILog log;
 		private readonly IApplicationVersionService applicationVersionService;
@@ -104,7 +104,7 @@ namespace Relativity.Import.Export
 		{
 			InstanceCheckCacheItem item =
 				new InstanceCheckCacheItem { Exception = null, Validated = false, RelativityVersion = null };
-			string cacheKey = this.CreateCacheKey();
+			string cacheKey = CacheKeys.CreateCompatibilityCheckCacheKey(this.instanceInfo.Host.ToString());
 			if (this.objectCacheRepository.Contains(cacheKey))
 			{
 				item = this.objectCacheRepository.SelectByKey<InstanceCheckCacheItem>(cacheKey);
@@ -265,11 +265,6 @@ namespace Relativity.Import.Export
 					this.minRelativityVersion);
 				throw new RelativityNotSupportedException(message, relativityVersion);
 			}
-		}
-
-		private string CreateCacheKey()
-		{
-			return $"2619DD28-5BA7-4774-8D8C-278DE295254F.{this.instanceInfo.Host}".ToUpperInvariant();
 		}
 
 		private class InstanceCheckCacheItem

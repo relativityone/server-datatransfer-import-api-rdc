@@ -68,14 +68,14 @@ namespace Relativity.Import.Export.NUnit
 				yield return new TestCaseData(RetryOptions.None, false, new InvalidOperationException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
 
 				// Test Case: disk full scenario 1 follow the options.
-				yield return new TestCaseData(RetryOptions.All, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.DiskFullHResultHResult), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.DiskFull, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.DiskFullHResultHResult), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.DiskFull, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
 
 				// Test Case: disk full scenario 2 follow the options.
-				yield return new TestCaseData(RetryOptions.All, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.DiskFull, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.HandleDiskFullHResult), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.DiskFull, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.HandleDiskFullHResult), NoExpectedRetryCount);
 
 				// Test Case: file does not exist follow the options.
 				yield return new TestCaseData(RetryOptions.All, false, new System.IO.FileNotFoundException(ExpectedDefaultExceptionMessage), MaxExpectedRetryCount);
@@ -88,18 +88,18 @@ namespace Relativity.Import.Export.NUnit
 				yield return new TestCaseData(RetryOptions.None, false, new System.IO.PathTooLongException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
 
 				// Test Case: illegal characters in the path should never retry.
-				yield return new TestCaseData(RetryOptions.None, false, new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.None, true, new FileInfoInvalidPathException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.All, false, new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.All, true, new FileInfoInvalidPathException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, true, new FileInfoInvalidPathException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.None, false, new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.None, true, new FileInfoInvalidPathException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.All, false, new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.All, true, new FileInfoInvalidPathException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, true, new FileInfoInvalidPathException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
 
 				// Test Case: permission errors follow the options.
 				yield return new TestCaseData(RetryOptions.All, false, new UnauthorizedAccessException(ExpectedDefaultExceptionMessage), MaxExpectedRetryCount);
@@ -336,7 +336,7 @@ namespace Relativity.Import.Export.NUnit
 		[TestCase(false)]
 		public void ItShouldHandleIllegalCharactersInPathException(bool testValue)
 		{
-			Exception exception = new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage);
+			Exception exception = new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage);
 			this.GivenTheDisableNativeLocationValidationConfigSetting(testValue);
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheExpectedException(exception);

@@ -2,6 +2,7 @@ Imports System.Collections.Concurrent
 Imports System.Collections.Generic
 Imports kCura.WinEDDS.Importers
 Imports kCura.WinEDDS.Service
+Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS
 
@@ -79,13 +80,13 @@ Namespace kCura.WinEDDS
 					End If
 				Next
 			Catch ex As Exception
-				If kCura.WinEDDS.Helpers.ExceptionHelper.IsFatalException(ex) Then
+				If ExceptionHelper.IsFatalException(ex) Then
 					Throw
 				End If
 
 				_logger.LogFatal(ex, "Failed to retrieve all sub-folders within the {RootFolderId} root folder for workspace {WorkspaceId}.", rootFolderID, _workspaceId)
 				Dim message As String = $"A fatal error occurred retrieving all sub-folders within the {rootFolderID} root folder for workspace {_workspaceId}."				
-				message = kCura.WinEDDS.Helpers.ExceptionHelper.AppendTryAgainAdminFatalMessage(message)
+				message = ExceptionHelper.AppendTryAgainAdminFatalMessage(message)
 				Throw New kCura.WinEDDS.Exceptions.WebApiException(message, ex)
 			End Try
 		End Sub
@@ -136,13 +137,13 @@ Namespace kCura.WinEDDS
 				    End If
 				    Return newFolder.FolderID
 				Catch ex As Exception
-					If kCura.WinEDDS.Helpers.ExceptionHelper.IsFatalException(ex) Then
+					If ExceptionHelper.IsFatalException(ex) Then
 						Throw
 					End If
 
 					_logger.LogFatal(ex, "Failed to create the {FolderPath} folder path for workspace {WorkspaceId}.", folderPath, _workspaceId)
 					Dim message As String = $"A fatal error occurred creating the '{folderPath}' folder path for workspace {_workspaceId}."
-					message = kCura.WinEDDS.Helpers.ExceptionHelper.AppendTryAgainAdminFatalMessage(message)
+					message = ExceptionHelper.AppendTryAgainAdminFatalMessage(message)
 					Throw New kCura.WinEDDS.Exceptions.WebApiException(message, ex)
 				End Try
 		    End If

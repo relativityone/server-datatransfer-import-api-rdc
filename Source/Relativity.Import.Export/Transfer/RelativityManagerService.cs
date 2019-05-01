@@ -10,7 +10,6 @@
 namespace Relativity.Import.Export.Transfer
 {
 	using System;
-	using System.Runtime.Caching;
 
 	using Polly;
 
@@ -22,16 +21,34 @@ namespace Relativity.Import.Export.Transfer
 	/// </remarks>
 	internal class RelativityManagerService : WebApiServiceBase
 	{
-		private const string RelativityUrlKey = "REL-URL-7480CAB5-A1C5-414B-BC05-512EADC5BCA3";
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RelativityManagerService"/> class.
+		/// </summary>
+		/// <param name="instanceInfo">
+		/// The Relativity instance information.
+		/// </param>
+		public RelativityManagerService(RelativityInstanceInfo instanceInfo)
+			: base(instanceInfo)
+		{
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RelativityManagerService"/> class.
 		/// </summary>
-		/// <param name="parameters">
-		/// The Transfer API bridge parameters.
+		/// <param name="instanceInfo">
+		/// The Relativity instance information.
 		/// </param>
-		public RelativityManagerService(TapiBridgeParameters parameters)
-			: base(parameters)
+		/// <param name="repository">
+		/// The object cache repository.
+		/// </param>
+		/// <param name="appSettings">
+		/// The application settings.
+		/// </param>
+		protected RelativityManagerService(
+			RelativityInstanceInfo instanceInfo,
+			IObjectCacheRepository repository,
+			IAppSettings appSettings)
+			: base(instanceInfo, repository, appSettings)
 		{
 		}
 
@@ -43,35 +60,38 @@ namespace Relativity.Import.Export.Transfer
 		/// </returns>
 		public Uri GetRelativityUrl()
 		{
-			string key = $"{RelativityUrlKey}-{this.WebServiceUrl.GetHashCode()}";
-			Uri relativityUrl = MemoryCache.Default.Get(key) as Uri;
+			string webApiServiceUrl = this.InstanceInfo.WebApiServiceUrl.ToString();
+			string cacheKey = CacheKeys.CreateRelativityUrlCacheKey(webApiServiceUrl);
+			Uri relativityUrl = this.CacheRepository.SelectByKey<Uri>(cacheKey);
 			if (relativityUrl != null)
 			{
 				return relativityUrl;
 			}
 
 			this.Initialize();
-			var policy = Policy.Handle<Exception>().WaitAndRetry(
-				this.MaxRetryAttempts,
-				retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-				(exception, span) =>
-				{
-					this.LogError(exception, $"Get Relativity URL failed - retry span: {span}");
-				});
+			var policy = Policy
+				.Handle<Exception>(exception => !ExceptionHelper.IsFatalException(exception)).WaitAndRetry(
+					this.AppSettings.IoErrorNumberOfRetries,
+					retryAttempt => TimeSpan.FromSeconds(this.AppSettings.IoErrorWaitTimeInSeconds),
+					(exception, span) =>
+						{
+							this.LogError(exception, $"Get Relativity URL failed - retry span: {span}");
+						});
 			return policy.Execute(() =>
 			{
-				// REL-281370: by design, GetRelativityUrl does NOT require authentication.
-				//             As a result, the UserManager Login service isn't required.
 				using (var serviceInstance = new RelativityManager())
 				{
-					serviceInstance.Url = Combine(this.WebServiceUrl, "RelativityManager.asmx");
-					serviceInstance.CookieContainer = this.CookieContainer;
-					serviceInstance.Credentials = this.Credential;
-					serviceInstance.Timeout = (int)TimeSpan.FromSeconds(this.TimeoutSeconds).TotalMilliseconds;
+					serviceInstance.Url = webApiServiceUrl.CombineUrls("RelativityManager.asmx");
+					serviceInstance.CookieContainer = this.InstanceInfo.CookieContainer;
+
+					// REL-281370: by design, GetRelativityUrl does NOT require authentication.
+					//             As a result, the UserManager Login service isn't required.
+					serviceInstance.Credentials = System.Net.CredentialCache.DefaultCredentials;
+					serviceInstance.Timeout =
+						(int)TimeSpan.FromSeconds(this.AppSettings.WebApiOperationTimeout).TotalMilliseconds;
 					string relativityUrlString = serviceInstance.GetRelativityUrl();
 					relativityUrl = new Uri(relativityUrlString);
-					var cachePolicy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(this.ExpirationMinutes) };
-					MemoryCache.Default.Set(key, relativityUrl, cachePolicy);
+					this.CacheRepository.Upsert(cacheKey, relativityUrl);
 					return relativityUrl;
 				}
 			});
