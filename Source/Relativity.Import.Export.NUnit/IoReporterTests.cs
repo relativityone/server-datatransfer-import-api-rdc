@@ -203,35 +203,43 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		[TestCase("")]
+		[TestCase(null)]
+		public void ItShouldReturnFalseWhenFileNameIsNullOrEmpty(string fileName)
+		{
+			this.GivenTheIoReportInstanceIsConstructed();
+			this.WhenCallingTheGetFileExistsReporterMethod(fileName);
+			this.ThenTheActualFileExistsShouldEqual(false);
+		}
+
+		[Test]
 		public void ItShouldThrowWhenTheGetFileExistsArgsAreInvalid()
 		{
-			Assert.Throws<ArgumentNullException>(() =>
-			{
-				this.GivenTheIoReportInstanceIsConstructed();
-				this.ioReporterInstance.GetFileExists(null, 0);
-			});
-
 			Assert.Throws<ArgumentOutOfRangeException>(() =>
-			{
-				this.GivenTheIoReportInstanceIsConstructed();
-				this.ioReporterInstance.GetFileExists("1", -1);
-			});
+				{
+					this.GivenTheIoReportInstanceIsConstructed();
+					this.ioReporterInstance.GetFileExists("1", -1);
+				});
 		}
 
 		[Test]
 		public void ItShouldThrowWhenTheGetFileLengthArgsAreInvalid()
 		{
-			Assert.Throws<ArgumentNullException>(() =>
-			{
-				this.GivenTheIoReportInstanceIsConstructed();
-				this.ioReporterInstance.GetFileLength(null, 0);
-			});
-
 			Assert.Throws<ArgumentOutOfRangeException>(() =>
 			{
 				this.GivenTheIoReportInstanceIsConstructed();
 				this.ioReporterInstance.GetFileLength("1", -1);
 			});
+		}
+
+		[Test]
+		[TestCase("")]
+		[TestCase(null)]
+		public void ItShouldReturnZeroWhenFileNameIsNullOrEmpty(string fileName)
+		{
+			this.GivenTheIoReportInstanceIsConstructed();
+			this.WhenCallingTheFileLengthReporterMethod(fileName);
+			this.ThenTheActualFileLengthShouldEqual(0);
 		}
 
 		[TestCase(1)]
@@ -244,7 +252,7 @@ namespace Relativity.Import.Export.NUnit
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheIoReportInstanceIsConstructed();
-			this.WhenCallingTheFileLengthReporterMethod();
+			this.WhenCallingTheFileLengthReporterMethod(TestFileName);
 			this.ThenTheActualFileLengthShouldEqual(expectedLength);
 		}
 
@@ -257,7 +265,7 @@ namespace Relativity.Import.Export.NUnit
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheIoReportInstanceIsConstructed();
-			this.WhenCallingTheGetFileExistsReporterMethod();
+			this.WhenCallingTheGetFileExistsReporterMethod(TestFileName);
 			this.ThenTheActualFileExistsShouldEqual(expectedFileExists);
 		}
 
@@ -275,7 +283,7 @@ namespace Relativity.Import.Export.NUnit
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheIoReportInstanceIsConstructed();
-			this.WhenCallingTheFileLengthReporterMethod();
+			this.WhenCallingTheFileLengthReporterMethod(TestFileName);
 			int expectedWaitTimeBetweenRetryAttempts = waitTimeBetweenRetryAttempts;
 			this.ThenTheActualRetryDurationShouldCalculated(retryAttempt, expectedWaitTimeBetweenRetryAttempts);
 		}
@@ -289,7 +297,7 @@ namespace Relativity.Import.Export.NUnit
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.None);
 			this.GivenTheIoReportInstanceIsConstructed();
-			this.WhenCallingTheFileLengthReporterMethod();
+			this.WhenCallingTheFileLengthReporterMethod(TestFileName);
 			this.ThenTheActualFileLengthShouldEqual(default(int));
 			this.ThenTheLoggerInformationShouldBeInvoked(1);
 		}
@@ -319,13 +327,13 @@ namespace Relativity.Import.Export.NUnit
 			this.ResetMockLogger();
 
 			// Verify retrieving the file length.
-			Assert.Throws(testException.GetType(), this.WhenCallingTheFileLengthReporterMethod);
+			Assert.Throws(testException.GetType(), () => this.WhenCallingTheFileLengthReporterMethod(TestFileName));
 			this.ThenTheLoggerErrorShouldBeInvoked(0, localExpectedException);
 			this.ThenTheLoggerWarningShouldBeInvoked(testExpectedRetryCount, localExpectedException);
 			this.ResetMockLogger();
 
 			// Verify retrieving the file exists flag.
-			Assert.Throws(testException.GetType(), this.WhenCallingTheGetFileExistsReporterMethod);
+			Assert.Throws(testException.GetType(), () => this.WhenCallingTheGetFileExistsReporterMethod(TestFileName));
 			this.ThenTheLoggerErrorShouldBeInvoked(0, localExpectedException);
 			this.ThenTheLoggerWarningShouldBeInvoked(testExpectedRetryCount, localExpectedException);
 			this.ResetMockLogger();
@@ -345,11 +353,11 @@ namespace Relativity.Import.Export.NUnit
 			this.GivenTheIoReportInstanceIsConstructed();
 			if (testValue)
 			{
-				Assert.Throws<FileInfoInvalidPathException>(this.WhenCallingTheFileLengthReporterMethod);
+				Assert.Throws<FileInfoInvalidPathException>(() => this.WhenCallingTheFileLengthReporterMethod(TestFileName));
 			}
 			else
 			{
-				Assert.Throws<ArgumentException>(this.WhenCallingTheFileLengthReporterMethod);
+				Assert.Throws<ArgumentException>(() => this.WhenCallingTheFileLengthReporterMethod(TestFileName));
 			}
 
 			const bool ExpectedException = false;
@@ -463,14 +471,14 @@ namespace Relativity.Import.Export.NUnit
 				this.cancellationTokenSource.Token);
 		}
 
-		private void WhenCallingTheFileLengthReporterMethod()
+		private void WhenCallingTheFileLengthReporterMethod(string fileName)
 		{
-			this.actualFileLength = this.ioReporterInstance.GetFileLength(TestFileName, 0);
+			this.actualFileLength = this.ioReporterInstance.GetFileLength(fileName, 0);
 		}
 
-		private void WhenCallingTheGetFileExistsReporterMethod()
+		private void WhenCallingTheGetFileExistsReporterMethod(string fileName)
 		{
-			this.actualFileExists = this.ioReporterInstance.GetFileExists(TestFileName, 0);
+			this.actualFileExists = this.ioReporterInstance.GetFileExists(fileName, 0);
 		}
 
 		private void WhenCallingTheFileCopyReporterMethod()
