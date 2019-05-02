@@ -73,8 +73,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Client", 
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5} = {410BA79B-DF60-4EDA-86B3-608F3DEE38F5}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Export.Services.Interfaces", "Relativity.Import.Export.Services.Interfaces\Relativity.Import.Export.Services.Interfaces.csproj", "{B2A59009-0DA3-42D4-AE60-D2E964D8D165}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Export.Client", "Relativity.Export.Client\Relativity.Export.Client.csproj", "{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Import.Export.Legacy", "Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj", "{2022E24B-46A1-46DA-A715-36D137436B3A}"

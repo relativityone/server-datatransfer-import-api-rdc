@@ -58,7 +58,6 @@ Write-Host "Merging SDK assemblies..."
     ("/out:""$MergedSdkFile"""),
     ("""$SolutionDir\Relativity.Import.Export\bin\Relativity.Import.Export.dll"""),
     ("""$SolutionDir\Relativity.Import.Export.Legacy\bin\Relativity.Import.Export.Legacy.dll"""),
-    ("""$SolutionDir\Relativity.Import.Export.Services.Interfaces\bin\Relativity.Import.Export.Services.Interfaces.dll"""),
     ("""$SolutionDir\Relativity.Export.Client\bin\Relativity.Export.Client.dll"""),
     ("""$SolutionDir\Relativity.Import.Client\bin\Relativity.Import.Client.dll"""))
 if ($LASTEXITCODE -eq 0) {

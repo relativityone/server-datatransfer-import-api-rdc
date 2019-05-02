@@ -344,7 +344,6 @@ The project structure is similar to other repos. Important folders and files are
 |Relativity.Import.Export.Legacy                |   `VB.NET` |         |The import/export shared class library project.                                                                             |
 |Relativity.Import.Export.NUnit                 |     C#     |         |The C# import/export unit test project.                                                                                     |
 |Relativity.Import.Export.NUnit.Integration     |     C#     |         |The C# import/export integration test project.                                                                              |
-|Relativity.Import.Export.Services.Interfaces   |     C#     |         |The import/export web-service contract project. e.g.<ul><li>enum</li><li>dto</li><li>constants</li><li>interfaces</li></ul> |
 |Relativity.Import.Export.TestFramework         |     C#     |         |The import/export test framework projecty.                                                                                  |
 
 ### Resharper Team Shared Layer
