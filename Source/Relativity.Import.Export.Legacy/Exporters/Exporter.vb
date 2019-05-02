@@ -13,6 +13,7 @@ Imports kCura.WinEDDS.Service.Export
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Process
 Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
@@ -419,8 +420,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub CreateOriginalFileNameProviderInstance(isFileNamePresent As Boolean)
-			Dim emptyAction As Action(Of String) = Sub (y)
-			End Sub
+			Dim emptyAction As Action(Of String) = Sub(y)
+												   End Sub
 
 			Dim shouldWriteWarning As Boolean = Settings.AppendOriginalFileName
 			Dim warningWriter As Action(Of String) = If(shouldWriteWarning,
@@ -429,7 +430,7 @@ Namespace kCura.WinEDDS
 			)
 			_originalFileNameProvider = New OriginalFileNameProvider(isFileNamePresent, FieldLookupService, warningWriter)
 		End Sub
-		
+
 		Private Function CallServerWithRetry(Of T)(f As Func(Of T), ByVal maxTries As Int32) As T
 			Dim tries As Integer
 			Dim records As T
@@ -1252,7 +1253,7 @@ Namespace kCura.WinEDDS
 
 		Public Event UploadModeChangeEvent(ByVal mode As String)
 
-		Private Sub _downloadModeStatus_UploadModeChangeEvent(ByVal mode As String) Handles _downloadModeStatus.UploadModeChangeEvent
+		Private Sub _downloadModeStatus_UploadModeChangeEvent(ByVal tapiClient As TapiClient) Handles _downloadModeStatus.UploadModeChangeEvent
 			RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
 		End Sub
 
