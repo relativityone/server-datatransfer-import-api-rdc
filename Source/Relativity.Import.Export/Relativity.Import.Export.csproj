@@ -148,10 +148,9 @@
     <Compile Include="Services\ChoiceInfo.cs" />
     <Compile Include="Services\ClaimsExtensions.cs" />
     <Compile Include="Services\ColumnSourceType.cs" />
-    <Compile Include="Services\Constants.cs" />
+    <Compile Include="Services\ServiceConstants.cs" />
     <Compile Include="Services\ErrorFileKey.cs" />
     <Compile Include="Services\ExecutionSource.cs" />
-    <Compile Include="Services\ExportConstants.cs" />
     <Compile Include="Services\FieldCategory.cs" />
     <Compile Include="Services\FieldInfoBase.cs" />
     <Compile Include="Services\FieldType.cs" />
