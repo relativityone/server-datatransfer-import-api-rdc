@@ -15,6 +15,7 @@ namespace Relativity.Import.Export.Transfer
 	using System.Threading.Tasks;
 
 	using Relativity.Import.Export.Resources;
+	using Relativity.Import.Export.Services;
 	using Relativity.Logging;
 
 	/// <summary>
