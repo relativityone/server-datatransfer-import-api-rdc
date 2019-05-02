@@ -148,6 +148,7 @@
     <Compile Include="Services\ChoiceInfo.cs" />
     <Compile Include="Services\ClaimsExtensions.cs" />
     <Compile Include="Services\ColumnSourceType.cs" />
+    <Compile Include="Services\RelativityManagerService.cs" />
     <Compile Include="Services\ServiceConstants.cs" />
     <Compile Include="Services\ErrorFileKey.cs" />
     <Compile Include="Services\ExecutionSource.cs" />
@@ -165,6 +166,7 @@
     <Compile Include="Services\SoapExceptionDetail.cs" />
     <Compile Include="Services\SqlNameHelper.cs" />
     <Compile Include="Services\ViewFieldInfo.cs" />
+    <Compile Include="Services\WebApiServiceBase.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="ImportExportCompatibilityCheck.cs" />
     <Compile Include="IApplicationVersionService.cs" />
@@ -232,7 +234,6 @@
     <Compile Include="Process\ProcessBase.cs" />
     <Compile Include="Process\IRunnable.cs" />
     <Compile Include="Transfer\ClientChangeReason.cs" />
-    <Compile Include="Transfer\RelativityManagerService.cs" />
     <Compile Include="Transfer\RelativityTransferLog.cs" />
     <Compile Include="Transfer\ITapiObjectService.cs" />
     <Compile Include="Transfer\TapiClient.cs" />
@@ -248,7 +249,6 @@
     <Compile Include="Transfer\TapiRequestListener.cs" />
     <Compile Include="Transfer\TapiStatisticsEventArgs.cs" />
     <Compile Include="Transfer\TapiStatisticsListener.cs" />
-    <Compile Include="Transfer\WebApiServiceBase.cs" />
     <Compile Include="RelativityLogFactory.cs" />
     <Compile Include="WaitAndRetryPolicy.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
