@@ -5,7 +5,10 @@
 
 namespace Relativity.Import.Export.Services
 {
-	internal static class Constants
+	/// <summary>
+	/// Defines service related constants.
+	/// </summary>
+	internal static class ServiceConstants
 	{
 		public const string LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN = "#KCURA99DF2F0FEB88420388879F1282A55760#";
 
@@ -20,9 +23,18 @@ namespace Relativity.Import.Export.Services
 		/// </summary>
 		/// <remarks>The document loader is configurable, but the image loader is not</remarks>
 		public const string ENDLINETERMSTRING = DEFAULT_FIELD_DELIMITER + Microsoft.VisualBasic.Constants.vbCrLf;
-		public const string LICENSE_AGREEMENT_TEXT = "The programs included herein are subject to a restricted use license and can only be used in conjunction with this application.";
 		public const string Name = "Name";
 		public const string Notes = "Notes";
 		public const string CreatedOn = "SystemCreatedOn";
+
+		/// <summary>
+		/// Used to pick out the COALESCED text field from export precedence
+		/// </summary>
+		/// <remarks>
+		/// Spaces are here to ensure that there will never be a a sql column name conflict, because we strip all punctuation out of non-generated fields' column names for query results.
+		/// </remarks>
+		public const string TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME = "Text Precedence";
+		public const string TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME = "KCURA FULL TEXT SOURCE";
+		public const string TEXT_PRECEDENCE_AWARE_TEXT_SIZE = "KCURA FULL TEXT SIZE";
 	}
 }

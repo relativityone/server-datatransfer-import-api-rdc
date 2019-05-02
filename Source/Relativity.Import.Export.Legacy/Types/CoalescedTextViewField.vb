@@ -5,8 +5,8 @@ Namespace kCura.WinEDDS
 		Inherits ViewFieldInfo
 		Public Sub New(ByVal vfi As ViewFieldInfo, ByVal useCurrentFieldName As Boolean)
 			MyBase.New(vfi)
-			AvfColumnName = ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME
-			Dim nameToUse As String = ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME
+			AvfColumnName = ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME
+			Dim nameToUse As String = ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME
 			If useCurrentFieldName Then nameToUse = vfi.DisplayName
 			AvfHeaderName = nameToUse
 			DisplayName = nameToUse

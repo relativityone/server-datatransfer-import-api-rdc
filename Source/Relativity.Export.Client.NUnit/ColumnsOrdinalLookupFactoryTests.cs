@@ -13,9 +13,8 @@ namespace Relativity.Export.NUnit
 	using kCura.WinEDDS;
 
 	using Relativity.Export.VolumeManagerV2.Settings;
+    using Relativity.Import.Export.Services;
 	using Relativity.Logging;
-
-    using ExportConstants = Relativity.Import.Export.Services.ExportConstants;
 
     [TestFixture]
 	public class ColumnsOrdinalLookupFactoryTests
@@ -52,7 +51,7 @@ namespace Relativity.Export.NUnit
 		{
 			ExportFile exportSettings = new ExportFile(1)
 			{
-				SelectedTextFields = new ViewFieldInfo[1]
+				SelectedTextFields = new kCura.WinEDDS.ViewFieldInfo[1]
 			};
 
 			// ACT
@@ -64,8 +63,8 @@ namespace Relativity.Export.NUnit
 				Assert.That(i, Is.EqualTo(ordinalLookup[columnsInOrder[i]]));
 			}
 
-			Assert.That(columnsInOrder.Length, Is.EqualTo(ordinalLookup[ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME]));
-			Assert.That(columnsInOrder.Length + 1, Is.EqualTo(ordinalLookup[ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME]));
+			Assert.That(columnsInOrder.Length, Is.EqualTo(ordinalLookup[ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME]));
+			Assert.That(columnsInOrder.Length + 1, Is.EqualTo(ordinalLookup[ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME]));
 
 			Assert.That(ordinalLookup.Count, Is.EqualTo(columnsInOrder.Length + 2));
 		}

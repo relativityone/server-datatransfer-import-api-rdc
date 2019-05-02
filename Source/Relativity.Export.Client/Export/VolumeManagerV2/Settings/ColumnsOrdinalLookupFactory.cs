@@ -27,10 +27,10 @@
 			if (exportSettings.SelectedTextFields != null && exportSettings.SelectedTextFields.Length > 0)
 			{
 				_logger.LogVerbose("Text Precedence is set. Adding TextPrecedence column {textPrecedenceColumn} and TextPrecedence source column {textPrecedenceSourceColumn}.",
-					ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME);
+					ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME);
 				int newIndex = ordinalLookup.Count;
-				ordinalLookup.Add(ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME, newIndex);
-				ordinalLookup.Add(ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newIndex + 1);
+				ordinalLookup.Add(ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME, newIndex);
+				ordinalLookup.Add(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newIndex + 1);
 			}
 
 			return ordinalLookup;

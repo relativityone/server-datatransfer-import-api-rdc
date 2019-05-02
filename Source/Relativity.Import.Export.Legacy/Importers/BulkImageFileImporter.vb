@@ -466,7 +466,7 @@ Namespace kCura.WinEDDS
 		Protected Sub LowerBatchSizeAndRetry(ByVal oldBulkLoadFilePath As String, ByVal dataGridFilePath As String, ByVal totalRecords As Int32)
 			'NOTE: we are not cutting a new/smaller data grid bulk file because it will be chunked as it is loaded into the data grid
 			Dim newBulkLoadFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.NativeLoadFileNameSuffix)
-			Dim limit As String = Constants.ENDLINETERMSTRING
+			Dim limit As String = ServiceConstants.ENDLINETERMSTRING
 			Dim last As New System.Collections.Generic.Queue(Of Char)
 			Dim recordsProcessed As Int32 = 0
 			Dim charactersSuccessfullyProcessed As Int64 = 0
@@ -923,9 +923,9 @@ Namespace kCura.WinEDDS
 				_bulkLoadFileWriter.Write($"{(-1)}{lastDivider}")
 			End If
 				
-			_bulkLoadFileWriter.Write(Constants.ENDLINETERMSTRING)
+			_bulkLoadFileWriter.Write(ServiceConstants.ENDLINETERMSTRING)
 			If _replaceFullText AndAlso Not _fullTextStorageIsInSql Then
-				_dataGridFileWriter.Write(Constants.ENDLINETERMSTRING)
+				_dataGridFileWriter.Write(ServiceConstants.ENDLINETERMSTRING)
 			End If
 		End Sub
 
@@ -1020,7 +1020,7 @@ Namespace kCura.WinEDDS
 				_bulkLoadFileWriter.Write("-1,")
 			End If
 			If writeLineTermination Then
-				_bulkLoadFileWriter.Write(Constants.ENDLINETERMSTRING)
+				_bulkLoadFileWriter.Write(ServiceConstants.ENDLINETERMSTRING)
 			End If
 		End Sub
 #End Region

@@ -23,13 +23,13 @@ namespace Relativity.Export.NUnit
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Export.VolumeManagerV2.Repository;
 	using Relativity.Export.VolumeManagerV2.Statistics;
-	using Relativity.Import.Export.TestFramework;
+    using Relativity.Import.Export.Services;
+    using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
-    using ExportConstants = Relativity.Import.Export.Services.ExportConstants;
-    using RelativityConstants = Relativity.Import.Export.Services.Constants;
+    using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
-	[TestFixture]
+    [TestFixture]
 	public class LongTextPrecedenceBuilderTests
 	{
 		private LongTextPrecedenceBuilder _instance;
@@ -63,8 +63,8 @@ namespace Relativity.Export.NUnit
 
 			_fileToDelete = Path.GetTempFileName();
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
-			_fieldService.Setup(x => x.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(1);
+			_fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
+			_fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(1);
 
 			LongTextHelper longTextHelper = new LongTextHelper(_exportSettings, _fieldService.Object, new LongTextRepository(null, new NullLogger()));
 
@@ -149,7 +149,7 @@ namespace Relativity.Export.NUnit
 		[Test]
 		public void ItShouldHandleTooLongTextToLoadFile()
 		{
-			const string tooLongText = RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			const string tooLongText = ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
 			_exportSettings.ExportFullTextAsFile = false;
 
@@ -174,7 +174,7 @@ namespace Relativity.Export.NUnit
 		[Test]
 		public void ItShouldHandleTooLongTextToFile()
 		{
-			const string tooLongText = RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			const string tooLongText = ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
 			_exportSettings.ExportFullTextAsFile = true;
 
@@ -202,7 +202,7 @@ namespace Relativity.Export.NUnit
 		[Test]
 		public void ItShouldHandleTooLongTextToFile_FileAlreadyExists()
 		{
-			const string tooLongText = RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			const string tooLongText = ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
 			_exportSettings.ExportFullTextAsFile = true;
 

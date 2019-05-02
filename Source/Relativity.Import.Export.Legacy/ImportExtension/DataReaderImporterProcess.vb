@@ -14,7 +14,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 			' Use the default value for the delimiter because as a public class,
 			' users of this class may not know what value to set for this
-			BulkLoadFileFieldDelimiter = Constants.DEFAULT_FIELD_DELIMITER
+			BulkLoadFileFieldDelimiter = ServiceConstants.DEFAULT_FIELD_DELIMITER
 		End Sub
 
 		Public Property OnBehalfOfUserToken As String

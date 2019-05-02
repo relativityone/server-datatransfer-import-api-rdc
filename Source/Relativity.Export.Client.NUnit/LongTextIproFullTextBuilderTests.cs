@@ -18,8 +18,8 @@ namespace Relativity.Export.NUnit
 
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Export.VolumeManagerV2.Repository;
-	using Relativity.Logging;
-    using RelativityConstants = Relativity.Import.Export.Services.Constants;
+    using Relativity.Import.Export.Services;
+    using Relativity.Logging;
 
     [TestFixture]
 	public class LongTextIproFullTextBuilderTests
@@ -60,7 +60,7 @@ namespace Relativity.Export.NUnit
 		[Test]
 		public void ItShouldHandleTooLongText()
 		{
-			const string tooLongText = RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			const string tooLongText = ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
 			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { tooLongText } };
 

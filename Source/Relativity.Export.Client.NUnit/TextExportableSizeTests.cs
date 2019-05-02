@@ -21,9 +21,6 @@ namespace Relativity.Export.NUnit
 	using Relativity.Import.Export.Services;
 	using Relativity.Import.Export.TestFramework;
 
-	using ExportConstants = Relativity.Import.Export.Services.ExportConstants;
-	using RelativityConstants = Relativity.Import.Export.Services.Constants;
-
 	[TestFixture]
 	public class TextExportableSizeTests
 	{
@@ -180,8 +177,8 @@ namespace Relativity.Export.NUnit
 
 			SetUpMocksForField(FieldType.Text, Encoding.Unicode);
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
-			_fieldService.Setup(x => x.ContainsFieldName(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
+			_fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
+			_fieldService.Setup(x => x.ContainsFieldName(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -193,7 +190,7 @@ namespace Relativity.Export.NUnit
 			{
 				Metadata = new object[]
 				{
-                    RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN,
+                    ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN,
 					textSize
 				}
 			};
@@ -214,8 +211,8 @@ namespace Relativity.Export.NUnit
 
 			SetUpMocksForField(FieldType.Text, encoding);
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
-			_fieldService.Setup(x => x.ContainsFieldName(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
+			_fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
+			_fieldService.Setup(x => x.ContainsFieldName(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -227,7 +224,7 @@ namespace Relativity.Export.NUnit
 			{
 				Metadata = new object[]
 				{
-					Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN,
+					ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN,
 					textSize
 				}
 			};
@@ -248,7 +245,7 @@ namespace Relativity.Export.NUnit
 
 			SetUpMocksForField(FieldType.Text, Encoding.Unicode);
 
-			_fieldService.Setup(x => x.ContainsFieldName(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(false);
+			_fieldService.Setup(x => x.ContainsFieldName(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(false);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -260,7 +257,7 @@ namespace Relativity.Export.NUnit
 			{
 				Metadata = new object[]
 				{
-					Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN
+					ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN
 				}
 			};
 

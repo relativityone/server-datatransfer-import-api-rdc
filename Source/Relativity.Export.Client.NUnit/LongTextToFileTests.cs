@@ -21,12 +21,13 @@ namespace Relativity.Export.NUnit
 	using Relativity.Export.VolumeManagerV2.Download;
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Export.VolumeManagerV2.Repository;
-	using Relativity.Import.Export.TestFramework;
+    using Relativity.Import.Export.Services;
+    using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
-    using Constants = Relativity.Import.Export.Services.ExportConstants;
+    using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
-	[TestFixture]
+    [TestFixture]
 	public class LongTextToFileTests
 	{
 		private LongTextToFile _instance;
@@ -116,7 +117,7 @@ namespace Relativity.Export.NUnit
 			const string expectedResult = "file_location";
 
 			FieldStub textPrecedenceField = new FieldStub(_fieldFactory.GetArtifactIdField());
-			textPrecedenceField.SetAvfColumnName(Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME);
+			textPrecedenceField.SetAvfColumnName(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME);
 
 			ViewFieldInfo trueTextPrecedenceField = _fieldFactory.GetArtifactIdField();
 
@@ -127,7 +128,7 @@ namespace Relativity.Export.NUnit
 
 			_exportSettings.SelectedTextFields = new[] { trueTextPrecedenceField };
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
+			_fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
 
 			LongText longText = LongText.CreateFromMissingValue(
 				artifact.ArtifactID,

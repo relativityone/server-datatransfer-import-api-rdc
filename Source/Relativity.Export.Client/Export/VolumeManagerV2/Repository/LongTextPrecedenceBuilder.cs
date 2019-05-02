@@ -72,7 +72,7 @@
 
 			_logger.LogVerbose("Text Precedence is stored in field {fieldName}:{fieldId}.", field.AvfColumnName, field.FieldArtifactId);
 
-			if (_longTextHelper.IsTextTooLong(artifact, ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
+			if (_longTextHelper.IsTextTooLong(artifact, ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
 			{
 				return CreateForTooLongText(artifact, field).InList();
 			}
@@ -107,7 +107,7 @@
 
 		private LongText CreateForLongText(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field)
 		{
-			string longTextValue = _longTextHelper.GetTextFromField(artifact, ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME);
+			string longTextValue = _longTextHelper.GetTextFromField(artifact, ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME);
 
 			if (_exportSettings.ExportFullTextAsFile)
 			{
@@ -147,13 +147,13 @@
 
 		private kCura.WinEDDS.ViewFieldInfo GetFieldForLongTextPrecedenceDownload(ObjectExportInfo artifact)
 		{
-			int fieldArtifactId = (int) artifact.Metadata[_fieldService.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)];
+			int fieldArtifactId = (int) artifact.Metadata[_fieldService.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)];
 			return _exportSettings.SelectedTextFields.First(x => x.FieldArtifactId == fieldArtifactId);
 		}
 
 		private kCura.WinEDDS.ViewFieldInfo GetFieldForLongTextPrecedenceDownload(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field)
 		{
-			if (field == null || field.AvfColumnName == ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)
+			if (field == null || field.AvfColumnName == ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)
 			{
 				return GetFieldForLongTextPrecedenceDownload(artifact);
 			}

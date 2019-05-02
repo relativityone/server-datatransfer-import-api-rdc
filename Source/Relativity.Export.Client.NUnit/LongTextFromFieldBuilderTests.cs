@@ -23,8 +23,6 @@ namespace Relativity.Export.NUnit
 	using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
-    using RelativityConstants = Relativity.Import.Export.Services.Constants;
-
     [TestFixture]
 	public class LongTextFromFieldBuilderTests
 	{
@@ -115,7 +113,7 @@ namespace Relativity.Export.NUnit
             _fieldService.Setup(x => x.GetColumns()).Returns(new[] { longTextField });
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
-			const string tooLongText = RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			const string tooLongText = ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
 			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { tooLongText } };
 
@@ -137,7 +135,7 @@ namespace Relativity.Export.NUnit
 			_fieldService.Setup(x => x.GetColumns()).Returns(new kCura.WinEDDS.ViewFieldInfo[] { longTextField });
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
-			const string tooLongText = RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			const string tooLongText = ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
 			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { tooLongText } };
 
