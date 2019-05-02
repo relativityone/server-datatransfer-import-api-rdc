@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="Timekeeper.cs" company="Relativity ODA LLC">
+// <copyright file="Timekeeper2.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -17,27 +17,27 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Represents a class object that tracks operational metrics. This class cannot be inherited.
 	/// </summary>
-	public sealed class Timekeeper
+	public sealed class Timekeeper2
 	{
 		/// <summary>
 		/// The default thread when one isn't specified.
 		/// </summary>
 		private const int DefaultThread = 0;
-		private readonly ConcurrentDictionary<string, ConcurrentDictionary<int, TimekeeperEntry>> dictionary;
+		private readonly ConcurrentDictionary<string, ConcurrentDictionary<int, TimekeeperEntry2>> dictionary;
 		private readonly IFileSystem fileSystem;
 		private readonly IAppSettings settings;
 		private bool? logAllEvents;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Timekeeper"/> class.
+		/// Initializes a new instance of the <see cref="Timekeeper2"/> class.
 		/// </summary>
-		public Timekeeper()
+		public Timekeeper2()
 			: this(FileSystem.Instance.DeepCopy(), AppSettings.Instance)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Timekeeper"/> class.
+		/// Initializes a new instance of the <see cref="Timekeeper2"/> class.
 		/// </summary>
 		/// <param name="fileSystem">
 		/// The file system wrapper.
@@ -45,7 +45,7 @@ namespace Relativity.Import.Export
 		/// <param name="settings">
 		/// The application settings.
 		/// </param>
-		public Timekeeper(IFileSystem fileSystem, IAppSettings settings)
+		public Timekeeper2(IFileSystem fileSystem, IAppSettings settings)
 		{
 			if (fileSystem == null)
 			{
@@ -59,7 +59,7 @@ namespace Relativity.Import.Export
 
 			this.fileSystem = fileSystem;
 			this.settings = settings;
-			this.dictionary = new ConcurrentDictionary<string, ConcurrentDictionary<int, TimekeeperEntry>>();
+			this.dictionary = new ConcurrentDictionary<string, ConcurrentDictionary<int, TimekeeperEntry2>>();
 		}
 
 		/// <summary>
@@ -77,9 +77,9 @@ namespace Relativity.Import.Export
 		/// The operation key.
 		/// </param>
 		/// <returns>
-		/// The <see cref="TimekeeperEntry"/> instance.
+		/// The <see cref="TimekeeperEntry2"/> instance.
 		/// </returns>
-		public TimekeeperEntry GetEntry(string key)
+		public TimekeeperEntry2 GetEntry(string key)
 		{
 			return this.GetEntry(key, DefaultThread);
 		}
@@ -94,16 +94,16 @@ namespace Relativity.Import.Export
 		/// The thread key associated with the operation.
 		/// </param>
 		/// <returns>
-		/// The <see cref="TimekeeperEntry"/> instance.
+		/// The <see cref="TimekeeperEntry2"/> instance.
 		/// </returns>
-		public TimekeeperEntry GetEntry(string key, int thread)
+		public TimekeeperEntry2 GetEntry(string key, int thread)
 		{
 			if (!this.dictionary.ContainsKey(key))
 			{
 				return null;
 			}
 
-			ConcurrentDictionary<int, TimekeeperEntry> entryDictionary = this.dictionary[key];
+			ConcurrentDictionary<int, TimekeeperEntry2> entryDictionary = this.dictionary[key];
 			return entryDictionary.ContainsKey(thread) ? entryDictionary[thread] : null;
 		}
 
@@ -134,8 +134,8 @@ namespace Relativity.Import.Export
 				return;
 			}
 
-			ConcurrentDictionary<int, TimekeeperEntry> entries = this.dictionary[key];
-			TimekeeperEntry entry = entries?[thread];
+			ConcurrentDictionary<int, TimekeeperEntry2> entries = this.dictionary[key];
+			TimekeeperEntry2 entry = entries?[thread];
 			if (entry == null)
 			{
 				return;
@@ -175,21 +175,21 @@ namespace Relativity.Import.Export
 
 			if (this.dictionary.ContainsKey(key))
 			{
-				ConcurrentDictionary<int, TimekeeperEntry> entryDictionary = this.dictionary[key];
+				ConcurrentDictionary<int, TimekeeperEntry2> entryDictionary = this.dictionary[key];
 				if (entryDictionary.ContainsKey(thread))
 				{
 					entryDictionary[thread].StartTime = System.DateTime.Now.Ticks;
 				}
 				else
 				{
-					entryDictionary[thread] = new TimekeeperEntry();
+					entryDictionary[thread] = new TimekeeperEntry2();
 				}
 			}
 			else
 			{
-				this.dictionary[key] = new ConcurrentDictionary<int, TimekeeperEntry>()
+				this.dictionary[key] = new ConcurrentDictionary<int, TimekeeperEntry2>()
 					                       {
-						                       [thread] = new TimekeeperEntry(),
+						                       [thread] = new TimekeeperEntry2(),
 					                       };
 			}
 		}
@@ -275,10 +275,10 @@ namespace Relativity.Import.Export
 				System.Array.Sort<string>(keys);
 				foreach (string key in keys)
 				{
-					ConcurrentDictionary<int, TimekeeperEntry> dict = this.dictionary[key];
+					ConcurrentDictionary<int, TimekeeperEntry2> dict = this.dictionary[key];
 					int count = 0;
 					long length = 0;
-					foreach (TimekeeperEntry entry in dict.Values)
+					foreach (TimekeeperEntry2 entry in dict.Values)
 					{
 						count += entry.Count;
 						length += entry.Length;

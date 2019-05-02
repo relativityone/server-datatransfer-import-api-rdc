@@ -31,13 +31,13 @@ namespace Relativity.Import.Export.NUnit
 		Justification = "The test class handles the disposal.")]
 	public class FileSystemWrapTests
 	{
-		private TempDirectory tempDirectory;
+		private TempDirectory2 tempDirectory;
 		private IFileSystem fileSystem;
 
 		[SetUp]
 		public void Setup()
 		{
-			this.tempDirectory = new TempDirectory();
+			this.tempDirectory = new TempDirectory2();
 			this.tempDirectory.Create();
 			this.fileSystem = FileSystem.Instance.DeepCopy();
 		}

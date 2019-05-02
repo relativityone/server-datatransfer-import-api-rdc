@@ -39,7 +39,7 @@ Namespace kCura.WinEDDS
 		Private _volumeManager As VolumeManager
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
 		Private _beginBatesColumn As String = ""
-		Private _timekeeper As New Timekeeper
+		Private _timekeeper As New Timekeeper2
 		Private _productionArtifactIDs As Int32()
 		Private _lastStatusMessageTs As Long = System.DateTime.Now.Ticks
 		Private _lastDocumentsExportedCountReported As Int32 = 0

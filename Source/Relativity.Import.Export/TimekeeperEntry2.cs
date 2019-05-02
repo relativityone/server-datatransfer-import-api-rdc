@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="TimekeeperEntry.cs" company="Relativity ODA LLC">
+// <copyright file="TimekeeperEntry2.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -7,14 +7,14 @@
 namespace Relativity.Import.Export
 {
 	/// <summary>
-	/// Represents a single entry stored within <see cref="Timekeeper"/> that contains metric information. This class cannot be inherited.
+	/// Represents a single entry stored within <see cref="Timekeeper2"/> that contains metric information. This class cannot be inherited.
 	/// </summary>
-	public sealed class TimekeeperEntry
+	public sealed class TimekeeperEntry2
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TimekeeperEntry"/> class.
+		/// Initializes a new instance of the <see cref="TimekeeperEntry2"/> class.
 		/// </summary>
-		public TimekeeperEntry()
+		public TimekeeperEntry2()
 		{
 			this.Count = 0;
 			this.Length = 0L;

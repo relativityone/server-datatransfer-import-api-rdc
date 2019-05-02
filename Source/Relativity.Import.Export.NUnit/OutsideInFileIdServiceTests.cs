@@ -31,13 +31,13 @@ namespace Relativity.Import.Export.NUnit
 		private const int Timeout = 35;
 		private static bool dumpBinaries;
 		private IFileIdService service;
-		private TempDirectory tempDirectory;
+		private TempDirectory2 tempDirectory;
 		private string tempFile;
 
 		[SetUp]
 		public void Setup()
 		{
-			this.tempDirectory = new TempDirectory();
+			this.tempDirectory = new TempDirectory2();
 			this.tempDirectory.Create();
 			this.tempFile = System.IO.Path.Combine(
 				this.tempDirectory.Directory,

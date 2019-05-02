@@ -32,12 +32,12 @@ namespace Relativity.Import.Export.NUnit
 		private static readonly List<string> CandidatePngImages = new List<string>();
 		private static readonly List<string> CandidateTiffImages = new List<string>();
 		private IImageConversionService service;
-		private TempDirectory tempDirectory;
+		private TempDirectory2 tempDirectory;
 
 		[SetUp]
 		public void Setup()
 		{
-			this.tempDirectory = new TempDirectory();
+			this.tempDirectory = new TempDirectory2();
 			this.tempDirectory.Create();
 			this.service = new ImageConversionService();
 		}

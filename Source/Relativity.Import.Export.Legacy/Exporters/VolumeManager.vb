@@ -46,7 +46,7 @@ Namespace kCura.WinEDDS
 		Private _hasWrittenColumnHeaderString As Boolean = False
 		Private _encoding As System.Text.Encoding
 		Private _errorFileLocation As String = ""
-		Private _timekeeper As Timekeeper
+		Private _timekeeper As Timekeeper2
 		Private _statistics As kCura.WinEDDS.Statistics
 		Private _totalExtractedTextFileLength As Int64 = 0
 		Private _halt As Boolean = False
@@ -140,7 +140,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As Global.Relativity.Import.Export.Io.IFile, directoryHelper As Global.Relativity.Import.Export.Io.IDirectory, fileNameProvider As IFileNameProvider)
+		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As Timekeeper2, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As Global.Relativity.Import.Export.Io.IFile, directoryHelper As Global.Relativity.Import.Export.Io.IDirectory, fileNameProvider As IFileNameProvider)
 			_settings = settings
 			_statistics = statistics
 			_parent = parent

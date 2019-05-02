@@ -172,7 +172,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 		/// <value>
 		/// The <see cref="TempDirectory"/> instance.
 		/// </value>
-		protected TempDirectory TempDirectory
+		protected TempDirectory2 TempDirectory
 		{
 			get;
 			private set;
@@ -228,7 +228,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 				this.TestParameters.WorkspaceId,
 				Is.Positive,
 				() => "The test workspace must be created or specified in order to run this integration test.");
-			this.TempDirectory = new TempDirectory();
+			this.TempDirectory = new TempDirectory2();
 			this.TempDirectory.Create();
 			this.SourcePaths = new global::System.Collections.Generic.List<string>();
 			this.MaxFilesPerFolder = 1000;

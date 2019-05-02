@@ -72,7 +72,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// <summary>
 		/// The test directory backing.
 		/// </summary>
-		private TempDirectory testDirectory;
+		private TempDirectory2 testDirectory;
 
 		/// <summary>
 		/// The source data.
@@ -109,7 +109,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
 			this.testParameters = AssemblySetup.TestParameters.DeepCopy();
-			this.testDirectory = new TempDirectory { ClearReadOnlyAttributes = true };
+			this.testDirectory = new TempDirectory2 { ClearReadOnlyAttributes = true };
 			this.testDirectory.Create();
 			this.sourceData = new System.Data.DataTable();
 			this.sourceData.Columns.Add(WellKnownFields.ControlNumber, typeof(string));

@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="TempDirectory.cs" company="Relativity ODA LLC">
+// <copyright file="TempDirectory2.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -11,9 +11,9 @@ namespace Relativity.Import.Export
 	using System.IO;
 
 	/// <summary>
-	/// Represents a disposable temporary directory class object.
+	/// Represents a disposable temporary directory class object. This class cannot be inherited.
 	/// </summary>
-	internal class TempDirectory : IDisposable
+	public sealed class TempDirectory2 : IDisposable
 	{
 		/// <summary>
 		/// The disposed backing.
@@ -21,9 +21,9 @@ namespace Relativity.Import.Export
 		private bool disposed;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TempDirectory" /> class.
+		/// Initializes a new instance of the <see cref="TempDirectory2" /> class.
 		/// </summary>
-		public TempDirectory()
+		public TempDirectory2()
 		{
 			this.ClearReadOnlyAttributes = false;
 			this.DeleteDirectory = true;

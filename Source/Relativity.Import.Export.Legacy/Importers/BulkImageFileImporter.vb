@@ -62,7 +62,7 @@ Namespace kCura.WinEDDS
 		Private _startLineNumber As Int64
 		Private _enforceDocumentLimit As Boolean
 
-		Private _timekeeper As New Timekeeper
+		Private _timekeeper As New Timekeeper2
 		Private _doRetryLogic As Boolean
 		Private _verboseErrorCollection As New ClientSideErrorCollection
 
