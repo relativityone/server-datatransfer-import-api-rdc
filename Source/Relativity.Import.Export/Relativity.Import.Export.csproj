@@ -167,10 +167,11 @@
     <Compile Include="Services\SqlNameHelper.cs" />
     <Compile Include="Services\ViewFieldInfo.cs" />
     <Compile Include="StringExtensions.cs" />
-    <Compile Include="TimekeeperEntry.cs" />
-    <Compile Include="Timekeeper.cs" />
     <Compile Include="ImportExportCompatibilityCheck.cs" />
     <Compile Include="IApplicationVersionService.cs" />
+    <Compile Include="TempDirectory2.cs" />
+    <Compile Include="Timekeeper2.cs" />
+    <Compile Include="TimekeeperEntry2.cs" />
     <Compile Include="VersionConstants.cs" />
     <Compile Include="Transfer\TapiBridgeBase.cs" />
     <Compile Include="VisualBasicConstants.cs" />
@@ -226,7 +227,6 @@
     <Compile Include="Process\ProcessContext.cs" />
     <Compile Include="Process\ProcessBase.cs" />
     <Compile Include="Process\IRunnable.cs" />
-    <Compile Include="TempDirectory.cs" />
     <Compile Include="Transfer\ClientChangeReason.cs" />
     <Compile Include="Transfer\DownloadTapiBridge.cs" />
     <Compile Include="Transfer\RelativityManagerService.cs" />
