@@ -11,7 +11,7 @@ namespace Relativity.Import.Export
 	using System.Runtime.Serialization;
 
 	/// <summary>
-	/// The exception thrown when call to Http server failed (e.g. WebApi or Kepler).
+	/// The exception thrown when call to Http server failed (e.g. WebApi or Kepler). This class cannot be inherited.
 	/// </summary>
 	[Serializable]
 	public sealed class HttpServiceException : Exception

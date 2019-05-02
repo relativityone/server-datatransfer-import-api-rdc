@@ -5,6 +5,9 @@
 
 namespace Relativity.Import.Export.Services
 {
+	/// <summary>
+	/// Defines constants for the well-known Relativity artifact types, including workspace/case, field, and document.
+	/// </summary>
 	public enum ArtifactType
 	{
 

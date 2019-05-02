@@ -15,7 +15,7 @@ namespace Relativity.Import.Export.Transfer
 	using Relativity.Transfer;
 
 	/// <summary>
-	/// Represents a thread-safe class object to write debug, information, warning, and error logs using Relativity Logging.
+	/// Represents a thread-safe class object to write debug, information, warning, and error logs using Relativity Logging. This class cannot be inherited.
 	/// </summary>
 	/// <remarks>
 	/// This is an alternative implementation of Relativity Logging <see cref="ITransferLog"/> and can be used in client-side scenarios.

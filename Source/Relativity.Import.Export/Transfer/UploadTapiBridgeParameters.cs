@@ -10,7 +10,7 @@
 namespace Relativity.Import.Export.Transfer
 {
 	/// <summary>
-	/// Represents the generic parameters to setup a Transfer API bridge for upload.
+	/// Represents the generic parameters to setup a Transfer API bridge for upload. This class cannot be inherited, backwards compatibility isn't guaranteed, and should never be consumed by API users.
 	/// </summary>
 	public sealed class UploadTapiBridgeParameters : TapiBridgeParameters
 	{

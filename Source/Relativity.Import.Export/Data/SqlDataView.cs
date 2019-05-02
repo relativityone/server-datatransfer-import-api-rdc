@@ -13,7 +13,7 @@ namespace Relativity.Import.Export.Data
 	using System.Runtime.Serialization;
 
 	/// <summary>
-	/// Represents a SQL data view.
+	/// Represents a SQL data view. This class cannot be inherited, backwards compatibility isn't guaranteed, and should never be consumed by API users.
 	/// </summary>
 	[Serializable]
 	public sealed class SqlDataView : MarshalByRefObject, IEnumerable, ISerializable

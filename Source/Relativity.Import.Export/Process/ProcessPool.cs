@@ -11,7 +11,7 @@ namespace Relativity.Import.Export.Process
 	using System.Threading;
 
 	/// <summary>
-	/// Represents a class object to manage 1 or more <see cref="IRunnable"/> objects.
+	/// Represents a class object to manage 1 or more <see cref="IRunnable"/> objects. This class cannot be inherited.
 	/// </summary>
 	internal sealed class ProcessPool
 	{

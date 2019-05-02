@@ -9,7 +9,7 @@ namespace Relativity.Import.Export
 	using System;
 
 	/// <summary>
-	/// Represents the file identification configuration class object.
+	/// Represents the file identification configuration class object. This class cannot be inherited.
 	/// </summary>
 	public sealed class FileIdConfiguration
 	{

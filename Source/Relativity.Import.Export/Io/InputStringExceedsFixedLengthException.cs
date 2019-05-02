@@ -13,7 +13,7 @@ namespace Relativity.Import.Export.Io
 	using Relativity.Import.Export.Resources;
 
 	/// <summary>
-	/// Represents an exception that occured while attempting to import a string.
+	/// Represents an exception that occured while attempting to import a string value. This class cannot be inherited.
 	/// </summary>
 	/// <remarks>
 	/// Be careful with parameters and which constructor is used. For backwards compatibility purposes, the original

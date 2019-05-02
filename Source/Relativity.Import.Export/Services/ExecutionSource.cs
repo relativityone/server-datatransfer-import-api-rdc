@@ -5,6 +5,9 @@
 
 namespace Relativity.Import.Export.Services
 {
+	/// <summary>
+	/// Defines constants for the well-known execution sources, including RDC, Import API, RIP, and Processing to support import/export telemetry.
+	/// </summary>
 	public enum ExecutionSource
 	{
 

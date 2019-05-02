@@ -7,10 +7,16 @@ namespace Relativity.Import.Export.Services
 {
 	using System;
 
+	/// <summary>
+	/// Represents a Relativity SOAP-based exception detail data object. This class cannot be inherited, backwards compatibility isn't guaranteed, and should never be consumed by API users.
+	/// </summary>
+	/// <remarks>
+	/// There's too much risk and too many expectation to make this type internal.
+	/// </remarks>
 	[System.Xml.Serialization.XmlType("SoapExceptionDetail")]
 	[System.Xml.Serialization.XmlRoot(ElementName ="detail")]
 	[Serializable]
-	public class SoapExceptionDetail
+	public sealed class SoapExceptionDetail
 	{
 		[System.Xml.Serialization.XmlElement("Details")]
 		public string[] Details { get; set; }

@@ -18,7 +18,7 @@ namespace Relativity.Import.Export.Transfer
 	using Relativity.Logging;
 
 	/// <summary>
-	/// Represents a class object to provide Transfer API object services to the transfer bridges.
+	/// Represents a class object to provide Transfer API object services to the transfer bridges. This class cannot be inherited.
 	/// </summary>
 	internal sealed class TapiObjectService : ITapiObjectService
 	{

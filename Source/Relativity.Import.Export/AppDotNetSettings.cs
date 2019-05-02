@@ -12,7 +12,7 @@ namespace Relativity.Import.Export
 	using System.Reflection;
 
 	/// <summary>
-	/// Represents a class object that provide a thread-safe copy of all .NET application settings.
+	/// Represents a class object that provide a thread-safe copy of all .NET application settings. This class cannot be inherited.
 	/// </summary>
 	/// <remarks>
 	/// Intentionally using string literals for all key names to ensure all published settings

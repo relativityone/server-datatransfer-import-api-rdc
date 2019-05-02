@@ -7,6 +7,9 @@ namespace Relativity.Import.Export.Services
 {
 	using System;
 
+	/// <summary>
+	/// Defines constants for the well-known import status values.
+	/// </summary>
 	/// <remarks>
 	/// The enum should not be used as a flag because the ImportStatus.Pending has value 0, making it useless as a flag.
 	/// </remarks>

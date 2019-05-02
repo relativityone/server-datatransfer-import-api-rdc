@@ -5,6 +5,9 @@
 
 namespace Relativity.Import.Export.Services
 {
+	/// <summary>
+	/// Defines constants for the well-known import overwrite behaviors, including append, overlay, and append/overlay.
+	/// </summary>
 	public enum ImportOverwriteType
 	{
 

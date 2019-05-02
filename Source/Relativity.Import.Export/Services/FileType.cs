@@ -5,6 +5,9 @@
 
 namespace Relativity.Import.Export.Services
 {
+	/// <summary>
+	/// Defines constants for the well-known file types, including native, TIFF, full-text, stamped TIFF, transcript, and production images.
+	/// </summary>
 	public enum FileType
 	{
 		Native = 0,

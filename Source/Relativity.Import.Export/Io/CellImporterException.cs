@@ -12,7 +12,7 @@ namespace Relativity.Import.Export.Io
 	using Relativity.Import.Export.Resources;
 
 	/// <summary>
-	/// Represents an exception that occured while attempting to import a cell.
+	/// Represents an exception that occured while attempting to import a cell. This class cannot be inherited.
 	/// </summary>
 	[Serializable]
 	public sealed class CellImporterException : ImporterException

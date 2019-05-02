@@ -7,16 +7,31 @@ namespace Relativity.Import.Export.Services
 {
 	using System;
 
+	/// <summary>
+	/// Represents a Relativity case or workspace information data object. This class cannot be inherited, backwards compatibility isn't guaranteed, and should never be consumed by API users.
+	/// </summary>
+	/// <remarks>
+	/// There's too much risk and too many expectation to make this type internal.
+	/// </remarks>
 	[Serializable]
 	public sealed class CaseInfo
 	{
 		private string documentPath;
 		private string downloadHandlerURL;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CaseInfo"/> class.
+		/// </summary>
 		public CaseInfo()
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CaseInfo"/> class.
+		/// </summary>
+		/// <param name="row">
+		/// The data row.
+		/// </param>
 		public CaseInfo(System.Data.DataRow row)
 		{
 			if (row == null)

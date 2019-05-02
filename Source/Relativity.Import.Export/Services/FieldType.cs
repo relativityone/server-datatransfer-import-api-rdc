@@ -5,6 +5,9 @@
 
 namespace Relativity.Import.Export.Services
 {
+	/// <summary>
+	/// Defines constants for the well-known field types, including integer, date, single-object, multi-object, and text.
+	/// </summary>
 	public enum FieldType
 	{
 

@@ -12,7 +12,7 @@ namespace Relativity.Import.Export.Io
 	using Relativity.Import.Export.Resources;
 
 	/// <summary>
-	/// Represents an exception that occured while attempting to import an integer.
+	/// Represents an exception that occured while attempting to import an integer value. This class cannot be inherited.
 	/// </summary>
 	[Serializable]
 	public sealed class IntegerImporterException : ImporterException

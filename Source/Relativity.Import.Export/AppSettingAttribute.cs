@@ -9,7 +9,7 @@ namespace Relativity.Import.Export
 	using System;
 
 	/// <summary>
-	/// Represents an application setting property-based attribute.
+	/// Represents an application setting property-based attribute. This class cannot be inherited.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	internal sealed class AppSettingAttribute : Attribute

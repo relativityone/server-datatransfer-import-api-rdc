@@ -12,7 +12,7 @@ namespace Relativity.Import.Export.Transfer
 	using Relativity.Transfer;
 
 	/// <summary>
-	/// Represents an object that listens for Transfer API path progress events.
+	/// Represents an object that listens for Transfer API path progress events. This class cannot be inherited.
 	/// </summary>
 	internal sealed class TapiPathProgressListener : TapiListenerBase
 	{

@@ -9,7 +9,7 @@ namespace Relativity.Import.Export.Services
 	using System.Runtime.Serialization;
 
 	/// <summary>
-	/// Represents the field information class object.
+	/// Represents the Relativity field information class object.
 	/// </summary>
 	/// <remarks>
 	/// The DataMember fields MUST be used in order serialize and deserialize existing <c>.kwi|.kwx</c> setting files.

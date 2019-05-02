@@ -10,7 +10,7 @@ namespace Relativity.Import.Export.Io
 	using System.Runtime.Serialization;
 
 	/// <summary>
-	/// Represents an exception that occured while attempting to import a boolean.
+	/// Represents an exception that occured while attempting to import a decimal value. This class cannot be inherited.
 	/// </summary>
 	[Serializable]
 	public sealed class DecimalImporterException : ImporterException

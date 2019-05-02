@@ -5,6 +5,9 @@
 
 namespace Relativity.Import.Export.Services
 {
+	/// <summary>
+	/// Defines constants for the well-known parent reflection types, including empty, parent, and grandparent.
+	/// </summary>
 	public enum ParentReflectionType
 	{
 

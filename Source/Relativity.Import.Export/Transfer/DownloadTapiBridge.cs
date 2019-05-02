@@ -17,7 +17,7 @@ namespace Relativity.Import.Export.Transfer
 	using Relativity.Transfer.Aspera;
 
 	/// <summary>
-	///     Represents a class object to provide a download bridge from the Transfer API to existing WinEDDS code.
+	///     Represents a class object to provide a download bridge from the Transfer API to existing import/export components. This class cannot be inherited, backwards compatibility isn't guaranteed, and should never be consumed by API users.
 	/// </summary>
 	public sealed class DownloadTapiBridge : TapiBridgeBase
 	{

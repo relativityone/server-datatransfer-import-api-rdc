@@ -10,7 +10,7 @@ namespace Relativity.Import.Export
 	using System.Runtime.Serialization;
 
 	/// <summary>
-	/// The exception thrown when a serious image identification error occurs.
+	/// The exception thrown when a serious image identification error occurs. This class cannot be inherited.
 	/// </summary>
 	[Serializable]
 	public sealed class ImageIdException : Exception

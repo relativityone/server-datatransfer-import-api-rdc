@@ -7,6 +7,12 @@ namespace Relativity.Import.Export.Services
 {
 	using System;
 
+	/// <summary>
+	/// Represents a Relativity field information data object. This class cannot be inherited, backwards compatibility isn't guaranteed, and should never be consumed by API users.
+	/// </summary>
+	/// <remarks>
+	/// There's too much risk and too many expectation to make this type internal.
+	/// </remarks>
 	[Serializable]
 	public class FieldInfoBase
 	{

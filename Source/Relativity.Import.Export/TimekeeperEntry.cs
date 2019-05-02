@@ -7,7 +7,7 @@
 namespace Relativity.Import.Export
 {
 	/// <summary>
-	/// Represents a single entry stored within <see cref="Timekeeper"/> that contains metric information.
+	/// Represents a single entry stored within <see cref="Timekeeper"/> that contains metric information. This class cannot be inherited.
 	/// </summary>
 	public sealed class TimekeeperEntry
 	{

@@ -5,6 +5,9 @@
 
 namespace Relativity.Import.Export.Services
 {
+	/// <summary>
+	/// Defines constants for the well-known import behaviors, including leave blank values unchanged, replace blank values with identifier, and object field contains artifact.
+	/// </summary>
 	public enum ImportBehaviorChoice
 	{
 		LeaveBlankValuesUnchanged = 1,

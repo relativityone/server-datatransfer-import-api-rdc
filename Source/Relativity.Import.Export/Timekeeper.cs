@@ -15,7 +15,7 @@ namespace Relativity.Import.Export
 	using Relativity.Import.Export.Io;
 
 	/// <summary>
-	/// Represents a class object that tracks operational metrics.
+	/// Represents a class object that tracks operational metrics. This class cannot be inherited.
 	/// </summary>
 	public sealed class Timekeeper
 	{

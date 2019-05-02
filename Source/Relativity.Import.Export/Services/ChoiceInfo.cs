@@ -7,6 +7,12 @@ namespace Relativity.Import.Export.Services
 {
 	using System;
 
+	/// <summary>
+	/// Represents a Relativity choice information data object. This class cannot be inherited, backwards compatibility isn't guaranteed, and should never be consumed by API users.
+	/// </summary>
+	/// <remarks>
+	/// There's too much risk and too many expectation to make this type internal.
+	/// </remarks>
 	[Serializable]
 	public sealed class ChoiceInfo
 	{
@@ -20,10 +26,19 @@ namespace Relativity.Import.Export.Services
 
 		public int ParentArtifactID { get; set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ChoiceInfo"/> class.
+		/// </summary>
 		public ChoiceInfo()
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ChoiceInfo"/> class.
+		/// </summary>
+		/// <param name="row">
+		/// The data row.
+		/// </param>
 		public ChoiceInfo(System.Data.DataRow row)
 		{
 			if (row == null)

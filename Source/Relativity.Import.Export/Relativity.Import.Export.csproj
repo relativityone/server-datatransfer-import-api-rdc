@@ -155,9 +155,7 @@
     <Compile Include="Services\FieldCategory.cs" />
     <Compile Include="Services\FieldInfoBase.cs" />
     <Compile Include="Services\FieldType.cs" />
-    <Compile Include="Services\FileInfoBase.cs" />
     <Compile Include="Services\FileType.cs" />
-    <Compile Include="Services\FolderInfo.cs" />
     <Compile Include="Services\ImportBehaviorChoice.cs" />
     <Compile Include="Services\ImportOverwriteType.cs" />
     <Compile Include="Services\ImportStatus.cs" />

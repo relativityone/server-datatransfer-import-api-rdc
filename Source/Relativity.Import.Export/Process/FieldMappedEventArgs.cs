@@ -9,7 +9,7 @@ namespace Relativity.Import.Export.Process
 	using System;
 
 	/// <summary>
-	/// Represents the field mapped event argument data.
+	/// Represents the field mapped event argument data. This class cannot be inherited.
 	/// </summary>
 	[Serializable]
 	public sealed class FieldMappedEventArgs : EventArgs

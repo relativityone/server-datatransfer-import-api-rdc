@@ -10,7 +10,7 @@ namespace Relativity.Import.Export
 	using System.Runtime.Serialization;
 
 	/// <summary>
-	/// The exception thrown when a serious failure occurs attempting to convert a multi-page PDF.
+	/// The exception thrown when a serious failure occurs attempting to convert a multi-page PDF. This class cannot be inherited.
 	/// </summary>
 	[Serializable]
 	public sealed class ConvertToMultiPagePdfException : ImageRollupException
