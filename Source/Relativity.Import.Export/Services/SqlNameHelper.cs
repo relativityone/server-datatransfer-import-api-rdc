@@ -1,24 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="SqlNameHelper.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
 namespace Relativity.Import.Export.Services
 {
-	public static class SqlNameHelper
+	/// <summary>
+	/// Defines static helper methods to perform common SQL name operations.
+	/// </summary>
+	internal static class SqlNameHelper
 	{
-
-		// TODO: remove method and change usages to kCura.Utility.SqlNameHelper
 		/// <summary>
-		/// 		''' This method is obsolete. Use "kCura.Utility.SqlNameHelper.GetSqlFriendlyName" instead.
-		/// 		''' </summary>
-		/// 		''' <param name="displayName"></param>
-		/// 		''' <returns></returns>
+		/// Gets the SQL friendly name.
+		/// </summary>
+		/// <param name="displayName">
+		/// The display name.
+		/// </param>
+		/// <returns>
+		/// The friendly name.
+		/// </returns>
 		public static string GetSqlFriendlyName(string displayName)
 		{
-			return System.Text.RegularExpressions.Regex.Replace(displayName == null ? string.Empty : displayName, @"[\W]+", "");
+			return System.Text.RegularExpressions.Regex.Replace(
+				displayName == null ? string.Empty : displayName,
+				@"[\W]+",
+				string.Empty);
 		}
 	}
-
 }

@@ -8,7 +8,7 @@ namespace Relativity.Import.Export.Services
 	using System;
 
 	[Serializable]
-	public class CaseInfo
+	public sealed class CaseInfo
 	{
 		private string documentPath;
 		private string downloadHandlerURL;

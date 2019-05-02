@@ -5,8 +5,15 @@
 
 namespace Relativity.Import.Export.Services
 {
+	using System;
+
+	[Serializable]
 	public class FieldInfoBase
 	{
+		public FieldInfoBase()
+		{
+		}
+
 		public int ArtifactID { get; set; }
 
 		public FieldCategory Category { get; set; }

@@ -3,10 +3,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-
 namespace Relativity.Import.Export.Services
 {
+	using System;
+
 	[System.Xml.Serialization.XmlType("SoapExceptionDetail")]
 	[System.Xml.Serialization.XmlRoot(ElementName ="detail")]
 	[Serializable]

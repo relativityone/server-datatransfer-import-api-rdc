@@ -1,17 +1,34 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="ClaimsExtensions.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
 namespace Relativity.Import.Export.Services
 {
-	public static class ClaimsExtensions
-	{
-		public const string ACCESS_TOKEN_IDENTIFIER = "access_token";
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Security.Claims;
 
-		public static string AccessToken(this IEnumerable<Claim> userClaims)
+	/// <summary>
+	/// Defines claims security related extension methods.
+	/// </summary>
+	internal static class ClaimsExtensions
+	{
+		/// <summary>
+		/// Retrieve the access token from the list of claims.
+		/// </summary>
+		/// <param name="claims">
+		/// The list of claims.
+		/// </param>
+		/// <returns>
+		/// System.String.
+		/// </returns>
+		public static string AccessToken(this IEnumerable<Claim> claims)
 		{
+			const string AccessTokenIdentifier = "access_token";
 			string retVal = string.Empty;
-			Claim previewId = userClaims.FirstOrDefault(x => x.Type == ACCESS_TOKEN_IDENTIFIER);
+			Claim previewId = claims.FirstOrDefault(x => x.Type == AccessTokenIdentifier);
 			if (previewId != null)
 			{
 				retVal = previewId.Value;

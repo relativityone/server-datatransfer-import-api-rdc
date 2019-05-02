@@ -1,70 +1,122 @@
-﻿using System;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="RepositoryPathManager.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
 namespace Relativity.Import.Export.Services
 {
-	public class RepositoryPathManager
+	/// <summary>
+	/// Represents a class object to manage paths within a given repository.
+	/// </summary>
+	internal class RepositoryPathManager
 	{
-		private Int32 _maxVolumeSize;
-		private string _currentSubDirectory;
-		private string _lastSubdirectory;
-		private Int32 _currentFileNumber = 0;
-		public const Int32 MINIMUM_VOLUME_SIZE = 500;
+		/// <summary>
+		/// The minimum volume size.
+		/// </summary>
+		public const int MinVolumeSize = 500;
 
-		public RepositoryPathManager(Int32 maximumVolumeSize)
+		private readonly int maxVolumeSize;
+		private string currentSubDirectory;
+		private string lastSubdirectory;
+		private int currentFileNumber = 0;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RepositoryPathManager"/> class.
+		/// </summary>
+		/// <param name="maximumVolumeSize">
+		/// The maximum size of the volume.
+		/// </param>
+		public RepositoryPathManager(int maximumVolumeSize)
 		{
-			_currentSubDirectory = GetNewSubdirectory();
-			_lastSubdirectory = string.Copy(_currentSubDirectory);
-			_maxVolumeSize = System.Math.Max(MINIMUM_VOLUME_SIZE, maximumVolumeSize);
+			this.currentSubDirectory = GetNewSubdirectory();
+			this.lastSubdirectory = string.Copy(this.currentSubDirectory);
+			this.maxVolumeSize = System.Math.Max(MinVolumeSize, maximumVolumeSize);
 		}
 
-		public void Rollback()
-		{
-			if (_currentFileNumber == 1)
-			{
-				_currentFileNumber = _maxVolumeSize;
-				_currentSubDirectory = string.Copy(_lastSubdirectory);
-			}
-			else
-				_currentFileNumber -= 1;
-		}
-
-		public string GetNextDestinationDirectory(string repositoryPath)
-		{
-			_currentFileNumber += 1;
-			if (_currentFileNumber > _maxVolumeSize)
-			{
-				_currentFileNumber = 1;
-				_lastSubdirectory = string.Copy(_currentSubDirectory);
-				_currentSubDirectory = GetNewSubdirectory();
-			}
-			return System.IO.Path.Combine(repositoryPath, _currentSubDirectory) + @"\";
-		}
-
+		/// <summary>
+		/// Gets the current destination directory.
+		/// </summary>
+		/// <value>
+		/// The full path.
+		/// </value>
 		public string CurrentDestinationDirectory
 		{
 			get
 			{
-				return _currentSubDirectory;
+				return this.currentSubDirectory;
 			}
+		}
+
+		/// <summary>
+		/// Gets the maximum number of files per volume.
+		/// </summary>
+		/// <value>
+		/// The file count.
+		/// </value>
+		public int MaxVolumeSize
+		{
+			get
+			{
+				return this.maxVolumeSize;
+			}
+		}
+
+		/// <summary>
+		/// Retrieves a new sub-directory path.
+		/// </summary>
+		/// <param name="path">
+		/// The path.
+		/// </param>
+		/// <returns>
+		/// The new path.
+		/// </returns>
+		public static string GetNewSubDirectory(string path)
+		{
+			return System.IO.Path.Combine(path, GetNewSubdirectory()) + @"\";
+		}
+
+		/// <summary>
+		/// Rollback the file count.
+		/// </summary>
+		public void Rollback()
+		{
+			if (this.currentFileNumber == 1)
+			{
+				this.currentFileNumber = this.maxVolumeSize;
+				this.currentSubDirectory = string.Copy(this.lastSubdirectory);
+			}
+			else
+			{
+				this.currentFileNumber -= 1;
+			}
+		}
+
+		/// <summary>
+		/// Retrieve the next destination directory name.
+		/// </summary>
+		/// <param name="repositoryPath">
+		/// The repository path.
+		/// </param>
+		/// <returns>
+		/// The new path.
+		/// </returns>
+		public string GetNextDestinationDirectory(string repositoryPath)
+		{
+			this.currentFileNumber += 1;
+			if (this.currentFileNumber > this.maxVolumeSize)
+			{
+				this.currentFileNumber = 1;
+				this.lastSubdirectory = string.Copy(this.currentSubDirectory);
+				this.currentSubDirectory = GetNewSubdirectory();
+			}
+
+			return System.IO.Path.Combine(repositoryPath, this.currentSubDirectory) + @"\";
 		}
 
 		private static string GetNewSubdirectory()
 		{
 			return "RV_" + System.Guid.NewGuid().ToString();
 		}
-
-		public Int32 MaxVolumeSize
-		{
-			get
-			{
-				return _maxVolumeSize;
-			}
-		}
-
-		public static string GetNewSubDirectory(string path)
-		{
-			return System.IO.Path.Combine(path, GetNewSubdirectory()) + @"\";
-		}
 	}
-
 }

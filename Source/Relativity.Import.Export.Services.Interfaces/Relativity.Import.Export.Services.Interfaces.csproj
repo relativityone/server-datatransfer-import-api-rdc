@@ -82,34 +82,7 @@
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
-    <Compile Include="ArtifactType.cs" />
-    <Compile Include="ArtifactTypeHelper.cs" />
-    <Compile Include="ChoiceInfo.cs" />
-    <Compile Include="CaseInfo.cs" />
-    <Compile Include="ClaimsExtensions.cs" />
-    <Compile Include="ColumnSourceType.cs" />
-    <Compile Include="ExportConstants.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="ErrorFileKey.cs" />
-    <Compile Include="ExecutionSource.cs" />
-    <Compile Include="FieldCategory.cs" />
-    <Compile Include="FieldInfoBase.cs" />
-    <Compile Include="FileType.cs" />
-    <Compile Include="ImportBehaviorChoice.cs" />
-    <Compile Include="FieldType.cs" />
-    <Compile Include="FileInfoBase.cs" />
-    <Compile Include="FolderInfo.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="ImportOverwriteType.cs" />
-    <Compile Include="ImportStatus.cs" />
-    <Compile Include="ImportStatusHelper.cs" />
-    <Compile Include="ParentReflectionType.cs" />
-    <Compile Include="ProductionDocumentBatesHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RepositoryPathManager.cs" />
-    <Compile Include="SoapExceptionDetail.cs" />
-    <Compile Include="SqlNameHelper.cs" />
-    <Compile Include="ViewFieldInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
