@@ -25,12 +25,12 @@
 
 		public ITapiBridgeWrapper Create()
 		{
-			TapiBridgeParameters parameters = _tapiBridgeParametersFactory.CreateTapiBridgeParametersFromConfiguration();
+			TapiBridgeParameters2 parameters = _tapiBridgeParametersFactory.CreateTapiBridgeParametersFromConfiguration();
 
 			parameters.FileshareCredentials = _fileshareSettings?.TransferCredential;
 			parameters.FileShare = _fileshareSettings?.UncPath;
 
-			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, _token);
+			DownloadTapiBridge2 tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, _token);
 			tapiBridge.DumpInfo();
 			return new TapiBridgeWrapper(tapiBridge);
 		}

@@ -534,9 +534,9 @@ Namespace Relativity.Desktop.Client
 			Return (Await GetConnectionMode().ConfigureAwait(False)) = Guid.Parse(TransferClientConstants.AsperaClientId)
 		End Function
 
-		Private Async Function CreateTapiParametersAsync() As Task(Of TapiBridgeParameters)
+		Private Async Function CreateTapiParametersAsync() As Task(Of TapiBridgeParameters2)
 			Dim credentials = Await Me.GetCredentialsAsync()
-			Dim parameters = New TapiBridgeParameters
+			Dim parameters = New TapiBridgeParameters2
 			parameters.Credentials = credentials
 			parameters.AsperaDocRootLevels = AppSettings.Instance.TapiAsperaNativeDocRootLevels
 			parameters.FileShare = Me.SelectedCaseInfo.DocumentPath

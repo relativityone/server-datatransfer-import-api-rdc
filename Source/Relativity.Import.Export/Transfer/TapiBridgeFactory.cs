@@ -16,12 +16,12 @@ namespace Relativity.Import.Export.Transfer
 	using Relativity.Transfer;
 
 	/// <summary>
-	/// Represents a class to create <see cref="TapiBridgeBase"/> instances.
+	/// Represents a class to create <see cref="TapiBridgeBase2"/> instances.
 	/// </summary>
 	internal static class TapiBridgeFactory
 	{
 		/// <summary>
-		/// Creates a <see cref="UploadTapiBridge"/> instance that supports native file upload transfers.
+		/// Creates a <see cref="UploadTapiBridge2"/> instance that supports native file upload transfers.
 		/// </summary>
 		/// <param name="parameters">
 		/// The native file transfer parameters.
@@ -33,16 +33,16 @@ namespace Relativity.Import.Export.Transfer
 		/// The cancellation token.
 		/// </param>
 		/// <returns>
-		/// The <see cref="UploadTapiBridge"/> instance.
+		/// The <see cref="UploadTapiBridge2"/> instance.
 		/// </returns>
-		public static UploadTapiBridge CreateUploadBridge(UploadTapiBridgeParameters parameters, ILog log, CancellationToken token)
+		public static UploadTapiBridge2 CreateUploadBridge(UploadTapiBridgeParameters2 parameters, ILog log, CancellationToken token)
 		{
 			var transferLog = GetTransferLog(log);
-			return new UploadTapiBridge(parameters, transferLog, token);
+			return new UploadTapiBridge2(parameters, transferLog, token);
 		}
 
 		/// <summary>
-		/// Creates a <see cref="DownloadTapiBridge"/> instance that supports download transfers.
+		/// Creates a <see cref="DownloadTapiBridge2"/> instance that supports download transfers.
 		/// </summary>
 		/// <param name="parameters">
 		/// The native file transfer parameters.
@@ -54,12 +54,12 @@ namespace Relativity.Import.Export.Transfer
 		/// The cancellation token.
 		/// </param>
 		/// <returns>
-		/// The <see cref="DownloadTapiBridge"/> instance.
+		/// The <see cref="DownloadTapiBridge2"/> instance.
 		/// </returns>
-		public static DownloadTapiBridge CreateDownloadBridge(TapiBridgeParameters parameters, ILog log, CancellationToken token)
+		public static DownloadTapiBridge2 CreateDownloadBridge(TapiBridgeParameters2 parameters, ILog log, CancellationToken token)
 		{
 			var transferLog = GetTransferLog(log);
-			return new DownloadTapiBridge(parameters, transferLog, token);
+			return new DownloadTapiBridge2(parameters, transferLog, token);
 		}
 
 		/// <summary>

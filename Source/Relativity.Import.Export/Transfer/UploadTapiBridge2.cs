@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="UploadTapiBridge.cs" company="Relativity ODA LLC">
+// <copyright file="UploadTapiBridge2.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
@@ -20,7 +20,7 @@ namespace Relativity.Import.Export.Transfer
 	/// <summary>
 	///     Represents a class object to provide a upload bridge from the Transfer API to existing import/export components. This class cannot be inherited, backwards compatibility isn't guaranteed, and should never be consumed by API users.
 	/// </summary>
-	public sealed class UploadTapiBridge : TapiBridgeBase
+	public sealed class UploadTapiBridge2 : TapiBridgeBase2
 	{
 		/// <summary>
 		/// The manager used to limit the maximum number of files per folder.
@@ -30,10 +30,10 @@ namespace Relativity.Import.Export.Transfer
 		/// <summary>
 		/// The upload specific parameters.
 		/// </summary>
-		private readonly UploadTapiBridgeParameters parameters;
+		private readonly UploadTapiBridgeParameters2 parameters;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UploadTapiBridge"/> class.
+		/// Initializes a new instance of the <see cref="UploadTapiBridge2"/> class.
 		/// </summary>
 		/// <param name="parameters">
 		/// The native file transfer parameters.
@@ -47,13 +47,13 @@ namespace Relativity.Import.Export.Transfer
 		/// <remarks>
 		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
 		/// </remarks>
-		public UploadTapiBridge(UploadTapiBridgeParameters parameters, ITransferLog log, CancellationToken token)
+		public UploadTapiBridge2(UploadTapiBridgeParameters2 parameters, ITransferLog log, CancellationToken token)
 			: this(new TapiObjectService(), parameters, log, token)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UploadTapiBridge"/> class.
+		/// Initializes a new instance of the <see cref="UploadTapiBridge2"/> class.
 		/// </summary>
 		/// <param name="factory">
 		/// The Transfer API object factory.
@@ -70,9 +70,9 @@ namespace Relativity.Import.Export.Transfer
 		/// <remarks>
 		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
 		/// </remarks>
-		public UploadTapiBridge(
+		public UploadTapiBridge2(
 			ITapiObjectService factory,
-			UploadTapiBridgeParameters parameters,
+			UploadTapiBridgeParameters2 parameters,
 			ITransferLog log,
 			CancellationToken token)
 			: base(factory, parameters, TransferDirection.Upload, log, token)

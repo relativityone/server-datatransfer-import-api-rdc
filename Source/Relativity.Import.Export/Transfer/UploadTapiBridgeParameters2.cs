@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="UploadTapiBridgeParameters.cs" company="Relativity ODA LLC">
+// <copyright file="UploadTapiBridgeParameters2.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
@@ -12,12 +12,12 @@ namespace Relativity.Import.Export.Transfer
 	/// <summary>
 	/// Represents the generic parameters to setup a Transfer API bridge for upload. This class cannot be inherited, backwards compatibility isn't guaranteed, and should never be consumed by API users.
 	/// </summary>
-	public sealed class UploadTapiBridgeParameters : TapiBridgeParameters
+	public sealed class UploadTapiBridgeParameters2 : TapiBridgeParameters2
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UploadTapiBridgeParameters"/> class.
+		/// Initializes a new instance of the <see cref="UploadTapiBridgeParameters2"/> class.
 		/// </summary>
-		public UploadTapiBridgeParameters()
+		public UploadTapiBridgeParameters2()
 		{
 			this.BcpFileTransfer = false;
 			this.MaxFilesPerFolder = 1000;
@@ -25,12 +25,12 @@ namespace Relativity.Import.Export.Transfer
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UploadTapiBridgeParameters"/> class.
+		/// Initializes a new instance of the <see cref="UploadTapiBridgeParameters2"/> class.
 		/// </summary>
 		/// <param name="copy">
 		/// The parameters to copy.
 		/// </param>
-		public UploadTapiBridgeParameters(UploadTapiBridgeParameters copy)
+		public UploadTapiBridgeParameters2(UploadTapiBridgeParameters2 copy)
 			: base(copy)
 		{
 			this.BcpFileTransfer = copy.BcpFileTransfer;
@@ -81,11 +81,11 @@ namespace Relativity.Import.Export.Transfer
 		/// Performs a shallow copy of this instance.
 		/// </summary>
 		/// <returns>
-		/// The <see cref="TapiBridgeParameters"/> instance.
+		/// The <see cref="TapiBridgeParameters2"/> instance.
 		/// </returns>
-		public UploadTapiBridgeParameters ShallowCopy()
+		public UploadTapiBridgeParameters2 ShallowCopy()
 		{
-			return new UploadTapiBridgeParameters(this);
+			return new UploadTapiBridgeParameters2(this);
 		}
 	}
 }

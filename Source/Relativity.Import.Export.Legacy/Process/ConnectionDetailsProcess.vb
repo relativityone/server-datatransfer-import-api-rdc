@@ -25,7 +25,7 @@ Namespace kCura.WinEDDS
 			Me.WriteStatus("")
 
 			Dim tapiObjectService As ITapiObjectService = New TapiObjectService
-			Dim parameters As TapiBridgeParameters = New TapiBridgeParameters
+			Dim parameters As TapiBridgeParameters2 = New TapiBridgeParameters2
 			parameters.Credentials = _credential
 			parameters.TimeoutSeconds = Me.AppSettings.HttpTimeoutSeconds
 			parameters.WebCookieContainer = _cookieContainer

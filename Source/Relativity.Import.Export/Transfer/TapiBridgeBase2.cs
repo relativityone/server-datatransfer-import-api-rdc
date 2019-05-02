@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TapiBridgeBase.cs" company="Relativity ODA LLC">
+// <copyright file="TapiBridgeBase2.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
@@ -27,7 +27,7 @@ namespace Relativity.Import.Export.Transfer
 	/// Represents a class object to provide a bridge from the Transfer API to existing Import/Export code.
 	/// </summary>
 	/// <seealso cref="System.IDisposable" />
-	public abstract class TapiBridgeBase : IDisposable
+	public abstract class TapiBridgeBase2 : IDisposable
 	{
 		/// <summary>
 		/// The Transfer API object service.
@@ -47,7 +47,7 @@ namespace Relativity.Import.Export.Transfer
 		/// <summary>
 		/// The native file transfer parameters.
 		/// </summary>
-		private readonly TapiBridgeParameters parameters;
+		private readonly TapiBridgeParameters2 parameters;
 
 		/// <summary>
 		/// The file system service used to wrap up all IO API's.
@@ -96,7 +96,7 @@ namespace Relativity.Import.Export.Transfer
 		private bool disposed;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TapiBridgeBase"/> class.
+		/// Initializes a new instance of the <see cref="TapiBridgeBase2"/> class.
 		/// </summary>
 		/// <param name="service">
 		/// The Transfer API object service.
@@ -116,9 +116,9 @@ namespace Relativity.Import.Export.Transfer
 		/// <remarks>
 		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
 		/// </remarks>
-		internal TapiBridgeBase(
+		internal TapiBridgeBase2(
 			ITapiObjectService service,
-			TapiBridgeParameters parameters,
+			TapiBridgeParameters2 parameters,
 			TransferDirection direction,
 			ITransferLog log,
 			CancellationToken token)

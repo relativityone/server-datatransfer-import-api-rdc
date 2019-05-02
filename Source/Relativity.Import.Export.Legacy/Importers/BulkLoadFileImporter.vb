@@ -458,7 +458,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
 			Dim gateway As Service.FileIO = New Service.FileIO(args.Credentials, args.CookieContainer)
-			Dim nativeParameters As UploadTapiBridgeParameters = New UploadTapiBridgeParameters
+			Dim nativeParameters As UploadTapiBridgeParameters2 = New UploadTapiBridgeParameters2
 			nativeParameters.Application = AppSettings.Instance.ApplicationName
 			nativeParameters.BcpFileTransfer = False
 			nativeParameters.AsperaBcpRootFolder = String.Empty
@@ -492,7 +492,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.BadPathErrorsRetry = AppSettings.Instance.TapiBadPathErrorsRetry
 
 			' Copying the parameters and tweaking just a few BCP specific parameters.
-			Dim bcpParameters As UploadTapiBridgeParameters = nativeParameters.ShallowCopy()
+			Dim bcpParameters As UploadTapiBridgeParameters2 = nativeParameters.ShallowCopy()
 			bcpParameters.BcpFileTransfer = True
 			bcpParameters.AsperaBcpRootFolder = AppSettings.Instance.TapiAsperaBcpRootFolder
 			bcpParameters.FileShare = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)

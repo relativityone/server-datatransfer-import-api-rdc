@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents the <see cref="TapiBridgeBase"/> base test class.
+//   Represents the <see cref="TapiBridgeBase2"/> base test class.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 	using Relativity.Transfer;
 
 	/// <summary>
-	/// Represents the <see cref="TapiBridgeBase"/> base test class.
+	/// Represents the <see cref="TapiBridgeBase2"/> base test class.
 	/// </summary>
 	public abstract class TapiBridgeTestBase
 	{
@@ -123,9 +123,9 @@ namespace Relativity.Import.Export.NUnit.Integration
 		/// Gets the Transfer API bridge object.
 		/// </summary>
 		/// <value>
-		/// The <see cref="TapiBridgeBase"/> instance.
+		/// The <see cref="TapiBridgeBase2"/> instance.
 		/// </value>
-		protected abstract TapiBridgeBase TapiBridge
+		protected abstract TapiBridgeBase2 TapiBridge
 		{
 			get;
 		}
@@ -352,7 +352,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 		}
 
 		/// <summary>
-		/// Given the <see cref="TapiBridgeBase"/> class.
+		/// Given the <see cref="TapiBridgeBase2"/> class.
 		/// </summary>
 		protected void GivenTheNativeFileTransfer()
 		{
@@ -382,7 +382,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 			};
 		}
 
-		protected void SetupTapiBridgeParameters(TapiBridgeParameters parameters)
+		protected void SetupTapiBridgeParameters(TapiBridgeParameters2 parameters)
 		{
 			ITapiObjectService objectService = new TapiObjectService();
 			objectService.SetTapiClient(parameters, this.TapiClient);

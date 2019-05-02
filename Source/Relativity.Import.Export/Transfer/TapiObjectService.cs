@@ -64,7 +64,7 @@ namespace Relativity.Import.Export.Transfer
 		/// <returns>
 		/// The <see cref="Relativity.Transfer.RelativityConnectionInfo"/> instance.
 		/// </returns>
-		public Relativity.Transfer.RelativityConnectionInfo CreateRelativityConnectionInfo(TapiBridgeParameters parameters)
+		public Relativity.Transfer.RelativityConnectionInfo CreateRelativityConnectionInfo(TapiBridgeParameters2 parameters)
 		{
 			if (parameters == null)
 			{
@@ -151,7 +151,7 @@ namespace Relativity.Import.Export.Transfer
 		}
 
 		/// <inheritdoc />
-		public Guid GetClientId(TapiBridgeParameters parameters)
+		public Guid GetClientId(TapiBridgeParameters2 parameters)
 		{
 			if (parameters == null)
 			{
@@ -195,14 +195,14 @@ namespace Relativity.Import.Export.Transfer
 		}
 
 		/// <inheritdoc />
-		public async Task<string> GetWorkspaceClientDisplayNameAsync(TapiBridgeParameters parameters)
+		public async Task<string> GetWorkspaceClientDisplayNameAsync(TapiBridgeParameters2 parameters)
 		{
 			Relativity.Transfer.ITransferClient transferClient = await this.GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
 			return transferClient.DisplayName;
 		}
 
 		/// <inheritdoc />
-		public async Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters parameters)
+		public async Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters2 parameters)
 		{
 			if (parameters == null)
 			{
@@ -214,7 +214,7 @@ namespace Relativity.Import.Export.Transfer
 		}
 
 		/// <inheritdoc />
-		public void SetTapiClient(TapiBridgeParameters parameters, TapiClient targetClient)
+		public void SetTapiClient(TapiBridgeParameters2 parameters, TapiClient targetClient)
 		{
 			if (parameters == null)
 			{
@@ -275,7 +275,7 @@ namespace Relativity.Import.Export.Transfer
 		/// <returns>
 		/// The <see cref="Relativity.Transfer.ITransferClient"/> instance.
 		/// </returns>
-		private async Task<Relativity.Transfer.ITransferClient> GetWorkspaceClientAsync(TapiBridgeParameters parameters)
+		private async Task<Relativity.Transfer.ITransferClient> GetWorkspaceClientAsync(TapiBridgeParameters2 parameters)
 		{
 			var configuration = new Relativity.Transfer.ClientConfiguration
 			{

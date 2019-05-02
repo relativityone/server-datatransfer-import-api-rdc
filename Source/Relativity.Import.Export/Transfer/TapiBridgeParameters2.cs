@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TapiBridgeParameters.cs" company="Relativity ODA LLC">
+// <copyright file="TapiBridgeParameters2.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
@@ -17,12 +17,12 @@ namespace Relativity.Import.Export.Transfer
 	/// <summary>
 	/// Represents the generic parameters to setup a Transfer API bridge.
 	/// </summary>
-	public class TapiBridgeParameters
+	public class TapiBridgeParameters2
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TapiBridgeParameters"/> class.
+		/// Initializes a new instance of the <see cref="TapiBridgeParameters2"/> class.
 		/// </summary>
-		public TapiBridgeParameters()
+		public TapiBridgeParameters2()
 		{
 			this.Application = null;
 			this.AsperaBcpRootFolder = null;
@@ -56,12 +56,12 @@ namespace Relativity.Import.Export.Transfer
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TapiBridgeParameters"/> class.
+		/// Initializes a new instance of the <see cref="TapiBridgeParameters2"/> class.
 		/// </summary>
 		/// <param name="copy">
 		/// The parameters to copy.
 		/// </param>
-		public TapiBridgeParameters(TapiBridgeParameters copy)
+		public TapiBridgeParameters2(TapiBridgeParameters2 copy)
 		{
 			if (copy == null)
 			{

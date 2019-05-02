@@ -58,7 +58,7 @@ namespace Relativity.Export.VolumeManagerV2
 		{
 			try
 			{
-				TapiBridgeParameters parameters = new TapiBridgeParameters
+				TapiBridgeParameters2 parameters = new TapiBridgeParameters2
 				{
 					Credentials = _currentUserCredential,
 					WebCookieContainer = _cookieContainer,

@@ -27,8 +27,8 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _fileSystem As Global.Relativity.Import.Export.Io.IFileSystem
 		Private ReadOnly _cancellationTokenSource As CancellationTokenSource
 		Private ReadOnly _statistics As New Statistics
-		Private WithEvents _bulkLoadTapiBridge As UploadTapiBridge
-		Private WithEvents _fileTapiBridge As UploadTapiBridge
+		Private WithEvents _bulkLoadTapiBridge As UploadTapiBridge2
+		Private WithEvents _fileTapiBridge As UploadTapiBridge2
 		Private _bulkLoadTapiClientName As String
 		Private _fileTapiClient As TapiClient = TapiClient.None
 		Private _fileTapiClientName As String
@@ -78,7 +78,7 @@ Namespace kCura.WinEDDS
 
 		Protected MustOverride ReadOnly Property CurrentLineNumber() As Integer
 
-		Protected ReadOnly Property BulkLoadTapiBridge As UploadTapiBridge
+		Protected ReadOnly Property BulkLoadTapiBridge As UploadTapiBridge2
 			Get
 				Return _bulkLoadTapiBridge
 			End Get
@@ -106,7 +106,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected ReadOnly Property FileTapiBridge As UploadTapiBridge
+		Protected ReadOnly Property FileTapiBridge As UploadTapiBridge2
 			Get
 				Return _fileTapiBridge
 			End Get
@@ -377,7 +377,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 
-		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters, ByVal bulkLoadParameters As UploadTapiBridgeParameters)
+		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters2, ByVal bulkLoadParameters As UploadTapiBridgeParameters2)
 			_fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, Me.CancellationToken)
 			AddHandler _fileTapiBridge.TapiClientChanged, AddressOf FileOnTapiClientChanged
 			AddHandler _fileTapiBridge.TapiFatalError, AddressOf OnTapiFatalError

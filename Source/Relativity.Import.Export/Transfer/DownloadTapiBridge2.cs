@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DownloadTapiBridge.cs" company="Relativity ODA LLC">
+// <copyright file="DownloadTapiBridge2.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
@@ -19,12 +19,12 @@ namespace Relativity.Import.Export.Transfer
 	/// <summary>
 	///     Represents a class object to provide a download bridge from the Transfer API to existing import/export components. This class cannot be inherited, backwards compatibility isn't guaranteed, and should never be consumed by API users.
 	/// </summary>
-	public sealed class DownloadTapiBridge : TapiBridgeBase
+	public sealed class DownloadTapiBridge2 : TapiBridgeBase2
 	{
-		private readonly TapiBridgeParameters parameters;
+		private readonly TapiBridgeParameters2 parameters;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DownloadTapiBridge"/> class.
+		/// Initializes a new instance of the <see cref="DownloadTapiBridge2"/> class.
 		/// </summary>
 		/// <param name="parameters">
 		/// The native file transfer parameters.
@@ -38,13 +38,13 @@ namespace Relativity.Import.Export.Transfer
 		/// <remarks>
 		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
 		/// </remarks>
-		public DownloadTapiBridge(TapiBridgeParameters parameters, ITransferLog log, CancellationToken token)
+		public DownloadTapiBridge2(TapiBridgeParameters2 parameters, ITransferLog log, CancellationToken token)
 			: this(new TapiObjectService(), parameters, log, token)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DownloadTapiBridge" /> class.
+		/// Initializes a new instance of the <see cref="DownloadTapiBridge2" /> class.
 		/// </summary>
 		/// <param name="factory">
 		/// The Transfer API object factory.
@@ -61,9 +61,9 @@ namespace Relativity.Import.Export.Transfer
 		/// <remarks>
 		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
 		/// </remarks>
-		public DownloadTapiBridge(
+		public DownloadTapiBridge2(
 			ITapiObjectService factory,
-			TapiBridgeParameters parameters,
+			TapiBridgeParameters2 parameters,
 			ITransferLog log,
 			CancellationToken token)
 			: base(factory, parameters, TransferDirection.Download, log, token)
