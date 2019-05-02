@@ -18,7 +18,7 @@ namespace Relativity.Import.Export
 	/// Represents a class object used to provide memory-based cache.
 	/// </summary>
 #if !DEBUG
-    [System.Diagnostics.DebuggerStepThrough]
+	[System.Diagnostics.DebuggerStepThrough]
 #endif
 	internal class MemoryCacheRepository : IObjectCacheRepository
 	{
