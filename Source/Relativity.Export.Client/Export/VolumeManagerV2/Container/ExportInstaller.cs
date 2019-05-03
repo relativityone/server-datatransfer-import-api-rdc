@@ -29,6 +29,8 @@
 	using kCura.WinEDDS.Exporters.Validator;
 	using kCura.WinEDDS.Service.Export;
 
+	using Relativity.Import.Export.Media;
+
 	public class ExportInstaller : IWindsorInstaller
 	{
 		private const string _EXPORT_SUB_SYSTEM_NAME = "Export";

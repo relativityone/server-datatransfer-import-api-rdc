@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.Import.Export.Media
 {
 	/// <summary>
 	/// Represents the well-known byte ordering values.

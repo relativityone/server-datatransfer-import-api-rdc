@@ -4,10 +4,8 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.Import.Export.Io
 {
-	using System;
-
 	/// <summary>
 	/// Represents a class object that describes the file identification information for a specific file.
 	/// </summary>

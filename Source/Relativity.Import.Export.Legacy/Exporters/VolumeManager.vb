@@ -8,6 +8,7 @@ Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.IO
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Media
 Imports Relativity.Import.Export.Process
 Imports Relativity.Import.Export.Service
 

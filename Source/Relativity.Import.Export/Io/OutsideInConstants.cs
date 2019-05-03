@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.Import.Export.Io
 {
 	/// <summary>
 	/// Defines Outside In constants.

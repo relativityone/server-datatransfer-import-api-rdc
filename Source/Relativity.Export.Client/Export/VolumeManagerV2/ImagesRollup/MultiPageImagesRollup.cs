@@ -14,6 +14,8 @@
 
 	using global::Relativity.Import.Export;
 
+	using Relativity.Import.Export.Media;
+
 	public abstract class MultiPageImagesRollup : IImagesRollup
 	{
 		private const string _TEMP_FILE_EXTENSION = ".tmp";

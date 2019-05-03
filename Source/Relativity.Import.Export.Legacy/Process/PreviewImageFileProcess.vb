@@ -1,4 +1,5 @@
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Media
 Imports Relativity.Import.Export.Process
 
 Namespace kCura.WinEDDS

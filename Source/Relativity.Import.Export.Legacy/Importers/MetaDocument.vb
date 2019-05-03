@@ -1,5 +1,6 @@
 Imports kCura.WinEDDS.Api
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Io
 
 Namespace kCura.WinEDDS
 	Public Class MetaDocument

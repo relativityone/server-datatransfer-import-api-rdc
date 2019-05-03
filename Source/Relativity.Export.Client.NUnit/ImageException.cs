@@ -7,6 +7,7 @@
 namespace Relativity.Export.NUnit
 {
     using Relativity.Import.Export;
+    using Relativity.Import.Export.Media;
 
     public class ImageException : ImageRollupException
 	{
