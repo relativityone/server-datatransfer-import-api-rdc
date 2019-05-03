@@ -1,11 +1,11 @@
 ﻿type
 	file
 id
-	Relativity.Import.Client.SDK
+	Relativity.Import.Export.Client.SDK
 version
 	1.0.0.0
 title
-	Relativity.Import.Client.SDK
+	Relativity.Import.Export.Client.SDK
 authors
 	Relativity
 owners
@@ -15,7 +15,7 @@ licenseUrl
 projectUrl
 	https://platform.relativity.com
 description
-	The Relativity import API client .NET package.	
+	The Relativity import/export client SDK .NET package.	
 summary
 	The Relativity Import API provides functionality for programmatically importing large numbers of documents, images, and Relativity Dynamic Objects (RDOs) into a Relativity workspace.	
 releaseNotes
@@ -33,7 +33,7 @@ files
 	../Artifacts/binaries/sdk/Relativity.Import.Export.Client.xml ==> lib/net462
 	../Artifacts/binaries/Relativity.Import.Client/FreeImageNET.dll ==> lib/net462
 	../Artifacts/binaries/Relativity.Import.Client/FreeImage.dll ==> lib/native
-    ./Relativity.Import.Client.SDK.targets ==> build
+    ./Relativity.Import.Export.Client.SDK.targets ==> build
 dependencies
   framework: net462
 	Newtonsoft.Json >= 6.0.8
