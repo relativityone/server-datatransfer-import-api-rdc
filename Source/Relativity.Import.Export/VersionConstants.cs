@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents Relativity version from which WebApi supports Semantic Versioning
+//   Defines static import/export version constants.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 namespace Relativity.Import.Export
@@ -32,7 +32,10 @@ namespace Relativity.Import.Export
 		/// <remarks>
 		/// TODO: Must validate that the Goatsbeard Import API release can support all versions from Bluestem through Goatsbeard.
 		/// </remarks>
-		public static Version MinRelativityVersion { get; } = new Version(9, 7);
+		/// <remarks>
+		/// The most recent Bluestem OP hotfix release includes the OAuth2 redirect fix and required to authenticate.
+		/// </remarks>
+		public static Version MinRelativityVersion { get; } = new Version(9, 7, 229, 5);
 
 		/// <summary>
 		/// Gets the Relativity version from which it supports the new WebAPI version endpoint.

@@ -29,6 +29,8 @@ namespace Relativity.Import.Export
 		private readonly Version requiredWebApiVersion;
 		private readonly Version webApiStartFromRelativityVersion;
 		private readonly IObjectCacheRepository objectCacheRepository;
+		private readonly IAppSettings appSettings;
+		private readonly IAppSettingsInternal appSettingsInternal;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ImportExportCompatibilityCheck"/> class.
@@ -53,7 +55,9 @@ namespace Relativity.Import.Export
 				VersionConstants.MinRelativityVersion,
 				VersionConstants.RequiredWebApiVersion,
 				VersionConstants.WebApiStartFromRelativityVersion,
-				DefaultObjectCacheRepository)
+				DefaultObjectCacheRepository,
+				AppSettings.Instance,
+				AppSettings.Instance as IAppSettingsInternal)
 		{
 		}
 
@@ -81,6 +85,12 @@ namespace Relativity.Import.Export
 		/// <param name="cacheRepository">
 		/// The object cache repository.
 		/// </param>
+		/// <param name="appSettings">
+		/// The application settings.
+		/// </param>
+		/// <param name="appSettingsInternal">
+		/// The application internal settings.
+		/// </param>
 		public ImportExportCompatibilityCheck(
 			RelativityInstanceInfo instanceInfo,
 			IApplicationVersionService applicationVersionService,
@@ -88,7 +98,9 @@ namespace Relativity.Import.Export
 			Version minRelativityVersion,
 			Version requiredWebApiVersion,
 			Version webApiStartFromRelativityVersion,
-			IObjectCacheRepository cacheRepository)
+			IObjectCacheRepository cacheRepository,
+			IAppSettings appSettings,
+			IAppSettingsInternal appSettingsInternal)
 		{
 			this.webApiStartFromRelativityVersion = webApiStartFromRelativityVersion;
 			this.instanceInfo = instanceInfo.ThrowIfNull(nameof(instanceInfo));
@@ -97,6 +109,8 @@ namespace Relativity.Import.Export
 			this.minRelativityVersion = minRelativityVersion.ThrowIfNull(nameof(minRelativityVersion));
 			this.requiredWebApiVersion = requiredWebApiVersion.ThrowIfNull(nameof(requiredWebApiVersion));
 			this.objectCacheRepository = cacheRepository.ThrowIfNull(nameof(cacheRepository));
+			this.appSettings = appSettings.ThrowIfNull(nameof(appSettings));
+			this.appSettingsInternal = appSettingsInternal.ThrowIfNull(nameof(appSettingsInternal));
 		}
 
 		/// <inheritdoc />
@@ -112,7 +126,7 @@ namespace Relativity.Import.Export
 					"Instance check cache item cache hit. RelativityVersion={RelativityVersion}, ImportExportWebApiVersion={ImportExportWebApiVersion}",
 					item.RelativityVersion,
 					item.ImportExportWebApiVersion);
-				if (item.Validated)
+				if (item.Validated || !this.ShouldThrowException(item.Exception.Message))
 				{
 					return;
 				}
@@ -209,18 +223,49 @@ namespace Relativity.Import.Export
 					"The Relativity version {RelativityVersion} is invalid and import/export service cannot be used for Relativity instance {RelativityHost}.",
 					relativityVersion,
 					this.instanceInfo.Host);
-				string message = string.Format(
-					CultureInfo.CurrentCulture,
-					Relativity.Import.Export.Resources.Strings.RelativtyMinVersionInvalidExceptionMessage,
-					this.instanceInfo.Host,
-					relativityVersion,
-					this.minRelativityVersion);
+				string message = Relativity.Import.Export.Resources.Strings
+					.RelativtyMinVersionInvalidNoAppNameExceptionMessage;
+				if (!string.IsNullOrEmpty(this.appSettings.ApplicationName))
+				{
+					message = string.Format(
+						CultureInfo.CurrentCulture,
+						Relativity.Import.Export.Resources.Strings.RelativtyMinVersionInvalidExceptionMessage,
+						this.appSettings.ApplicationName);
+				}
+
 				RelativityNotSupportedException exception = new RelativityNotSupportedException(message, relativityVersion);
 				item.Exception = exception;
 				item.Validated = false;
 				this.objectCacheRepository.Upsert(cacheKey, item);
+				if (!this.appSettingsInternal.EnforceVersionCompatibilityCheck)
+				{
+					return;
+				}
+
 				throw exception;
 			}
+		}
+
+		/// <summary>
+		/// Inspect the application settings to determine whether to throw the exception. If disabled, the message is logged as a warning.
+		/// </summary>
+		/// <param name="message">
+		/// The message to log.
+		/// </param>
+		/// <returns>
+		/// <see langword="true" /> to throw the exception; otherwise, <see langword="false" />.
+		/// </returns>
+		private bool ShouldThrowException(string message)
+		{
+			bool enforce = this.appSettingsInternal.EnforceVersionCompatibilityCheck;
+			if (!enforce)
+			{
+				this.log.LogWarning(
+					"The version compatibility check failed but the application settings are configured to disable enforcement. Message: {VersionCompatibilityMessage}",
+					message);
+			}
+
+			return enforce;
 		}
 
 		private void VerifyImportExportWebApiVersion(Version relativityVersion, Version importExportWebApiVersion)
@@ -231,11 +276,20 @@ namespace Relativity.Import.Export
 				this.log.LogError(
 					"The import/export WebAPI version {ImportExportWebApiVersion} is invalid and import/export service cannot be used.",
 					importExportWebApiVersion);
-				string message = string.Format(
-					CultureInfo.CurrentCulture,
-					Relativity.Import.Export.Resources.Strings.ImportExportWebApiVersionInvalidExceptionMessage,
-					this.instanceInfo.Host);
-				throw new RelativityNotSupportedException(message, relativityVersion);
+				string message = Relativity.Import.Export.Resources.Strings
+					.ImportExportWebApiVersionInvalidNoAppNameExceptionMessage;
+				if (!string.IsNullOrEmpty(this.appSettings.ApplicationName))
+				{
+					message = string.Format(
+						CultureInfo.CurrentCulture,
+						Relativity.Import.Export.Resources.Strings.ImportExportWebApiVersionInvalidExceptionMessage,
+						this.appSettings.ApplicationName);
+				}
+
+				if (this.ShouldThrowException(message))
+				{
+					throw new RelativityNotSupportedException(message, relativityVersion);
+				}
 			}
 
 			if (this.requiredWebApiVersion.Major != importExportWebApiVersion.Major)
@@ -244,11 +298,20 @@ namespace Relativity.Import.Export
 					"The import/export WebAPI version {ImportExportWebApiVersion} isn't compatible with the required client API version {RequiredWebApiVersion}.",
 					importExportWebApiVersion,
 					this.requiredWebApiVersion);
-				string message = string.Format(
-					CultureInfo.CurrentCulture,
-					Relativity.Import.Export.Resources.Strings.ImportExportWebApiVersionNotSupportedExceptionMessage,
-					this.instanceInfo.Host);
-				throw new RelativityNotSupportedException(message, relativityVersion);
+				string message = Relativity.Import.Export.Resources.Strings
+					.ImportExportWebApiVersionNotSupportedNoAppNameExceptionMessage;
+				if (!string.IsNullOrEmpty(this.appSettings.ApplicationName))
+				{
+					message = string.Format(
+						CultureInfo.CurrentCulture,
+						Relativity.Import.Export.Resources.Strings.ImportExportWebApiVersionNotSupportedExceptionMessage,
+						this.appSettings.ApplicationName);
+				}
+
+				if (this.ShouldThrowException(message))
+				{
+					throw new RelativityNotSupportedException(message, relativityVersion);
+				}
 			}
 		}
 
@@ -259,11 +322,23 @@ namespace Relativity.Import.Export
 			{
 				string message = string.Format(
 					CultureInfo.CurrentCulture,
-					Relativity.Import.Export.Resources.Strings.RelativtyMinVersionExceptionMessage,
-					this.instanceInfo.Host,
+					Relativity.Import.Export.Resources.Strings.RelativtyMinVersionNoAppNameExceptionMessage,
 					relativityVersion,
 					this.minRelativityVersion);
-				throw new RelativityNotSupportedException(message, relativityVersion);
+				if (!string.IsNullOrEmpty(this.appSettings.ApplicationName))
+				{
+					message = string.Format(
+						CultureInfo.CurrentCulture,
+						Relativity.Import.Export.Resources.Strings.RelativtyMinVersionExceptionMessage,
+						this.appSettings.ApplicationName,
+						relativityVersion,
+						this.minRelativityVersion);
+				}
+
+				if (this.ShouldThrowException(message))
+				{
+					throw new RelativityNotSupportedException(message, relativityVersion);
+				}
 			}
 		}
 

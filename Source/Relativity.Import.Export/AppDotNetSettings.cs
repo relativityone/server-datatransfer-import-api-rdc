@@ -19,7 +19,7 @@ namespace Relativity.Import.Export
 	/// remain consistent but allow property names to be refactored with zero impact.
 	/// </remarks>
 	[Serializable]
-	internal sealed class AppDotNetSettings : IAppSettings
+	internal sealed class AppDotNetSettings : IAppSettings, IAppSettingsInternal
 	{
 		// All backing fields go here.
 		private int exportErrorWaitTimeInSeconds;
@@ -84,7 +84,7 @@ namespace Relativity.Import.Export
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.ApplicationNameKey,
-			"")]
+			AppSettingsConstants.ApplicationNameDefaultValue)]
 		string IAppSettings.ApplicationName
 		{
 			get;
@@ -261,7 +261,7 @@ namespace Relativity.Import.Export
 			AppSettingsConstants.SectionImportExport,
 			AppSettingsConstants.EnforceVersionCompatibilityCheckKey,
 			AppSettingsConstants.EnforceVersionCompatibilityCheckDefaultValue)]
-		bool IAppSettings.EnforceVersionCompatibilityCheck
+		bool IAppSettingsInternal.EnforceVersionCompatibilityCheck
 		{
 			get;
 			set;
