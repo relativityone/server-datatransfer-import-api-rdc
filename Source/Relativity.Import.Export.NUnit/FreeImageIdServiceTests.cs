@@ -88,7 +88,7 @@ namespace Relativity.Import.Export.NUnit
 			string file = ResourceFileHelper.GetResourceFilePath("Tiff", fileName);
 			ImageFormat format = this.service.Identify(file);
 			Assert.That(format, Is.EqualTo(ImageFormat.Tiff));
-			ImageIdException exception = Assert.Throws<ImageIdException>(() => this.service.Validate(file));
+			ImageValidationException exception = Assert.Throws<ImageValidationException>(() => this.service.Validate(file));
 			Assert.That(exception.Message, Contains.Substring("is encoded"));
 		}
 
@@ -104,7 +104,7 @@ namespace Relativity.Import.Export.NUnit
 			string file = ResourceFileHelper.GetResourceFilePath("Tiff", fileName);
 			ImageFormat format = this.service.Identify(file);
 			Assert.That(format, Is.EqualTo(ImageFormat.Tiff));
-			ImageIdException exception = Assert.Throws<ImageIdException>(() => this.service.Validate(file));
+			ImageValidationException exception = Assert.Throws<ImageValidationException>(() => this.service.Validate(file));
 			Assert.That(exception.Message, Contains.Substring("bits"));
 		}
 
@@ -119,7 +119,7 @@ namespace Relativity.Import.Export.NUnit
 			string file = ResourceFileHelper.GetResourceFilePath("Png", fileName);
 			ImageFormat format = this.service.Identify(file);
 			Assert.That(format, Is.EqualTo(ImageFormat.Png));
-			ImageIdException exception = Assert.Throws<ImageIdException>(() => this.service.Validate(file));
+			ImageValidationException exception = Assert.Throws<ImageValidationException>(() => this.service.Validate(file));
 			Assert.That(exception.Message, Contains.Substring("isn't a valid TIFF or JPEG"));
 		}
 
@@ -147,7 +147,7 @@ namespace Relativity.Import.Export.NUnit
 			string file = RandomHelper.NextBinaryFile(0, 0, this.tempDirectory.Directory);
 			ImageFormat format = this.service.Identify(file);
 			Assert.That(format, Is.EqualTo(ImageFormat.Unknown));
-			Assert.Throws<ImageIdException>(() => this.service.Validate(file));
+			Assert.Throws<ImageValidationException>(() => this.service.Validate(file));
 		}
 	}
 }

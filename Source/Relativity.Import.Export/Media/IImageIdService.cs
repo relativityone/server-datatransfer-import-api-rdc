@@ -26,7 +26,7 @@ namespace Relativity.Import.Export.Media
 		/// <exception cref="System.IO.FileNotFoundException">
 		/// The exception thrown when the file doesn't exist.
 		/// </exception>
-		/// <exception cref="ImageIdException">
+		/// <exception cref="ImageValidationException">
 		/// The exception thrown when the image file cannot be identified.
 		/// </exception>
 		ImageFormat Identify(string file);
@@ -43,7 +43,7 @@ namespace Relativity.Import.Export.Media
 		/// <exception cref="System.IO.FileNotFoundException">
 		/// The exception thrown when the file doesn't exist.
 		/// </exception>
-		/// <exception cref="ImageIdException">
+		/// <exception cref="ImageValidationException">
 		/// The exception thrown when the image file cannot be validated.
 		/// </exception>
 		void Validate(string file);

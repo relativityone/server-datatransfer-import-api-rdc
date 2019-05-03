@@ -819,7 +819,7 @@ Namespace kCura.WinEDDS
 
 				Me.RaiseStatusEvent(EventType2.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 			Catch ex As Exception
-				If TypeOf ex Is ImageIdException Then
+				If TypeOf ex Is ImageValidationException Then
 				Me.LogError(ex, "Failed to validate the {Path} image.", imageFilePath)
 					retval = ImportStatus.InvalidImageFormat
 					_verboseErrorCollection.AddError(imageRecord.OriginalIndex, ex)

@@ -60,7 +60,7 @@ namespace Relativity.Import.Export.Media
 				if (fileInfo.Length == 0)
 				{
 					string message = string.Format(CultureInfo.CurrentCulture, Strings.ImageZeroBytesError, file);
-					throw new ImageIdException(message);
+					throw new ImageValidationException(message);
 				}
 
 				// Determine if the file is a supported image type
@@ -78,10 +78,10 @@ namespace Relativity.Import.Export.Media
 									Strings.TiffImageNotOneBitError,
 									file,
 									bitCount);
-								throw new ImageIdException(message);
+								throw new ImageValidationException(message);
 							}
 						}
-						catch (ImageIdException)
+						catch (ImageValidationException)
 						{
 							throw;
 						}
@@ -91,12 +91,12 @@ namespace Relativity.Import.Export.Media
 								CultureInfo.CurrentCulture,
 								Strings.TiffImageNotSupportedError,
 								file);
-							throw new ImageIdException(message, e);
+							throw new ImageValidationException(message, e);
 						}
 						catch (Exception e)
 						{
 							string message = string.Format(CultureInfo.CurrentCulture, Strings.ImageReadError, file);
-							throw new ImageIdException(message, e);
+							throw new ImageValidationException(message, e);
 						}
 
 						const string SupportedEncoding = ImageConstants.TiffEncoding4Fax;
@@ -109,7 +109,7 @@ namespace Relativity.Import.Export.Media
 								file,
 								encoding,
 								SupportedEncoding);
-							throw new ImageIdException(message);
+							throw new ImageValidationException(message);
 						}
 
 						break;
@@ -133,7 +133,7 @@ namespace Relativity.Import.Export.Media
 							Strings.ImageFormatNotSupportedError,
 							file,
 							fileTypeString);
-						throw new ImageIdException(formatMessage);
+						throw new ImageValidationException(formatMessage);
 				}
 			}
 			finally
@@ -183,7 +183,7 @@ namespace Relativity.Import.Export.Media
 						CultureInfo.CurrentCulture,
 						Strings.TiffMultiPageNotSupportedError,
 						file);
-					throw new ImageIdException(message);
+					throw new ImageValidationException(message);
 				}
 
 				fileStream.Position = currentPosition;
