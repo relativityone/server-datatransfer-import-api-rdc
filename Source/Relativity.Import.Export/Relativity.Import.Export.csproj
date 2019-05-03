@@ -96,6 +96,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CacheKeys.cs" />
+    <Compile Include="Data\BooleanImporterException.cs" />
+    <Compile Include="Data\CellImporterException.cs" />
+    <Compile Include="Data\ConditionalArrayList.cs" />
+    <Compile Include="Data\ConditionalStringBuilder.cs" />
+    <Compile Include="Data\DateImporterException.cs" />
+    <Compile Include="Data\DecimalImporterException.cs" />
+    <Compile Include="Data\DelimitedFileImporter.cs" />
+    <Compile Include="Data\DelimitedMode.cs" />
+    <Compile Include="Data\GenericCsvReader.cs" />
+    <Compile Include="Data\ImporterException.cs" />
+    <Compile Include="Data\InputStringExceedsFixedLengthException.cs" />
+    <Compile Include="Data\IntegerImporterException.cs" />
+    <Compile Include="Data\ObjectNameImporterException.cs" />
+    <Compile Include="Data\TrimOption.cs" />
     <Compile Include="ExceptionHelper.cs" />
     <Compile Include="IObjectCacheRepository.cs" />
     <Compile Include="MemoryCacheRepository.cs" />
@@ -114,20 +128,6 @@
     <Compile Include="RelativityNotSupportedException.cs" />
     <Compile Include="NullableTypesHelper.cs" />
     <Compile Include="NullArgValidationExtensions.cs" />
-    <Compile Include="Io\BooleanImporterException.cs" />
-    <Compile Include="Io\CellImporterException.cs" />
-    <Compile Include="Io\ConditionalArrayList.cs" />
-    <Compile Include="Io\ConditionalStringBuilder.cs" />
-    <Compile Include="Io\DateImporterException.cs" />
-    <Compile Include="Io\DecimalImporterException.cs" />
-    <Compile Include="Io\DelimitedFileImporter.cs" />
-    <Compile Include="Io\DelimitedMode.cs" />
-    <Compile Include="Io\GenericCsvReader.cs" />
-    <Compile Include="Io\ImporterException.cs" />
-    <Compile Include="Io\ObjectNameImporterException.cs" />
-    <Compile Include="Io\IntegerImporterException.cs" />
-    <Compile Include="Io\InputStringExceedsFixedLengthException.cs" />
-    <Compile Include="Io\TrimOption.cs" />
     <Compile Include="Process\FieldMappedEventArgs.cs" />
     <Compile Include="Process\CancellationRequestEventArgs.cs" />
     <Compile Include="Process\ErrorReportEventArgs.cs" />
