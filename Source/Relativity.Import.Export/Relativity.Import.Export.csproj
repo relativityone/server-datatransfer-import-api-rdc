@@ -114,6 +114,7 @@
     <Compile Include="IAppSettingsInternal.cs" />
     <Compile Include="IObjectCacheRepository.cs" />
     <Compile Include="MemoryCacheRepository.cs" />
+    <Compile Include="Process\ProcessBase2.cs" />
     <Compile Include="RestClient.cs" />
     <Compile Include="AppSettingsDictionary.cs" />
     <Compile Include="AppSettingsConstants.cs" />
@@ -232,7 +233,6 @@
     <Compile Include="Process\ProcessPool.cs" />
     <Compile Include="Process\ProcessEventType.cs" />
     <Compile Include="Process\ProcessContext.cs" />
-    <Compile Include="Process\ProcessBase.cs" />
     <Compile Include="Process\IRunnable.cs" />
     <Compile Include="Transfer\ClientChangeReason.cs" />
     <Compile Include="Transfer\RelativityTransferLog.cs" />
