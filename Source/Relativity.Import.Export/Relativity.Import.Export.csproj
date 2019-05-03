@@ -114,6 +114,7 @@
     <Compile Include="IAppSettingsInternal.cs" />
     <Compile Include="IObjectCacheRepository.cs" />
     <Compile Include="MemoryCacheRepository.cs" />
+    <Compile Include="Process\EventType2.cs" />
     <Compile Include="Process\ProcessBase2.cs" />
     <Compile Include="RestClient.cs" />
     <Compile Include="AppSettingsDictionary.cs" />
@@ -140,7 +141,6 @@
     <Compile Include="Process\ParentFormClosingEventArgs.cs" />
     <Compile Include="Process\ProcessErrorReport.cs" />
     <Compile Include="Process\ExportErrorEventArgs.cs" />
-    <Compile Include="Process\EventType.cs" />
     <Compile Include="Process\RecordNumberEventArgs.cs" />
     <Compile Include="Process\ShowReportEventArgs.cs" />
     <Compile Include="SerializationHelper.cs" />
