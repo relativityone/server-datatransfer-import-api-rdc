@@ -116,6 +116,7 @@
     <Compile Include="MemoryCacheRepository.cs" />
     <Compile Include="Process\EventType2.cs" />
     <Compile Include="Process\ProcessBase2.cs" />
+    <Compile Include="Process\ProcessPool2.cs" />
     <Compile Include="RestClient.cs" />
     <Compile Include="AppSettingsDictionary.cs" />
     <Compile Include="AppSettingsConstants.cs" />
@@ -230,7 +231,6 @@
     <Compile Include="Process\StatusBarEventArgs.cs" />
     <Compile Include="Process\ProgressEventArgs.cs" />
     <Compile Include="Process\ProcessEventArgs.cs" />
-    <Compile Include="Process\ProcessPool.cs" />
     <Compile Include="Process\ProcessEventType.cs" />
     <Compile Include="Process\ProcessContext.cs" />
     <Compile Include="Process\IRunnable.cs" />
