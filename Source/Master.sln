@@ -9,8 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{44D529
 	ProjectSection(SolutionItems) = preProject
 		..\paket.dependencies = ..\paket.dependencies
 		..\.paket\paket.template.relativity.desktop.client = ..\.paket\paket.template.relativity.desktop.client
-		..\.paket\paket.template.relativity.import.client.sdk = ..\.paket\paket.template.relativity.import.client.sdk
-		..\.paket\Relativity.Import.Client.SDK.targets = ..\.paket\Relativity.Import.Client.SDK.targets
+		..\.paket\paket.template.relativity.import.export.client.sdk = ..\.paket\paket.template.relativity.import.export.client.sdk
+		..\.paket\Relativity.Import.Export.Client.SDK.targets = ..\.paket\Relativity.Import.Export.Client.SDK.targets
 	EndProjectSection
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Import.Client.Legacy.NUnit", "Relativity.Import.Client.Legacy.NUnit\Relativity.Import.Client.Legacy.NUnit.vbproj", "{6B2E3939-E33B-4672-B420-F3B6021DDA78}"

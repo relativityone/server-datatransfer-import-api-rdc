@@ -12,8 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{44D529
 	ProjectSection(SolutionItems) = preProject
 		..\paket.dependencies = ..\paket.dependencies
 		..\.paket\paket.template.relativity.desktop.client = ..\.paket\paket.template.relativity.desktop.client
-		..\.paket\paket.template.relativity.import.client.sdk = ..\.paket\paket.template.relativity.import.client.sdk
-		..\.paket\Relativity.Import.Client.SDK.targets = ..\.paket\Relativity.Import.Client.SDK.targets
+		..\.paket\paket.template.relativity.import.export.client.sdk = ..\.paket\paket.template.relativity.import.export.client.sdk
+		..\.paket\Relativity.Import.Export.Client.SDK.targets = ..\.paket\Relativity.Import.Export.Client.SDK.targets
 	EndProjectSection
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Import.Client.Legacy.NUnit", "Relativity.Import.Client.Legacy.NUnit\Relativity.Import.Client.Legacy.NUnit.vbproj", "{6B2E3939-E33B-4672-B420-F3B6021DDA78}"
@@ -147,10 +147,6 @@ Global
 		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}.Debug-ILMerge|Any CPU.Build.0 = Debug-ILMerge|Any CPU
 		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}.Release-ILMerge|Any CPU.ActiveCfg = Release-ILMerge|Any CPU
 		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}.Release-ILMerge|Any CPU.Build.0 = Release-ILMerge|Any CPU
-		{B2A59009-0DA3-42D4-AE60-D2E964D8D165}.Debug-ILMerge|Any CPU.ActiveCfg = Debug-ILMerge|Any CPU
-		{B2A59009-0DA3-42D4-AE60-D2E964D8D165}.Debug-ILMerge|Any CPU.Build.0 = Debug-ILMerge|Any CPU
-		{B2A59009-0DA3-42D4-AE60-D2E964D8D165}.Release-ILMerge|Any CPU.ActiveCfg = Release-ILMerge|Any CPU
-		{B2A59009-0DA3-42D4-AE60-D2E964D8D165}.Release-ILMerge|Any CPU.Build.0 = Release-ILMerge|Any CPU
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}.Debug-ILMerge|Any CPU.ActiveCfg = Debug-ILMerge|Any CPU
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}.Debug-ILMerge|Any CPU.Build.0 = Debug-ILMerge|Any CPU
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}.Release-ILMerge|Any CPU.ActiveCfg = Release-ILMerge|Any CPU
@@ -187,7 +183,6 @@ Global
 		{267AC175-3DAD-4348-9058-D5DB19DEAA57} = {272C7D84-8FCE-4F14-8D39-E0422E0FF922}
 		{49CDE7EB-9385-41D9-8CD9-687C09C46996} = {272C7D84-8FCE-4F14-8D39-E0422E0FF922}
 		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D} = {D46C8AE9-2431-43EC-9AC6-3CB06EE99453}
-		{B2A59009-0DA3-42D4-AE60-D2E964D8D165} = {5F3863F0-E6C9-439F-A371-6B95DB928BDE}
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5} = {1114F579-C126-48A5-8182-50AB87366325}
 		{2022E24B-46A1-46DA-A715-36D137436B3A} = {5F3863F0-E6C9-439F-A371-6B95DB928BDE}
 		{B57C3966-8EF3-4952-AE19-3455C0B049A8} = {272C7D84-8FCE-4F14-8D39-E0422E0FF922}
