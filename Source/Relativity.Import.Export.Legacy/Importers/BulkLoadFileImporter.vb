@@ -2243,7 +2243,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub ManageErrors(ByVal artifactTypeID As Int32)
 			If Not Me.BulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, RunId) Then Exit Sub
-			Dim sr As GenericCsvReader = Nothing
+			Dim sr As GenericCsvReader2 = Nothing
 			Dim downloader As FileDownloader = Nothing
 			Try
 				With Me.BulkImportManager.GenerateNonImageErrorFiles(_caseInfo.ArtifactID, RunId, artifactTypeID, True, _keyFieldID)
@@ -2290,13 +2290,13 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Private Function AttemptErrorFileDownload(ByVal downloader As FileDownloader, ByVal errorFileOutputPath As String, ByVal logKey As String, ByVal caseInfo As CaseInfo) As GenericCsvReader
+		Private Function AttemptErrorFileDownload(ByVal downloader As FileDownloader, ByVal errorFileOutputPath As String, ByVal logKey As String, ByVal caseInfo As CaseInfo) As GenericCsvReader2
 			Dim triesLeft As Integer = 3
-			Dim sr As GenericCsvReader = Nothing
+			Dim sr As GenericCsvReader2 = Nothing
 
 			While triesLeft > 0
 				downloader.MoveTempFileToLocal(errorFileOutputPath, logKey, caseInfo, False)
-				sr = New GenericCsvReader(errorFileOutputPath, System.Text.Encoding.UTF8, True)
+				sr = New GenericCsvReader2(errorFileOutputPath, System.Text.Encoding.UTF8, True)
 				Dim firstChar As Int32 = sr.Peek()
 
 				If firstChar = -1 Then

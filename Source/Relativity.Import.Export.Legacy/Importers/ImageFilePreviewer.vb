@@ -8,7 +8,7 @@ Imports Relativity.Import.Export.Process
 
 Namespace kCura.WinEDDS
 	Public Class ImageFilePreviewer
-		Inherits DelimitedFileImporter
+		Inherits DelimitedFileImporter2
 		
 		Private ReadOnly _imageValidator As IImageIdService
 		Private _fileLineCount As Int32

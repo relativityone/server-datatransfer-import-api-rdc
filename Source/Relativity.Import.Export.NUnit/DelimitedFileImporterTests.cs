@@ -3,7 +3,7 @@
  //   © Relativity All Rights Reserved.
  // </copyright>
  // <summary>
- //   Represents <see cref="DelimitedFileImporter"/> tests.
+ //   Represents <see cref="DelimitedFileImporter2"/> tests.
  // </summary>
  // -----------------------------------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ namespace Relativity.Import.Export.NUnit
 	using Relativity.Logging;
 
 	/// <summary>
-	/// Represents <see cref="DelimitedFileImporter"/> tests.
+	/// Represents <see cref="DelimitedFileImporter2"/> tests.
 	/// </summary>
 	[TestFixture]
 	public class DelimitedFileImporterTests
@@ -58,7 +58,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				() =>
 					{
-						DelimitedFileImporter temp = new MockDelimitedFileImport(
+						DelimitedFileImporter2 temp = new MockDelimitedFileImport(
 							MockDelimitedFileImport.DefaultDelimiter,
 							MockDelimitedFileImport.DefaultBound,
 							MockDelimitedFileImport.DefaultNewline,
@@ -71,7 +71,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				() =>
 					{
-						DelimitedFileImporter temp = new MockDelimitedFileImport(
+						DelimitedFileImporter2 temp = new MockDelimitedFileImport(
 							MockDelimitedFileImport.DefaultDelimiter,
 							MockDelimitedFileImport.DefaultBound,
 							MockDelimitedFileImport.DefaultNewline,
@@ -84,35 +84,35 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				() =>
 					{
-						DelimitedFileImporter temp = new MockDelimitedFileImport(nullStringDelimiter);
+						DelimitedFileImporter2 temp = new MockDelimitedFileImport(nullStringDelimiter);
 						Assert.That(temp, Is.Null, NeverExecuteMessage);
 					},
 				Throws.TypeOf<ArgumentNullException>().With.Property("ParamName").EqualTo("delimiter"));
 			Assert.That(
 				() =>
 					{
-						DelimitedFileImporter temp = new MockDelimitedFileImport(",;");
+						DelimitedFileImporter2 temp = new MockDelimitedFileImport(",;");
 						Assert.That(temp, Is.Null, NeverExecuteMessage);
 					},
 				Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("delimiter"));
 			Assert.That(
 				() =>
 					{
-						DelimitedFileImporter temp = new MockDelimitedFileImport(",", nullStringBound);
+						DelimitedFileImporter2 temp = new MockDelimitedFileImport(",", nullStringBound);
 						Assert.That(temp, Is.Null, NeverExecuteMessage);
 					},
 				Throws.TypeOf<ArgumentNullException>().With.Property("ParamName").EqualTo("bound"));
 			Assert.That(
 				() =>
 					{
-						DelimitedFileImporter temp = new MockDelimitedFileImport(";", "ab");
+						DelimitedFileImporter2 temp = new MockDelimitedFileImport(";", "ab");
 						Assert.That(temp, Is.Null, NeverExecuteMessage);
 					},
 				Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("bound"));
 			Assert.That(
 				() =>
 					{
-						DelimitedFileImporter temp = new MockDelimitedFileImport(
+						DelimitedFileImporter2 temp = new MockDelimitedFileImport(
 							MockDelimitedFileImport.DefaultDelimiter.ToString(),
 							nullStringBound,
 							nullStringNewline,
@@ -125,7 +125,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				() =>
 					{
-						DelimitedFileImporter temp = new MockDelimitedFileImport(
+						DelimitedFileImporter2 temp = new MockDelimitedFileImport(
 							MockDelimitedFileImport.DefaultDelimiter.ToString(),
 							nullStringBound,
 							nullStringNewline,

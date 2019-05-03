@@ -1164,7 +1164,7 @@ Namespace kCura.WinEDDS
 			Dim w As System.IO.StreamWriter = Nothing
 			Dim r As System.IO.StreamReader = Nothing
 
-			Dim sr As GenericCsvReader = Nothing
+			Dim sr As GenericCsvReader2 = Nothing
 			Try
 				With _bulkImportManager.GenerateImageErrorFiles(_caseInfo.ArtifactID, _runId, True, _keyFieldDto.ArtifactID)
 					Me.RaiseStatusEvent(EventType.Status, "Retrieving errors from server", Me.CurrentLineNumber, Me.CurrentLineNumber)
@@ -1252,13 +1252,13 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Private Function AttemptErrorFileDownload(ByVal downloader As FileDownloader, ByVal errorFileOutputPath As String, ByVal logKey As String, ByVal caseInfo As CaseInfo) As GenericCsvReader
+		Private Function AttemptErrorFileDownload(ByVal downloader As FileDownloader, ByVal errorFileOutputPath As String, ByVal logKey As String, ByVal caseInfo As CaseInfo) As GenericCsvReader2
 			Dim triesLeft As Integer = 3
-			Dim sr As GenericCsvReader = Nothing
+			Dim sr As GenericCsvReader2 = Nothing
 
 			While triesLeft > 0
 				downloader.MoveTempFileToLocal(errorFileOutputPath, logKey, caseInfo, False)
-				sr = New GenericCsvReader(errorFileOutputPath, True)
+				sr = New GenericCsvReader2(errorFileOutputPath, True)
 				Dim firstChar As Int32 = sr.Peek()
 
 				If firstChar = -1 Then

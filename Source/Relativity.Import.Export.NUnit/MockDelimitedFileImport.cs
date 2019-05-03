@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents a mock <see cref="DelimitedFileImporter" /> implementation for testing purposes.
+//   Represents a mock <see cref="DelimitedFileImporter2" /> implementation for testing purposes.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
@@ -18,9 +18,9 @@ namespace Relativity.Import.Export.NUnit
 	using Relativity.Logging;
 
 	/// <summary>
-	/// Represents a mock <see cref="DelimitedFileImporter" /> implementation for testing purposes.
+	/// Represents a mock <see cref="DelimitedFileImporter2" /> implementation for testing purposes.
 	/// </summary>
-	internal class MockDelimitedFileImport : DelimitedFileImporter
+	internal class MockDelimitedFileImport : DelimitedFileImporter2
 	{
 		public const char DefaultDelimiter = ',';
 

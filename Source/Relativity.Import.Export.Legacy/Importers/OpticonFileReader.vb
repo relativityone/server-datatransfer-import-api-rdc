@@ -4,7 +4,7 @@ Imports Relativity.Import.Export.Process
 
 Namespace kCura.WinEDDS
 	Public Class OpticonFileReader
-		Inherits DelimitedFileImporter
+		Inherits DelimitedFileImporter2
 		Implements Api.IImageReader
 		Private _settings As ImageLoadFile
 		Public ReadOnly Property Settings() As ImageLoadFile

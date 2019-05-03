@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="GenericCsvReader.cs" company="Relativity ODA LLC">
+// <copyright file="GenericCsvReader2.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -19,10 +19,10 @@ namespace Relativity.Import.Export.Data
 	/// <summary>
 	/// Represents an exception that occured while attempting to import data.
 	/// </summary>
-	internal class GenericCsvReader : DelimitedFileImporter
+	internal class GenericCsvReader2 : DelimitedFileImporter2
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GenericCsvReader"/> class.
+		/// Initializes a new instance of the <see cref="GenericCsvReader2"/> class.
 		/// </summary>
 		/// <param name="file">
 		/// The full path to the CSV file.
@@ -30,13 +30,13 @@ namespace Relativity.Import.Export.Data
 		/// <param name="retry">
 		/// Specify whether retry behavior is required. This flag was added for backwards compatibility with legacy code.
 		/// </param>
-		public GenericCsvReader(string file, bool retry)
+		public GenericCsvReader2(string file, bool retry)
 			: this(file, Encoding.Default, retry)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GenericCsvReader"/> class.
+		/// Initializes a new instance of the <see cref="GenericCsvReader2"/> class.
 		/// </summary>
 		/// <param name="file">
 		/// The full path to the CSV file.
@@ -47,7 +47,7 @@ namespace Relativity.Import.Export.Data
 		/// <param name="retry">
 		/// Specify whether retry behavior is required. This flag was added for backwards compatibility with legacy code.
 		/// </param>
-		public GenericCsvReader(string file, Encoding encoding, bool retry)
+		public GenericCsvReader2(string file, Encoding encoding, bool retry)
 			: this(
 				file,
 				encoding,
@@ -58,7 +58,7 @@ namespace Relativity.Import.Export.Data
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GenericCsvReader"/> class.
+		/// Initializes a new instance of the <see cref="GenericCsvReader2"/> class.
 		/// </summary>
 		/// <param name="file">
 		/// The full path to the CSV file.
@@ -69,13 +69,13 @@ namespace Relativity.Import.Export.Data
 		/// <param name="token">
 		/// The cancellation token used to stop the process upon request.
 		/// </param>
-		public GenericCsvReader(string file, ILog logger, CancellationToken token)
+		public GenericCsvReader2(string file, ILog logger, CancellationToken token)
 			: this(file, Encoding.Default, new IoReporterContext(), logger, token)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GenericCsvReader"/> class.
+		/// Initializes a new instance of the <see cref="GenericCsvReader2"/> class.
 		/// </summary>
 		/// <param name="file">
 		/// The full path to the CSV file.
@@ -89,13 +89,13 @@ namespace Relativity.Import.Export.Data
 		/// <param name="token">
 		/// The cancellation token used to stop the process upon request.
 		/// </param>
-		public GenericCsvReader(string file, IoReporterContext context, ILog logger, CancellationToken token)
+		public GenericCsvReader2(string file, IoReporterContext context, ILog logger, CancellationToken token)
 			: this(file, Encoding.Default, context, logger, token)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GenericCsvReader"/> class.
+		/// Initializes a new instance of the <see cref="GenericCsvReader2"/> class.
 		/// </summary>
 		/// <param name="file">
 		/// The full path to the CSV file.
@@ -112,7 +112,7 @@ namespace Relativity.Import.Export.Data
 		/// <param name="token">
 		/// The cancellation token used to stop the process upon request.
 		/// </param>
-		public GenericCsvReader(
+		public GenericCsvReader2(
 			string file,
 			System.Text.Encoding encoding,
 			IoReporterContext context,

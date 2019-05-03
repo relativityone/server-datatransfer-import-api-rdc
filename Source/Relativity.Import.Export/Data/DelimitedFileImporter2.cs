@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="DelimitedFileImporter.cs" company="Relativity ODA LLC">
+// <copyright file="DelimitedFileImporter2.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -21,7 +21,7 @@ namespace Relativity.Import.Export.Data
 	/// <summary>
 	/// Represents an abstract representation of a file importer that operates over delimited files.
 	/// </summary>
-	public abstract class DelimitedFileImporter : IoReporter
+	public abstract class DelimitedFileImporter2 : IoReporter
 	{
 		/// <summary>
 		/// The maximum column count for line.
@@ -55,7 +55,7 @@ namespace Relativity.Import.Export.Data
 		private string newlineProxyString;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
+		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
 		/// </summary>
 		/// <param name="delimiter">
 		/// The delimiter string to use while splitting lines. This is limited to 1 character and must be specified.
@@ -66,13 +66,13 @@ namespace Relativity.Import.Export.Data
 		/// <param name="newlineProxy">
 		/// The string with which to replace system newline characters (ClRf). This is limited to 1 character and optional.
 		/// </param>
-		protected DelimitedFileImporter(string delimiter, string bound, string newlineProxy)
+		protected DelimitedFileImporter2(string delimiter, string bound, string newlineProxy)
 			: this(delimiter, bound, newlineProxy, new IoReporterContext(), new NullLogger(), CancellationToken.None)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
+		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
 		/// </summary>
 		/// <param name="delimiter">
 		/// The delimiter character to use while splitting lines. This is limited to 1 character and must be specified.
@@ -86,7 +86,7 @@ namespace Relativity.Import.Export.Data
 		/// <param name="retry">
 		/// Specify whether retry behavior is required. This flag was added for backwards compatibility with legacy code.
 		/// </param>
-		protected DelimitedFileImporter(string delimiter, string bound, string newlineProxy, bool retry)
+		protected DelimitedFileImporter2(string delimiter, string bound, string newlineProxy, bool retry)
 			: this(
 				delimiter,
 				bound,
@@ -98,7 +98,7 @@ namespace Relativity.Import.Export.Data
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
+		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
 		/// </summary>
 		/// <param name="delimiter">
 		/// The delimiter string to use while splitting lines. This is limited to 1 character and must be specified.
@@ -124,7 +124,7 @@ namespace Relativity.Import.Export.Data
 		/// <exception cref="ArgumentOutOfRangeException">
 		/// Thrown when <paramref name="delimiter"/> or <paramref name="bound"/> is not exactly 1 character.
 		/// </exception>
-		protected DelimitedFileImporter(
+		protected DelimitedFileImporter2(
 			string delimiter,
 			string bound,
 			string newlineProxy,
@@ -165,7 +165,7 @@ namespace Relativity.Import.Export.Data
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
+		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
 		/// </summary>
 		/// <param name="delimiter">
 		/// The delimiter character to use while splitting lines.
@@ -173,7 +173,7 @@ namespace Relativity.Import.Export.Data
 		/// <param name="retry">
 		/// Specify whether retry behavior is required. This flag was added for backwards compatibility with legacy code.
 		/// </param>
-		protected DelimitedFileImporter(char delimiter, bool retry)
+		protected DelimitedFileImporter2(char delimiter, bool retry)
 			: this(
 				delimiter,
 				UnboundedChar,
@@ -185,7 +185,7 @@ namespace Relativity.Import.Export.Data
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
+		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
 		/// </summary>
 		/// <param name="delimiter">
 		/// The delimiter character to use while splitting lines.
@@ -199,13 +199,13 @@ namespace Relativity.Import.Export.Data
 		/// <param name="token">
 		/// The cancellation token used to stop the process upon request.
 		/// </param>
-		protected DelimitedFileImporter(char delimiter, IoReporterContext context, ILog logger, CancellationToken token)
+		protected DelimitedFileImporter2(char delimiter, IoReporterContext context, ILog logger, CancellationToken token)
 			: this(delimiter, UnboundedChar, UnspecifiedNewlineProxyChar, context, logger, token)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
+		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
 		/// </summary>
 		/// <param name="delimiter">
 		/// The delimiter character to use while splitting lines.
@@ -225,7 +225,7 @@ namespace Relativity.Import.Export.Data
 		/// <param name="token">
 		/// The cancellation token used to stop the process upon request.
 		/// </param>
-		protected DelimitedFileImporter(
+		protected DelimitedFileImporter2(
 			char delimiter,
 			char bound,
 			char newlineProxy,

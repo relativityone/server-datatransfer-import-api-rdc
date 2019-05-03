@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Defines static properties to provide <see cref="DelimitedFileImporter"/> test cases.
+//   Defines static properties to provide <see cref="DelimitedFileImporter2"/> test cases.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ namespace Relativity.Import.Export.NUnit
 	using Relativity.Import.Export.Io;
 
 	/// <summary>
-	/// Defines static properties to provide <see cref="DelimitedFileImporter"/> test cases.
+	/// Defines static properties to provide <see cref="DelimitedFileImporter2"/> test cases.
 	/// </summary>
 	internal static class DelimitedFileImporterTestCases
 	{

@@ -102,9 +102,9 @@
     <Compile Include="Data\ConditionalStringBuilder.cs" />
     <Compile Include="Data\DateImporterException.cs" />
     <Compile Include="Data\DecimalImporterException.cs" />
-    <Compile Include="Data\DelimitedFileImporter.cs" />
+    <Compile Include="Data\DelimitedFileImporter2.cs" />
     <Compile Include="Data\DelimitedMode.cs" />
-    <Compile Include="Data\GenericCsvReader.cs" />
+    <Compile Include="Data\GenericCsvReader2.cs" />
     <Compile Include="Data\ImporterException.cs" />
     <Compile Include="Data\IntegerImporterException.cs" />
     <Compile Include="Data\ObjectNameImporterException.cs" />
