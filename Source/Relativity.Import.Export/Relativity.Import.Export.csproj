@@ -113,6 +113,13 @@
     <Compile Include="ExceptionHelper.cs" />
     <Compile Include="IAppSettingsInternal.cs" />
     <Compile Include="IObjectCacheRepository.cs" />
+    <Compile Include="Io\FileIdConfiguration.cs" />
+    <Compile Include="Io\FileIdError.cs" />
+    <Compile Include="Io\FileIdException.cs" />
+    <Compile Include="Io\FileIdInfo.cs" />
+    <Compile Include="Io\IFileIdService.cs" />
+    <Compile Include="Io\OutsideInConstants.cs" />
+    <Compile Include="Io\OutsideInFileIdService.cs" />
     <Compile Include="MemoryCacheRepository.cs" />
     <Compile Include="Process\EventType2.cs" />
     <Compile Include="Process\ProcessBase2.cs" />
@@ -306,13 +313,10 @@
     <Content Include="oi\unmanaged\wvcore-R1.dll">
       <Paket>True</Paket>
     </Content>
-    <Compile Include="FileIdError.cs" />
     <Compile Include="ImageFormat.cs" />
     <Compile Include="FreeImageIdService.cs" />
     <Compile Include="ImageIdException.cs" />
     <Compile Include="IImageIdService.cs" />
-    <Compile Include="OutsideInConstants.cs" />
-    <Compile Include="IFileIdService.cs" />
     <Compile Include="Resources\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -321,10 +325,6 @@
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
-    <Compile Include="FileIdException.cs" />
-    <Compile Include="FileIdConfiguration.cs" />
-    <Compile Include="OutsideInFileIdService.cs" />
-    <Compile Include="FileIdInfo.cs" />
     <Compile Include="GlobalSuppressions.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
