@@ -18,7 +18,7 @@ Namespace Relativity.Import.Client.NUnit
 			Dim value As String = "More Than 5 Chars"
 			Dim len As Integer = value.length
 			Dim maxLen As Integer = 5
-			Dim thrownException = Assert.Throws(Of InputStringExceedsFixedLengthException)(Sub()
+			Dim thrownException = Assert.Throws(Of StringImporterException)(Sub()
 				DelimitedFileImporter.ValidateStringForVarChar(value, 2, maxLen, 10, "Test")
 			End Sub)
 			Assert.AreEqual("Error in line 10, column ""C"". The input value from the Test source field has a length of " & len & " character(s). This exceeds the limit for the Test destination field, which is currently set to " & maxLen & " character(s).", thrownException.Message)

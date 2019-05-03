@@ -166,14 +166,14 @@ namespace Relativity.Import.Export.NUnit
 		{
 			// The Excel flag should have no bearing - but just making sure.
 			int columnNumber = GetRandomColumnOrdinal(excelSingleCharOrdinal);
-			string additionalInfoMessage = InputStringExceedsFixedLengthException.GetAdditionalInfoMessage(5, 3, "TargetPath");
+			string additionalInfoMessage = StringImporterException.GetAdditionalInfoMessage(5, 3, "TargetPath");
 			string expectedErrorMessage = ImporterException.GetExcelStyleErrorMessage(
 				this.importer.CurrentLineNumber,
 				columnNumber,
 				additionalInfoMessage);
 			Assert.That(
 				() => this.importer.GetNullableFixedString("abcde", columnNumber, 3, "TargetPath"),
-				Throws.TypeOf<InputStringExceedsFixedLengthException>().With.Message.EqualTo(expectedErrorMessage).And.With
+				Throws.TypeOf<StringImporterException>().With.Message.EqualTo(expectedErrorMessage).And.With
 					.Property("Row").EqualTo(this.importer.CurrentLineNumber).And.With.Property("Column")
 					.EqualTo(columnNumber));
 		}

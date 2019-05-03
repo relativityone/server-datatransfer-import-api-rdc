@@ -374,7 +374,7 @@ namespace Relativity.Import.Export.Data
 		{
 			if (value != null && value.Length > fieldLength)
 			{
-				throw new InputStringExceedsFixedLengthException(currentLineNumber, column, value.Length, fieldLength, displayName);
+				throw new StringImporterException(currentLineNumber, column, value.Length, fieldLength, displayName);
 			}
 
 			return NullableTypesHelper.ToString(value);
@@ -574,7 +574,7 @@ namespace Relativity.Import.Export.Data
 		{
 			if (value != null && value.Length > maxLength)
 			{
-				throw new InputStringExceedsFixedLengthException(this.CurrentLineNumber, column, value.Length, maxLength, displayName);
+				throw new StringImporterException(this.CurrentLineNumber, column, value.Length, maxLength, displayName);
 			}
 
 			return NullableTypesHelper.ToString(value);
