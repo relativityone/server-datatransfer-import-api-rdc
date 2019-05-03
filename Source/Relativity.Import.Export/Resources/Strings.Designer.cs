@@ -316,7 +316,7 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This application cannot be used with Relativity instance {0} because the import/export web-services version is invalid. Contact your system administrator for assistance if this problem persists..
+        ///   Looks up a localized string similar to The &apos;{0}&apos; application can’t be used with this Relativity instance because the import/export web-services version is invalid. Contact your system administrator for assistance if this problem persists..
         /// </summary>
         internal static string ImportExportWebApiVersionInvalidExceptionMessage {
             get {
@@ -325,11 +325,29 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This application cannot be used with Relativity instance {0} because the import/export web-services version isn&apos;t supported. Review the &apos;Importing and exporting&apos; compatibility page on help.relativity.com for more details..
+        ///   Looks up a localized string similar to This application can’t be used with this Relativity instance because the import/export web-services version is invalid. Contact your system administrator for assistance if this problem persists..
+        /// </summary>
+        internal static string ImportExportWebApiVersionInvalidNoAppNameExceptionMessage {
+            get {
+                return ResourceManager.GetString("ImportExportWebApiVersionInvalidNoAppNameExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; application can’t be used with this Relativity instance because the import/export web-services version isn&apos;t supported. For more details, review the compatibility information for importing and exporting on the Relativity Documentation site at help.relativity.com..
         /// </summary>
         internal static string ImportExportWebApiVersionNotSupportedExceptionMessage {
             get {
                 return ResourceManager.GetString("ImportExportWebApiVersionNotSupportedExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This application can’t be used with this Relativity instance because the import/export web-services version isn&apos;t supported. For more details, review the compatibility information for importing and exporting on the Relativity Documentation site at help.relativity.com..
+        /// </summary>
+        internal static string ImportExportWebApiVersionNotSupportedNoAppNameExceptionMessage {
+            get {
+                return ResourceManager.GetString("ImportExportWebApiVersionNotSupportedNoAppNameExceptionMessage", resourceCulture);
             }
         }
         
@@ -487,7 +505,7 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This application cannot be used with Relativity instance {0} because version v{1} doesn&apos;t meet or exceed the minimum version v{2}. Review the &apos;Importing and exporting&apos; compatibility page on help.relativity.com for more details..
+        ///   Looks up a localized string similar to The &apos;{0}&apos; application can’t be used with this Relativity instance because version {1} doesn&apos;t meet or exceed the minimum version {2}. For more details, review the compatibility information for importing and exporting on the Relativity Documentation site at help.relativity.com..
         /// </summary>
         internal static string RelativtyMinVersionExceptionMessage {
             get {
@@ -496,11 +514,29 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This application cannot be used with Relativity instance {0} because the instance version is invalid. Contact your system administrator for assistance if this problem persists..
+        ///   Looks up a localized string similar to The &apos;{0}&apos; application can’t be used with this Relativity instance because the Relativity version is invalid. Contact your system administrator for assistance if this problem persists..
         /// </summary>
         internal static string RelativtyMinVersionInvalidExceptionMessage {
             get {
                 return ResourceManager.GetString("RelativtyMinVersionInvalidExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This application can’t be used with this Relativity instance because the Relativity version is invalid. Contact your system administrator for assistance if this problem persists..
+        /// </summary>
+        internal static string RelativtyMinVersionInvalidNoAppNameExceptionMessage {
+            get {
+                return ResourceManager.GetString("RelativtyMinVersionInvalidNoAppNameExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This application can’t be used with this Relativity instance because version {0} doesn&apos;t meet or exceed the minimum version {1}. For more details, review the compatibility information for importing and exporting on the Relativity Documentation site at help.relativity.com..
+        /// </summary>
+        internal static string RelativtyMinVersionNoAppNameExceptionMessage {
+            get {
+                return ResourceManager.GetString("RelativtyMinVersionNoAppNameExceptionMessage", resourceCulture);
             }
         }
         
