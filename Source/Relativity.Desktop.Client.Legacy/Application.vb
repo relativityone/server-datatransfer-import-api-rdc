@@ -26,7 +26,7 @@ Namespace Relativity.Desktop.Client
 		Private Shared _instance As Application
 
 		Protected Sub New()
-			_processPool = New ProcessPool
+			_processPool = New ProcessPool2
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_CookieContainer = New System.Net.CookieContainer
 			_logger = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
@@ -55,7 +55,7 @@ Namespace Relativity.Desktop.Client
 		Private ReadOnly _cancellationTokenSource As System.Threading.CancellationTokenSource = New System.Threading.CancellationTokenSource()
 		Private _isCaseFolderSelected As Boolean = True
 		Private _showCaseSelectDialog As Boolean = True
-		Private _processPool As ProcessPool
+		Private _processPool As ProcessPool2
 		Private _selectedCaseInfo As Relativity.Import.Export.Service.CaseInfo
 		Private _selectedCaseFolderID As Int32
 		Private _fieldProviderCache As IFieldProviderCache

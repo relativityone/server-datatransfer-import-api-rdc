@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ProcessPool.cs" company="Relativity ODA LLC">
+// <copyright file="ProcessPool2.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -13,7 +13,7 @@ namespace Relativity.Import.Export.Process
 	/// <summary>
 	/// Represents a class object to manage 1 or more <see cref="IRunnable"/> objects. This class cannot be inherited.
 	/// </summary>
-	internal sealed class ProcessPool
+	internal sealed class ProcessPool2
 	{
 		/// <summary>
 		/// The dictionary that maps runnable processes to a thread.
@@ -21,9 +21,9 @@ namespace Relativity.Import.Export.Process
 		private readonly ConcurrentDictionary<Guid, Thread> threadDictionary;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ProcessPool"/> class.
+		/// Initializes a new instance of the <see cref="ProcessPool2"/> class.
 		/// </summary>
-		public ProcessPool()
+		public ProcessPool2()
 		{
 			this.threadDictionary = new ConcurrentDictionary<Guid, Thread>();
 		}
