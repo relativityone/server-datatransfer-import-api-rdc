@@ -17,6 +17,7 @@ namespace Relativity.Import.Export.NUnit
 
 	using Moq;
 
+	using Relativity.Import.Export.Data;
 	using Relativity.Import.Export.Io;
 	using Relativity.Import.Export.Resources;
 	using Relativity.Import.Export.TestFramework;

@@ -2,6 +2,7 @@ Imports System.IO
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Helpers
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Data
 Imports Relativity.Import.Export.Io
 Imports Relativity.Import.Export.Process
 

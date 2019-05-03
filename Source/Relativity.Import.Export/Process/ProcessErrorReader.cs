@@ -11,6 +11,7 @@ namespace Relativity.Import.Export.Process
 
 	using Microsoft.VisualBasic.CompilerServices;
 
+	using Relativity.Import.Export.Data;
 	using Relativity.Import.Export.Io;
 	using Relativity.Logging;
 

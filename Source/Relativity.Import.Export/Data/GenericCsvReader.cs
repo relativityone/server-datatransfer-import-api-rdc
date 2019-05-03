@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Io
+namespace Relativity.Import.Export.Data
 {
 	using System;
 	using System.IO;
@@ -13,6 +13,7 @@ namespace Relativity.Import.Export.Io
 
 	using Microsoft.VisualBasic.CompilerServices;
 
+	using Relativity.Import.Export.Io;
 	using Relativity.Logging;
 
 	/// <summary>

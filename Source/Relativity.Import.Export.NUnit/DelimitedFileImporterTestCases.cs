@@ -13,6 +13,7 @@ namespace Relativity.Import.Export.NUnit
 
 	using global::NUnit.Framework;
 
+	using Relativity.Import.Export.Data;
 	using Relativity.Import.Export.Io;
 
 	/// <summary>

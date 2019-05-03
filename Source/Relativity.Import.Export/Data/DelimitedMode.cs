@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Io
+namespace Relativity.Import.Export.Data
 {
 	/// <summary>
 	/// Represents the supported file delimiter modes.
