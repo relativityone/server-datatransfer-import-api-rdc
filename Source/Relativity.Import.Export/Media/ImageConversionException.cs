@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ImageRollupException.cs" company="Relativity ODA LLC">
+// <copyright file="ImageConversionException.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -16,28 +16,28 @@ namespace Relativity.Import.Export.Media
 	/// The exception thrown when a serious failure occurs during image rollup.
 	/// </summary>
 	[Serializable]
-	public class ImageRollupException : Exception
+	public class ImageConversionException : Exception
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ImageRollupException"/> class.
+		/// Initializes a new instance of the <see cref="ImageConversionException"/> class.
 		/// </summary>
-		public ImageRollupException()
+		public ImageConversionException()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ImageRollupException"/> class.
+		/// Initializes a new instance of the <see cref="ImageConversionException"/> class.
 		/// </summary>
 		/// <param name="message">
 		/// The message that describes the error.
 		/// </param>
-		public ImageRollupException(string message)
+		public ImageConversionException(string message)
 			: base(message)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ImageRollupException"/> class.
+		/// Initializes a new instance of the <see cref="ImageConversionException"/> class.
 		/// </summary>
 		/// <param name="message">
 		/// The error message that explains the reason for the exception.
@@ -45,13 +45,13 @@ namespace Relativity.Import.Export.Media
 		/// <param name="innerException">
 		/// The exception that is the cause of the current exception, or a null reference (Nothing in Visual Basic) if no inner exception is specified.
 		/// </param>
-		public ImageRollupException(string message, Exception innerException)
+		public ImageConversionException(string message, Exception innerException)
 			: base(message, innerException)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ImageRollupException"/> class.
+		/// Initializes a new instance of the <see cref="ImageConversionException"/> class.
 		/// </summary>
 		/// <param name="file">
 		/// The full path to the image file that caused the exception.
@@ -65,7 +65,7 @@ namespace Relativity.Import.Export.Media
 		/// <param name="innerException">
 		/// The exception that is the cause of the current exception, or a null reference (Nothing in Visual Basic) if no inner exception is specified.
 		/// </param>
-		public ImageRollupException(string file, int pageNumber, int pageCount, Exception innerException)
+		public ImageConversionException(string file, int pageNumber, int pageCount, Exception innerException)
 			: base(GetErrorMessage(file, pageNumber, pageCount), innerException)
 		{
 			this.File = file;
@@ -74,7 +74,7 @@ namespace Relativity.Import.Export.Media
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ImageRollupException"/> class.
+		/// Initializes a new instance of the <see cref="ImageConversionException"/> class.
 		/// </summary>
 		/// <param name="info">
 		/// The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.
@@ -82,7 +82,7 @@ namespace Relativity.Import.Export.Media
 		/// <param name="context">
 		/// The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.
 		/// </param>
-		protected ImageRollupException(SerializationInfo info, StreamingContext context)
+		protected ImageConversionException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 			this.File = info.GetString(nameof(this.File));

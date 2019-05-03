@@ -25,10 +25,10 @@ namespace Relativity.Import.Export.Media
 		/// <exception cref="System.ArgumentNullException">
 		/// Thrown when <paramref name="inputFiles" /> or <paramref name="outputFile" /> is <see langword="null" /> or empty.
 		/// </exception>
-		/// <exception cref="ConvertToMultiPageTiffException">
+		/// <exception cref="MultiPageTiffConversionException">
 		/// Thrown when an error occurs during conversion.
 		/// </exception>
-		/// <exception cref="ImageRollupException">
+		/// <exception cref="ImageConversionException">
 		/// Thrown when a generic image error occurs during conversion.
 		/// </exception>
 		void ConvertTiffsToMultiPageTiff(IEnumerable<string> inputFiles, string outputFile);
@@ -45,10 +45,10 @@ namespace Relativity.Import.Export.Media
 		/// <exception cref="System.ArgumentNullException">
 		/// Thrown when <paramref name="inputFiles" /> or <paramref name="outputFile" /> is <see langword="null" /> or empty.
 		/// </exception>
-		/// <exception cref="ConvertToMultiPagePdfException">
+		/// <exception cref="MultiPagePdfConversionException">
 		/// Thrown when an error occurs during conversion.
 		/// </exception>
-		/// <exception cref="ImageRollupException">
+		/// <exception cref="ImageConversionException">
 		/// Thrown when a generic image error occurs during conversion.
 		/// </exception>
 		void ConvertImagesToMultiPagePdf(IEnumerable<string> inputFiles, string outputFile);

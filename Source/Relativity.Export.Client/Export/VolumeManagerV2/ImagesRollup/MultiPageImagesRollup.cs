@@ -65,7 +65,7 @@
 				_logger.LogVerbose("Attempting to move temporary image {tempImage} to destination location {destinationLocation}.", rollupTempLocation, destinationImage.TempLocation);
 				MoveFileFromTempToDestination(destinationImage, rollupTempLocation);
 			}
-			catch (ImageRollupException ex)
+			catch (ImageConversionException ex)
 			{
 				HandleImageRollupException(artifact, ex, rollupTempLocation);
 				destinationImage.SuccessfulRollup = false;
@@ -128,7 +128,7 @@
 			}
 		}
 
-		private void HandleImageRollupException(ObjectExportInfo artifact, ImageRollupException ex, string rollupTempLocation)
+		private void HandleImageRollupException(ObjectExportInfo artifact, ImageConversionException ex, string rollupTempLocation)
 		{
 			_logger.LogError(ex, "Error occurred during image rollup.");
 			try

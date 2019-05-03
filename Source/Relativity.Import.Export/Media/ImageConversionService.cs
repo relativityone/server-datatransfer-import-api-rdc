@@ -79,7 +79,7 @@ namespace Relativity.Import.Export.Media
 
 			if (info == null)
 			{
-				throw new ImageRollupException(Strings.ImageConversionTiffCodecNotFoundMessage);
+				throw new ImageConversionException(Strings.ImageConversionTiffCodecNotFoundMessage);
 			}
 
 			outputFile = this.fileSystem.Path.GetFullPath(outputFile);
@@ -149,7 +149,7 @@ namespace Relativity.Import.Export.Media
 				multiPageTiff?.Dispose();
 				if (pageNumber > -1)
 				{
-					throw new ConvertToMultiPageTiffException(
+					throw new MultiPageTiffConversionException(
 						inputFilesList[pageNumber],
 						pageNumber,
 						inputFilesList.Count,
@@ -264,7 +264,7 @@ namespace Relativity.Import.Export.Media
 
 				if (pageNumber > -1)
 				{
-					throw new ConvertToMultiPagePdfException(
+					throw new MultiPagePdfConversionException(
 						inputFilesList[pageNumber],
 						pageNumber,
 						inputFilesList.Count,

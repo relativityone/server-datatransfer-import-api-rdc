@@ -476,7 +476,7 @@ Namespace kCura.WinEDDS
 				Else
 					_fileHelper.Move(tempLocation, DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
 				End If
-			Catch ex As ImageRollupException
+			Catch ex As ImageConversionException
 				successfulRollup = False
 				Try
 					If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then
