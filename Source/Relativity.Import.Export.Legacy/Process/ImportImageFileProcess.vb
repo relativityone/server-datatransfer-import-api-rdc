@@ -199,26 +199,26 @@ Namespace kCura.WinEDDS
 				Dim additionalInfo As IDictionary = Nothing
 				If Not e.AdditionalInfo Is Nothing Then additionalInfo = DirectCast(e.AdditionalInfo, IDictionary)
 				Select Case e.EventType
-					Case EventType.Error
+					Case EventType2.Error
 						If e.CountsTowardsTotal Then _errorCount += 1
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 						Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case EventType.Progress
+					Case EventType2.Progress
 						TotalRecords = e.TotalRecords
 						CompletedRecordsCount = e.CurrentRecordIndex
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 						Me.Context.PublishRecordProcessed(e.CurrentRecordIndex)
-					Case EventType.Statistics
+					Case EventType2.Statistics
 						SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
-					Case EventType.Status
+					Case EventType2.Status
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case EventType.Warning
+					Case EventType2.Warning
 						If e.CountsTowardsTotal Then _warningCount += 1
 						Me.Context.PublishWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case EventType.Count
+					Case EventType2.Count
 						Me.Context.PublishRecordCountIncremented()
-					Case EventType.ResetStartTime
+					Case EventType2.ResetStartTime
 						SetStartTime()
 				End Select
 			End SyncLock

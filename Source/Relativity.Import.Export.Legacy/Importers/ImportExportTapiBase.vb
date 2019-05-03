@@ -356,9 +356,9 @@ Namespace kCura.WinEDDS
 
 		Protected Sub CompletePendingPhysicalFileTransfers(waitingMessage As String, completedMessage As String, errorMessage As String)
 			Try
-				Me.OnWriteStatusMessage(EventType.Status, waitingMessage, 0, 0)
+				Me.OnWriteStatusMessage(EventType2.Status, waitingMessage, 0, 0)
 				Me.FileTapiBridge.WaitForTransferJob()
-				Me.OnWriteStatusMessage(EventType.Status, completedMessage, 0, 0)
+				Me.OnWriteStatusMessage(EventType2.Status, completedMessage, 0, 0)
 			Catch ex As Exception
 				Me.LogError(ex, errorMessage)
 				Throw
@@ -367,9 +367,9 @@ Namespace kCura.WinEDDS
 
 		Protected Sub CompletePendingBulkLoadFileTransfers()
 			Try
-				Me.OnWriteStatusMessage(EventType.Status, "Waiting for the bulk load job to complete...", 0, 0)
+				Me.OnWriteStatusMessage(EventType2.Status, "Waiting for the bulk load job to complete...", 0, 0)
 				Me.BulkLoadTapiBridge.WaitForTransferJob()
-				Me.OnWriteStatusMessage(EventType.Status, "Bulk load file job completed.", 0, 0)
+				Me.OnWriteStatusMessage(EventType2.Status, "Bulk load file job completed.", 0, 0)
 			Catch ex As Exception
 				Me.LogError(ex, "Failed to complete all pending bulk load file transfers.")
 				Throw
@@ -487,11 +487,11 @@ Namespace kCura.WinEDDS
 			Logger.LogWarning($"Tapi client has been changed.")
 		End Sub
 
-		Protected Overridable Sub OnWriteStatusMessage(ByVal eventType As EventType, ByVal message As String)
+		Protected Overridable Sub OnWriteStatusMessage(ByVal eventType As EventType2, ByVal message As String)
 			'TODO Log this action and call from the derivered class.
 		End Sub
 
-		Protected Overridable Sub OnWriteStatusMessage(ByVal eventType As EventType, ByVal message As String, ByVal progressLineNumber As Int32, ByVal physicalLineNumber As Int32)
+		Protected Overridable Sub OnWriteStatusMessage(ByVal eventType As EventType2, ByVal message As String, ByVal progressLineNumber As Int32, ByVal physicalLineNumber As Int32)
 			'TODO Log this action and call from the derivered class.
 		End Sub
 
@@ -505,7 +505,7 @@ Namespace kCura.WinEDDS
 				OnStopImport()
 				_cancellationTokenSource.Cancel()
 			Catch ex As Exception
-				OnWriteStatusMessage(EventType.Status, "Error occured while stopping the job.")
+				OnWriteStatusMessage(EventType2.Status, "Error occured while stopping the job.")
 				Throw
 			End Try
 		End Sub
@@ -515,7 +515,7 @@ Namespace kCura.WinEDDS
 			If updateCurrentStats OrElse force Then
 				CurrentStatisticsSnapshot = Me.Statistics.ToDictionary()
 				_statisticsLastUpdated = time
-				Me.OnWriteStatusMessage(EventType.Statistics, "", 0, 0)
+				Me.OnWriteStatusMessage(EventType2.Statistics, "", 0, 0)
 			End If
 		End Sub
 
@@ -572,7 +572,7 @@ Namespace kCura.WinEDDS
 		Private Sub OnTapiErrorMessage(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
 			SyncLock _syncRoot
 				If ShouldImport Then
-					Me.OnWriteStatusMessage(EventType.Error, e.Message, e.LineNumber, e.LineNumber)
+					Me.OnWriteStatusMessage(EventType2.Error, e.Message, e.LineNumber, e.LineNumber)
 					Me.LogError(e.Message)
 				End If
 			End SyncLock
@@ -581,7 +581,7 @@ Namespace kCura.WinEDDS
 		Private Sub OnTapiWarningMessage(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
 			SyncLock _syncRoot
 				If ShouldImport Then
-					Me.OnWriteStatusMessage(EventType.Warning, e.Message, e.LineNumber, e.LineNumber)
+					Me.OnWriteStatusMessage(EventType2.Warning, e.Message, e.LineNumber, e.LineNumber)
 					Me.LogWarning(e.Message)
 				End If
 			End SyncLock
@@ -598,13 +598,13 @@ Namespace kCura.WinEDDS
 		Private Sub OnTapiStatusEvent(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
 			SyncLock _syncRoot
 				If ShouldImport Then
-					Me.OnWriteStatusMessage(EventType.Status, e.Message, e.LineNumber, e.LineNumber)
+					Me.OnWriteStatusMessage(EventType2.Status, e.Message, e.LineNumber, e.LineNumber)
 				End If
 			End SyncLock
 		End Sub
 
 		Private Sub WriteTapiProgressMessage(ByVal message As String, ByVal lineNumber As Int32)
-			Me.OnWriteStatusMessage(EventType.Progress, message, FileTapiProgressCount, lineNumber)
+			Me.OnWriteStatusMessage(EventType2.Progress, message, FileTapiProgressCount, lineNumber)
 		End Sub
 
 		Protected Function GetLineMessage(ByVal line As String, ByVal lineNumber As Int32) As String
@@ -671,7 +671,7 @@ Namespace kCura.WinEDDS
 					Return TimeSpan.FromMilliseconds(waitBetweenRetries)
 				End Function)
 
-			Me.OnWriteStatusMessage(EventType.Status, startMessage, 0, 0)
+			Me.OnWriteStatusMessage(EventType2.Status, startMessage, 0, 0)
 
 			retryPolicy.Execute(Function()
 									waitSuccess = retryFunction()
@@ -679,7 +679,7 @@ Namespace kCura.WinEDDS
 									Return waitSuccess
 								End Function, _cancellationTokenSource.Token)
 
-			Me.OnWriteStatusMessage(EventType.Status, stopMessage, 0, 0)
+			Me.OnWriteStatusMessage(EventType2.Status, stopMessage, 0, 0)
 
 			If Not waitSuccess Then
 				Me.LogWarning(errorMessage)

@@ -38,7 +38,7 @@
 		private void OnStatusMessage(object sender, TapiMessageEventArgs e)
 		{
 			_logger.LogInformation(e.Message);
-			_status.WriteStatusLine(EventType.Status, e.Message, false);
+			_status.WriteStatusLine(EventType2.Status, e.Message, false);
 		}
 
 		private void OnWarningMessage(object sender, TapiMessageEventArgs e)

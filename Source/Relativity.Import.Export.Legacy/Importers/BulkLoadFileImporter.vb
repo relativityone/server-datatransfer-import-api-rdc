@@ -634,7 +634,7 @@ Namespace kCura.WinEDDS
 											'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
 											' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
 											' -Phil S. 06/12/2012
-											WriteStatusLine(EventType.Count, String.Empty)
+											WriteStatusLine(EventType2.Count, String.Empty)
 											line = _artifactReader.ReadArtifact
 										End Using
 										Dim lineStatus As Int32 = 0
@@ -748,7 +748,7 @@ Namespace kCura.WinEDDS
 		Private Function InitializeMembers(ByVal path As String) As Boolean
 			RecordCount = _artifactReader.CountRecords
 			If RecordCount = -1 Then
-				OnStatusMessage(New StatusEventArgs(EventType.Progress, CurrentLineNumber, CurrentLineNumber, CancelEventMsg, CurrentStatisticsSnapshot, Statistics))
+				OnStatusMessage(New StatusEventArgs(EventType2.Progress, CurrentLineNumber, CurrentLineNumber, CancelEventMsg, CurrentStatisticsSnapshot, Statistics))
 				Return False
 			End If
 
@@ -756,11 +756,11 @@ Namespace kCura.WinEDDS
 			Me.InitializeFieldIdList()
 			Me.DeleteTempLoadFiles()
 			Me.OpenFileWriters()
-			Me.OnStatusMessage(New StatusEventArgs(EventType.ResetStartTime, 0, RecordCount, RestartTimeEventMsg, Nothing, Statistics))
+			Me.OnStatusMessage(New StatusEventArgs(EventType2.ResetStartTime, 0, RecordCount, RestartTimeEventMsg, Nothing, Statistics))
 
 			' Counting all lines increments progress to 100%.
 			' This will reset progress back to zero instead of waiting for the first transfer to complete.
-			Me.OnStatusMessage(New StatusEventArgs(EventType.ResetProgress, 0, RecordCount, "Starting import...", Nothing, Statistics))
+			Me.OnStatusMessage(New StatusEventArgs(EventType2.ResetProgress, 0, RecordCount, "Starting import...", Nothing, Statistics))
 			Return True
 		End Function
 
@@ -933,7 +933,7 @@ Namespace kCura.WinEDDS
 
 						' Status must be handled the pre-TAPI way whenever the copy repository option is disabled.
 						If ShouldImport AndAlso Not _copyFileToRepository Then
-							WriteStatusLine(EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
+							WriteStatusLine(EventType2.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 						End If
 					End If
 				End If
@@ -1098,12 +1098,12 @@ Namespace kCura.WinEDDS
 			' Let TAPI handle progress as long as we're transferring the native. See the TAPI progress event below.
 			If _copyFileToRepository AndAlso metaDoc.IndexFileInDB Then
 				Using Timekeeper.CaptureTime("ManageDocumentMetadata_StatusEvent")
-					WriteStatusLine(EventType.Status, $"Item '{metaDoc.IdentityValue}' file '{metaDoc.FileGuid}' processed.", metaDoc.LineNumber)
+					WriteStatusLine(EventType2.Status, $"Item '{metaDoc.IdentityValue}' file '{metaDoc.FileGuid}' processed.", metaDoc.LineNumber)
 				End Using
 			Else
 				Using Timekeeper.CaptureTime("ManageDocumentMetadata_ProgressEvent")
 					FileTapiProgressCount += 1
-					WriteStatusLine(EventType.Progress, $"Item '{metaDoc.IdentityValue}' file '{metaDoc.FileGuid}'  processed.", metaDoc.LineNumber)
+					WriteStatusLine(EventType2.Progress, $"Item '{metaDoc.IdentityValue}' file '{metaDoc.FileGuid}'  processed.", metaDoc.LineNumber)
 				End Using
 			End If
 		End Sub
@@ -1887,10 +1887,10 @@ Namespace kCura.WinEDDS
 				For Each item In _fieldMap
 					If FirstTimeThrough Then
 						If item.DocumentField Is Nothing Then
-							WriteStatusLine(EventType.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)
+							WriteStatusLine(EventType2.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)
 						End If
 						If item.NativeFileColumnIndex = -1 Then
-							WriteStatusLine(EventType.Warning, String.Format("Field '{0}' will be unmapped", item.DocumentField.FieldName), 0)
+							WriteStatusLine(EventType2.Warning, String.Format("Field '{0}' will be unmapped", item.DocumentField.FieldName), 0)
 						End If
 					End If
 					If Not item.DocumentField Is Nothing Then
@@ -1949,14 +1949,14 @@ Namespace kCura.WinEDDS
 		Private Sub WriteTapiProgressMessage(ByVal message As String, ByVal lineNumber As Int32)
 			message = GetLineMessage(message, lineNumber)
 			Dim lineProgress As Int32 = FileTapiProgressCount
-			OnStatusMessage(New StatusEventArgs(EventType.Progress, lineProgress, RecordCount, message, CurrentStatisticsSnapshot, Statistics))
+			OnStatusMessage(New StatusEventArgs(EventType2.Progress, lineProgress, RecordCount, message, CurrentStatisticsSnapshot, Statistics))
 		End Sub
 
-		Protected Sub WriteStatusLine(ByVal et As EventType, ByVal line As String)
+		Protected Sub WriteStatusLine(ByVal et As EventType2, ByVal line As String)
 			WriteStatusLine(et, line, Me.CurrentLineNumber)
 		End Sub
 
-		Private Sub WriteStatusLine(ByVal et As EventType, ByVal line As String, ByVal lineNumber As Int32)
+		Private Sub WriteStatusLine(ByVal et As EventType2, ByVal line As String, ByVal lineNumber As Int32)
 			' Avoid displaying potential negative numbers.
 			Dim recordNumber As Int32 = lineNumber
 			If recordNumber <> TapiConstants.NoLineNumber Then
@@ -2001,7 +2001,7 @@ Namespace kCura.WinEDDS
 			ht.Add("Line Number", currentLineNumber)
 			ht.Add("Identifier", _artifactReader.SourceIdentifierValue)
 			RaiseReportError(ht, currentLineNumber, _artifactReader.SourceIdentifierValue, "client")
-			WriteStatusLine(EventType.Error, line)
+			WriteStatusLine(EventType2.Error, line)
 		End Sub
 
 		Private Sub RaiseReportError(ByVal row As System.Collections.Hashtable, ByVal lineNumber As Int32, ByVal identifier As String, ByVal type As String)
@@ -2035,25 +2035,25 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Sub WriteWarning(ByVal line As String)
-			WriteStatusLine(EventType.Warning, line)
+			WriteStatusLine(EventType2.Warning, line)
 		End Sub
 
 		Private Sub WriteEndImport(ByVal line As String)
 			' When a fatal error occurs or the user stops, provide an accurate count due to async nature of TAPI.
 			If ShouldImport Then
-				WriteStatusLine(EventType.End, line)
+				WriteStatusLine(EventType2.End, line)
 			ElseIf CancellationToken.IsCancellationRequested Then
-				WriteStatusLine(EventType.Status, "Job has been finalized.", TapiConstants.NoLineNumber)
+				WriteStatusLine(EventType2.Status, "Job has been finalized.", TapiConstants.NoLineNumber)
 			Else
-				WriteStatusLine(EventType.End, line, FileTapiProgressCount)
+				WriteStatusLine(EventType2.End, line, FileTapiProgressCount)
 			End If
 		End Sub
 
-		Protected Overrides Sub OnWriteStatusMessage(ByVal eventType As EventType, ByVal message As String, ByVal progressLineNumber As Int32, ByVal physicalLineNumber As Int32)
+		Protected Overrides Sub OnWriteStatusMessage(ByVal eventType As EventType2, ByVal message As String, ByVal progressLineNumber As Int32, ByVal physicalLineNumber As Int32)
 			Select Case eventType
-				Case EventType.Error
+				Case EventType2.Error
 					WriteError(progressLineNumber, message)
-				Case EventType.Warning, EventType.Status, EventType.Progress, EventType.Statistics
+				Case EventType2.Warning, EventType2.Status, EventType2.Progress, EventType2.Statistics
 					WriteStatusLine(eventType, message, progressLineNumber)
 			End Select
 		End Sub
@@ -2063,7 +2063,7 @@ Namespace kCura.WinEDDS
 			MyBase.OnWriteFatalError(exception)
 		End Sub
 		Private Sub LegacyUploader_UploadStatusEvent(ByVal s As String)
-			WriteStatusLine(EventType.Status, s)
+			WriteStatusLine(EventType2.Status, s)
 		End Sub
 #End Region
 
@@ -2097,8 +2097,8 @@ Namespace kCura.WinEDDS
 			If Not _artifactReader Is Nothing Then
 				_artifactReader.Halt()
 			End If
-			WriteStatusLine(EventType.Progress, $"Job has been stopped - {Me.TotalTransferredFilesCount} documents have been transferred.", CType(Me.TotalTransferredFilesCount + 1, Integer))
-			WriteStatusLine(EventType.Status, "Finalizing job...", TapiConstants.NoLineNumber)
+			WriteStatusLine(EventType2.Progress, $"Job has been stopped - {Me.TotalTransferredFilesCount} documents have been transferred.", CType(Me.TotalTransferredFilesCount + 1, Integer))
+			WriteStatusLine(EventType2.Status, "Finalizing job...", TapiConstants.NoLineNumber)
 		End Sub
 
 		Protected Overridable Sub _processContext_ExportServerErrors(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportServerErrors
@@ -2229,7 +2229,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _artifactReader_StatusMessage(ByVal message As String) Handles _artifactReader.StatusMessage
-			OnStatusMessage(New StatusEventArgs(EventType.Status, _artifactReader.CurrentLineNumber, RecordCount, message, False, CurrentStatisticsSnapshot, Statistics))
+			OnStatusMessage(New StatusEventArgs(EventType2.Status, _artifactReader.CurrentLineNumber, RecordCount, message, False, CurrentStatisticsSnapshot, Statistics))
 		End Sub
 
 		Private Sub _artifactReader_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _artifactReader.FieldMapped
@@ -2247,7 +2247,7 @@ Namespace kCura.WinEDDS
 			Dim downloader As FileDownloader = Nothing
 			Try
 				With Me.BulkImportManager.GenerateNonImageErrorFiles(_caseInfo.ArtifactID, RunId, artifactTypeID, True, _keyFieldID)
-					Me.WriteStatusLine(EventType.Status, "Retrieving errors from server")
+					Me.WriteStatusLine(EventType2.Status, "Retrieving errors from server")
 					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer)
 					AddHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
 					Dim errorsLocation As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
@@ -2271,7 +2271,7 @@ Namespace kCura.WinEDDS
 							ht.Add("Identifier", line(2))
 							ht.Add("Line Number", Int32.Parse(line(0)))
 							RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
-							OnStatusMessage(New StatusEventArgs(EventType.Error, Int32.Parse(line(0)) - 1, RecordCount, "[Line " & line(0) & "]" & line(1), CurrentStatisticsSnapshot, Statistics))
+							OnStatusMessage(New StatusEventArgs(EventType2.Error, Int32.Parse(line(0)) - 1, RecordCount, "[Line " & line(0) & "]" & line(1), CurrentStatisticsSnapshot, Statistics))
 							line = sr.ReadLine
 						End While
 						RemoveHandler sr.Context.IoWarningEvent, AddressOf Me.IoWarningHandler

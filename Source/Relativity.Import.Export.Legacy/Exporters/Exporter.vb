@@ -208,7 +208,7 @@ Namespace kCura.WinEDDS
 					_volumeManager.Close()
 				End If
 			Finally
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType.End, _lastStatisticsSnapshot, Statistics))
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType2.End, _lastStatisticsSnapshot, Statistics))
 			End Try
 			Return Me.ErrorLogFileName = ""
 		End Function
@@ -287,7 +287,7 @@ Namespace kCura.WinEDDS
 						Exit While
 					Catch ex As System.Exception
 						If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
-							Me.WriteStatusLine(EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+							Me.WriteStatusLine(EventType2.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
 							System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
 						Else
 							Throw
@@ -358,10 +358,10 @@ Namespace kCura.WinEDDS
 					WriteWarningWithoutShowingExportedDocumentsCount("Filename column does not exist for this workspace and the filename from the file table will be used")
 				End If
 
-				Me.WriteStatusLine(EventType.Status, "Created search log file.", True)
+				Me.WriteStatusLine(EventType2.Status, "Created search log file.", True)
 				Me.WriteUpdate($"Data retrieved. Beginning {typeOfExportDisplayString} export...")
 
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType.ResetStartTime, _lastStatisticsSnapshot, Statistics))
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType2.ResetStartTime, _lastStatisticsSnapshot, Statistics))
 				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
 
 				Dim records As Object() = Nothing
@@ -381,7 +381,7 @@ Namespace kCura.WinEDDS
 
 					If records Is Nothing Then Exit While
 					If Me.Settings.TypeOfExport = ExportFile.ExportType.Production AndAlso production IsNot Nothing AndAlso production.DocumentsHaveRedactions Then
-						WriteStatusLineWithoutDocCount(EventType.Warning, "Please Note - Documents in this production were produced with redactions applied.  Ensure that you have exported text that was generated via OCR of the redacted documents.", True)
+						WriteStatusLineWithoutDocCount(EventType2.Warning, "Please Note - Documents in this production were produced with redactions applied.  Ensure that you have exported text that was generated via OCR of the redacted documents.", True)
 					End If
 					lastRecordCount = records.Length
 					Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
@@ -403,7 +403,7 @@ Namespace kCura.WinEDDS
 				' REL-292896: nextRecordIndex represents the total number of records and should match.
 				ValidateExportedRecordCount(nextRecordIndex, Me.TotalExportArtifactCount)
 
-				Me.WriteStatusLine(EventType.Status, FileDownloader.TotalWebTime.ToString, True)
+				Me.WriteStatusLine(EventType2.Status, FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
 
 				If UseOldExport Then _volumeManager.Finish()
@@ -445,7 +445,7 @@ Namespace kCura.WinEDDS
 					If TypeOf (ex) Is System.InvalidOperationException AndAlso ex.Message.Contains("empty response") Then
 						Throw New Exception("Communication with the WebAPI server has failed, possibly because values for MaximumLongTextSizeForExportInCell and/or MaximumTextVolumeForExportChunk are too large.  Please lower them and try again.", ex)
 					ElseIf tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
-						Me.WriteStatusLine(EventType.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
+						Me.WriteStatusLine(EventType2.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
 						System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
 					Else
 						Throw
@@ -1140,7 +1140,7 @@ Namespace kCura.WinEDDS
 			RaiseEvent FatalErrorEvent(line, ex)
 		End Sub
 
-		Friend Sub WriteStatusLine(ByVal e As EventType, ByVal line As String, ByVal isEssential As Boolean, ByVal showNumberOfExportedDocuments As Boolean)
+		Friend Sub WriteStatusLine(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean, ByVal showNumberOfExportedDocuments As Boolean)
 			Dim now As Long = System.DateTime.Now.Ticks
 
 			SyncLock _syncLock
@@ -1157,11 +1157,11 @@ Namespace kCura.WinEDDS
 
 		End Sub
 
-		Friend Sub WriteStatusLine(ByVal e As EventType, ByVal line As String, ByVal isEssential As Boolean) Implements IStatus.WriteStatusLine
+		Friend Sub WriteStatusLine(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean) Implements IStatus.WriteStatusLine
 			WriteStatusLine(e, line, isEssential, True)
 		End Sub
 
-		Friend Sub WriteStatusLineWithoutDocCount(ByVal e As EventType, ByVal line As String, ByVal isEssential As Boolean)
+		Friend Sub WriteStatusLineWithoutDocCount(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean)
 			Dim now As Long = System.DateTime.Now.Ticks
 
 			SyncLock _syncLock
@@ -1176,7 +1176,7 @@ Namespace kCura.WinEDDS
 
 		Friend Sub WriteError(ByVal line As String) Implements IStatus.WriteError
 			Interlocked.Increment(_errorCount)
-			WriteStatusLine(EventType.Error, line, True)
+			WriteStatusLine(EventType2.Error, line, True)
 		End Sub
 
 		Friend Sub WriteImgProgressError(ByVal artifact As Exporters.ObjectExportInfo, ByVal imageIndex As Int32, ByVal ex As System.Exception, Optional ByVal notes As String = "") Implements IStatus.WriteImgProgressError
@@ -1196,16 +1196,16 @@ Namespace kCura.WinEDDS
 		End Sub
 		Friend Sub WriteWarningWithoutShowingExportedDocumentsCount(line As String)
 			Interlocked.Increment(_warningCount)
-			WriteStatusLine(EventType.Warning, line, True, False)
+			WriteStatusLine(EventType2.Warning, line, True, False)
 		End Sub
 
 		Friend Sub WriteWarning(ByVal line As String) Implements IStatus.WriteWarning
 			Interlocked.Increment(_warningCount)
-			WriteStatusLine(EventType.Warning, line, True)
+			WriteStatusLine(EventType2.Warning, line, True)
 		End Sub
 
 		Friend Sub WriteUpdate(ByVal line As String, Optional ByVal isEssential As Boolean = True) Implements IStatus.WriteUpdate
-			WriteStatusLine(EventType.Progress, line, isEssential)
+			WriteStatusLine(EventType2.Progress, line, isEssential)
 		End Sub
 
 		Dim _statisticsLastUpdated As Date
@@ -1214,7 +1214,7 @@ Namespace kCura.WinEDDS
 			If updateCurrentStats Then
 				_lastStatisticsSnapshot = Statistics.ToDictionary()
 				_statisticsLastUpdated = time
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType.Statistics, _lastStatisticsSnapshot, Statistics))
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType2.Statistics, _lastStatisticsSnapshot, Statistics))
 			End If
 		End Sub
 

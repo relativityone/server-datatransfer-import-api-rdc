@@ -43,7 +43,7 @@ Namespace kCura.WinEDDS
 			Try
 				_fileLineCount = Global.Relativity.Import.Export.Io.FileSystem.Instance.File.CountLinesInFile(path)
 				Reader = New StreamReader(path)
-				RaiseStatusEvent(EventType.Progress, "Begin Image Upload")
+				RaiseStatusEvent(EventType2.Progress, "Begin Image Upload")
 
 				While [Continue]
 					Try
@@ -55,13 +55,13 @@ Namespace kCura.WinEDDS
 						Else
 							txt = ex.Message
 						End If
-						RaiseStatusEvent(EventType.Error, txt)
+						RaiseStatusEvent(EventType2.Error, txt)
 					End Try
 				End While
 				Me.Reader.Close()
-				RaiseStatusEvent(EventType.Progress, "End Image Upload")
+				RaiseStatusEvent(EventType2.Progress, "End Image Upload")
 			Catch ex As Exception
-				RaiseStatusEvent(EventType.Error, ex.Message)
+				RaiseStatusEvent(EventType2.Error, ex.Message)
 				RaiseFatalError(ex)
 			End Try
 			Return Nothing
@@ -75,11 +75,11 @@ Namespace kCura.WinEDDS
 				Dim filePath As String = GetFilePathAndValidate(record)
 
 				If record.BatesNumber = "" Then
-					Me.RaiseStatusEvent(EventType.Progress, $"Line {CurrentLineNumber} improperly formatted. Invalid bates number.")
+					Me.RaiseStatusEvent(EventType2.Progress, $"Line {CurrentLineNumber} improperly formatted. Invalid bates number.")
 				ElseIf filePath = "" Then
-					Me.RaiseStatusEvent(EventType.Progress, $"Record '{record.BatesNumber}' processed - file info error.")
+					Me.RaiseStatusEvent(EventType2.Progress, $"Record '{record.BatesNumber}' processed - file info error.")
 				Else
-					Me.RaiseStatusEvent(EventType.Progress, $"Record '{record.BatesNumber}' processed.")
+					Me.RaiseStatusEvent(EventType2.Progress, $"Record '{record.BatesNumber}' processed.")
 				End If
 
 				If MyBase.HasReachedEOF Then
@@ -109,12 +109,12 @@ Namespace kCura.WinEDDS
 			Dim foundFileName As String = _filePathHelper.GetExistingFilePath(filename)
 			Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
 			If Not fileExists Then
-				Me.RaiseStatusEvent(EventType.Error, $"File '{filename}' does not exist.")
+				Me.RaiseStatusEvent(EventType2.Error, $"File '{filename}' does not exist.")
 				Return String.Empty
 			End If
 
 			If Not String.Equals(filename, foundFileName)
-				Me.RaiseStatusEvent(EventType.Warning, $"File '{filename}' does not exist. File {foundFileName} will be used instead.")
+				Me.RaiseStatusEvent(EventType2.Warning, $"File '{filename}' does not exist. File {foundFileName} will be used instead.")
 			End If
 
 			If Not ValidateImage(foundFileName) Then
@@ -130,7 +130,7 @@ Namespace kCura.WinEDDS
 				retval = valuearray(index)
 				Return retval
 			Catch ex As IndexOutOfRangeException
-				Me.RaiseStatusEvent(EventType.Error, $"Line {CurrentLineNumber} is invalid format. No column at index {index}.")
+				Me.RaiseStatusEvent(EventType2.Error, $"Line {CurrentLineNumber} is invalid format. No column at index {index}.")
 				Return ""
 			End Try
 		End Function
@@ -140,7 +140,7 @@ Namespace kCura.WinEDDS
 				_imageValidator.Validate(path)
 				Return True
 			Catch ex As Exception
-				RaiseStatusEvent(EventType.Error, ex.Message)
+				RaiseStatusEvent(EventType2.Error, ex.Message)
 				Return False
 			End Try
 		End Function
@@ -153,7 +153,7 @@ Namespace kCura.WinEDDS
 			RaiseEvent FatalErrorEvent("Error processing line: " + CurrentLineNumber.ToString, ex)
 		End Sub
 
-		Private Sub RaiseStatusEvent(ByVal et As EventType, ByVal line As String)
+		Private Sub RaiseStatusEvent(ByVal et As EventType2, ByVal line As String)
 			'TODO: track stats
 			RaiseEvent StatusMessage(New StatusEventArgs(et, Me.CurrentLineNumber, _fileLineCount, line, Nothing, Nothing))
 		End Sub

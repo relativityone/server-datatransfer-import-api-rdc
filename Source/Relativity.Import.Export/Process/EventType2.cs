@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="EventType.cs" company="Relativity ODA LLC">
+// <copyright file="EventType2.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -7,9 +7,9 @@
 namespace Relativity.Import.Export.Process
 {
 	/// <summary>
-	/// Represents all supported events.
+	/// Represents all supported process related events.
 	/// </summary>
-	public enum EventType
+	public enum EventType2
 	{
 		/// <summary>
 		/// The status event.

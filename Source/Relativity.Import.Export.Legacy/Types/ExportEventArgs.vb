@@ -4,7 +4,7 @@ Namespace kCura.WinEDDS
 	Public Class ExportEventArgs
 		Protected _documentsExported As Int32
 		Protected _totalDocuments As Int32
-		Protected _eventType As EventType
+		Protected _eventType As EventType2
 		Protected _message As String
 		Protected _additionalInfo As Object
 		Protected _statistics As Statistics
@@ -28,11 +28,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property EventType() As EventType
+		Public Property EventType() As EventType2
 			Get
 				Return _eventType
 			End Get
-			Set(ByVal value As EventType)
+			Set(ByVal value As EventType2)
 				_eventType = value
 			End Set
 		End Property
@@ -66,7 +66,7 @@ Namespace kCura.WinEDDS
 			_statistics = statistics
 		End Sub
 
-		Public Sub New(ByVal documentsExported As Int32, ByVal totalDocuments As Int32, ByVal message As String, ByVal eventType As EventType, ByVal additionalInfo As Object, ByVal statistics As Statistics)
+		Public Sub New(ByVal documentsExported As Int32, ByVal totalDocuments As Int32, ByVal message As String, ByVal eventType As EventType2, ByVal additionalInfo As Object, ByVal statistics As Statistics)
 			_documentsExported = documentsExported
 			_totalDocuments = totalDocuments
 			_message = message

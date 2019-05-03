@@ -606,10 +606,10 @@ Namespace kCura.WinEDDS
 								Exit While
 							Catch ex As System.Exception
 								If tries = 1 Then
-									_parent.WriteStatusLine(EventType.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
+									_parent.WriteStatusLine(EventType2.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
 								ElseIf tries < maxTries Then
 									Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-									_parent.WriteStatusLine(EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
+									_parent.WriteStatusLine(EventType2.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
 									System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 								Else
 									Throw
@@ -723,11 +723,11 @@ Namespace kCura.WinEDDS
 					Dim secs As Double = Math.Round(webServiceRequestTime.ElapsedMilliseconds / 1000, 2)
 
 					If tries = 1 Then
-						_parent.WriteStatusLine(EventType.Warning, "Second attempt to download full text for document " & 
+						_parent.WriteStatusLine(EventType2.Warning, "Second attempt to download full text for document " & 
 							artifact.IdentifierValue & ". Previous request took " & secs & " (secs)", True)
 					ElseIf tries < maxTries Then
 						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-						_parent.WriteStatusLine(EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds. " &
+						_parent.WriteStatusLine(EventType2.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds. " &
 							"Previous request took " & secs & " (secs)", True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
@@ -875,7 +875,7 @@ Namespace kCura.WinEDDS
 			If _fileHelper.Exists(tempFile) Then
 				If _settings.Overwrite Then
 					_fileHelper.Delete(tempFile)
-					_parent.WriteStatusLine(EventType.Status, String.Format("Overwriting image for {0}.", image.BatesNumber), False)
+					_parent.WriteStatusLine(EventType2.Status, String.Format("Overwriting image for {0}.", image.BatesNumber), False)
 				Else
 					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
 					Return 0
@@ -891,10 +891,10 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As System.Exception
 					If tries = 1 Then
-						_parent.WriteStatusLine(EventType.Warning, "Second attempt to download image " & image.BatesNumber & " - exact error: " & ex.ToString, True)
+						_parent.WriteStatusLine(EventType2.Warning, "Second attempt to download image " & image.BatesNumber & " - exact error: " & ex.ToString, True)
 					ElseIf tries < maxTries Then
 						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-						_parent.WriteStatusLine(EventType.Warning, "Additional attempt to download image " & image.BatesNumber & " failed - retrying in " & waitTime.ToString() & " seconds - exact error: " & ex.ToString, True)
+						_parent.WriteStatusLine(EventType2.Warning, "Additional attempt to download image " & image.BatesNumber & " failed - retrying in " & waitTime.ToString() & " seconds - exact error: " & ex.ToString, True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
 						Throw
@@ -910,21 +910,21 @@ Namespace kCura.WinEDDS
 				If _fileHelper.Exists(fileName) Then
 					If _settings.Overwrite Then
 						_fileHelper.Delete(fileName)
-						_parent.WriteStatusLine(EventType.Status, String.Format("Overwriting document image {0}.", batesNumber), False)
+						_parent.WriteStatusLine(EventType2.Status, String.Format("Overwriting document image {0}.", batesNumber), False)
 						_fileHelper.Move(tempFileLocation, fileName)
 					Else
 						_parent.WriteWarning(String.Format("{0}.tif already exists. Skipping file export.", batesNumber))
 					End If
 				Else
 					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
-					_parent.WriteStatusLine(EventType.Status, String.Format("Now exporting document image {0}.", batesNumber), False)
+					_parent.WriteStatusLine(EventType2.Status, String.Format("Now exporting document image {0}.", batesNumber), False)
 					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
 					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_MoveFile", threadNumber)
 					_fileHelper.Move(tempFileLocation, fileName)
 					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_MoveFile", threadNumber)
 				End If
 				_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
-				_parent.WriteStatusLine(EventType.Status, String.Format("Finished exporting document image {0}.", batesNumber), False)
+				_parent.WriteStatusLine(EventType2.Status, String.Format("Finished exporting document image {0}.", batesNumber), False)
 				_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
 			End If
 			'_parent.DocumentsExported += 1
@@ -1013,14 +1013,14 @@ Namespace kCura.WinEDDS
 				If _fileHelper.Exists(exportFileName) Then
 					If _settings.Overwrite Then
 						_fileHelper.Delete(exportFileName)
-						_parent.WriteStatusLine(EventType.Status, String.Format("Overwriting document {0}.", systemFileName), False)
+						_parent.WriteStatusLine(EventType2.Status, String.Format("Overwriting document {0}.", systemFileName), False)
 						_fileHelper.Move(tempLocation, exportFileName)
 					Else
 						_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", systemFileName))
 					End If
 				Else
 					_timekeeper.MarkStart("VolumeManager_ExportNative_WriteStatus", threadNumber)
-					_parent.WriteStatusLine(EventType.Status, String.Format("Now exporting document {0}.", systemFileName), False)
+					_parent.WriteStatusLine(EventType2.Status, String.Format("Now exporting document {0}.", systemFileName), False)
 					_timekeeper.MarkEnd("VolumeManager_ExportNative_WriteStatus", threadNumber)
 					_timekeeper.MarkStart("VolumeManager_ExportNative_MoveFile", threadNumber)
 					_fileHelper.Move(tempLocation, exportFileName)
@@ -1040,7 +1040,7 @@ Namespace kCura.WinEDDS
 			If _fileHelper.Exists(tempFile) Then
 				If Settings.Overwrite Then
 					_fileHelper.Delete(tempFile)
-					_parent.WriteStatusLine(EventType.Status, String.Format("Overwriting document {0}.", nativeFileName), False)
+					_parent.WriteStatusLine(EventType2.Status, String.Format("Overwriting document {0}.", nativeFileName), False)
 				Else
 					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
 					artifact.NativeTempLocation = tempFile
@@ -1061,10 +1061,10 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As System.Exception
 					If tries = 1 Then
-						_parent.WriteStatusLine(EventType.Warning, "Second attempt to download native for document " & artifact.IdentifierValue, True)
+						_parent.WriteStatusLine(EventType2.Warning, "Second attempt to download native for document " & artifact.IdentifierValue, True)
 					ElseIf tries < maxTries Then
 						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-						_parent.WriteStatusLine(EventType.Warning, "Additional attempt to download native for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
+						_parent.WriteStatusLine(EventType2.Warning, "Additional attempt to download native for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
 						Throw
@@ -1145,7 +1145,7 @@ Namespace kCura.WinEDDS
 				If destinationPathExists AndAlso Not _settings.Overwrite Then 'Skip export instead of overwriting file
 					_parent.WriteWarning(destinationFilePath & " already exists. Skipping file export.")
 				Else 'Overwrite existing text file
-					If destinationPathExists Then _parent.WriteStatusLine(EventType.Status, "Overwriting: " & destinationFilePath, False)
+					If destinationPathExists Then _parent.WriteStatusLine(EventType2.Status, "Overwriting: " & destinationFilePath, False)
 					Dim destinationFileStream As FileStream = _fileStreamFactory.Create(destinationFilePath, False)
 					destination = New System.IO.StreamWriter(destinationFileStream, Me.Settings.TextFileEncoding)
 				End If
