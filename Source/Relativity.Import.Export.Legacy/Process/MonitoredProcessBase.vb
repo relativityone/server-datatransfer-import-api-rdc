@@ -5,7 +5,7 @@ Imports Relativity.Import.Export.Process
 Imports Relativity.Import.Export.Transfer
 
 Public MustInherit Class MonitoredProcessBase
-	Inherits ProcessBase
+	Inherits ProcessBase2
 
 	Private ReadOnly _messageThrottling As TimeSpan
 	Protected Property JobGuid As System.Guid = System.Guid.NewGuid()

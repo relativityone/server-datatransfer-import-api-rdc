@@ -4,7 +4,7 @@ Imports Relativity.Import.Export.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class ConnectionDetailsProcess
-		Inherits ProcessBase
+		Inherits ProcessBase2
 
 		Private ReadOnly _credential As Net.NetworkCredential
 		Private ReadOnly _cookieContainer As Net.CookieContainer

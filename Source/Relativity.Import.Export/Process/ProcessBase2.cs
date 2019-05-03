@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ProcessBase.cs" company="Relativity ODA LLC">
+// <copyright file="ProcessBase2.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -14,7 +14,7 @@ namespace Relativity.Import.Export.Process
 	/// <summary>
 	/// Defines an abstract object that performs a runnable process.
 	/// </summary>
-	public abstract class ProcessBase : IRunnable, IDisposable
+	public abstract class ProcessBase2 : IRunnable, IDisposable
 	{
 		/// <summary>
 		/// The process error writer.
@@ -32,9 +32,9 @@ namespace Relativity.Import.Export.Process
 		private bool disposed;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ProcessBase"/> class.
+		/// Initializes a new instance of the <see cref="ProcessBase2"/> class.
 		/// </summary>
-		protected ProcessBase()
+		protected ProcessBase2()
 			: this(
 				Relativity.Import.Export.Io.FileSystem.Instance,
 				Relativity.Import.Export.AppSettings.Instance,
@@ -44,7 +44,7 @@ namespace Relativity.Import.Export.Process
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ProcessBase"/> class.
+		/// Initializes a new instance of the <see cref="ProcessBase2"/> class.
 		/// </summary>
 		/// <param name="fileSystem">
 		/// The file system wrapper.
@@ -58,7 +58,7 @@ namespace Relativity.Import.Export.Process
 		/// <param name="tokenSource">
 		/// The cancellation token source.
 		/// </param>
-		protected ProcessBase(IFileSystem fileSystem, IAppSettings settings, Relativity.Logging.ILog logger, CancellationTokenSource tokenSource)
+		protected ProcessBase2(IFileSystem fileSystem, IAppSettings settings, Relativity.Logging.ILog logger, CancellationTokenSource tokenSource)
 		{
 			if (fileSystem == null)
 			{

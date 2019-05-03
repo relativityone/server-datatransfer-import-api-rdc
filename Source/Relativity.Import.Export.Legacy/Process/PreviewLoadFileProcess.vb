@@ -5,7 +5,7 @@ Imports Relativity.Import.Export.Process
 Namespace kCura.WinEDDS
 
 	Public Class PreviewLoadFileProcess
-		Inherits ProcessBase
+		Inherits ProcessBase2
 
 		Public LoadFile As LoadFile
 		Protected WithEvents _loadFilePreviewer As LoadFilePreviewer
