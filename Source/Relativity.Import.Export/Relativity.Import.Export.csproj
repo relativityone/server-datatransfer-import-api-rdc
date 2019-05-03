@@ -129,8 +129,8 @@
     <Compile Include="Media\ImageConstants.cs" />
     <Compile Include="Media\ImageConversionService.cs" />
     <Compile Include="Media\ImageFormat.cs" />
-    <Compile Include="Media\ImageIdException.cs" />
     <Compile Include="Media\ImageRollupException.cs" />
+    <Compile Include="Media\ImageValidationException.cs" />
     <Compile Include="MemoryCacheRepository.cs" />
     <Compile Include="Process\EventType2.cs" />
     <Compile Include="Process\ProcessBase2.cs" />
