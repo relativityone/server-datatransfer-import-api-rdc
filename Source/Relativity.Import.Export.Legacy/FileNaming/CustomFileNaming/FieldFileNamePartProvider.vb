@@ -2,7 +2,7 @@
 Imports FileNaming.CustomFileNaming
 Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Helpers
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 	Public Class FieldFileNamePartProvider

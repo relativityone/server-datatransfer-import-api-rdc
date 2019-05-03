@@ -3,7 +3,7 @@ Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Data
 Imports Relativity.Import.Export.Io
 Imports Relativity.Logging
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 
 Namespace kCura.WinEDDS

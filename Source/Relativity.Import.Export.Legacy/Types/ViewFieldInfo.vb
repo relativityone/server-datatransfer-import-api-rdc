@@ -1,12 +1,12 @@
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class ViewFieldInfo
-		Inherits Global.Relativity.Import.Export.Services.ViewFieldInfo
+		Inherits Global.Relativity.Import.Export.Service.ViewFieldInfo
 		Implements IComparable
 
 		Public Sub New(ByVal row As System.Data.DataRow)
 			MyBase.New(row)
 		End Sub
-		Public Sub New(ByVal vfi As Global.Relativity.Import.Export.Services.ViewFieldInfo)
+		Public Sub New(ByVal vfi As Global.Relativity.Import.Export.Service.ViewFieldInfo)
 			MyBase.New(vfi)
 		End Sub
 

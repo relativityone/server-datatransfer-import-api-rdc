@@ -3,7 +3,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Services
+namespace Relativity.Import.Export.Service
 {
 	/// <summary>
 	/// Defines service related constants.

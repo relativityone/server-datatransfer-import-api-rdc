@@ -21,7 +21,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.Export.VolumeManagerV2.Download;
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Export.VolumeManagerV2.Repository;
-    using Relativity.Import.Export.Services;
+    using Relativity.Import.Export.Service;
 	using Relativity.Import.Export.TestFramework;
 	using Relativity.Logging;
 

@@ -3,7 +3,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Services
+namespace Relativity.Import.Export.Service
 {
 	/// <summary>
 	/// Defines constants for the well-known file types, including native, TIFF, full-text, stamped TIFF, transcript, and production images.

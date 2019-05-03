@@ -3,7 +3,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Services
+namespace Relativity.Import.Export.Service
 {
 	/// <summary>
 	/// Defines constants for the well-known execution sources, including RDC, Import API, RIP, and Processing to support import/export telemetry.

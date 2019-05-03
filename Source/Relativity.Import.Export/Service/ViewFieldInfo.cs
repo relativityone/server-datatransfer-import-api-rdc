@@ -3,7 +3,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Services
+namespace Relativity.Import.Export.Service
 {
 	using System;
 	using System.Runtime.Serialization;
@@ -309,7 +309,7 @@ namespace Relativity.Import.Export.Services
 			}
 		}
 
-		public Relativity.Import.Export.Services.FieldCategory Category
+		public Relativity.Import.Export.Service.FieldCategory Category
 		{
 			get
 			{
@@ -322,7 +322,7 @@ namespace Relativity.Import.Export.Services
 			}
 		}
 
-		public Relativity.Import.Export.Services.ColumnSourceType ColumnSource
+		public Relativity.Import.Export.Service.ColumnSourceType ColumnSource
 		{
 			get
 			{
@@ -348,7 +348,7 @@ namespace Relativity.Import.Export.Services
 			}
 		}
 
-		public Relativity.Import.Export.Services.FieldCategory ConnectorFieldCategory
+		public Relativity.Import.Export.Service.FieldCategory ConnectorFieldCategory
 		{
 			get
 			{
@@ -452,7 +452,7 @@ namespace Relativity.Import.Export.Services
 			}
 		}
 
-		public Relativity.Import.Export.Services.FieldType FieldType
+		public Relativity.Import.Export.Service.FieldType FieldType
 		{
 			get
 			{
@@ -543,7 +543,7 @@ namespace Relativity.Import.Export.Services
 			}
 		}
 
-		public Relativity.Import.Export.Services.ParentReflectionType ParentReflectionType
+		public Relativity.Import.Export.Service.ParentReflectionType ParentReflectionType
 		{
 			get
 			{

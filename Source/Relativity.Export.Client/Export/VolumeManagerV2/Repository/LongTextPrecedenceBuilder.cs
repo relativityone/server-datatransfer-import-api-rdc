@@ -15,7 +15,7 @@
 	using Relativity.Export.VolumeManagerV2.Download;
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Export.VolumeManagerV2.Statistics;
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 
 	public class LongTextPrecedenceBuilder : ILongTextBuilder
 	{

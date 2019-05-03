@@ -1,5 +1,5 @@
 ﻿Imports kCura.WinEDDS
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 Imports Relativity.Desktop.Client
 
 Public Class ImportOptions

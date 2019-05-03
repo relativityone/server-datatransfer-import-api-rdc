@@ -7,7 +7,7 @@
 	using kCura.WinEDDS;
 
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 	using Relativity.Logging;
 
 	public class FullTextLoadFileEntryFactory

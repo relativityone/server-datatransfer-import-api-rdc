@@ -3,7 +3,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Services
+namespace Relativity.Import.Export.Service
 {
 	/// <summary>
 	/// Defines constants for the well-known Relativity artifact types, including workspace/case, field, and document.

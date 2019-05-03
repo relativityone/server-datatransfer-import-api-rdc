@@ -8,7 +8,7 @@
 	using kCura.WinEDDS.Exporters;
 
 	using Relativity.Export.VolumeManagerV2.Repository;
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 
 	public class LongTextHelper
 	{

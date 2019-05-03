@@ -10,7 +10,7 @@ namespace Relativity.Import.Export.TestFramework
 	using System.Data;
 	using System.Globalization;
 
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 
 	public class QueryFieldFactory
 	{

@@ -16,7 +16,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.Export.VolumeManagerV2;
 	using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-    using Relativity.Import.Export.Services;
+    using Relativity.Import.Export.Service;
 	using Relativity.Logging;
 
     [TestFixture]

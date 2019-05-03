@@ -12,7 +12,7 @@ Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.Service.Export
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 Imports Relativity.Import.Export.Transfer
 
 Namespace kCura.WinEDDS

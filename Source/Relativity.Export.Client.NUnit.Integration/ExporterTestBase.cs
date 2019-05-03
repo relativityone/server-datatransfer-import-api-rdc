@@ -29,7 +29,7 @@ namespace Relativity.Export.Client.NUnit.Integration
 	using Relativity.Export.VolumeManagerV2.Container;
 	using Relativity.Import.Export;
 	using Relativity.Import.Export.Process;
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 	using Relativity.Import.Export.TestFramework;
 	using Relativity.Logging;
 	using Relativity.Transfer;

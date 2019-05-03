@@ -32,7 +32,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 				this.RelativityInstance.WebApiServiceUrl.ToString(),
 				DefaultTimeOutMilliseconds))
 			{
-				Relativity.Import.Export.Services.CaseInfo caseInfo = caseManager.Read(this.TestParameters.WorkspaceId);
+				Relativity.Import.Export.Service.CaseInfo caseInfo = caseManager.Read(this.TestParameters.WorkspaceId);
 				Assert.That(caseInfo, Is.Not.Null);
 				Assert.That(caseInfo.ArtifactID, Is.Positive);
 				Assert.That(caseInfo.DocumentPath, Is.Not.Empty.Or.Null);

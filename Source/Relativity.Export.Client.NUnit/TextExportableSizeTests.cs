@@ -18,7 +18,7 @@ namespace Relativity.Export.NUnit
 
 	using Relativity.Export.VolumeManagerV2.DataSize;
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 	using Relativity.Import.Export.TestFramework;
 
 	[TestFixture]

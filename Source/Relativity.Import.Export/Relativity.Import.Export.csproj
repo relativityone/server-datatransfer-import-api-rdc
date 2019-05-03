@@ -154,7 +154,6 @@
     <Compile Include="Service\FieldInfoBase.cs" />
     <Compile Include="Service\FieldType.cs" />
     <Compile Include="Service\FileType.cs" />
-    <Compile Include="Service\GlobalSuppressions.cs" />
     <Compile Include="Service\ImportBehaviorChoice.cs" />
     <Compile Include="Service\ImportOverwriteType.cs" />
     <Compile Include="Service\ImportStatus.cs" />

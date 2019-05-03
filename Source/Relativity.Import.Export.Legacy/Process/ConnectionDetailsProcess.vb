@@ -1,5 +1,5 @@
 Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 Imports Relativity.Import.Export.Transfer
 
 Namespace kCura.WinEDDS

@@ -1,7 +1,7 @@
 Imports System.Collections.Concurrent
 Imports kCura.WinEDDS.Service.Export
 Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 Imports Relativity.Import.Export.Transfer
 
 Namespace kCura.WinEDDS

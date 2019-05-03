@@ -3,7 +3,7 @@ Imports FileNaming.CustomFileNaming
 Imports kCura.WinEDDS
 Imports Relativity.Desktop.Client
 Imports Relativity.Desktop.Client.Legacy.Controls
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Public Class ExportForm
 	Inherits System.Windows.Forms.Form
@@ -1263,7 +1263,7 @@ Public Class ExportForm
 	Protected _exportFile As kCura.WinEDDS.ExportFile
 	Protected WithEvents _precedenceForm As ProductionPrecedenceForm
 	Protected WithEvents _textFieldPrecedenceForm As TextPrecedenceForm
-	Private _allExportableFields As Relativity.Import.Export.Services.ViewFieldInfo
+	Private _allExportableFields As Relativity.Import.Export.Service.ViewFieldInfo
 	Private _dataSourceIsSet As Boolean = False
 	Private _objectTypeName As String = ""
 	Private _isLoadingExport As Boolean = False
