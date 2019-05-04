@@ -111,7 +111,7 @@ timestamps
                             stage('Run unit tests')
                             {
                                 echo "Running the unit tests"
-                                output = powershell ".\\build.ps1 UnitTests"
+                                output = powershell ".\\build.ps1 UnitTests -ILMerge"
                                 echo output
                             }
                         }
@@ -121,7 +121,7 @@ timestamps
                             stage('Run integration tests')
                             {
                                 echo "Running the integration tests"
-                                output = powershell ".\\build.ps1 IntegrationTests -TestEnvironment $params.testEnvironment"
+                                output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment"
                                 echo output
                             }
                         }
