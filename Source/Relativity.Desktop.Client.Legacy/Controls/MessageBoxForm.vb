@@ -1,4 +1,4 @@
-Namespace Relativity.Desktop.Client.Legacy.Controls
+Namespace Relativity.Desktop.Client
 	Public Class MessageBoxForm
 		Inherits System.Windows.Forms.Form
 

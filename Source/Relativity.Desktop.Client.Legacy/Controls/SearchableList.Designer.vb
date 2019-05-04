@@ -1,6 +1,6 @@
 ﻿Imports System.Windows.Forms
 
-Namespace Relativity.Desktop.Client.Legacy.Controls
+Namespace Relativity.Desktop.Client
 	<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 	Partial Class SearchableList
 		Inherits System.Windows.Forms.UserControl
@@ -26,7 +26,7 @@ Namespace Relativity.Desktop.Client.Legacy.Controls
 		<System.Diagnostics.DebuggerStepThrough()>
 		Private Sub InitializeComponent()
 		Me._textBox = New System.Windows.Forms.TextBox()
-		Me._listBox = New Relativity.Desktop.Client.Legacy.Controls.ListBox()
+		Me._listBox = New Relativity.Desktop.Client.ListBox()
 		Me.SuspendLayout
 		'
 		'_textBox

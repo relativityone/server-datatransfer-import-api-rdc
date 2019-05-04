@@ -2,7 +2,6 @@ Imports kCura.Vendor.Castle.Core.Internal
 Imports FileNaming.CustomFileNaming
 Imports kCura.WinEDDS
 Imports Relativity.Desktop.Client
-Imports Relativity.Desktop.Client.Legacy.Controls
 Imports Relativity.Import.Export.Service
 
 Public Class ExportForm

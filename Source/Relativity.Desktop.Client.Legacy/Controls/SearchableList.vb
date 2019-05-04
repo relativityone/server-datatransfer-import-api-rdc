@@ -1,7 +1,7 @@
 ﻿Imports System.Drawing
 Imports System.Windows.Forms
 
-Namespace Relativity.Desktop.Client.Legacy.Controls
+Namespace Relativity.Desktop.Client
 	Public Class SearchableList
 		Private _timer As Timer
 		Private _dataSource As New List(Of Object)

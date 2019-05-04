@@ -1,5 +1,4 @@
 Imports kCura.WinEDDS
-Imports Relativity.Desktop.Client.Legacy.Controls
 Imports Relativity.Import.Export.Service
 
 Namespace Relativity.Desktop.Client
@@ -33,7 +32,7 @@ Namespace Relativity.Desktop.Client
 			Return docfields
 		End Function
 
-		Public Shared Function ExtractFieldMap(ByVal caseFields As Global.Relativity.Desktop.Client.Legacy.Controls.TwoListBox, ByVal fileColumns As TwoListBox, ByVal docFieldList As DocumentFieldCollection, ByVal artifactTypeID As Int32, ObjectFieldIdList As IList(Of Int32)) As LoadFileFieldMap
+		Public Shared Function ExtractFieldMap(ByVal caseFields As Global.Relativity.Desktop.Client.TwoListBox, ByVal fileColumns As TwoListBox, ByVal docFieldList As DocumentFieldCollection, ByVal artifactTypeID As Int32, ObjectFieldIdList As IList(Of Int32)) As LoadFileFieldMap
 			Dim selectedFields As List(Of Object) = caseFields.RightSearchableListItems
 			Dim selectedColumns As List(Of Object) = fileColumns.LeftSearchableListItems
 			Dim fieldMap As New kCura.WinEDDS.LoadFileFieldMap

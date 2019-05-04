@@ -1,4 +1,4 @@
-﻿Namespace Relativity.Desktop.Client.Legacy.Controls
+﻿Namespace Relativity.Desktop.Client
 	''' <summary>
 	''' Used to describe which side a ListBox control is on
 	''' </summary>

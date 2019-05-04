@@ -1,8 +1,5 @@
-Imports System.Drawing
-Imports System.Windows.Forms
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Process
-Imports Relativity.Desktop.Client.Legacy.Controls
 
 Namespace Relativity.Desktop.Client
 	Public Class ProcessForm
@@ -46,12 +43,12 @@ Namespace Relativity.Desktop.Client
 		Friend WithEvents SummaryTab As System.Windows.Forms.TabPage
 		Friend WithEvents WarningsTab As System.Windows.Forms.TabPage
 		Friend WithEvents ErrorsTab As System.Windows.Forms.TabPage
-		Friend WithEvents _outputTextBox As Relativity.Desktop.Client.Legacy.Controls.OutputRichTextBox
+		Friend WithEvents _outputTextBox As Relativity.Desktop.Client.OutputRichTextBox
 		Friend WithEvents _Tabs As System.Windows.Forms.TabControl
 		Friend WithEvents _summaryOutput As System.Windows.Forms.TextBox
 		Friend WithEvents _currentMessageStatus As System.Windows.Forms.Label
-		Friend WithEvents _warningsOutputTextBox As Relativity.Desktop.Client.Legacy.Controls.OutputRichTextBox
-		Friend WithEvents _errorsOutputTextBox As Relativity.Desktop.Client.Legacy.Controls.OutputRichTextBox
+		Friend WithEvents _warningsOutputTextBox As Relativity.Desktop.Client.OutputRichTextBox
+		Friend WithEvents _errorsOutputTextBox As Relativity.Desktop.Client.OutputRichTextBox
 
 		Friend WithEvents _statusBar As System.Windows.Forms.Label
 		Friend WithEvents ErrorReportTab As System.Windows.Forms.TabPage
@@ -74,11 +71,11 @@ Namespace Relativity.Desktop.Client
 		Me.SummaryTab = New System.Windows.Forms.TabPage()
 		Me._summaryOutput = New System.Windows.Forms.TextBox()
 		Me.ErrorsTab = New System.Windows.Forms.TabPage()
-		Me._errorsOutputTextBox = New Relativity.Desktop.Client.Legacy.Controls.OutputRichTextBox()
+		Me._errorsOutputTextBox = New Relativity.Desktop.Client.OutputRichTextBox()
 		Me.ProgressTab = New System.Windows.Forms.TabPage()
-		Me._outputTextBox = New Relativity.Desktop.Client.Legacy.Controls.OutputRichTextBox()
+		Me._outputTextBox = New Relativity.Desktop.Client.OutputRichTextBox()
 		Me.WarningsTab = New System.Windows.Forms.TabPage()
-		Me._warningsOutputTextBox = New Relativity.Desktop.Client.Legacy.Controls.OutputRichTextBox()
+		Me._warningsOutputTextBox = New Relativity.Desktop.Client.OutputRichTextBox()
 		Me.ErrorReportTab = New System.Windows.Forms.TabPage()
 		Me._exportErrorFileButton = New System.Windows.Forms.Button()
 		Me._exportErrorReportBtn = New System.Windows.Forms.Button()

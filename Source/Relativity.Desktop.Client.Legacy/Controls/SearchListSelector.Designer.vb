@@ -1,6 +1,6 @@
 ﻿Imports System.Windows.Forms
 
-Namespace Relativity.Desktop.Client.Legacy.Controls
+Namespace Relativity.Desktop.Client
     <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
     Partial Class SearchListSelector
         Inherits System.Windows.Forms.Form

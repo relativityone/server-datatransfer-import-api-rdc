@@ -1,4 +1,4 @@
-﻿Namespace Relativity.Desktop.Client.Legacy.Controls
+﻿Namespace Relativity.Desktop.Client
 	''' <summary>
 	''' An EventArgs class used for highlight item events in ListBox controls.
 	''' </summary>
@@ -9,7 +9,7 @@
 		''' Indicates the position of the listbox with the highlighted item
 		''' </summary>
 		''' <value></value>
-		''' <returns>A <see cref="Relativity.Desktop.Client.Legacy.Controls.ListBoxLocation"></see> enum.</returns>
+		''' <returns>A <see cref="Relativity.Desktop.Client.ListBoxLocation"></see> enum.</returns>
 		Public Property Location As ListBoxLocation
 
 		''' <summary>

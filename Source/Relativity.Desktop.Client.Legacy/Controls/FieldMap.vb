@@ -1,6 +1,6 @@
 Imports System.Drawing
 
-Namespace Relativity.Desktop.Client.Legacy.Controls
+Namespace Relativity.Desktop.Client
 
 	Public Class FieldMap
 		Inherits System.Windows.Forms.UserControl
@@ -38,14 +38,14 @@ Namespace Relativity.Desktop.Client.Legacy.Controls
 		'Do not modify it using the code editor.
 		Friend WithEvents _fieldColumnsLabel As System.Windows.Forms.Label
 		Friend WithEvents _loadFileColumnsLabel As System.Windows.Forms.Label
-		Friend WithEvents _fieldColumns As Relativity.Desktop.Client.Legacy.Controls.TwoListBox
-		Friend WithEvents _loadFileColumns As Relativity.Desktop.Client.Legacy.Controls.TwoListBox
+		Friend WithEvents _fieldColumns As Relativity.Desktop.Client.TwoListBox
+		Friend WithEvents _loadFileColumns As Relativity.Desktop.Client.TwoListBox
 
 		Private Sub InitializeComponent()
 			Me._fieldColumnsLabel = New System.Windows.Forms.Label
 			Me._loadFileColumnsLabel = New System.Windows.Forms.Label
-			Me._fieldColumns = New Relativity.Desktop.Client.Legacy.Controls.TwoListBox
-			Me._loadFileColumns = New Relativity.Desktop.Client.Legacy.Controls.TwoListBox
+			Me._fieldColumns = New Relativity.Desktop.Client.TwoListBox
+			Me._loadFileColumns = New Relativity.Desktop.Client.TwoListBox
 			Me.SuspendLayout()
 			Me.DoubleBuffered = True
 			'
@@ -80,7 +80,7 @@ Namespace Relativity.Desktop.Client.Legacy.Controls
 			Me._fieldColumns.LeftOrderControlsVisible = False
 			Me._fieldColumns.RightOrderControlVisible = True
 			Me._fieldColumns.TabIndex = 8
-			Me._fieldColumns.OuterBox = Relativity.Desktop.Client.Legacy.Controls.ListBoxLocation.Left
+			Me._fieldColumns.OuterBox = Relativity.Desktop.Client.ListBoxLocation.Left
 			'
 			'_loadFileColumns
 			'
@@ -92,7 +92,7 @@ Namespace Relativity.Desktop.Client.Legacy.Controls
 			Me._loadFileColumns.LeftOrderControlsVisible = True
 			Me._loadFileColumns.RightOrderControlVisible = False
 			Me._loadFileColumns.TabIndex = 9
-			Me._loadFileColumns.OuterBox = Relativity.Desktop.Client.Legacy.Controls.ListBoxLocation.Right
+			Me._loadFileColumns.OuterBox = Relativity.Desktop.Client.ListBoxLocation.Right
 			'
 			'FieldMap
 			'
@@ -192,20 +192,20 @@ Namespace Relativity.Desktop.Client.Legacy.Controls
 
 #Region "Properties"
 
-		Public Property FieldColumns() As Relativity.Desktop.Client.Legacy.Controls.TwoListBox
+		Public Property FieldColumns() As Relativity.Desktop.Client.TwoListBox
 			Get
 				Return _fieldColumns
 			End Get
-			Set(ByVal Value As Relativity.Desktop.Client.Legacy.Controls.TwoListBox)
+			Set(ByVal Value As Relativity.Desktop.Client.TwoListBox)
 				_fieldColumns = Value
 			End Set
 		End Property
 
-		Public Property LoadFileColumns() As Relativity.Desktop.Client.Legacy.Controls.TwoListBox
+		Public Property LoadFileColumns() As Relativity.Desktop.Client.TwoListBox
 			Get
 				Return _loadFileColumns
 			End Get
-			Set(ByVal Value As Relativity.Desktop.Client.Legacy.Controls.TwoListBox)
+			Set(ByVal Value As Relativity.Desktop.Client.TwoListBox)
 				_loadFileColumns = Value
 			End Set
 		End Property

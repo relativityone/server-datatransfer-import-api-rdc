@@ -1,4 +1,4 @@
-﻿Namespace Relativity.Desktop.Client.Legacy.Controls
+﻿Namespace Relativity.Desktop.Client
 	''' <summary>
 	''' These are the valid properties for the control whose values are
 	''' used as a reference when calculating the property of another control,

@@ -1,6 +1,6 @@
 ﻿Imports System.Runtime.CompilerServices
 
-Namespace Relativity.Desktop.Client.Legacy.Controls
+Namespace Relativity.Desktop.Client
 	Module ListBoxExtensions
 
 	    <Extension>   

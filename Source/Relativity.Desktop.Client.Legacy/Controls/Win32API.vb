@@ -1,6 +1,6 @@
 Imports System.Runtime.InteropServices
 
-Namespace Relativity.Desktop.Client.Legacy.Controls
+Namespace Relativity.Desktop.Client
 	Public Class Win32API
 
 #Region " Constants "

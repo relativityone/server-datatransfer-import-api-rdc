@@ -148,7 +148,7 @@ Namespace Relativity.Desktop.Client
 		'		' updated.
 		'		Private _layoutReferenceDistance As Int32 = 0
 
-		'		Private _layoutDifferenceList As List(Of Relativity.Desktop.Client.Legacy.Controls.RelativeLayoutData)
+		'		Private _layoutDifferenceList As List(Of Relativity.Desktop.Client.RelativeLayoutData)
 
 		'		Private Function CalcReferenceDistance() As Int32
 		'			Return Me.AutoScaleBaseSize.Width * Me.AutoScaleBaseSize.Height

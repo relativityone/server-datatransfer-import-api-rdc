@@ -1,5 +1,4 @@
 Imports kCura.WinEDDS
-Imports Relativity.Desktop.Client.Legacy.Controls
 Imports Relativity.Import.Export.Service
 
 Namespace Relativity.Desktop.Client
@@ -1612,7 +1611,7 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Sub LoadFileForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			'Relativity.Desktop.Client.Legacy.Controls.EnhancedMenuProvider.Hook(Me)
+			'Relativity.Desktop.Client.EnhancedMenuProvider.Hook(Me)
 			_loadFileEncodingPicker.InitializeDropdown()
 			_fullTextFileEncodingPicker.InitializeDropdown()
 			_importMenuForceFolderPreviewItem.Checked = _application.TemporaryForceFolderPreview
@@ -1623,7 +1622,7 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Sub LoadFileForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
-			'Relativity.Desktop.Client.Legacy.Controls.EnhancedMenuProvider.Unhook()
+			'Relativity.Desktop.Client.EnhancedMenuProvider.Unhook()
 		End Sub
 
 		Private Sub _loadNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _loadNativeFiles.CheckedChanged

@@ -105,17 +105,13 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
@@ -195,6 +191,52 @@
     <Compile Include="CommandLine\InvalidArgumentException.vb" />
     <Compile Include="CommandLine\InvalidCommandLineFormat.vb" />
     <Compile Include="ConfigurationException.vb" />
+    <Compile Include="Controls\EnhancedMenuProvider.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ErrorDialog.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\FieldMap.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\HighlightItemEventArgs.vb" />
+    <Compile Include="Controls\LayoutPropertyType.vb" />
+    <Compile Include="Controls\ListBox.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ListBoxExtensions.vb" />
+    <Compile Include="Controls\ListBoxLocation.vb" />
+    <Compile Include="Controls\MessageBoxForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\MoveDirection.vb" />
+    <Compile Include="Controls\OutputRichTextBox.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ProcessForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\RelativeLayoutData.vb" />
+    <Compile Include="Controls\RichTextBox.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\SearchableList.Designer.vb">
+      <DependentUpon>SearchableList.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SearchableList.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\SearchListSelector.Designer.vb">
+      <DependentUpon>SearchListSelector.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SearchListSelector.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\TwoListBox.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Win32API.vb" />
     <Compile Include="Dictionary.vb" />
     <Compile Include="DictionaryBase.vb" />
     <Compile Include="IConfigDictionaryFactory.vb" />
@@ -349,11 +391,38 @@
     <EmbeddedResource Include="Controls\EncodingPicker.resx">
       <DependentUpon>EncodingPicker.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\EnhancedMenuProvider.resx">
+      <DependentUpon>EnhancedMenuProvider.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ErrorDialog.resx">
+      <DependentUpon>ErrorDialog.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\FieldMap.resx">
+      <DependentUpon>FieldMap.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MessageBoxForm.resx">
+      <DependentUpon>MessageBoxForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\OutputRichTextBox.resx">
+      <DependentUpon>OutputRichTextBox.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ProcessForm.resx">
+      <DependentUpon>ProcessForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\SearchableList.resx">
+      <DependentUpon>SearchableList.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\SearchListSelector.resx">
+      <DependentUpon>SearchListSelector.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\TextAndNativeFileNamePicker.resx">
       <DependentUpon>TextAndNativeFileNamePicker.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TextFieldPrecedencePicker.resx">
       <DependentUpon>TextFieldPrecedencePicker.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TwoListBox.resx">
+      <DependentUpon>TwoListBox.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AdvancedFileLocation.resx">
       <DependentUpon>AdvancedFileLocation.vb</DependentUpon>
@@ -432,10 +501,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Relativity.Desktop.Client.Controls.Legacy\Relativity.Desktop.Client.Controls.Legacy.vbproj">
-      <Project>{267ac175-3dad-4348-9058-d5db19deaa57}</Project>
-      <Name>Relativity.Desktop.Client.Controls.Legacy</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Relativity.Export.Client\Relativity.Export.Client.csproj">
       <Project>{410ba79b-df60-4eda-86b3-608f3dee38f5}</Project>
       <Name>Relativity.Export.Client</Name>
@@ -463,7 +528,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
-  <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>

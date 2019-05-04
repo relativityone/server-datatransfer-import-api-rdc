@@ -8,7 +8,6 @@ Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Monitoring
 Imports Relativity.DataTransfer.MessageService
 Imports Relativity.DataTransfer.MessageService.Tools
-Imports Relativity.Desktop.Client.Legacy.Controls
 Imports Relativity.Export
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Process

@@ -3,7 +3,7 @@ Imports System.Windows.Forms
 Imports System.ComponentModel
 Imports System.Drawing.Drawing2D
 
-Namespace Relativity.Desktop.Client.Legacy.Controls
+Namespace Relativity.Desktop.Client
 
     <ProvideProperty("ImageIndex", GetType(MenuItem)), _
      ProvideProperty("ImageList", GetType(MenuItem)), _

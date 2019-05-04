@@ -1,7 +1,7 @@
 Imports System.Windows.Forms
 Imports System.Drawing
 
-Namespace Relativity.Desktop.Client.Legacy.Controls
+Namespace Relativity.Desktop.Client
 
 	Public Class TwoListBox
 		Inherits System.Windows.Forms.UserControl

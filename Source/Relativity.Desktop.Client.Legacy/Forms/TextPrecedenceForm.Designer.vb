@@ -1,6 +1,4 @@
-﻿Imports Relativity.Desktop.Client.Legacy.Controls
-
-Namespace Relativity.Desktop.Client
+﻿Namespace Relativity.Desktop.Client
 	<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 	Partial Class TextPrecedenceForm
 		Inherits System.Windows.Forms.Form

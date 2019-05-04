@@ -1,5 +1,4 @@
 Imports kCura.WinEDDS
-Imports Relativity.Desktop.Client.Legacy.Controls
 
 Namespace Relativity.Desktop.Client
 	Public Class CaseFolderExplorer

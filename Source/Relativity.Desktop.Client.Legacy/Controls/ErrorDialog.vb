@@ -1,7 +1,7 @@
 Imports System.Web.Services.Protocols
 Imports System.Windows.Forms
 
-Namespace Relativity.Desktop.Client.Legacy.Controls
+Namespace Relativity.Desktop.Client
 	Public Class ErrorDialog
 		Inherits System.Windows.Forms.Form
 

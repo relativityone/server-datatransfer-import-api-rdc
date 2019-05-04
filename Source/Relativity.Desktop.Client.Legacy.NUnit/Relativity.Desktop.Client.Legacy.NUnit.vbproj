@@ -65,7 +65,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\buildtools\Legacy.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -78,7 +78,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\buildtools\Legacy.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -117,10 +117,6 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Relativity.Desktop.Client.Controls.Legacy\Relativity.Desktop.Client.Controls.Legacy.vbproj">
-      <Project>{267ac175-3dad-4348-9058-d5db19deaa57}</Project>
-      <Name>Relativity.Desktop.Client.Controls.Legacy</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Relativity.Desktop.Client.Legacy\Relativity.Desktop.Client.Legacy.vbproj">
       <Project>{49cde7eb-9385-41d9-8cd9-687c09c46996}</Project>
       <Name>Relativity.Desktop.Client.Legacy</Name>

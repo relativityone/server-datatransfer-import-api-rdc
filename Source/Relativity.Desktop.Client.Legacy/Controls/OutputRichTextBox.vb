@@ -1,4 +1,4 @@
-Namespace Relativity.Desktop.Client.Legacy.Controls
+Namespace Relativity.Desktop.Client
   Public Class OutputRichTextBox
     Inherits System.Windows.Forms.UserControl
 
