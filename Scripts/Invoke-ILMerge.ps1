@@ -37,7 +37,7 @@ $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
 $SdkBinariesArtifactsDir = Join-Path $BinariesArtifactsDir "sdk"
 $LogsDir = Join-Path $Root "Logs"
 $LogFile = Join-Path $LogsDir "ilmerge-build.log"
-$MergedSdkFile = Join-Path $SdkBinariesArtifactsDir "Relativity.Import.Export.Client.dll"
+$MergedSdkFile = Join-Path $SdkBinariesArtifactsDir "Relativity.Import.Export.Client.SDK.dll"
 
 if (Test-Path $SdkBinariesArtifactsDir -PathType Container) {
     Get-ChildItem $SdkBinariesArtifactsDir -Recurse | Remove-Item -Recurse

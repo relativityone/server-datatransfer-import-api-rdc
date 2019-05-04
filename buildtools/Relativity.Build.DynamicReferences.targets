@@ -31,7 +31,7 @@
       <!-- This represents the ILMerge/SDK assembly file reference configuration. -->
       <ItemGroup>
         <Reference Include="Relativity.Import.Client.Sdk">
-          <HintPath>..\..\Artifacts\binaries\sdk\Relativity.Import.Export.Client.dll</HintPath>
+          <HintPath>..\..\Artifacts\binaries\sdk\Relativity.Import.Export.Client.SDK.dll</HintPath>
           <Private>True</Private>
           <Paket>False</Paket>
         </Reference>
