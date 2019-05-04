@@ -271,10 +271,15 @@ task Help -Alias ? -Description "Display task information" {
 task IntegrationTests -Description "Run all integration tests" {
     Initialize-Folder $TestReportsDir -Safe
     Initialize-Folder $IntegrationTestsReportDir
+    $SolutionFile = $MasterSolution
+    if ($ILMerge) {
+        $SolutionFile = $MasterILMergeSolution
+    }
+
     $OutputFile = Join-Path $IntegrationTestsReportDir "integration-test-output.txt"
     $testCategoryFilter = "--where=`"cat==Integration`""
     Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
-    exec { & $NunitExe $MasterSolution `
+    exec { & $NunitExe $SolutionFile `
             "--labels=All" `
             "--agents=$NumberOfProcessors" `
             "--skipnontestassemblies" `
@@ -393,10 +398,15 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
 task UnitTests -Description "Run all unit tests" {
     Initialize-Folder $TestReportsDir -Safe
     Initialize-Folder $UnitTestsReportDir
+    $SolutionFile = $MasterSolution
+    if ($ILMerge) {
+        $SolutionFile = $MasterILMergeSolution
+    }
+
     $OutputFile = Join-Path $UnitTestsReportDir "unit-test-output.txt"
     $testCategoryFilter = "--where=`"cat!=Integration`""
     Invoke-SetTestParameters -SkipIntegrationTests $true -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
-    exec { & $NunitExe $MasterSolution `
+    exec { & $NunitExe $SolutionFile `
             "--labels=All" `
             "--agents=$NumberOfProcessors" `
             "--skipnontestassemblies" `
