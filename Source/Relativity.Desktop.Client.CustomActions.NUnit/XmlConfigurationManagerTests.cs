@@ -4,6 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
+using System;
+using System.IO;
+using System.Reflection;
+
 namespace Relativity.Desktop.Client.CustomActions.NUnit
 {
 	using global::NUnit.Framework;
@@ -11,29 +15,31 @@ namespace Relativity.Desktop.Client.CustomActions.NUnit
 	using System.Collections.Generic;
 	using System.Configuration;
 
-	using Relativity.Import.Export.TestFramework;
-
 	[TestFixture]
 	public class XmlConfigurationManagerTests
 	{
-		private TestDirectory testDirectory;
+		private string testDirectory;
 		private string appConfigFile;
 
 		[SetUp]
 		public void Setup()
 		{
-			this.testDirectory = new TestDirectory();
-			this.testDirectory.Create();
+			this.testDirectory = Path.Combine(Path.GetTempPath(), "RelativityTmpDir_" + DateTime.Now.Ticks + "_" + Guid.NewGuid());
+			System.IO.Directory.CreateDirectory(this.testDirectory);
 			string fileName = System.IO.Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
-			string sourceAppConfigFile = ResourceFileHelper.GetBaseFilePath($"{fileName}.config");
-			this.appConfigFile = System.IO.Path.Combine(this.testDirectory.Directory, fileName);
+			string basePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			string sourceAppConfigFile = System.IO.Path.Combine(basePath, $"{fileName}.config");
+			this.appConfigFile = System.IO.Path.Combine(this.testDirectory, fileName);
 			System.IO.File.Copy(sourceAppConfigFile, this.appConfigFile);
 		}
 
 		[TearDown]
 		public void Teardown()
 		{
-			this.testDirectory.Dispose();
+			if (System.IO.Directory.Exists(this.testDirectory))
+			{
+				System.IO.Directory.Delete(this.testDirectory, true);
+			}
 		}
 
 		[Test]
