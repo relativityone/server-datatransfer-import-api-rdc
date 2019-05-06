@@ -1,8 +1,7 @@
-﻿Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Io
+﻿Imports Relativity.Import.Export.Io
 
 Namespace kCura.WinEDDS.Api
-	Public Class ExtendedFileIdInfo
+	Friend Class ExtendedFileIdInfo
 		Inherits FileTypeIdInfo
 		Implements IHasSupportedByViewer
 

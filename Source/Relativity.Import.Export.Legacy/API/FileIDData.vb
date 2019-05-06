@@ -1,8 +1,7 @@
-﻿Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Io
+﻿Imports Relativity.Import.Export.Io
 
 Namespace kCura.WinEDDS.Api
-	Public Class FileIDData
+	Friend Class FileIDData
 		Inherits FileTypeIdInfo
 		Public Sub New(fileID As Int32, fileType As String)
 			MyBase.New(fileID, fileType)
