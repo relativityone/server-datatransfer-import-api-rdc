@@ -1,9 +1,8 @@
-﻿Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Io
+﻿Imports Relativity.Import.Export.Io
 
 Namespace kCura.WinEDDS.Api
 	Public Interface IHasOixFileType
-		Function GetFileIdInfo() As FileIdInfo
+		Function GetFileTypeIdInfo() As IFileTypeIdInfo
 	End Interface
 
 	Public Interface IHasFileSize

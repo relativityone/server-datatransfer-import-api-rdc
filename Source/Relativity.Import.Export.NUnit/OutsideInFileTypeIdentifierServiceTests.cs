@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------
-// <copyright file="OutsideInFileIdServiceTests.cs" company="Relativity ODA LLC">
+// <copyright file="OutsideInFileTypeIdentifierServiceTests.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
@@ -20,18 +20,18 @@ namespace Relativity.Import.Export.NUnit
 	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
-	/// Represents <see cref="OutsideInFileIdService"/> tests.
+	/// Represents <see cref="OutsideInFileTypeIdentifierService"/> tests.
 	/// </summary>
 	[TestFixture]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
 		Justification = "The test class handles the disposal.")]
-	public class OutsideInFileIdServiceTests
+	public class OutsideInFileTypeIdentifierServiceTests
 	{
 		private const int Timeout = 35;
 		private static bool dumpBinaries;
-		private IFileIdService service;
+		private IFileTypeIdentifier service;
 		private TempDirectory2 tempDirectory;
 		private string tempFile;
 
@@ -47,7 +47,7 @@ namespace Relativity.Import.Export.NUnit
 
 			try
 			{
-				OutsideInFileIdService.Shutdown();
+				OutsideInFileTypeIdentifierService.Shutdown();
 			}
 			catch
 			{
@@ -55,7 +55,7 @@ namespace Relativity.Import.Export.NUnit
 				throw;
 			}
 
-			this.service = new OutsideInFileIdService(Timeout);
+			this.service = new OutsideInFileTypeIdentifierService(Timeout);
 		}
 
 		[TearDown]
@@ -79,10 +79,10 @@ namespace Relativity.Import.Export.NUnit
 				{
 					// Reinitializing should have no impact.
 					this.service.Reinitialize();
-					FileIdInfo fileIdData = this.service.Identify(this.tempFile);
-					Assert.That(fileIdData, Is.Not.Null);
-					Assert.That(fileIdData.Id, Is.GreaterThan(0));
-					Assert.That(fileIdData.Description, Is.Not.Null.Or.Empty);
+					IFileTypeIdInfo fileTypeIdInfo = this.service.Identify(this.tempFile);
+					Assert.That(fileTypeIdInfo, Is.Not.Null);
+					Assert.That(fileTypeIdInfo.Id, Is.GreaterThan(0));
+					Assert.That(fileTypeIdInfo.Description, Is.Not.Null.Or.Empty);
 				}
 
 				this.ValidateConfigInfo();
@@ -141,9 +141,9 @@ namespace Relativity.Import.Export.NUnit
 			{
 				try
 				{
-					FileIdException exception =
-						Assert.Throws<FileIdException>(() => this.service.Identify(this.tempFile));
-					Assert.That(exception.Error, Is.EqualTo(FileIdError.Permissions));
+					FileTypeIdException exception =
+						Assert.Throws<FileTypeIdException>(() => this.service.Identify(this.tempFile));
+					Assert.That(exception.Error, Is.EqualTo(FileTypeIdError.Permissions));
 					this.ValidateConfigInfo();
 				}
 				catch
@@ -185,7 +185,7 @@ namespace Relativity.Import.Export.NUnit
 
 			try
 			{
-				string path = OutsideInFileIdService.GetInstallPath();
+				string path = OutsideInFileTypeIdentifierService.GetInstallPath();
 				Console.WriteLine(
 					$"A serious OI error has occurred. Dumping the list of OI binaries found within the '{path}' install directory.");
 				if (!System.IO.Directory.Exists(path))

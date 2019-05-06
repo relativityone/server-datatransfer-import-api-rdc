@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="OutsideInFileIdService.cs" company="Relativity ODA LLC">
+// <copyright file="OutsideInFileTypeIdentifierService.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -17,7 +17,7 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Represents a file identification service class object using Outside In technology.
 	/// </summary>
-	internal class OutsideInFileIdService : IFileIdService
+	internal class OutsideInFileTypeIdentifierService : IFileTypeIdentifier
 	{
 		/// <summary>
 		/// The default idle timeout value.
@@ -27,7 +27,7 @@ namespace Relativity.Import.Export.Io
 		/// <summary>
 		/// The file identification configuration.
 		/// </summary>
-		private readonly FileIdConfiguration configuration = new FileIdConfiguration();
+		private readonly FileTypeIdConfiguration configuration = new FileTypeIdConfiguration();
 
 		/// <summary>
 		/// The optional timeout.
@@ -45,20 +45,20 @@ namespace Relativity.Import.Export.Io
 		private bool disposed;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OutsideInFileIdService"/> class.
+		/// Initializes a new instance of the <see cref="OutsideInFileTypeIdentifierService"/> class.
 		/// </summary>
-		public OutsideInFileIdService()
+		public OutsideInFileTypeIdentifierService()
 			: this(null)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OutsideInFileIdService"/> class.
+		/// Initializes a new instance of the <see cref="OutsideInFileTypeIdentifierService"/> class.
 		/// </summary>
 		/// <param name="timeout">
 		/// The optional timeout.
 		/// </param>
-		public OutsideInFileIdService(int? timeout)
+		public OutsideInFileTypeIdentifierService(int? timeout)
 		{
 			this.timeout = timeout ?? DefaultIdleTimeout;
 			this.disposed = false;
@@ -66,7 +66,7 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
-		public FileIdConfiguration Configuration
+		public IFileTypeIdConfiguration Configuration
 		{
 			get
 			{
@@ -109,7 +109,7 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
-		public FileIdInfo Identify(string file)
+		public IFileTypeIdInfo Identify(string file)
 		{
 			if (string.IsNullOrEmpty(file))
 			{
@@ -123,7 +123,7 @@ namespace Relativity.Import.Export.Io
 				// OI fixed the lock file/file not found error code defect.
 				System.IO.FileInfo fileInfo = new System.IO.FileInfo(file);
 				FileFormat fileFormat = this.exporter.Identify(fileInfo);
-				return new FileIdInfo(fileFormat.GetId(), fileFormat.GetDescription());
+				return new FileTypeIdInfo(fileFormat.GetId(), fileFormat.GetDescription());
 			}
 			catch (System.IO.FileNotFoundException)
 			{
@@ -137,12 +137,12 @@ namespace Relativity.Import.Export.Io
 			catch (OutsideInException e)
 			{
 				string message = string.Format(CultureInfo.CurrentCulture, Strings.OutsideInFileIdError, file, e.ErrorCode);
-				throw new FileIdException(message, e, GetFileIdError(e.ErrorCode));
+				throw new FileTypeIdException(message, e, GetFileIdError(e.ErrorCode));
 			}
 			catch (Exception e)
 			{
 				string message = string.Format(CultureInfo.CurrentCulture, Strings.OutsideInFileIdUnexpectedError, file);
-				throw new FileIdException(message, e);
+				throw new FileTypeIdException(message, e);
 			}
 		}
 
@@ -163,21 +163,21 @@ namespace Relativity.Import.Export.Io
 		/// The Outside In error code.
 		/// </param>
 		/// <returns>
-		/// The <see cref="FileIdError"/> value.
+		/// The <see cref="FileTypeIdError"/> value.
 		/// </returns>
-		private static FileIdError GetFileIdError(int error)
+		private static FileTypeIdError GetFileIdError(int error)
 		{
 			switch (error)
 			{
 				case OutsideInConstants.FileNotFoundErrorCode:
-					return FileIdError.FileNotFound;
+					return FileTypeIdError.FileNotFound;
 
 				case OutsideInConstants.FilePermissionErrorCode:
-					return FileIdError.Permissions;
+					return FileTypeIdError.Permissions;
 
 				default:
 					// When all else fails, assume an I/O error.
-					return FileIdError.Io;
+					return FileTypeIdError.Io;
 			}
 		}
 
@@ -249,7 +249,7 @@ namespace Relativity.Import.Export.Io
 					CultureInfo.CurrentCulture,
 					Strings.OutsideInConfigurationError,
 					path);
-				throw new FileIdException(message, e);
+				throw new FileTypeIdException(message, e);
 			}
 
 			// Allow this to potentially throw.

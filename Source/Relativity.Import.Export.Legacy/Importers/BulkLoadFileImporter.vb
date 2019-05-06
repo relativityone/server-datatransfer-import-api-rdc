@@ -620,7 +620,7 @@ Namespace kCura.WinEDDS
 						Statistics.BatchSize = Me.ImportBatchSize
 						JobCounter = 1
 						Me.TotalTransferredFilesCount = 0
-						Using fileService As OutsideInFileIdService = New OutsideInFileIdService()
+						Using fileTypeIdentifier As IFileTypeIdentifier = New OutsideInFileTypeIdentifierService()
 							While ShouldImport AndAlso _artifactReader.HasMoreRecords
 								Try
 									If Me.CurrentLineNumber < _startLineNumber Then
@@ -644,7 +644,7 @@ Namespace kCura.WinEDDS
 
 										Dim id As String
 										Using Timekeeper.CaptureTime("ReadFile_ManageDocument")
-											id = ManageDocument(fileService, line, lineStatus)
+											id = ManageDocument(fileTypeIdentifier, line, lineStatus)
 										End Using
 
 										Using Timekeeper.CaptureTime("ReadFile_IdTrack")
@@ -671,7 +671,7 @@ Namespace kCura.WinEDDS
 								Catch ex As System.IO.FileNotFoundException
 									WriteError(Me.CurrentLineNumber, ex.Message)
 									Me.LogError(ex, "A file not found error has occurred managing an import document.")
-								Catch ex As FileIdException
+								Catch ex As FileTypeIdException
 									WriteError(Me.CurrentLineNumber, ex.Message)
 									Me.LogError(ex, "An error occured identifying type of native file.")
 								Catch ex As System.UnauthorizedAccessException
@@ -686,22 +686,22 @@ Namespace kCura.WinEDDS
 							' Dump OI details.
 							' Preserving existing behavior where this can never fail.
 							Try
-								Dim FileIdConfiguration As FileIdConfiguration = fileService.Configuration
-								If FileIdConfiguration.HasError Then
+								Dim fileTypeIdConfiguration As IFileTypeIdConfiguration = fileTypeIdentifier.Configuration
+								If fileTypeIdConfiguration.HasError Then
 									Me.LogError("OI Configuration Info")
-									Me.LogError("OI version: {Version}", FileIdConfiguration.Version)
-									Me.LogError("OI idle worker timeout: {Timeout} seconds", FileIdConfiguration.Timeout)
-									Me.LogError("OI install path: {InstallPath}", FileIdConfiguration.InstallDirectory)
-									If Not FileIdConfiguration.Exception Is Nothing Then
-										Me.LogError(FileIdConfiguration.Exception, "OI runtime exception.", FileIdConfiguration.Exception)
+									Me.LogError("OI version: {Version}", fileTypeIdConfiguration.Version)
+									Me.LogError("OI idle worker timeout: {Timeout} seconds", fileTypeIdConfiguration.Timeout)
+									Me.LogError("OI install path: {InstallPath}", fileTypeIdConfiguration.InstallDirectory)
+									If Not fileTypeIdConfiguration.Exception Is Nothing Then
+										Me.LogError(fileTypeIdConfiguration.Exception, "OI runtime exception.", fileTypeIdConfiguration.Exception)
 									End If
 								Else
 									Me.LogInformation("OI Configuration Info")
-									Me.LogInformation("OI version: {Version}", FileIdConfiguration.Version)
-									Me.LogInformation("OI idle worker timeout: {Timeout}", FileIdConfiguration.Timeout)
-									Me.LogInformation("OI install path: {InstallPath}", FileIdConfiguration.InstallDirectory)
+									Me.LogInformation("OI version: {Version}", fileTypeIdConfiguration.Version)
+									Me.LogInformation("OI idle worker timeout: {Timeout}", fileTypeIdConfiguration.Timeout)
+									Me.LogInformation("OI install path: {InstallPath}", fileTypeIdConfiguration.InstallDirectory)
 								End If
-							Catch ex As FileIDException
+							Catch ex As FileTypeIdException
 								Me.LogError(ex, "Failed to retrieve OI configuration info.")
 							End Try
 						End Using
@@ -797,7 +797,7 @@ Namespace kCura.WinEDDS
 			_fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
 		End Sub
 
-		Private Function ManageDocument(ByVal fileService As OutsideInFileIdService, ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String
+		Private Function ManageDocument(ByVal fileTypeIdentifier As IFileTypeIdentifier, ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String
 			Dim filename As String = String.Empty
 			Dim originalFilename As String = String.Empty
 			Dim fileGuid As String = String.Empty
@@ -806,7 +806,7 @@ Namespace kCura.WinEDDS
 			Dim identityValue As String = String.Empty
 			Dim parentFolderID As Int32
 			Dim fullFilePath As String = String.Empty
-			Dim oixFileIdInfo As FileIdInfo = Nothing
+			Dim oixFileTypeIdInfo As IFileTypeIdInfo = Nothing
 			Dim destinationVolume As String = Nothing
 			Dim injectableContainer As Api.IInjectableFieldCollection = TryCast(record, Api.IInjectableFieldCollection)
 
@@ -855,7 +855,7 @@ Namespace kCura.WinEDDS
 
 						Try
 							If Me.DisableNativeValidation Then
-								oixFileIdInfo = Nothing
+								oixFileTypeIdInfo = Nothing
 							Else
 								Dim idDataExtractor As Api.IHasOixFileType = Nothing
 								If (Not injectableContainerIsNothing) Then
@@ -867,11 +867,11 @@ Namespace kCura.WinEDDS
 									Dim maxRetryAttempts As Integer = Me.NumberOfRetries
 									Dim currentRetryAttempt As Integer = 0
 									Dim policy As IWaitAndRetryPolicy = Me.CreateWaitAndRetryPolicy()
-									oixFileIdInfo = policy.WaitAndRetry(
+									oixFileTypeIdInfo = policy.WaitAndRetry(
 										Function(exception)
-											Dim outsideInException As FileIdException = TryCast(exception, FileIdException)
+											Dim outsideInException As FileTypeIdException = TryCast(exception, FileTypeIdException)
 											If (Not outsideInException Is Nothing)
-												If (outsideInException.Error = FileIdError.Permissions) Then
+												If (outsideInException.Error = FileTypeIdError.Permissions) Then
 													' Only perform a retry operation if configured to do so.
 													Return Me.RetryOptions.HasFlag(RetryOptions.Permissions)
 												End If
@@ -888,19 +888,19 @@ Namespace kCura.WinEDDS
 											' Force OI to get reinitialized in the event the runtime configuration is invalid.
 											currentRetryAttempt = count
 											If count > 1 Then
-												fileService.Reinitialize()
+												fileTypeIdentifier.Reinitialize()
 											End If
 											Return TimeSpan.FromSeconds(Me.WaitTimeBetweenRetryAttempts)
 										End Function,
 										Sub(exception, span)
 											Me.PublishIoRetryMessage(exception, span, currentRetryAttempt, maxRetryAttempts)
 										End Sub,
-										Function() As FileIdInfo
-											Return fileService.Identify(fullFilePath)
+										Function() As IFileTypeIdInfo
+											Return fileTypeIdentifier.Identify(fullFilePath)
 										End Function,
 										Me.CancellationToken)
 								Else
-									oixFileIdInfo = idDataExtractor.GetFileIdInfo()
+									oixFileTypeIdInfo = idDataExtractor.GetFileTypeIdInfo()
 								End If
 							End If
 
@@ -1012,9 +1012,9 @@ Namespace kCura.WinEDDS
 				fileSizeExtractor = injectableContainer.FileSize
 			End If
 			If fileSizeExtractor Is Nothing Then
-				doc = New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdInfo, lineStatus, destinationVolume, folderPath, dataGridID)
+				doc = New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileTypeIdInfo, lineStatus, destinationVolume, folderPath, dataGridID)
 			Else
-				doc = New SizedMetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdInfo, lineStatus, destinationVolume, fileSizeExtractor.GetFileSize(), folderPath, dataGridID)
+				doc = New SizedMetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileTypeIdInfo, lineStatus, destinationVolume, fileSizeExtractor.GetFileSize(), folderPath, dataGridID)
 			End If
 
 			Using Timekeeper.CaptureTime("ManageDocument_ManageDocumentMetadata")
@@ -1603,10 +1603,10 @@ Namespace kCura.WinEDDS
 
 		Private Sub WriteDocumentNativeInfo(mdoc As MetaDocument)
 			If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
-				Dim supportedByViewerProvider As IHasSupportedByViewer = TryCast(mdoc.FileIdInfo, IHasSupportedByViewer)
+				Dim supportedByViewerProvider As IHasSupportedByViewer = TryCast(mdoc.FileTypeIdInfo, IHasSupportedByViewer)
 
 				If supportedByViewerProvider Is Nothing
-					WriteDocumentNativeInfo(Me.IsSupportedRelativityFileType(mdoc.FileIdInfo), mdoc.GetFileType(), True)
+					WriteDocumentNativeInfo(Me.IsSupportedRelativityFileType(mdoc.FileTypeIdInfo), mdoc.GetFileType(), True)
 				Else
 					WriteDocumentNativeInfo(supportedByViewerProvider.SupportedByViewer(), mdoc.GetFileType(), True)
 				End If
@@ -1846,8 +1846,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Private Function IsSupportedRelativityFileType(ByVal fileData As FileIdInfo) As Boolean
-			If fileData Is Nothing Then
+		Private Function IsSupportedRelativityFileType(ByVal fileTypeIdInfo As IFileTypeIdInfo) As Boolean
+			If fileTypeIdInfo Is Nothing Then
 				If Me.DisableNativeValidation Then
 					Return True
 				Else
@@ -1860,7 +1860,7 @@ Namespace kCura.WinEDDS
 					_oixFileLookup.Add(id, id)
 				Next
 			End If
-			Return Not _oixFileLookup.Contains(fileData.Id)
+			Return Not _oixFileLookup.Contains(fileTypeIdInfo.Id)
 		End Function
 
 #End Region

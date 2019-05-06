@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="IFileIdService.cs" company="Relativity ODA LLC">
+// <copyright file="IFileTypeIdentifier.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -9,17 +9,17 @@ namespace Relativity.Import.Export.Io
 	using System;
 
 	/// <summary>
-	/// Represents an abstract service to identify files.
+	/// Represents an abstract object to identify file types.
 	/// </summary>
-	public interface IFileIdService : IDisposable
+	public interface IFileTypeIdentifier : IDisposable
 	{
 		/// <summary>
 		/// Gets the file identification configuration.
 		/// </summary>
 		/// <value>
-		/// The <see cref="FileIdConfiguration"/> instance.
+		/// The <see cref="FileTypeIdConfiguration"/> instance.
 		/// </value>
-		FileIdConfiguration Configuration
+		IFileTypeIdConfiguration Configuration
 		{
 			get;
 		}
@@ -35,10 +35,10 @@ namespace Relativity.Import.Export.Io
 		/// <exception cref="System.IO.FileNotFoundException">
 		/// The exception thrown when the file doesn't exist.
 		/// </exception>
-		/// <exception cref="FileIdException">
+		/// <exception cref="FileTypeIdException">
 		/// The exception thrown when the source file cannot be identified.
 		/// </exception>
-		FileIdInfo Identify(string file);
+		IFileTypeIdInfo Identify(string file);
 
 		/// <summary>
 		/// Reinitialize the Outside In runtime. This should only be done in cases where OI is failing and this instance cannot be easily disposed.

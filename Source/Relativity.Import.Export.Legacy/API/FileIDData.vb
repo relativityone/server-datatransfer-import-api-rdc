@@ -3,7 +3,7 @@ Imports Relativity.Import.Export.Io
 
 Namespace kCura.WinEDDS.Api
 	Public Class FileIDData
-		Inherits FileIdInfo
+		Inherits FileTypeIdInfo
 		Public Sub New(fileID As Int32, fileType As String)
 			MyBase.New(fileID, fileType)
 		End Sub

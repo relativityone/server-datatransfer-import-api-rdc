@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="FileIdConfiguration.cs" company="Relativity ODA LLC">
+// <copyright file="FileTypeIdConfiguration.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -9,64 +9,39 @@ namespace Relativity.Import.Export.Io
 	using System;
 
 	/// <summary>
-	/// Represents the file identification configuration class object. This class cannot be inherited.
+	/// Represents a class object to identify file types. This class cannot be inherited.
 	/// </summary>
-	public sealed class FileIdConfiguration
+	internal sealed class FileTypeIdConfiguration : IFileTypeIdConfiguration
 	{
-		/// <summary>
-		/// Gets the file identification configuration exception.
-		/// </summary>
-		/// <value>
-		/// The <see cref="Exception"/> instance.
-		/// </value>
+		/// <inheritdoc />
 		public Exception Exception
 		{
 			get;
 			internal set;
 		}
 
-		/// <summary>
-		/// Gets a value indicating whether a file identification configuration error has occurred.
-		/// </summary>
-		/// <value>
-		/// <see langword="true" /> when an file identification configuration error has occurred; otherwise, <see langword="false" />.
-		/// </value>
+		/// <inheritdoc />
 		public bool HasError
 		{
 			get;
 			internal set;
 		}
 
-		/// <summary>
-		/// Gets the file identification installation directory.
-		/// </summary>
-		/// <value>
-		/// The full path.
-		/// </value>
+		/// <inheritdoc />
 		public string InstallDirectory
 		{
 			get;
 			internal set;
 		}
 
-		/// <summary>
-		/// Gets the file identification timeout in seconds.
-		/// </summary>
-		/// <value>
-		/// The total number of seconds.
-		/// </value>
+		/// <inheritdoc />
 		public int Timeout
 		{
 			get;
 			internal set;
 		}
 
-		/// <summary>
-		/// Gets the file identification library version.
-		/// </summary>
-		/// <value>
-		/// The version.
-		/// </value>
+		/// <inheritdoc />
 		public string Version
 		{
 			get;

@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="FileIdInfo.cs" company="Relativity ODA LLC">
+// <copyright file="FileTypeIdInfo.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -9,10 +9,10 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Represents a class object that describes the file identification information for a specific file.
 	/// </summary>
-	public class FileIdInfo
+	internal class FileTypeIdInfo : IFileTypeIdInfo
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FileIdInfo"/> class.
+		/// Initializes a new instance of the <see cref="FileTypeIdInfo"/> class.
 		/// </summary>
 		/// <param name="id">
 		/// The file identifier.
@@ -20,29 +20,19 @@ namespace Relativity.Import.Export.Io
 		/// <param name="description">
 		/// The file type description.
 		/// </param>
-		public FileIdInfo(int id, string description)
+		public FileTypeIdInfo(int id, string description)
 		{
 			this.Id = id;
 			this.Description = description;
 		}
 
-		/// <summary>
-		/// Gets the file identifier.
-		/// </summary>
-		/// <value>
-		/// The identifier.
-		/// </value>
+		/// <inheritdoc />
 		public int Id
 		{
 			get;
 		}
 
-		/// <summary>
-		/// Gets the file type description.
-		/// </summary>
-		/// <value>
-		/// The description.
-		/// </value>
+		/// <inheritdoc />
 		public string Description
 		{
 			get;
