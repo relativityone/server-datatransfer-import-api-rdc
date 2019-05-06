@@ -121,12 +121,12 @@
     <Compile Include="Io\OutsideInConstants.cs" />
     <Compile Include="Io\OutsideInFileIdService.cs" />
     <Compile Include="Media\ByteOrdering.cs" />
-    <Compile Include="Media\FreeImageIdService.cs" />
-    <Compile Include="Media\IImageConversionService.cs" />
-    <Compile Include="Media\IImageIdService.cs" />
+    <Compile Include="Media\FreeImageService.cs" />
+    <Compile Include="Media\IImageConverter.cs" />
+    <Compile Include="Media\IImageFormatIdentifier.cs" />
     <Compile Include="Media\ImageConstants.cs" />
     <Compile Include="Media\ImageConversionException.cs" />
-    <Compile Include="Media\ImageConversionService.cs" />
+    <Compile Include="Media\ImageConverterService.cs" />
     <Compile Include="Media\ImageFormat.cs" />
     <Compile Include="Media\ImageValidationException.cs" />
     <Compile Include="Media\MultiPagePdfConversionException.cs" />

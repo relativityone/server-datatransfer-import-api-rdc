@@ -140,7 +140,9 @@
     </Compile>
     <Compile Include="AppSettingsTests.cs" />
     <Compile Include="ChoiceInfoTests.cs" />
+    <Compile Include="FreeImageServiceTests.cs" />
     <Compile Include="HttpServiceExceptionTests.cs" />
+    <Compile Include="ImageConverterServiceTests.cs" />
     <Compile Include="SoapExceptionDetailTests.cs" />
     <Compile Include="SerializationTestsBase.cs" />
     <Compile Include="ImportExportCompatibilityCheckTests.cs" />
@@ -156,8 +158,6 @@
     <Compile Include="DelimitedFileImporterTestCases.cs" />
     <Compile Include="DelimitedFileImporterTests.cs" />
     <Compile Include="FileSystemWrapTests.cs" />
-    <Compile Include="FreeImageIdServiceTests.cs" />
-    <Compile Include="ImageConversionServiceTests.cs" />
     <Compile Include="ImporterExceptionSerializationTests.cs" />
     <Compile Include="CollectionExtensionsTests.cs" />
     <Compile Include="IoReporterContextTests.cs" />
