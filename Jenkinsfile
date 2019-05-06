@@ -52,7 +52,7 @@ timestamps
                 {
                     stage('Clean')
                     {
-                        output = powershell ".\\build.ps1 Clean -ForceDeleteTools -ForceDeletePackages -ForceDeleteArtifacts -Verbosity '${params.buildVerbosity}'"
+                        output = powershell ".\\build.ps1 Clean -Verbosity '${params.buildVerbosity}'"
                         echo output
                     }
 
