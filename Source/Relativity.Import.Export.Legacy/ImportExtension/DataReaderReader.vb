@@ -1,7 +1,7 @@
 Imports kCura.WinEDDS.Api
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderReader
@@ -277,11 +277,11 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 
 		Private Function GetArtifactFieldCollectionWithBasicFields() As ArtifactFieldCollection
-			Dim idDataSet As FileIdInfo = GetFieldIdData()
+			Dim fileTypeIdInfo As FileTypeIdInfo = GetFileTypeIdInfo()
 			Dim fileSizeSet As Long? = GetFileSizeData()
 			Dim fileNameSet As String = GetFileNameData()
 
-			Return InjectableArtifactFieldCollection.CreateFieldCollection(fileNameSet, idDataSet, fileSizeSet)
+			Return InjectableArtifactFieldCollection.CreateFieldCollection(fileNameSet, fileTypeIdInfo, fileSizeSet)
 		End Function
 
 		Private Function GetFileNameData() As String
@@ -386,7 +386,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			Return Nothing
 		End Function
 
-		Private Function GetFieldIdData() As FileIdInfo
+		Private Function GetFileTypeIdInfo() As FileTypeIdInfo
 
 			If Not _FileSettings.OIFileIdMapped
 				Return Nothing

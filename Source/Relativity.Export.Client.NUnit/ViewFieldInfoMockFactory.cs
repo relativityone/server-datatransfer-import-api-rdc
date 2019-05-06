@@ -9,7 +9,7 @@ namespace Relativity.Export.NUnit
     using System;
     using System.Collections.Generic;
     using System.Data;
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 
 	internal class ViewFieldInfoMockFactory
 	{

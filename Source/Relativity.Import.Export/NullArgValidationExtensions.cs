@@ -13,7 +13,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Extension method to check method argument reference is not null.
 	/// </summary>
-	public static class NullArgValidationExtensions
+	internal static class NullArgValidationExtensions
 	{
 		/// <summary>
 		/// It throws ArgumentNullException when passed argument is null.

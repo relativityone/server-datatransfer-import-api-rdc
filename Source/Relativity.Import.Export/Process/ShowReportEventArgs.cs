@@ -10,7 +10,7 @@ namespace Relativity.Import.Export.Process
 	using System.Data;
 
 	/// <summary>
-	/// Represents the show report event argument data.
+	/// Represents the show report event argument data. This class cannot be inherited.
 	/// </summary>
 	public sealed class ShowReportEventArgs : EventArgs
 	{

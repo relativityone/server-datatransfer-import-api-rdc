@@ -1,5 +1,4 @@
-﻿Imports Relativity.Desktop.Client.Legacy.Controls
-Imports Relativity.OAuth2Client.Exceptions
+﻿Imports Relativity.OAuth2Client.Exceptions
 
 Namespace Relativity.Desktop.Client
 	Public Class ThreadExceptionHandler

@@ -8,7 +8,7 @@
 	using kCura.WinEDDS.Exporters;
 
 	using Relativity.Export.VolumeManagerV2.Repository;
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 
 	public class LongTextHelper
 	{
@@ -56,7 +56,7 @@
 
 		public bool IsTextTooLong(string text)
 		{
-			return text == Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			return text == ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 		}
 
 		public bool IsTextTooLong(ObjectExportInfo artifact, string fieldName)
@@ -101,7 +101,7 @@
 		{
 			if (_exportSettings.SelectedTextFields != null)
 			{
-				int fieldArtifactId = (int) artifact.Metadata[_fieldService.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)];
+				int fieldArtifactId = (int) artifact.Metadata[_fieldService.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)];
 				return _exportSettings.SelectedTextFields.FirstOrDefault(x => x.FieldArtifactId == fieldArtifactId);
 			}
 
@@ -110,7 +110,7 @@
 
 		public kCura.WinEDDS.ViewFieldInfo GetTextPrecedenceTrueField(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field)
 		{
-			if (field == null || field.AvfColumnName == ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)
+			if (field == null || field.AvfColumnName == ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)
 			{
 				return GetTextPrecedenceField(artifact);
 			}

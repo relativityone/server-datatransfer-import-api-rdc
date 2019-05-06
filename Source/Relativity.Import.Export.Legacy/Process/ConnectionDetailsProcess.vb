@@ -1,10 +1,10 @@
 Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 Imports Relativity.Import.Export.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class ConnectionDetailsProcess
-		Inherits ProcessBase
+		Inherits ProcessBase2
 
 		Private ReadOnly _credential As Net.NetworkCredential
 		Private ReadOnly _cookieContainer As Net.CookieContainer
@@ -25,7 +25,7 @@ Namespace kCura.WinEDDS
 			Me.WriteStatus("")
 
 			Dim tapiObjectService As ITapiObjectService = New TapiObjectService
-			Dim parameters As TapiBridgeParameters = New TapiBridgeParameters
+			Dim parameters As TapiBridgeParameters2 = New TapiBridgeParameters2
 			parameters.Credentials = _credential
 			parameters.TimeoutSeconds = Me.AppSettings.HttpTimeoutSeconds
 			parameters.WebCookieContainer = _cookieContainer

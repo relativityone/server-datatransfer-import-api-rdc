@@ -235,14 +235,16 @@ namespace Relativity.Import.Export.NUnit
 		[Test]
 		public void ShouldGetAndSetTheEnforceVersionCompatibilityCheckSetting()
 		{
+			IAppSettingsInternal backdoorAppSettings = this.settings as IAppSettingsInternal;
+			Assert.That(backdoorAppSettings, Is.Not.Null);
 			Assert.That(
-				this.settings.EnforceVersionCompatibilityCheck,
+				backdoorAppSettings.EnforceVersionCompatibilityCheck,
 				Is.EqualTo(AppSettingsConstants.EnforceVersionCompatibilityCheckDefaultValue));
 			bool expectedValue = RandomHelper.NextBoolean();
-			this.settings.EnforceVersionCompatibilityCheck = expectedValue;
-			Assert.That(this.settings.EnforceVersionCompatibilityCheck, Is.EqualTo(expectedValue));
-			this.settings.EnforceVersionCompatibilityCheck = !expectedValue;
-			Assert.That(this.settings.EnforceVersionCompatibilityCheck, Is.EqualTo(!expectedValue));
+			backdoorAppSettings.EnforceVersionCompatibilityCheck = expectedValue;
+			Assert.That(backdoorAppSettings.EnforceVersionCompatibilityCheck, Is.EqualTo(expectedValue));
+			backdoorAppSettings.EnforceVersionCompatibilityCheck = !expectedValue;
+			Assert.That(backdoorAppSettings.EnforceVersionCompatibilityCheck, Is.EqualTo(!expectedValue));
 		}
 
 		[Test]

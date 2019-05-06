@@ -8,7 +8,7 @@
 	using kCura.WinEDDS.Exporters;
 
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 
 	public class TextExportableSize
 	{
@@ -39,16 +39,16 @@
 					string columnName = field.AvfColumnName;
 					string textValue = _longTextHelper.GetTextFromField(artifact, columnName);
 
-					if (textValue == Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN)
+					if (textValue == ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN)
 					{
-						if (!_fieldService.ContainsFieldName(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE))
+						if (!_fieldService.ContainsFieldName(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE))
 						{
 							//This is just for backward compatibility
 							volumeSize.TextFilesSize += _EXTRACTED_TEXT_SIZE_NAIVE;
 						}
 						else
 						{
-							int columnWithSizeIndex = _fieldService.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE);
+							int columnWithSizeIndex = _fieldService.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE);
 							long sizeInUnicode = (long) artifact.Metadata[columnWithSizeIndex];
 							if (_exportSettings.TextFileEncoding.Equals(Encoding.Unicode))
 							{

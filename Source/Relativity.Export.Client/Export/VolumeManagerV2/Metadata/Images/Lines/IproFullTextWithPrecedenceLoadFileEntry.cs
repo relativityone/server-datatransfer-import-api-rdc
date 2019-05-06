@@ -4,7 +4,7 @@
 	using kCura.WinEDDS.Exporters;
 
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 
 	public class IproFullTextWithPrecedenceLoadFileEntry : IproFullTextLoadFileEntry
 	{
@@ -15,14 +15,14 @@
 
 		protected override int GetTextSourceFieldId(ObjectExportInfo artifact)
 		{
-			string textSourceColumnName = ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME;
+			string textSourceColumnName = ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME;
 			int fieldIndex = FieldService.GetOrdinalIndex(textSourceColumnName);
 			return (int) artifact.Metadata[fieldIndex];
 		}
 
 		protected override string GetTextColumnName()
 		{
-			return ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME;
+			return ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME;
 		}
 	}
 }

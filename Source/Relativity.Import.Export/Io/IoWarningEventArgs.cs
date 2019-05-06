@@ -9,7 +9,7 @@ namespace Relativity.Import.Export.Io
 	using System;
 
 	/// <summary>
-	/// Class for IO warning event arguments.
+	/// Class for IO warning event arguments. This class cannot be inherited.
 	/// </summary>
 	public sealed class IoWarningEventArgs : EventArgs
 	{

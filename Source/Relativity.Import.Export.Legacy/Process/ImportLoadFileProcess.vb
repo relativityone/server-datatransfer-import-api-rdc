@@ -3,7 +3,7 @@ Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Io
 Imports Relativity.Import.Export.Process
 Imports Relativity.Import.Export.Transfer
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Namespace kCura.WinEDDS
 
@@ -291,35 +291,35 @@ Namespace kCura.WinEDDS
 				Dim statisticsDictionary As IDictionary = Nothing
 				If Not e.AdditionalInfo Is Nothing Then statisticsDictionary = DirectCast(e.AdditionalInfo, IDictionary)
 				Select Case e.EventType
-					Case EventType.End
+					Case EventType2.End
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, System.DateTime.Now, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 						Me.Context.PublishProcessEnded(e.Statistics.FileBytes, e.Statistics.MetadataBytes)
-					Case EventType.Error
+					Case EventType2.Error
 						_errorCount += 1
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case EventType.Progress
+					Case EventType2.Progress
 						TotalRecords = e.TotalRecords
 						CompletedRecordsCount = e.CurrentRecordIndex
 						Me.Context.PublishRecordProcessed(e.CurrentRecordIndex)
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case EventType.Statistics
+					Case EventType2.Statistics
 						SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
-					Case EventType.ResetProgress
+					Case EventType2.ResetProgress
 						' Do NOT raise RaiseRecordProcessed for this event. 
 						CompletedRecordsCount = 0
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case EventType.Status
+					Case EventType2.Status
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case EventType.Warning
+					Case EventType2.Warning
 						_warningCount += 1
 						Me.Context.PublishWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case EventType.ResetStartTime
+					Case EventType2.ResetStartTime
 						SetStartTime()
-					Case EventType.Count
+					Case EventType2.Count
 						Me.Context.PublishRecordCountIncremented()
 				End Select
 			End SyncLock

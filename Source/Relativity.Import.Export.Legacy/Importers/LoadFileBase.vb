@@ -3,7 +3,7 @@ Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Data
 Imports Relativity.Import.Export.Io
 Imports Relativity.Logging
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 
 Namespace kCura.WinEDDS
@@ -327,7 +327,7 @@ Namespace kCura.WinEDDS
 			Dim nameIDPairs As New System.Collections.Hashtable
 			For Each objectName As String In objectDisplayNames
 				If objectName.Length > field.TextLength Then
-					Throw New InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, objectName.Length, field.TextLength, field.DisplayName)
+					Throw New StringImporterException(Me.CurrentLineNumber, column, objectName.Length, field.TextLength, field.DisplayName)
 				End If
 				nameIDPairs(objectName) = Me.LookupArtifactIDForName(objectName, associatedObjectTypeID)
 			Next
@@ -367,7 +367,7 @@ Namespace kCura.WinEDDS
 
 			For Each objectArtifactId As String In objectArtifactIds
 				If objectArtifactId.Length > field.TextLength Then
-					Throw New InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, objectArtifactId.Length, field.TextLength, field.DisplayName)
+					Throw New StringImporterException(Me.CurrentLineNumber, column, objectArtifactId.Length, field.TextLength, field.DisplayName)
 				End If
 				nameIDPairs(objectArtifactId) = Me.LookupNameForArtifactID(CInt(objectArtifactId), associatedObjectTypeID)
 			Next
@@ -754,7 +754,7 @@ Namespace kCura.WinEDDS
 
 		Public Function GetNullableFixedString(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32, ByVal displayName As String) As String
 			If value.Length > fieldLength Then
-				Throw New InputStringExceedsFixedLengthException(CurrentLineNumber, column, value.Length, fieldLength, displayName)
+				Throw New StringImporterException(CurrentLineNumber, column, value.Length, fieldLength, displayName)
 			Else
 				Return NullableTypesHelper.DBNullString(value)
 			End If

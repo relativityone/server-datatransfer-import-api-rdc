@@ -9,7 +9,7 @@ namespace Relativity.Import.Export.Process
 	using System;
 
 	/// <summary>
-	/// Represents the process end event argument data.
+	/// Represents the process end event argument data. This class cannot be inherited.
 	/// </summary>
 	[Serializable]
 	public sealed class ProcessEndEventArgs : EventArgs

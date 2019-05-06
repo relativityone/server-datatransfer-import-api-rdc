@@ -7,7 +7,7 @@
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 
 	using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 

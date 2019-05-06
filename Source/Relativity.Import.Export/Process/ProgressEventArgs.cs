@@ -10,7 +10,7 @@ namespace Relativity.Import.Export.Process
 	using System.Collections;
 
 	/// <summary>
-	/// Represents the progress event argument data.
+	/// Represents the progress event argument data. This class cannot be inherited.
 	/// </summary>
 	[Serializable]
 	public sealed class ProgressEventArgs : EventArgs

@@ -17,6 +17,7 @@ namespace Relativity.Import.Client.NUnit
 	using kCura.WinEDDS.Exceptions;
 
 	using Relativity.Import.Export;
+	using Relativity.Import.Export.Io;
 
 	[TestFixture]
 	public static class ExceptionSerializationTests
@@ -172,15 +173,15 @@ namespace Relativity.Import.Client.NUnit
 						"Message",
 						new InvalidOperationException()),
 					validateNoOp);
-				yield return new TestCaseData(new FileIdException(), validateNoOp);
+				yield return new TestCaseData(new FileTypeIdException(), validateNoOp);
 				yield return new TestCaseData(
-					new FileIdException("Message"),
+					new FileTypeIdException("Message"),
 					validateNoOp);
 				yield return new TestCaseData(
-					new FileIdException("Message", new InvalidOperationException()),
+					new FileTypeIdException("Message", new InvalidOperationException()),
 					validateNoOp);
 				yield return new TestCaseData(
-					new FileIdException("Message", new InvalidOperationException(), FileIdError.Io),
+					new FileTypeIdException("Message", new InvalidOperationException(), FileTypeIdError.Io),
 					validateNoOp);
 				yield return new TestCaseData(
 					new ImportCredentialException("Message", "username", "url"),

@@ -84,7 +84,7 @@ namespace Relativity.Export.NUnit
 			_instance.CanExport(filePath, string.Empty);
 
 			// ASSERT
-			_status.Verify(x => x.WriteStatusLine(EventType.Status, It.IsAny<string>(), false));
+			_status.Verify(x => x.WriteStatusLine(EventType2.Status, It.IsAny<string>(), false));
 			_fileHelper.Verify(x => x.Delete(filePath));
 		}
 
@@ -117,7 +117,7 @@ namespace Relativity.Export.NUnit
 
 			// ASSERT
 			Assert.That(canExport, Is.False);
-			_status.Verify(x => x.WriteStatusLine(EventType.Status, It.IsAny<string>(), false));
+			_status.Verify(x => x.WriteStatusLine(EventType2.Status, It.IsAny<string>(), false));
 			_fileHelper.Verify(x => x.Delete(filePath), Times.Never);
 		}
 	}

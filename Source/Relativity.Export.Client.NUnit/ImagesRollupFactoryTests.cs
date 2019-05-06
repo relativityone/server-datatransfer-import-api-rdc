@@ -16,7 +16,7 @@ namespace Relativity.Export.NUnit
 	using Moq;
 
 	using Relativity.Export.VolumeManagerV2.ImagesRollup;
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 	using Relativity.Logging;
 
     [TestFixture]

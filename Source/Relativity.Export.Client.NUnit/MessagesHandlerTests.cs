@@ -88,7 +88,7 @@ namespace Relativity.Export.NUnit
 			_tapiBridge.Raise(x => x.TapiStatusMessage += null, new TapiMessageEventArgs(message, 0));
 
 			// ASSERT
-			_status.Verify(x => x.WriteStatusLine(EventType.Status, message, false), Times.Once);
+			_status.Verify(x => x.WriteStatusLine(EventType2.Status, message, false), Times.Once);
 		}
 
 		[Test]
@@ -108,7 +108,7 @@ namespace Relativity.Export.NUnit
 			// ASSERT
 			_status.Verify(x => x.WriteWarning(message), Times.Never);
 			_status.Verify(x => x.WriteError(message), Times.Never);
-			_status.Verify(x => x.WriteStatusLine(EventType.Status, message, false), Times.Never);
+			_status.Verify(x => x.WriteStatusLine(EventType2.Status, message, false), Times.Never);
 		}
 	}
 }

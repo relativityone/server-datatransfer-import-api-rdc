@@ -13,7 +13,7 @@ namespace Relativity.Import.Export.Transfer
 	using Relativity.Transfer;
 
 	/// <summary>
-	/// Represents Transfer API progress event arguments data.
+	/// Represents Transfer API progress event arguments data. This class cannot be inherited.
 	/// </summary>
 	/// <seealso cref="System.EventArgs" />
 	public sealed class TapiProgressEventArgs : EventArgs

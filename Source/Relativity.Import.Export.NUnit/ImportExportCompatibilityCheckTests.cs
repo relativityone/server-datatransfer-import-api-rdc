@@ -17,16 +17,26 @@ namespace Relativity.Import.Export.NUnit
 
 	using Relativity.Logging;
 
+	[TestFixture("Processing")]
+	[TestFixture(null)]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
 		Justification = "The test class handles the disposal.")]
 	public class ImportExportCompatibilityCheckTests
 	{
+		private readonly string applicationName;
 		private Mock<IApplicationVersionService> relativityVersionServiceMock;
 		private Mock<ILog> logMock;
 		private RelativityInstanceInfo instanceInfo;
 		private IObjectCacheRepository objectCacheRepository;
+		private Mock<IAppSettings> appSettings;
+		private Mock<IAppSettingsInternal> appSettingsInternal;
+
+		public ImportExportCompatibilityCheckTests(string applicationName)
+		{
+			this.applicationName = applicationName;
+		}
 
 		[SetUp]
 		public void Setup()
@@ -38,7 +48,12 @@ namespace Relativity.Import.Export.NUnit
 				Host = new Uri("https://relativity.one"),
 				WebApiServiceUrl = new Uri("https://relativity.one/RelativityWebAPI/")
 			};
+
 			this.objectCacheRepository = new MemoryCacheRepository(TimeSpan.FromSeconds(0));
+			this.appSettings = new Mock<IAppSettings>();
+			this.appSettings.SetupGet(settings => settings.ApplicationName).Returns(this.applicationName);
+			this.appSettingsInternal = new Mock<IAppSettingsInternal>();
+			this.appSettingsInternal.SetupGet(settings => settings.EnforceVersionCompatibilityCheck).Returns(true);
 		}
 
 		[TearDown]
@@ -48,15 +63,63 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
-		[TestCase("0.0.0.0", "1.0")]
-		[TestCase("10.3.0.0", "0.0")]
-		public void ShouldThrowWhenTheRelativityOrImportExportWebApiVersionIsInvalid(string mockRelativityVersion, string mockWebApiVersion)
+		[TestCase("10.2.0.0", "1.0", "10.3.0.0", "1.0", "10.3.0.0")]
+		[TestCase("10.3.0.0", "1.0", "10.3.0.0", "2.0", "10.3.0.0")]
+		public async Task ShouldNotThrowWhenTheEnforceVersionCompatibilityCheckIsDisabledAsync(
+			string mockRelativityVersion,
+			string mockWebApiVersion,
+			string mockMinRelativityVersion,
+			string mockRequiredWebApiVersion,
+			string webApiStartFromRelativityVersion)
 		{
 			// arrange
 			Version relativityVersion = Version.Parse(mockRelativityVersion);
 			Version webApiVersion = Version.Parse(mockWebApiVersion);
-			this.relativityVersionServiceMock.Setup(x => x.GetRelativityVersionAsync(CancellationToken.None)).Returns(Task.FromResult(relativityVersion));
-			this.relativityVersionServiceMock.Setup(x => x.GetImportExportWebApiVersionAsync(CancellationToken.None)).Returns(Task.FromResult(webApiVersion));
+			this.appSettingsInternal.SetupGet(settings => settings.EnforceVersionCompatibilityCheck).Returns(false);
+			this.relativityVersionServiceMock.Setup(x => x.GetRelativityVersionAsync(CancellationToken.None))
+				.Returns(Task.FromResult(relativityVersion));
+			this.relativityVersionServiceMock.Setup(x => x.GetImportExportWebApiVersionAsync(CancellationToken.None))
+				.Returns(Task.FromResult(webApiVersion));
+			ImportExportCompatibilityCheck subjectUnderTest = new ImportExportCompatibilityCheck(
+				this.instanceInfo,
+				this.relativityVersionServiceMock.Object,
+				this.logMock.Object,
+				Version.Parse(mockMinRelativityVersion),
+				Version.Parse(mockRequiredWebApiVersion),
+				Version.Parse(webApiStartFromRelativityVersion),
+				this.objectCacheRepository,
+				this.appSettings.Object,
+				this.appSettingsInternal.Object);
+
+			// act
+			await subjectUnderTest.ValidateAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			if (Version.Parse(mockRelativityVersion) >= Version.Parse(mockMinRelativityVersion))
+			{
+				this.relativityVersionServiceMock.Verify(
+					x => x.GetImportExportWebApiVersionAsync(CancellationToken.None),
+					Times.Once);
+			}
+
+			this.relativityVersionServiceMock.Verify(x => x.GetRelativityVersionAsync(CancellationToken.None), Times.Once);
+			this.logMock.Verify(x => x.LogWarning(It.IsAny<string>(), It.IsAny<object[]>()));
+		}
+
+		[Test]
+		[TestCase("0.0.0.0", "1.0")]
+		[TestCase("10.3.0.0", "0.0")]
+		public void ShouldThrowWhenTheRelativityOrImportExportWebApiVersionIsInvalid(
+			string mockRelativityVersion,
+			string mockWebApiVersion)
+		{
+			// arrange
+			Version relativityVersion = Version.Parse(mockRelativityVersion);
+			Version webApiVersion = Version.Parse(mockWebApiVersion);
+			this.relativityVersionServiceMock.Setup(x => x.GetRelativityVersionAsync(CancellationToken.None))
+				.Returns(Task.FromResult(relativityVersion));
+			this.relativityVersionServiceMock.Setup(x => x.GetImportExportWebApiVersionAsync(CancellationToken.None))
+				.Returns(Task.FromResult(webApiVersion));
 			ImportExportCompatibilityCheck subjectUnderTest = new ImportExportCompatibilityCheck(
 				this.instanceInfo,
 				this.relativityVersionServiceMock.Object,
@@ -64,11 +127,14 @@ namespace Relativity.Import.Export.NUnit
 				new Version(9, 7, 0, 0),
 				new Version(1, 0),
 				new Version(10, 3),
-				this.objectCacheRepository);
+				this.objectCacheRepository,
+				this.appSettings.Object,
+				this.appSettingsInternal.Object);
 
 			// act
 			RelativityNotSupportedException exception = Assert.ThrowsAsync<RelativityNotSupportedException>(
 				async () => await subjectUnderTest.ValidateAsync(CancellationToken.None).ConfigureAwait(false));
+			Console.WriteLine(exception.Message);
 
 			// assert
 			Assert.That(exception.RelativityVersion, Is.EqualTo(relativityVersion));
@@ -100,7 +166,9 @@ namespace Relativity.Import.Export.NUnit
 				new Version(minRelativityVersion),
 				VersionConstants.RequiredWebApiVersion,
 				new Version(webApiStartFromRelativityVersion),
-				this.objectCacheRepository);
+				this.objectCacheRepository,
+				this.appSettings.Object,
+				this.appSettingsInternal.Object);
 
 			// act
 			if (expectedResult)
@@ -109,11 +177,12 @@ namespace Relativity.Import.Export.NUnit
 			}
 			else
 			{
-				Assert.ThrowsAsync<RelativityNotSupportedException>(
+				RelativityNotSupportedException exception = Assert.ThrowsAsync<RelativityNotSupportedException>(
 					async () =>
 						{
 							await subjectUnderTest.ValidateAsync(CancellationToken.None).ConfigureAwait(false);
 						});
+				Console.WriteLine(exception.Message);
 			}
 
 			// assert
@@ -152,7 +221,9 @@ namespace Relativity.Import.Export.NUnit
 				new Version(minRelativityVersion),
 				new Version(minWebApiVersion),
 				new Version(webApiStartFromRelativityVersion),
-			this.objectCacheRepository);
+				this.objectCacheRepository,
+				this.appSettings.Object,
+				this.appSettingsInternal.Object);
 
 			// act
 			if (expectedResult)
@@ -161,11 +232,12 @@ namespace Relativity.Import.Export.NUnit
 			}
 			else
 			{
-				Assert.ThrowsAsync<RelativityNotSupportedException>(
+				RelativityNotSupportedException exception = Assert.ThrowsAsync<RelativityNotSupportedException>(
 					async () =>
 						{
 							await subjectUnderTest.ValidateAsync(CancellationToken.None).ConfigureAwait(false);
 						});
+				Console.WriteLine(exception.Message);
 			}
 
 			// assert

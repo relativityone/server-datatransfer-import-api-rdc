@@ -10,7 +10,7 @@ namespace Relativity.Import.Export.Process
 	using System.Xml.Serialization;
 
 	/// <summary>
-	/// Represents the process event data transfer object.
+	/// Represents the process event data transfer object. This class cannot be inherited.
 	/// </summary>
 	/// <remarks>
 	/// The Xml serialization attributes are used strictly for backwards compatibility.

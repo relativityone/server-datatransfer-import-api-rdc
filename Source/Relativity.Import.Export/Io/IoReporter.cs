@@ -211,7 +211,7 @@ namespace Relativity.Import.Export.Io
 		{
 			if (string.IsNullOrEmpty(fileName))
 			{
-				throw new ArgumentNullException(nameof(fileName));
+				return false;
 			}
 
 			if (lineNumber < 0)
@@ -234,7 +234,7 @@ namespace Relativity.Import.Export.Io
 		{
 			if (string.IsNullOrEmpty(fileName))
 			{
-				throw new ArgumentNullException(nameof(fileName));
+				return 0;
 			}
 
 			if (lineNumber < 0)

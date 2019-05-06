@@ -1,7 +1,4 @@
 ﻿Imports System.Windows.Forms
-
-Imports kCura.EDDS.WinForm.Forms
-
 Imports NUnit.Framework
 
 Namespace Relativity.Desktop.Client.Legacy.NUnit

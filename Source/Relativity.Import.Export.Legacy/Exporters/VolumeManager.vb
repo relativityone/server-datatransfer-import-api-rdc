@@ -8,8 +8,9 @@ Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.IO
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Media
 Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Namespace kCura.WinEDDS
 	Public Class VolumeManager
@@ -46,7 +47,7 @@ Namespace kCura.WinEDDS
 		Private _hasWrittenColumnHeaderString As Boolean = False
 		Private _encoding As System.Text.Encoding
 		Private _errorFileLocation As String = ""
-		Private _timekeeper As Timekeeper
+		Private _timekeeper As Timekeeper2
 		Private _statistics As kCura.WinEDDS.Statistics
 		Private _totalExtractedTextFileLength As Int64 = 0
 		Private _halt As Boolean = False
@@ -140,7 +141,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As Global.Relativity.Import.Export.Io.IFile, directoryHelper As Global.Relativity.Import.Export.Io.IDirectory, fileNameProvider As IFileNameProvider)
+		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As Timekeeper2, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As Global.Relativity.Import.Export.Io.IFile, directoryHelper As Global.Relativity.Import.Export.Io.IDirectory, fileNameProvider As IFileNameProvider)
 			_settings = settings
 			_statistics = statistics
 			_parent = parent
@@ -214,9 +215,9 @@ Namespace kCura.WinEDDS
 			Next
 			If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then
 				Dim newindex As Int32 = _ordinalLookup.Count
-				_ordinalLookup.Add(ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME, newindex)
-				_ordinalLookup.Add(ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newindex + 1)
-				_ordinalLookup.Add(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE, newindex + 2)
+				_ordinalLookup.Add(ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME, newindex)
+				_ordinalLookup.Add(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newindex + 1)
+				_ordinalLookup.Add(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE, newindex + 2)
 			End If
 
 		End Sub
@@ -271,9 +272,9 @@ Namespace kCura.WinEDDS
 							End If
 							If fieldValue Is Nothing Then fieldValue = String.Empty
 							Dim textValue As String = fieldValue.ToString
-							If textValue = Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
+							If textValue = ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 								'This isn't ideal, because encoding can be different than Unicode - this is fixed in new export
-								prediction.TextFilesSize += CType(artifact.Metadata(_ordinalLookup(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)), long)
+								prediction.TextFilesSize += CType(artifact.Metadata(_ordinalLookup(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)), long)
 							Else
 								prediction.TextFilesSize += Me.Settings.TextFileEncoding.GetByteCount(textValue)
 							End If
@@ -435,14 +436,14 @@ Namespace kCura.WinEDDS
 				imageList(i) = DirectCast(artifact.Images(i), Exporters.ImageExportInfo).TempLocation
 			Next
 			Dim tempLocation As String = Me.Settings.FolderPath.TrimEnd("\"c) & "\" & System.Guid.NewGuid.ToString & ".tmp"
-			Dim imageConversionService As New ImageConversionService
+			Dim imageConverterService As IImageConverter = New ImageConverterService
 			Try
 				Select Case Me.Settings.TypeOfImage
 					Case ExportFile.ImageType.MultiPageTiff
-						imageConversionService.ConvertTiffsToMultiPageTiff(imageList, tempLocation)
+						imageConverterService.ConvertTiffsToMultiPageTiff(imageList, tempLocation)
 					Case ExportFile.ImageType.Pdf
 						If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then
-							imageConversionService.ConvertImagesToMultiPagePdf(imageList, tempLocation)
+							imageConverterService.ConvertImagesToMultiPagePdf(imageList, tempLocation)
 						End If
 				End Select
 				imageCount = 1
@@ -475,7 +476,7 @@ Namespace kCura.WinEDDS
 				Else
 					_fileHelper.Move(tempLocation, DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
 				End If
-			Catch ex As ImageRollupException
+			Catch ex As ImageConversionException
 				successfulRollup = False
 				Try
 					If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then
@@ -492,13 +493,13 @@ Namespace kCura.WinEDDS
 
 		Private Function CopySelectedLongTextToFile(ByVal artifact As Exporters.ObjectExportInfo, ByRef len As Int64) As String
 			Dim field As ViewFieldInfo = Me.GetFieldForLongTextPrecedenceDownload(Nothing, artifact)
-			If Not Me.OrdinalLookup.ContainsKey(ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME) Then
+			If Not Me.OrdinalLookup.ContainsKey(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME) Then
 				Return String.Empty
 			End If
-			Dim text As Object = artifact.Metadata(Me.OrdinalLookup(ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
+			Dim text As Object = artifact.Metadata(Me.OrdinalLookup(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
 			If text Is Nothing Then text = String.Empty
 			Dim longText As String = text.ToString
-			If longText = Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
+			If longText = ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 				Dim filePath As String = Me.DownloadTextFieldAsFile(artifact, field)
 				len += _fileHelper.GetFileSize(filePath)
 				Return filePath
@@ -593,7 +594,7 @@ Namespace kCura.WinEDDS
 					Dim start As Int64 = System.DateTime.Now.Ticks
 					'BigData_ET_1037768
 					Dim val As String = artifact.Metadata(Me.OrdinalLookup("ExtractedText")).ToString
-					If val <> Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
+					If val <> ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 						Dim tempLocalIproFileStream As FileStream = _fileStreamFactory.Create(tempLocalIproFullTextFilePath, False)
 						Dim sw As New System.IO.StreamWriter(tempLocalIproFileStream, System.Text.Encoding.Unicode)
 						sw.Write(val)
@@ -606,10 +607,10 @@ Namespace kCura.WinEDDS
 								Exit While
 							Catch ex As System.Exception
 								If tries = 1 Then
-									_parent.WriteStatusLine(EventType.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
+									_parent.WriteStatusLine(EventType2.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
 								ElseIf tries < maxTries Then
 									Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-									_parent.WriteStatusLine(EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
+									_parent.WriteStatusLine(EventType2.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
 									System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 								Else
 									Throw
@@ -625,7 +626,7 @@ Namespace kCura.WinEDDS
 						tempLocalIproFullTextFilePath = TempFileBuilder.GetTempFileName(TempFileConstants.IProFileNameSuffix)
 						Dim tempLocalIproFileStream As FileStream = _fileStreamFactory.Create(tempLocalIproFullTextFilePath, False)
 						Dim sw As New System.IO.StreamWriter(tempLocalIproFileStream, System.Text.Encoding.Unicode)
-						Dim val As String = artifact.Metadata(Me.OrdinalLookup(ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).ToString
+						Dim val As String = artifact.Metadata(Me.OrdinalLookup(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).ToString
 						sw.Write(val)
 						sw.Close()
 					End If
@@ -694,9 +695,9 @@ Namespace kCura.WinEDDS
 
 		Private Function GetFieldForLongTextPrecedenceDownload(ByVal input As ViewFieldInfo, ByVal artifact As WinEDDS.Exporters.ObjectExportInfo) As ViewFieldInfo
 			Dim retval As ViewFieldInfo = input
-			If input Is Nothing OrElse input.AvfColumnName = ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME Then
+			If input Is Nothing OrElse input.AvfColumnName = ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME Then
 				If Me.Settings.SelectedTextFields IsNot Nothing Then
-					retval = (From f In Me.Settings.SelectedTextFields Where f.FieldArtifactId = CInt(artifact.Metadata(_ordinalLookup(ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)))).First
+					retval = (From f In Me.Settings.SelectedTextFields Where f.FieldArtifactId = CInt(artifact.Metadata(_ordinalLookup(ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)))).First
 				End If
 			End If
 			Return retval
@@ -723,11 +724,11 @@ Namespace kCura.WinEDDS
 					Dim secs As Double = Math.Round(webServiceRequestTime.ElapsedMilliseconds / 1000, 2)
 
 					If tries = 1 Then
-						_parent.WriteStatusLine(EventType.Warning, "Second attempt to download full text for document " & 
+						_parent.WriteStatusLine(EventType2.Warning, "Second attempt to download full text for document " & 
 							artifact.IdentifierValue & ". Previous request took " & secs & " (secs)", True)
 					ElseIf tries < maxTries Then
 						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-						_parent.WriteStatusLine(EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds. " &
+						_parent.WriteStatusLine(EventType2.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds. " &
 							"Previous request took " & secs & " (secs)", True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
@@ -875,7 +876,7 @@ Namespace kCura.WinEDDS
 			If _fileHelper.Exists(tempFile) Then
 				If _settings.Overwrite Then
 					_fileHelper.Delete(tempFile)
-					_parent.WriteStatusLine(EventType.Status, String.Format("Overwriting image for {0}.", image.BatesNumber), False)
+					_parent.WriteStatusLine(EventType2.Status, String.Format("Overwriting image for {0}.", image.BatesNumber), False)
 				Else
 					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
 					Return 0
@@ -891,10 +892,10 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As System.Exception
 					If tries = 1 Then
-						_parent.WriteStatusLine(EventType.Warning, "Second attempt to download image " & image.BatesNumber & " - exact error: " & ex.ToString, True)
+						_parent.WriteStatusLine(EventType2.Warning, "Second attempt to download image " & image.BatesNumber & " - exact error: " & ex.ToString, True)
 					ElseIf tries < maxTries Then
 						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-						_parent.WriteStatusLine(EventType.Warning, "Additional attempt to download image " & image.BatesNumber & " failed - retrying in " & waitTime.ToString() & " seconds - exact error: " & ex.ToString, True)
+						_parent.WriteStatusLine(EventType2.Warning, "Additional attempt to download image " & image.BatesNumber & " failed - retrying in " & waitTime.ToString() & " seconds - exact error: " & ex.ToString, True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
 						Throw
@@ -910,21 +911,21 @@ Namespace kCura.WinEDDS
 				If _fileHelper.Exists(fileName) Then
 					If _settings.Overwrite Then
 						_fileHelper.Delete(fileName)
-						_parent.WriteStatusLine(EventType.Status, String.Format("Overwriting document image {0}.", batesNumber), False)
+						_parent.WriteStatusLine(EventType2.Status, String.Format("Overwriting document image {0}.", batesNumber), False)
 						_fileHelper.Move(tempFileLocation, fileName)
 					Else
 						_parent.WriteWarning(String.Format("{0}.tif already exists. Skipping file export.", batesNumber))
 					End If
 				Else
 					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
-					_parent.WriteStatusLine(EventType.Status, String.Format("Now exporting document image {0}.", batesNumber), False)
+					_parent.WriteStatusLine(EventType2.Status, String.Format("Now exporting document image {0}.", batesNumber), False)
 					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
 					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_MoveFile", threadNumber)
 					_fileHelper.Move(tempFileLocation, fileName)
 					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_MoveFile", threadNumber)
 				End If
 				_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
-				_parent.WriteStatusLine(EventType.Status, String.Format("Finished exporting document image {0}.", batesNumber), False)
+				_parent.WriteStatusLine(EventType2.Status, String.Format("Finished exporting document image {0}.", batesNumber), False)
 				_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
 			End If
 			'_parent.DocumentsExported += 1
@@ -1013,14 +1014,14 @@ Namespace kCura.WinEDDS
 				If _fileHelper.Exists(exportFileName) Then
 					If _settings.Overwrite Then
 						_fileHelper.Delete(exportFileName)
-						_parent.WriteStatusLine(EventType.Status, String.Format("Overwriting document {0}.", systemFileName), False)
+						_parent.WriteStatusLine(EventType2.Status, String.Format("Overwriting document {0}.", systemFileName), False)
 						_fileHelper.Move(tempLocation, exportFileName)
 					Else
 						_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", systemFileName))
 					End If
 				Else
 					_timekeeper.MarkStart("VolumeManager_ExportNative_WriteStatus", threadNumber)
-					_parent.WriteStatusLine(EventType.Status, String.Format("Now exporting document {0}.", systemFileName), False)
+					_parent.WriteStatusLine(EventType2.Status, String.Format("Now exporting document {0}.", systemFileName), False)
 					_timekeeper.MarkEnd("VolumeManager_ExportNative_WriteStatus", threadNumber)
 					_timekeeper.MarkStart("VolumeManager_ExportNative_MoveFile", threadNumber)
 					_fileHelper.Move(tempLocation, exportFileName)
@@ -1040,7 +1041,7 @@ Namespace kCura.WinEDDS
 			If _fileHelper.Exists(tempFile) Then
 				If Settings.Overwrite Then
 					_fileHelper.Delete(tempFile)
-					_parent.WriteStatusLine(EventType.Status, String.Format("Overwriting document {0}.", nativeFileName), False)
+					_parent.WriteStatusLine(EventType2.Status, String.Format("Overwriting document {0}.", nativeFileName), False)
 				Else
 					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
 					artifact.NativeTempLocation = tempFile
@@ -1061,10 +1062,10 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As System.Exception
 					If tries = 1 Then
-						_parent.WriteStatusLine(EventType.Warning, "Second attempt to download native for document " & artifact.IdentifierValue, True)
+						_parent.WriteStatusLine(EventType2.Warning, "Second attempt to download native for document " & artifact.IdentifierValue, True)
 					ElseIf tries < maxTries Then
 						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-						_parent.WriteStatusLine(EventType.Warning, "Additional attempt to download native for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
+						_parent.WriteStatusLine(EventType2.Warning, "Additional attempt to download native for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
 						Throw
@@ -1121,7 +1122,7 @@ Namespace kCura.WinEDDS
 			Dim source As System.IO.TextReader
 			Dim destination As System.IO.TextWriter = Nothing
 			Dim downloadedFileExists As Boolean = Not String.IsNullOrEmpty(downloadedTextFilePath) AndAlso _fileHelper.Exists(downloadedTextFilePath)
-			If textValue = Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then 'Text was too long and needs to be downloaded to a file instead
+			If textValue = ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then 'Text was too long and needs to be downloaded to a file instead
 				If Me.Settings.SelectedTextFields IsNot Nothing AndAlso TypeOf textField Is CoalescedTextViewField AndAlso downloadedFileExists Then
 					If Settings.SelectedTextFields.Count = 1 Then
 						source = Me.GetLongTextStream(downloadedTextFilePath, textField)
@@ -1145,7 +1146,7 @@ Namespace kCura.WinEDDS
 				If destinationPathExists AndAlso Not _settings.Overwrite Then 'Skip export instead of overwriting file
 					_parent.WriteWarning(destinationFilePath & " already exists. Skipping file export.")
 				Else 'Overwrite existing text file
-					If destinationPathExists Then _parent.WriteStatusLine(EventType.Status, "Overwriting: " & destinationFilePath, False)
+					If destinationPathExists Then _parent.WriteStatusLine(EventType2.Status, "Overwriting: " & destinationFilePath, False)
 					Dim destinationFileStream As FileStream = _fileStreamFactory.Create(destinationFilePath, False)
 					destination = New System.IO.StreamWriter(destinationFileStream, Me.Settings.TextFileEncoding)
 				End If

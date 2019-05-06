@@ -12,7 +12,7 @@ namespace Relativity.Import.Export.Transfer
 	using System;
 
 	/// <summary>
-	/// Represents Transfer API message event arguments data.
+	/// Represents Transfer API message event arguments data. This class cannot be inherited.
 	/// </summary>
 	/// <seealso cref="System.EventArgs" />
 	public sealed class TapiMessageEventArgs : EventArgs

@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents a base class for <see cref="TapiBridgeBase"/> derived classes.
+//   Represents a base class for <see cref="TapiBridgeBase2"/> derived classes.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
@@ -22,13 +22,13 @@ namespace Relativity.Import.Export.NUnit
 	using Relativity.Transfer;
 
 	/// <summary>
-	/// Represents a base class for <see cref="TapiBridgeBase"/> derived classes.
+	/// Represents a base class for <see cref="TapiBridgeBase2"/> derived classes.
 	/// </summary>
 	/// <typeparam name="TTapiBridge">
 	/// The TAPI bridge type under test.
 	/// </typeparam>
 	public abstract class TapiBridgeTestsBase<TTapiBridge>
-		where TTapiBridge : TapiBridgeBase
+		where TTapiBridge : TapiBridgeBase2
 	{
 		/// <summary>
 		/// The real object service backing.
@@ -85,12 +85,12 @@ namespace Relativity.Import.Export.NUnit
 			this.MockTapiObjectService.Setup(
 					x => x.CreateRelativityTransferHost(It.IsAny<Relativity.Transfer.RelativityConnectionInfo>(), It.IsAny<ITransferLog>()))
 				.Returns(this.MockRelativityTransferHost.Object);
-			this.MockTapiObjectService.Setup(x => x.CreateRelativityConnectionInfo(It.IsAny<TapiBridgeParameters>()))
+			this.MockTapiObjectService.Setup(x => x.CreateRelativityConnectionInfo(It.IsAny<TapiBridgeParameters2>()))
 				.Returns(new Relativity.Transfer.RelativityConnectionInfo());
 			this.MockTapiObjectService.Setup(x => x.CreateFileSystemService())
 				.Returns(this.MockTransferFileSystemService.Object);
-			this.MockTapiObjectService.Setup(x => x.GetClientId(It.IsAny<TapiBridgeParameters>())).Returns(
-				(TapiBridgeParameters parameters) => this.realObjectService.GetClientId(parameters));
+			this.MockTapiObjectService.Setup(x => x.GetClientId(It.IsAny<TapiBridgeParameters2>())).Returns(
+				(TapiBridgeParameters2 parameters) => this.realObjectService.GetClientId(parameters));
 			this.MockTapiObjectService.Setup(x => x.GetTapiClient(It.IsAny<Guid>()))
 				.Returns((Guid id) => this.realObjectService.GetTapiClient(id));
 			this.MockTransferLogger = new Mock<ITransferLog>();
@@ -169,9 +169,9 @@ namespace Relativity.Import.Export.NUnit
 		{
 		}
 
-		protected TapiBridgeParameters CreateTapiBridgeParameters(WellKnownTransferClient client)
+		protected TapiBridgeParameters2 CreateTapiBridgeParameters(WellKnownTransferClient client)
 		{
-			TapiBridgeParameters parameters = new TapiBridgeParameters
+			TapiBridgeParameters2 parameters = new TapiBridgeParameters2
 			{
 				Credentials = new NetworkCredential(),
 				WebServiceUrl = "https://relativity.one.com",
@@ -184,7 +184,7 @@ namespace Relativity.Import.Export.NUnit
 			return parameters;
 		}
 
-		protected void ConfigureTapiBridgeParameters(TapiBridgeParameters parameters, WellKnownTransferClient client)
+		protected void ConfigureTapiBridgeParameters(TapiBridgeParameters2 parameters, WellKnownTransferClient client)
 		{
 			if (parameters == null)
 			{

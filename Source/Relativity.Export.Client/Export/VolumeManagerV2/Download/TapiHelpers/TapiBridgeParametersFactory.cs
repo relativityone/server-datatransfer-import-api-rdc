@@ -19,9 +19,9 @@
 			_exportConfig = exportConfig;
 		}
 
-		public TapiBridgeParameters CreateTapiBridgeParametersFromConfiguration()
+		public TapiBridgeParameters2 CreateTapiBridgeParametersFromConfiguration()
 		{
-			TapiBridgeParameters parameters = new TapiBridgeParameters
+			TapiBridgeParameters2 parameters = new TapiBridgeParameters2
 			{
 				Application = AppSettings.Instance.ApplicationName,
 				AsperaBcpRootFolder = AppSettings.Instance.TapiAsperaBcpRootFolder,

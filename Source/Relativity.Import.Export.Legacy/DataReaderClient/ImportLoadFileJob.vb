@@ -1,6 +1,6 @@
 Imports System.Net
 Imports kCura.WinEDDS
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 Imports Relativity.Import.Export.Process
 
 Namespace kCura.Relativity.DataReaderClient
@@ -42,7 +42,7 @@ Namespace kCura.Relativity.DataReaderClient
 			_nativeSettings = New Settings
 			_nativeDataReader = New SourceIDataReader
 
-			_bulkLoadFileFieldDelimiter = Constants.DEFAULT_FIELD_DELIMITER
+			_bulkLoadFileFieldDelimiter = ServiceConstants.DEFAULT_FIELD_DELIMITER
 		End Sub
 
 		Friend Sub New(ByVal credentials As ICredentials, ByVal tapiCredentials As NetworkCredential, ByVal cookieMonster As Net.CookieContainer, ByVal Optional executionSource As Integer = 0)

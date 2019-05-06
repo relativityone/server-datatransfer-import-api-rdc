@@ -66,7 +66,7 @@ namespace Relativity.Import.Export.Io
 		/// The current line number.
 		/// </param>
 		/// <returns>
-		/// <see langword="true" /> if the file exists; <see langword="false" /> if the file does not exist or if the file is a directory.
+		/// <see langword="true" /> if the file exists; <see langword="false" /> if the file does not exist, if the file is a directory or if <paramref name="fileName" /> is null or empty.
 		/// </returns>
 		/// <exception cref="T:System.IO.IOException">
 		/// <see cref="M:System.IO.FileSystemInfo.Refresh" /> cannot update the state of the file or directory.
@@ -86,7 +86,7 @@ namespace Relativity.Import.Export.Io
 		/// The current line number.
 		/// </param>
 		/// <returns>
-		/// The size of the current file in bytes.
+		/// The size of the current file in bytes; 0 if <paramref name="fileName" /> is null or empty.
 		/// </returns>
 		/// <exception cref="T:System.IO.IOException">
 		/// <see cref="M:System.IO.FileSystemInfo.Refresh" /> cannot update the state of the file or directory.

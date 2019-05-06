@@ -1,5 +1,5 @@
 ﻿Imports System
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Public Class AboutForm
 	Inherits System.Windows.Forms.Form
@@ -36,7 +36,8 @@ Public Class AboutForm
 			sb.Append($"Version {version.ToString()} (stand-alone)" & nl)
 		End If
 
-		sb.Append(Constants.LICENSE_AGREEMENT_TEXT & nl)
+		Const LicenseAgreement As String = "The programs included herein are subject to a restricted use license and can only be used in conjunction with this application."
+		sb.Append(LicenseAgreement & nl)
 		sb.Append("Copyright © " & System.DateTime.Now.Year & " Relativity ODA LLC")
 		Me.MainTextLabel.Text = sb.ToString()
 

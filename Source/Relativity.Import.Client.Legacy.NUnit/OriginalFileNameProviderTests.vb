@@ -14,7 +14,7 @@ Imports NSubstitute
 
 Imports NUnit.Framework
 
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Namespace Relativity.Import.Client.NUnit
 

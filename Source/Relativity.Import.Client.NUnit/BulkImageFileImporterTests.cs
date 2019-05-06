@@ -16,8 +16,8 @@ namespace Relativity.Import.Client.NUnit
 
 	using Moq;
 
-	using CaseInfo = Relativity.Import.Export.Services.CaseInfo;
-	using ExecutionSource = Relativity.Import.Export.Services.ExecutionSource;
+	using CaseInfo = Relativity.Import.Export.Service.CaseInfo;
+	using ExecutionSource = Relativity.Import.Export.Service.ExecutionSource;
 
 	/// <summary>
 	/// Represents <see cref="BulkImageFileImporter"/> tests.

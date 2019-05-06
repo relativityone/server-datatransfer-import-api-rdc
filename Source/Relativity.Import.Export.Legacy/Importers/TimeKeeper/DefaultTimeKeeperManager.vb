@@ -4,7 +4,7 @@ Namespace kCura.WinEDDS
 	Public Class DefaultTimeKeeperManager
 		Implements ITimeKeeperManager
 
-		Private ReadOnly _timekeeper As New Timekeeper
+		Private ReadOnly _timekeeper As New Timekeeper2
 
 		Public Function CaptureTime(eventKey As String) As ImportTimeKeeperBase Implements ITimeKeeperManager.CaptureTime
 			Return New DefaultTimerKeeper(_timekeeper, eventKey)

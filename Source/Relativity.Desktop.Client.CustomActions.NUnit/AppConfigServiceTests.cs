@@ -4,6 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
+using System.IO;
+using System.Reflection;
+
 namespace Relativity.Desktop.Client.CustomActions.NUnit
 {
 	using System;
@@ -14,13 +17,11 @@ namespace Relativity.Desktop.Client.CustomActions.NUnit
 
 	using Moq;
 
-	using Relativity.Import.Export.TestFramework;
-
 	[TestFixture]
 	public class AppConfigServiceTests
 	{
 		private Mock<IWixSession> session;
-		private TestDirectory testDirectory;
+		private string testDirectory;
 		private string sourceAppConfigFile;
 		private string targetAppConfigFile;
 
@@ -28,22 +29,26 @@ namespace Relativity.Desktop.Client.CustomActions.NUnit
 		public void Setup()
 		{
 			this.session = new Mock<IWixSession>();
-			this.testDirectory = new TestDirectory();
-			this.testDirectory.Create();
+			this.testDirectory = Path.Combine(Path.GetTempPath(), "RelativityTmpDir_" + DateTime.Now.Ticks + "_" + Guid.NewGuid());
+			System.IO.Directory.CreateDirectory(this.testDirectory);
 			string fileName = System.IO.Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
-			string projectAppConfigFile = ResourceFileHelper.GetBaseFilePath($"{fileName}.config");
+			string basePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			string projectAppConfigFile = System.IO.Path.Combine(basePath, $"{fileName}.config");
 			string sourceAppConfigFileName = "app-config-source.config";
-			this.sourceAppConfigFile = System.IO.Path.Combine(this.testDirectory.Directory, sourceAppConfigFileName);
+			this.sourceAppConfigFile = System.IO.Path.Combine(this.testDirectory, sourceAppConfigFileName);
 			System.IO.File.Copy(projectAppConfigFile, this.sourceAppConfigFile);
 			string targetAppConfigFileName = "app-config-target.config";
-			this.targetAppConfigFile = System.IO.Path.Combine(this.testDirectory.Directory, targetAppConfigFileName);
+			this.targetAppConfigFile = System.IO.Path.Combine(this.testDirectory, targetAppConfigFileName);
 			System.IO.File.Copy(projectAppConfigFile, this.targetAppConfigFile);
 		}
 
 		[TearDown]
 		public void Teardown()
 		{
-			this.testDirectory.Dispose();
+			if (System.IO.Directory.Exists(this.testDirectory))
+			{
+				System.IO.Directory.Delete(this.testDirectory, true);
+			}
 		}
 
 		[Test]
@@ -51,7 +56,7 @@ namespace Relativity.Desktop.Client.CustomActions.NUnit
 	    {
 		    this.session.Setup(x => x.GetStringPropertyValue(AppConfigService.PropertyNameSourceAppConfigFile))
 			    .Returns(string.Empty);
-		    AppConfigService service = new AppConfigService(this.session.Object, this.testDirectory.Directory);
+		    AppConfigService service = new AppConfigService(this.session.Object, this.testDirectory);
 			ActionResult result = service.Backup();
 			Assert.That(result, Is.EqualTo(ActionResult.Success));
 			Assert.That(service.BackupConfigFile, Is.Null.Or.Empty);
@@ -60,10 +65,10 @@ namespace Relativity.Desktop.Client.CustomActions.NUnit
 	    [Test]
 	    public void ShouldNotFailWhenTheBackupSourceConfigFileDoesNotExist()
 	    {
-		    string nonExistentFile = System.IO.Path.Combine(this.testDirectory.Directory, $"{Guid.NewGuid()}.config");
+		    string nonExistentFile = System.IO.Path.Combine(this.testDirectory, $"{Guid.NewGuid()}.config");
 		    this.session.Setup(x => x.GetStringPropertyValue(AppConfigService.PropertyNameSourceAppConfigFile))
 			    .Returns(nonExistentFile);
-		    AppConfigService service = new AppConfigService(this.session.Object, this.testDirectory.Directory);
+		    AppConfigService service = new AppConfigService(this.session.Object, this.testDirectory);
 			ActionResult result = service.Backup();
 			Assert.That(result, Is.EqualTo(ActionResult.Success));
 			Assert.That(service.BackupConfigFile, Is.Null.Or.Empty);
@@ -74,7 +79,7 @@ namespace Relativity.Desktop.Client.CustomActions.NUnit
 	    {
 		    this.session.Setup(x => x.GetStringPropertyValue(AppConfigService.PropertyNameSourceAppConfigFile))
 			    .Returns(this.sourceAppConfigFile);
-		    AppConfigService service = new AppConfigService(this.session.Object, this.testDirectory.Directory);
+		    AppConfigService service = new AppConfigService(this.session.Object, this.testDirectory);
 		    ActionResult result = service.Backup();
 		    Assert.That(result, Is.EqualTo(ActionResult.Success));
 			Assert.That(service.BackupConfigFile, Is.Not.Null.Or.Empty);
@@ -104,7 +109,7 @@ namespace Relativity.Desktop.Client.CustomActions.NUnit
 			manager.SetSectionSettings(XmlConfigurationManager.SectionNameLegacyProcess, "UseLog2", "True");
 			manager.SetSectionSettings(XmlConfigurationManager.SectionNameLegacyUtility, "IORetryCount2", "5");
 			manager.Save();
-			AppConfigService service = new AppConfigService(this.session.Object, this.testDirectory.Directory);
+			AppConfigService service = new AppConfigService(this.session.Object, this.testDirectory);
 			ActionResult result = service.Merge();
 			Assert.That(result, Is.EqualTo(ActionResult.Success));
 

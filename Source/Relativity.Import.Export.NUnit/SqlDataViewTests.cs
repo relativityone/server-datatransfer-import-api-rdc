@@ -18,12 +18,11 @@ namespace Relativity.Import.Export.NUnit
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export;
 	using Relativity.Import.Export.Data;
 	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
-	/// Represents <see cref="Timekeeper"/> tests.
+	/// Represents <see cref="SqlDataView"/> tests.
 	/// </summary>
 	[TestFixture]
 	public static class SqlDataViewTests

@@ -20,6 +20,7 @@ Imports System.Runtime.InteropServices
 <Assembly: ComVisible(False)>
 <Assembly: CLSCompliant(False)>
 <Assembly: InternalsVisibleTo("Relativity.Import.Client")>
+<Assembly: InternalsVisibleTo("Relativity.Import.Client.NUnit")>
 <Assembly: InternalsVisibleTo("Relativity.Import.Export.NUnit")>
 <Assembly: InternalsVisibleTo("Relativity.Import.Export.NUnit.Integration")>
 <Assembly: InternalsVisibleTo("Relativity.Desktop.Client")>

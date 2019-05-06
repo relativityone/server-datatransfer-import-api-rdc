@@ -11,7 +11,7 @@ namespace Relativity.Import.Export.NUnit
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 
 	[TestFixture]
 	public class ViewFieldInfoTests : SerializationTestsBase

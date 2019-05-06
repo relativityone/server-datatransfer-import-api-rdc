@@ -108,22 +108,22 @@ Namespace kCura.WinEDDS
 
 		Private Sub _productionExporter_StatusMessage(ByVal e As ExportEventArgs) Handles _searchExporter.StatusMessage
 			Select Case e.EventType
-				Case EventType.End
+				Case EventType2.End
 					SendJobStatistics(e.Statistics)
-				Case EventType.Error
+				Case EventType2.Error
 					Interlocked.Increment(_errorCount)
 					Me.Context.PublishErrorEvent(e.DocumentsExported.ToString, e.Message)
-				Case EventType.Progress
+				Case EventType2.Progress
 					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
 					Me.Context.PublishStatusEvent("", e.Message)
-				Case EventType.Statistics
+				Case EventType2.Statistics
 					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
-				Case EventType.Status
+				Case EventType2.Status
 					Me.Context.PublishStatusEvent(e.DocumentsExported.ToString, e.Message)
-				Case EventType.Warning
+				Case EventType2.Warning
 					Interlocked.Increment(_warningCount)
 					Me.Context.PublishWarningEvent(e.DocumentsExported.ToString, e.Message)
-				Case EventType.ResetStartTime
+				Case EventType2.ResetStartTime
 					SetStartTime()
 			End Select
 			TotalRecords = e.TotalDocuments

@@ -12,7 +12,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>

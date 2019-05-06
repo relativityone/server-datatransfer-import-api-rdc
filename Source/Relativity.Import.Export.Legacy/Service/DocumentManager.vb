@@ -1,5 +1,5 @@
 Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Namespace kCura.WinEDDS.Service
 	Public Class DocumentManager

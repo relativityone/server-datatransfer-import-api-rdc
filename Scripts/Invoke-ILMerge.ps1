@@ -37,7 +37,7 @@ $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
 $SdkBinariesArtifactsDir = Join-Path $BinariesArtifactsDir "sdk"
 $LogsDir = Join-Path $Root "Logs"
 $LogFile = Join-Path $LogsDir "ilmerge-build.log"
-$MergedSdkFile = Join-Path $SdkBinariesArtifactsDir "Relativity.Import.Export.Client.dll"
+$MergedSdkFile = Join-Path $SdkBinariesArtifactsDir "Relativity.Import.Export.Client.SDK.dll"
 
 if (Test-Path $SdkBinariesArtifactsDir -PathType Container) {
     Get-ChildItem $SdkBinariesArtifactsDir -Recurse | Remove-Item -Recurse
@@ -58,7 +58,6 @@ Write-Host "Merging SDK assemblies..."
     ("/out:""$MergedSdkFile"""),
     ("""$SolutionDir\Relativity.Import.Export\bin\Relativity.Import.Export.dll"""),
     ("""$SolutionDir\Relativity.Import.Export.Legacy\bin\Relativity.Import.Export.Legacy.dll"""),
-    ("""$SolutionDir\Relativity.Import.Export.Services.Interfaces\bin\Relativity.Import.Export.Services.Interfaces.dll"""),
     ("""$SolutionDir\Relativity.Export.Client\bin\Relativity.Export.Client.dll"""),
     ("""$SolutionDir\Relativity.Import.Client\bin\Relativity.Import.Client.dll"""))
 if ($LASTEXITCODE -eq 0) {

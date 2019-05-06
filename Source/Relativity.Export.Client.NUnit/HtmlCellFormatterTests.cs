@@ -16,7 +16,7 @@ namespace Relativity.Export.NUnit
     using Moq;
 
 	using Relativity.Export.VolumeManagerV2.Directories;
-    using Relativity.Import.Export.Services;
+    using Relativity.Import.Export.Service;
 
 	using HtmlCellFormatter = Relativity.Export.VolumeManagerV2.HtmlCellFormatter;
 

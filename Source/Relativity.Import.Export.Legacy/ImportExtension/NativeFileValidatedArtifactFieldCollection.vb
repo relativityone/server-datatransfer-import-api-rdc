@@ -1,13 +1,14 @@
 ﻿Imports kCura.WinEDDS.Api
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Io
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class NativeFileValidated
 		Implements IHasOixFileType
 
-		Public Property OixFileID As FileIdInfo
-		Public Function GetFileIDData() As FileIdInfo Implements Api.IHasOixFileType.GetFileIdInfo
-			Return Me.OixFileID
+		Public Property FileTypeIdInfo As IFileTypeIdInfo
+		Public Function GetFileTypeIdInfo() As IFileTypeIdInfo Implements Api.IHasOixFileType.GetFileTypeIdInfo
+			Return Me.FileTypeIdInfo
 		End Function
 	End Class
 
@@ -37,12 +38,12 @@ Namespace kCura.WinEDDS.ImportExtension
 		Public ReadOnly Property FileSize As IHasFileSize Implements IInjectableFieldCollection.FileSize
 		Public ReadOnly Property FileIdData As IHasOixFileType Implements IInjectableFieldCollection.FileIdInfo
 
-		Private Sub New(fileName As String, fileData As FileIdInfo, fileSize As Long?)
+		Private Sub New(fileName As String, fileTypeIdInfo As IFileTypeIdInfo, fileSize As Long?)
 			If (Not String.IsNullOrEmpty(fileName)) Then
 				Me.FileName = New FileNamePopulated() With {.FileName = fileName}
 			End If
-			If (Not fileData Is Nothing) Then
-				Me.FileIdData = New NativeFileValidated() With {.OixFileID = fileData}
+			If (Not fileTypeIdInfo Is Nothing) Then
+				Me.FileIdData = New NativeFileValidated() With {.FileTypeIdInfo = fileTypeIdInfo}
 			End If
 			If (Not fileSize Is Nothing) Then
 				Me.FileSize = New FileSizePopulated() With {.FileSize = fileSize.GetValueOrDefault(0)}
@@ -61,8 +62,8 @@ Namespace kCura.WinEDDS.ImportExtension
 			Return Not FileIdData Is Nothing
 		End Function
 
-		Public Shared Function CreateFieldCollection(fileName As String, fileData As FileIdInfo, fileSize As Long?) As ArtifactFieldCollection
-			Dim possibleRetVal As InjectableArtifactFieldCollection = New InjectableArtifactFieldCollection(fileName, fileData, fileSize)
+		Public Shared Function CreateFieldCollection(fileName As String, fileTypeIdInfo As IFileTypeIdInfo, fileSize As Long?) As ArtifactFieldCollection
+			Dim possibleRetVal As InjectableArtifactFieldCollection = New InjectableArtifactFieldCollection(fileName, fileTypeIdInfo, fileSize)
 			If (possibleRetVal.HasFileName() Or possibleRetVal.HasFileIdData() Or possibleRetVal.HasFileSize()) Then
 				Return possibleRetVal
 			End If

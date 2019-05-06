@@ -1,10 +1,11 @@
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Media
 Imports Relativity.Import.Export.Process
 
 Namespace kCura.WinEDDS
 
 	Public Class PreviewImageFileProcess
-		Inherits ProcessBase
+		Inherits ProcessBase2
 
 		Public LoadFile As ImageLoadFile
 		Private WithEvents _imageFilePreviewer As ImageFilePreviewer
@@ -18,7 +19,7 @@ Namespace kCura.WinEDDS
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_imageFilePreviewer = New ImageFilePreviewer(Me.Context, True, New FreeImageIdService)
+			_imageFilePreviewer = New ImageFilePreviewer(Me.Context, True, New FreeImageService)
 
 			_imageFilePreviewer.ReadFile(LoadFile.FileName)
 			Me.Context.PublishProcessCompleted()
@@ -26,15 +27,15 @@ Namespace kCura.WinEDDS
 
 		Private Sub _imageFileImporter_StatusMessage(ByVal e As StatusEventArgs) Handles _imageFilePreviewer.StatusMessage
 			Select Case e.EventType
-				Case EventType.Error
+				Case EventType2.Error
 					_errorCount += 1
 					Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
-				Case EventType.Progress
+				Case EventType2.Progress
 					Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, _startTime, DateTime.Now, 0, 0, Me.ProcessID)
-				Case EventType.Status
+				Case EventType2.Status
 					Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-				Case EventType.Warning
+				Case EventType2.Warning
 					_warningCount += 1
 					Me.Context.PublishWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
 			End Select

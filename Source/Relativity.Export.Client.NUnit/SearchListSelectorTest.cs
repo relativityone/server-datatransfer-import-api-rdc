@@ -11,9 +11,7 @@ namespace Relativity.Export.NUnit
 
     using global::NUnit.Framework;
 
-    using Relativity.Desktop.Client.Legacy.Controls;
-
-    internal class SearchListSelectorTest : SearchListSelector
+    internal class SearchListSelectorTest : Relativity.Desktop.Client.SearchListSelector
 	{
 		private DataTable _dt;
 

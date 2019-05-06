@@ -15,12 +15,13 @@ namespace Relativity.Export.NUnit
     using Moq;
 
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Import.Export.Service;
 	using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
-    using RelativityConstants = Relativity.Import.Export.Services.Constants;
+	using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
-    [TestFixture]
+	[TestFixture]
 	public class LongTextToLoadFileTests
 	{
 		private LongTextToLoadFile _instance;
@@ -67,7 +68,7 @@ namespace Relativity.Export.NUnit
 		{
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Metadata = new object[] { RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN }
+				Metadata = new object[] { ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN }
 			};
 
 			ViewFieldInfo field = new QueryFieldFactory().GetArtifactIdField();

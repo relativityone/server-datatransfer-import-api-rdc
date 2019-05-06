@@ -1,8 +1,5 @@
 ﻿namespace Relativity.Export.VolumeManagerV2.Statistics
 {
-	using System;
-
-	using kCura.WinEDDS;
 	using kCura.WinEDDS.Service.Export;
 
 	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
@@ -16,35 +13,30 @@
 
 		public event IExportFileDownloaderStatus.UploadModeChangeEventEventHandler UploadModeChangeEvent;
 
-		public FileDownloader.FileAccessType UploaderType { get; set; }
+		public TapiClient UploaderType { get; set; }
 
 		public ExportFileDownloaderStatus(ILog logger)
 		{
 			_logger = logger;
-			UploaderType = FileDownloader.FileAccessType.Web;
+			UploaderType = TapiClient.Web;
 		}
 
 		public void Attach(ITapiBridge tapiBridge)
 		{
 			_tapiBridge = tapiBridge;
-			_tapiBridge.TapiClientChanged += OnTapiClientChanged;
+			_tapiBridge.TapiClientChanged += this.OnTapiClientChanged;
 		}
 
 		public void Detach()
 		{
-			_tapiBridge.TapiClientChanged -= OnTapiClientChanged;
+			_tapiBridge.TapiClientChanged -= this.OnTapiClientChanged;
 		}
 
 		private void OnTapiClientChanged(object sender, TapiClientEventArgs e)
 		{
 			_logger.LogInformation("Tapi client changed to {type}.", e.Name);
-			FileDownloader.FileAccessType uploaderType;
-			if (Enum.TryParse(e.Name, true, out uploaderType))
-			{
-				UploaderType = uploaderType;
-			}
-
-			UploadModeChangeEvent?.Invoke(UploaderType.ToString());
+			this.UploaderType = e.Client;
+			this.UploadModeChangeEvent?.Invoke(this.UploaderType);
 		}
 	}
 }

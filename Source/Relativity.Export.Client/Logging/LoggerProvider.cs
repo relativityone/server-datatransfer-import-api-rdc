@@ -2,7 +2,7 @@
 {
 	using global::Relativity;
 	using global::Relativity.Logging;
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 
 	public class LoggerProvider
 	{

@@ -10,10 +10,10 @@
 namespace Relativity.Import.Export.Transfer
 {
     /// <summary>
-    /// Represents the supported transfer API clients.
+    /// Represents the supported Transfer API clients.
     /// </summary>
     /// <remarks>
-    /// This is provided purely for backwards compatibility with WinEDDS.
+    /// This is provided purely for backwards compatibility with import/export components.
     /// </remarks>
     public enum TapiClient
     {

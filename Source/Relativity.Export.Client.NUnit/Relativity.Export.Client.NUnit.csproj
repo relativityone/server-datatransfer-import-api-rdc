@@ -250,9 +250,9 @@
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.DynamicReferences.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Relativity.Desktop.Client.Controls.Legacy\Relativity.Desktop.Client.Controls.Legacy.vbproj">
-      <Project>{267ac175-3dad-4348-9058-d5db19deaa57}</Project>
-      <Name>Relativity.Desktop.Client.Controls.Legacy</Name>
+    <ProjectReference Include="..\Relativity.Desktop.Client.Legacy\Relativity.Desktop.Client.Legacy.vbproj">
+      <Project>{49cde7eb-9385-41d9-8cd9-687c09c46996}</Project>
+      <Name>Relativity.Desktop.Client.Legacy</Name>
     </ProjectReference>
     <ProjectReference Include="..\Relativity.Import.Export.TestFramework\Relativity.Import.Export.TestFramework.csproj">
       <Project>{fed61746-80ec-40cb-998e-9299b804ce7d}</Project>

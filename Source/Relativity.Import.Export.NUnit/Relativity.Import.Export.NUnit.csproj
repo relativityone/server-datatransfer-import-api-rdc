@@ -140,7 +140,10 @@
     </Compile>
     <Compile Include="AppSettingsTests.cs" />
     <Compile Include="ChoiceInfoTests.cs" />
+    <Compile Include="FreeImageServiceTests.cs" />
     <Compile Include="HttpServiceExceptionTests.cs" />
+    <Compile Include="ImageConverterServiceTests.cs" />
+    <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
     <Compile Include="SoapExceptionDetailTests.cs" />
     <Compile Include="SerializationTestsBase.cs" />
     <Compile Include="ImportExportCompatibilityCheckTests.cs" />
@@ -156,14 +159,11 @@
     <Compile Include="DelimitedFileImporterTestCases.cs" />
     <Compile Include="DelimitedFileImporterTests.cs" />
     <Compile Include="FileSystemWrapTests.cs" />
-    <Compile Include="FreeImageIdServiceTests.cs" />
-    <Compile Include="ImageConversionServiceTests.cs" />
     <Compile Include="ImporterExceptionSerializationTests.cs" />
     <Compile Include="CollectionExtensionsTests.cs" />
     <Compile Include="IoReporterContextTests.cs" />
     <Compile Include="MockDelimitedFileImport.cs" />
     <Compile Include="NullableTypesHelperTests.cs" />
-    <Compile Include="OutsideInFileIdServiceTests.cs" />
     <Compile Include="TapiBridgeTestsBase.cs" />
     <Compile Include="DownloadTapiBridgeTests.cs" />
     <Compile Include="UploadTapiBridgeTests.cs" />
@@ -195,10 +195,6 @@
     <ProjectReference Include="..\Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj">
       <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
       <Name>Relativity.Import.Export.Legacy</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export.Services.Interfaces\Relativity.Import.Export.Services.Interfaces.csproj">
-      <Project>{b2a59009-0da3-42d4-ae60-d2e964d8d165}</Project>
-      <Name>Relativity.Import.Export.Services.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
       <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>

@@ -1,5 +1,5 @@
 Imports System.Threading.Tasks
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Namespace Relativity.Desktop.Client
 	Public Class ImageLoad

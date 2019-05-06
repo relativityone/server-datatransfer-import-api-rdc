@@ -12,7 +12,7 @@ namespace Relativity.Import.Client.NUnit
 
 	using kCura.WinEDDS;
 
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 
 	[TestFixture]
 	public class LoadFileReaderTests
@@ -28,7 +28,7 @@ namespace Relativity.Import.Client.NUnit
 		public void Setup()
 		{
 			CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-			this.loadFileArgs = new LoadFile { CaseInfo = new Relativity.Import.Export.Services.CaseInfo() };
+			this.loadFileArgs = new LoadFile { CaseInfo = new Relativity.Import.Export.Service.CaseInfo() };
 		}
 
 		[Test]

@@ -1,24 +1,20 @@
 Imports System.Collections.Concurrent
 Imports kCura.WinEDDS.Service.Export
 Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
+Imports Relativity.Import.Export.Transfer
 
 Namespace kCura.WinEDDS
-	Public Class FileDownloader
+	Friend Class FileDownloader
 		Implements Service.Export.IExportFileDownloader
-		Public Enum FileAccessType
-			Web
-			Direct
-			Aspera
-		End Enum
 
 		Private _gateway As kCura.WinEDDS.Service.FileIO
 		Private _credentials As Net.NetworkCredential
-		Private _type As FileAccessType?
+		Private _tapiClient As TapiClient?
 		Private _downloadUrl As String
 		Private _cookieContainer As System.Net.CookieContainer
 		Private _userManager As kCura.WinEDDS.Service.UserManager
-		Private Shared _locationAccessMatrix As New ConcurrentDictionary(Of String, Object)
+		Private Shared _locationAccessMatrix As New ConcurrentDictionary(Of String, TapiClient)
 		
 		Private _fileHelper As Global.Relativity.Import.Export.Io.IFile
 		Public Property FileHelper() As Global.Relativity.Import.Export.Io.IFile Implements IExportFileDownloader.FileHelper
@@ -53,48 +49,33 @@ Namespace kCura.WinEDDS
 			_downloadUrl = Global.Relativity.Import.Export.Io.FileSystem.Instance.Path.GetFullyQualifiedPath(New System.Uri(AppSettings.Instance.WebApiServiceUrl), downloadHandlerUrl)
 			_userManager = New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer)
 
-			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New ConcurrentDictionary(Of String, Object)
+			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New ConcurrentDictionary(Of String, TapiClient)
 		End Sub
 
-		Private Function SetType(ByVal destFolderPath As String) As FileAccessType
+		Private Function SetType(ByVal destFolderPath As String) As TapiClient
 			Try
 				Dim dummyText As String = System.Guid.NewGuid().ToString().Replace("-", String.Empty).Substring(0, 5)
 				FileHelper.Create(destFolderPath & dummyText).Close()
 				FileHelper.Delete(destFolderPath & dummyText)
-				Me.UploaderType = FileAccessType.Direct
+				Me.UploaderType = TapiClient.Direct
 			Catch ex As System.Exception
-				Me.UploaderType = FileAccessType.Web
+				Me.UploaderType = TapiClient.Web
 			End Try
 			Return Me.UploaderType
 		End Function
 
 		Public Property DestinationFolderPath() As String
 
-		Public Property UploaderType() As FileAccessType Implements IExportFileDownloader.UploaderType
+		Public Property UploaderType() As TapiClient Implements IExportFileDownloader.UploaderType
 			Get
-				Return If(_type, SetType(DestinationFolderPath))
+				Return If(_tapiClient, SetType(DestinationFolderPath))
 			End Get
-			Set(ByVal value As FileAccessType)
-				Dim doevent As Boolean = Not _type.HasValue OrElse _type.Value <> value
-				_type = value
-				If doevent Then RaiseEvent UploadModeChangeEvent(value.ToString)
+			Set(ByVal value As TapiClient)
+				Dim doevent As Boolean = Not _tapiClient.HasValue OrElse _tapiClient.Value <> value
+				_tapiClient = value
+				If doevent Then RaiseEvent UploadModeChangeEvent(value)
 			End Set
 		End Property
-
-		Private ReadOnly Property Gateway() As kCura.WinEDDS.Service.FileIO
-			Get
-				Return _gateway
-			End Get
-		End Property
-
-		Friend Class Settings
-
-			Friend Shared ReadOnly Property ChunkSize() As Int32
-				Get
-					Return 1024000
-				End Get
-			End Property
-		End Class
 
 		Public Function DownloadFullTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean Implements IExportFileDownloader.DownloadFullTextFile
 			Return WebDownloadFile(localFilePath, artifactID, "", appID, Nothing, True, -1, -1, -1)
@@ -115,22 +96,23 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			Dim remoteLocationKey As String = remoteLocation.Substring(0, remoteLocation.LastIndexOf("\")).TrimEnd("\"c) & "\"
-			Dim accessType As Object = New Object()
-			Dim keyExists As Boolean = _locationAccessMatrix.TryGetValue(remoteLocationKey, accessType)
+			Dim tapiClient As TapiClient = TapiClient.None
+			Dim keyExists As Boolean = _locationAccessMatrix.TryGetValue(remoteLocationKey, tapiClient)
 			If keyExists Then
-				Select Case CType(accessType, FileAccessType)
-					Case FileAccessType.Direct
-						Me.UploaderType = FileAccessType.Direct
+				Select tapiClient
+					Case TapiClient.Direct
+						Me.UploaderType = tapiClient
 						FileHelper.Copy(remoteLocation, localFilePath, True)
 						Return True
-					Case FileAccessType.Web
-						Me.UploaderType = FileAccessType.Web
+					Case TapiClient.None
+					Case TapiClient.Web
+						Me.UploaderType = tapiClient
 						Return WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, Nothing, False, -1, fileID, fileFieldArtifactID)
 				End Select
 			Else
 				Try
 					FileHelper.Copy(remoteLocation, localFilePath, True)
-					_locationAccessMatrix.TryAdd(remoteLocationKey, FileAccessType.Direct)
+					_locationAccessMatrix.TryAdd(remoteLocationKey, TapiClient.Direct)
 					Return True
 				Catch ex As Exception
 					Return Me.WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, remoteLocationKey, False, -1, fileID, fileFieldArtifactID)
@@ -148,7 +130,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function DownloadTempFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal appID As String) As Boolean
-			Me.UploaderType = FileAccessType.Web
+			Me.UploaderType = TapiClient.Web
 			Return WebDownloadFile(localFilePath, -1, remoteFileGuid, appID, Nothing, False, -1, -1, -1)
 		End Function
 
@@ -236,7 +218,7 @@ Namespace kCura.WinEDDS
 				If length <> actualLength AndAlso length > 0 Then
 					Throw New kCura.WinEDDS.Exceptions.WebDownloadCorruptException("Error retrieving data from distributed server; expecting " & length & " bytes and received " & actualLength)
 				End If
-				If Not remotelocationkey Is Nothing Then _locationAccessMatrix.TryAdd(remotelocationkey, FileAccessType.Web)
+				If Not remotelocationkey Is Nothing Then _locationAccessMatrix.TryAdd(remotelocationkey, TapiClient.Web)
 				TotalWebTime += System.DateTime.Now.Ticks - now
 				Return True
 			Catch ex As DistributedReLoginException
@@ -294,7 +276,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Event UploadStatusEvent(ByVal message As String)
-		Public Event UploadModeChangeEvent(ByVal mode As String) Implements IExportFileDownloader.UploadModeChangeEvent
+		Public Event UploadModeChangeEvent(ByVal tapiClient As TapiClient) Implements IExportFileDownloader.UploadModeChangeEvent
 
 	End Class
 End Namespace

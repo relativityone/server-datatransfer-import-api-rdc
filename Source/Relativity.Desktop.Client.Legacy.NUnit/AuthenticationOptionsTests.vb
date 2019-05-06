@@ -1,6 +1,4 @@
-﻿Imports kCura.CommandLine
-
-Imports NUnit.Framework
+﻿Imports NUnit.Framework
 
 Namespace Relativity.Desktop.Client.Legacy.NUnit
 
@@ -30,7 +28,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 			' Set
 			_authOptions.SetCredentials(_commandLine)
 			' Assert
-			Assert.Throws(Of Exceptions.MultipleCredentialException)(Sub() _authOptions.CredentialsAreSet())
+			Assert.Throws(Of MultipleCredentialException)(Sub() _authOptions.CredentialsAreSet())
 
 		End Sub
 
@@ -47,7 +45,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 			' Set
 			_authOptions.SetCredentials(_commandLine)
 			' Assert
-			Assert.Throws(Of Exceptions.UsernameException)(Sub() _authOptions.CredentialsAreSet())
+			Assert.Throws(Of UsernameException)(Sub() _authOptions.CredentialsAreSet())
 
 		End Sub
 
@@ -63,7 +61,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 			' Set
 			_authOptions.SetCredentials(_commandLine)
 			' Assert
-			Assert.Throws(Of Exceptions.PasswordException)(Sub() _authOptions.CredentialsAreSet())
+			Assert.Throws(Of PasswordException)(Sub() _authOptions.CredentialsAreSet())
 
 		End Sub
 
@@ -79,7 +77,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 			' Set
 			_authOptions.SetCredentials(_commandLine)
 			' Assert
-			Assert.Throws(Of Exceptions.ClientIDException)(Sub() _authOptions.CredentialsAreSet())
+			Assert.Throws(Of ClientIDException)(Sub() _authOptions.CredentialsAreSet())
 
 		End Sub
 
@@ -95,7 +93,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 			' Set
 			_authOptions.SetCredentials(_commandLine)
 			' Assert
-			Assert.Throws(Of Exceptions.ClientSecretException)(Sub() _authOptions.CredentialsAreSet())
+			Assert.Throws(Of ClientSecretException)(Sub() _authOptions.CredentialsAreSet())
 
 		End Sub
 

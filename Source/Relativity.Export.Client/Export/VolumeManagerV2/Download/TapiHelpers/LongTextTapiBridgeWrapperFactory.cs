@@ -21,14 +21,14 @@ namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
 
 		public ITapiBridgeWrapper Create()
 		{
-			TapiBridgeParameters parameters = _tapiBridgeParametersFactory.CreateTapiBridgeParametersFromConfiguration();
+			TapiBridgeParameters2 parameters = _tapiBridgeParametersFactory.CreateTapiBridgeParametersFromConfiguration();
 
 			parameters.ForceAsperaClient = false;
 			parameters.ForceClientCandidates = string.Empty;
 			parameters.ForceFileShareClient = false;
 			parameters.ForceHttpClient = true;
 
-			DownloadTapiBridge downloadTapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, _token);
+			DownloadTapiBridge2 downloadTapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, _token);
 			return new TapiBridgeWrapper(downloadTapiBridge);
 		}
 	}

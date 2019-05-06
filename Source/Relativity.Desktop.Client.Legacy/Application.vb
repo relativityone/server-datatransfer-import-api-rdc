@@ -8,11 +8,10 @@ Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Monitoring
 Imports Relativity.DataTransfer.MessageService
 Imports Relativity.DataTransfer.MessageService.Tools
-Imports Relativity.Desktop.Client.Legacy.Controls
 Imports Relativity.Export
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 Imports Relativity.Import.Export.Transfer
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
@@ -26,7 +25,7 @@ Namespace Relativity.Desktop.Client
 		Private Shared _instance As Application
 
 		Protected Sub New()
-			_processPool = New ProcessPool
+			_processPool = New ProcessPool2
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_CookieContainer = New System.Net.CookieContainer
 			_logger = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
@@ -55,8 +54,8 @@ Namespace Relativity.Desktop.Client
 		Private ReadOnly _cancellationTokenSource As System.Threading.CancellationTokenSource = New System.Threading.CancellationTokenSource()
 		Private _isCaseFolderSelected As Boolean = True
 		Private _showCaseSelectDialog As Boolean = True
-		Private _processPool As ProcessPool
-		Private _selectedCaseInfo As Relativity.Import.Export.Services.CaseInfo
+		Private _processPool As ProcessPool2
+		Private _selectedCaseInfo As Relativity.Import.Export.Service.CaseInfo
 		Private _selectedCaseFolderID As Int32
 		Private _fieldProviderCache As IFieldProviderCache
 		Private _selectedCaseFolderPath As String
@@ -119,13 +118,13 @@ Namespace Relativity.Desktop.Client
 			End Set
 		End Property
 
-		Public ReadOnly Property SelectedCaseInfo() As Relativity.Import.Export.Services.CaseInfo
+		Public ReadOnly Property SelectedCaseInfo() As Relativity.Import.Export.Service.CaseInfo
 			Get
 				Return _selectedCaseInfo
 			End Get
 		End Property
 
-		Public Async Function RefreshSelectedCaseInfoAsync(Optional ByVal caseInfo As Relativity.Import.Export.Services.CaseInfo = Nothing) As Task
+		Public Async Function RefreshSelectedCaseInfoAsync(Optional ByVal caseInfo As Relativity.Import.Export.Service.CaseInfo = Nothing) As Task
 			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Await Me.GetCredentialsAsync(), _CookieContainer)
 			If caseInfo Is Nothing Then
 				_selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
@@ -534,9 +533,9 @@ Namespace Relativity.Desktop.Client
 			Return (Await GetConnectionMode().ConfigureAwait(False)) = Guid.Parse(TransferClientConstants.AsperaClientId)
 		End Function
 
-		Private Async Function CreateTapiParametersAsync() As Task(Of TapiBridgeParameters)
+		Private Async Function CreateTapiParametersAsync() As Task(Of TapiBridgeParameters2)
 			Dim credentials = Await Me.GetCredentialsAsync()
-			Dim parameters = New TapiBridgeParameters
+			Dim parameters = New TapiBridgeParameters2
 			parameters.Credentials = credentials
 			parameters.AsperaDocRootLevels = AppSettings.Instance.TapiAsperaNativeDocRootLevels
 			parameters.FileShare = Me.SelectedCaseInfo.DocumentPath
@@ -811,7 +810,7 @@ Namespace Relativity.Desktop.Client
 #End Region
 
 #Region "Form Initializers"
-		Public Async Function NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.Import.Export.Services.CaseInfo) As Task
+		Public Async Function NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.Import.Export.Service.CaseInfo) As Task
 			If Not Await Me.IsConnected() Then
 				CursorDefault()
 				Return
@@ -837,11 +836,11 @@ Namespace Relativity.Desktop.Client
 			frm.Show()
 		End Function
 
-		Public Async Function NewProductionExport(ByVal caseInfo As Relativity.Import.Export.Services.CaseInfo) As Task
+		Public Async Function NewProductionExport(ByVal caseInfo As Relativity.Import.Export.Service.CaseInfo) As Task
 			Await Me.NewSearchExport(caseInfo.RootFolderID, caseInfo, ExportFile.ExportType.Production)
 		End Function
 
-		Public Async Function NewSearchExport(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.Import.Export.Services.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType) As Task
+		Public Async Function NewSearchExport(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.Import.Export.Service.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType) As Task
 			Dim frm As ExportForm = New ExportForm()
 			Dim exportFile As kCura.WinEDDS.ExportFile
 			Try
@@ -880,7 +879,7 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 
-		Public Async Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.Import.Export.Services.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As Task(Of kCura.WinEDDS.ExportFile)
+		Public Async Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.Import.Export.Service.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As Task(Of kCura.WinEDDS.ExportFile)
 			Dim exportFile As New kCura.WinEDDS.ExtendedExportFile(artifactTypeID)
 			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Await Me.GetCredentialsAsync(), _CookieContainer)
 			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer)
@@ -925,7 +924,7 @@ Namespace Relativity.Desktop.Client
 			Return searchExportDataSet.Tables(0)
 		End Function
 
-		Public Async Function NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Relativity.Import.Export.Services.CaseInfo) As Task
+		Public Async Function NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Relativity.Import.Export.Service.CaseInfo) As Task
 			CursorWait()
 			If Not Await Me.IsConnected() Then
 				CursorDefault()
@@ -953,7 +952,7 @@ Namespace Relativity.Desktop.Client
 			CursorDefault()
 		End Function
 
-		Public Async Function NewProductionFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Relativity.Import.Export.Services.CaseInfo) As Task
+		Public Async Function NewProductionFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Relativity.Import.Export.Service.CaseInfo) As Task
 			CursorWait()
 			If Not Await Me.IsConnected() Then
 				CursorDefault()
@@ -1679,7 +1678,7 @@ Namespace Relativity.Desktop.Client
 		End Function
 #End Region
 
-		Public Overridable Async Function GetProductionPrecendenceList(ByVal caseInfo As Relativity.Import.Export.Services.CaseInfo) As Task(Of System.Data.DataTable)
+		Public Overridable Async Function GetProductionPrecendenceList(ByVal caseInfo As Relativity.Import.Export.Service.CaseInfo) As Task(Of System.Data.DataTable)
 			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
 			Dim dt As System.Data.DataTable
 			Try
