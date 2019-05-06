@@ -5,9 +5,9 @@
 
 	public class ImageWrapper : IImage
 	{
-		private readonly IImageConversionService _imageConverter;
+		private readonly IImageConverter _imageConverter;
 
-		public ImageWrapper(IImageConversionService imageConverter)
+		public ImageWrapper(IImageConverter imageConverter)
 		{
 			_imageConverter = imageConverter;
 		}

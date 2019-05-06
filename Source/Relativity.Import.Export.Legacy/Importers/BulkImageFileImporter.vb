@@ -810,11 +810,11 @@ Namespace kCura.WinEDDS
 			End If
 
 			Dim retval As ImportStatus = ImportStatus.Pending
-			Dim validator As New FreeImageIdService
+			Dim imageValidator As IImageValidator = New FreeImageService
 
 			Try
 				If Not Me.DisableImageTypeValidation Then
-					validator.Validate(imageFilePath)
+					imageValidator.Validate(imageFilePath)
 				End If
 
 				Me.RaiseStatusEvent(EventType2.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)

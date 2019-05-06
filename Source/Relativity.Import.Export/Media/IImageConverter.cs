@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="IImageConversionService.cs" company="Relativity ODA LLC">
+// <copyright file="IImageConverter.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -9,9 +9,9 @@ namespace Relativity.Import.Export.Media
 	using System.Collections.Generic;
 
 	/// <summary>
-	/// Represents an abstract service to convert images to their multi-page representation.
+	/// Represents an abstract object to convert images to their multi-page representation.
 	/// </summary>
-	public interface IImageConversionService
+	public interface IImageConverter
 	{
 		/// <summary>
 		/// Converts the collection of TIFF images to their multi-page representation.

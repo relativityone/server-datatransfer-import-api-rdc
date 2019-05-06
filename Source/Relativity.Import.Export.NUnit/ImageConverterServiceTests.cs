@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------
-// <copyright file="ImageConversionServiceTests.cs" company="Relativity ODA LLC">
+// <copyright file="ImageConverterServiceTests.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
@@ -20,19 +20,19 @@ namespace Relativity.Import.Export.NUnit
 	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
-	/// Represents <see cref="IImageConversionService"/> tests.
+	/// Represents <see cref="IImageConverter"/> tests.
 	/// </summary>
 	[TestFixture]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
 		Justification = "The test class handles the disposal.")]
-	public class ImageConversionServiceTests
+	public class ImageConverterServiceTests
 	{
 		private static readonly List<string> CandidateJpegImages = new List<string>();
 		private static readonly List<string> CandidatePngImages = new List<string>();
 		private static readonly List<string> CandidateTiffImages = new List<string>();
-		private IImageConversionService service;
+		private IImageConverter service;
 		private TempDirectory2 tempDirectory;
 
 		[SetUp]
@@ -40,7 +40,7 @@ namespace Relativity.Import.Export.NUnit
 		{
 			this.tempDirectory = new TempDirectory2();
 			this.tempDirectory.Create();
-			this.service = new ImageConversionService();
+			this.service = new ImageConverterService();
 		}
 
 		[TearDown]

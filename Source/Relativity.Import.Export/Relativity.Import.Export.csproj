@@ -123,6 +123,7 @@
     <Compile Include="Media\ByteOrdering.cs" />
     <Compile Include="Media\FreeImageService.cs" />
     <Compile Include="Media\IImageConverter.cs" />
+    <Compile Include="Media\IImageValidator.cs" />
     <Compile Include="Media\IImageFormatIdentifier.cs" />
     <Compile Include="Media\ImageConstants.cs" />
     <Compile Include="Media\ImageConversionException.cs" />

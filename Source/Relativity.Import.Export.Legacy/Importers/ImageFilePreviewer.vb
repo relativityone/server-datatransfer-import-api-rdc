@@ -1,9 +1,7 @@
 Imports System.IO
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Helpers
-Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Data
-Imports Relativity.Import.Export.Io
 Imports Relativity.Import.Export.Media
 Imports Relativity.Import.Export.Process
 
@@ -11,7 +9,7 @@ Namespace kCura.WinEDDS
 	Public Class ImageFilePreviewer
 		Inherits DelimitedFileImporter2
 		
-		Private ReadOnly _imageValidator As IImageIdService
+		Private ReadOnly _imageValidator As IImageValidator
 		Private _fileLineCount As Int32
 		Private _continue As Boolean
 		Private WithEvents _processContext As ProcessContext
@@ -31,7 +29,7 @@ Namespace kCura.WinEDDS
 
 		Public Event StatusMessage(ByVal args As StatusEventArgs)
 
-		Public Sub New(ByVal context As ProcessContext, ByVal doRetryLogic As Boolean, imageValidator As IImageIdService)
+		Public Sub New(ByVal context As ProcessContext, ByVal doRetryLogic As Boolean, imageValidator As IImageValidator)
 			MyBase.New(","c, doRetryLogic)
 			
 			_processContext = context

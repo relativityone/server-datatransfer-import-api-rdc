@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="FreeImageIdService.cs" company="Relativity ODA LLC">
+// <copyright file="FreeImageService.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -15,9 +15,9 @@ namespace Relativity.Import.Export.Media
 	using Relativity.Import.Export.Resources;
 
 	/// <summary>
-	/// Represents a service class object to identify an image file using the FreeImage native library.
+	/// Represents a service class object to identify and validate images using the FreeImage native library.
 	/// </summary>
-	internal class FreeImageIdService : IImageIdService
+	internal class FreeImageService : IImageFormatIdentifier, IImageValidator
 	{
 		/// <inheritdoc />
 		public ImageFormat Identify(string file)

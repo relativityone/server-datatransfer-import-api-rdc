@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------
-// <copyright file="FreeImageIdServiceTests.cs" company="Relativity ODA LLC">
+// <copyright file="FreeImageServiceTests.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
@@ -19,23 +19,23 @@ namespace Relativity.Import.Export.NUnit
 	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
-	/// Represents <see cref="FreeImageIdService"/> tests.
+	/// Represents <see cref="FreeImageService"/> tests.
 	/// </summary>
 	[TestFixture]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
 		Justification = "The test class handles the disposal.")]
-	public class FreeImageIdServiceTests
+	public class FreeImageServiceTests
 	{
 		private TempDirectory2 tempDirectory;
-		private IImageIdService service;
+		private FreeImageService service;
 
 		[SetUp]
 		public void Setup()
 		{
 			this.tempDirectory = new TempDirectory2();
-			this.service = new FreeImageIdService();
+			this.service = new FreeImageService();
 		}
 
 		[TearDown]

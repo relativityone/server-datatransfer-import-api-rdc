@@ -61,7 +61,7 @@
 		private void InstallFromWinEdds(IWindsorContainer container)
 		{
 			container.Register(Component.For<PaddingWarningValidator>().ImplementedBy<PaddingWarningValidator>());
-			container.Register(Component.For<IImageConversionService>().ImplementedBy<ImageConversionService>());
+			container.Register(Component.For<IImageConverter>().ImplementedBy<ImageConverterService>());
 			container.Register(Component.For<ILoadFileHeaderFormatterFactory>().Instance(_loadFileHeaderFormatterFactory));
 			container.Register(Component.For<ITransferClientHandler, IExportFileDownloaderStatus, ExportFileDownloaderStatus>().ImplementedBy<ExportFileDownloaderStatus>());
 			container.Register(Component.For<ILoadFileCellFormatter>().UsingFactoryMethod(k => k.Resolve<LoadFileCellFormatterFactory>().Create(ExportSettings, k.Resolve<FilePathTransformerFactory>().Create(ExportSettings, container))));

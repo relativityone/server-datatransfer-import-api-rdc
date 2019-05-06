@@ -436,14 +436,14 @@ Namespace kCura.WinEDDS
 				imageList(i) = DirectCast(artifact.Images(i), Exporters.ImageExportInfo).TempLocation
 			Next
 			Dim tempLocation As String = Me.Settings.FolderPath.TrimEnd("\"c) & "\" & System.Guid.NewGuid.ToString & ".tmp"
-			Dim imageConversionService As New ImageConversionService
+			Dim imageConverterService As IImageConverter = New ImageConverterService
 			Try
 				Select Case Me.Settings.TypeOfImage
 					Case ExportFile.ImageType.MultiPageTiff
-						imageConversionService.ConvertTiffsToMultiPageTiff(imageList, tempLocation)
+						imageConverterService.ConvertTiffsToMultiPageTiff(imageList, tempLocation)
 					Case ExportFile.ImageType.Pdf
 						If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then
-							imageConversionService.ConvertImagesToMultiPagePdf(imageList, tempLocation)
+							imageConverterService.ConvertImagesToMultiPagePdf(imageList, tempLocation)
 						End If
 				End Select
 				imageCount = 1

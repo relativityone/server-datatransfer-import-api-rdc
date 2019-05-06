@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ImageConversionService.cs" company="Relativity ODA LLC">
+// <copyright file="ImageConverterService.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -14,9 +14,9 @@ namespace Relativity.Import.Export.Media
 	using Relativity.Import.Export.Resources;
 
 	/// <summary>
-	/// Represents a class object service to convert images to their multi-page representation.
+	/// Represents a service class object to convert images to their multi-page representation.
 	/// </summary>
-	internal class ImageConversionService : IImageConversionService
+	internal class ImageConverterService : IImageConverter
 	{
 		/// <summary>
 		/// The file system wrapper.
@@ -24,20 +24,20 @@ namespace Relativity.Import.Export.Media
 		private readonly IFileSystem fileSystem;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ImageConversionService"/> class.
+		/// Initializes a new instance of the <see cref="ImageConverterService"/> class.
 		/// </summary>
-		public ImageConversionService()
+		public ImageConverterService()
 			: this(FileSystem.Instance)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ImageConversionService"/> class.
+		/// Initializes a new instance of the <see cref="ImageConverterService"/> class.
 		/// </summary>
 		/// <param name="fileSystem">
 		/// The file system wrapper.
 		/// </param>
-		public ImageConversionService(IFileSystem fileSystem)
+		public ImageConverterService(IFileSystem fileSystem)
 		{
 			if (fileSystem == null)
 			{

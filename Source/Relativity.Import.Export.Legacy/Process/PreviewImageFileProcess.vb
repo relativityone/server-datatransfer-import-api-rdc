@@ -19,7 +19,7 @@ Namespace kCura.WinEDDS
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_imageFilePreviewer = New ImageFilePreviewer(Me.Context, True, New FreeImageIdService)
+			_imageFilePreviewer = New ImageFilePreviewer(Me.Context, True, New FreeImageService)
 
 			_imageFilePreviewer.ReadFile(LoadFile.FileName)
 			Me.Context.PublishProcessCompleted()
