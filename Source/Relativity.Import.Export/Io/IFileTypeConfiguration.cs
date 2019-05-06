@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="IFileTypeIdConfiguration.cs" company="Relativity ODA LLC">
+// <copyright file="IFileTypeConfiguration.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -9,9 +9,9 @@ namespace Relativity.Import.Export.Io
 	using System;
 
 	/// <summary>
-	/// Represents an abstract object to identify file types.
+	/// Represents an abstract object to configure <see cref="IFileTypeIdentifier"/>.
 	/// </summary>
-	public interface IFileTypeIdConfiguration
+	public interface IFileTypeConfiguration
 	{
 		/// <summary>
 		/// Gets the file identification configuration exception.

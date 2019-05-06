@@ -173,15 +173,15 @@ namespace Relativity.Import.Client.NUnit
 						"Message",
 						new InvalidOperationException()),
 					validateNoOp);
-				yield return new TestCaseData(new FileTypeIdException(), validateNoOp);
+				yield return new TestCaseData(new FileTypeIdentifyException(), validateNoOp);
 				yield return new TestCaseData(
-					new FileTypeIdException("Message"),
+					new FileTypeIdentifyException("Message"),
 					validateNoOp);
 				yield return new TestCaseData(
-					new FileTypeIdException("Message", new InvalidOperationException()),
+					new FileTypeIdentifyException("Message", new InvalidOperationException()),
 					validateNoOp);
 				yield return new TestCaseData(
-					new FileTypeIdException("Message", new InvalidOperationException(), FileTypeIdError.Io),
+					new FileTypeIdentifyException("Message", new InvalidOperationException(), FileTypeIdentifyError.Io),
 					validateNoOp);
 				yield return new TestCaseData(
 					new ImportCredentialException("Message", "username", "url"),

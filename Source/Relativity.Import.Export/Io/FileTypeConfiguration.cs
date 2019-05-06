@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="FileTypeIdConfiguration.cs" company="Relativity ODA LLC">
+// <copyright file="FileTypeConfiguration.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -9,9 +9,9 @@ namespace Relativity.Import.Export.Io
 	using System;
 
 	/// <summary>
-	/// Represents a class object to identify file types. This class cannot be inherited.
+	/// Represents a class object to configure <see cref="IFileTypeIdentifier"/>. This class cannot be inherited.
 	/// </summary>
-	internal sealed class FileTypeIdConfiguration : IFileTypeIdConfiguration
+	internal sealed class FileTypeConfiguration : IFileTypeConfiguration
 	{
 		/// <inheritdoc />
 		public Exception Exception

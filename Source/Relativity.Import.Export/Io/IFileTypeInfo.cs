@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="IFileTypeIdInfo.cs" company="Relativity ODA LLC">
+// <copyright file="IFileTypeInfo.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -7,9 +7,9 @@
 namespace Relativity.Import.Export.Io
 {
 	/// <summary>
-	/// Represents an abstract object that describes the file identification information for a specific file.
+	/// Represents an abstract object that describes file type information.
 	/// </summary>
-	public interface IFileTypeIdInfo
+	public interface IFileTypeInfo
 	{
 		/// <summary>
 		/// Gets the file identifier.

@@ -277,11 +277,11 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 
 		Private Function GetArtifactFieldCollectionWithBasicFields() As ArtifactFieldCollection
-			Dim fileTypeIdInfo As FileTypeIdInfo = GetFileTypeIdInfo()
+			Dim fileTypeInfo As FileTypeInfo = GetFileTypeIdInfo()
 			Dim fileSizeSet As Long? = GetFileSizeData()
 			Dim fileNameSet As String = GetFileNameData()
 
-			Return InjectableArtifactFieldCollection.CreateFieldCollection(fileNameSet, fileTypeIdInfo, fileSizeSet)
+			Return InjectableArtifactFieldCollection.CreateFieldCollection(fileNameSet, fileTypeInfo, fileSizeSet)
 		End Function
 
 		Private Function GetFileNameData() As String
@@ -386,7 +386,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			Return Nothing
 		End Function
 
-		Private Function GetFileTypeIdInfo() As FileTypeIdInfo
+		Private Function GetFileTypeIdInfo() As FileTypeInfo
 
 			If Not _FileSettings.OIFileIdMapped
 				Return Nothing
@@ -430,9 +430,9 @@ Namespace kCura.WinEDDS.ImportExtension
 			End If
 
 			If isSupportedByViewer Is Nothing
-				Return New FileIDData(oiFileId, oiFileType)
+				Return New FileTypeInfo(oiFileId, oiFileType)
 			Else 
-				Return New ExtendedFileIdInfo(oiFileType, isSupportedByViewer.Value)
+				Return New ExtendedFileTypeInfo(oiFileType, isSupportedByViewer.Value)
 			End If
 		End Function
 

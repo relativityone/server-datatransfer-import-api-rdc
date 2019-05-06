@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="FileTypeIdError.cs" company="Relativity ODA LLC">
+// <copyright file="FileTypeIdentifyError.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -7,9 +7,9 @@
 namespace Relativity.Import.Export.Io
 {
 	/// <summary>
-	/// Represents the file identification error enumeration.
+	/// Represents the errors that can occur when attempting to identify a file type.
 	/// </summary>
-	public enum FileTypeIdError
+	public enum FileTypeIdentifyError
 	{
 		/// <summary>
 		/// The error hasn't been assigned.

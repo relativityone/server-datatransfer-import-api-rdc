@@ -79,10 +79,10 @@ namespace Relativity.Import.Export.NUnit
 				{
 					// Reinitializing should have no impact.
 					this.service.Reinitialize();
-					IFileTypeIdInfo fileTypeIdInfo = this.service.Identify(this.tempFile);
-					Assert.That(fileTypeIdInfo, Is.Not.Null);
-					Assert.That(fileTypeIdInfo.Id, Is.GreaterThan(0));
-					Assert.That(fileTypeIdInfo.Description, Is.Not.Null.Or.Empty);
+					IFileTypeInfo fileTypeInfo = this.service.Identify(this.tempFile);
+					Assert.That(fileTypeInfo, Is.Not.Null);
+					Assert.That(fileTypeInfo.Id, Is.GreaterThan(0));
+					Assert.That(fileTypeInfo.Description, Is.Not.Null.Or.Empty);
 				}
 
 				this.ValidateConfigInfo();
@@ -141,9 +141,9 @@ namespace Relativity.Import.Export.NUnit
 			{
 				try
 				{
-					FileTypeIdException exception =
-						Assert.Throws<FileTypeIdException>(() => this.service.Identify(this.tempFile));
-					Assert.That(exception.Error, Is.EqualTo(FileTypeIdError.Permissions));
+					FileTypeIdentifyException exception =
+						Assert.Throws<FileTypeIdentifyException>(() => this.service.Identify(this.tempFile));
+					Assert.That(exception.Error, Is.EqualTo(FileTypeIdentifyError.Permissions));
 					this.ValidateConfigInfo();
 				}
 				catch

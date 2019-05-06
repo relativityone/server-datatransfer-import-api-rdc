@@ -2,7 +2,7 @@
 
 Namespace kCura.WinEDDS.Api
 	Public Interface IHasOixFileType
-		Function GetFileTypeIdInfo() As IFileTypeIdInfo
+		Function GetFileTypeIdInfo() As IFileTypeInfo
 	End Interface
 
 	Public Interface IHasFileSize

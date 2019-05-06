@@ -191,8 +191,7 @@
     <Compile Include="API\DataSourcePrepEventArgs.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="API\ExtendedFileIdData.vb" />
-    <Compile Include="API\FileIDData.vb" />
+    <Compile Include="API\ExtendedFileTypeInfo.vb" />
     <Compile Include="API\IArtifactReader.vb">
       <SubType>Code</SubType>
     </Compile>

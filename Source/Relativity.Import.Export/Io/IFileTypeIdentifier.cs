@@ -17,9 +17,9 @@ namespace Relativity.Import.Export.Io
 		/// Gets the file identification configuration.
 		/// </summary>
 		/// <value>
-		/// The <see cref="FileTypeIdConfiguration"/> instance.
+		/// The <see cref="FileTypeConfiguration"/> instance.
 		/// </value>
-		IFileTypeIdConfiguration Configuration
+		IFileTypeConfiguration Configuration
 		{
 			get;
 		}
@@ -35,10 +35,10 @@ namespace Relativity.Import.Export.Io
 		/// <exception cref="System.IO.FileNotFoundException">
 		/// The exception thrown when the file doesn't exist.
 		/// </exception>
-		/// <exception cref="FileTypeIdException">
+		/// <exception cref="FileTypeIdentifyException">
 		/// The exception thrown when the source file cannot be identified.
 		/// </exception>
-		IFileTypeIdInfo Identify(string file);
+		IFileTypeInfo Identify(string file);
 
 		/// <summary>
 		/// Reinitialize the Outside In runtime. This should only be done in cases where OI is failing and this instance cannot be easily disposed.

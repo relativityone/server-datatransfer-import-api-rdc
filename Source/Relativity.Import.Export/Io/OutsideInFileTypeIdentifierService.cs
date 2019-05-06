@@ -27,7 +27,7 @@ namespace Relativity.Import.Export.Io
 		/// <summary>
 		/// The file identification configuration.
 		/// </summary>
-		private readonly FileTypeIdConfiguration configuration = new FileTypeIdConfiguration();
+		private readonly FileTypeConfiguration configuration = new FileTypeConfiguration();
 
 		/// <summary>
 		/// The optional timeout.
@@ -66,7 +66,7 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
-		public IFileTypeIdConfiguration Configuration
+		public IFileTypeConfiguration Configuration
 		{
 			get
 			{
@@ -109,7 +109,7 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
-		public IFileTypeIdInfo Identify(string file)
+		public IFileTypeInfo Identify(string file)
 		{
 			if (string.IsNullOrEmpty(file))
 			{
@@ -123,7 +123,7 @@ namespace Relativity.Import.Export.Io
 				// OI fixed the lock file/file not found error code defect.
 				System.IO.FileInfo fileInfo = new System.IO.FileInfo(file);
 				FileFormat fileFormat = this.exporter.Identify(fileInfo);
-				return new FileTypeIdInfo(fileFormat.GetId(), fileFormat.GetDescription());
+				return new FileTypeInfo(fileFormat.GetId(), fileFormat.GetDescription());
 			}
 			catch (System.IO.FileNotFoundException)
 			{
@@ -137,12 +137,12 @@ namespace Relativity.Import.Export.Io
 			catch (OutsideInException e)
 			{
 				string message = string.Format(CultureInfo.CurrentCulture, Strings.OutsideInFileIdError, file, e.ErrorCode);
-				throw new FileTypeIdException(message, e, GetFileIdError(e.ErrorCode));
+				throw new FileTypeIdentifyException(message, e, GetFileIdError(e.ErrorCode));
 			}
 			catch (Exception e)
 			{
 				string message = string.Format(CultureInfo.CurrentCulture, Strings.OutsideInFileIdUnexpectedError, file);
-				throw new FileTypeIdException(message, e);
+				throw new FileTypeIdentifyException(message, e);
 			}
 		}
 
@@ -163,21 +163,21 @@ namespace Relativity.Import.Export.Io
 		/// The Outside In error code.
 		/// </param>
 		/// <returns>
-		/// The <see cref="FileTypeIdError"/> value.
+		/// The <see cref="FileTypeIdentifyError"/> value.
 		/// </returns>
-		private static FileTypeIdError GetFileIdError(int error)
+		private static FileTypeIdentifyError GetFileIdError(int error)
 		{
 			switch (error)
 			{
 				case OutsideInConstants.FileNotFoundErrorCode:
-					return FileTypeIdError.FileNotFound;
+					return FileTypeIdentifyError.FileNotFound;
 
 				case OutsideInConstants.FilePermissionErrorCode:
-					return FileTypeIdError.Permissions;
+					return FileTypeIdentifyError.Permissions;
 
 				default:
 					// When all else fails, assume an I/O error.
-					return FileTypeIdError.Io;
+					return FileTypeIdentifyError.Io;
 			}
 		}
 
@@ -249,7 +249,7 @@ namespace Relativity.Import.Export.Io
 					CultureInfo.CurrentCulture,
 					Strings.OutsideInConfigurationError,
 					path);
-				throw new FileTypeIdException(message, e);
+				throw new FileTypeIdentifyException(message, e);
 			}
 
 			// Allow this to potentially throw.
