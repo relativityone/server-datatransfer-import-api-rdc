@@ -1305,9 +1305,6 @@ Namespace kCura.WinEDDS
 
 		Private Sub _processContext_ExportErrorFileEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles _processContext.ExportErrorFile
 			Const retry As Boolean = True
-			If _errorRowsFileLocation Is Nothing Then
-				Exit Sub
-			End If
 
 			Try
 				If Me.GetFileExists(_errorRowsFileLocation, retry) Then
