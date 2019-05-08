@@ -17,7 +17,7 @@ namespace Relativity.Import.Export.Io
 		/// Gets the file identification configuration.
 		/// </summary>
 		/// <value>
-		/// The <see cref="FileTypeConfiguration"/> instance.
+		/// The <see cref="IFileTypeConfiguration"/> instance.
 		/// </value>
 		IFileTypeConfiguration Configuration
 		{
@@ -28,7 +28,9 @@ namespace Relativity.Import.Export.Io
 		/// Identifies the specified file.
 		/// </summary>
 		/// <param name="file">The file.</param>
-		/// <returns>FileIdInfo.</returns>
+		/// <returns>
+		/// The <see cref="IFileTypeInfo"/> instance.
+		/// </returns>
 		/// <exception cref="System.ArgumentNullException">
 		/// Thrown when <paramref name="file" /> is <see langword="null" /> or empty.
 		/// </exception>
@@ -41,7 +43,7 @@ namespace Relativity.Import.Export.Io
 		IFileTypeInfo Identify(string file);
 
 		/// <summary>
-		/// Reinitialize the Outside In runtime. This should only be done in cases where OI is failing and this instance cannot be easily disposed.
+		/// Reinitialize the underlying library without forcing object disposal.
 		/// </summary>
 		void Reinitialize();
 	}

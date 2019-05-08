@@ -350,10 +350,10 @@ Detail: {4}</value>
     <value>The '{0}' HTTP Web service could not be called because the supplied Import API credential type '{1}' doesn't contain an authorization header and is unsupported.</value>
   </data>
   <data name="RelativtyMinVersionExceptionMessage" xml:space="preserve">
-    <value>The '{0}' application can’t be used with this Relativity instance because version {1} doesn't meet or exceed the minimum version {2}. For more details, review the compatibility information for importing and exporting on the Relativity Documentation site at help.relativity.com.</value>
+    <value>The '{0}' application can’t be used with this Relativity instance because version {1} doesn't meet or exceed the minimum version {2}.</value>
   </data>
   <data name="RelativtyMinVersionNoAppNameExceptionMessage" xml:space="preserve">
-    <value>This application can’t be used with this Relativity instance because version {0} doesn't meet or exceed the minimum version {1}. For more details, review the compatibility information for importing and exporting on the Relativity Documentation site at help.relativity.com.</value>
+    <value>This application can’t be used with this Relativity instance because version {0} doesn't meet or exceed the minimum version {1}.</value>
   </data>
   <data name="RelativtyMinVersionInvalidExceptionMessage" xml:space="preserve">
     <value>The '{0}' application can’t be used with this Relativity instance because the Relativity version is invalid. Contact your system administrator for assistance if this problem persists.</value>
@@ -362,10 +362,10 @@ Detail: {4}</value>
     <value>This application can’t be used with this Relativity instance because the Relativity version is invalid. Contact your system administrator for assistance if this problem persists.</value>
   </data>
   <data name="ImportExportWebApiVersionNotSupportedExceptionMessage" xml:space="preserve">
-    <value>The '{0}' application can’t be used with this Relativity instance because the import/export web-services version isn't supported. For more details, review the compatibility information for importing and exporting on the Relativity Documentation site at help.relativity.com.</value>
+    <value>The '{0}' application can’t be used with this Relativity instance because the import/export web-services version isn't supported.</value>
   </data>
   <data name="ImportExportWebApiVersionNotSupportedNoAppNameExceptionMessage" xml:space="preserve">
-    <value>This application can’t be used with this Relativity instance because the import/export web-services version isn't supported. For more details, review the compatibility information for importing and exporting on the Relativity Documentation site at help.relativity.com.</value>
+    <value>This application can’t be used with this Relativity instance because the import/export web-services version isn't supported.</value>
   </data>
   <data name="ImportExportWebApiVersionInvalidExceptionMessage" xml:space="preserve">
     <value>The '{0}' application can’t be used with this Relativity instance because the import/export web-services version is invalid. Contact your system administrator for assistance if this problem persists.</value>

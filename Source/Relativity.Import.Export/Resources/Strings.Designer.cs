@@ -19,7 +19,7 @@ namespace Relativity.Import.Export.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Strings {
@@ -334,7 +334,7 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The &apos;{0}&apos; application can’t be used with this Relativity instance because the import/export web-services version isn&apos;t supported. For more details, review the compatibility information for importing and exporting on the Relativity Documentation site at help.relativity.com..
+        ///   Looks up a localized string similar to The &apos;{0}&apos; application can’t be used with this Relativity instance because the import/export web-services version isn&apos;t supported..
         /// </summary>
         internal static string ImportExportWebApiVersionNotSupportedExceptionMessage {
             get {
@@ -343,7 +343,7 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This application can’t be used with this Relativity instance because the import/export web-services version isn&apos;t supported. For more details, review the compatibility information for importing and exporting on the Relativity Documentation site at help.relativity.com..
+        ///   Looks up a localized string similar to This application can’t be used with this Relativity instance because the import/export web-services version isn&apos;t supported..
         /// </summary>
         internal static string ImportExportWebApiVersionNotSupportedNoAppNameExceptionMessage {
             get {
@@ -505,7 +505,7 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The &apos;{0}&apos; application can’t be used with this Relativity instance because version {1} doesn&apos;t meet or exceed the minimum version {2}. For more details, review the compatibility information for importing and exporting on the Relativity Documentation site at help.relativity.com..
+        ///   Looks up a localized string similar to The &apos;{0}&apos; application can’t be used with this Relativity instance because version {1} doesn&apos;t meet or exceed the minimum version {2}..
         /// </summary>
         internal static string RelativtyMinVersionExceptionMessage {
             get {
@@ -532,7 +532,7 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This application can’t be used with this Relativity instance because version {0} doesn&apos;t meet or exceed the minimum version {1}. For more details, review the compatibility information for importing and exporting on the Relativity Documentation site at help.relativity.com..
+        ///   Looks up a localized string similar to This application can’t be used with this Relativity instance because version {0} doesn&apos;t meet or exceed the minimum version {1}..
         /// </summary>
         internal static string RelativtyMinVersionNoAppNameExceptionMessage {
             get {
