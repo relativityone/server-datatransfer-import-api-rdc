@@ -66,13 +66,8 @@ Namespace kCura.WinEDDS
 
 		Public Overridable Function DeserializeExportFile(ByVal xml As XDocument) As ExportFile
 			Dim scrubbed As String = Me.TransformExportFileXml(xml)
-			Dim soapFormatter As SoapFormatter = SoapFormatterFactory.Create()
 
-			Dim deserialized As kCura.WinEDDS.ExportFile
-			Using ms As System.IO.MemoryStream = New System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(scrubbed))
-				deserialized = CType(soapFormatter.Deserialize(ms), kCura.WinEDDS.ExportFile)
-			End Using
-
+			Dim deserialized As kCura.WinEDDS.ExportFile = Global.Relativity.Import.Export.SerializationHelper.DeserializeFromSoap(Of kCura.WinEDDS.ExportFile)(scrubbed)
 			Return deserialized
 		End Function
 
