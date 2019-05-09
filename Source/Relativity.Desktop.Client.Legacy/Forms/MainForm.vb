@@ -10,6 +10,8 @@ Namespace Relativity.Desktop.Client
 
 #Region " Windows Form Designer generated code "
 
+		Private Shared _mainWindowHandle As IntPtr = IntPtr.Zero
+
 		Public Sub New()
 			MyBase.New()
 
@@ -18,7 +20,22 @@ Namespace Relativity.Desktop.Client
 
 			'Add any initialization after the InitializeComponent() call
 			_application = Global.Relativity.Desktop.Client.Application.Instance
+			_mainWindowHandle = Me.Handle
 		End Sub
+
+		''' <summary>
+		''' Gets the handle to the main window form.
+		''' </summary>
+		''' <value>
+		''' The <see cref="IntPtr"/> value.
+		''' </value>
+		Public Shared ReadOnly Property MainWindowHandle As IntPtr
+			Get
+				' Note: the Window handle must be used because the RDC doesn't employ proper marshalling calls from non-GUI threads
+				'       and WinForms will throw an exception whenever attempting to access such properties.
+				Return _mainWindowHandle
+			End Get
+		End Property
 
 		'Form overrides dispose to clean up the component list.
 		Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)

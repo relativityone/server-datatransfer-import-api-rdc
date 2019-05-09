@@ -1529,7 +1529,8 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Public Sub HandleRelativityNotSupportedException(exception As Relativity.Import.Export.RelativityNotSupportedException)
-			ChangeWebServiceUrl(exception.Message + vbCrLf + vbCrLf + "Try a new URL?")
+			Dim tryAnotherUrl As Boolean = TaskDialogs.ShowRelativityNotSupportedTaskDialog(MainForm.MainWindowHandle, exception)
+			OnChangeWebServiceUrl(tryAnotherUrl)
 		End Sub
 
 		Public Function IsAccessDisabledException(ByVal ex As System.Exception) As Boolean
@@ -1608,6 +1609,14 @@ Namespace Relativity.Desktop.Client
 
 		Public Sub ChangeWebServiceUrl(ByVal message As String)
 			If MsgBox(message, MsgBoxStyle.YesNo, "Relativity Desktop Client") = MsgBoxResult.Yes Then
+				OnChangeWebServiceUrl(True)
+			Else
+				OnChangeWebServiceUrl(False)
+			End If
+		End Sub
+
+		Private Sub OnChangeWebServiceUrl(ByVal tryAnotherUrl As Boolean)
+			If tryAnotherUrl Then
 				Dim url As String = InputBox("Enter New URL:", Title:="Set Relativity URL", DefaultResponse:=AppSettings.Instance.WebApiServiceUrl)
 				If url <> String.Empty Then
 					AppSettings.Instance.WebApiServiceUrl = url

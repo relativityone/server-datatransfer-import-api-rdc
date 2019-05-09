@@ -16,8 +16,6 @@ Namespace Relativity.Desktop.Client
 
 #Region " Members "
 		Friend _application As Global.Relativity.Desktop.Client.Application
-		Friend HasSetUsername As Boolean = False
-		Friend HasSetPassword As Boolean = False
 		Private _importOptions As ImportOptions = New ImportOptions()
 		Private _authOptions As AuthenticationOptions = New AuthenticationOptions()
 #End Region
@@ -54,16 +52,6 @@ Namespace Relativity.Desktop.Client
 						 End Function).Wait()
 			End If
 		End Sub
-
-		Private Function GetValueFromCommandListByFlag(ByVal commandList As CommandList, ByVal flag As String) As String
-			For Each command As Command In commandList
-				If command.Directive.ToLower.Replace("-", "").Replace("/", "") = flag.ToLower Then
-					If command.Value Is Nothing Then Return ""
-					Return command.Value
-				End If
-			Next
-			Return ""
-		End Function
 
 		Private Function UrlIsValid(ByVal url As String) As Boolean
 			Try
@@ -157,6 +145,10 @@ Namespace Relativity.Desktop.Client
 				Console.WriteLine("ERROR: " & ex.Message)
 				Console.WriteLine("")
 				Console.WriteLine("Use Relativity.Desktop.Client.Application.exe -h for help")
+				Console.WriteLine("--------------------------")
+			Catch ex As RelativityNotSupportedException
+				Console.WriteLine("--------------------------")
+				Console.WriteLine("NOT SUPPORTED: " & ex.Message)
 				Console.WriteLine("--------------------------")
 			Catch ex As Exception
 				Console.WriteLine("--------------------------")
