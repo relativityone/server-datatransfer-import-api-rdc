@@ -95,6 +95,8 @@ namespace Relativity.Import.Export
 		public const int MinBatchSizeDefaultValue = 100;
 		public const string MaximumReloginTriesKey = "MaximumReloginTries";
 		public const int MaximumReloginTriesDefaultValue = 4;
+		public const string OAuth2ImplicitCredentialRedirectUrl = "OAuth2ImplicitCredentialRedirectUrl";
+		public const string OAuth2ImplicitCredentialRedirectUrlDefaultValue = "rdc://relativityimplicit/";
 		public const string PermissionErrorsRetryKey = "PermissionErrorsRetry";
 		public const bool PermissionErrorsRetryDefaultValue = false;
 		public const string PreviewThresholdKey = "PreviewThreshold";

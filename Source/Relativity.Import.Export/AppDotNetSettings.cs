@@ -580,6 +580,21 @@ namespace Relativity.Import.Export
 		}
 
 		/// <inheritdoc />
+		/// <remarks>
+		/// This setting is intentionally omitted from the RDC app.config file and provided for potential backwards or forwards
+		/// compatibility due to a recent redirection URL change by the platform team. See REL-294177 for more details.
+		/// </remarks>
+		[AppSetting(
+			AppSettingsConstants.SectionImportExport,
+			AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrl,
+			AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlDefaultValue)]
+		string IAppSettings.OAuth2ImplicitCredentialRedirectUrl
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
 			"Microsoft.Usage",
 			"CA2227:CollectionPropertiesShouldBeReadOnly",
