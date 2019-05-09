@@ -20,7 +20,6 @@ Namespace Relativity.Desktop.Client
 
 			'Add any initialization after the InitializeComponent() call
 			_application = Global.Relativity.Desktop.Client.Application.Instance
-			_mainWindowHandle = Me.Handle
 		End Sub
 
 		''' <summary>
@@ -461,6 +460,7 @@ Namespace Relativity.Desktop.Client
 		Private Async Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 
 			ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
+			_mainWindowHandle = Me.Handle
 			LoadWindowSize()
 			Me.CenterToScreen()
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
