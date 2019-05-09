@@ -6,6 +6,7 @@ nuget csvhelper = 12.1.2
 
 # This is used strictly for producing unit test results.
 nuget extent = 0.0.3
+nuget filehelpers = 3.4.0
 nuget gitversion.commandline = 4.0.0
 nuget ilmerge = 3.0.29
 nuget jetbrains.dotcover.commandlinetools = 2019.1.0-eap06
@@ -32,10 +33,10 @@ nuget zetalongpaths = 1.0.0.27
 
 # Proget packages are below.
 source https://proget.kcura.corp/NuGet/NuGet
-nuget kcura.outsidein.fi.win32 = 2019.2.0
+nuget kcura.outsidein.fi.win32 = 2019.2.2
 nuget relativity.dataTransfer.messageService = 10.2.0
-nuget relativity.logging = 2019.4.4
-nuget relativity.logging.interfaces = 2019.4.4
+nuget relativity.logging = 2018.11.8
+nuget relativity.logging.interfaces = 2018.11.8
 nuget relativity.kepler.client = 1.0.1.627
 nuget relativity.oauth2client = 1.0.27
 nuget relativity.oauth2client.implicit = 1.0.27
