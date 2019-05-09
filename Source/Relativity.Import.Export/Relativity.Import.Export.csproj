@@ -22,7 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591;0649</NoWarn>
@@ -140,7 +140,6 @@
     <Compile Include="Process\ProcessBase2.cs" />
     <Compile Include="Process\ProcessPool2.cs" />
     <Compile Include="RdcFileSerializationBinder.cs" />
-    <Compile Include="RdcFileSerializationSurrogate.cs" />
     <Compile Include="RestClient.cs" />
     <Compile Include="AppSettingsDictionary.cs" />
     <Compile Include="AppSettingsConstants.cs" />

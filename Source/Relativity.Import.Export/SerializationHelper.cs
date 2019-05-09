@@ -7,7 +7,6 @@
 namespace Relativity.Import.Export
 {
 	using System.IO;
-	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Soap;
 
 	/// <summary>
@@ -26,10 +25,10 @@ namespace Relativity.Import.Export
 		/// </param>
 		public static void SerializeToSoapFile(object value, string file)
 		{
-			using (var writer = new StreamWriter(file))
+			using (FileStream stream = File.OpenWrite(file))
 			{
-				SoapFormatter soapFormatter = new SoapFormatter();
-				soapFormatter.Serialize(writer.BaseStream, value);
+				var soapFormatter = new SoapFormatter();
+				soapFormatter.Serialize(stream, value);
 			}
 		}
 
@@ -89,11 +88,10 @@ namespace Relativity.Import.Export
 		{
 			using (MemoryStream ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(soap)))
 			{
-				var surrogateSelector = new SurrogateSelector();
-				surrogateSelector.AddSurrogate(typeof(T), new StreamingContext(StreamingContextStates.All), new RdcFileSerializationSurrogate());
-
-				var soapFormatter = new SoapFormatter(surrogateSelector, new StreamingContext(StreamingContextStates.All));
-				soapFormatter.Binder = new RdcFileSerializationBinder(typeof(T).Assembly);
+				var soapFormatter = new SoapFormatter
+				{
+					Binder = new RdcFileSerializationBinder(typeof(T).Assembly),
+				};
 
 				T deserialized = (T)soapFormatter.Deserialize(ms);
 				return deserialized;

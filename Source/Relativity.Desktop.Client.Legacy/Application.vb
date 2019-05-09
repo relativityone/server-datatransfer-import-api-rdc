@@ -1,9 +1,7 @@
-Imports System.IO
 Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
-Imports System.Runtime.Serialization.Formatters.Soap
 Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Credentials
@@ -1249,7 +1247,6 @@ Namespace Relativity.Desktop.Client
 		Private Sub SaveFileObject(ByVal fileObject As Object, ByVal path As String)
 			Try
 				Relativity.Import.Export.SerializationHelper.SerializeToSoapFile(fileObject, path)
-
 			Catch ex As System.Exception
 				MsgBox("Save Failed" + vbCrLf + ex.Message, MsgBoxStyle.Critical)
 			End Try
