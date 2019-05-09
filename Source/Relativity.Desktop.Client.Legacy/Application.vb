@@ -1719,22 +1719,9 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Public Async Function DoHelp() As Task
-			Dim cloudIsEnabled As Boolean = Await GetIsCloudInstance()
-			'Default cloud setting
-
-			Dim urlPrefix As String = "https://help.kcura.com/"
-
-			'Go to appropriate documentation site
-			Dim relativityVersion As System.Version = GetRelativityBuildVersion()
-
-			' Always direct the user to the R1 site when this application is installed stand-alone.
-			If cloudIsEnabled OrElse relativityVersion Is Nothing Then
-				System.Diagnostics.Process.Start(urlPrefix & "RelativityOne/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
-			Else
-				Dim majMin As String = $"{relativityVersion.Major}.{relativityVersion.Minor}"
-				System.Diagnostics.Process.Start(urlPrefix & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
-			End If
-
+			Dim cloudInstance As Boolean = Await GetIsCloudInstance()
+			Dim url = WebHelpUrls.GetHomePageUrl(cloudInstance)
+			System.Diagnostics.Process.Start(url)
 		End Function
 
 		Public Async Function GetIsCloudInstance() As Task(Of System.Boolean)

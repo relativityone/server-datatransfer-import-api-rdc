@@ -8,6 +8,8 @@ Namespace Relativity.Desktop.Client
 	''' </summary>
 	Public Class TaskDialogs
 
+		Private Const Caption As String = "Relativity Desktop Client"
+
 		''' <summary>
 		''' Shows the Relativity not supported task dialog and returns a value indicating whether to try a new URL.
 		''' </summary>
@@ -22,11 +24,11 @@ Namespace Relativity.Desktop.Client
 		''' </returns>
 		Public Shared Function ShowRelativityNotSupportedTaskDialog(ByVal parent As IntPtr, ByVal exception As RelativityNotSupportedException) As Boolean
 			Try
+				Dim helpUrl As String = WebHelpUrls.GetCompatibilityPageUrl()
 				Using taskDialog As TaskDialog = New TaskDialog()
-					taskDialog.Caption = "Relativity Desktop Client"
+					taskDialog.Caption = Caption
 					taskDialog.FooterIcon = TaskDialogStandardIcon.Information
-					taskDialog.FooterText =
-						"<A HREF=""https://help.relativity.com/RelativityOne/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm"">View RDC compatibility details on the web</A>"
+					taskDialog.FooterText = $"<A HREF=""{helpUrl}"">View RDC compatibility details on the web</A>"
 					taskDialog.HyperlinksEnabled = True
 					taskDialog.Icon = TaskDialogStandardIcon.Warning
 					taskDialog.InstructionText = "Do you want to try another URL?"
@@ -61,9 +63,9 @@ Namespace Relativity.Desktop.Client
 					Return result
 				End Using
 			Catch ex As Exception
-				' This is the original message box implementation.
+				' Fallback to the original message box.
 				Dim message As String = exception.Message + vbCrLf + vbCrLf + "Try a new URL?"
-				Dim result As MsgBoxResult = MsgBox(message, MsgBoxStyle.YesNo, "Relativity Desktop Client")
+				Dim result As MsgBoxResult = MsgBox(message, MsgBoxStyle.YesNo, Caption)
 				Return result = MsgBoxResult.Yes
 			End Try
 		End Function
