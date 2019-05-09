@@ -259,6 +259,18 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Gets or sets the maximum number of seconds to identify a file type before reaching the timeout.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int FileTypeIdentifyTimeoutSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to force a folder preview.
 		/// </summary>
 		/// <value>

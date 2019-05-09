@@ -620,7 +620,7 @@ Namespace kCura.WinEDDS
 						Statistics.BatchSize = Me.ImportBatchSize
 						JobCounter = 1
 						Me.TotalTransferredFilesCount = 0
-						Using fileTypeIdentifier As IFileTypeIdentifier = New OutsideInFileTypeIdentifierService()
+						Using fileTypeIdentifier As IFileTypeIdentifier = New OutsideInFileTypeIdentifierService(AppSettings.Instance.FileTypeIdentifyTimeoutSeconds)
 							While ShouldImport AndAlso _artifactReader.HasMoreRecords
 								Try
 									If Me.CurrentLineNumber < _startLineNumber Then

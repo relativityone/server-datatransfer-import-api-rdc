@@ -292,6 +292,17 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheFileTypeIdentifierTimeoutSecondsSetting()
+		{
+			Assert.That(
+				this.settings.FileTypeIdentifyTimeoutSeconds,
+				Is.EqualTo(AppSettingsConstants.FileTypeIdentifyTimeoutSecondsDefaultValue));
+			int expectedValue = RandomHelper.NextInt32(5000, 30000);
+			this.settings.FileTypeIdentifyTimeoutSeconds = expectedValue;
+			Assert.That(this.settings.FileTypeIdentifyTimeoutSeconds, Is.EqualTo(expectedValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheForceFolderPreviewSetting()
 		{
 			DeleteTestSubKey();

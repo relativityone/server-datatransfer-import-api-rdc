@@ -64,6 +64,8 @@ namespace Relativity.Import.Export
 		public const int ExportErrorWaitTimeInSecondsDefaultValue = 30;
 		public const string ExportThreadCountKey = "ExportThreadCount";
 		public const int ExportThreadCountDefaultValue = 2;
+		public const string FileTypeIdentifyTimeoutSecondsKey = "FileTypeIdentifyTimeoutSeconds";
+		public const int FileTypeIdentifyTimeoutSecondsDefaultValue = Relativity.Import.Export.Io.OutsideInFileTypeIdentifierService.DefaultIdleTimeout;
 		public const bool ForceFolderPreviewDefaultValue = true;
 		public const string ForceParallelismInNewExportKey = "ForceParallelismInNewExport";
 		public const bool ForceParallelismInNewExportDefaultValue = false;
