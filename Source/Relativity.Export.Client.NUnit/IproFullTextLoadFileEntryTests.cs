@@ -21,8 +21,8 @@ namespace Relativity.Export.NUnit
 	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Export.VolumeManagerV2.Repository;
 	using Relativity.Import.Export.Io;
+    using Relativity.Import.Export.Service;
     using Relativity.Logging;
-    using RelativityConstants = Relativity.Import.Export.Services.Constants;
 
     [TestFixture]
 	public abstract class IproFullTextLoadFileEntryTests
@@ -129,7 +129,7 @@ namespace Relativity.Export.NUnit
 		[Test]
 		public void ItShouldHandleTooLongText()
 		{
-			const string textToWrite = RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			const string textToWrite = ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 			const string textInFile = "text in file";
 
 			File.WriteAllText(_tempFile, textInFile);

@@ -1,7 +1,7 @@
 Imports System.Runtime.Serialization
 Imports System.Collections.Generic
 Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class DocumentField

@@ -10,7 +10,7 @@ namespace Relativity.Import.Export.Data
 	using System.Data;
 
 	/// <summary>
-	/// Represents a SQL data row.
+	/// Represents a SQL data row. This class cannot be inherited, backwards compatibility isn't guaranteed, and should never be consumed by API users.
 	/// </summary>
 	public sealed class SqlDataRow
 	{

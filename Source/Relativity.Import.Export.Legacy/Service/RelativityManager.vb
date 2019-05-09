@@ -9,12 +9,16 @@ Namespace kCura.WinEDDS.Service
 		End Sub
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webServiceUrl As String)
+			Me.New(credentials, cookieContainer, AppSettings.Instance.WebApiServiceUrl, AppSettings.Instance.WebApiOperationTimeout)
+		End Sub
+
+		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webServiceUrl As String, ByVal timeout As Integer)
 			MyBase.New()
 
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			Me.Url = String.Format("{0}RelativityManager.asmx", AppSettings.Instance.ValidateUriFormat(webServiceUrl))
-			Me.Timeout = Settings.DefaultTimeOut
+			Me.Timeout = timeout
 		End Sub
 
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
@@ -34,6 +38,10 @@ Namespace kCura.WinEDDS.Service
 
 		Public Shadows Function RetrieveRdcConfiguration() As System.Data.DataSet
 			Return RetryOnReLoginException(Function() MyBase.RetrieveRdcConfiguration())
+		End Function
+
+		Public Shadows Function GetImportExportWebApiVersion() As String
+			Return RetryOnReLoginException(Function() MyBase.GetImportExportWebApiVersion())
 		End Function
 	End Class
 End Namespace

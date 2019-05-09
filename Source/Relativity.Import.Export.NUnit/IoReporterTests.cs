@@ -68,14 +68,14 @@ namespace Relativity.Import.Export.NUnit
 				yield return new TestCaseData(RetryOptions.None, false, new InvalidOperationException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
 
 				// Test Case: disk full scenario 1 follow the options.
-				yield return new TestCaseData(RetryOptions.All, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.DiskFullHResultHResult), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.DiskFull, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.DiskFullHResultHResult), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.DiskFull, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
 
 				// Test Case: disk full scenario 2 follow the options.
-				yield return new TestCaseData(RetryOptions.All, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.DiskFull, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.HandleDiskFullHResult), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.DiskFull, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.HandleDiskFullHResult), NoExpectedRetryCount);
 
 				// Test Case: file does not exist follow the options.
 				yield return new TestCaseData(RetryOptions.All, false, new System.IO.FileNotFoundException(ExpectedDefaultExceptionMessage), MaxExpectedRetryCount);
@@ -88,18 +88,18 @@ namespace Relativity.Import.Export.NUnit
 				yield return new TestCaseData(RetryOptions.None, false, new System.IO.PathTooLongException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
 
 				// Test Case: illegal characters in the path should never retry.
-				yield return new TestCaseData(RetryOptions.None, false, new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.None, true, new FileInfoInvalidPathException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.All, false, new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.All, true, new FileInfoInvalidPathException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, true, new FileInfoInvalidPathException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.None, false, new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.None, true, new FileInfoInvalidPathException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.All, false, new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.All, true, new FileInfoInvalidPathException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, true, new FileInfoInvalidPathException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
 
 				// Test Case: permission errors follow the options.
 				yield return new TestCaseData(RetryOptions.All, false, new UnauthorizedAccessException(ExpectedDefaultExceptionMessage), MaxExpectedRetryCount);
@@ -203,35 +203,43 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		[TestCase("")]
+		[TestCase(null)]
+		public void ItShouldReturnFalseWhenFileNameIsNullOrEmpty(string fileName)
+		{
+			this.GivenTheIoReportInstanceIsConstructed();
+			this.WhenCallingTheGetFileExistsReporterMethod(fileName);
+			this.ThenTheActualFileExistsShouldEqual(false);
+		}
+
+		[Test]
 		public void ItShouldThrowWhenTheGetFileExistsArgsAreInvalid()
 		{
-			Assert.Throws<ArgumentNullException>(() =>
-			{
-				this.GivenTheIoReportInstanceIsConstructed();
-				this.ioReporterInstance.GetFileExists(null, 0);
-			});
-
 			Assert.Throws<ArgumentOutOfRangeException>(() =>
-			{
-				this.GivenTheIoReportInstanceIsConstructed();
-				this.ioReporterInstance.GetFileExists("1", -1);
-			});
+				{
+					this.GivenTheIoReportInstanceIsConstructed();
+					this.ioReporterInstance.GetFileExists("1", -1);
+				});
 		}
 
 		[Test]
 		public void ItShouldThrowWhenTheGetFileLengthArgsAreInvalid()
 		{
-			Assert.Throws<ArgumentNullException>(() =>
-			{
-				this.GivenTheIoReportInstanceIsConstructed();
-				this.ioReporterInstance.GetFileLength(null, 0);
-			});
-
 			Assert.Throws<ArgumentOutOfRangeException>(() =>
 			{
 				this.GivenTheIoReportInstanceIsConstructed();
 				this.ioReporterInstance.GetFileLength("1", -1);
 			});
+		}
+
+		[Test]
+		[TestCase("")]
+		[TestCase(null)]
+		public void ItShouldReturnZeroWhenFileNameIsNullOrEmpty(string fileName)
+		{
+			this.GivenTheIoReportInstanceIsConstructed();
+			this.WhenCallingTheFileLengthReporterMethod(fileName);
+			this.ThenTheActualFileLengthShouldEqual(0);
 		}
 
 		[TestCase(1)]
@@ -244,7 +252,7 @@ namespace Relativity.Import.Export.NUnit
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheIoReportInstanceIsConstructed();
-			this.WhenCallingTheFileLengthReporterMethod();
+			this.WhenCallingTheFileLengthReporterMethod(TestFileName);
 			this.ThenTheActualFileLengthShouldEqual(expectedLength);
 		}
 
@@ -257,7 +265,7 @@ namespace Relativity.Import.Export.NUnit
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheIoReportInstanceIsConstructed();
-			this.WhenCallingTheGetFileExistsReporterMethod();
+			this.WhenCallingTheGetFileExistsReporterMethod(TestFileName);
 			this.ThenTheActualFileExistsShouldEqual(expectedFileExists);
 		}
 
@@ -275,7 +283,7 @@ namespace Relativity.Import.Export.NUnit
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheIoReportInstanceIsConstructed();
-			this.WhenCallingTheFileLengthReporterMethod();
+			this.WhenCallingTheFileLengthReporterMethod(TestFileName);
 			int expectedWaitTimeBetweenRetryAttempts = waitTimeBetweenRetryAttempts;
 			this.ThenTheActualRetryDurationShouldCalculated(retryAttempt, expectedWaitTimeBetweenRetryAttempts);
 		}
@@ -289,7 +297,7 @@ namespace Relativity.Import.Export.NUnit
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.None);
 			this.GivenTheIoReportInstanceIsConstructed();
-			this.WhenCallingTheFileLengthReporterMethod();
+			this.WhenCallingTheFileLengthReporterMethod(TestFileName);
 			this.ThenTheActualFileLengthShouldEqual(default(int));
 			this.ThenTheLoggerInformationShouldBeInvoked(1);
 		}
@@ -319,13 +327,13 @@ namespace Relativity.Import.Export.NUnit
 			this.ResetMockLogger();
 
 			// Verify retrieving the file length.
-			Assert.Throws(testException.GetType(), this.WhenCallingTheFileLengthReporterMethod);
+			Assert.Throws(testException.GetType(), () => this.WhenCallingTheFileLengthReporterMethod(TestFileName));
 			this.ThenTheLoggerErrorShouldBeInvoked(0, localExpectedException);
 			this.ThenTheLoggerWarningShouldBeInvoked(testExpectedRetryCount, localExpectedException);
 			this.ResetMockLogger();
 
 			// Verify retrieving the file exists flag.
-			Assert.Throws(testException.GetType(), this.WhenCallingTheGetFileExistsReporterMethod);
+			Assert.Throws(testException.GetType(), () => this.WhenCallingTheGetFileExistsReporterMethod(TestFileName));
 			this.ThenTheLoggerErrorShouldBeInvoked(0, localExpectedException);
 			this.ThenTheLoggerWarningShouldBeInvoked(testExpectedRetryCount, localExpectedException);
 			this.ResetMockLogger();
@@ -336,7 +344,7 @@ namespace Relativity.Import.Export.NUnit
 		[TestCase(false)]
 		public void ItShouldHandleIllegalCharactersInPathException(bool testValue)
 		{
-			Exception exception = new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage);
+			Exception exception = new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage);
 			this.GivenTheDisableNativeLocationValidationConfigSetting(testValue);
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheExpectedException(exception);
@@ -345,11 +353,11 @@ namespace Relativity.Import.Export.NUnit
 			this.GivenTheIoReportInstanceIsConstructed();
 			if (testValue)
 			{
-				Assert.Throws<FileInfoInvalidPathException>(this.WhenCallingTheFileLengthReporterMethod);
+				Assert.Throws<FileInfoInvalidPathException>(() => this.WhenCallingTheFileLengthReporterMethod(TestFileName));
 			}
 			else
 			{
-				Assert.Throws<ArgumentException>(this.WhenCallingTheFileLengthReporterMethod);
+				Assert.Throws<ArgumentException>(() => this.WhenCallingTheFileLengthReporterMethod(TestFileName));
 			}
 
 			const bool ExpectedException = false;
@@ -463,14 +471,14 @@ namespace Relativity.Import.Export.NUnit
 				this.cancellationTokenSource.Token);
 		}
 
-		private void WhenCallingTheFileLengthReporterMethod()
+		private void WhenCallingTheFileLengthReporterMethod(string fileName)
 		{
-			this.actualFileLength = this.ioReporterInstance.GetFileLength(TestFileName, 0);
+			this.actualFileLength = this.ioReporterInstance.GetFileLength(fileName, 0);
 		}
 
-		private void WhenCallingTheGetFileExistsReporterMethod()
+		private void WhenCallingTheGetFileExistsReporterMethod(string fileName)
 		{
-			this.actualFileExists = this.ioReporterInstance.GetFileExists(TestFileName, 0);
+			this.actualFileExists = this.ioReporterInstance.GetFileExists(fileName, 0);
 		}
 
 		private void WhenCallingTheFileCopyReporterMethod()

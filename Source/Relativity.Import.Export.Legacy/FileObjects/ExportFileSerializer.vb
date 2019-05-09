@@ -1,6 +1,6 @@
-﻿Imports System.Runtime.Serialization.Formatters.Soap
+Imports System.Runtime.Serialization.Formatters.Soap
 Imports System.Xml.Linq
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Namespace kCura.WinEDDS
 	Public Class ExportFileSerializer

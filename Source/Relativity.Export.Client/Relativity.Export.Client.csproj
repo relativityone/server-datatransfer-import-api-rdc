@@ -39,8 +39,33 @@
     <NoWarn>1591;0649;0067</NoWarn>
     <DocumentationFile>bin\Relativity.Export.Client.xml</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DocumentationFile>bin\Relativity.Export.Client.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591;0649;0067</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DocumentationFile>bin\Relativity.Export.Client.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591;0649;0067</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FreeImageNET">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -180,7 +205,7 @@
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\PdfImagesRollup.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\SinglePageImagesRollup.cs" />
     <Compile Include="Export\VolumeManagerV2\IRelativityFileShareSettings.cs" />
-    <Compile Include="Export\VolumeManagerV2\ListHelper.cs" />
+    <Compile Include="Export\VolumeManagerV2\ListExtensions.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\EmptyImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFileMetadataBuilder.cs" />
@@ -349,10 +374,6 @@
       <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
       <Name>Relativity.Import.Export.Legacy</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export.Services.Interfaces\Relativity.Import.Export.Services.Interfaces.csproj">
-      <Project>{b2a59009-0da3-42d4-ae60-d2e964d8d165}</Project>
-      <Name>Relativity.Import.Export.Services.Interfaces</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
       <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
       <Name>Relativity.Import.Export</Name>
@@ -360,9 +381,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll" $(TargetDir)
-copy "$(SolutionDir)..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll" $(TargetDir)</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -413,9 +435,6 @@ copy "$(SolutionDir)..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll" $(TargetDir)<
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

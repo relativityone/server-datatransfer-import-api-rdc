@@ -11,13 +11,14 @@ namespace Relativity.Import.Export.Process
 
 	using Microsoft.VisualBasic.CompilerServices;
 
+	using Relativity.Import.Export.Data;
 	using Relativity.Import.Export.Io;
 	using Relativity.Logging;
 
 	/// <summary>
 	/// Represents a class object that can read error information from a delimited file.
 	/// </summary>
-	internal class ProcessErrorReader : DelimitedFileImporter
+	internal class ProcessErrorReader : DelimitedFileImporter2
 	{
 		/// <summary>
 		/// The key column name.

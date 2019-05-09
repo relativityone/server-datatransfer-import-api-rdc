@@ -33,7 +33,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// <value>
 		/// The temp directory.
 		/// </value>
-		protected TempDirectory TempDirectory
+		protected TempDirectory2 TempDirectory
 		{
 			get;
 			private set;
@@ -78,7 +78,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 				Is.Positive,
 				() => "The test workspace must be created or specified in order to run this integration test.");
 			this.Timestamp = DateTime.Now;
-			this.TempDirectory = new TempDirectory { ClearReadOnlyAttributes = true };
+			this.TempDirectory = new TempDirectory2 { ClearReadOnlyAttributes = true };
 			this.TempDirectory.Create();
 			this.OnSetup();
 		}

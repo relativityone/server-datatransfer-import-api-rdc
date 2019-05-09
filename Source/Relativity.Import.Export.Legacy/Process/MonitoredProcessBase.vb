@@ -5,7 +5,7 @@ Imports Relativity.Import.Export.Process
 Imports Relativity.Import.Export.Transfer
 
 Public MustInherit Class MonitoredProcessBase
-	Inherits ProcessBase
+	Inherits ProcessBase2
 
 	Private ReadOnly _messageThrottling As TimeSpan
 	Protected Property JobGuid As System.Guid = System.Guid.NewGuid()
@@ -20,7 +20,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected _hasFatalErrorOccured As Boolean
 	Protected _tapiClientName As String = TapiClient.None.ToString()
 
-	Public Property CaseInfo As Relativity.Import.Export.Services.CaseInfo
+	Public Property CaseInfo As Relativity.Import.Export.Service.CaseInfo
 
 	Public Sub New(messageService As IMessageService)
 		Me.MessageService = messageService

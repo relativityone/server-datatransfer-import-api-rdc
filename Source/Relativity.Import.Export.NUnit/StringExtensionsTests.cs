@@ -84,5 +84,52 @@ namespace Relativity.Import.Export.NUnit
 			string value = input.ToSqlFriendlyName();
 			Assert.That(value, Is.EqualTo(expected));
 		}
+
+		[TestCase(null, "")]
+		[TestCase("", "")]
+		[TestCase(@"https://relativity.one", "https://relativity.one/")]
+		[TestCase(@"https://relativity.one/", "https://relativity.one/")]
+		public static void ShouldAppendTheTrailingSlashToTheUrl(string value, string expected)
+		{
+			string actual = value.AppendTrailingSlashToUrl();
+			Assert.That(actual, Is.EqualTo(expected));
+		}
+
+		[TestCase(null, "")]
+		[TestCase("", "")]
+		[TestCase(@"/relativity.one", "relativity.one")]
+		[TestCase(@"\relativity.one", "relativity.one")]
+		public static void ShouldTrimTheLeadingSlashFromTheUrl(string value, string expected)
+		{
+			string actual = value.TrimLeadingSlashFromUrl();
+			Assert.That(actual, Is.EqualTo(expected));
+		}
+
+		[TestCase(null, "")]
+		[TestCase("", "")]
+		[TestCase(@"https://relativity.one", "https://relativity.one")]
+		[TestCase(@"https://relativity.one/", "https://relativity.one")]
+		[TestCase(@"https://relativity.one\\", "https://relativity.one")]
+		public static void ShouldTrimTheTrailingSlashFromTheUrl(string value, string expected)
+		{
+			string actual = value.TrimTrailingSlashFromUrl();
+			Assert.That(actual, Is.EqualTo(expected));
+		}
+
+		[Test]
+		[TestCase(null, null, "")]
+		[TestCase(null, "", "")]
+		[TestCase("", null, "")]
+		[TestCase("", "", "")]
+		[TestCase(@"https://relativity.one", "Service.API/Module/GetValue", "https://relativity.one/Service.API/Module/GetValue")]
+		[TestCase(@"https://relativity.one", "/Service.API/Module/GetValue", "https://relativity.one/Service.API/Module/GetValue")]
+		[TestCase(@"https://relativity.one/", "/Service.API/Module/GetValue", "https://relativity.one/Service.API/Module/GetValue")]
+		[TestCase(@"https://relativity.one", "", "https://relativity.one/")]
+		[TestCase(@"https://relativity.one/", "", "https://relativity.one/")]
+		public static void ShouldCombineTheUrls(string url1, string url2, string expected)
+		{
+			string actual = url1.CombineUrls(url2);
+			Assert.That(actual, Is.EqualTo(expected));
+		}
 	}
 }

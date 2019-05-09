@@ -54,7 +54,37 @@
   <PropertyGroup>
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>Relativity.Import.Client.Legacy.NUnit.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>40000;42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\..\buildtools\Legacy.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>Relativity.Import.Client.Legacy.NUnit.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>40000;42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\..\buildtools\Legacy.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FreeImageNET">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
@@ -148,7 +178,6 @@
     <Compile Include="GlobalSuppressions.vb" />
     <Compile Include="LoadFileBaseTests.vb" />
     <Compile Include="LoadFileTypeTests.vb" />
-    <Compile Include="LoginHelperTests.vb" />
     <Compile Include="MockBulkImageFileImporter.vb" />
     <Compile Include="MockBulkImportManagerSqlExceptions.vb" />
     <Compile Include="MockBulkImportManagerWebExceptions.vb" />
@@ -169,25 +198,14 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj">
-      <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
-      <Name>Relativity.Import.Export.Legacy</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export.Services.Interfaces\Relativity.Import.Export.Services.Interfaces.csproj">
-      <Project>{b2a59009-0da3-42d4-ae60-d2e964d8d165}</Project>
-      <Name>Relativity.Import.Export.Services.Interfaces</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Relativity.Import.Export.TestFramework\Relativity.Import.Export.TestFramework.csproj">
       <Project>{fed61746-80ec-40cb-998e-9299b804ce7d}</Project>
       <Name>Relativity.Import.Export.TestFramework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
-      <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
-      <Name>Relativity.Import.Export</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.DynamicReferences.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -270,9 +288,6 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

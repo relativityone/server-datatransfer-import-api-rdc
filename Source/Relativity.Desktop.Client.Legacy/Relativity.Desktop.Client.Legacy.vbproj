@@ -42,6 +42,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>1</WarningLevel>
     <NoWarn>40000,42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -54,6 +55,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>1</WarningLevel>
     <NoWarn>40000,42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>
@@ -67,25 +69,49 @@
   <PropertyGroup>
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>Relativity.Desktop.Client.xml</DocumentationFile>
+    <WarningLevel>1</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>40000,42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>Relativity.Desktop.Client.xml</DocumentationFile>
+    <WarningLevel>1</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>40000,42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="itextsharp, Version=5.5.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+    <Reference Include="itextsharp">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
@@ -165,6 +191,52 @@
     <Compile Include="CommandLine\InvalidArgumentException.vb" />
     <Compile Include="CommandLine\InvalidCommandLineFormat.vb" />
     <Compile Include="ConfigurationException.vb" />
+    <Compile Include="Controls\EnhancedMenuProvider.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ErrorDialog.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\FieldMap.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\HighlightItemEventArgs.vb" />
+    <Compile Include="Controls\LayoutPropertyType.vb" />
+    <Compile Include="Controls\ListBox.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ListBoxExtensions.vb" />
+    <Compile Include="Controls\ListBoxLocation.vb" />
+    <Compile Include="Controls\MessageBoxForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\MoveDirection.vb" />
+    <Compile Include="Controls\OutputRichTextBox.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ProcessForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\RelativeLayoutData.vb" />
+    <Compile Include="Controls\RichTextBox.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\SearchableList.Designer.vb">
+      <DependentUpon>SearchableList.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SearchableList.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\SearchListSelector.Designer.vb">
+      <DependentUpon>SearchListSelector.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SearchListSelector.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\TwoListBox.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Win32API.vb" />
     <Compile Include="Dictionary.vb" />
     <Compile Include="DictionaryBase.vb" />
     <Compile Include="IConfigDictionaryFactory.vb" />
@@ -319,11 +391,38 @@
     <EmbeddedResource Include="Controls\EncodingPicker.resx">
       <DependentUpon>EncodingPicker.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\EnhancedMenuProvider.resx">
+      <DependentUpon>EnhancedMenuProvider.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ErrorDialog.resx">
+      <DependentUpon>ErrorDialog.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\FieldMap.resx">
+      <DependentUpon>FieldMap.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MessageBoxForm.resx">
+      <DependentUpon>MessageBoxForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\OutputRichTextBox.resx">
+      <DependentUpon>OutputRichTextBox.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ProcessForm.resx">
+      <DependentUpon>ProcessForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\SearchableList.resx">
+      <DependentUpon>SearchableList.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\SearchListSelector.resx">
+      <DependentUpon>SearchListSelector.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\TextAndNativeFileNamePicker.resx">
       <DependentUpon>TextAndNativeFileNamePicker.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TextFieldPrecedencePicker.resx">
       <DependentUpon>TextFieldPrecedencePicker.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TwoListBox.resx">
+      <DependentUpon>TwoListBox.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AdvancedFileLocation.resx">
       <DependentUpon>AdvancedFileLocation.vb</DependentUpon>
@@ -402,10 +501,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Relativity.Desktop.Client.Controls.Legacy\Relativity.Desktop.Client.Controls.Legacy.vbproj">
-      <Project>{267ac175-3dad-4348-9058-d5db19deaa57}</Project>
-      <Name>Relativity.Desktop.Client.Controls.Legacy</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Relativity.Export.Client\Relativity.Export.Client.csproj">
       <Project>{410ba79b-df60-4eda-86b3-608f3dee38f5}</Project>
       <Name>Relativity.Export.Client</Name>
@@ -413,10 +508,6 @@
     <ProjectReference Include="..\Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj">
       <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
       <Name>Relativity.Import.Export.Legacy</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export.Services.Interfaces\Relativity.Import.Export.Services.Interfaces.csproj">
-      <Project>{b2a59009-0da3-42d4-ae60-d2e964d8d165}</Project>
-      <Name>Relativity.Import.Export.Services.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
       <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
@@ -438,8 +529,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll" $(TargetDir)
-copy "$(SolutionDir)..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll" $(TargetDir)</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -473,9 +564,6 @@ copy "$(SolutionDir)..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll" $(TargetDir)<
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

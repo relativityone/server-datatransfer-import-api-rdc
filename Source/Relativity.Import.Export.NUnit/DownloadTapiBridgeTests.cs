@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents <see cref="DownloadTapiBridge"/> tests.
+//   Represents <see cref="DownloadTapiBridge2"/> tests.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
@@ -21,24 +21,24 @@ namespace Relativity.Import.Export.NUnit
 	using Relativity.Transfer;
 
 	/// <summary>
-	/// Represents <see cref="DownloadTapiBridge"/> tests.
+	/// Represents <see cref="DownloadTapiBridge2"/> tests.
 	/// </summary>
 	[TestFixture]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
 		Justification = "The test class handles the disposal.")]
-	public class DownloadTapiBridgeTests : TapiBridgeTestsBase<DownloadTapiBridge>
+	public class DownloadTapiBridgeTests : TapiBridgeTestsBase<DownloadTapiBridge2>
 	{
 		[Test]
 		[Category(TestCategories.TransferApi)]
 		public void ShouldThrowWhenTheConstructorArgsAreInvalid()
 		{
-			TapiBridgeParameters parameters = this.CreateTapiBridgeParameters(WellKnownTransferClient.Unassigned);
+			TapiBridgeParameters2 parameters = this.CreateTapiBridgeParameters(WellKnownTransferClient.Unassigned);
 			Assert.Throws<ArgumentNullException>(
 				() =>
 					{
-						using (new DownloadTapiBridge(
+						using (new DownloadTapiBridge2(
 							null,
 							parameters,
 							this.MockTransferLogger.Object,
@@ -50,7 +50,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.Throws<ArgumentNullException>(
 				() =>
 					{
-						using (new DownloadTapiBridge(
+						using (new DownloadTapiBridge2(
 							this.MockTapiObjectService.Object,
 							null,
 							this.MockTransferLogger.Object,
@@ -62,7 +62,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.Throws<ArgumentNullException>(
 				() =>
 					{
-						using (new DownloadTapiBridge(
+						using (new DownloadTapiBridge2(
 							this.MockTapiObjectService.Object,
 							parameters,
 							null,
@@ -75,7 +75,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.Throws<ArgumentOutOfRangeException>(
 				() =>
 					{
-						using (new DownloadTapiBridge(
+						using (new DownloadTapiBridge2(
 							this.MockTapiObjectService.Object,
 							parameters,
 							this.MockTransferLogger.Object,
@@ -88,7 +88,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.Throws<ArgumentException>(
 				() =>
 					{
-						using (new DownloadTapiBridge(
+						using (new DownloadTapiBridge2(
 							this.MockTapiObjectService.Object,
 							parameters,
 							this.MockTransferLogger.Object,
@@ -125,9 +125,9 @@ namespace Relativity.Import.Export.NUnit
 			Justification = "The test teardown disposes the test object.")]
 		protected override void CreateTapiBridge(WellKnownTransferClient client)
 		{
-			TapiBridgeParameters parameters = this.CreateTapiBridgeParameters(client);
+			TapiBridgeParameters2 parameters = this.CreateTapiBridgeParameters(client);
 			this.TestClientConfiguration.Client = client;
-			this.TapiBridgeInstance = new DownloadTapiBridge(
+			this.TapiBridgeInstance = new DownloadTapiBridge2(
 				this.MockTapiObjectService.Object,
 				parameters,
 				this.MockTransferLogger.Object,

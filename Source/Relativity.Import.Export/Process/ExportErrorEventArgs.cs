@@ -9,7 +9,7 @@ namespace Relativity.Import.Export.Process
 	using System;
 
 	/// <summary>
-	/// Represents export error event argument data.
+	/// Represents export error event argument data. This class cannot be inherited.
 	/// </summary>
 	public sealed class ExportErrorEventArgs : EventArgs
 	{

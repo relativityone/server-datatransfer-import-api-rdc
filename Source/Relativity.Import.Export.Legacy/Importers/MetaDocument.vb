@@ -1,5 +1,6 @@
 Imports kCura.WinEDDS.Api
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Io
 
 Namespace kCura.WinEDDS
 	Public Class MetaDocument
@@ -13,7 +14,7 @@ Namespace kCura.WinEDDS
 		Private _parentFolderID As Int32
 
 		Private _record As Api.ArtifactFieldCollection
-		Private _FileIdInfo As FileIdInfo
+		Private _fileTypeInfo As IFileTypeInfo
 		Private _lineStatus As Int64
 		Private _destinationVolume As String
 
@@ -109,12 +110,12 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property FileIdInfo() As FileIdInfo
+		Public Property FileTypeInfo() As IFileTypeInfo
 			Get
-				Return _FileIdInfo
+				Return _fileTypeInfo
 			End Get
-			Set(ByVal value As FileIdInfo)
-				_FileIdInfo = value
+			Set(ByVal value As IFileTypeInfo)
+				_fileTypeInfo = value
 			End Set
 		End Property
 
@@ -146,7 +147,7 @@ Namespace kCura.WinEDDS
 		 ByVal lineNumber As Int32, _
 		 ByVal parentFolderID As Int32, _
 		 ByVal record As Api.ArtifactFieldCollection, _
-		 ByVal oixFileData As FileIdInfo, _
+		 ByVal fileTypeInfo As IFileTypeInfo, _
 		 ByVal lineStatus As Int64, _
 		 ByVal destinationVolume As String,
 		 ByVal folderPath As String,
@@ -162,7 +163,7 @@ Namespace kCura.WinEDDS
 			_parentFolderID = parentFolderID
 			_record = record
 
-			_FileIdInfo = oixFileData
+			_fileTypeInfo = fileTypeInfo
 			_lineStatus = lineStatus
 			_destinationVolume = destinationVolume
 			Me.FolderPath = folderPath
@@ -171,10 +172,10 @@ Namespace kCura.WinEDDS
 
 		Public Function GetFileType() As String
 			Dim type As String
-			If FileIdInfo Is Nothing Then
+			If FileTypeInfo Is Nothing Then
 				type = "Unknown format"
 			Else
-				type = FileIdInfo.Description
+				type = FileTypeInfo.Description
 			End If
 			Return type
 		End Function
@@ -196,14 +197,14 @@ Namespace kCura.WinEDDS
 		 ByVal lineNumber As Int32, _
 		 ByVal parentFolderID As Int32, _
 		 ByVal record As Api.ArtifactFieldCollection, _
-		 ByVal oixFileData As FileIdInfo, _
+		 ByVal fileTypeInfo As IFileTypeInfo, _
 		 ByVal lineStatus As Int64, _
 		 ByVal destinationVolume As String, _
 		 ByVal size As Long,
 		 ByVal folderPath As String,
 		 ByVal dataGridID As String
 		 )
-			MyBase.New(fileGuid, identityValue, indexFileInDB, filename, fullFilePath, uploadFile, lineNumber, parentFolderID, record, oixFileData, lineStatus, destinationVolume, folderPath, dataGridID)
+			MyBase.New(fileGuid, identityValue, indexFileInDB, filename, fullFilePath, uploadFile, lineNumber, parentFolderID, record, fileTypeInfo, lineStatus, destinationVolume, folderPath, dataGridID)
 			_size = size
 		End Sub
 

@@ -8,8 +8,6 @@ namespace Relativity.Export.NUnit
 {
 	using global::NUnit.Framework;
 
-	using kCura.WinEDDS;
-
 	using Moq;
 
 	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
@@ -33,25 +31,28 @@ namespace Relativity.Export.NUnit
 		}
 
 		[Test]
-		[TestCase("Aspera", FileDownloader.FileAccessType.Aspera)]
-		[TestCase("aspera", FileDownloader.FileAccessType.Aspera)]
-		[TestCase("Direct", FileDownloader.FileAccessType.Direct)]
-		[TestCase("direct", FileDownloader.FileAccessType.Direct)]
-		[TestCase("Web", FileDownloader.FileAccessType.Web)]
-		[TestCase("web", FileDownloader.FileAccessType.Web)]
-		public void ItShouldUpdateUploaderType(string clientName, FileDownloader.FileAccessType type)
+		[TestCase("Aspera", TapiClient.Aspera)]
+		[TestCase("aspera", TapiClient.Aspera)]
+		[TestCase("Direct", TapiClient.Direct)]
+		[TestCase("direct", TapiClient.Direct)]
+		[TestCase("Web", TapiClient.Web)]
+		[TestCase("web", TapiClient.Web)]
+		public void ItShouldUpdateUploaderType(string clientName, TapiClient expectedTapiClient)
 		{
-			string mode = string.Empty;
+			TapiClient currentTapiClient = TapiClient.None;
 
 			_instance.Attach(_tapiBridge.Object);
-			_instance.UploadModeChangeEvent += s => mode = s;
+			_instance.UploadModeChangeEvent += newTapiClient =>
+				{
+					currentTapiClient = newTapiClient;
+				};
 
 			// ACT
-			_tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(clientName, 0));
+			_tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(clientName, expectedTapiClient));
 
 			// ASSERT
-			Assert.That(mode, Is.EqualTo(type.ToString()));
-			Assert.That(_instance.UploaderType, Is.EqualTo(type));
+			Assert.That(currentTapiClient, Is.EqualTo(expectedTapiClient));
+			Assert.That(_instance.UploaderType, Is.EqualTo(expectedTapiClient));
 		}
 
 		[Test]
@@ -59,21 +60,24 @@ namespace Relativity.Export.NUnit
 		{
 			const string aspera = "Aspera";
 			const string web = "Web";
-			string mode = string.Empty;
+			TapiClient currentTapiClient = TapiClient.None;
 
 			_instance.Attach(_tapiBridge.Object);
-			_instance.UploadModeChangeEvent += s => mode = s;
+			_instance.UploadModeChangeEvent += newTapiClient =>
+				{
+					currentTapiClient = newTapiClient;
+				};
 
 			// ACT
-			_tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(aspera, 0));
+			_tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(aspera, TapiClient.Aspera));
 
 			_instance.Detach();
 
-			_tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(web, 0));
+			_tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(web, TapiClient.Web));
 
 			// ASSERT
-			Assert.That(mode, Is.EqualTo(aspera));
-			Assert.That(_instance.UploaderType, Is.EqualTo(FileDownloader.FileAccessType.Aspera));
+			Assert.That(currentTapiClient, Is.EqualTo(TapiClient.Aspera));
+			Assert.That(_instance.UploaderType, Is.EqualTo(TapiClient.Aspera));
 		}
 	}
 }

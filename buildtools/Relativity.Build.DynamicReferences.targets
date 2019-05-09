@@ -1,0 +1,41 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- The decision on whether to use a project or assembly file reference must be handled via Choose/When element. -->
+  <!-- This ensures msbuild and VS both handle the dynamic switching gracefull and without side-effects.            -->
+  <!--                                                                                                              -->
+  <!-- Assumption: An ILMerge master solution defines the following build configurations:                           -->
+  <!--             Debug-ILMerge                                                                                    -->
+  <!--             Release-ILMerge                                                                                  -->
+  <Choose>
+    <When Condition=" '$(Configuration)'=='Debug' OR '$(Configuration)'=='Release' ">
+      <!-- This represents the standard project reference configuration. -->
+      <ItemGroup>
+        <ProjectReference Include="..\Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj">
+          <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
+          <Name>Relativity.Import.Export.Legacy</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
+          <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
+          <Name>Relativity.Import.Export</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\Relativity.Import.Client\Relativity.Import.Client.csproj">
+          <Project>{ab2cba4c-f2eb-41d7-8cdc-ae6d9e1d885d}</Project>
+          <Name>Relativity.Import.Client</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\Relativity.Export.Client\Relativity.Export.Client.csproj">
+          <Project>{410ba79b-df60-4eda-86b3-608f3dee38f5}</Project>
+        <Name>Relativity.Export.Client</Name>
+    </ProjectReference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <!-- This represents the ILMerge/SDK assembly file reference configuration. -->
+      <ItemGroup>
+        <Reference Include="Relativity.Import.Client.Sdk">
+          <HintPath>..\..\Artifacts\binaries\sdk\Relativity.Import.Export.Client.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>False</Paket>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+</Project>

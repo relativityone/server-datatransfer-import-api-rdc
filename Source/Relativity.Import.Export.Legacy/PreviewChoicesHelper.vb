@@ -1,5 +1,5 @@
 ﻿Imports System.Collections.Generic
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Namespace kCura.WinEDDS
 	Public Class PreviewChoicesHelper

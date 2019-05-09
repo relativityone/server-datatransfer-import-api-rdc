@@ -1,12 +1,13 @@
 ﻿namespace Relativity.Export.VolumeManagerV2.ImagesRollup
 {
 	using Relativity.Import.Export;
+	using Relativity.Import.Export.Media;
 
 	public class ImageWrapper : IImage
 	{
-		private readonly IImageConversionService _imageConverter;
+		private readonly IImageConverter _imageConverter;
 
-		public ImageWrapper(IImageConversionService imageConverter)
+		public ImageWrapper(IImageConverter imageConverter)
 		{
 			_imageConverter = imageConverter;
 		}

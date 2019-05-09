@@ -87,8 +87,8 @@ namespace Relativity.Export.NUnit
 			int actualDocumentExportedCount = 0;
 			string actualLine = string.Empty;
 			_status.Setup(x => x.UpdateDocumentExportedCount(It.IsAny<int>())).Callback((int docs) => actualDocumentExportedCount = docs);
-			_status.Setup(x => x.WriteStatusLine(It.IsAny<EventType>(), It.IsAny<string>(), It.IsAny<bool>()))
-				.Callback((EventType eventType, string line, bool isEssential) => actualLine = line);
+			_status.Setup(x => x.WriteStatusLine(It.IsAny<EventType2>(), It.IsAny<string>(), It.IsAny<bool>()))
+				.Callback((EventType2 eventType, string line, bool isEssential) => actualLine = line);
 
 			// ACT
 			_instance.MarkFileAsDownloaded(image1_B.ExportRequest.FileName, image1_B.ExportRequest.Order);

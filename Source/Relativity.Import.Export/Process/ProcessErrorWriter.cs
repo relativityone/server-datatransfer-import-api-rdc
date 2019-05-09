@@ -14,7 +14,7 @@ namespace Relativity.Import.Export.Process
 	using Relativity.Import.Export.Io;
 
 	/// <summary>
-	/// Represents a class object that writes all process errors to a CSV file.
+	/// Represents a class object that writes all process errors to a CSV file. This class cannot be inherited.
 	/// </summary>
 	internal sealed class ProcessErrorWriter : IProcessErrorWriter
 	{

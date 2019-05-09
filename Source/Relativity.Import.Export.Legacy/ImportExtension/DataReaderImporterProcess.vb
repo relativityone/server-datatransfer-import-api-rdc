@@ -1,6 +1,6 @@
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImporterProcess
@@ -14,7 +14,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 			' Use the default value for the delimiter because as a public class,
 			' users of this class may not know what value to set for this
-			BulkLoadFileFieldDelimiter = Constants.DEFAULT_FIELD_DELIMITER
+			BulkLoadFileFieldDelimiter = ServiceConstants.DEFAULT_FIELD_DELIMITER
 		End Sub
 
 		Public Property OnBehalfOfUserToken As String

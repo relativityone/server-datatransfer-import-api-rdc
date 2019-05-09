@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents <see cref="Timekeeper"/> tests.
+//   Represents <see cref="Timekeeper2"/> tests.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ namespace Relativity.Import.Export.NUnit
 	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
-	/// Represents <see cref="Timekeeper"/> tests.
+	/// Represents <see cref="Timekeeper2"/> tests.
 	/// </summary>
 	[TestFixture]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -33,19 +33,19 @@ namespace Relativity.Import.Export.NUnit
 		Justification = "The test class handles the disposal.")]
 	public class TimekeeperTests
 	{
-		private TempDirectory tempDirectory;
+		private TempDirectory2 tempDirectory;
 		private IFileSystem fileSystem;
 		private Mock<IAppSettings> mockAppSettings;
-		private Timekeeper timekeeper;
+		private Timekeeper2 timekeeper;
 
 		[SetUp]
 		public void Setup()
 		{
 			this.fileSystem = new FileSystemWrap();
-			this.tempDirectory = new TempDirectory();
+			this.tempDirectory = new TempDirectory2();
 			this.tempDirectory.Create();
 			this.mockAppSettings = new Mock<IAppSettings>();
-			this.timekeeper = new Timekeeper(this.fileSystem, this.mockAppSettings.Object);
+			this.timekeeper = new Timekeeper2(this.fileSystem, this.mockAppSettings.Object);
 		}
 
 		[TearDown]

@@ -1,5 +1,4 @@
 Imports kCura.WinEDDS
-Imports Relativity.Desktop.Client.Legacy.Controls
 
 Namespace Relativity.Desktop.Client
 	Public Class CaseFolderExplorer
@@ -164,7 +163,7 @@ Namespace Relativity.Desktop.Client
 
 		Private _contextMenuTreeNode As System.Windows.Forms.TreeNode
 
-		Private Async Function LoadCase(ByVal caseInfo As Relativity.Import.Export.Services.CaseInfo) As Task
+		Private Async Function LoadCase(ByVal caseInfo As Relativity.Import.Export.Service.CaseInfo) As Task
 			'check import/export permissions for the case
 			Await _application.LoadWorkspacePermissions()
 

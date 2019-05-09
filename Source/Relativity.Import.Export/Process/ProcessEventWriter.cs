@@ -12,7 +12,7 @@ namespace Relativity.Import.Export.Process
 	using Relativity.Import.Export.Io;
 
 	/// <summary>
-	/// Represents an abstract object that writes output events to a file.
+	/// Represents an abstract object that writes output events to a file. This class cannot be inherited.
 	/// </summary>
 	internal sealed class ProcessEventWriter : IProcessEventWriter
 	{

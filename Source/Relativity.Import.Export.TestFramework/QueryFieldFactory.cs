@@ -10,7 +10,7 @@ namespace Relativity.Import.Export.TestFramework
 	using System.Data;
 	using System.Globalization;
 
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 
 	public class QueryFieldFactory
 	{
@@ -244,6 +244,48 @@ namespace Relativity.Import.Export.TestFramework
 				-1,
 				string.Empty,
 				"OtherLong Text",
+				-1,
+				-1,
+				string.Empty,
+				-1,
+				-1,
+				string.Empty,
+				false,
+				"MainTable",
+				"Document",
+				string.Empty,
+				string.Empty,
+				string.Empty,
+				ParentReflectionType.Empty,
+				string.Empty,
+				string.Empty,
+				string.Empty,
+				string.Empty,
+				false);
+		}
+
+		public kCura.WinEDDS.ViewFieldInfo GetSameNameDifferentIdGenericLongTextField()
+		{
+			return this.GenerateQueryField(
+				6,
+				1441000,
+				FieldCategory.FullText,
+				FieldType.Text,
+				10,
+				"Document",
+				-1,
+				false,
+				"Long Text",
+				"LongText",
+				"Long Text",
+				string.Empty,
+				-1,
+				true,
+				false,
+				string.Empty,
+				-1,
+				string.Empty,
+				"Long Text",
 				-1,
 				-1,
 				string.Empty,

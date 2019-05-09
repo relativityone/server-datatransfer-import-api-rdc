@@ -4,7 +4,6 @@ nbuilder
 newtonsoft.json
 nsubstitute
 nunit
-relativity
 relativity.logging
 relativity.logging.interfaces
 relativity.telemetry.datacontracts.shared

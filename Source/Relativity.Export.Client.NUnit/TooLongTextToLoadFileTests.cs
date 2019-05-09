@@ -21,10 +21,9 @@ namespace Relativity.Export.NUnit
 	using Relativity.Export.VolumeManagerV2.Download;
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Export.VolumeManagerV2.Repository;
+    using Relativity.Import.Export.Service;
 	using Relativity.Import.Export.TestFramework;
-    using Relativity.Logging;
-
-    using ExportConstants = Relativity.Import.Export.Services.ExportConstants;
+	using Relativity.Logging;
 
     [TestFixture]
 	public class TooLongTextToLoadFileTests
@@ -59,7 +58,7 @@ namespace Relativity.Export.NUnit
 			const string expectedPath = "expected_path";
 			Encoding expectedEncoding = Encoding.UTF32;
 
-			ViewFieldInfo field = new QueryFieldFactory().GetArtifactIdField();
+			kCura.WinEDDS.ViewFieldInfo field = new QueryFieldFactory().GetArtifactIdField();
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
@@ -94,7 +93,7 @@ namespace Relativity.Export.NUnit
 
 			CoalescedTextViewField field = new CoalescedTextViewField(new QueryFieldFactory().GetArtifactIdField(), true);
 
-			ViewFieldInfo trueTextPrecedenceField = new QueryFieldFactory().GetGenericDateField();
+			kCura.WinEDDS.ViewFieldInfo trueTextPrecedenceField = new QueryFieldFactory().GetGenericDateField();
 			_exportSettings.SelectedTextFields = new[] { trueTextPrecedenceField };
 
 			ObjectExportInfo artifact = new ObjectExportInfo
@@ -103,7 +102,7 @@ namespace Relativity.Export.NUnit
 					                            Metadata = new object[] { trueTextPrecedenceField.FieldArtifactId }
 				                            };
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
+			_fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
 
 			LongText longText = LongText.CreateFromMissingFile(
 				artifact.ArtifactID,

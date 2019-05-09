@@ -89,9 +89,10 @@ namespace Relativity.Import.Export.TestFramework
 		/// </param>
 		public static void Destroy(IntegrationTestParameters parameters)
 		{
+			// This can be null when the Setup fails.
 			if (parameters == null)
 			{
-				throw new ArgumentNullException(nameof(parameters));
+				return;
 			}
 
 			if (parameters.SkipIntegrationTests)

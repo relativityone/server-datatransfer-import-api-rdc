@@ -83,5 +83,10 @@ namespace Relativity.Import.Export.TestFramework
 		/// The transfer API test category.
 		/// </summary>
 		public const string TransferApi = "TransferApi";
+
+		/// <summary>
+		/// The web-service test category.
+		/// </summary>
+		public const string WebService = "WebService";
 	}
 }

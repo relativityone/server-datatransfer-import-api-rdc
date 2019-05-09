@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -45,12 +45,38 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DocumentationFile>bin\Relativity.Import.Export.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591;0649</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DocumentationFile>bin\Relativity.Import.Export.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591;0649</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FreeImageNET, Version=3.18.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="FreeImageNET">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
     </Reference>
-    <Reference Include="itextsharp, Version=5.5.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+    <Reference Include="itextsharp">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll</HintPath>
     </Reference>
@@ -61,12 +87,58 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheKeys.cs" />
+    <Compile Include="Data\BooleanImporterException.cs" />
+    <Compile Include="Data\CellImporterException.cs" />
+    <Compile Include="Data\ConditionalArrayList.cs" />
+    <Compile Include="Data\ConditionalStringBuilder.cs" />
+    <Compile Include="Data\DateImporterException.cs" />
+    <Compile Include="Data\DecimalImporterException.cs" />
+    <Compile Include="Data\DelimitedFileImporter2.cs" />
+    <Compile Include="Data\DelimitedMode.cs" />
+    <Compile Include="Data\GenericCsvReader2.cs" />
+    <Compile Include="Data\ImporterException.cs" />
+    <Compile Include="Data\IntegerImporterException.cs" />
+    <Compile Include="Data\ObjectNameImporterException.cs" />
+    <Compile Include="Data\StringImporterException.cs" />
+    <Compile Include="Data\TrimOption.cs" />
+    <Compile Include="ExceptionHelper.cs" />
+    <Compile Include="IAppSettingsInternal.cs" />
+    <Compile Include="IObjectCacheRepository.cs" />
+    <Compile Include="Io\FileTypeConfiguration.cs" />
+    <Compile Include="Io\FileTypeIdentifyError.cs" />
+    <Compile Include="Io\FileTypeIdentifyException.cs" />
+    <Compile Include="Io\FileTypeInfo.cs" />
+    <Compile Include="Io\IFileTypeConfiguration.cs" />
+    <Compile Include="Io\IFileTypeIdentifier.cs" />
+    <Compile Include="Io\IFileTypeInfo.cs" />
+    <Compile Include="Io\OutsideInConstants.cs" />
+    <Compile Include="Io\OutsideInFileTypeIdentifierService.cs" />
+    <Compile Include="Media\ByteOrdering.cs" />
+    <Compile Include="Media\FreeImageService.cs" />
+    <Compile Include="Media\IImageConverter.cs" />
+    <Compile Include="Media\IImageValidator.cs" />
+    <Compile Include="Media\IImageFormatIdentifier.cs" />
+    <Compile Include="Media\ImageConstants.cs" />
+    <Compile Include="Media\ImageConversionException.cs" />
+    <Compile Include="Media\ImageConverterService.cs" />
+    <Compile Include="Media\ImageFormat.cs" />
+    <Compile Include="Media\ImageValidationException.cs" />
+    <Compile Include="Media\MultiPagePdfConversionException.cs" />
+    <Compile Include="Media\MultiPageTiffConversionException.cs" />
+    <Compile Include="MemoryCacheRepository.cs" />
+    <Compile Include="Process\EventType2.cs" />
+    <Compile Include="Process\ProcessBase2.cs" />
+    <Compile Include="Process\ProcessPool2.cs" />
+    <Compile Include="RestClient.cs" />
     <Compile Include="AppSettingsDictionary.cs" />
     <Compile Include="AppSettingsConstants.cs" />
     <Compile Include="AppSettingsManager.cs" />
@@ -75,20 +147,12 @@
     <Compile Include="Data\SqlDataView.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="AppSettingAttribute.cs" />
-    <Compile Include="Io\BooleanImporterException.cs" />
-    <Compile Include="Io\CellImporterException.cs" />
-    <Compile Include="Io\ConditionalArrayList.cs" />
-    <Compile Include="Io\ConditionalStringBuilder.cs" />
-    <Compile Include="Io\DateImporterException.cs" />
-    <Compile Include="Io\DecimalImporterException.cs" />
-    <Compile Include="Io\DelimitedFileImporter.cs" />
-    <Compile Include="Io\DelimitedMode.cs" />
-    <Compile Include="Io\GenericCsvReader.cs" />
-    <Compile Include="Io\ImporterException.cs" />
-    <Compile Include="Io\ObjectNameImporterException.cs" />
-    <Compile Include="Io\IntegerImporterException.cs" />
-    <Compile Include="Io\InputStringExceedsFixedLengthException.cs" />
-    <Compile Include="Io\TrimOption.cs" />
+    <Compile Include="HttpServiceException.cs" />
+    <Compile Include="IImportExportCompatibilityCheck.cs" />
+    <Compile Include="RelativityInstanceInfo.cs" />
+    <Compile Include="RelativityNotSupportedException.cs" />
+    <Compile Include="NullableTypesHelper.cs" />
+    <Compile Include="NullArgValidationExtensions.cs" />
     <Compile Include="Process\FieldMappedEventArgs.cs" />
     <Compile Include="Process\CancellationRequestEventArgs.cs" />
     <Compile Include="Process\ErrorReportEventArgs.cs" />
@@ -99,27 +163,54 @@
     <Compile Include="Process\ParentFormClosingEventArgs.cs" />
     <Compile Include="Process\ProcessErrorReport.cs" />
     <Compile Include="Process\ExportErrorEventArgs.cs" />
-    <Compile Include="Process\EventType.cs" />
     <Compile Include="Process\RecordNumberEventArgs.cs" />
     <Compile Include="Process\ShowReportEventArgs.cs" />
+    <Compile Include="SerializationHelper.cs" />
+    <Compile Include="Service\ArtifactType.cs" />
+    <Compile Include="Service\ArtifactTypeHelper.cs" />
+    <Compile Include="Service\CaseInfo.cs" />
+    <Compile Include="Service\ChoiceInfo.cs" />
+    <Compile Include="Service\ClaimsExtensions.cs" />
+    <Compile Include="Service\ColumnSourceType.cs" />
+    <Compile Include="Service\ErrorFileKey.cs" />
+    <Compile Include="Service\ExecutionSource.cs" />
+    <Compile Include="Service\FieldCategory.cs" />
+    <Compile Include="Service\FieldInfoBase.cs" />
+    <Compile Include="Service\FieldType.cs" />
+    <Compile Include="Service\FileType.cs" />
+    <Compile Include="Service\ImportBehaviorChoice.cs" />
+    <Compile Include="Service\ImportOverwriteType.cs" />
+    <Compile Include="Service\ImportStatus.cs" />
+    <Compile Include="Service\ImportStatusHelper.cs" />
+    <Compile Include="Service\ParentReflectionType.cs" />
+    <Compile Include="Service\ProductionDocumentBatesHelper.cs" />
+    <Compile Include="Service\RelativityManagerService.cs" />
+    <Compile Include="Service\RepositoryPathManager.cs" />
+    <Compile Include="Service\ServiceConstants.cs" />
+    <Compile Include="Service\SoapExceptionDetail.cs" />
+    <Compile Include="Service\SqlNameHelper.cs" />
+    <Compile Include="Service\ViewFieldInfo.cs" />
+    <Compile Include="Service\WebApiServiceBase.cs" />
     <Compile Include="StringExtensions.cs" />
-    <Compile Include="TimekeeperEntry.cs" />
-    <Compile Include="Timekeeper.cs" />
+    <Compile Include="ImportExportCompatibilityCheck.cs" />
+    <Compile Include="IApplicationVersionService.cs" />
+    <Compile Include="TempDirectory2.cs" />
+    <Compile Include="Timekeeper2.cs" />
+    <Compile Include="TimekeeperEntry2.cs" />
+    <Compile Include="Transfer\DownloadTapiBridge2.cs" />
+    <Compile Include="Transfer\TapiBridgeBase2.cs" />
+    <Compile Include="Transfer\TapiBridgeFactory.cs" />
+    <Compile Include="Transfer\TapiBridgeParameters2.cs" />
+    <Compile Include="Transfer\UploadTapiBridge2.cs" />
+    <Compile Include="Transfer\UploadTapiBridgeParameters2.cs" />
+    <Compile Include="VersionConstants.cs" />
     <Compile Include="VisualBasicConstants.cs" />
     <Compile Include="CollectionExtensions.cs" />
-    <Compile Include="ConvertToMultiPagePdfException.cs" />
-    <Compile Include="ConvertToMultiPageTiffException.cs" />
-    <Compile Include="ImageConversionService.cs" />
-    <Compile Include="IImageConversionService.cs" />
-    <Compile Include="ImageRollupException.cs" />
     <Compile Include="Io\IoReporterContext.cs" />
-    <Compile Include="NullableTypesHelper.cs" />
     <Compile Include="ImportExportException.cs" />
     <Compile Include="IAppSettings.cs" />
-    <Compile Include="ByteOrdering.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="DictionaryExtensions.cs" />
-    <Compile Include="ImageConstants.cs" />
     <Compile Include="Io\IoWarningType.cs" />
     <Compile Include="Io\DirectoryInfoWrap.cs" />
     <Compile Include="Io\DirectoryWrap.cs" />
@@ -154,20 +245,12 @@
     <Compile Include="Process\StatusBarEventArgs.cs" />
     <Compile Include="Process\ProgressEventArgs.cs" />
     <Compile Include="Process\ProcessEventArgs.cs" />
-    <Compile Include="Process\ProcessPool.cs" />
     <Compile Include="Process\ProcessEventType.cs" />
     <Compile Include="Process\ProcessContext.cs" />
-    <Compile Include="Process\ProcessBase.cs" />
     <Compile Include="Process\IRunnable.cs" />
-    <Compile Include="TempDirectory.cs" />
     <Compile Include="Transfer\ClientChangeReason.cs" />
-    <Compile Include="Transfer\DownloadTapiBridge.cs" />
-    <Compile Include="Transfer\RelativityManagerService.cs" />
     <Compile Include="Transfer\RelativityTransferLog.cs" />
-    <Compile Include="Transfer\TapiBridgeBase.cs" />
     <Compile Include="Transfer\ITapiObjectService.cs" />
-    <Compile Include="Transfer\TapiBridgeFactory.cs" />
-    <Compile Include="Transfer\TapiBridgeParameters.cs" />
     <Compile Include="Transfer\TapiClient.cs" />
     <Compile Include="Transfer\TapiClientEventArgs.cs" />
     <Compile Include="Transfer\TapiConstants.cs" />
@@ -181,9 +264,6 @@
     <Compile Include="Transfer\TapiRequestListener.cs" />
     <Compile Include="Transfer\TapiStatisticsEventArgs.cs" />
     <Compile Include="Transfer\TapiStatisticsListener.cs" />
-    <Compile Include="Transfer\UploadTapiBridge.cs" />
-    <Compile Include="Transfer\UploadTapiBridgeParameters.cs" />
-    <Compile Include="Transfer\WebApiServiceBase.cs" />
     <Compile Include="RelativityLogFactory.cs" />
     <Compile Include="WaitAndRetryPolicy.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
@@ -240,13 +320,6 @@
     <Content Include="oi\unmanaged\wvcore-R1.dll">
       <Paket>True</Paket>
     </Content>
-    <Compile Include="FileIdError.cs" />
-    <Compile Include="ImageFormat.cs" />
-    <Compile Include="FreeImageIdService.cs" />
-    <Compile Include="ImageIdException.cs" />
-    <Compile Include="IImageIdService.cs" />
-    <Compile Include="OutsideInConstants.cs" />
-    <Compile Include="IFileIdService.cs" />
     <Compile Include="Resources\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -255,10 +328,6 @@
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
-    <Compile Include="FileIdException.cs" />
-    <Compile Include="FileIdConfiguration.cs" />
-    <Compile Include="OutsideInFileIdService.cs" />
-    <Compile Include="FileIdInfo.cs" />
     <Compile Include="GlobalSuppressions.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

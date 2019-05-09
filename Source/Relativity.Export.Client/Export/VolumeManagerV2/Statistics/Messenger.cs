@@ -25,7 +25,7 @@
 			if (_exportSettings.ExportImages)
 			{
 				_logger.LogVerbose("Creating image load file.");
-				_status.WriteStatusLine(EventType.Status, "Creating image load file.", true);
+				_status.WriteStatusLine(EventType2.Status, "Creating image load file.", true);
 			}
 		}
 
@@ -34,7 +34,7 @@
 			if (_exportSettings.ExportNative)
 			{
 				_logger.LogVerbose("Creating load file.");
-				_status.WriteStatusLine(EventType.Status, "Creating load file.", true);
+				_status.WriteStatusLine(EventType2.Status, "Creating load file.", true);
 			}
 		}
 
@@ -45,52 +45,52 @@
 			if (mergingImages)
 			{
 				_logger.LogVerbose("Attempting to rollup images.");
-				_status.WriteStatusLine(EventType.Status, "Attempting to rollup images.", true);
+				_status.WriteStatusLine(EventType2.Status, "Attempting to rollup images.", true);
 			}
 		}
 
 		public void PreparingBatchForExport()
 		{
 			_logger.LogVerbose("Preparing batch for export.");
-			_status.WriteStatusLine(EventType.Status, "Preparing batch for export.", true);
+			_status.WriteStatusLine(EventType2.Status, "Preparing batch for export.", true);
 		}
 
 		public void ValidatingBatch()
 		{
 			_logger.LogVerbose("Validating batch after export.");
-			_status.WriteStatusLine(EventType.Status, "Validating batch after export.", true);
+			_status.WriteStatusLine(EventType2.Status, "Validating batch after export.", true);
 		}
 
 		public void RestoringAfterCancel()
 		{
 			_logger.LogVerbose("Export has been canceled. Restoring state from previous batch.");
-			_status.WriteStatusLine(EventType.Status, "Export has been canceled. Restoring state from previous batch.", true);
+			_status.WriteStatusLine(EventType2.Status, "Export has been canceled. Restoring state from previous batch.", true);
 		}
 
 		public void BatchCompleted()
 		{
 			_logger.LogVerbose("Batch completed.");
-			_status.WriteStatusLine(EventType.Status, "Batch completed.", true);
+			_status.WriteStatusLine(EventType2.Status, "Batch completed.", true);
 		}
 
 		public void DownloadingBatch()
 		{
 			_logger.LogVerbose("Downloading files for batch.");
 			_downloadProgress.UpdateDownloadedCount();
-			_status.WriteStatusLine(EventType.Status, "Downloading files for batch.", true);
+			_status.WriteStatusLine(EventType2.Status, "Downloading files for batch.", true);
 		}
 
 		public void FilesDownloadCompleted()
 		{
 			_logger.LogVerbose("Documents for batch downloaded.");
 			_downloadProgress.UpdateDownloadedCount();
-			_status.WriteStatusLine(EventType.Progress, "Documents for batch downloaded.", true);
+			_status.WriteStatusLine(EventType2.Progress, "Documents for batch downloaded.", true);
 		}
 
 		public void StateRestored()
 		{
 			_logger.LogVerbose("State from previous batch restored.");
-			_status.WriteStatusLine(EventType.Status, "State from previous batch restored.", true);
+			_status.WriteStatusLine(EventType2.Status, "State from previous batch restored.", true);
 		}
 	}
 }

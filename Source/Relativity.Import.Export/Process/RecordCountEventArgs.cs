@@ -9,7 +9,7 @@ namespace Relativity.Import.Export.Process
 	using System;
 
 	/// <summary>
-	/// Represents the record count event argument data.
+	/// Represents the record count event argument data. This class cannot be inherited.
 	/// </summary>
 	public sealed class RecordCountEventArgs : EventArgs
 	{

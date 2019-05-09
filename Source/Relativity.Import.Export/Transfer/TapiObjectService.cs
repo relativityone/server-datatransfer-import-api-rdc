@@ -15,21 +15,21 @@ namespace Relativity.Import.Export.Transfer
 	using System.Threading.Tasks;
 
 	using Relativity.Import.Export.Resources;
+	using Relativity.Import.Export.Service;
 	using Relativity.Logging;
-	using Relativity.Transfer;
 
 	/// <summary>
-	/// Represents a class object to provide Transfer API object services to the transfer bridges.
+	/// Represents a class object to provide Transfer API object services to the transfer bridges. This class cannot be inherited.
 	/// </summary>
-	public sealed class TapiObjectService : ITapiObjectService
+	internal sealed class TapiObjectService : ITapiObjectService
 	{
 		/// <summary>
 		/// The singleton instance.
 		/// </summary>
-		private static readonly IFileSystemService Instance = new FileSystemService();
+		private static readonly Relativity.Transfer.IFileSystemService Instance = new Relativity.Transfer.FileSystemService();
 
 		/// <inheritdoc />
-		public IFileSystemService CreateFileSystemService()
+		public Relativity.Transfer.IFileSystemService CreateFileSystemService()
 		{
 			return Instance;
 		}
@@ -63,9 +63,9 @@ namespace Relativity.Import.Export.Transfer
 		/// The Transfer API bridge parameters.
 		/// </param>
 		/// <returns>
-		/// The <see cref="RelativityConnectionInfo"/> instance.
+		/// The <see cref="Relativity.Transfer.RelativityConnectionInfo"/> instance.
 		/// </returns>
-		public RelativityConnectionInfo CreateRelativityConnectionInfo(TapiBridgeParameters parameters)
+		public Relativity.Transfer.RelativityConnectionInfo CreateRelativityConnectionInfo(TapiBridgeParameters2 parameters)
 		{
 			if (parameters == null)
 			{
@@ -92,24 +92,31 @@ namespace Relativity.Import.Export.Transfer
 				throw new ArgumentException("The WebCookieContainer must be non-null.", nameof(parameters));
 			}
 
-			IHttpCredential httpCredential;
-			if (string.Compare(parameters.Credentials.UserName, BearerTokenCredential.OAuth2UserName, StringComparison.OrdinalIgnoreCase) == 0)
+			Relativity.Transfer.IHttpCredential httpCredential;
+			if (string.Compare(parameters.Credentials.UserName, Relativity.Transfer.BearerTokenCredential.OAuth2UserName, StringComparison.OrdinalIgnoreCase) == 0)
 			{
-				httpCredential = new BearerTokenCredential(parameters.Credentials.Password);
+				httpCredential = new Relativity.Transfer.BearerTokenCredential(parameters.Credentials.Password);
 			}
 			else
 			{
-				httpCredential = new BasicAuthenticationCredential(parameters.Credentials.UserName, parameters.Credentials.Password);
+				httpCredential = new Relativity.Transfer.BasicAuthenticationCredential(parameters.Credentials.UserName, parameters.Credentials.Password);
 			}
 
 			// REL-281370: Due to high SOI, this method takes on more responsibility
 			//             than it should but it limits the URL fetch to a single method.
-			RelativityManagerService service = new RelativityManagerService(parameters);
+			RelativityInstanceInfo instanceInfo = new RelativityInstanceInfo
+				                                      {
+					                                      CookieContainer = parameters.WebCookieContainer,
+					                                      Credentials = parameters.Credentials,
+					                                      WebApiServiceUrl = new Uri(parameters.WebServiceUrl),
+				                                      };
+
+			RelativityManagerService service = new RelativityManagerService(instanceInfo);
 			Uri relativityUrl = service.GetRelativityUrl();
 
 			// REL-286484: There are several expectations on a normalized URL - especially extracted text downloads.
 			var host = new Uri(relativityUrl.GetLeftPart(UriPartial.Authority));
-			return new RelativityConnectionInfo(
+			return new Relativity.Transfer.RelativityConnectionInfo(
 				host,
 				httpCredential,
 				parameters.WorkspaceId,
@@ -117,9 +124,9 @@ namespace Relativity.Import.Export.Transfer
 		}
 
 		/// <inheritdoc />
-		public IRelativityTransferHost CreateRelativityTransferHost(RelativityConnectionInfo connectionInfo, ITransferLog log)
+		public Relativity.Transfer.IRelativityTransferHost CreateRelativityTransferHost(Relativity.Transfer.RelativityConnectionInfo connectionInfo, Relativity.Transfer.ITransferLog log)
 		{
-			return new RelativityTransferHost(connectionInfo, log);
+			return new Relativity.Transfer.RelativityTransferHost(connectionInfo, log);
 		}
 
 		/// <inheritdoc />
@@ -132,7 +139,7 @@ namespace Relativity.Import.Export.Transfer
 
 			using (var transferLog = new RelativityTransferLog())
 			{
-				foreach (var clientMetadata in TransferClientHelper.SearchAvailableClients(transferLog))
+				foreach (var clientMetadata in Relativity.Transfer.TransferClientHelper.SearchAvailableClients(transferLog))
 				{
 					if (new Guid(clientMetadata.Id) == clientId)
 					{
@@ -145,7 +152,7 @@ namespace Relativity.Import.Export.Transfer
 		}
 
 		/// <inheritdoc />
-		public Guid GetClientId(TapiBridgeParameters parameters)
+		public Guid GetClientId(TapiBridgeParameters2 parameters)
 		{
 			if (parameters == null)
 			{
@@ -155,15 +162,15 @@ namespace Relativity.Import.Export.Transfer
 			var clientId = Guid.Empty;
 			if (parameters.ForceAsperaClient)
 			{
-				clientId = new Guid(TransferClientConstants.AsperaClientId);
+				clientId = new Guid(Relativity.Transfer.TransferClientConstants.AsperaClientId);
 			}
 			else if (parameters.ForceHttpClient)
 			{
-				clientId = new Guid(TransferClientConstants.HttpClientId);
+				clientId = new Guid(Relativity.Transfer.TransferClientConstants.HttpClientId);
 			}
 			else if (parameters.ForceFileShareClient)
 			{
-				clientId = new Guid(TransferClientConstants.FileShareClientId);
+				clientId = new Guid(Relativity.Transfer.TransferClientConstants.FileShareClientId);
 			}
 
 			return clientId;
@@ -174,13 +181,13 @@ namespace Relativity.Import.Export.Transfer
 		{
 			switch (clientId.ToString("D").ToUpperInvariant())
 			{
-				case TransferClientConstants.AsperaClientId:
+				case Relativity.Transfer.TransferClientConstants.AsperaClientId:
 					return TapiClient.Aspera;
 
-				case TransferClientConstants.FileShareClientId:
+				case Relativity.Transfer.TransferClientConstants.FileShareClientId:
 					return TapiClient.Direct;
 
-				case TransferClientConstants.HttpClientId:
+				case Relativity.Transfer.TransferClientConstants.HttpClientId:
 					return TapiClient.Web;
 
 				default:
@@ -189,26 +196,26 @@ namespace Relativity.Import.Export.Transfer
 		}
 
 		/// <inheritdoc />
-		public async Task<string> GetWorkspaceClientDisplayNameAsync(TapiBridgeParameters parameters)
+		public async Task<string> GetWorkspaceClientDisplayNameAsync(TapiBridgeParameters2 parameters)
 		{
-			ITransferClient transferClient = await this.GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
+			Relativity.Transfer.ITransferClient transferClient = await this.GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
 			return transferClient.DisplayName;
 		}
 
 		/// <inheritdoc />
-		public async Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters parameters)
+		public async Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters2 parameters)
 		{
 			if (parameters == null)
 			{
 				throw new ArgumentNullException(nameof(parameters));
 			}
 
-			ITransferClient transferClient = await this.GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
+			Relativity.Transfer.ITransferClient transferClient = await this.GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
 			return transferClient.Id;
 		}
 
 		/// <inheritdoc />
-		public void SetTapiClient(TapiBridgeParameters parameters, TapiClient targetClient)
+		public void SetTapiClient(TapiBridgeParameters2 parameters, TapiClient targetClient)
 		{
 			if (parameters == null)
 			{
@@ -242,7 +249,7 @@ namespace Relativity.Import.Export.Transfer
 			using (var transferLog = new RelativityTransferLog())
 			{
 				var sb = new StringBuilder();
-				foreach (var clientMetadata in TransferClientHelper.SearchAvailableClients(transferLog)
+				foreach (var clientMetadata in Relativity.Transfer.TransferClientHelper.SearchAvailableClients(transferLog)
 					.OrderBy(x => x.DisplayName))
 				{
 					if (sb.Length > 0)
@@ -267,11 +274,11 @@ namespace Relativity.Import.Export.Transfer
 		/// The bridge connection parameters.
 		/// </param>
 		/// <returns>
-		/// The <see cref="ITransferClient"/> instance.
+		/// The <see cref="Relativity.Transfer.ITransferClient"/> instance.
 		/// </returns>
-		private async Task<ITransferClient> GetWorkspaceClientAsync(TapiBridgeParameters parameters)
+		private async Task<Relativity.Transfer.ITransferClient> GetWorkspaceClientAsync(TapiBridgeParameters2 parameters)
 		{
-			var configuration = new ClientConfiguration
+			var configuration = new Relativity.Transfer.ClientConfiguration
 			{
 				CookieContainer = parameters.WebCookieContainer,
 				ClientId = this.GetClientId(parameters),
@@ -281,7 +288,7 @@ namespace Relativity.Import.Export.Transfer
 			{
 				var connectionInfo = this.CreateRelativityConnectionInfo(parameters);
 				using (var transferLog = new RelativityTransferLog())
-				using (var transferHost = new RelativityTransferHost(connectionInfo, transferLog))
+				using (var transferHost = new Relativity.Transfer.RelativityTransferHost(connectionInfo, transferLog))
 				{
 					if (configuration.ClientId != Guid.Empty)
 					{
@@ -296,8 +303,8 @@ namespace Relativity.Import.Export.Transfer
 					}
 
 					var clientStrategy = string.IsNullOrEmpty(parameters.ForceClientCandidates)
-																	 ? new TransferClientStrategy()
-																	 : new TransferClientStrategy(parameters.ForceClientCandidates);
+																	 ? new Relativity.Transfer.TransferClientStrategy()
+																	 : new Relativity.Transfer.TransferClientStrategy(parameters.ForceClientCandidates);
 					using (var forcedClient = await transferHost.CreateClientAsync(configuration, clientStrategy)
 																				.ConfigureAwait(false))
 					{

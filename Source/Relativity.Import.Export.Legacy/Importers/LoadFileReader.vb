@@ -3,11 +3,11 @@ Imports kCura.WinEDDS.Api
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Data
 Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Namespace kCura.WinEDDS
 	Public Class LoadFileReader
-		Inherits DelimitedFileImporter
+		Inherits DelimitedFileImporter2
 		Implements IArtifactReader
 
 		Public Const MAXIMUM_COLUMN_NAME_LENGTH As Int32 = 500
@@ -317,7 +317,7 @@ Namespace kCura.WinEDDS
 
 		Public Function ManageErrorRecords(ByVal errorMessageFileLocation As String, ByVal prePushErrorLineNumbersFileName As String) As String Implements IArtifactReader.ManageErrorRecords
 			RaiseEvent StatusMessage("Generating error line file.")
-			Dim allErrors As New GenericCsvReader(errorMessageFileLocation, System.Text.Encoding.Default, True)
+			Dim allErrors As New GenericCsvReader2(errorMessageFileLocation, System.Text.Encoding.Default, True)
 			Dim clientErrors As System.IO.StreamReader
 			'Me.Reader.BaseStream.Seek(0, IO.SeekOrigin.Begin)
 			Me.Reader = New System.IO.StreamReader(_settings.FilePath, _sourceFileEncoding, True)

@@ -9,7 +9,7 @@ namespace Relativity.Import.Export.Process
 	using System;
 
 	/// <summary>
-	/// Represents the status bar event argument data.
+	/// Represents the status bar event argument data. This class cannot be inherited.
 	/// </summary>
 	[Serializable]
 	public sealed class StatusBarEventArgs : EventArgs

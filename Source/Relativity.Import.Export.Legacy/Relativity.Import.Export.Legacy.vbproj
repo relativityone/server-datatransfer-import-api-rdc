@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -103,7 +103,45 @@
   <PropertyGroup>
     <OptionInfer>Off</OptionInfer>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>EnableInjections</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <DocumentationFile>bin\kCura.WinEDDS.xml</DocumentationFile>
+    <WarningLevel>1</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>40000,40008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>EnableInjections</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <DocumentationFile>bin\kCura.WinEDDS.xml</DocumentationFile>
+    <WarningLevel>1</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>40000,40008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="kCura.Relativity.Client">
+      <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.Interfaces">
+      <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -116,6 +154,7 @@
       <Name>System.Data</Name>
     </Reference>
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap">
       <Name>System.Runtime.Serialization.Formatters.Soap</Name>
@@ -152,8 +191,7 @@
     <Compile Include="API\DataSourcePrepEventArgs.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="API\ExtendedFileIdData.vb" />
-    <Compile Include="API\FileIDData.vb" />
+    <Compile Include="API\ExtendedFileTypeInfo.vb" />
     <Compile Include="API\IArtifactReader.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -314,9 +352,6 @@
     <Compile Include="FileObjects\LoadFile.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="FileUploader.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Helpers\CaseInsensitiveFilePathHelper.vb" />
     <Compile Include="Helpers\CaseSensitiveFilePathHelper.vb" />
     <Compile Include="Helpers\ConfigurableFilePathHelper.vb" />
@@ -382,7 +417,13 @@
     <Compile Include="ImportExtension\ImageImport\ImageDataTableReader.vb" />
     <Compile Include="ImportExtension\NativeFileValidatedArtifactFieldCollection.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="Resources\Strings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
     <Compile Include="Service\IBulkImportManager.vb" />
+    <Compile Include="Service\ApplicationVersionService.vb" />
     <Compile Include="TempFileConstants.vb" />
     <Compile Include="TempFileBuilder.vb" />
     <Compile Include="Importers\TimeKeeper\DefaultTimeKeeperManager.vb" />
@@ -485,9 +526,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Service\FileIO.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Service\FileManager.vb">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Service\FolderManager.vb">
@@ -1107,14 +1145,18 @@
     <Compile Include="FileNaming\CustomFileNaming\ValueDescriptorPart.vb" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Relativity.Import.Export.Services.Interfaces\Relativity.Import.Export.Services.Interfaces.csproj">
-      <Project>{b2a59009-0da3-42d4-ae60-d2e964d8d165}</Project>
-      <Name>Relativity.Import.Export.Services.Interfaces</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
       <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
       <Name>Relativity.Import.Export</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Strings.resx">
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.vb</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <Choose>
@@ -1166,9 +1208,6 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

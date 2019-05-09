@@ -1,6 +1,6 @@
 ﻿Imports System.Net
 Imports System.Collections.Generic
-Imports kCura.WinEDDS
+Imports System.Threading
 Imports Relativity.Import.Export
 
 Friend Class ImportCredentialManager
@@ -53,23 +53,25 @@ Friend Class ImportCredentialManager
 			Else
 
 				' 2. credential in cache not found, so actually log in and create credentials
-
+				Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
+				Dim token As CancellationToken = CancellationToken.None
 				Dim creds As NetworkCredential = Nothing
 				Dim credsTapi As NetworkCredential = Nothing
 				Dim cookieMonster As New CookieContainer
 
 				Try
-					If String.IsNullOrEmpty(UserName) Then  ' use winAuth
-						creds = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster)
-						credsTapi = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuthTapi()
+					If String.IsNullOrEmpty(UserName) Then
+						creds = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster, WebServiceURL, token, logger)
+						credsTapi = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuthTapi(cookieMonster, WebServiceURL, token, logger)
 					Else
-						' use supplied credentials
-						creds = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(UserName.Trim(), Password.Trim(), cookieMonster)
+						creds = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(UserName.Trim(), Password.Trim(), cookieMonster, WebServiceURL, token, logger)
 						credsTapi = creds
 					End If
 				Catch ex As kCura.WinEDDS.Exceptions.CredentialsNotSupportedException
 					Throw
 				Catch ex As kCura.WinEDDS.Exceptions.InvalidLoginException
+					Throw
+				Catch ex As RelativityNotSupportedException
 					Throw
 				Catch ex As Exception
 					Throw New System.Exception("Unknown failure during authentication", ex)

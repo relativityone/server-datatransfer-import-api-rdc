@@ -13,7 +13,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Defines typed IEnumerable extension methods.
 	/// </summary>
-	public static class CollectionExtensions
+	internal static class CollectionExtensions
 	{
 		/// <summary>
 		/// Transforms a sequence of values to a comma-delimited string.

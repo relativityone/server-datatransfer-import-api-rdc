@@ -60,7 +60,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 
 
 		Private Class MockExportFilterSelectForm
-			Inherits kCura.EDDS.WinForm.ExportFilterSelectForm
+			Inherits Relativity.Desktop.Client.ExportFilterSelectForm
 
 			Public ReadOnly Property OkButtonEnabled As Boolean
 				Get

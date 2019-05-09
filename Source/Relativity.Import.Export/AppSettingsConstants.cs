@@ -9,7 +9,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Defines all application settings constant keys and default values.
 	/// </summary>
-	public static class AppSettingsConstants
+	internal static class AppSettingsConstants
 	{
 #pragma warning disable SA1600
 		// All configuration sections go here.
@@ -27,6 +27,7 @@ namespace Relativity.Import.Export
 
 		// All default values go here.
 		public const string ApplicationNameKey = "ApplicationName";
+		public const string ApplicationNameDefaultValue = "";
 		public const string AuditLevelKey = "AuditLevel";
 		public const string AuditLevelDefaultValue = "FullAudit";
 		public const string CreateErrorForInvalidDateKey = "CreateErrorForInvalidDate";
@@ -53,8 +54,8 @@ namespace Relativity.Import.Export
 		public const bool EnableCaseSensitiveSearchOnImportDefaultValue = true;
 		public const string EnableSingleModeImportKey = "EnableSingleModeImport";
 		public const bool EnableSingleModeImportDefaultValue = false;
-		public const string EnforceVersionCompatibilityCheckKey = "EnforceVersionCompatibilityCheck";
-		public const bool EnforceVersionCompatibilityCheckDefaultValue = false;
+		public const string EnforceVersionCompatibilityCheckKey = "40B88CBC-9435-4A91-8F65-48B52C51B3FD";
+		public const bool EnforceVersionCompatibilityCheckDefaultValue = true;
 		public const string ExportBatchSizeKey = "ExportBatchSize";
 		public const int ExportBatchSizeDefaultValue = 1000;
 		public const string ExportErrorNumberOfRetriesKey = "ExportErrorNumberOfRetries";

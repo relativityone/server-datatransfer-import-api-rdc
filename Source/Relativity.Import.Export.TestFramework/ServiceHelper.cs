@@ -41,9 +41,6 @@ namespace Relativity.Import.Export.TestFramework
 				throw new ArgumentNullException(nameof(parameters));
 			}
 
-			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls
-			                                                                            | SecurityProtocolType.Tls11
-			                                                                            | SecurityProtocolType.Tls12;
 			Credentials credentials = new UsernamePasswordCredentials(parameters.RelativityUserName, parameters.RelativityPassword);
 			ServiceFactorySettings serviceFactorySettings = new ServiceFactorySettings(
 				                                                parameters.RelativityServicesUrl,

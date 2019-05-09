@@ -8,9 +8,9 @@
 
 	public class TapiBridgeWrapper : ITapiBridgeWrapper
 	{
-		private readonly TapiBridgeBase _tapiBridge;
+		private readonly TapiBridgeBase2 _tapiBridge;
 
-		public TapiBridgeWrapper(TapiBridgeBase tapiBridge)
+		public TapiBridgeWrapper(TapiBridgeBase2 tapiBridge)
 		{
 			_tapiBridge = tapiBridge;
 		}

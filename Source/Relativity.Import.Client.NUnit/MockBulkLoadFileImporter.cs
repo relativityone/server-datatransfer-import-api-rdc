@@ -16,7 +16,7 @@ namespace Relativity.Import.Client.NUnit
 	using Relativity.Import.Export.Process;
 	using Relativity.Logging;
 
-	using ExecutionSource = Relativity.Import.Export.Services.ExecutionSource;
+	using ExecutionSource = Relativity.Import.Export.Service.ExecutionSource;
 
 	/// <summary>
 	/// Represents a mock class object for <see cref="BulkLoadFileImporter"/>.

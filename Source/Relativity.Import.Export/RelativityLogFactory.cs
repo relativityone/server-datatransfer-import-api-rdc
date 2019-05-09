@@ -14,7 +14,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Represents a wait and retry policy class objects with a default back-off time strategy.
 	/// </summary>
-	public static class RelativityLogFactory
+	internal static class RelativityLogFactory
 	{
 		/// <summary>
 		/// The default logging system.

@@ -1,5 +1,5 @@
 ﻿Imports System
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Public Class AboutForm
 	Inherits System.Windows.Forms.Form
@@ -26,8 +26,18 @@ Public Class AboutForm
 		End If
 
 		sb.Append(String.Format("Relativity Desktop Client {0} {1}", bitness, nl))
-		sb.Append("Version " & System.Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString & nl)
-		sb.Append(Constants.LICENSE_AGREEMENT_TEXT & nl)
+		Dim version As System.Version = Relativity.Desktop.Client.Application.GetRelativityBuildVersion()
+		If (Not version Is Nothing) Then
+			' Prefer displaying the Relativity version...
+			sb.Append($"Version {version.ToString()}" & nl)
+		Else
+			' Otherwise, use the assembly version for stand-alone installations.
+			version = Relativity.Desktop.Client.Application.GetAssemblyVersion()
+			sb.Append($"Version {version.ToString()} (stand-alone)" & nl)
+		End If
+
+		Const LicenseAgreement As String = "The programs included herein are subject to a restricted use license and can only be used in conjunction with this application."
+		sb.Append(LicenseAgreement & nl)
 		sb.Append("Copyright © " & System.DateTime.Now.Year & " Relativity ODA LLC")
 		Me.MainTextLabel.Text = sb.ToString()
 

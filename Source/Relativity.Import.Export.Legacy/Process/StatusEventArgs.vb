@@ -5,7 +5,7 @@ Namespace kCura.WinEDDS
         Private _currentRecordIndex As Int64
         Private _totalRecords As Int64
         Private _message As String
-        Private _eventType As EventType
+        Private _eventType As EventType2
         Private _countsTowardsTotal As Boolean
         Private _additionalInfo As Object
         Private _statistics As Statistics
@@ -28,7 +28,7 @@ Namespace kCura.WinEDDS
             End Get
         End Property
 
-        Public ReadOnly Property EventType() As EventType
+        Public ReadOnly Property EventType() As EventType2
             Get
                 Return _eventType
             End Get
@@ -52,7 +52,7 @@ Namespace kCura.WinEDDS
             End Get
         End Property
 
-        Public Sub New(ByVal et As EventType, ByVal recordNumber As Int64, ByVal totalRecords As Int64, ByVal message As String, ByVal countsTowardsTotal As Boolean, ByVal additionalInfo As Object, ByVal statistics As Statistics)
+        Public Sub New(ByVal et As EventType2, ByVal recordNumber As Int64, ByVal totalRecords As Int64, ByVal message As String, ByVal countsTowardsTotal As Boolean, ByVal additionalInfo As Object, ByVal statistics As Statistics)
             _eventType = et
             _currentRecordIndex = recordNumber
             _totalRecords = totalRecords
@@ -62,7 +62,7 @@ Namespace kCura.WinEDDS
             _statistics = statistics
         End Sub
 
-        Public Sub New(ByVal et As EventType, ByVal recordNumber As Int64, ByVal totalRecords As Int64, ByVal message As String, ByVal additionalInfo As Object, ByVal statistics As Statistics)
+        Public Sub New(ByVal et As EventType2, ByVal recordNumber As Int64, ByVal totalRecords As Int64, ByVal message As String, ByVal additionalInfo As Object, ByVal statistics As Statistics)
             Me.New(et, recordNumber, totalRecords, message, True, additionalInfo, statistics)
         End Sub
     End Class

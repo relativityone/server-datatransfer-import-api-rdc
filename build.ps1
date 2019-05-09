@@ -69,6 +69,12 @@ An optional test environment that maps to a test parameters JSON file.
 
 .PARAMETER TestVMName
 The optional TestVM used to execute all integration tests. This is only relevant for the IntegrationTests task.
+
+.PARAMETER PackageTemplateRegex
+The optional regular expression used to determine which package templates to build.
+
+.PARAMETER ILMerge
+The optional parameter to apply ILMerge configurations to the build.
 #>
 
 #Requires -Version 5.0
@@ -102,7 +108,11 @@ param(
     [ValidateSet("hyperv","e2e")]
     [String]$TestEnvironment,
     [Parameter()]
-    [String]$TestVMName
+    [String]$TestVMName,
+    [Parameter()]
+    [String]$PackageTemplateRegex = "paket.template.*$",
+    [Parameter()]
+    [Switch]$ILMerge
 )
 
 $BaseDir = $PSScriptRoot
@@ -171,6 +181,8 @@ $Params = @{
         TestParametersFile = $TestParametersFile
         TestEnvironment = $TestEnvironment
         TestVMName = $TestVMName
+        PackageTemplateRegex = $PackageTemplateRegex
+        ILMerge = $ILMerge
     }
 
     Verbose = $VerbosePreference

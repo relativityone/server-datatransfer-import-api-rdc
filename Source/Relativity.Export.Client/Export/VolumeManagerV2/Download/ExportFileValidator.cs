@@ -32,7 +32,7 @@
 				{
 					_logger.LogVerbose($"Overwriting document {destinationLocation}. Removing already existing file.");
 					_fileWrapper.Delete(destinationLocation);
-					_status.WriteStatusLine(EventType.Status, warningUserMessage, false);
+					_status.WriteStatusLine(EventType2.Status, warningUserMessage, false);
 					return true;
 				}
 				else
@@ -48,7 +48,7 @@
 				if (_exportSettings.Overwrite)
 				{
 					_logger.LogVerbose($"Document {destinationLocation} already exists in current export requests for batch. Skipping file.");
-					_status.WriteStatusLine(EventType.Status, warningUserMessage, false);
+					_status.WriteStatusLine(EventType2.Status, warningUserMessage, false);
 				}
 				else
 				{

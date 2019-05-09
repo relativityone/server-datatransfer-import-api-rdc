@@ -6,7 +6,7 @@
 	using global::Relativity.Import.Export;
 	using global::Relativity.Logging;
 	using global::Relativity.Logging.Factory;
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 
 	public class LoggerFactory
 	{

@@ -1,6 +1,6 @@
 Imports kCura.WinEDDS.Service.Export
 Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Services
+Imports Relativity.Import.Export.Service
 
 Namespace kCura.WinEDDS.Service
 	Public Class CaseManager
@@ -8,13 +8,16 @@ Namespace kCura.WinEDDS.Service
         Implements ICaseManager
 
         Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-			MyBase.New()
-
-			Me.Credentials = credentials
-			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}CaseManager.asmx", AppSettings.Instance.WebApiServiceUrl)
-			Me.Timeout = Settings.DefaultTimeOut
+	        Me.New(credentials, cookieContainer, AppSettings.Instance.WebApiServiceUrl, Settings.DefaultTimeOut)
 		End Sub
+
+        Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webApiServiceUrl As String, ByVal webApiOperationTimeout As Int32)
+	        MyBase.New()
+	        Me.Credentials = credentials
+	        Me.CookieContainer = cookieContainer
+	        Me.Url = String.Format("{0}CaseManager.asmx", webApiServiceUrl)
+	        Me.Timeout = webApiOperationTimeout
+        End Sub
 
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
 			Dim wr As System.Net.HttpWebRequest = DirectCast(MyBase.GetWebRequest(uri), System.Net.HttpWebRequest)

@@ -5,9 +5,9 @@ Namespace kCura.WinEDDS
 	Public Class DefaultTimerKeeper
 		Inherits ImportTimeKeeperBase
 
-		Private ReadOnly _timeKeeper As Timekeeper
+		Private ReadOnly _timeKeeper As Timekeeper2
 
-		Public Sub New(timeKeeper As Timekeeper, eventKey As String)
+		Public Sub New(timeKeeper As Timekeeper2, eventKey As String)
 			MyBase.New(eventKey)
 			_timeKeeper = timeKeeper
 			_timeKeeper.MarkStart(EventKey)

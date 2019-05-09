@@ -17,21 +17,6 @@ namespace Relativity.Import.Export.Io
 	internal static class RetryExceptionHelper
 	{
 		/// <summary>
-		/// The handle disk full HResult value.
-		/// </summary>
-		public const int HandleDiskFullHResult = unchecked((int)0x80070027);
-
-		/// <summary>
-		/// The disk full HResult value.
-		/// </summary>
-		public const int DiskFullHResultHResult = unchecked((int)0x80070070);
-
-		/// <summary>
-		/// The illegal characters in path constant message.
-		/// </summary>
-		public const string IllegalCharactersInPathMessage = "Illegal characters in path.";
-
-		/// <summary>
 		/// Creates a retry predicate that uses the specified options and exception to determine whether to retry the operation.
 		/// </summary>
 		/// <param name="options">
@@ -73,7 +58,7 @@ namespace Relativity.Import.Export.Io
 				return options.HasFlag(RetryOptions.Permissions);
 			}
 
-			if (exception is FileInfoInvalidPathException || IsIllegalCharactersInPathException(exception))
+			if (exception is FileInfoInvalidPathException || ExceptionHelper.IsIllegalCharactersInPathException(exception))
 			{
 				// This is not configurable because it can never succeed.
 				return false;
@@ -95,7 +80,7 @@ namespace Relativity.Import.Export.Io
 				return false;
 			}
 
-			if (IsOutOfDiskSpaceException(exception))
+			if (ExceptionHelper.IsOutOfDiskSpaceException(exception))
 			{
 				return options.HasFlag(RetryOptions.DiskFull);
 			}
@@ -106,59 +91,6 @@ namespace Relativity.Import.Export.Io
 			}
 
 			return false;
-		}
-
-		/// <summary>
-		/// Determines whether the specified exception is due to running out of disk space.
-		/// </summary>
-		/// <param name="exception">
-		/// The exception.
-		/// </param>
-		/// <returns>
-		/// <see langword="true" /> if the exception is due to running out of disk space; otherwise, <see langword="false" />.
-		/// </returns>
-		/// <exception cref="ArgumentNullException">
-		/// Thrown when <paramref name="exception"/> is <see langword="null" />.
-		/// </exception>
-		public static bool IsOutOfDiskSpaceException(Exception exception)
-		{
-			if (exception == null)
-			{
-				throw new ArgumentNullException(nameof(exception));
-			}
-
-			bool ioException = exception is System.IO.IOException;
-			if (!ioException)
-			{
-				return false;
-			}
-
-			// Retry all other I/O errors except the disk-full scenario.
-			const int HandleDiskFull = unchecked((int)0x80070027);
-			const int DiskFullHResult = unchecked((int)0x80070070);
-			return exception.HResult == HandleDiskFull || exception.HResult == DiskFullHResult;
-		}
-
-		/// <summary>
-		/// Determines whether the specified exception is due to illegal characters in the path.
-		/// </summary>
-		/// <param name="exception">
-		/// The exception.
-		/// </param>
-		/// <returns>
-		/// <see langword="true" /> if the exception is is due to illegal characters in the path; otherwise, <see langword="false" />.
-		/// </returns>
-		/// <exception cref="ArgumentNullException">
-		/// Thrown when <paramref name="exception"/> is <see langword="null" />.
-		/// </exception>
-		public static bool IsIllegalCharactersInPathException(Exception exception)
-		{
-			if (exception == null)
-			{
-				throw new ArgumentNullException(nameof(exception));
-			}
-
-			return exception is ArgumentException && exception.Message.Contains(IllegalCharactersInPathMessage);
 		}
 	}
 }

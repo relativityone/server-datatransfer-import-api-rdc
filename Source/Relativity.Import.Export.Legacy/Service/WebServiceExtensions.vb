@@ -1,64 +1,65 @@
+Imports System.Web.Services.Protocols
 Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS.Service
-    Public Module WebServiceExtensions
+	Public Module WebServiceExtensions
 		Private _logger As Global.Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
 
 		<System.Runtime.CompilerServices.Extension>
-        Public Function RetryOnReLoginException(Of T)(ByVal input As System.Web.Services.Protocols.SoapHttpClientProtocol, serviceCall As Func(Of T), Optional ByVal retryOnFailure As Boolean = True) As T
-            Dim tries As Int32 = 0
-            While tries < AppSettings.Instance.MaxReloginTries
-                tries += 1
-                Try
-                    Return serviceCall()
-                Catch ex As System.Exception
-                    LogFailedServiceCall(ex, tries, retryOnFailure)
+		Public Function RetryOnReLoginException(Of T)(ByVal input As System.Web.Services.Protocols.SoapHttpClientProtocol, serviceCall As Func(Of T), Optional ByVal retryOnFailure As Boolean = True) As T
+			Dim tries As Int32 = 0
+			While tries < AppSettings.Instance.MaxReloginTries
+				tries += 1
+				Try
+					Return serviceCall()
+				Catch ex As System.Exception
+					LogFailedServiceCall(ex, tries, retryOnFailure)
 
-                    If retryOnFailure AndAlso TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
-                        LogAttemptReLogin(ex)
+					If retryOnFailure AndAlso TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
+						LogAttemptReLogin(ex)
 
-                        Try
-                            Helper.AttemptReLogin(input.Credentials, input.CookieContainer, tries, False)
-                        Catch loginEx As System.Exception
-                            LogFailedAttemptRelogin(loginEx)
-                        End Try
-                    Else
-                        LogFailedExceptionCheck(ex)
-                        Throw
-                    End If
-                End Try
-            End While
-            Return Nothing
-        End Function
+						Try
+							Helper.AttemptReLogin(input.Credentials, input.CookieContainer, tries, False)
+						Catch loginEx As System.Exception
+							LogFailedAttemptReLogin(loginEx)
+						End Try
+					Else
+						LogFailedExceptionCheck(ex)
+						Throw
+					End If
+				End Try
+			End While
+			Return Nothing
+		End Function
 
-        <System.Runtime.CompilerServices.Extension>
-        Public Sub RetryOnReLoginException(ByVal input As System.Web.Services.Protocols.SoapHttpClientProtocol, serviceCall As Action, Optional ByVal retryOnFailure As Boolean = True)
-            Dim tries As Int32 = 0
-            While tries < AppSettings.Instance.MaxReloginTries
-                tries += 1
-                Try
-                    serviceCall()
-                    Exit Sub
-                Catch ex As System.Exception
-                    LogFailedServiceCall(ex, tries, retryOnFailure)
+		<System.Runtime.CompilerServices.Extension>
+		Public Sub RetryOnReLoginException(ByVal input As System.Web.Services.Protocols.SoapHttpClientProtocol, serviceCall As Action, Optional ByVal retryOnFailure As Boolean = True)
+			Dim tries As Int32 = 0
+			While tries < AppSettings.Instance.MaxReloginTries
+				tries += 1
+				Try
+					serviceCall()
+					Exit Sub
+				Catch ex As System.Exception
+					LogFailedServiceCall(ex, tries, retryOnFailure)
 
-                    If retryOnFailure AndAlso TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
-                        LogAttemptReLogin(ex)
+					If retryOnFailure AndAlso TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
+						LogAttemptReLogin(ex)
 
-                        Try
-                            Helper.AttemptReLogin(input.Credentials, input.CookieContainer, tries, False)
-                        Catch loginEx As System.Exception
-                            LogFailedAttemptRelogin(loginEx)
-                        End Try
-                    Else
-                        LogFailedExceptionCheck(ex)
-                        Throw
-                    End If
-                End Try
-            End While
-        End Sub
+						Try
+							Helper.AttemptReLogin(input.Credentials, input.CookieContainer, tries, False)
+						Catch loginEx As System.Exception
+							LogFailedAttemptReLogin(loginEx)
+						End Try
+					Else
+						LogFailedExceptionCheck(ex)
+						Throw
+					End If
+				End Try
+			End While
+		End Sub
 
-        Private Sub LogFailedServiceCall(exception As Exception, tries As Int32, retryOnFailure As Boolean)
+		Private Sub LogFailedServiceCall(exception As Exception, tries As Int32, retryOnFailure As Boolean)
             Dim maxRetries As Int32 = AppSettings.Instance.MaxReloginTries
             Dim token As String = kCura.WinEDDS.Service.Settings.AuthenticationToken
             Dim message As String = "An error occurred when retrying on a re-login exception"

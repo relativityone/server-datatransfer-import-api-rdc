@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents <see cref="UploadTapiBridge"/> tests.
+//   Represents <see cref="UploadTapiBridge2"/> tests.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 	using Relativity.Testing.Identification;
 
 	/// <summary>
-	/// Represents <see cref="UploadTapiBridge"/> tests.
+	/// Represents <see cref="UploadTapiBridge2"/> tests.
 	/// </summary>
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
@@ -30,9 +30,9 @@ namespace Relativity.Import.Export.NUnit.Integration
 		Justification = "The test class handles the disposal.")]
 	public class UploadTapiBridgeTests : TapiBridgeTestBase
 	{
-		private UploadTapiBridge tapiBridge;
+		private UploadTapiBridge2 tapiBridge;
 
-		protected override TapiBridgeBase TapiBridge => this.tapiBridge;
+		protected override TapiBridgeBase2 TapiBridge => this.tapiBridge;
 
 		[IdentifiedTestCase("3b1d585f-a2ab-4a30-84ce-d0816e088333", TapiClient.None, false)]
 		[IdentifiedTestCase("49c40e14-0fe6-429b-9690-63438d1c6a2e", TapiClient.Aspera, true)]
@@ -64,7 +64,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 		protected override void CreateTapiBridge()
 		{
-			var parameters = new UploadTapiBridgeParameters
+			var parameters = new UploadTapiBridgeParameters2
 			{
 				Credentials =
 										 new NetworkCredential(
@@ -83,7 +83,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 			};
 
 			this.SetupTapiBridgeParameters(parameters);
-			this.tapiBridge = new UploadTapiBridge(parameters, this.TransferLog, CancellationToken.None);
+			this.tapiBridge = new UploadTapiBridge2(parameters, this.TransferLog, CancellationToken.None);
 		}
 
 		private void WhenExecutingTheJob()

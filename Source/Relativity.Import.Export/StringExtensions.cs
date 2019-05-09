@@ -12,7 +12,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Defines static <see cref="string"/> extension methods.
 	/// </summary>
-	public static class StringExtensions
+	internal static class StringExtensions
 	{
 		/// <summary>
 		/// Converts the input string to replace the system newline characters with the provided new line proxy; doubles any existing bound strings in the input.
@@ -82,6 +82,95 @@ namespace Relativity.Import.Export
 		public static string ToSqlFriendlyName(this string input)
 		{
 			return Regex.Replace(input ?? string.Empty, "[\\W]+", string.Empty);
+		}
+
+		/// <summary>
+		/// Appends a trailing slash to the URL string.
+		/// </summary>
+		/// <param name="url">
+		/// The URL to append.
+		/// </param>
+		/// <returns>
+		/// The modified URL.
+		/// </returns>
+		public static string AppendTrailingSlashToUrl(this string url)
+		{
+			// Intentionally not throwing and always return a non-null value.
+			if (string.IsNullOrWhiteSpace(url))
+			{
+				return string.Empty;
+			}
+
+			if (url.LastIndexOf('/') != url.Length - 1)
+			{
+				url += '/';
+			}
+
+			return url;
+		}
+
+		/// <summary>
+		/// Trims the leading slash from the URL string.
+		/// </summary>
+		/// <param name="url">
+		/// The URL to trim.
+		/// </param>
+		/// <returns>
+		/// The modified URL.
+		/// </returns>
+		public static string TrimLeadingSlashFromUrl(this string url)
+		{
+			// Intentionally not throwing and always return a non-null value.
+			if (string.IsNullOrWhiteSpace(url))
+			{
+				return string.Empty;
+			}
+
+			return url.TrimStart('/', '\\');
+		}
+
+		/// <summary>
+		/// Trims a trailing slash from the URL string.
+		/// </summary>
+		/// <param name="url">
+		/// The URL to trim.
+		/// </param>
+		/// <returns>
+		/// The modified URL.
+		/// </returns>
+		public static string TrimTrailingSlashFromUrl(this string url)
+		{
+			// Intentionally not throwing and always return a non-null value.
+			if (string.IsNullOrWhiteSpace(url))
+			{
+				return string.Empty;
+			}
+
+			return url.TrimEnd('/', '\\');
+		}
+
+		/// <summary>
+		/// Safely combines the two URL values into a new URL.
+		/// </summary>
+		/// <param name="url">
+		/// The first URL.
+		/// </param>
+		/// <param name="value">
+		/// The second URL.
+		/// </param>
+		/// <returns>
+		/// The combined URL.
+		/// </returns>
+		public static string CombineUrls(this string url, string value)
+		{
+			// Intentionally not throwing and always return a non-null value.
+			if (string.IsNullOrWhiteSpace(url))
+			{
+				return string.Empty;
+			}
+
+			url = url.TrimTrailingSlashFromUrl().AppendTrailingSlashToUrl() + value.TrimLeadingSlashFromUrl();
+			return url;
 		}
 	}
 }

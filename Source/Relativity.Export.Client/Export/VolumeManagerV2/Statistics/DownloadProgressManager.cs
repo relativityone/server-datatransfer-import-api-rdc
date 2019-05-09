@@ -168,7 +168,7 @@
 					suffixMessage = $" (line number: {lineNumber})";
 				}
 
-				_status.WriteStatusLine(EventType.Progress,
+				_status.WriteStatusLine(EventType2.Progress,
 					$"Document {native.Artifact.IdentifierValue} downloaded{suffixMessage}.", false);
 			}
 		}

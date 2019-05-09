@@ -1,7 +1,4 @@
-﻿Imports Relativity.Desktop.Client.Legacy.Controls
-Imports Relativity.Import.Export.Services
-
-Namespace Relativity.Desktop.Client
+﻿Namespace Relativity.Desktop.Client
 	Public Class TextPrecedenceForm
 		Friend WithEvents _longTextFieldsTwoListBox As TwoListBox
 		Friend WithEvents _availableLongTextFieldsLabel As System.Windows.Forms.Label

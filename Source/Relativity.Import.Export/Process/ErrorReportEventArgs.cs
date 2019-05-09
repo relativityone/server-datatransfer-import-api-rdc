@@ -10,7 +10,7 @@ namespace Relativity.Import.Export.Process
 	using System.Collections;
 
 	/// <summary>
-	/// Represents the error report event argument data.
+	/// Represents the error report event argument data. This class cannot be inherited.
 	/// </summary>
 	[Serializable]
 	public sealed class ErrorReportEventArgs : EventArgs

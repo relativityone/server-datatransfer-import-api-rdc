@@ -29,7 +29,7 @@ namespace Relativity.Export.Client.NUnit.Integration
 	using Relativity.Export.VolumeManagerV2.Container;
 	using Relativity.Import.Export;
 	using Relativity.Import.Export.Process;
-	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.Service;
 	using Relativity.Import.Export.TestFramework;
 	using Relativity.Logging;
 	using Relativity.Transfer;
@@ -52,7 +52,7 @@ namespace Relativity.Export.Client.NUnit.Integration
 		private CookieContainer cookieContainer;
 		private NetworkCredential credentials;
 		private Mock<IUserNotification> userNotification;
-		private TempDirectory tempDirectory;
+		private TempDirectory2 tempDirectory;
 		private int selectedFolderId;
 		private ExportFile.ExportType exportType;
 		private string identifierColumnName;
@@ -101,7 +101,7 @@ namespace Relativity.Export.Client.NUnit.Integration
 			this.encoding = Encoding.Unicode;
 			this.logger = new Mock<ILog>();
 			this.searchResult = false;
-			this.tempDirectory = new TempDirectory { ClearReadOnlyAttributes = true };
+			this.tempDirectory = new TempDirectory2 { ClearReadOnlyAttributes = true };
 			this.tempDirectory.Create();
 			this.userNotification = new Mock<IUserNotification>();
 			this.userNotification.Setup(x => x.Alert(It.IsAny<string>())).Callback<string>(msg =>
