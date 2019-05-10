@@ -170,9 +170,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
+    <ProjectReference Include="..\Relativity.DataExchange\Relativity.DataExchange.csproj">
       <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
-      <Name>Relativity.Import.Export</Name>
+      <Name>Relativity.DataExchange</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

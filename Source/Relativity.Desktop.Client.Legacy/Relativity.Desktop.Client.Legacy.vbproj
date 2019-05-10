@@ -504,17 +504,17 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Relativity.Export.Client\Relativity.Export.Client.csproj">
+    <ProjectReference Include="..\Relativity.DataExchange.Export\Relativity.DataExchange.Export.csproj">
       <Project>{410ba79b-df60-4eda-86b3-608f3dee38f5}</Project>
-      <Name>Relativity.Export.Client</Name>
+      <Name>Relativity.DataExchange.Export</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj">
+    <ProjectReference Include="..\Relativity.DataExchange.Legacy\Relativity.DataExchange.Legacy.vbproj">
       <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
-      <Name>Relativity.Import.Export.Legacy</Name>
+      <Name>Relativity.DataExchange.Legacy</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
+    <ProjectReference Include="..\Relativity.DataExchange\Relativity.DataExchange.csproj">
       <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
-      <Name>Relativity.Import.Export</Name>
+      <Name>Relativity.DataExchange</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

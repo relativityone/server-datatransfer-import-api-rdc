@@ -121,17 +121,17 @@
       <Project>{49cde7eb-9385-41d9-8cd9-687c09c46996}</Project>
       <Name>Relativity.Desktop.Client.Legacy</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj">
+    <ProjectReference Include="..\Relativity.DataExchange.Legacy\Relativity.DataExchange.Legacy.vbproj">
       <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
-      <Name>Relativity.Import.Export.Legacy</Name>
+      <Name>Relativity.DataExchange.Legacy</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export.TestFramework\Relativity.Import.Export.TestFramework.csproj">
+    <ProjectReference Include="..\Relativity.DataExchange.TestFramework\Relativity.DataExchange.TestFramework.csproj">
       <Project>{fed61746-80ec-40cb-998e-9299b804ce7d}</Project>
-      <Name>Relativity.Import.Export.TestFramework</Name>
+      <Name>Relativity.DataExchange.TestFramework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
+    <ProjectReference Include="..\Relativity.DataExchange\Relativity.DataExchange.csproj">
       <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
-      <Name>Relativity.Import.Export</Name>
+      <Name>Relativity.DataExchange</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

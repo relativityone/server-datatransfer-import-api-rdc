@@ -5,11 +5,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}</ProjectGuid>
+    <ProjectGuid>{B6E34ED3-1C41-4DB9-9BD7-24A256A05663}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Relativity.Export.NUnit</RootNamespace>
-    <AssemblyName>Relativity.Export.Client.NUnit</AssemblyName>
+    <RootNamespace>Relativity.DataExchange.NUnit.Integration</RootNamespace>
+    <AssemblyName>Relativity.DataExchange.NUnit.Integration</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -24,10 +24,10 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\..\buildtools\Legacy.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Relativity.Export.Client.NUnit.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <DocumentationFile>bin\Relativity.DataExchange.NUnit.Integration.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,11 +37,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisRuleSet>..\..\buildtools\Legacy.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Relativity.Export.Client.NUnit.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <DocumentationFile>bin\Relativity.DataExchange.NUnit.Integration.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -50,178 +50,116 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
-    <DocumentationFile>bin\Relativity.Export.Client.NUnit.xml</DocumentationFile>
+    <DocumentationFile>bin\Relativity.DataExchange.NUnit.Integration.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>..\..\buildtools\Legacy.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
-    <DocumentationFile>bin\Relativity.Export.Client.NUnit.xml</DocumentationFile>
+    <DocumentationFile>bin\Relativity.DataExchange.NUnit.Integration.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>..\..\buildtools\Legacy.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FreeImageNET">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Web" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Web.Services" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExportRequestBuilderTests.cs" />
-    <Compile Include="ProductionExportFileNameProviderTests.cs" />
-    <Compile Include="RelativeFilePathProviderTests.cs" />
-    <Compile Include="RetryableStreamWriterTests.cs" />
-    <Compile Include="RetryableStreamWriterTestsRetries.cs" />
-    <Compile Include="SearchListSelectorTest.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SeparatorFileNamePartProviderTests.cs" />
-    <Compile Include="SinglePageImagesRollupTests.cs" />
-    <Compile Include="SinglePageMetadataForArtifactBuilderTests.cs" />
-    <Compile Include="SmartTapiBridgeTests.cs" />
-    <Compile Include="StreamStub.cs" />
-    <Compile Include="SubdirectoryManagerTests.cs" />
-    <Compile Include="TextExportableSizeTests.cs" />
-    <Compile Include="TooLongTextToLoadFileTests.cs" />
-    <Compile Include="ViewFieldInfoMockFactory.cs" />
-    <Compile Include="VolumeAndSubdirectoryValidatorTests.cs" />
-    <Compile Include="VolumeManagerTests.cs" />
-    <Compile Include="WriterStub.cs" />
+    <Content Include="LogConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="oi\docs\fileids_values_only_sorted.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\docs\fileids_values_strs.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\cmmap000.bin">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.exe">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.jar">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccca-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccch-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccda-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccex-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfa-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfi-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfmt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfnt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccind-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\scclo-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\wvcore-R1.dll">
+      <Paket>True</Paket>
+    </Content>
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
-    <Compile Include="BatchCleanUpTests.cs" />
-    <Compile Include="BatchExporterTests.cs" />
-    <Compile Include="BatchInitializationTests.cs" />
-    <Compile Include="BatchStateTests.cs" />
-    <Compile Include="BatchTests.cs" />
-    <Compile Include="BatchValidatorTests.cs" />
-    <Compile Include="CachedLabelManagerForArtifactTests.cs" />
-    <Compile Include="ColumnsFactoryTests.cs" />
-    <Compile Include="ColumnsOrdinalLookupFactoryTests.cs" />
-    <Compile Include="CustomFileNameProviderTest.cs" />
-    <Compile Include="CustomTextFileNamePartProviderTests.cs" />
-    <Compile Include="DeferredEntryExtensions.cs" />
-    <Compile Include="DestinationPathTests.cs" />
-    <Compile Include="DownloaderTests.cs" />
-    <Compile Include="DownloadProgressManagerTests.cs" />
-    <Compile Include="DownloadTapiBridgeAdapterTests.cs" />
-    <Compile Include="DownloadTapiBridgeForFilesTests.cs" />
-    <Compile Include="DownloadTapiBridgeWithEncodingConversionTests.cs" />
-    <Compile Include="ErrorFileDestinationPathTests.cs" />
-    <Compile Include="ErrorFileWriterTests.cs" />
-    <Compile Include="ErrorReportingTapiBridgeTests.cs" />
-    <Compile Include="ExportFileDownloaderStatusTests.cs" />
-    <Compile Include="ExportFileFormatterFactoryTests.cs" />
-    <Compile Include="ExportFileFormatterSetUp.cs" />
-    <Compile Include="ExportFileFormatterTests.cs" />
-    <Compile Include="ExportFileValidatorTests.cs" />
-    <Compile Include="ExportPermissionCheckTests.cs" />
-    <Compile Include="FieldFileExportRequestBuilderTests.cs" />
-    <Compile Include="FieldFileNamePartProviderTests.cs" />
-    <Compile Include="FieldNameProviderTests.cs" />
-    <Compile Include="FieldServiceFactoryTests.cs" />
-    <Compile Include="FieldStub.cs" />
-    <Compile Include="FileDownloadProgressHandlerTests.cs" />
-    <Compile Include="FileEncodingConverterTests.cs" />
-    <Compile Include="FileNamePartProviderContainerTest.cs" />
-    <Compile Include="FilePathHelperTests.cs" />
-    <Compile Include="FilePathProviderTests.cs" />
-    <Compile Include="FilesOverwriteValidatorTests.cs" />
-    <Compile Include="FilesStatisticsTests.cs" />
-    <Compile Include="FileTapiBridgePoolTests.cs" />
-    <Compile Include="FromFieldToLoadFileWriterTests.cs" />
-    <Compile Include="FromFileToLoadFileWriterTests.cs" />
-    <Compile Include="FullTextLineWriterTests.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="HtmlCellFormatterTests.cs" />
-    <Compile Include="HtmlExportFileFormatterTests.cs" />
-    <Compile Include="IdentifierExportFileNameProviderTests.cs" />
-    <Compile Include="ImageException.cs" />
-    <Compile Include="ImageExportableSizeTests.cs" />
-    <Compile Include="ImageExportRequestBuilderTests.cs" />
-    <Compile Include="ImageFileBatchValidatorTests.cs" />
-    <Compile Include="ImageFileParallelBatchValidatorTests.cs" />
-    <Compile Include="ImageFilePathProviderTests.cs" />
-    <Compile Include="ImageLoadFileBatchValidatorTests.cs" />
-    <Compile Include="ImageLoadFileEntryDataSet.cs" />
-    <Compile Include="ImageLoadFileMetadataBuilderTests.cs" />
-    <Compile Include="ImageLoadFileMetadataForArtifactBuilderTests.cs" />
-    <Compile Include="ImageRepositoryBuilderTests.cs" />
-    <Compile Include="ImageRepositoryTests.cs" />
-    <Compile Include="ImagesRollupFactoryTests.cs" />
-    <Compile Include="IproFullTextLoadFileEntryTests.cs" />
-    <Compile Include="IproFullTextWithoutPrecedenceLoadFileEntryTests.cs" />
-    <Compile Include="IproFullTextWithPrecedenceLoadFileEntryTests.cs" />
-    <Compile Include="IproLoadFileEntryTests.cs" />
-    <Compile Include="LabelManagerForArtifactTests.cs" />
-    <Compile Include="LabelManagerTests.cs" />
-    <Compile Include="LineFieldsValueTests.cs" />
-    <Compile Include="LineNativeFilePathTests.cs" />
-    <Compile Include="LoadFileBatchValidatorTests.cs" />
-    <Compile Include="LoadFileLineTests.cs" />
-    <Compile Include="LoadFileMetadataBuilderTests.cs" />
-    <Compile Include="LoadFileTestHelpers.cs" />
-    <Compile Include="LoadFileWriterTests.cs" />
-    <Compile Include="LongTextBatchValidatorTests.cs" />
-    <Compile Include="LongTextDownloaderTests.cs" />
-    <Compile Include="LongTextEncodingConverterTests.cs" />
-    <Compile Include="LongTextFilePathProviderTests.cs" />
-    <Compile Include="LongTextFromFieldBuilderTests.cs" />
-    <Compile Include="LongTextHandlerTests.cs" />
-    <Compile Include="LongTextHelperTests.cs" />
-    <Compile Include="LongTextIproFullTextBuilderTests.cs" />
-    <Compile Include="LongTextParallelBatchValidatorTests.cs" />
-    <Compile Include="LongTextPrecedenceBuilderTests.cs" />
-    <Compile Include="LongTextProgressHandlerTests.cs" />
-    <Compile Include="LongTextRepositoryBuilderTests.cs" />
-    <Compile Include="LongTextRepositoryTests.cs" />
-    <Compile Include="LongTextTapiBridgePoolTests.cs" />
-    <Compile Include="LongTextToFileTests.cs" />
-    <Compile Include="LongTextToLoadFileTests.cs" />
-    <Compile Include="MessagesHandlerTests.cs" />
-    <Compile Include="MetadataStatisticsTests.cs" />
-    <Compile Include="ModelFactory.cs" />
-    <Compile Include="MultiPageImagesRollupTests.cs" />
-    <Compile Include="MultiPageMetadataForArtifactBuilderTests.cs" />
-    <Compile Include="MultiPageNotOpticonMetadataForArtifactBuilderTests.cs" />
-    <Compile Include="MultiPageOpticonMetadataForArtifactBuilderTests.cs" />
-    <Compile Include="MultiPageTiffImagesRollupTests.cs" />
-    <Compile Include="NativeExportableSizeTests.cs" />
-    <Compile Include="NativeFileBatchValidatorTests.cs" />
-    <Compile Include="NativeFileExportRequestBuilderTests.cs" />
-    <Compile Include="NativeFileNameViewFieldsHelperTests.cs" />
-    <Compile Include="NativeFileParallelBatchValidatorTests.cs" />
-    <Compile Include="NativeFilePathProviderTests.cs" />
-    <Compile Include="NativeRepositoryBuilderTests.cs" />
-    <Compile Include="NativeRepositoryTests.cs" />
-    <Compile Include="NotTooLongTextToLoadFileTests.cs" />
-    <Compile Include="OpticonLoadFileEntryTests.cs" />
-    <Compile Include="ParallelBatchInitializationTests.cs" />
-    <Compile Include="PdfImagesRollupTests.cs" />
-    <Compile Include="PhysicalFilesDownloaderTests.cs" />
-    <Compile Include="PrefixFilePathTransformerTests.cs" />
-    <Compile Include="ProgressHandlerTests.cs" />
+    <Compile Include="AssemblySetup.cs" />
+    <Compile Include="ApplicationVersionServiceTests.cs" />
+    <Compile Include="RestClientTests.cs" />
+    <Compile Include="RelativityManagerWebServiceTests.cs" />
+    <Compile Include="WebServiceTestsBase.cs" />
+    <Compile Include="CaseManagerWebServiceTests.cs" />
+    <Compile Include="DownloadTapiBridgeTests.cs" />
+    <Compile Include="GlobalSuppressions.cs">
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TapiBridgeTestBase.cs" />
+    <Compile Include="UploadTapiBridgeTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\buildtools\stylecop.json">
+      <Link>stylecop.json</Link>
+    </AdditionalFiles>
+    <None Include="App.config" />
+    <None Include="app.manifest" />
+    <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\buildtools\CustomDictionary.xml">
@@ -232,12 +170,18 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="..\..\buildtools\stylecop.json">
-      <Link>stylecop.json</Link>
-    </AdditionalFiles>
-    <None Include="app.config" />
-    <None Include="app.manifest" />
-    <None Include="paket.references" />
+    <ProjectReference Include="..\Relativity.DataExchange.Legacy\Relativity.DataExchange.Legacy.vbproj">
+      <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
+      <Name>Relativity.DataExchange.Legacy</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.DataExchange\Relativity.DataExchange.csproj">
+      <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
+      <Name>Relativity.DataExchange</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.DataExchange.TestFramework\Relativity.DataExchange.TestFramework.csproj">
+      <Project>{fed61746-80ec-40cb-998e-9299b804ce7d}</Project>
+      <Name>Relativity.DataExchange.TestFramework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -247,18 +191,12 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
-  <Import Project="..\..\buildtools\Relativity.Build.DynamicReferences.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\Relativity.Desktop.Client.Legacy\Relativity.Desktop.Client.Legacy.vbproj">
-      <Project>{49cde7eb-9385-41d9-8cd9-687c09c46996}</Project>
-      <Name>Relativity.Desktop.Client.Legacy</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export.TestFramework\Relativity.Import.Export.TestFramework.csproj">
-      <Project>{fed61746-80ec-40cb-998e-9299b804ce7d}</Project>
-      <Name>Relativity.Import.Export.TestFramework</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -276,11 +214,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="System.Runtime.Remoting">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Castle.Windsor">
-          <HintPath>..\..\packages\Castle.Windsor\lib\net45\Castle.Windsor.dll</HintPath>
+        <Reference Include="oi">
+          <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -334,8 +269,30 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="NUnitExtras.HierarchicalCategories">
+          <HintPath>..\..\packages\NUnitExtras.HierarchicalCategories\lib\net45\NUnitExtras.HierarchicalCategories.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Polly">
           <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.MessageService">
+          <HintPath>..\..\packages\Relativity.DataTransfer.MessageService\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -356,8 +313,19 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.Logging">
-          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
+        <Reference Include="Relativity.Kepler">
+          <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -369,6 +337,39 @@
       <ItemGroup>
         <Reference Include="Relativity.Logging.Interfaces">
           <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+          <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.Services.Interface">
+          <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Testing.Identification">
+          <HintPath>..\..\packages\Relativity.Testing.Identification\lib\net462\Relativity.Testing.Identification.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -417,6 +418,7 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
   <ItemGroup>
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
       <Paket>True</Paket>
@@ -462,17 +464,6 @@
       <ItemGroup>
         <Reference Include="System.Threading.Tasks.Extensions">
           <HintPath>..\..\packages\System.Threading.Tasks.Extensions\lib\netstandard1.0\System.Threading.Tasks.Extensions.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="ZetaLongPaths">
-          <HintPath>..\..\packages\ZetaLongPaths\lib\net452-full\ZetaLongPaths.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

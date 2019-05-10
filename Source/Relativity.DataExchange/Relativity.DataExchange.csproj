@@ -1,15 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\NUnit\build\NUnit.props" Condition="Exists('..\..\packages\NUnit\build\NUnit.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EBDD2E81-9CF1-4070-823D-6ACDF08CDEEE}</ProjectGuid>
+    <ProjectGuid>{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Relativity.Import.Export.NUnit</RootNamespace>
-    <AssemblyName>Relativity.Import.Export.NUnit</AssemblyName>
+    <RootNamespace>Relativity.DataExchange</RootNamespace>
+    <AssemblyName>Relativity.DataExchange</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -22,12 +21,12 @@
     <DefineConstants>TRACE;DEBUG;WINDOWS64</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\..\buildtools\Tests.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
-    <DocumentationFile>bin\Relativity.Import.Export.NUnit.xml</DocumentationFile>
+    <NoWarn>1591;0649</NoWarn>
+    <DocumentationFile>bin\Relativity.DataExchange.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,12 +35,12 @@
     <DefineConstants>TRACE;WINDOWS64</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
-    <CodeAnalysisRuleSet>..\..\buildtools\Tests.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
-    <DocumentationFile>bin\Relativity.Import.Export.NUnit.xml</DocumentationFile>
+    <DocumentationFile>bin\Relativity.DataExchange.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -50,37 +49,223 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
-    <DocumentationFile>bin\Relativity.Import.Export.NUnit.xml</DocumentationFile>
+    <DocumentationFile>bin\Relativity.DataExchange.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>1591;0649</NoWarn>
     <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>..\..\buildtools\Tests.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
-    <DocumentationFile>bin\Relativity.Import.Export.NUnit.xml</DocumentationFile>
+    <DocumentationFile>bin\Relativity.DataExchange.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>1591;0649</NoWarn>
     <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>..\..\buildtools\Tests.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FreeImageNET">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheKeys.cs" />
+    <Compile Include="Data\BooleanImporterException.cs" />
+    <Compile Include="Data\CellImporterException.cs" />
+    <Compile Include="Data\ConditionalArrayList.cs" />
+    <Compile Include="Data\ConditionalStringBuilder.cs" />
+    <Compile Include="Data\DateImporterException.cs" />
+    <Compile Include="Data\DecimalImporterException.cs" />
+    <Compile Include="Data\DelimitedFileImporter2.cs" />
+    <Compile Include="Data\DelimitedMode.cs" />
+    <Compile Include="Data\GenericCsvReader2.cs" />
+    <Compile Include="Data\ImporterException.cs" />
+    <Compile Include="Data\IntegerImporterException.cs" />
+    <Compile Include="Data\ObjectNameImporterException.cs" />
+    <Compile Include="Data\StringImporterException.cs" />
+    <Compile Include="Data\TrimOption.cs" />
+    <Compile Include="ExceptionHelper.cs" />
+    <Compile Include="IAppSettingsInternal.cs" />
+    <Compile Include="IObjectCacheRepository.cs" />
+    <Compile Include="Io\FileTypeConfiguration.cs" />
+    <Compile Include="Io\FileTypeIdentifyError.cs" />
+    <Compile Include="Io\FileTypeIdentifyException.cs" />
+    <Compile Include="Io\FileTypeInfo.cs" />
+    <Compile Include="Io\IFileTypeConfiguration.cs" />
+    <Compile Include="Io\IFileTypeIdentifier.cs" />
+    <Compile Include="Io\IFileTypeInfo.cs" />
+    <Compile Include="Io\OutsideInConstants.cs" />
+    <Compile Include="Io\OutsideInFileTypeIdentifierService.cs" />
+    <Compile Include="Media\ByteOrdering.cs" />
+    <Compile Include="Media\FreeImageService.cs" />
+    <Compile Include="Media\IImageConverter.cs" />
+    <Compile Include="Media\IImageValidator.cs" />
+    <Compile Include="Media\IImageFormatIdentifier.cs" />
+    <Compile Include="Media\ImageConstants.cs" />
+    <Compile Include="Media\ImageConversionException.cs" />
+    <Compile Include="Media\ImageConverterService.cs" />
+    <Compile Include="Media\ImageFormat.cs" />
+    <Compile Include="Media\ImageValidationException.cs" />
+    <Compile Include="Media\MultiPagePdfConversionException.cs" />
+    <Compile Include="Media\MultiPageTiffConversionException.cs" />
+    <Compile Include="MemoryCacheRepository.cs" />
+    <Compile Include="Process\EventType2.cs" />
+    <Compile Include="Process\ProcessBase2.cs" />
+    <Compile Include="Process\ProcessPool2.cs" />
+    <Compile Include="RestClient.cs" />
+    <Compile Include="AppSettingsDictionary.cs" />
+    <Compile Include="AppSettingsConstants.cs" />
+    <Compile Include="AppSettingsManager.cs" />
+    <Compile Include="AppDotNetSettings.cs" />
+    <Compile Include="Data\SqlDataRow.cs" />
+    <Compile Include="Data\SqlDataView.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
+    <Compile Include="AppSettingAttribute.cs" />
+    <Compile Include="HttpServiceException.cs" />
+    <Compile Include="IImportExportCompatibilityCheck.cs" />
+    <Compile Include="RelativityInstanceInfo.cs" />
+    <Compile Include="RelativityNotSupportedException.cs" />
+    <Compile Include="NullableTypesHelper.cs" />
+    <Compile Include="NullArgValidationExtensions.cs" />
+    <Compile Include="Process\FieldMappedEventArgs.cs" />
+    <Compile Include="Process\CancellationRequestEventArgs.cs" />
+    <Compile Include="Process\ErrorReportEventArgs.cs" />
+    <Compile Include="Process\FatalExceptionEventArgs.cs" />
+    <Compile Include="Process\ProcessEventDto.cs" />
+    <Compile Include="Process\ProcessEventWriter.cs" />
+    <Compile Include="Process\IProcessEventWriter.cs" />
+    <Compile Include="Process\ParentFormClosingEventArgs.cs" />
+    <Compile Include="Process\ProcessErrorReport.cs" />
+    <Compile Include="Process\ExportErrorEventArgs.cs" />
+    <Compile Include="Process\RecordNumberEventArgs.cs" />
+    <Compile Include="Process\ShowReportEventArgs.cs" />
+    <Compile Include="SerializationHelper.cs" />
+    <Compile Include="Service\ArtifactType.cs" />
+    <Compile Include="Service\ArtifactTypeHelper.cs" />
+    <Compile Include="Service\CaseInfo.cs" />
+    <Compile Include="Service\ChoiceInfo.cs" />
+    <Compile Include="Service\ClaimsExtensions.cs" />
+    <Compile Include="Service\ColumnSourceType.cs" />
+    <Compile Include="Service\ErrorFileKey.cs" />
+    <Compile Include="Service\ExecutionSource.cs" />
+    <Compile Include="Service\FieldCategory.cs" />
+    <Compile Include="Service\FieldInfoBase.cs" />
+    <Compile Include="Service\FieldType.cs" />
+    <Compile Include="Service\FileType.cs" />
+    <Compile Include="Service\ImportBehaviorChoice.cs" />
+    <Compile Include="Service\ImportOverwriteType.cs" />
+    <Compile Include="Service\ImportStatus.cs" />
+    <Compile Include="Service\ImportStatusHelper.cs" />
+    <Compile Include="Service\ParentReflectionType.cs" />
+    <Compile Include="Service\ProductionDocumentBatesHelper.cs" />
+    <Compile Include="Service\RelativityManagerService.cs" />
+    <Compile Include="Service\RepositoryPathManager.cs" />
+    <Compile Include="Service\ServiceConstants.cs" />
+    <Compile Include="Service\SoapExceptionDetail.cs" />
+    <Compile Include="Service\SqlNameHelper.cs" />
+    <Compile Include="Service\ViewFieldInfo.cs" />
+    <Compile Include="Service\WebApiServiceBase.cs" />
+    <Compile Include="StringExtensions.cs" />
+    <Compile Include="ImportExportCompatibilityCheck.cs" />
+    <Compile Include="IApplicationVersionService.cs" />
+    <Compile Include="TempDirectory2.cs" />
+    <Compile Include="Timekeeper2.cs" />
+    <Compile Include="TimekeeperEntry2.cs" />
+    <Compile Include="Transfer\DownloadTapiBridge2.cs" />
+    <Compile Include="Transfer\TapiBridgeBase2.cs" />
+    <Compile Include="Transfer\TapiBridgeFactory.cs" />
+    <Compile Include="Transfer\TapiBridgeParameters2.cs" />
+    <Compile Include="Transfer\UploadTapiBridge2.cs" />
+    <Compile Include="Transfer\UploadTapiBridgeParameters2.cs" />
+    <Compile Include="VersionConstants.cs" />
+    <Compile Include="VisualBasicConstants.cs" />
+    <Compile Include="CollectionExtensions.cs" />
+    <Compile Include="Io\IoReporterContext.cs" />
+    <Compile Include="ImportExportException.cs" />
+    <Compile Include="IAppSettings.cs" />
+    <Compile Include="AppSettings.cs" />
+    <Compile Include="DictionaryExtensions.cs" />
+    <Compile Include="Io\IoWarningType.cs" />
+    <Compile Include="Io\DirectoryInfoWrap.cs" />
+    <Compile Include="Io\DirectoryWrap.cs" />
+    <Compile Include="Io\FileInfoInvalidPathException.cs" />
+    <Compile Include="Io\FileInfoWrap.cs" />
+    <Compile Include="Io\FileSharePathManager.cs" />
+    <Compile Include="Io\FileSystem.cs" />
+    <Compile Include="Io\FileSystemWrap.cs" />
+    <Compile Include="Io\FileWrap.cs" />
+    <Compile Include="Io\IDirectory.cs" />
+    <Compile Include="Io\IDirectoryInfo.cs" />
+    <Compile Include="Io\IFile.cs" />
+    <Compile Include="Io\IFileInfo.cs" />
+    <Compile Include="Io\IFileSystem.cs" />
+    <Compile Include="Io\IIoReporter.cs" />
+    <Compile Include="Io\IoReporter.cs" />
+    <Compile Include="Io\IoWarningEventArgs.cs" />
+    <Compile Include="Io\IPath.cs" />
+    <Compile Include="Io\IStreamWriter.cs" />
+    <Compile Include="Io\NullIoReporter.cs" />
+    <Compile Include="Io\PathWrap.cs" />
+    <Compile Include="Io\RetryExceptionHelper.cs" />
+    <Compile Include="Io\RetryOptions.cs" />
+    <Compile Include="Io\StreamWriterWrap.cs" />
+    <Compile Include="IWaitAndRetryPolicy.cs" />
+    <Compile Include="Process\ProcessErrorReader.cs" />
+    <Compile Include="Process\ProcessErrorWriter.cs" />
+    <Compile Include="Process\IProcessErrorWriter.cs" />
+    <Compile Include="Process\ProcessCompleteEventArgs.cs" />
+    <Compile Include="Process\ProcessEndEventArgs.cs" />
+    <Compile Include="Process\RecordCountEventArgs.cs" />
+    <Compile Include="Process\StatusBarEventArgs.cs" />
+    <Compile Include="Process\ProgressEventArgs.cs" />
+    <Compile Include="Process\ProcessEventArgs.cs" />
+    <Compile Include="Process\ProcessEventType.cs" />
+    <Compile Include="Process\ProcessContext.cs" />
+    <Compile Include="Process\IRunnable.cs" />
+    <Compile Include="Transfer\ClientChangeReason.cs" />
+    <Compile Include="Transfer\RelativityTransferLog.cs" />
+    <Compile Include="Transfer\ITapiObjectService.cs" />
+    <Compile Include="Transfer\TapiClient.cs" />
+    <Compile Include="Transfer\TapiClientEventArgs.cs" />
+    <Compile Include="Transfer\TapiConstants.cs" />
+    <Compile Include="Transfer\TapiJobRetryListener.cs" />
+    <Compile Include="Transfer\TapiListenerBase.cs" />
+    <Compile Include="Transfer\TapiMessageEventArgs.cs" />
+    <Compile Include="Transfer\TapiObjectService.cs" />
+    <Compile Include="Transfer\TapiPathIssueListener.cs" />
+    <Compile Include="Transfer\TapiPathProgressListener.cs" />
+    <Compile Include="Transfer\TapiProgressEventArgs.cs" />
+    <Compile Include="Transfer\TapiRequestListener.cs" />
+    <Compile Include="Transfer\TapiStatisticsEventArgs.cs" />
+    <Compile Include="Transfer\TapiStatisticsListener.cs" />
+    <Compile Include="RelativityLogFactory.cs" />
+    <Compile Include="WaitAndRetryPolicy.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
       <Paket>True</Paket>
     </Content>
@@ -135,45 +320,17 @@
     <Content Include="oi\unmanaged\wvcore-R1.dll">
       <Paket>True</Paket>
     </Content>
+    <Compile Include="Resources\Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
-    <Compile Include="AppSettingsTests.cs" />
-    <Compile Include="ChoiceInfoTests.cs" />
-    <Compile Include="FreeImageServiceTests.cs" />
-    <Compile Include="HttpServiceExceptionTests.cs" />
-    <Compile Include="ImageConverterServiceTests.cs" />
-    <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
-    <Compile Include="SoapExceptionDetailTests.cs" />
-    <Compile Include="SerializationTestsBase.cs" />
-    <Compile Include="ImportExportCompatibilityCheckTests.cs" />
-    <Compile Include="ViewFieldInfoTests.cs" />
-    <Compile Include="CaseInfoTests.cs" />
-    <Compile Include="CryptoHelperTests.cs" />
-    <Compile Include="ProcessEventWriterTests.cs" />
-    <Compile Include="ProcessErrorWriterTests.cs" />
-    <Compile Include="SqlDataViewTests.cs" />
-    <Compile Include="TimekeeperTests.cs" />
-    <Compile Include="StringExtensionsTests.cs" />
-    <Compile Include="DateTimeExtensionsTests.cs" />
-    <Compile Include="DelimitedFileImporterTestCases.cs" />
-    <Compile Include="DelimitedFileImporterTests.cs" />
-    <Compile Include="FileSystemWrapTests.cs" />
-    <Compile Include="ImporterExceptionSerializationTests.cs" />
-    <Compile Include="CollectionExtensionsTests.cs" />
-    <Compile Include="IoReporterContextTests.cs" />
-    <Compile Include="MockDelimitedFileImport.cs" />
-    <Compile Include="NullableTypesHelperTests.cs" />
-    <Compile Include="TapiBridgeTestsBase.cs" />
-    <Compile Include="DownloadTapiBridgeTests.cs" />
-    <Compile Include="UploadTapiBridgeTests.cs" />
-    <Compile Include="IoReporterTests.cs" />
-    <Compile Include="ProcessContextTests.cs" />
     <Compile Include="GlobalSuppressions.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ArtifactTypeHelperTests.cs" />
-    <Compile Include="WaitAndRetryPolicyTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\buildtools\stylecop.json">
@@ -191,20 +348,6 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj">
-      <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
-      <Name>Relativity.Import.Export.Legacy</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
-      <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
-      <Name>Relativity.Import.Export</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export.TestFramework\Relativity.Import.Export.TestFramework.csproj">
-      <Project>{fed61746-80ec-40cb-998e-9299b804ce7d}</Project>
-      <Name>Relativity.Import.Export.TestFramework</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -214,122 +357,13 @@
   </Target>
   -->
   <ItemGroup>
-    <Content Include="Resources\Jpeg\w3c_home.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Jpeg\w3c_home_2.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Jpeg\w3c_home_256.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Jpeg\w3c_home_gray.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Png\w3c_home.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Png\w3c_home_2.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Png\w3c_home_256.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Png\w3c_home_gray.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\CCITT_1.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\CCITT_2.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\CCITT_3.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\CCITT_4.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\CCITT_5.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\CCITT_6.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\CCITT_7.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\CCITT_8.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\FLAG_T24.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\G31D.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\G31DS.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\G32D.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\G32DS.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\G4.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\G4S.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\GMARBLES.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\MARBIBM.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\MARBLES.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Tiff\XING_T24.TIF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="Resources\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
-  <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="System.Configuration">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Castle.Core">
-          <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Microsoft.CSharp">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="CsvHelper">
-          <HintPath>..\..\packages\CsvHelper\lib\net45\CsvHelper.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -344,41 +378,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Moq">
-          <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="FizzWare.NBuilder">
-          <HintPath>..\..\packages\NBuilder\lib\net40\FizzWare.NBuilder.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Newtonsoft.Json">
           <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="nunit.framework">
-          <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -401,6 +402,17 @@
       <ItemGroup>
         <Reference Include="FaspManager">
           <HintPath>..\..\packages\relativity.faspmanager\lib\net40\FaspManager.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Logging">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -490,40 +502,4 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="System.Runtime.CompilerServices.Unsafe">
-          <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="System.Threading.Tasks.Extensions">
-          <HintPath>..\..\packages\System.Threading.Tasks.Extensions\lib\netstandard1.0\System.Threading.Tasks.Extensions.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="mscorlib">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.ValueTuple">
-          <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
 </Project>
