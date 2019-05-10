@@ -75,7 +75,10 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Web.Services" />
   </ItemGroup>
@@ -142,6 +145,7 @@
     </Compile>
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="ApplicationVersionServiceTests.cs" />
+    <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
     <Compile Include="RestClientTests.cs" />
     <Compile Include="RelativityManagerWebServiceTests.cs" />
     <Compile Include="WebServiceTestsBase.cs" />
@@ -160,6 +164,15 @@
     <None Include="App.config" />
     <None Include="app.manifest" />
     <None Include="paket.references" />
+    <Content Include="Resources\OutsideIn\Test-FileTypeId-List-2018-9.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\OutsideIn\Test-FileTypeId-List-Golden-2018-9.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\OutsideIn\Test-FileTypeId-List.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\buildtools\CustomDictionary.xml">
@@ -205,6 +218,20 @@
         </Reference>
         <Reference Include="Castle.Core">
           <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Xml">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FileHelpers">
+          <HintPath>..\..\packages\FileHelpers\lib\net45\FileHelpers.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
