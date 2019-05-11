@@ -21,12 +21,15 @@ Namespace kCura.WinEDDS.Service
 		End Sub
 
 		Public Async Function GetRelativityVersionAsync(ByVal token As CancellationToken) As Task(Of Version) Implements IApplicationVersionService.GetRelativityVersionAsync
-			Dim client As New RestClient(_instance, _logger, _appSettings.HttpTimeoutSeconds, _appSettings.IoErrorNumberOfRetries)
+			' This check should fail more quickly than other web service calls.
+			Const RetryCount As Integer = 3
+			Const WaitSeconds As Integer = 5
+			Dim client As New RestClient(_instance, _logger, _appSettings.HttpTimeoutSeconds, RetryCount)
 			Dim relVersionString As String = Await client.RequestPostStringAsync(
 			InstanceDetailsServiceRelPath,
 			String.Empty,
 			Function(retryAttempt)
-				Return TimeSpan.FromSeconds(_appSettings.HttpTimeoutSeconds)
+				Return TimeSpan.FromSeconds(WaitSeconds)
 			End Function,
 			Sub(exception, timespan, context)
 				_logger.LogError(exception, "Retry - {Timespan} - Failed to retrieve the Relativity Version.", timespan)
