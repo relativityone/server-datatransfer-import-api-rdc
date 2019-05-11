@@ -91,12 +91,7 @@ Namespace kCura.WinEDDS
 				Me.WriteStatus("Selected BCP folder: " & bcpPath)
 			Catch ex As System.Exception
 				Me.WriteStatus("Error retrieving BCP folder - WebAPI error")
-				Dim ensure As String = "Ensure"
-				If Me.AppSettings.EnableSingleModeImport Then
-					Me.WriteStatus("Loads will happen in Single mode - this is less than optimal.  To upgrade,")
-					ensure = "ensure"
-				End If
-				Me.WriteStatus(ensure & " that relativity service account has rights to create/delete files and subdirectories in the BCP folder")
+				Me.WriteStatus("Ensure that relativity service account has rights to create/delete files and subdirectories in the BCP folder")
 				Me.WriteStatus("Exact error: " & ex.ToString)
 				Return
 			End Try

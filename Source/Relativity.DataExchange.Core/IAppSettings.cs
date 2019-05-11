@@ -45,7 +45,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to create an error when importing a zero byte file.
+		/// Gets or sets a value indicating whether to create an error when importing a zero byte file. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to create an error; otherwise, <see langword="false" />.
@@ -57,7 +57,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to create an error when importing fields with invalid dates.
+		/// Gets or sets a value indicating whether to create an error when importing fields with invalid dates. This is <see langword="true" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to create an error; otherwise, <see langword="false" />.
@@ -69,7 +69,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to create folders using a WebAPI web service or a legacy client-side API.
+		/// Gets or sets a value indicating whether to create folders using a WebAPI web service or a legacy client-side API. This is <see langword="true" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to create folders using a WebAPI web service; otherwise, <see langword="false" /> uses a legacy client-side API.
@@ -93,7 +93,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to disable image location validation.
+		/// Gets or sets a value indicating whether to disable image location validation. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to disable image location validation; otherwise, <see langword="false" />.
@@ -105,7 +105,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to disable image type validation.
+		/// Gets or sets a value indicating whether to disable image type validation. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to disable image type validation; otherwise, <see langword="false" />.
@@ -117,7 +117,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to disable file identification using Outside In technology.
+		/// Gets or sets a value indicating whether to disable file identification using Outside In technology. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to disable disable file identification; otherwise, <see langword="false" />.
@@ -129,7 +129,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to disable the text file encoding check.
+		/// Gets or sets a value indicating whether to disable the text file encoding check. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to disable the text file encoding check; otherwise, <see langword="false" />.
@@ -141,7 +141,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to disable throwing exceptions when illegal characters are found within a path.
+		/// Gets or sets a value indicating whether to disable throwing exceptions when illegal characters are found within a path. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to disable throwing an exception; otherwise, <see langword="false" />.
@@ -153,7 +153,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to automatically decrease the import batch size during the import when an error occurs.
+		/// Gets or sets a value indicating whether to automatically decrease the import batch size during the import when an error occurs. This is <see langword="true" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to automatically decrease the import batch; otherwise, <see langword="false" />.
@@ -165,7 +165,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to use case-sensitive file matching during imports.
+		/// Gets or sets a value indicating whether to use case-sensitive file matching during imports. This is <see langword="true" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to use case-sensitive file matching; otherwise, <see langword="false" />.
@@ -177,19 +177,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to enable single-mode import.
-		/// </summary>
-		/// <value>
-		/// <see langword="true" /> to enable single-mode import; otherwise, <see langword="false" />.
-		/// </value>
-		bool EnableSingleModeImport
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether to enforce minimum retry counts.
+		/// Gets or sets a value indicating whether to enforce minimum retry counts. This is <see langword="true" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to enforce minimum retry counts; otherwise, <see langword="false" />.
@@ -201,7 +189,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to enforce minimum wait times.
+		/// Gets or sets a value indicating whether to enforce minimum wait times. This is <see langword="true" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to enforce minimum wait times; otherwise, <see langword="false" />.
@@ -273,7 +261,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to force a folder preview.
+		/// Gets or sets a value indicating whether to force a folder preview. This is <see langword="true" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to force a folder preview; otherwise, <see langword="false" />.
@@ -285,7 +273,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to use parallelism for production exports that use the new implementation.
+		/// Gets or sets a value indicating whether to use parallelism for production exports that use the new implementation. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to use parallelism; otherwise, <see langword="false" />.
@@ -297,7 +285,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to force web-mode.
+		/// Gets or sets a value indicating whether to force web-mode. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to force web-mode; otherwise, <see langword="false" />.
@@ -381,7 +369,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to load full-text data during the import.
+		/// Gets or sets a value indicating whether to load full-text data during the import. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to load full-text data; otherwise, <see langword="false" />.
@@ -393,7 +381,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to log all the I/O events.
+		/// Gets or sets a value indicating whether to log all the I/O events. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to log all the I/O events; otherwise, <see langword="false" />.
@@ -508,7 +496,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether permission specific errors are retried.
+		/// Gets or sets a value indicating whether permission specific errors are retried. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to retry permissions specific errors; otherwise, <see langword="false" />.
@@ -591,7 +579,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to suppress server certificate validation errors.
+		/// Gets or sets a value indicating whether to suppress server certificate validation errors. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to enforce server certificate validation errors; otherwise, <see langword="false" />.
@@ -627,7 +615,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether Transfer API retries files that fail due to invalid paths.
+		/// Gets or sets a value indicating whether Transfer API retries files that fail due to invalid paths. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to retry invalid path specific errors; otherwise, <see langword="false" />.
@@ -651,7 +639,31 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to force using the Aspera transfer client.
+		/// Gets or sets a value indicating whether Transfer API should disable treating missing files as errors. This is <see langword="false" /> by default and always <see langword="true" /> for exports.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to disable treating missing files as errors; otherwise, <see langword="false" />.
+		/// </value>
+		bool TapiFileNotFoundErrorsDisabled
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether Transfer API should retry missing files. This is <see langword="true" /> by default and always <see langword="false" /> for exports.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to retry missing files; otherwise, <see langword="false" />.
+		/// </value>
+		bool TapiFileNotFoundErrorsRetry
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to force using the Aspera transfer client. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to force the client; otherwise, <see langword="false" />.
@@ -663,7 +675,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to force using the HTTP transfer client client for all load file transfers.
+		/// Gets or sets a value indicating whether to force using the HTTP transfer client client for all load file transfers. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to force the client; otherwise, <see langword="false" />.
@@ -687,7 +699,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to force the file share transfer client.
+		/// Gets or sets a value indicating whether to force the file share transfer client. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to force the client; otherwise, <see langword="false" />.
@@ -699,7 +711,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to force using the HTTP transfer client.
+		/// Gets or sets a value indicating whether to force using the HTTP transfer client. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to force the client; otherwise, <see langword="false" />.
@@ -711,7 +723,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to raise progress events for large files.
+		/// Gets or sets a value indicating whether to raise progress events for large files. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to raise progress events; otherwise, <see langword="false" />.
@@ -747,7 +759,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to preserve import and export file timestamps.
+		/// Gets or sets a value indicating whether to preserve import and export file timestamps. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to preserve file timestamps; otherwise, <see langword="false" />.
@@ -759,7 +771,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether Transfer API should submit APM metrics when each transfer job completes.
+		/// Gets or sets a value indicating whether Transfer API should submit APM metrics when each transfer job completes. This is <see langword="true" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to submit APM metrics; otherwise, <see langword="false" />.
@@ -807,7 +819,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to use the old export production implementation.
+		/// Gets or sets a value indicating whether to use the old export production implementation. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to use the old export production implementation; otherwise, <see langword="false" /> to use the new export production implementation.
@@ -819,7 +831,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to execute native and object import tasks in parallel.
+		/// Gets or sets a value indicating whether to execute native and object import tasks in parallel. This is <see langword="true" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to execute tasks in parallel; otherwise, <see langword="false" />.

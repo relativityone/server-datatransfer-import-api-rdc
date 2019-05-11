@@ -421,7 +421,8 @@ Namespace kCura.WinEDDS
 
         Public Shared ReadOnly Property EnableSingleModeImport() As Boolean
             Get
-				Return AppSettings.Instance.EnableSingleModeImport
+				' 5/11/2019: Per Nick, this implementation was removed years ago and preserving the property for backwards compatibility only.
+				Return False
             End Get
         End Property
 

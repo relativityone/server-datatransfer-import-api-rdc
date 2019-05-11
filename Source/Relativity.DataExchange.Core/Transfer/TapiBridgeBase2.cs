@@ -489,29 +489,32 @@ namespace Relativity.DataExchange.Transfer
 			// Intentionally limiting resiliency here; otherwise, status messages don't make it to IAPI.
 			const int MaxHttpRetryAttempts = 1;
 			var configuration = new ClientConfiguration
-			{
-				BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
-				BcpRootFolder = this.parameters.AsperaBcpRootFolder,
-				CookieContainer = this.parameters.WebCookieContainer,
-				Credential =
-											this.parameters.FileshareCredentials != null
-												? this.parameters.FileshareCredentials.CreateCredential()
-												: null,
-				FileTransferHint = FileTransferHint.Natives,
-				HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
-				MaxJobParallelism = this.parameters.MaxJobParallelism,
-				MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
-				MaxHttpRetryAttempts = MaxHttpRetryAttempts,
-				MinDataRateMbps = this.parameters.MinDataRateMbps,
-				PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
+				                    {
+					                    BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
+					                    BcpRootFolder = this.parameters.AsperaBcpRootFolder,
+					                    CookieContainer = this.parameters.WebCookieContainer,
+					                    Credential =
+						                    this.parameters.FileshareCredentials != null
+							                    ? this.parameters.FileshareCredentials.CreateCredential()
+							                    : null,
+					                    FileTransferHint = FileTransferHint.Natives,
+					                    FileNotFoundErrorsDisabled = this.parameters.FileNotFoundErrorsDisabled,
+					                    FileNotFoundErrorsRetry = this.parameters.FileNotFoundErrorsRetry,
+					                    HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
+					                    MaxJobParallelism = this.parameters.MaxJobParallelism,
+					                    MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
+					                    MaxHttpRetryAttempts = MaxHttpRetryAttempts,
+					                    MinDataRateMbps = this.parameters.MinDataRateMbps,
+					                    PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
 
-				// REL-298418: preserving file timestamps are now driven by a configurable setting.
-				PreserveDates = this.parameters.PreserveFileTimestamps,
-				SupportCheckPath = this.parameters.SupportCheckPath,
-				TargetDataRateMbps = this.parameters.TargetDataRateMbps,
-				TransferLogDirectory = this.parameters.TransferLogDirectory,
-				ValidateSourcePaths = ValidateSourcePaths,
-			};
+					                    // REL-298418: preserving file timestamps are now driven by a configurable setting.
+					                    PreserveDates = this.parameters.PreserveFileTimestamps,
+					                    SupportCheckPath = this.parameters.SupportCheckPath,
+					                    TargetDataRateMbps = this.parameters.TargetDataRateMbps,
+					                    TransferLogDirectory = this.parameters.TransferLogDirectory,
+					                    ValidateSourcePaths = ValidateSourcePaths,
+				                    };
+
 			return configuration;
 		}
 

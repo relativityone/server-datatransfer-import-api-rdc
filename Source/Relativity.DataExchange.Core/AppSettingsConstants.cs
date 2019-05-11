@@ -19,7 +19,7 @@ namespace Relativity.DataExchange
 		public const string SectionLegacyWindowsProcess = "kCura.Windows.Process";
 		public const string SectionLegacyUtility = "kCura.Utility";
 		public const string SectionLegacyWinEdds = "kCura.WinEDDS";
-		public const string SectionImportExport = "Relativity.DataExchange";
+		public const string SectionDataExchange = "Relativity.DataExchange";
 
 		// All Registry keys go here.
 		public const string ForceFolderPreviewRegistryKey = "ForceFolderPreview";
@@ -54,8 +54,6 @@ namespace Relativity.DataExchange
 		public const bool DynamicBatchResizingOnDefaultValue = true;
 		public const string EnableCaseSensitiveSearchOnImportKey = "EnableCaseSensitiveSearchOnImport";
 		public const bool EnableCaseSensitiveSearchOnImportDefaultValue = true;
-		public const string EnableSingleModeImportKey = "EnableSingleModeImport";
-		public const bool EnableSingleModeImportDefaultValue = false;
 		public const string EnforceVersionCompatibilityCheckKey = "40B88CBC-9435-4A91-8F65-48B52C51B3FD";
 		public const bool EnforceVersionCompatibilityCheckDefaultValue = true;
 		public const string ExportBatchSizeKey = "ExportBatchSize";
@@ -99,7 +97,7 @@ namespace Relativity.DataExchange
 		public const int MinBatchSizeDefaultValue = 100;
 		public const string MaximumReloginTriesKey = "MaximumReloginTries";
 		public const int MaximumReloginTriesDefaultValue = 4;
-		public const string OAuth2ImplicitCredentialRedirectUrl = "OAuth2ImplicitCredentialRedirectUrl";
+		public const string OAuth2ImplicitCredentialRedirectUrlKey = "OAuth2ImplicitCredentialRedirectUrl";
 		public const string OAuth2ImplicitCredentialRedirectUrlDefaultValue = "rdc://relativityimplicit/";
 		public const string PermissionErrorsRetryKey = "PermissionErrorsRetry";
 		public const bool PermissionErrorsRetryDefaultValue = false;
@@ -122,6 +120,10 @@ namespace Relativity.DataExchange
 		public const bool TapiBadPathErrorsRetryDefaultValue = false;
 		public const string TapiBridgeExportTransferWaitingTimeInSecondsKey = "TapiBridgeExportTransferWaitingTimeInSeconds";
 		public const int TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue = 600;
+		public const string TapiFileNotFoundErrorsDisabledKey = "TapiFileNotFoundErrorsDisabled";
+		public const bool TapiFileNotFoundErrorsDisabledDefaultValue = false;
+		public const string TapiFileNotFoundErrorsRetryKey = "TapiFileNotFoundErrorsRetry";
+		public const bool TapiFileNotFoundErrorsRetryDefaultValue = true;
 		public const string TapiForceAsperaClientKey = "TapiForceAsperaClient";
 		public const bool TapiForceAsperaClientDefaultValue = false;
 		public const string TapiForceBcpHttpClientKey = "TapiForceBcpHttpClient";

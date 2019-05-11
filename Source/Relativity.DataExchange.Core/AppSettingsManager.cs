@@ -160,7 +160,7 @@ namespace Relativity.DataExchange
 			// For backwards compatibility, support all legacy sections.
 			Dictionary<string, Dictionary<string, object>> sectionDictionaries = ReadAllSectionDictionaries();
 			Dictionary<string, object> defaultSection =
-				sectionDictionaries[GetSectionKey(AppSettingsConstants.SectionImportExport)];
+				sectionDictionaries[GetSectionKey(AppSettingsConstants.SectionDataExchange)];
 			BuildAttributeDictionary();
 			foreach (var prop in GetProperties())
 			{
@@ -175,7 +175,7 @@ namespace Relativity.DataExchange
 				if (!sectionDictionaries.ContainsKey(sectionKey))
 				{
 					// This is guaranteed.
-					sectionKey = AppSettingsConstants.SectionImportExport;
+					sectionKey = AppSettingsConstants.SectionDataExchange;
 				}
 
 				var sectionDictionary = sectionDictionaries[sectionKey];
@@ -665,7 +665,7 @@ namespace Relativity.DataExchange
 					                        AppSettingsConstants.SectionLegacyWindowsProcess,
 					                        AppSettingsConstants.SectionLegacyUtility,
 					                        AppSettingsConstants.SectionLegacyWinEdds,
-					                        AppSettingsConstants.SectionImportExport,
+					                        AppSettingsConstants.SectionDataExchange,
 				                        };
 			foreach (var sectionName in sectionNames)
 			{

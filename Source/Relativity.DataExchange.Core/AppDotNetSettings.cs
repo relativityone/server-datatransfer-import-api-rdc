@@ -226,17 +226,6 @@ namespace Relativity.DataExchange
 		}
 
 		/// <inheritdoc />
-		[AppSetting(
-			AppSettingsConstants.SectionLegacyWinEdds,
-			AppSettingsConstants.EnableSingleModeImportKey,
-			AppSettingsConstants.EnableSingleModeImportDefaultValue)]
-		bool IAppSettings.EnableSingleModeImport
-		{
-			get;
-			set;
-		}
-
-		/// <inheritdoc />
 		/// <remarks>
 		/// This is an unmapped setting and generally reserved for testing purposes.
 		/// </remarks>
@@ -260,7 +249,7 @@ namespace Relativity.DataExchange
 
 		/// <inheritdoc />
 		[AppSetting(
-			AppSettingsConstants.SectionImportExport,
+			AppSettingsConstants.SectionDataExchange,
 			AppSettingsConstants.EnforceVersionCompatibilityCheckKey,
 			AppSettingsConstants.EnforceVersionCompatibilityCheckDefaultValue)]
 		bool IAppSettingsInternal.EnforceVersionCompatibilityCheck
@@ -333,7 +322,7 @@ namespace Relativity.DataExchange
 
 		/// <inheritdoc />
 		[AppSetting(
-			AppSettingsConstants.SectionImportExport,
+			AppSettingsConstants.SectionDataExchange,
 			AppSettingsConstants.FileTypeIdentifyTimeoutSecondsKey,
 			AppSettingsConstants.FileTypeIdentifyTimeoutSecondsDefaultValue)]
 		int IAppSettings.FileTypeIdentifyTimeoutSeconds
@@ -598,8 +587,8 @@ namespace Relativity.DataExchange
 		/// compatibility due to a recent redirection URL change by the platform team. See REL-294177 for more details.
 		/// </remarks>
 		[AppSetting(
-			AppSettingsConstants.SectionImportExport,
-			AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrl,
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlKey,
 			AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlDefaultValue)]
 		string IAppSettings.OAuth2ImplicitCredentialRedirectUrl
 		{
@@ -797,6 +786,28 @@ namespace Relativity.DataExchange
 			}
 
 			set => this.tapiBridgeExportTransferWaitingTimeInSeconds = value;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.TapiFileNotFoundErrorsDisabledKey,
+			AppSettingsConstants.TapiFileNotFoundErrorsDisabledDefaultValue)]
+		bool IAppSettings.TapiFileNotFoundErrorsDisabled
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.TapiFileNotFoundErrorsRetryKey,
+			AppSettingsConstants.TapiFileNotFoundErrorsRetryDefaultValue)]
+		bool IAppSettings.TapiFileNotFoundErrorsRetry
+		{
+			get;
+			set;
 		}
 
 		/// <inheritdoc />

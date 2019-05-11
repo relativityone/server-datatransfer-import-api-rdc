@@ -30,6 +30,8 @@ namespace Relativity.DataExchange.Transfer
 			this.BadPathErrorsRetry = false;
 			this.ClientRequestId = Guid.NewGuid();
 			this.Credentials = null;
+			this.FileNotFoundErrorsDisabled = false;
+			this.FileNotFoundErrorsRetry = true;
 			this.FileShare = null;
 			this.FileshareCredentials = null;
 			this.ForceAsperaClient = false;
@@ -74,6 +76,8 @@ namespace Relativity.DataExchange.Transfer
 			this.BadPathErrorsRetry = copy.BadPathErrorsRetry;
 			this.ClientRequestId = copy.ClientRequestId;
 			this.Credentials = copy.Credentials;
+			this.FileNotFoundErrorsRetry = copy.FileNotFoundErrorsRetry;
+			this.FileNotFoundErrorsDisabled = copy.FileNotFoundErrorsDisabled;
 			this.FileShare = copy.FileShare;
 			this.FileshareCredentials = copy.FileshareCredentials;
 			this.ForceAsperaClient = copy.ForceAsperaClient;
@@ -166,6 +170,30 @@ namespace Relativity.DataExchange.Transfer
 		/// The <see cref="NetworkCredential"/> instance.
 		/// </value>
 		public NetworkCredential Credentials
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to treat missing files as warnings or errors.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to disable treating missing files as errors; otherwise, <see langword="false" />.
+		/// </value>
+		public bool FileNotFoundErrorsDisabled
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to retry missing file errors.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to retry missing file errors; otherwise, <see langword="false" />.
+		/// </value>
+		public bool FileNotFoundErrorsRetry
 		{
 			get;
 			set;

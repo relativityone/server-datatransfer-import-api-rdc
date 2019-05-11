@@ -220,19 +220,6 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldGetAndSetTheEnableSingleModeImportSetting()
-		{
-			Assert.That(
-				this.settings.EnableSingleModeImport,
-				Is.EqualTo(DataExchange.AppSettingsConstants.EnableSingleModeImportDefaultValue));
-			bool expectedValue = RandomHelper.NextBoolean();
-			this.settings.EnableSingleModeImport = expectedValue;
-			Assert.That(this.settings.EnableSingleModeImport, Is.EqualTo(expectedValue));
-			this.settings.EnableSingleModeImport = !expectedValue;
-			Assert.That(this.settings.EnableSingleModeImport, Is.EqualTo(!expectedValue));
-		}
-
-		[Test]
 		public void ShouldGetAndSetTheEnforceVersionCompatibilityCheckSetting()
 		{
 			IAppSettingsInternal backdoorAppSettings = this.settings as IAppSettingsInternal;
@@ -647,6 +634,32 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheTapiFileNotFoundErrorsDisabledSetting()
+		{
+			Assert.That(
+				this.settings.TapiFileNotFoundErrorsDisabled,
+				Is.EqualTo(DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsDisabledDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.TapiFileNotFoundErrorsDisabled = expectedValue;
+			Assert.That(this.settings.TapiFileNotFoundErrorsDisabled, Is.EqualTo(expectedValue));
+			this.settings.TapiFileNotFoundErrorsDisabled = !expectedValue;
+			Assert.That(this.settings.TapiFileNotFoundErrorsDisabled, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheTapiFileNotFoundErrorsRetrySetting()
+		{
+			Assert.That(
+				this.settings.TapiFileNotFoundErrorsRetry,
+				Is.EqualTo(DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsRetryDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.TapiFileNotFoundErrorsRetry = expectedValue;
+			Assert.That(this.settings.TapiFileNotFoundErrorsRetry, Is.EqualTo(expectedValue));
+			this.settings.TapiFileNotFoundErrorsRetry = !expectedValue;
+			Assert.That(this.settings.TapiFileNotFoundErrorsRetry, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheTapiForceAsperaClientSetting()
 		{
 			Assert.That(
@@ -1055,6 +1068,13 @@ namespace Relativity.DataExchange.NUnit
 
 				// The kCura.Windows.Process section asserts go here.
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.LogAllEventsKey], Is.True);
+
+				// The new Relativity.DataExchange section asserts go here.
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.EnforceVersionCompatibilityCheckKey], Is.True);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.FileTypeIdentifyTimeoutSecondsKey], Is.EqualTo(456));
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlKey], Is.EqualTo("http://relativity"));
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsDisabledKey], Is.True);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsRetryKey], Is.True);
 			}
 		}
 
@@ -1135,6 +1155,10 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.TapiAsperaBcpRootFolder, Is.EqualTo("def"));
 				dictionary[DataExchange.AppSettingsConstants.TapiBadPathErrorsRetryKey] = true;
 				Assert.That(this.settings.TapiBadPathErrorsRetry, Is.True);
+				dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsRetryKey] = true;
+				Assert.That(this.settings.TapiFileNotFoundErrorsRetry, Is.True);
+				dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsDisabledKey] = true;
+				Assert.That(this.settings.TapiFileNotFoundErrorsDisabled, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.TapiForceAsperaClientKey] = true;
 				Assert.That(this.settings.TapiForceAsperaClient, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.TapiForceBcpHttpClientKey] = true;
@@ -1175,6 +1199,14 @@ namespace Relativity.DataExchange.NUnit
 				// The kCura.Windows.Process section asserts go here.
 				dictionary[DataExchange.AppSettingsConstants.LogAllEventsKey] = true;
 				Assert.That(this.settings.LogAllEvents, Is.True);
+
+				// The new Relativity.DataExchange section asserts go here.
+				dictionary[DataExchange.AppSettingsConstants.EnforceVersionCompatibilityCheckKey] = true;
+				Assert.That(((IAppSettingsInternal)this.settings).EnforceVersionCompatibilityCheck, Is.True);
+				dictionary[DataExchange.AppSettingsConstants.FileTypeIdentifyTimeoutSecondsKey] = 999;
+				Assert.That(this.settings.FileTypeIdentifyTimeoutSeconds, Is.EqualTo(999));
+				dictionary[DataExchange.AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlKey] = "http://dummy";
+				Assert.That(this.settings.OAuth2ImplicitCredentialRedirectUrl, Is.EqualTo("http://dummy"));
 			}
 		}
 
