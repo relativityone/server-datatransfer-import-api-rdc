@@ -247,7 +247,8 @@ task DigitallySignBinaries -Description "Digitally sign all binaries" {
         # The RDC binaries contained within the project must be signed to ensure harvesting includes digitally signed binaries.
         (Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Legacy") "bin"),
         (Join-Path $BinariesArtifactsDir "Relativity.Desktop.Client.Legacy"),
-        (Join-Path $BinariesArtifactsDir "Relativity.Import.Client")
+        (Join-Path $BinariesArtifactsDir "Relativity.DataExchange.Import"),
+		(Join-Path $BinariesArtifactsDir "sdk")
     )
 
     Invoke-DigitallSignFiles -DirectoryCandidates $directoryCandidates
