@@ -105,10 +105,6 @@ namespace Relativity.DataExchange
 		public const int PreviewThresholdDefaultValue = 1000;
 		public const string ProcessFormRefreshRateKey = "ProcessFormRefreshRate";
 		public const int ProcessFormRefreshRateDefaultValue = 0;
-		public const string RestUrlKey = "RestUrl";
-		public const string RestUrlDefaultValue = "/Relativity.REST/api";
-		public const string ServicesUrlKey = "ServicesUrl";
-		public const string ServicesUrlDefaultValue = "/Relativity.Services/";
 		public const RetryOptions RetryOptionsDefaultValue = RetryOptions.Io;
 		public const string SuppressServerCertificateValidationKey = "SuppressCertificateCheckOnClient";
 		public const bool SuppressServerCertificateValidationDefaultValue = false;

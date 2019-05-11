@@ -544,18 +544,6 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets the relative REST URL.
-		/// </summary>
-		/// <value>
-		/// The URL.
-		/// </value>
-		string RestUrl
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Gets the retry options used by all retry policy blocks. This value is read-only because the value is driven by a combination of other setting values such as <see cref="PermissionErrorsRetry"/>.
 		/// </summary>
 		/// <value>
@@ -564,18 +552,6 @@ namespace Relativity.DataExchange
 		RetryOptions RetryOptions
 		{
 			get;
-		}
-
-		/// <summary>
-		/// Gets or sets the relative services URL.
-		/// </summary>
-		/// <value>
-		/// The URL.
-		/// </value>
-		string ServicesUrl
-		{
-			get;
-			set;
 		}
 
 		/// <summary>

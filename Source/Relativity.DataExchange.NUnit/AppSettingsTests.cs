@@ -559,24 +559,6 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldGetAndSetTheRestUrlSetting()
-		{
-			Assert.That(this.settings.RestUrl, Is.EqualTo(DataExchange.AppSettingsConstants.RestUrlDefaultValue));
-			Uri expectedValue = RandomHelper.NextUri();
-			this.settings.RestUrl = expectedValue.ToString();
-			Assert.That(this.settings.RestUrl, Is.EqualTo(expectedValue));
-		}
-
-		[Test]
-		public void ShouldGetAndSetTheServicesUrlSetting()
-		{
-			Assert.That(this.settings.ServicesUrl, Is.EqualTo(DataExchange.AppSettingsConstants.ServicesUrlDefaultValue));
-			Uri expectedValue = RandomHelper.NextUri();
-			this.settings.ServicesUrl = expectedValue.ToString();
-			Assert.That(this.settings.ServicesUrl, Is.EqualTo(expectedValue));
-		}
-
-		[Test]
 		public void ShouldGetAndSetTheSuppressServerCertificateValidationSetting()
 		{
 			Assert.That(
@@ -1042,8 +1024,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.MinBatchSizeKey], Is.EqualTo(29));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.PermissionErrorsRetryKey], Is.False);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.PreviewThresholdKey], Is.EqualTo(49));
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.RestUrlKey], Is.EqualTo("/Relativity.One.REST/api/"));
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.ServicesUrlKey], Is.EqualTo("/Relativity.One.Services/"));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.SuppressServerCertificateValidationKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiAsperaBcpRootFolderKey], Is.EqualTo("Root"));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiBadPathErrorsRetryKey], Is.False);
@@ -1145,10 +1125,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.PermissionErrorsRetry, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.PreviewThresholdKey] = 16;
 				Assert.That(this.settings.PreviewThreshold, Is.EqualTo(16));
-				dictionary[DataExchange.AppSettingsConstants.RestUrlKey] = "/Relativity.One.Two.REST/api/";
-				Assert.That(this.settings.RestUrl, Is.EqualTo("/Relativity.One.Two.REST/api/"));
-				dictionary[DataExchange.AppSettingsConstants.ServicesUrlKey] = "/Relativity.One.Two.Services/";
-				Assert.That(this.settings.ServicesUrl, Is.EqualTo("/Relativity.One.Two.Services/"));
 				dictionary[DataExchange.AppSettingsConstants.SuppressServerCertificateValidationKey] = true;
 				Assert.That(this.settings.SuppressServerCertificateValidation, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.TapiAsperaBcpRootFolderKey] = "def";

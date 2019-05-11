@@ -682,17 +682,6 @@ namespace Relativity.DataExchange
 		}
 
 		/// <inheritdoc />
-		[AppSetting(
-			AppSettingsConstants.SectionLegacyWinEdds,
-			AppSettingsConstants.RestUrlKey,
-			AppSettingsConstants.RestUrlDefaultValue)]
-		string IAppSettings.RestUrl
-		{
-			get;
-			set;
-		}
-
-		/// <inheritdoc />
 		[AppSetting]
 		RetryOptions IAppSettings.RetryOptions
 		{
@@ -711,17 +700,6 @@ namespace Relativity.DataExchange
 
 				return value;
 			}
-		}
-
-		/// <inheritdoc />
-		[AppSetting(
-			AppSettingsConstants.SectionLegacyWinEdds,
-			AppSettingsConstants.ServicesUrlKey,
-			AppSettingsConstants.ServicesUrlDefaultValue)]
-		string IAppSettings.ServicesUrl
-		{
-			get;
-			set;
 		}
 
 		/// <inheritdoc />
