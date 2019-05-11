@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.Samples.NUnit.Tests
+namespace Relativity.DataExchange.Samples.NUnit.Import
 {
 	using System;
 	using System.Collections.Generic;

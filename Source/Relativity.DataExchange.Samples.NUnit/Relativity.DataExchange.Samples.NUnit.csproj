@@ -139,19 +139,19 @@
       <Paket>True</Paket>
     </Content>
     <Compile Include="AssemblySetup.cs" />
-    <Compile Include="Tests\DocImportFolderTests.cs" />
-    <Compile Include="Tests\DocImportTests.cs" />
-    <Compile Include="Tests\DocImportRecord.cs" />
-    <Compile Include="Tests\DocImportTestsBase.cs" />
-    <Compile Include="Tests\DocNegativeImportTests.cs" />
-    <Compile Include="Tests\ImageImportTests.cs" />
-    <Compile Include="Tests\ImageImportTestsBase.cs" />
-    <Compile Include="Tests\ImportTestsBase.cs" />
-    <Compile Include="Tests\ObjectAdvancedImportTests.cs" />
-    <Compile Include="Tests\ObjectImportTestsBase.cs" />
-    <Compile Include="Tests\ObjectNegativeImportTests.cs" />
-    <Compile Include="Tests\ObjectSimpleImportTests.cs" />
-    <Compile Include="Tests\ProductionImportTests.cs" />
+    <Compile Include="Import\DocImportFolderTests.cs" />
+    <Compile Include="Import\DocImportTests.cs" />
+    <Compile Include="Import\DocImportRecord.cs" />
+    <Compile Include="Import\DocImportTestsBase.cs" />
+    <Compile Include="Import\DocNegativeImportTests.cs" />
+    <Compile Include="Import\ImageImportTests.cs" />
+    <Compile Include="Import\ImageImportTestsBase.cs" />
+    <Compile Include="Import\ImportTestsBase.cs" />
+    <Compile Include="Import\ObjectAdvancedImportTests.cs" />
+    <Compile Include="Import\ObjectImportTestsBase.cs" />
+    <Compile Include="Import\ObjectNegativeImportTests.cs" />
+    <Compile Include="Import\ObjectSimpleImportTests.cs" />
+    <Compile Include="Import\ProductionImportTests.cs" />
     <Content Include="LogConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
