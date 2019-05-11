@@ -468,6 +468,17 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheOAuth2ImplicitCredentialRedirectUrlSetting()
+		{
+			Assert.That(
+				this.settings.OAuth2ImplicitCredentialRedirectUrl,
+				Is.EqualTo(AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlDefaultValue));
+			Uri expectedValue = RandomHelper.NextUri();
+			this.settings.OAuth2ImplicitCredentialRedirectUrl = expectedValue.ToString();
+			Assert.That(this.settings.OAuth2ImplicitCredentialRedirectUrl, Is.EqualTo(expectedValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheMinBatchSizeSetting()
 		{
 			Assert.That(

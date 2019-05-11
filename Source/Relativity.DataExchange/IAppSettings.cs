@@ -453,6 +453,22 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets the OAuth2 implicit credential redirect URL. This is only used for interactive processes like the RDC.
+		/// </summary>
+		/// <value>
+		/// The redirect URL.
+		/// </value>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1056:UriPropertiesShouldNotBeStrings",
+			Justification = "This is OK based on usage.")]
+		string OAuth2ImplicitCredentialRedirectUrl
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the list of artifacts to use for object field mapping.
 		/// </summary>
 		/// <value>
