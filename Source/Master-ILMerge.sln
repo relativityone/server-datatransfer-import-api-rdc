@@ -36,7 +36,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Imp
 		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D} = {AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Import.Samples.NUnit", "Relativity.DataExchange.Import.Samples.NUnit\Relativity.DataExchange.Import.Samples.NUnit.csproj", "{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Samples.NUnit", "Relativity.DataExchange.Samples.NUnit\Relativity.DataExchange.Samples.NUnit.csproj", "{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}"
 	ProjectSection(ProjectDependencies) = postProject
 		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D} = {AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}
 	EndProjectSection
