@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.572
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Import.NUnit", "Relativity.DataExchange.Import.NUnit\Relativity.DataExchange.Import.NUnit.csproj", "{10DF5B1F-2D12-4201-BA36-D074574F2510}"
 EndProject
@@ -22,8 +22,6 @@ EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Desktop.Client.Legacy.NUnit", "Relativity.Desktop.Client.Legacy.NUnit\Relativity.Desktop.Client.Legacy.NUnit.vbproj", "{A68791C3-A2A3-46C5-8C59-AF6FE6516662}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Import.NUnit.Integration", "Relativity.DataExchange.Import.NUnit.Integration\Relativity.DataExchange.Import.NUnit.Integration.csproj", "{4BC26612-C72D-45D9-9902-88562017EDA0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Import.Samples.NUnit", "Relativity.DataExchange.Import.Samples.NUnit\Relativity.DataExchange.Import.Samples.NUnit.csproj", "{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Export.NUnit.Integration", "Relativity.DataExchange.Export.NUnit.Integration\Relativity.DataExchange.Export.NUnit.Integration.csproj", "{5AEF327E-1D3A-4231-B4C6-041769248B33}"
 EndProject
@@ -48,6 +46,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Export", "Relativity.DataExchange.Export\Relativity.DataExchange.Export.csproj", "{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.DataExchange.Legacy", "Relativity.DataExchange.Legacy\Relativity.DataExchange.Legacy.vbproj", "{2022E24B-46A1-46DA-A715-36D137436B3A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github", "Github", "{FC4A7043-E43C-4E72-A36A-480315B2F1A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Samples.NUnit", "Relativity.DataExchange.Samples.NUnit\Relativity.DataExchange.Samples.NUnit.csproj", "{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,14 +107,6 @@ Global
 		{4BC26612-C72D-45D9-9902-88562017EDA0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4BC26612-C72D-45D9-9902-88562017EDA0}.Release-ILMerge|Any CPU.ActiveCfg = Release-ILMerge|Any CPU
 		{4BC26612-C72D-45D9-9902-88562017EDA0}.Release-ILMerge|Any CPU.Build.0 = Release-ILMerge|Any CPU
-		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Debug-ILMerge|Any CPU.ActiveCfg = Debug-ILMerge|Any CPU
-		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Debug-ILMerge|Any CPU.Build.0 = Debug-ILMerge|Any CPU
-		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Release-ILMerge|Any CPU.ActiveCfg = Release-ILMerge|Any CPU
-		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Release-ILMerge|Any CPU.Build.0 = Release-ILMerge|Any CPU
 		{5AEF327E-1D3A-4231-B4C6-041769248B33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5AEF327E-1D3A-4231-B4C6-041769248B33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AEF327E-1D3A-4231-B4C6-041769248B33}.Debug-ILMerge|Any CPU.ActiveCfg = Debug-ILMerge|Any CPU
@@ -177,6 +171,14 @@ Global
 		{2022E24B-46A1-46DA-A715-36D137436B3A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2022E24B-46A1-46DA-A715-36D137436B3A}.Release-ILMerge|Any CPU.ActiveCfg = Release-ILMerge|Any CPU
 		{2022E24B-46A1-46DA-A715-36D137436B3A}.Release-ILMerge|Any CPU.Build.0 = Release-ILMerge|Any CPU
+		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Debug-ILMerge|Any CPU.ActiveCfg = Debug-ILMerge|Any CPU
+		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Debug-ILMerge|Any CPU.Build.0 = Debug-ILMerge|Any CPU
+		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Release-ILMerge|Any CPU.ActiveCfg = Release-ILMerge|Any CPU
+		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}.Release-ILMerge|Any CPU.Build.0 = Release-ILMerge|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -188,7 +190,6 @@ Global
 		{FED61746-80EC-40CB-998E-9299B804CE7D} = {5F3863F0-E6C9-439F-A371-6B95DB928BDE}
 		{A68791C3-A2A3-46C5-8C59-AF6FE6516662} = {272C7D84-8FCE-4F14-8D39-E0422E0FF922}
 		{4BC26612-C72D-45D9-9902-88562017EDA0} = {D46C8AE9-2431-43EC-9AC6-3CB06EE99453}
-		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE} = {D46C8AE9-2431-43EC-9AC6-3CB06EE99453}
 		{5AEF327E-1D3A-4231-B4C6-041769248B33} = {1114F579-C126-48A5-8182-50AB87366325}
 		{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31} = {5F3863F0-E6C9-439F-A371-6B95DB928BDE}
 		{B6E34ED3-1C41-4DB9-9BD7-24A256A05663} = {5F3863F0-E6C9-439F-A371-6B95DB928BDE}
@@ -197,6 +198,7 @@ Global
 		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D} = {D46C8AE9-2431-43EC-9AC6-3CB06EE99453}
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5} = {1114F579-C126-48A5-8182-50AB87366325}
 		{2022E24B-46A1-46DA-A715-36D137436B3A} = {5F3863F0-E6C9-439F-A371-6B95DB928BDE}
+		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE} = {FC4A7043-E43C-4E72-A36A-480315B2F1A8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B030F56A-9600-4DC6-B33D-A81BE2C63205}
