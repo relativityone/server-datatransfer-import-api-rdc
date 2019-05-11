@@ -31,9 +31,9 @@ tags
 files
 	../Artifacts/binaries/sdk/Relativity.DataExchange.Client.SDK.dll ==> lib/net462
 	../Artifacts/binaries/sdk/Relativity.DataExchange.Client.SDK.xml ==> lib/net462
-	../Artifacts/binaries/Relativity.DataExchange/FreeImageNET.dll ==> lib/net462
-	../Artifacts/binaries/Relativity.DataExchange/FreeImage.dll ==> lib/native
-    ./Relativity.DataExchange.Client.SDK.targets ==> build
+	../Artifacts/binaries/Relativity.DataExchange.Import/FreeImageNET.dll ==> lib/net462
+	../Artifacts/binaries/Relativity.DataExchange.Import/FreeImage.dll ==> lib/native
+  ./Relativity.DataExchange.Client.SDK.targets ==> build
 dependencies
   framework: net462
 	Newtonsoft.Json >= 6.0.8
