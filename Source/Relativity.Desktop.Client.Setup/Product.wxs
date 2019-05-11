@@ -7,7 +7,7 @@
            Name="$(var.ProductName)"
            Codepage="1252"
            Language="1033"
-           Version="!(bind.FileVersion.Relativity.Desktop.Client.exe)"
+           Version="$(var.ProductVersion)"
            UpgradeCode="$(var.UpgradeCode)"
            Manufacturer="Relativity ODA LLC">
     <Package Description="$(var.ProductName) Installer package"
