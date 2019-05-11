@@ -206,6 +206,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.DynamicReferences.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

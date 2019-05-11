@@ -1,6 +1,6 @@
-Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Service
-Imports Relativity.Import.Export.Transfer
+Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Service
+Imports Relativity.DataExchange.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class ConnectionDetailsProcess
@@ -58,7 +58,7 @@ Namespace kCura.WinEDDS
 		
 		Private Sub CheckDownloadHandlerURL()
 			Me.WriteStatus("Validate Download URL:")
-			Dim downloadUrl As String = Global.Relativity.Import.Export.Io.FileSystem.Instance.Path.GetFullyQualifiedPath(New System.Uri(Me.AppSettings.WebApiServiceUrl), _caseInfo.DownloadHandlerURL)
+			Dim downloadUrl As String = Global.Relativity.DataExchange.Io.FileSystem.Instance.Path.GetFullyQualifiedPath(New System.Uri(Me.AppSettings.WebApiServiceUrl), _caseInfo.DownloadHandlerURL)
 			Me.WriteStatus(downloadUrl)
 			Dim myReq As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(downloadUrl & "AccessDenied.aspx"), System.Net.HttpWebRequest)
 	  Try

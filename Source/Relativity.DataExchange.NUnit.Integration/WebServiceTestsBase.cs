@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit.Integration
+namespace Relativity.DataExchange.NUnit.Integration
 {
 	using System.Net;
 	using System.Threading;
@@ -13,7 +13,8 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 	using Moq;
 
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents the base class for web-service class objects.
@@ -95,7 +96,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
 			this.AssignTestSettings();
-			this.AppSettings = AppSettingsManager.Create(true);
+			this.AppSettings = DataExchange.AppSettingsManager.Create(true);
 			this.CancellationTokenSource = new CancellationTokenSource();
 			this.Logger = new Mock<Relativity.Logging.ILog>();
 			this.RelativityInstance = new RelativityInstanceInfo

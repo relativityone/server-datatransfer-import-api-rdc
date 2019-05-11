@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Io
+namespace Relativity.DataExchange.Io
 {
 	using System;
 	using System.Globalization;
@@ -12,7 +12,7 @@ namespace Relativity.Import.Export.Io
 
 	using OutsideIn;
 
-	using Relativity.Import.Export.Resources;
+	using Relativity.DataExchange.Resources;
 
 	/// <summary>
 	/// Represents a file identification service class object using Outside In technology.

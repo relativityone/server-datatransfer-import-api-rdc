@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.Threading;
@@ -16,9 +16,9 @@ namespace Relativity.Import.Export.NUnit
 
 	using Moq;
 
-	using Relativity.Import.Export.Io;
-	using Relativity.Import.Export.Process;
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Process;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents <see cref="ProcessErrorWriter"/> tests.

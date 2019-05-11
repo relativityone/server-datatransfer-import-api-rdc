@@ -14,7 +14,7 @@ namespace Relativity.Export.NUnit
 
     using global::NUnit.Framework;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
 
     [TestFixture]
 	public class FullTextLineWriterTests

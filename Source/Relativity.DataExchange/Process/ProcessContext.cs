@@ -4,13 +4,13 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Process
+namespace Relativity.DataExchange.Process
 {
 	using System;
 	using System.Collections;
 	using System.Threading;
 
-	using Relativity.Import.Export.Resources;
+	using Relativity.DataExchange.Resources;
 
 	/// <summary>
 	/// Represents a thread-safe context for a <see cref="IRunnable"/> process to publish events. This class cannot be inherited.
@@ -596,7 +596,7 @@ namespace Relativity.Import.Export.Process
 		/// Logs the process event.
 		/// </summary>
 		/// <param name="args">
-		/// The <see cref="Relativity.Import.Export.Process.ProcessEventArgs" /> instance containing the event data.
+		/// The <see cref="ProcessEventArgs" /> instance containing the event data.
 		/// </param>
 		private void LogProcessEvent(ProcessEventArgs args)
 		{

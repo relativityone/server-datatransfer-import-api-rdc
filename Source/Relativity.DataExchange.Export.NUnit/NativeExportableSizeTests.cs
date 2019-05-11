@@ -11,7 +11,7 @@ namespace Relativity.Export.NUnit
 	using kCura.WinEDDS;
     using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.DataSize;
+	using Relativity.DataExchange.Export.VolumeManagerV2.DataSize;
 
 	[TestFixture]
 	public class NativeExportableSizeTests

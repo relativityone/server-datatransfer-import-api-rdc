@@ -1,10 +1,11 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	using System;
 
-	using global::Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
-	using global::Relativity.Import.Export.Transfer;
+	using global::Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using global::Relativity.Transfer;
+
+	using Relativity.DataExchange.Transfer;
 
 	public class TapiBridgeWrapper : ITapiBridgeWrapper
 	{

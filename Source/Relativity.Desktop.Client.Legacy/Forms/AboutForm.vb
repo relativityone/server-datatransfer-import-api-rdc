@@ -1,5 +1,4 @@
 ﻿Imports System
-Imports Relativity.Import.Export.Service
 
 Public Class AboutForm
 	Inherits System.Windows.Forms.Form

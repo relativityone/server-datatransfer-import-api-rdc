@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Repository
 {
 	using System.Collections.Generic;
 	using System.Linq;
@@ -6,8 +6,8 @@
 
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.Directories;
-	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.Logging;
 
 	public class NativeRepositoryBuilder : IRepositoryBuilder

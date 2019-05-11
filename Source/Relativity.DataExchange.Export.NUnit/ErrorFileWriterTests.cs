@@ -16,9 +16,9 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
-	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
-	using Relativity.Logging;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
+    using Relativity.Logging;
 
     [TestFixture]
 	public class ErrorFileWriterTests

@@ -15,9 +15,9 @@ namespace Relativity.Import.Client.NUnit
 
 	using Moq;
 
-	using Relativity.Import.Export;
-	using Relativity.Import.Export.Io;
-	using Relativity.Import.Export.Process;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Process;
 	using Relativity.Logging;
 
 	/// <summary>

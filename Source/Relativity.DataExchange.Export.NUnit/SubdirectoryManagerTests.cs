@@ -11,7 +11,7 @@ namespace Relativity.Export.NUnit
 	using kCura.WinEDDS;
     using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 
 	[TestFixture]
 	public class SubdirectoryManagerTests

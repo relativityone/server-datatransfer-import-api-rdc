@@ -1,10 +1,8 @@
-﻿namespace Relativity.Export.IO
+﻿namespace Relativity.DataExchange.Io
 {
-	using global::Relativity.Import.Export.Io;
-
 	using ZetaLongPaths;
 
-	public class LongPathDirectoryHelper : IDirectory
+	internal class LongPathDirectoryHelper : IDirectory
     {
         private object _lockObject = new object();
 
@@ -15,9 +13,9 @@
 
         public void CreateDirectory(string path)
         {
-            lock (_lockObject)
+            lock (this._lockObject)
             {
-                if (!Exists(path))
+                if (!this.Exists(path))
                 {
                     ZlpIOHelper.CreateDirectory(path);
                 }
@@ -26,9 +24,9 @@
 
         public void Delete(string path, bool recursive)
         {
-            lock (_lockObject)
+            lock (this._lockObject)
             {
-                if (Exists(path))
+                if (this.Exists(path))
                 {
                     ZlpIOHelper.DeleteDirectory(path, recursive);
                 }

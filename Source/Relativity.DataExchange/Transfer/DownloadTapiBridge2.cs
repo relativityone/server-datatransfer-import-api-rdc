@@ -7,12 +7,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Transfer
+namespace Relativity.DataExchange.Transfer
 {
 	using System;
 	using System.Threading;
 
-	using Relativity.Import.Export.Resources;
+	using Relativity.DataExchange.Resources;
 	using Relativity.Transfer;
 	using Relativity.Transfer.Aspera;
 

@@ -1,9 +1,11 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Natives
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives
 {
-	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
+
+	using HtmlCellFormatter = Relativity.DataExchange.Export.HtmlCellFormatter;
 
 	public class LoadFileCellFormatterFactory
 	{
@@ -11,7 +13,7 @@
 		{
 			if (exportSettings.LoadFileIsHtml)
 			{
-				return new Relativity.Export.VolumeManagerV2.HtmlCellFormatter(exportSettings, filePathTransformer);
+				return new HtmlCellFormatter(exportSettings, filePathTransformer);
 			}
 
 			return new DelimitedCellFormatter(exportSettings);

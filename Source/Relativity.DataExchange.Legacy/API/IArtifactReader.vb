@@ -1,4 +1,4 @@
-Imports Relativity.Import.Export.Io
+Imports Relativity.DataExchange.Io
 
 Namespace kCura.WinEDDS.Api
 	Public Interface IArtifactReader

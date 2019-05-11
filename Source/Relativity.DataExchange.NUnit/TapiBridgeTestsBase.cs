@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.Net;
@@ -17,8 +17,8 @@ namespace Relativity.Import.Export.NUnit
 
 	using Moq;
 
-	using Relativity.Import.Export.TestFramework;
-	using Relativity.Import.Export.Transfer;
+	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.Transfer;
 	using Relativity.Transfer;
 
 	/// <summary>

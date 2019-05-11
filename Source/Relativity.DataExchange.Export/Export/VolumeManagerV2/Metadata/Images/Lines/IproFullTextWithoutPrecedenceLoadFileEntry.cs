@@ -1,6 +1,6 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images.Lines
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines
 {
-	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 
 	using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS;

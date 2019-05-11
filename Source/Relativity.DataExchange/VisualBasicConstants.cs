@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
 	/// <summary>
 	/// Defines constants used by legacy code VB.NET ported from Relativity.

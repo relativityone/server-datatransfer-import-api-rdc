@@ -1,17 +1,17 @@
-namespace Relativity.Export.VolumeManagerV2
+namespace Relativity.DataExchange.Export.VolumeManagerV2
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Net;
 
-	using Relativity.Import.Export.Transfer;
 	using Relativity.Logging;
 	using Relativity.Transfer;
 
-	using global::Relativity.Import.Export;
-
 	using kCura.WinEDDS;
+
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.Transfer;
 
 	public partial class FileShareSettingsService : IFileShareSettingsService
 	{

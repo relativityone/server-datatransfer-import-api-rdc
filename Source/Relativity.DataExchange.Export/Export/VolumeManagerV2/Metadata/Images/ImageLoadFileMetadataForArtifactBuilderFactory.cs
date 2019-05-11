@@ -1,11 +1,11 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images
 {
 	using System;
 
 	using kCura.WinEDDS;
 
-	using Relativity.Export.VolumeManagerV2.Directories;
-	using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
 	using Relativity.Logging;
 
 	public class ImageLoadFileMetadataForArtifactBuilderFactory

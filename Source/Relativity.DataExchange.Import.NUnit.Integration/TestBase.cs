@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit.Integration
+namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
 	using System.IO;
@@ -17,10 +17,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export;
-	using Relativity.Import.Export.TestFramework;
-	using Relativity.Import.Export.Transfer;
-	using Relativity.Transfer;
+	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.Transfer;
 
 	/// <summary>
 	/// Represents an abstract integration test base class.

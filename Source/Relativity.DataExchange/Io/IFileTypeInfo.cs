@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Io
+namespace Relativity.DataExchange.Io
 {
 	/// <summary>
 	/// Represents an abstract object that describes file type information.

@@ -6,8 +6,8 @@
 
 namespace Relativity.Export.NUnit
 {
-    using Relativity.Import.Export;
-    using Relativity.Import.Export.Media;
+    using Relativity.DataExchange;
+    using Relativity.DataExchange.Media;
 
     public class ImageException : ImageConversionException
 	{

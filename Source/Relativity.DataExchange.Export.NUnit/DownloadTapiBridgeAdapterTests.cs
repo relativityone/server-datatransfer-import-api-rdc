@@ -10,11 +10,11 @@ namespace Relativity.Export.NUnit
 
 	using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
-	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Transfer;
 
-    using ITransferStatistics = Relativity.Export.VolumeManagerV2.Statistics.ITransferStatistics;
+    using ITransferStatistics = Relativity.DataExchange.Export.VolumeManagerV2.Statistics.ITransferStatistics;
 
     [TestFixture]
 	public abstract class DownloadTapiBridgeAdapterTests

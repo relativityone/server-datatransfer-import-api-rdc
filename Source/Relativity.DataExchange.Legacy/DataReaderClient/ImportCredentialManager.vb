@@ -1,7 +1,7 @@
 ﻿Imports System.Net
 Imports System.Collections.Generic
 Imports System.Threading
-Imports Relativity.Import.Export
+Imports Relativity.DataExchange
 
 Friend Class ImportCredentialManager
 

@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Statistics
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Statistics
 {
 	public interface IDownloadProgressManager
 	{

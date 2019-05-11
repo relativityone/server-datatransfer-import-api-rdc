@@ -7,13 +7,14 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
 	using System;
 	using System.Threading;
+
 	using Polly;
 
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Io;
 
 	/// <summary>
 	/// Represents a wait and retry policy class objects with a default back-off time strategy.

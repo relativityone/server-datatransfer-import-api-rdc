@@ -1,9 +1,9 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Writers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers
 {
 	using kCura.WinEDDS;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
-	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 
 	public class ImageLoadFileRetryableStreamWriter : RetryableStreamWriter

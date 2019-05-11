@@ -8,7 +8,7 @@ namespace Relativity.Export.NUnit
 {
     using System.Data;
 
-    using Relativity.Import.Export.Service;
+    using Relativity.DataExchange.Service;
 
 	public class FieldStub : kCura.WinEDDS.ViewFieldInfo
 	{
@@ -17,7 +17,7 @@ namespace Relativity.Export.NUnit
 		{
 		}
 
-		public FieldStub(Relativity.Import.Export.Service.ViewFieldInfo vfi)
+		public FieldStub(Relativity.DataExchange.Service.ViewFieldInfo vfi)
 			: base(vfi)
 		{
 		}

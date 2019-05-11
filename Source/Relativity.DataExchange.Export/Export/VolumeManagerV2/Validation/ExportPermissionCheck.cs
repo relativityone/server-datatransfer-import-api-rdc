@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Validation
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Validation
 {
 	using kCura.WinEDDS.Service;
 	using kCura.WinEDDS.Service.Export;

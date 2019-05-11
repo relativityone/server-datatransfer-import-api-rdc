@@ -1,9 +1,9 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Validation
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Validation
 {
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
 	using Relativity.Logging;
 
 	public class FilesOverwriteValidator

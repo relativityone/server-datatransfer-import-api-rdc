@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.TestFramework
+namespace Relativity.DataExchange.TestFramework
 {
 	using System;
 
@@ -50,6 +50,7 @@ namespace Relativity.Import.Export.TestFramework
 						IncludePageNumbers = false,
 					},
 				};
+
 				return client.CreateSingleAsync(parameters.WorkspaceId, production).ConfigureAwait(false).GetAwaiter()
 					.GetResult();
 			}

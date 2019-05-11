@@ -7,10 +7,10 @@ Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.IO
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Media
-Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Media
+Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS
 	Public Class VolumeManager
@@ -54,9 +54,9 @@ Namespace kCura.WinEDDS
 		Private _ordinalLookup As New System.Collections.Generic.Dictionary(Of String, Int32)
 		Private _loadFileFormatter As Exporters.ILoadFileCellFormatter
 
-		Private _fileHelper As Global.Relativity.Import.Export.Io.IFile
+		Private _fileHelper As Global.Relativity.DataExchange.Io.IFile
 		Private _fileStreamFactory As IFileStreamFactory
-		Private _directoryHelper As Global.Relativity.Import.Export.Io.IDirectory
+		Private _directoryHelper As Global.Relativity.DataExchange.Io.IDirectory
 		Private _fileNameProvider As IFileNameProvider
 		
 		Private _logger As Global.Relativity.Logging.ILog
@@ -141,7 +141,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As Timekeeper2, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As Global.Relativity.Import.Export.Io.IFile, directoryHelper As Global.Relativity.Import.Export.Io.IDirectory, fileNameProvider As IFileNameProvider)
+		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As Timekeeper2, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As Global.Relativity.DataExchange.Io.IFile, directoryHelper As Global.Relativity.DataExchange.Io.IDirectory, fileNameProvider As IFileNameProvider)
 			_settings = settings
 			_statistics = statistics
 			_parent = parent
@@ -1269,7 +1269,7 @@ Namespace kCura.WinEDDS
 			End If
 			Dim formatter As Exporters.ILongTextStreamFormatter = GetLongTextStreamFormatter(source)
 			If Not fileWriter Is Nothing Then Me.WriteLongText(source, fileWriter, formatter)
-			If Not String.IsNullOrEmpty(longTextPath) Then Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(longTextPath)
+			If Not String.IsNullOrEmpty(longTextPath) Then Global.Relativity.DataExchange.Io.FileSystem.Instance.File.Delete(longTextPath)
 		End Sub
 
 		Public Sub WriteDatFile(ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry), ByVal artifacts As Exporters.ObjectExportInfo())
@@ -1309,7 +1309,7 @@ Namespace kCura.WinEDDS
 					'Save file writer stream position in case we need to rollback on retry attempts
 					If Not _nativeFileWriter Is Nothing Then
 						_nativeFileWriterPosition = _nativeFileWriter.BaseStream.Position
-						loadFileBytes += Global.Relativity.Import.Export.Io.FileSystem.Instance.File.GetFileSize(DirectCast(_nativeFileWriter.BaseStream, System.IO.FileStream).Name)
+						loadFileBytes += Global.Relativity.DataExchange.Io.FileSystem.Instance.File.GetFileSize(DirectCast(_nativeFileWriter.BaseStream, System.IO.FileStream).Name)
 					End If
 
 					'Store statistics
@@ -1382,7 +1382,7 @@ Namespace kCura.WinEDDS
 					'Save file writer stream position in case we need to rollback on retry attempts
 					If Not _imageFileWriter Is Nothing Then
 						_imageFileWriterPosition = _imageFileWriter.BaseStream.Position
-						loadFileBytes += Global.Relativity.Import.Export.Io.FileSystem.Instance.File.GetFileSize(DirectCast(_imageFileWriter.BaseStream, System.IO.FileStream).Name)
+						loadFileBytes += Global.Relativity.DataExchange.Io.FileSystem.Instance.File.GetFileSize(DirectCast(_imageFileWriter.BaseStream, System.IO.FileStream).Name)
 					End If
 
 					'Store statistics

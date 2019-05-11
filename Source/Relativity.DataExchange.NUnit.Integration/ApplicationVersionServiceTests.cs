@@ -7,13 +7,14 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit.Integration
+namespace Relativity.DataExchange.NUnit.Integration
 {
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Testing.Identification;
 
 	/// <summary>

@@ -3,7 +3,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Service
+namespace Relativity.DataExchange.Service
 {
 	/// <summary>
 	/// Defines constants for the well-known parent reflection types, including empty, parent, and grandparent.

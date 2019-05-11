@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Repository
 {
 	using System.Collections.Generic;
 	using System.IO;
@@ -11,11 +11,11 @@
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.Directories;
-	using Relativity.Export.VolumeManagerV2.Download;
-	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.Export.VolumeManagerV2.Statistics;
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 
 	public class LongTextPrecedenceBuilder : ILongTextBuilder
 	{

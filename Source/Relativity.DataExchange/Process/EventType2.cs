@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Process
+namespace Relativity.DataExchange.Process
 {
 	/// <summary>
 	/// Represents all supported process related events.

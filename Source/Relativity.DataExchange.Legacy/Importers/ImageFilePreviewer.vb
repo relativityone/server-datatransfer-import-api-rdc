@@ -1,9 +1,9 @@
 Imports System.IO
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Helpers
-Imports Relativity.Import.Export.Data
-Imports Relativity.Import.Export.Media
-Imports Relativity.Import.Export.Process
+Imports Relativity.DataExchange.Data
+Imports Relativity.DataExchange.Media
+Imports Relativity.DataExchange.Process
 
 Namespace kCura.WinEDDS
 	Public Class ImageFilePreviewer
@@ -40,7 +40,7 @@ Namespace kCura.WinEDDS
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
 			Try
-				_fileLineCount = Global.Relativity.Import.Export.Io.FileSystem.Instance.File.CountLinesInFile(path)
+				_fileLineCount = Global.Relativity.DataExchange.Io.FileSystem.Instance.File.CountLinesInFile(path)
 				Reader = New StreamReader(path)
 				RaiseStatusEvent(EventType2.Progress, "Begin Image Upload")
 

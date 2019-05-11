@@ -1,7 +1,7 @@
 Imports System.Net
 Imports kCura.WinEDDS
-Imports Relativity.Import.Export.Service
-Imports Relativity.Import.Export.Process
+Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Service
 
 Namespace kCura.Relativity.DataReaderClient
 

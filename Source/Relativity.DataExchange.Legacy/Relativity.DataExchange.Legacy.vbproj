@@ -58,7 +58,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
-    <DocumentationFile>bin\kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\Relativity.DataExchange.Legacy.xml</DocumentationFile>
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
@@ -79,7 +79,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
-    <DocumentationFile>bin\kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\Relativity.DataExchange.Legacy.xml</DocumentationFile>
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
@@ -110,7 +110,7 @@
     <OutputPath>bin\</OutputPath>
     <DefineConstants>EnableInjections</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>bin\kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\Relativity.DataExchange.Legacy.xml</DocumentationFile>
     <WarningLevel>1</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>40000,40008</NoWarn>
@@ -126,7 +126,7 @@
     <OutputPath>bin\</OutputPath>
     <DefineConstants>EnableInjections</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>bin\kCura.WinEDDS.xml</DocumentationFile>
+    <DocumentationFile>bin\Relativity.DataExchange.Legacy.xml</DocumentationFile>
     <WarningLevel>1</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>40000,40008</NoWarn>
@@ -1140,18 +1140,18 @@
     <Compile Include="FileNaming\CustomFileNaming\ValueDescriptorPart.vb" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Relativity.DataExchange\Relativity.DataExchange.csproj">
-      <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
-      <Name>Relativity.DataExchange</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources\Strings.resx">
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.vb</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Relativity.DataExchange\Relativity.DataExchange.csproj">
+      <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
+      <Name>Relativity.DataExchange</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <Choose>

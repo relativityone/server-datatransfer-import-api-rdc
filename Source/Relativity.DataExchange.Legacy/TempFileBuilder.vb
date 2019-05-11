@@ -1,4 +1,4 @@
-﻿Imports Relativity.Import.Export
+﻿Imports Relativity.DataExchange
 
 Namespace kCura.WinEDDS
 
@@ -10,7 +10,7 @@ Namespace kCura.WinEDDS
 	''' </remarks>
 	Public Class TempFileBuilder
 
-		Private Shared _fileSystem As Global.Relativity.Import.Export.Io.IFileSystem
+		Private Shared _fileSystem As Global.Relativity.DataExchange.Io.IFileSystem
 
 		''' <summary>
 		''' Gets a uniquely named, zero-byte temporary file on disk and returns the full path of that file.
@@ -36,11 +36,11 @@ Namespace kCura.WinEDDS
 			Return FileSystem.Path.GetTempFileName(fileNameSuffix)
 		End Function
 
-		Private Shared ReadOnly Property FileSystem As Global.Relativity.Import.Export.Io.IFileSystem
+		Private Shared ReadOnly Property FileSystem As Global.Relativity.DataExchange.Io.IFileSystem
 			Get
 				' Limiting custom temp directory configuration to just this class.
 				If _fileSystem Is Nothing
-					_fileSystem = Global.Relativity.Import.Export.Io.FileSystem.Instance.DeepCopy()
+					_fileSystem = Global.Relativity.DataExchange.Io.FileSystem.Instance.DeepCopy()
 					_fileSystem.Path.CustomTempPath = AppSettings.Instance.TempDirectory
 				End If
 

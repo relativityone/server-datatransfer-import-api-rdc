@@ -7,10 +7,10 @@
 Imports System.Threading
 Imports kCura.WinEDDS.Helpers
 Imports Polly
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Transfer
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Transfer
 Imports Relativity.Logging
 Imports Relativity.Transfer
 
@@ -24,7 +24,7 @@ Namespace kCura.WinEDDS
 #Region "Members"
 		Private ReadOnly _ioReporter As IIoReporter
 		Private ReadOnly _syncRoot As Object = New Object
-		Private ReadOnly _fileSystem As Global.Relativity.Import.Export.Io.IFileSystem
+		Private ReadOnly _fileSystem As Global.Relativity.DataExchange.Io.IFileSystem
 		Private ReadOnly _cancellationTokenSource As CancellationTokenSource
 		Private ReadOnly _statistics As New Statistics
 		Private WithEvents _bulkLoadTapiBridge As UploadTapiBridge2
@@ -49,7 +49,7 @@ Namespace kCura.WinEDDS
 
 			' TODO: Refactor all core constructors to use a single config object
 			' TODO: once IAPI/RDC is moved into the new repo.
-			_fileSystem = Global.Relativity.Import.Export.Io.FileSystem.Instance.DeepCopy()
+			_fileSystem = Global.Relativity.DataExchange.Io.FileSystem.Instance.DeepCopy()
 			If reporter Is Nothing Then
 				reporter = New NullIoReporter(_fileSystem)
 			End If
@@ -157,9 +157,9 @@ Namespace kCura.WinEDDS
 		''' Gets the file system instance.
 		''' </summary>
 		''' <value>
-		''' The <see cref="Global.Relativity.Import.Export.Io.IFileSystem"/> instance.
+		''' The <see cref="Global.Relativity.DataExchange.Io.IFileSystem"/> instance.
 		''' </value>
-		Protected ReadOnly Property FileSystem As Global.Relativity.Import.Export.Io.IFileSystem
+		Protected ReadOnly Property FileSystem As Global.Relativity.DataExchange.Io.IFileSystem
 			Get
 				Return _fileSystem
 			End Get
@@ -318,7 +318,7 @@ Namespace kCura.WinEDDS
 			If Not retry Then
 				' Note: this is always non-null even if the file doesn't exist.
 				' Note: always allow the System.IO.FileNotFoundException to throw.
-				Dim fileInfo As Global.Relativity.Import.Export.Io.IFileInfo = _fileSystem.CreateFileInfo(path)
+				Dim fileInfo As Global.Relativity.DataExchange.Io.IFileInfo = _fileSystem.CreateFileInfo(path)
 				Return fileInfo.Length
 			Else
 				Return _ioReporter.GetFileLength(path, Me.CurrentLineNumber)

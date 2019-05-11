@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Repository
 {
 	using System.Collections.Generic;
 	using System.Linq;
@@ -6,7 +6,7 @@
 
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Text;	
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;	
 
 	public class EmptyLongTextBuilder : ILongTextBuilder
 	{

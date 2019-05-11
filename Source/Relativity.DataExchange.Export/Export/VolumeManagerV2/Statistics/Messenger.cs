@@ -1,8 +1,8 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Statistics
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Statistics
 {
 	using kCura.WinEDDS;
 
-	using Relativity.Import.Export.Process;
+	using Relativity.DataExchange.Process;
 	using Relativity.Logging;
 
 	public class Messenger : IMessenger

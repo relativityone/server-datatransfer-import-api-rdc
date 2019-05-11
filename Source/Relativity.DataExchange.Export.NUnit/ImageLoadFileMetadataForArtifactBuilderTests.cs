@@ -13,10 +13,10 @@ namespace Relativity.Export.NUnit
 
 	using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Directories;
-	using Relativity.Export.VolumeManagerV2.Metadata.Images;
-	using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
-	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 
     [TestFixture]
 	public abstract class ImageLoadFileMetadataForArtifactBuilderTests

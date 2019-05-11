@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Io
+namespace Relativity.DataExchange.Io
 {
 	using System;
 
@@ -18,8 +18,8 @@ namespace Relativity.Import.Export.Io
 		/// </summary>
 		public IoReporterContext()
 			: this(
-				Relativity.Import.Export.Io.FileSystem.Instance.DeepCopy(),
-				Relativity.Import.Export.AppSettings.Instance,
+				Io.FileSystem.Instance.DeepCopy(),
+				DataExchange.AppSettings.Instance,
 				new WaitAndRetryPolicy())
 		{
 		}

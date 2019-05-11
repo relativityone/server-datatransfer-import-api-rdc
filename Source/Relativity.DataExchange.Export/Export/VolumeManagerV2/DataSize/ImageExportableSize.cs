@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.DataSize
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.DataSize
 {
 	using System;
 

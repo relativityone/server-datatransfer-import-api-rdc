@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2
 {
 	public interface IFileShareSettingsService
 	{

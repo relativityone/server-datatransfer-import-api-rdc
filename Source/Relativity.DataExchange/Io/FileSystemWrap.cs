@@ -4,10 +4,9 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Io
+namespace Relativity.DataExchange.Io
 {
 	using System;
-	using System.IO;
 	using System.Text;
 
 	/// <summary>

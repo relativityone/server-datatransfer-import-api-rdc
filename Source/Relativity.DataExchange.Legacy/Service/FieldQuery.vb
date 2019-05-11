@@ -1,7 +1,7 @@
 Imports System.Collections.Generic
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Data
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Data
+Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS.Service
 	Public Class FieldQuery

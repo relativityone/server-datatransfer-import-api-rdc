@@ -4,12 +4,14 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Reflection;
+
+	using Relativity.DataExchange.Io;
 
 	/// <summary>
 	/// Represents a class object that provide a thread-safe copy of all .NET application settings. This class cannot be inherited.
@@ -677,19 +679,19 @@ namespace Relativity.Import.Export
 
 		/// <inheritdoc />
 		[AppSetting]
-		Relativity.Import.Export.Io.RetryOptions IAppSettings.RetryOptions
+		RetryOptions IAppSettings.RetryOptions
 		{
 			get
 			{
 				// Always use other settings to drive these enum switches.
-				Relativity.Import.Export.Io.RetryOptions value = AppSettingsConstants.RetryOptionsDefaultValue;
+				RetryOptions value = AppSettingsConstants.RetryOptionsDefaultValue;
 				if (((IAppSettings)this).PermissionErrorsRetry)
 				{
-					value |= Relativity.Import.Export.Io.RetryOptions.Permissions;
+					value |= RetryOptions.Permissions;
 				}
 				else
 				{
-					value &= ~Relativity.Import.Export.Io.RetryOptions.Permissions;
+					value &= ~RetryOptions.Permissions;
 				}
 
 				return value;

@@ -1,11 +1,11 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	using System.Threading;
 
 	using kCura.WinEDDS;
-	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 
-	using Relativity.Export.VolumeManagerV2.Download.EncodingHelpers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.Logging;
 
 	public class LongTextTapiBridgeFactory : ILongTextTapiBridgeFactory

@@ -1,6 +1,5 @@
 ﻿Imports kCura.WinEDDS.Api
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Io
+Imports Relativity.DataExchange.Io
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class NativeFileValidated

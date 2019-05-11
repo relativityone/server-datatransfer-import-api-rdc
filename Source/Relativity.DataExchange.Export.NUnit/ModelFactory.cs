@@ -11,10 +11,10 @@ namespace Relativity.Export.NUnit
 
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2;
-    using Relativity.Export.VolumeManagerV2.Download;
-    using Relativity.Export.VolumeManagerV2.Metadata.Text;
-    using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.DataExchange.Export.VolumeManagerV2;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Download;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 
     public class ModelFactory
 	{

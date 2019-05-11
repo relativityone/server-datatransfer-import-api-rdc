@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Service
+namespace Relativity.DataExchange.Service
 {
 	/// <summary>
 	/// Defines static helper methods to perform common SQL name operations.

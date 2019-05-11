@@ -13,7 +13,7 @@ namespace Relativity.Export.NUnit
 
 	using kCura.WinEDDS;
 
-    using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
     using Relativity.Logging;
 
     [TestFixture]

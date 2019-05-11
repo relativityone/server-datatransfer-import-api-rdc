@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Repository
 {
 	public interface IExportRequestRepository
 	{

@@ -1,11 +1,11 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Threading;
 	using System.Threading.Tasks;
 
-	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.Logging;
 	using Relativity.Transfer;
 

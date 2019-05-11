@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.ImagesRollup
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup
 {
 	using System;
 	using System.Collections.Generic;
@@ -9,12 +9,9 @@
 	using kCura.WinEDDS.Exceptions;
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Media;
 	using Relativity.Logging;
-
-	using global::Relativity.Import.Export;
-
-	using Relativity.Import.Export.Media;
 
 	public abstract class MultiPageImagesRollup : IImagesRollup
 	{

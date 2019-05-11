@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System.Collections.Generic;
 	using System.IO;
@@ -19,9 +19,9 @@ namespace Relativity.Import.Export.NUnit
 
 	using Moq;
 
-	using Relativity.Import.Export;
-	using Relativity.Import.Export.Io;
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents <see cref="Timekeeper2"/> tests.

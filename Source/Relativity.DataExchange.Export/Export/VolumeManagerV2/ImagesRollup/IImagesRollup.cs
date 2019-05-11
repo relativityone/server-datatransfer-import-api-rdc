@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.ImagesRollup
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup
 {
 	using kCura.WinEDDS.Exporters;
 

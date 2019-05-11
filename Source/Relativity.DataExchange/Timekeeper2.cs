@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
 	using System;
 	using System.Collections.Concurrent;
@@ -12,7 +12,7 @@ namespace Relativity.Import.Export
 	using System.Security;
 	using System.Text;
 
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Io;
 
 	/// <summary>
 	/// Represents a class object that tracks operational metrics. This class cannot be inherited.

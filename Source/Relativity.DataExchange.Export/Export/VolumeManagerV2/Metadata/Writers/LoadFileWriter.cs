@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Writers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers
 {
 	using System.Collections.Generic;
 	using System.IO;
@@ -7,7 +7,7 @@
 	using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS.LoadFileEntry;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Natives;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
 	using Relativity.Logging;
 
 	public class LoadFileWriter

@@ -12,8 +12,8 @@ namespace Relativity.Export.NUnit
 
     using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.Download;
-	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 
 	[TestFixture]
 	public class NativeRepositoryTests

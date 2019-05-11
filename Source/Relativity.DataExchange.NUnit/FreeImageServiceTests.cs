@@ -7,16 +7,16 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.IO;
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export;
-	using Relativity.Import.Export.Media;
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.Media;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents <see cref="FreeImageService"/> tests.

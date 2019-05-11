@@ -7,13 +7,14 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
 	using System;
 	using System.Globalization;
 	using System.Threading;
 	using System.Threading.Tasks;
 
+	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 
 	/// <summary>
@@ -223,13 +224,13 @@ namespace Relativity.Import.Export
 					"The Relativity version {RelativityVersion} is invalid and import/export service cannot be used for Relativity instance {RelativityHost}.",
 					relativityVersion,
 					this.instanceInfo.Host);
-				string message = Relativity.Import.Export.Resources.Strings
+				string message = Strings
 					.RelativtyMinVersionInvalidNoAppNameExceptionMessage;
 				if (!string.IsNullOrEmpty(this.appSettings.ApplicationName))
 				{
 					message = string.Format(
 						CultureInfo.CurrentCulture,
-						Relativity.Import.Export.Resources.Strings.RelativtyMinVersionInvalidExceptionMessage,
+						Strings.RelativtyMinVersionInvalidExceptionMessage,
 						this.appSettings.ApplicationName);
 				}
 
@@ -276,13 +277,13 @@ namespace Relativity.Import.Export
 				this.log.LogError(
 					"The import/export WebAPI version {ImportExportWebApiVersion} is invalid and import/export service cannot be used.",
 					importExportWebApiVersion);
-				string message = Relativity.Import.Export.Resources.Strings
+				string message = Strings
 					.ImportExportWebApiVersionInvalidNoAppNameExceptionMessage;
 				if (!string.IsNullOrEmpty(this.appSettings.ApplicationName))
 				{
 					message = string.Format(
 						CultureInfo.CurrentCulture,
-						Relativity.Import.Export.Resources.Strings.ImportExportWebApiVersionInvalidExceptionMessage,
+						Strings.ImportExportWebApiVersionInvalidExceptionMessage,
 						this.appSettings.ApplicationName);
 				}
 
@@ -298,13 +299,13 @@ namespace Relativity.Import.Export
 					"The import/export WebAPI version {ImportExportWebApiVersion} isn't compatible with the required client API version {RequiredWebApiVersion}.",
 					importExportWebApiVersion,
 					this.requiredWebApiVersion);
-				string message = Relativity.Import.Export.Resources.Strings
+				string message = Strings
 					.ImportExportWebApiVersionNotSupportedNoAppNameExceptionMessage;
 				if (!string.IsNullOrEmpty(this.appSettings.ApplicationName))
 				{
 					message = string.Format(
 						CultureInfo.CurrentCulture,
-						Relativity.Import.Export.Resources.Strings.ImportExportWebApiVersionNotSupportedExceptionMessage,
+						Strings.ImportExportWebApiVersionNotSupportedExceptionMessage,
 						this.appSettings.ApplicationName);
 				}
 
@@ -322,14 +323,14 @@ namespace Relativity.Import.Export
 			{
 				string message = string.Format(
 					CultureInfo.CurrentCulture,
-					Relativity.Import.Export.Resources.Strings.RelativtyMinVersionNoAppNameExceptionMessage,
+					Strings.RelativtyMinVersionNoAppNameExceptionMessage,
 					relativityVersion,
 					this.minRelativityVersion);
 				if (!string.IsNullOrEmpty(this.appSettings.ApplicationName))
 				{
 					message = string.Format(
 						CultureInfo.CurrentCulture,
-						Relativity.Import.Export.Resources.Strings.RelativtyMinVersionExceptionMessage,
+						Strings.RelativtyMinVersionExceptionMessage,
 						this.appSettings.ApplicationName,
 						relativityVersion,
 						this.minRelativityVersion);

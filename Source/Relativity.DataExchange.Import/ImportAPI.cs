@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net;
+
 using kCura.Relativity.ImportAPI.Data;
 using kCura.Relativity.ImportAPI.Enumeration;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service;
 using kCura.Relativity.DataReaderClient;
 using kCura.WinEDDS.Exceptions;
-using Relativity.Import.Export.Service;
+
+using Relativity.DataExchange.Service;
 
 namespace kCura.Relativity.ImportAPI
 {
-	using global::Relativity.Import.Export;
+	using global::Relativity.DataExchange;
 
 	/// <summary>
 	/// Provides methods for developing custom import utilities for documents, images, production sets, and Dynamic Objects.

@@ -13,9 +13,9 @@ namespace Relativity.Export.NUnit
 
 	using kCura.WinEDDS;
 
-    using Relativity.Export.VolumeManagerV2.Settings;
-    using Relativity.Import.Export.TestFramework;
-    using Relativity.Logging;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Settings;
+    using Relativity.DataExchange.TestFramework;
+	using Relativity.Logging;
 
     [TestFixture]
 	public class ColumnsFactoryTests

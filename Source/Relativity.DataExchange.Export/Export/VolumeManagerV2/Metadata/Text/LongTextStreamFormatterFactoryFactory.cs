@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text
 {
 	using kCura.WinEDDS;
 

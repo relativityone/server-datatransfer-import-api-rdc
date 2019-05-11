@@ -4,14 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System;
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export;
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents <see cref="CollectionExtensions"/> tests.

@@ -4,15 +4,15 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Process
+namespace Relativity.DataExchange.Process
 {
 	using System.Globalization;
 	using System.Threading;
 
 	using Microsoft.VisualBasic.CompilerServices;
 
-	using Relativity.Import.Export.Data;
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Data;
+	using Relativity.DataExchange.Io;
 	using Relativity.Logging;
 
 	/// <summary>

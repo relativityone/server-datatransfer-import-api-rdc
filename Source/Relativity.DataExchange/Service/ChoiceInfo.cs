@@ -3,7 +3,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Service
+namespace Relativity.DataExchange.Service
 {
 	using System;
 
@@ -46,11 +46,11 @@ namespace Relativity.Import.Export.Service
 				throw new ArgumentNullException(nameof(row));
 			}
 
-			Order = System.Convert.ToInt32(row["Order"]);
-			CodeTypeID = System.Convert.ToInt32(row["CodeTypeID"]);
-			Name = System.Convert.ToString(row["Name"]);
-			ArtifactID = System.Convert.ToInt32(row["ArtifactID"]);
-			ParentArtifactID = System.Convert.ToInt32(row["ParentArtifactID"]);
+			this.Order = System.Convert.ToInt32(row["Order"]);
+			this.CodeTypeID = System.Convert.ToInt32(row["CodeTypeID"]);
+			this.Name = System.Convert.ToString(row["Name"]);
+			this.ArtifactID = System.Convert.ToInt32(row["ArtifactID"]);
+			this.ParentArtifactID = System.Convert.ToInt32(row["ParentArtifactID"]);
 		}
 	}
 }

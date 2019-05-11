@@ -3,7 +3,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Service
+namespace Relativity.DataExchange.Service
 {
 	/// <summary>
 	/// Defines constants for the well-known Relativity column source types, including computed, artifact, main table, and no database column.

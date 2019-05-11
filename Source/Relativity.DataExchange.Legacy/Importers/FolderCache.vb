@@ -2,7 +2,7 @@ Imports System.Collections.Concurrent
 Imports System.Collections.Generic
 Imports kCura.WinEDDS.Importers
 Imports kCura.WinEDDS.Service
-Imports Relativity.Import.Export
+Imports Relativity.DataExchange
 
 Namespace kCura.WinEDDS
 

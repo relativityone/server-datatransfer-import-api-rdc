@@ -7,13 +7,13 @@
 // </summary>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Io
+namespace Relativity.DataExchange.Io
 {
 	using System;
 	using System.Globalization;
 	using System.Threading;
 
-	using Relativity.Import.Export.Resources;
+	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 
 	/// <summary>

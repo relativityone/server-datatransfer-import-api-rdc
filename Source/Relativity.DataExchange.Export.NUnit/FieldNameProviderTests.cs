@@ -12,6 +12,8 @@ namespace Relativity.Export.NUnit
 
     using global::NUnit.Framework;
 
+    using Relativity.DataExchange.Export;
+
     public class FieldNameProviderTests
 	{
 		private FieldNameProvider _subjectUnderTest;

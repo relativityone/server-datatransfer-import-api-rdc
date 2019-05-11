@@ -1,4 +1,4 @@
-Imports Relativity.Import.Export
+Imports Relativity.DataExchange
 
 Namespace kCura.WinEDDS.Service
 	Public Class FolderManager

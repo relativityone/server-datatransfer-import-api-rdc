@@ -7,11 +7,11 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Service;
 
 	[TestFixture]
 	public static class ArtifactTypeHelperTests

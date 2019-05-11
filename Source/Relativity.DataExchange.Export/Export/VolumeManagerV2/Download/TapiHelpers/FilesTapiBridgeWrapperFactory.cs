@@ -1,10 +1,9 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	using System.Threading;
 
-	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
-
-	using Relativity.Import.Export.Transfer;
+	using Relativity.DataExchange.Transfer;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.Logging;
 
 	public class FilesTapiBridgeWrapperFactory : ITapiBridgeWrapperFactory

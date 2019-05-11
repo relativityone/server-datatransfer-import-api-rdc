@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Writers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers
 {
 	using System;
 	using System.IO;
@@ -6,7 +6,7 @@
 
 	using kCura.WinEDDS.Exceptions;
 
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Io;
 	using Relativity.Logging;
 
 	public class StreamFactory : IStreamFactory

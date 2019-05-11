@@ -16,7 +16,8 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Import.Export.Service;
+    using Relativity.DataExchange.Export;
+    using Relativity.DataExchange.Service;
 
     public class ExportFileFormatterSetUp<T>
 	    where T : ExportFileFormatterBase

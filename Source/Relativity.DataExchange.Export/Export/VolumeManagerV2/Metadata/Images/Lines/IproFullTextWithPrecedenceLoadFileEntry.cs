@@ -1,10 +1,10 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images.Lines
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines
 {
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 
 	public class IproFullTextWithPrecedenceLoadFileEntry : IproFullTextLoadFileEntry
 	{

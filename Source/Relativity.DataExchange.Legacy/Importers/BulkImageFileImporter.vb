@@ -2,13 +2,13 @@ Imports System.Collections.Generic
 Imports System.Threading
 Imports kCura.WinEDDS.Service
 Imports kCura.WinEDDS.Helpers
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Data
-Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Media
-Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Transfer
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Data
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Media
+Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Service
+Imports Relativity.DataExchange.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class BulkImageFileImporter
@@ -508,12 +508,12 @@ Namespace kCura.WinEDDS
 						tries += 1
 						hasReachedEof = False
 					Else
-						Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(newBulkLoadFilePath)
+						Global.Relativity.DataExchange.Io.FileSystem.Instance.File.Delete(newBulkLoadFilePath)
 						Throw
 					End If
 				End Try
 			End While
-			Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(newBulkLoadFilePath)
+			Global.Relativity.DataExchange.Io.FileSystem.Instance.File.Delete(newBulkLoadFilePath)
 		End Sub
 
 		Protected Overridable Function DoLogicAndPushImageBatch(ByVal totalRecords As Integer, ByVal recordsProcessed As Integer, ByVal bulkLocation As String, ByVal dataGridLocation As String, ByRef charactersSuccessfullyProcessed As Long, ByVal i As Integer, ByVal charactersProcessed As Long) As Integer
@@ -527,8 +527,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub DeleteFiles(ByVal bulkFilePath As String, ByVal datagridFilePath As String)
-			Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(bulkFilePath)
-			Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(datagridFilePath)
+			Global.Relativity.DataExchange.Io.FileSystem.Instance.File.Delete(bulkFilePath)
+			Global.Relativity.DataExchange.Io.FileSystem.Instance.File.Delete(datagridFilePath)
 		End Sub
 
 		Protected Overridable Function CreateStreamWriter(ByVal tmpLocation As String) As System.IO.TextWriter
@@ -1217,7 +1217,7 @@ Namespace kCura.WinEDDS
 						End While
 						w.Close()
 						r.Close()
-						Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(tmp)
+						Global.Relativity.DataExchange.Io.FileSystem.Instance.File.Delete(tmp)
 						RemoveHandler sr.Context.IoWarningEvent, AddressOf Me.IoWarningHandler
 					End If
 				End With

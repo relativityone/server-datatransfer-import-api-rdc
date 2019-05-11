@@ -15,10 +15,10 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Directories;
-    using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+    using Relativity.DataExchange.Service;
 
-	using HtmlCellFormatter = Relativity.Export.VolumeManagerV2.HtmlCellFormatter;
+	using HtmlCellFormatter = Relativity.DataExchange.Export.HtmlCellFormatter;
 
     [TestFixture]
 	public class HtmlCellFormatterTests

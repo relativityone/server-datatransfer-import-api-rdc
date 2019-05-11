@@ -3,7 +3,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Service
+namespace Relativity.DataExchange.Service
 {
 	/// <summary>
 	/// Defines constants for the well-known import overwrite behaviors, including append, overlay, and append/overlay.

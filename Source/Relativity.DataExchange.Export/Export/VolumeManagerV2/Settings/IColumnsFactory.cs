@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Settings
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Settings
 {
 	using kCura.WinEDDS;
 

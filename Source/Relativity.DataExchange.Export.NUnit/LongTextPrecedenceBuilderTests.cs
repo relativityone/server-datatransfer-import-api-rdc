@@ -18,14 +18,14 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Directories;
-	using Relativity.Export.VolumeManagerV2.Download;
-	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.Export.VolumeManagerV2.Repository;
-	using Relativity.Export.VolumeManagerV2.Statistics;
-    using Relativity.Import.Export.Service;
-    using Relativity.Import.Export.TestFramework;
-    using Relativity.Logging;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+    using Relativity.DataExchange.Service;
+    using Relativity.DataExchange.TestFramework;
+	using Relativity.Logging;
 
     using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 

@@ -1,8 +1,8 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download
 {
 	using System.Collections.Generic;
 
-	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 
 	public class ExportRequestRetriever : IExportRequestRetriever
     {

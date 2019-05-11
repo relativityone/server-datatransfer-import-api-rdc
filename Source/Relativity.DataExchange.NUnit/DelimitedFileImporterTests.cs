@@ -7,20 +7,20 @@
  // </summary>
  // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using System.Threading;
+
 	using global::NUnit.Framework;
 
 	using Moq;
 
-	using Relativity.Import.Export.Data;
-	using Relativity.Import.Export.Io;
-	using Relativity.Import.Export.Resources;
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange.Data;
+	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Resources;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
 	/// <summary>

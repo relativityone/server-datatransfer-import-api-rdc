@@ -1,9 +1,9 @@
 Imports System.Collections.Generic
 Imports kCura.WinEDDS.Api
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Data
-Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Data
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS
 	Public Class LoadFileReader

@@ -3,7 +3,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Service
+namespace Relativity.DataExchange.Service
 {
 	using System;
 
@@ -45,7 +45,7 @@ namespace Relativity.Import.Export.Service
 			}
 
 			this.ExceptionType = ex.GetType().ToString();
-			SetMessageText(ex);
+			this.SetMessageText(ex);
 			this.ExceptionTrace = ex.StackTrace;
 			this.ExceptionFullText = ex.ToString();
 		}
@@ -53,7 +53,7 @@ namespace Relativity.Import.Export.Service
 		private void SetMessageText(Exception ex)
 		{
 			System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder();
-			GetBaseMessageAndAllInnerMessages(ex, stringBuilder);
+			this.GetBaseMessageAndAllInnerMessages(ex, stringBuilder);
 			this.ExceptionMessage = stringBuilder.ToString();
 		}
 
@@ -63,7 +63,7 @@ namespace Relativity.Import.Export.Service
 			if ((ex.InnerException != null))
 			{
 				sb.AppendLine("---Additional Errors---");
-				GetBaseMessageAndAllInnerMessages(ex.InnerException, sb);
+				this.GetBaseMessageAndAllInnerMessages(ex.InnerException, sb);
 			}
 			return sb;
 		}

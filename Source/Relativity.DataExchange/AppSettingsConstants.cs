@@ -4,8 +4,10 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
+	using Relativity.DataExchange.Io;
+
 	/// <summary>
 	/// Defines all application settings constant keys and default values.
 	/// </summary>
@@ -17,7 +19,7 @@ namespace Relativity.Import.Export
 		public const string SectionLegacyWindowsProcess = "kCura.Windows.Process";
 		public const string SectionLegacyUtility = "kCura.Utility";
 		public const string SectionLegacyWinEdds = "kCura.WinEDDS";
-		public const string SectionImportExport = "Relativity.Import.Export";
+		public const string SectionImportExport = "Relativity.DataExchange";
 
 		// All Registry keys go here.
 		public const string ForceFolderPreviewRegistryKey = "ForceFolderPreview";
@@ -105,7 +107,7 @@ namespace Relativity.Import.Export
 		public const string RestUrlDefaultValue = "/Relativity.REST/api";
 		public const string ServicesUrlKey = "ServicesUrl";
 		public const string ServicesUrlDefaultValue = "/Relativity.Services/";
-		public const Relativity.Import.Export.Io.RetryOptions RetryOptionsDefaultValue = Relativity.Import.Export.Io.RetryOptions.Io;
+		public const RetryOptions RetryOptionsDefaultValue = RetryOptions.Io;
 		public const string SuppressServerCertificateValidationKey = "SuppressCertificateCheckOnClient";
 		public const bool SuppressServerCertificateValidationDefaultValue = false;
 		public const string TapiAsperaBcpRootFolderKey = "TapiAsperaBcpRootFolder";

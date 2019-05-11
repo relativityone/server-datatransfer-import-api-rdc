@@ -14,8 +14,8 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Directories;
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Io;
 
     [TestFixture]
 	public abstract class FilePathProviderTests

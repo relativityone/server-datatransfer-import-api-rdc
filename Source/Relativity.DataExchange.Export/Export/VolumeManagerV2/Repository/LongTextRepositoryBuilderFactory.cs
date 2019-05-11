@@ -1,10 +1,10 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Repository
 {
 	using Castle.Windsor;
 
 	using kCura.WinEDDS;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Logging;
 
 	public class LongTextRepositoryBuilderFactory

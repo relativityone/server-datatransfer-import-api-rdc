@@ -1,14 +1,14 @@
-﻿namespace Relativity.Export.Logging
+﻿namespace Relativity.DataExchange.Logging
 {
 	using System.IO;
 	using System.Reflection;
 
-	using global::Relativity.Import.Export;
-	using global::Relativity.Logging;
-	using global::Relativity.Logging.Factory;
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.Service;
+	using Relativity.Logging;
+	using Relativity.Logging.Factory;
 
-	public class LoggerFactory
+	internal class LoggerFactory
 	{
 		public static ILog Create(ExecutionSource executionSource)
 		{

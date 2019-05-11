@@ -1,9 +1,9 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download.EncodingHelpers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers
 {
 	using System.Text;
 	using System.Threading;
 
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Io;
 	using Relativity.Logging;
 
 	public class FileEncodingConverter : IFileEncodingConverter

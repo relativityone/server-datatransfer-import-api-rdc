@@ -1,11 +1,11 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text
 {
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS.LoadFileEntry;
 
-	using Relativity.Export.VolumeManagerV2.Directories;
-	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.Logging;
 
 	public class LongTextToFile : ILongTextHandler

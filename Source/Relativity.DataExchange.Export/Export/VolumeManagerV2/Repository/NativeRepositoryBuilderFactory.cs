@@ -1,12 +1,12 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Repository
 {
 	using Castle.Windsor;
 
 	using kCura.WinEDDS;
 
-	using Relativity.Export.VolumeManagerV2.Directories;
-	using Relativity.Export.VolumeManagerV2.Download;
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.Logging;
 
 	public class NativeRepositoryBuilderFactory

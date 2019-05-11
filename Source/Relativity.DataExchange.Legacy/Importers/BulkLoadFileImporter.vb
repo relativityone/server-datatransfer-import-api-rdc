@@ -2,12 +2,12 @@ Imports System.Collections.Generic
 Imports System.Threading
 Imports System.Threading.Tasks
 Imports kCura.WinEDDS.Api
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Data
-Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Transfer
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Data
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Service
+Imports Relativity.DataExchange.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
@@ -1296,12 +1296,12 @@ Namespace kCura.WinEDDS
 						tries += 1
 						hasReachedEof = False
 					Else
-						Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(newNativeFilePath)
+						Global.Relativity.DataExchange.Io.FileSystem.Instance.File.Delete(newNativeFilePath)
 						Throw
 					End If
 				End Try
 			End While
-			Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(newNativeFilePath)
+			Global.Relativity.DataExchange.Io.FileSystem.Instance.File.Delete(newNativeFilePath)
 		End Sub
 
 		Private Sub AdvanceStream(ByVal sr As System.IO.StreamReader, ByVal count As Int64)
@@ -1629,7 +1629,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As Global.Relativity.Import.Export.Io.IStreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
+		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As Global.Relativity.DataExchange.Io.IStreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
 			If field.Type = FieldType.MultiCode OrElse field.Type = FieldType.Code Then
 				outputWriter.Write(field.Value)
 				outputWriter.Write(delimiter)

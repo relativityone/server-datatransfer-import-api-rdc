@@ -10,10 +10,10 @@ Imports kCura.WinEDDS
 Imports Moq
 
 Imports NUnit.Framework
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Service
 
 Imports Relativity.Logging
 
@@ -35,7 +35,7 @@ Namespace Relativity.Import.Client.NUnit
 		Public Sub SetUp()
 			kCura.WinEDDS.Config.ProgrammaticServiceURL = "https://r1.kcura.com/RelativityWebAPI/"
 			_args = New ImageLoadFile()
-			_args.CaseInfo = New Relativity.Import.Export.Service.CaseInfo()
+			_args.CaseInfo = New Relativity.DataExchange.Service.CaseInfo()
 			_args.CaseInfo.RootArtifactID = 1
 			_guid = New Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1")
 			Dim mockProcessEventWriter = New Mock(Of IProcessEventWriter)()

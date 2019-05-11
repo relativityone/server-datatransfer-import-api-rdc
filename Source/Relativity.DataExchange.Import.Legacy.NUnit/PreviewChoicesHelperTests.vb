@@ -9,7 +9,7 @@ Imports kCura.WinEDDS.Api
 
 Imports NUnit.Framework
 
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange.Service
 
 Namespace Relativity.Import.Client.NUnit
 

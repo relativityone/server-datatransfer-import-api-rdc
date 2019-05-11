@@ -1,11 +1,12 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download
 {
-	using Relativity.Export.VolumeManagerV2.Repository;
-	using Relativity.Import.Export.Io;
-	using Relativity.Import.Export.Process;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.Logging;
 
 	using kCura.WinEDDS;
+
+	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Process;
 
 	public class ExportFileValidator : IExportFileValidator
 	{

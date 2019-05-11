@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Natives
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives
 {
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;

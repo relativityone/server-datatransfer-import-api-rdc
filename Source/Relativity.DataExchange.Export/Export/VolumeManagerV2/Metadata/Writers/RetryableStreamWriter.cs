@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Writers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers
 {
 	using System;
 	using System.IO;
@@ -7,8 +7,8 @@
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exceptions;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
-	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 
 	using Polly;

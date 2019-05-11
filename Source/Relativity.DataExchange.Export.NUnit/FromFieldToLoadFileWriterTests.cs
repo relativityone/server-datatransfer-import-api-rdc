@@ -13,8 +13,8 @@ namespace Relativity.Export.NUnit
 
 	using kCura.WinEDDS;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Logging;
 
     [TestFixture]

@@ -3,7 +3,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Service
+namespace Relativity.DataExchange.Service
 {
 	using System;
 	using System.Runtime.Serialization;
@@ -144,59 +144,59 @@ namespace Relativity.Import.Export.Service
 				throw new ArgumentNullException(nameof(row));
 			}
 
-			AllowFieldName = row["AllowFieldName"].ToString();
-			AllowHtml = System.Convert.ToBoolean(row["AllowHtml"]);
-			ArtifactTypeID = System.Convert.ToInt32(row["ArtifactTypeID"]);
-			ArtifactTypeTableName = row["ArtifactTypeTableName"].ToString();
-			AssociativeArtifactTypeID = System.Convert.ToInt32(row["AssociativeArtifactTypeID"]);
-			AvfColumnName = row["AvfColumnName"].ToString();
-			AvfHeaderName = row["AvfHeaderName"].ToString();
-			AvfId = System.Convert.ToInt32(row["AvfID"]);
-			Category = (FieldCategory)System.Convert.ToInt32(row["FieldCategoryID"]);
-			ColumnSource = (ColumnSourceType)System.Enum.Parse(typeof(ColumnSourceType), row["ColumnSource"].ToString());
-			ConnectorFieldArtifactID = System.Convert.ToInt32(row["ConnectorFieldArtifactID"]);
-			ConnectorFieldCategory = (FieldCategory)System.Convert.ToInt32(row["ConnectorFieldCategoryID"]);
-			ConnectorFieldName = row["ConnectorFieldName"].ToString();
-			DataSource = row["DataSource"].ToString();
-			DisplayName = row["DisplayName"].ToString();
-			EnableDataGrid = System.Convert.ToBoolean(row["EnableDataGrid"]);
-			FieldArtifactId = System.Convert.ToInt32(row["FieldArtifactID"]);
-			FieldType = (FieldType)System.Convert.ToInt32(row["FieldTypeID"]);
-			IsLinked = System.Convert.ToBoolean(row["IsLinked"]);
-			FieldCodeTypeID = System.Convert.ToInt32(row["FieldCodeTypeID"]);
-			FieldIsArtifactBaseField = System.Convert.ToBoolean(row["FieldIsArtifactBaseField"]);
-			FormatString = System.Convert.ToString(row["FormatString"]);
-			IsUnicodeEnabled = System.Convert.ToBoolean(row["IsUnicodeEnabled"]);
-			ParentFileFieldArtifactID = System.Convert.ToInt32(row["ParentFileFieldArtifactID"]);
-			ParentFileFieldDisplayName = System.Convert.ToString(row["ParentFileFieldDisplayName"]);
-			RelationalTableName = System.Convert.ToString(row["RelationalTableName"]);
-			RelationalTableColumnName = System.Convert.ToString(row["RelationalTableColumnName"]);
-			RelationalTableColumnName2 = System.Convert.ToString(row["RelationalTableColumnName2"]);
-			SourceFieldName = row["SourceFieldDisplayName"].ToString();
-			SourceFieldArtifactTypeID = System.Convert.ToInt32(row["SourceFieldArtifactTypeID"]);			
-			SourceFieldArtifactTypeTableName = row["SourceFieldArtifactTypeTableName"].ToString();
-			SourceFieldArtifactID = System.Convert.ToInt32(row["SourceFieldArtifactID"]);
+			this.AllowFieldName = row["AllowFieldName"].ToString();
+			this.AllowHtml = System.Convert.ToBoolean(row["AllowHtml"]);
+			this.ArtifactTypeID = System.Convert.ToInt32(row["ArtifactTypeID"]);
+			this.ArtifactTypeTableName = row["ArtifactTypeTableName"].ToString();
+			this.AssociativeArtifactTypeID = System.Convert.ToInt32(row["AssociativeArtifactTypeID"]);
+			this.AvfColumnName = row["AvfColumnName"].ToString();
+			this.AvfHeaderName = row["AvfHeaderName"].ToString();
+			this.AvfId = System.Convert.ToInt32(row["AvfID"]);
+			this.Category = (FieldCategory)System.Convert.ToInt32(row["FieldCategoryID"]);
+			this.ColumnSource = (ColumnSourceType)System.Enum.Parse(typeof(ColumnSourceType), row["ColumnSource"].ToString());
+			this.ConnectorFieldArtifactID = System.Convert.ToInt32(row["ConnectorFieldArtifactID"]);
+			this.ConnectorFieldCategory = (FieldCategory)System.Convert.ToInt32(row["ConnectorFieldCategoryID"]);
+			this.ConnectorFieldName = row["ConnectorFieldName"].ToString();
+			this.DataSource = row["DataSource"].ToString();
+			this.DisplayName = row["DisplayName"].ToString();
+			this.EnableDataGrid = System.Convert.ToBoolean(row["EnableDataGrid"]);
+			this.FieldArtifactId = System.Convert.ToInt32(row["FieldArtifactID"]);
+			this.FieldType = (FieldType)System.Convert.ToInt32(row["FieldTypeID"]);
+			this.IsLinked = System.Convert.ToBoolean(row["IsLinked"]);
+			this.FieldCodeTypeID = System.Convert.ToInt32(row["FieldCodeTypeID"]);
+			this.FieldIsArtifactBaseField = System.Convert.ToBoolean(row["FieldIsArtifactBaseField"]);
+			this.FormatString = System.Convert.ToString(row["FormatString"]);
+			this.IsUnicodeEnabled = System.Convert.ToBoolean(row["IsUnicodeEnabled"]);
+			this.ParentFileFieldArtifactID = System.Convert.ToInt32(row["ParentFileFieldArtifactID"]);
+			this.ParentFileFieldDisplayName = System.Convert.ToString(row["ParentFileFieldDisplayName"]);
+			this.RelationalTableName = System.Convert.ToString(row["RelationalTableName"]);
+			this.RelationalTableColumnName = System.Convert.ToString(row["RelationalTableColumnName"]);
+			this.RelationalTableColumnName2 = System.Convert.ToString(row["RelationalTableColumnName2"]);
+			this.SourceFieldName = row["SourceFieldDisplayName"].ToString();
+			this.SourceFieldArtifactTypeID = System.Convert.ToInt32(row["SourceFieldArtifactTypeID"]);			
+			this.SourceFieldArtifactTypeTableName = row["SourceFieldArtifactTypeTableName"].ToString();
+			this.SourceFieldArtifactID = System.Convert.ToInt32(row["SourceFieldArtifactID"]);
 			if (row.Table.Columns.Contains("ParentReflectionType"))
 			{
-				ParentReflectionType = (ParentReflectionType)System.Convert.ToInt32(row["ParentReflectionType"]);
-				ReflectedFieldArtifactTypeTableName = System.Convert.ToString(row["ReflectedFieldArtifactTypeTableName"]);
-				ReflectedFieldIdentifierColumnName = System.Convert.ToString(row["ReflectedFieldArtifactTypeIdentifierColumnName"]);
-				ReflectedFieldConnectorFieldName = System.Convert.ToString(row["ReflectedFieldArtifactTypeConnectorFieldName"]);
-				ReflectedConnectorIdentifierColumnName = System.Convert.ToString(row["ReflectedConnectorArtifactTypeIdentifierColumnName"]);
+				this.ParentReflectionType = (ParentReflectionType)System.Convert.ToInt32(row["ParentReflectionType"]);
+				this.ReflectedFieldArtifactTypeTableName = System.Convert.ToString(row["ReflectedFieldArtifactTypeTableName"]);
+				this.ReflectedFieldIdentifierColumnName = System.Convert.ToString(row["ReflectedFieldArtifactTypeIdentifierColumnName"]);
+				this.ReflectedFieldConnectorFieldName = System.Convert.ToString(row["ReflectedFieldArtifactTypeConnectorFieldName"]);
+				this.ReflectedConnectorIdentifierColumnName = System.Convert.ToString(row["ReflectedConnectorArtifactTypeIdentifierColumnName"]);
 			}
 			else
 			{
-				ParentReflectionType = ParentReflectionType.Empty;
-				ReflectedFieldArtifactTypeTableName = string.Empty;
-				ReflectedFieldIdentifierColumnName = string.Empty;
-				ReflectedFieldConnectorFieldName = string.Empty;
-				ReflectedConnectorIdentifierColumnName = string.Empty;
+				this.ParentReflectionType = ParentReflectionType.Empty;
+				this.ReflectedFieldArtifactTypeTableName = string.Empty;
+				this.ReflectedFieldIdentifierColumnName = string.Empty;
+				this.ReflectedFieldConnectorFieldName = string.Empty;
+				this.ReflectedConnectorIdentifierColumnName = string.Empty;
 			}
 
 			bool columnExists = row.Table.Columns.Contains("IsVirtualAssociativeArtifactType");
 			if (columnExists)
 			{
-				IsVirtualAssociativeArtifactType = System.Convert.ToBoolean(row["IsVirtualAssociativeArtifactType"]);
+				this.IsVirtualAssociativeArtifactType = System.Convert.ToBoolean(row["IsVirtualAssociativeArtifactType"]);
 			}
 		}
 
@@ -309,7 +309,7 @@ namespace Relativity.Import.Export.Service
 			}
 		}
 
-		public Relativity.Import.Export.Service.FieldCategory Category
+		public FieldCategory Category
 		{
 			get
 			{
@@ -322,7 +322,7 @@ namespace Relativity.Import.Export.Service
 			}
 		}
 
-		public Relativity.Import.Export.Service.ColumnSourceType ColumnSource
+		public ColumnSourceType ColumnSource
 		{
 			get
 			{
@@ -348,7 +348,7 @@ namespace Relativity.Import.Export.Service
 			}
 		}
 
-		public Relativity.Import.Export.Service.FieldCategory ConnectorFieldCategory
+		public FieldCategory ConnectorFieldCategory
 		{
 			get
 			{
@@ -452,7 +452,7 @@ namespace Relativity.Import.Export.Service
 			}
 		}
 
-		public Relativity.Import.Export.Service.FieldType FieldType
+		public FieldType FieldType
 		{
 			get
 			{
@@ -543,7 +543,7 @@ namespace Relativity.Import.Export.Service
 			}
 		}
 
-		public Relativity.Import.Export.Service.ParentReflectionType ParentReflectionType
+		public ParentReflectionType ParentReflectionType
 		{
 			get
 			{
@@ -717,47 +717,47 @@ namespace Relativity.Import.Export.Service
 
 		private void CopyFromViewFieldInfo(ViewFieldInfo vfi)
 		{
-			FieldArtifactId = vfi.FieldArtifactId;
-			AvfId = vfi.AvfId;
-			Category = vfi.Category;
-			DisplayName = vfi.DisplayName;
-			AvfColumnName = vfi.AvfColumnName;
-			AvfHeaderName = vfi.AvfHeaderName;
-			AllowFieldName = vfi.AllowFieldName;
-			ColumnSource = vfi.ColumnSource;
-			DataSource = vfi.DataSource;
-			SourceFieldName = vfi.SourceFieldName;
-			SourceFieldArtifactTypeID = vfi.SourceFieldArtifactTypeID;
-			ConnectorFieldArtifactID = vfi.ConnectorFieldArtifactID;
-			SourceFieldArtifactTypeTableName = vfi.SourceFieldArtifactTypeTableName;
-			ConnectorFieldName = vfi.ConnectorFieldName;
-			FieldType = vfi.FieldType;
-			ConnectorFieldCategory = vfi.ConnectorFieldCategory;
-			IsLinked = vfi.IsLinked;
-			FieldCodeTypeID = vfi.FieldCodeTypeID;
-			ArtifactTypeID = vfi.ArtifactTypeID;
-			ArtifactTypeTableName = vfi.ArtifactTypeTableName;
-			FieldIsArtifactBaseField = vfi.FieldIsArtifactBaseField;
-			FormatString = vfi.FormatString;
-			IsUnicodeEnabled = vfi.IsUnicodeEnabled;
-			AllowHtml = vfi.AllowHtml;
-			ParentFileFieldArtifactID = vfi.ParentFileFieldArtifactID;
-			ParentFileFieldDisplayName = vfi.ParentFileFieldDisplayName;
-			AssociativeArtifactTypeID = vfi.AssociativeArtifactTypeID;
-			RelationalTableName = vfi.RelationalTableName;
-			RelationalTableColumnName = vfi.RelationalTableColumnName;
-			RelationalTableColumnName2 = vfi.RelationalTableColumnName2;
-			SourceFieldArtifactID = vfi.SourceFieldArtifactID;
+			this.FieldArtifactId = vfi.FieldArtifactId;
+			this.AvfId = vfi.AvfId;
+			this.Category = vfi.Category;
+			this.DisplayName = vfi.DisplayName;
+			this.AvfColumnName = vfi.AvfColumnName;
+			this.AvfHeaderName = vfi.AvfHeaderName;
+			this.AllowFieldName = vfi.AllowFieldName;
+			this.ColumnSource = vfi.ColumnSource;
+			this.DataSource = vfi.DataSource;
+			this.SourceFieldName = vfi.SourceFieldName;
+			this.SourceFieldArtifactTypeID = vfi.SourceFieldArtifactTypeID;
+			this.ConnectorFieldArtifactID = vfi.ConnectorFieldArtifactID;
+			this.SourceFieldArtifactTypeTableName = vfi.SourceFieldArtifactTypeTableName;
+			this.ConnectorFieldName = vfi.ConnectorFieldName;
+			this.FieldType = vfi.FieldType;
+			this.ConnectorFieldCategory = vfi.ConnectorFieldCategory;
+			this.IsLinked = vfi.IsLinked;
+			this.FieldCodeTypeID = vfi.FieldCodeTypeID;
+			this.ArtifactTypeID = vfi.ArtifactTypeID;
+			this.ArtifactTypeTableName = vfi.ArtifactTypeTableName;
+			this.FieldIsArtifactBaseField = vfi.FieldIsArtifactBaseField;
+			this.FormatString = vfi.FormatString;
+			this.IsUnicodeEnabled = vfi.IsUnicodeEnabled;
+			this.AllowHtml = vfi.AllowHtml;
+			this.ParentFileFieldArtifactID = vfi.ParentFileFieldArtifactID;
+			this.ParentFileFieldDisplayName = vfi.ParentFileFieldDisplayName;
+			this.AssociativeArtifactTypeID = vfi.AssociativeArtifactTypeID;
+			this.RelationalTableName = vfi.RelationalTableName;
+			this.RelationalTableColumnName = vfi.RelationalTableColumnName;
+			this.RelationalTableColumnName2 = vfi.RelationalTableColumnName2;
+			this.SourceFieldArtifactID = vfi.SourceFieldArtifactID;
 
 			// Reflected Object fields
-			ParentReflectionType = vfi.ParentReflectionType;
-			ReflectedFieldArtifactTypeTableName = vfi.ReflectedFieldArtifactTypeTableName;
-			ReflectedFieldIdentifierColumnName = vfi.ReflectedFieldIdentifierColumnName;
-			ReflectedFieldConnectorFieldName = vfi.ReflectedFieldConnectorFieldName;
-			ReflectedConnectorIdentifierColumnName = vfi.ReflectedConnectorIdentifierColumnName;
+			this.ParentReflectionType = vfi.ParentReflectionType;
+			this.ReflectedFieldArtifactTypeTableName = vfi.ReflectedFieldArtifactTypeTableName;
+			this.ReflectedFieldIdentifierColumnName = vfi.ReflectedFieldIdentifierColumnName;
+			this.ReflectedFieldConnectorFieldName = vfi.ReflectedFieldConnectorFieldName;
+			this.ReflectedConnectorIdentifierColumnName = vfi.ReflectedConnectorIdentifierColumnName;
 
-			EnableDataGrid = vfi.EnableDataGrid;
-			IsVirtualAssociativeArtifactType = vfi.IsVirtualAssociativeArtifactType;
+			this.EnableDataGrid = vfi.EnableDataGrid;
+			this.IsVirtualAssociativeArtifactType = vfi.IsVirtualAssociativeArtifactType;
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 
 	[TestFixture]
 	public class LabelManagerForArtifactTests

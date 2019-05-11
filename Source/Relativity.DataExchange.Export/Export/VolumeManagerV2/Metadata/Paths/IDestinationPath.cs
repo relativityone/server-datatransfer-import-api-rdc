@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Paths
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths
 {
 	using System.Text;
 

@@ -37,7 +37,7 @@ $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
 $SdkBinariesArtifactsDir = Join-Path $BinariesArtifactsDir "sdk"
 $LogsDir = Join-Path $Root "Logs"
 $LogFile = Join-Path $LogsDir "ilmerge-build.log"
-$MergedSdkFile = Join-Path $SdkBinariesArtifactsDir "Relativity.Import.Export.Client.SDK.dll"
+$MergedSdkFile = Join-Path $SdkBinariesArtifactsDir "Relativity.DataExchange.Client.SDK.dll"
 
 if (Test-Path $SdkBinariesArtifactsDir -PathType Container) {
     Get-ChildItem $SdkBinariesArtifactsDir -Recurse | Remove-Item -Recurse
@@ -47,7 +47,7 @@ else {
 }
 
 Write-Host "Merging SDK assemblies..."
-# Note: Relativity.Import.Client.dll must be the last entry to ensure the assembly attributes are copied correctly.
+# Note: Relativity.DataExchange.Import.dll must be the last entry to ensure the assembly attributes are copied correctly.
 & $IlMergeExe @(
     ("/log:""$LogFile"""),
     ("/targetplatform:""v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2"""),
@@ -56,10 +56,10 @@ Write-Host "Merging SDK assemblies..."
     ("/allowMultiple"),
     ("/xmldocs"),
     ("/out:""$MergedSdkFile"""),
-    ("""$SolutionDir\Relativity.Import.Export\bin\Relativity.Import.Export.dll"""),
-    ("""$SolutionDir\Relativity.Import.Export.Legacy\bin\Relativity.Import.Export.Legacy.dll"""),
-    ("""$SolutionDir\Relativity.Export.Client\bin\Relativity.Export.Client.dll"""),
-    ("""$SolutionDir\Relativity.Import.Client\bin\Relativity.Import.Client.dll"""))
+    ("""$SolutionDir\Relativity.DataExchange\bin\Relativity.DataExchange.dll"""),
+    ("""$SolutionDir\Relativity.DataExchange.Legacy\bin\Relativity.DataExchange.Legacy.dll"""),
+    ("""$SolutionDir\Relativity.DataExchange.Export\bin\Relativity.DataExchange.Export.dll"""),
+    ("""$SolutionDir\Relativity.DataExchange.Import\bin\Relativity.DataExchange.Import.dll"""))
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Successfully merged SDK assemblies."
     exit 0

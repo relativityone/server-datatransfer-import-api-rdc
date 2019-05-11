@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Media
+namespace Relativity.DataExchange.Media
 {
 	using System;
 	using System.Globalization;
@@ -12,7 +12,7 @@ namespace Relativity.Import.Export.Media
 
 	using FreeImageAPI;
 
-	using Relativity.Import.Export.Resources;
+	using Relativity.DataExchange.Resources;
 
 	/// <summary>
 	/// Represents a service class object to identify and validate images using the FreeImage native library.

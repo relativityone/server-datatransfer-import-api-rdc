@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit.Integration
+namespace Relativity.DataExchange.NUnit.Integration
 {
 	using System;
 	using System.Net;
@@ -15,8 +15,8 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.TestFramework;
-	using Relativity.Import.Export.Transfer;
+	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 	using Relativity.Transfer;
 

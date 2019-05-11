@@ -16,7 +16,7 @@ namespace Relativity.Import.Client.NUnit
 
 	using Moq;
 
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Service;
 
 	/// <summary>
 	/// Represents <see cref="BulkLoadFileImporter"/> tests.
@@ -248,7 +248,7 @@ namespace Relativity.Import.Client.NUnit
 		protected override void OnSetup()
 		{
 			this.args = new LoadFile();
-			this.args.CaseInfo = new Relativity.Import.Export.Service.CaseInfo();
+			this.args.CaseInfo = new Relativity.DataExchange.Service.CaseInfo();
 			this.args.CaseInfo.RootArtifactID = -1;
 			this.importer = new MockBulkLoadFileImporter(
 				this.args,

@@ -10,7 +10,7 @@ Imports NSubstitute
 Imports NSubstitute.ExceptionExtensions
 
 Imports NUnit.Framework
-Imports Relativity.Import.Export.Io
+Imports Relativity.DataExchange.Io
 
 Namespace Relativity.Import.Client.NUnit
 

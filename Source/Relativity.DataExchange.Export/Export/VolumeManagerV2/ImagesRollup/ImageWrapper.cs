@@ -1,7 +1,6 @@
-﻿namespace Relativity.Export.VolumeManagerV2.ImagesRollup
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup
 {
-	using Relativity.Import.Export;
-	using Relativity.Import.Export.Media;
+	using Relativity.DataExchange.Media;
 
 	public class ImageWrapper : IImage
 	{

@@ -1,8 +1,8 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Repository
 {
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 
 	public class Image
 	{

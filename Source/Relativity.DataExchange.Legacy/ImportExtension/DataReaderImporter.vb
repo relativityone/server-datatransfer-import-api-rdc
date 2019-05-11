@@ -1,9 +1,9 @@
 Imports System.Collections.Generic
 Imports System.Threading
-Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Process
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Service
 Imports Relativity.Logging
-Imports Relativity.Import.Export.Service
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImporter

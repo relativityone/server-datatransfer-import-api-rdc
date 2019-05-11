@@ -1,7 +1,7 @@
 Imports kCura.WinEDDS.Api
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderReader
@@ -232,12 +232,12 @@ Namespace kCura.WinEDDS.ImportExtension
 									If System.IO.File.Exists(newLocation) Then
 										'Import API file access denied when importing read only files
 										Try
-											Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(newLocation)
+											Global.Relativity.DataExchange.Io.FileSystem.Instance.File.Delete(newLocation)
 										Catch ex As Exception
 											'This is to make sure we don't have buggy data.  Clients that have run the line that sets attributes below will never hit this line.
 											'However, clients on old versions of ImportAPI may hit this line and we want to make sure we're accounting for our mistake.
 											System.IO.File.SetAttributes(newLocation, System.IO.FileAttributes.Normal)
-											Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(newLocation)
+											Global.Relativity.DataExchange.Io.FileSystem.Instance.File.Delete(newLocation)
 										End Try
 									End If
 									System.IO.File.Copy(field.ValueAsString, newLocation)

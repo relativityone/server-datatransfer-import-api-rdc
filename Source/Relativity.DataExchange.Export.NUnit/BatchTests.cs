@@ -14,9 +14,9 @@ namespace Relativity.Export.NUnit
 
 	using Moq;
 
-	using Relativity.Export.VolumeManagerV2;
-	using Relativity.Export.VolumeManagerV2.Batches;
-	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Export.VolumeManagerV2;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 
     [TestFixture]

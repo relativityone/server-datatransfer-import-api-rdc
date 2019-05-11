@@ -1,7 +1,7 @@
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
-Imports Relativity.Import.Export
+Imports Relativity.DataExchange
 
 Namespace kCura.WinEDDS
 	Public MustInherit Class SettingsFactoryBase
@@ -110,7 +110,7 @@ Namespace kCura.WinEDDS
 
 		Protected Sub SaveObject(ByVal location As String, ByVal settings As Object)
 			Try
-				Global.Relativity.Import.Export.SerializationHelper.SerializeToSoapFile(settings, location)
+				Global.Relativity.DataExchange.SerializationHelper.SerializeToSoapFile(settings, location)
 			Catch ex As System.Exception
 				Throw New System.Exception("Settings object save failed", ex)
 			End Try

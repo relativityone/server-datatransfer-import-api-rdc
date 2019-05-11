@@ -1,9 +1,9 @@
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Service
+Imports Relativity.DataExchange.Transfer
 Imports Relativity.DataTransfer.MessageService
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Transfer
-Imports Relativity.Import.Export.Service
 
 Namespace kCura.WinEDDS
 	Public Class ImportImageFileProcess

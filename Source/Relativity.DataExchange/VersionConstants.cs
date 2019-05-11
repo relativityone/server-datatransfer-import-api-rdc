@@ -6,7 +6,7 @@
 //   Defines static import/export version constants.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
 	using System;
 

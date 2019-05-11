@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
 	/// <summary>
 	/// Represents an abstract object that provides thread-safe internal import/export application settings that are never exposed to API users.

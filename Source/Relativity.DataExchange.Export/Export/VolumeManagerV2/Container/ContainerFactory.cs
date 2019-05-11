@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Container
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Container
 {
 	using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 	using Castle.Windsor;

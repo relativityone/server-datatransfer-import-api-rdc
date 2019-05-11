@@ -7,8 +7,7 @@
 Imports kCura.WinEDDS
 
 Imports NUnit.Framework
-
-Imports Relativity.Import.Export.TestFramework
+Imports Relativity.DataExchange.TestFramework
 
 Namespace Relativity.Import.Client.NUnit
 

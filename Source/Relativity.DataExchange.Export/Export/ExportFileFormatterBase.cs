@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export
+﻿namespace Relativity.DataExchange.Export
 {
 	using System;
 	using System.Collections.Generic;

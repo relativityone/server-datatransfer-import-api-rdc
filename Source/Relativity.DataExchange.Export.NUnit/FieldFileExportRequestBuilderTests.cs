@@ -14,9 +14,9 @@ namespace Relativity.Export.NUnit
 	using kCura.WinEDDS;
     using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.Directories;
-	using Relativity.Export.VolumeManagerV2.Download;
-	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 
     public class FieldFileExportRequestBuilderTests : ExportRequestBuilderTests

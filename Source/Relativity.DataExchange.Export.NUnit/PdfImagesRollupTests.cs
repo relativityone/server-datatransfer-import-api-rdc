@@ -13,9 +13,9 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Export.VolumeManagerV2.ImagesRollup;
-	using Relativity.Import.Export.Io;
-    using Relativity.Logging;
+    using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
+    using Relativity.DataExchange.Io;
+	using Relativity.Logging;
 
     public class PdfImagesRollupTests : MultiPageImagesRollupTests
 	{

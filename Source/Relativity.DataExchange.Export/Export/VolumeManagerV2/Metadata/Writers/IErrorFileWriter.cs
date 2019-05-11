@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Writers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers
 {
 	using System;
 

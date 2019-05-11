@@ -1,11 +1,11 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text
 {
 	using Castle.Core;
 
 	using kCura.WinEDDS;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
-	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 
 	using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS.LoadFileEntry;

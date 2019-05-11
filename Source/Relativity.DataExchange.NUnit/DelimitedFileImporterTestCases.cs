@@ -7,14 +7,13 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System.Collections;
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.Data;
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Data;
 
 	/// <summary>
 	/// Defines static properties to provide <see cref="DelimitedFileImporter2"/> test cases.

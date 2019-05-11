@@ -4,13 +4,13 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Media
+namespace Relativity.DataExchange.Media
 {
 	using System;
 	using System.Globalization;
 	using System.Runtime.Serialization;
 
-	using Relativity.Import.Export.Resources;
+	using Relativity.DataExchange.Resources;
 
 	/// <summary>
 	/// The exception thrown when a serious failure occurs during image rollup.

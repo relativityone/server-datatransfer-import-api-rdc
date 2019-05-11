@@ -1,9 +1,9 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Natives
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives
 {
 	using System.Collections.Generic;
 	using System.Threading;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 
 	using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS.LoadFileEntry;

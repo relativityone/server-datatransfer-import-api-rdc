@@ -1,10 +1,10 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images
 {
 	using Castle.Windsor;
 
 	using kCura.WinEDDS;
 
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Service;
 
 	public class ImageLoadFileFactory
 	{

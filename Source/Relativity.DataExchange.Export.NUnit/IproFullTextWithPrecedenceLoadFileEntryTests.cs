@@ -13,10 +13,10 @@ namespace Relativity.Export.NUnit
 	using kCura.WinEDDS;
     using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2;
-	using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
-	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-    using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Export.VolumeManagerV2;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+    using Relativity.DataExchange.Service;
 	using Relativity.Logging;
 
     [TestFixture]

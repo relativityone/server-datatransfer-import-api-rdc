@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
 	using System;
 
@@ -24,7 +24,7 @@ namespace Relativity.Import.Export
 		/// <summary>
 		/// The default logging sub-system.
 		/// </summary>
-		public const string DefaultSubSystem = "Relativity.Import.Export";
+		public const string DefaultSubSystem = "Relativity.DataExchange";
 
 		/// <summary>
 		/// Creates a Relativity logging instance.

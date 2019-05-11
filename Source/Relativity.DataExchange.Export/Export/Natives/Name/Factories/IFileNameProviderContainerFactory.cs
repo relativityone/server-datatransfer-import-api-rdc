@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.Natives.Name.Factories
+﻿namespace Relativity.DataExchange.Export.Natives.Name.Factories
 {
 	using kCura.WinEDDS;
 

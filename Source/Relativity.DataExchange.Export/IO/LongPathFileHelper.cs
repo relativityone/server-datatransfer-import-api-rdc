@@ -1,14 +1,12 @@
-﻿namespace Relativity.Export.IO
+﻿namespace Relativity.DataExchange.Io
 {
 	using System.IO;
 	using System.Reflection;
 
-	using global::Relativity.Import.Export.Io;
-
 	using ZetaLongPaths;
 	using ZetaLongPaths.Native;
 
-	public class LongPathFileHelper : IFile
+	internal class LongPathFileHelper : IFile
 	{
 		public FileStream Create(string filePath)
 		{
@@ -23,7 +21,7 @@
 
 			var fileHandle = ZlpIOHelper.CreateFileHandle(filePath, disposition, fileAccess, ZetaLongPaths.Native.FileShare.None);
 			FileStream fileStream = new FileStream(fileHandle, System.IO.FileAccess.ReadWrite);
-			SetFileName(fileStream, filePath);
+			this.SetFileName(fileStream, filePath);
 			
 			if (append)
 			{
@@ -45,7 +43,7 @@
 
 			var fileHandle = ZlpIOHelper.CreateFileHandle(filePath, disposition, fileAccess, ZetaLongPaths.Native.FileShare.None);
 			FileStream fileStream = new FileStream(fileHandle, System.IO.FileAccess.ReadWrite);
-			SetFileName(fileStream, filePath);
+			this.SetFileName(fileStream, filePath);
 			
 			fileStream.SetLength(position);
 			fileStream.Seek(0L, SeekOrigin.End);
@@ -63,7 +61,7 @@
 
 		public void Copy(string sourceFilePath, string destinationFilePath)
 		{
-			Copy(sourceFilePath, destinationFilePath, false);
+			this.Copy(sourceFilePath, destinationFilePath, false);
 		}
 
 		public void Copy(string sourceFilePath, string destinationFilePath, bool overwrite)

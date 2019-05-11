@@ -1,12 +1,12 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Repository
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 
-	using Relativity.Export.VolumeManagerV2.Download;
-	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Logging;
 
 	public class LongTextRepository : IClearable, ILongTextRepository

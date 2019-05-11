@@ -1,9 +1,9 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Batches
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Batches
 {
 	using System;
 	using System.Collections.Generic;
 
-	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.Logging;
 
 	public class BatchCleanUp : IBatchCleanUp

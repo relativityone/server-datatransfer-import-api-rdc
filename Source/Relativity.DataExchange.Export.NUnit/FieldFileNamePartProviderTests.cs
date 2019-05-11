@@ -18,7 +18,7 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Service;
 
 	public class FieldFileNamePartProviderTests
 	{

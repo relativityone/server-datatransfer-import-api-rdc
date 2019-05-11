@@ -1,5 +1,4 @@
-﻿Imports Relativity.Import.Export.Data
-Imports Relativity.Import.Export.Io
+﻿Imports Relativity.DataExchange.Data
 
 Namespace kCura.WinEDDS.Exceptions
 

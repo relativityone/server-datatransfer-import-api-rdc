@@ -7,13 +7,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Service
+namespace Relativity.DataExchange.Service
 {
 	using System;
 	using System.Net;
 
 	using Relativity.Logging;
-	using Relativity.Transfer;
 
 	/// <summary>
 	/// Represents an abstract class service object for WebAPI-based wrappers.
@@ -39,7 +38,7 @@ namespace Relativity.Import.Export.Service
 		/// The Relativity instance information.
 		/// </param>
 		protected WebApiServiceBase(RelativityInstanceInfo instanceInfo)
-			: this(instanceInfo, DefaultObjectCacheRepository, Relativity.Import.Export.AppSettings.Instance)
+			: this(instanceInfo, DefaultObjectCacheRepository, DataExchange.AppSettings.Instance)
 		{
 		}
 

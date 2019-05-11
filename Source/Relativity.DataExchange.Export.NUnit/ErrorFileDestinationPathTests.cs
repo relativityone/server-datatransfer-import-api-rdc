@@ -10,7 +10,7 @@ namespace Relativity.Export.NUnit
 
 	using kCura.WinEDDS;
 
-    using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
     using Relativity.Logging;
 
     [TestFixture]

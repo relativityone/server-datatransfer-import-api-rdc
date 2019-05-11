@@ -27,7 +27,7 @@ namespace Relativity.Desktop.Client.CustomActions
 	/// </remarks>
 	public class XmlConfigurationManager
 	{
-		public const string SectionNameRelativityImportExport = "Relativity.Import.Export";
+		public const string SectionNameRelativityImportExport = "Relativity.DataExchange";
 		public const string SectionNameAppSettings = "appSettings";
 		public const string SectionNameLegacyWinEdds = "kCura.WinEDDS";
 		public const string SectionNameLegacyUtility = "kCura.Utility";

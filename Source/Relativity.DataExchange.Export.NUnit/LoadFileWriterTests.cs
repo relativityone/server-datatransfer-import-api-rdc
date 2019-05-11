@@ -18,8 +18,8 @@ namespace Relativity.Export.NUnit
 
     using Polly;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Natives;
-	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Logging;
 
     [TestFixture]

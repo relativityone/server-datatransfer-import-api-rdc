@@ -1,6 +1,6 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Natives
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives
 {
-	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.Logging;
 
 	using kCura.WinEDDS;

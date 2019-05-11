@@ -1,10 +1,10 @@
 Imports System.Threading
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Data
-Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Process
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Data
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Service
 Imports Relativity.Logging
-Imports Relativity.Import.Export.Service
 
 Namespace kCura.WinEDDS
 	Public Class LoadFilePreviewer

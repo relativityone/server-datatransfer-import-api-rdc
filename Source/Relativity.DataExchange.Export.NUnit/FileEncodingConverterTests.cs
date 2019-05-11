@@ -14,8 +14,8 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Download.EncodingHelpers;
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
+	using Relativity.DataExchange.Io;
     using Relativity.Logging;
 
     [TestFixture]

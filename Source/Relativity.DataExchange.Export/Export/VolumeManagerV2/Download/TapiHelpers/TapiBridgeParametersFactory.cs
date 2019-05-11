@@ -1,12 +1,11 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	using System;
 
-	using global::Relativity.Import.Export;
-
 	using kCura.WinEDDS;
 
-	using Relativity.Import.Export.Transfer;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.Transfer;
 
 	public class TapiBridgeParametersFactory
 	{

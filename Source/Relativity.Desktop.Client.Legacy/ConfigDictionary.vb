@@ -1,4 +1,4 @@
-Imports Relativity.Import.Export
+Imports Relativity.DataExchange
 
 Namespace Relativity.Desktop.Client
 	Friend Class ConfigDictionary

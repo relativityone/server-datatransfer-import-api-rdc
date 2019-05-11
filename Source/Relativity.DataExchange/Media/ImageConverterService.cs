@@ -4,14 +4,14 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Media
+namespace Relativity.DataExchange.Media
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 
-	using Relativity.Import.Export.Io;
-	using Relativity.Import.Export.Resources;
+	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Resources;
 
 	/// <summary>
 	/// Represents a service class object to convert images to their multi-page representation.

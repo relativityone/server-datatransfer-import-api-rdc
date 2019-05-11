@@ -4,12 +4,12 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Data
+namespace Relativity.DataExchange.Data
 {
 	using System;
 	using System.Runtime.Serialization;
 
-	using Relativity.Import.Export.Resources;
+	using Relativity.DataExchange.Resources;
 
 	/// <summary>
 	/// Represents an exception that occured while attempting to import a boolean. This class cannot be inherited.

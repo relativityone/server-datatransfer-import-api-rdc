@@ -1,9 +1,9 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Statistics
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Statistics
 {
 	using System;
 
-	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
-	using Relativity.Import.Export.Transfer;
+	using Relativity.DataExchange.Transfer;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.Logging;
 
 	public abstract class ProgressHandler : IProgressHandler

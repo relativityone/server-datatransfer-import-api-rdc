@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
 	/// <summary>
 	/// Provides static methods to create memory cache keys used by import/export class objects.

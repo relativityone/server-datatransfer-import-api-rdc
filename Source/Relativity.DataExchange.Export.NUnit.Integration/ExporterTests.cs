@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit.Integration
+namespace Relativity.DataExchange.Export.NUnit.Integration
 {
 	using System.Collections.Generic;
 	using System.Text;
@@ -17,9 +17,8 @@ namespace Relativity.Export.Client.NUnit.Integration
 
 	using kCura.WinEDDS;
 
-	using Relativity.Import.Export.Service;
-	using Relativity.Import.Export.TestFramework;
-
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Testing.Identification;
 
 	/// <summary>

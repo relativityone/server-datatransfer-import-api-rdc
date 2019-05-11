@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Container
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Container
 {
 	using Castle.MicroKernel.Registration;
 	using Castle.MicroKernel.SubSystems.Configuration;
@@ -6,30 +6,29 @@
 
 	using kCura.WinEDDS;
 
-	using Relativity.Export.VolumeManagerV2.Batches;
-	using Relativity.Export.VolumeManagerV2.Directories;
-	using Relativity.Export.VolumeManagerV2.ImagesRollup;
-	using Relativity.Export.VolumeManagerV2.Metadata.Images;
-	using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
-	using Relativity.Export.VolumeManagerV2.Metadata.Natives;
-	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
-	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.Export.VolumeManagerV2.Metadata.Text.Delimiter;
-	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
-	using Relativity.Export.VolumeManagerV2.Repository;
-	using Relativity.Export.VolumeManagerV2.Settings;
-	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text.Delimiter;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Settings;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 
 	using Relativity.Logging;
-
-	using Relativity.Import.Export;
-	using Relativity.Import.Export.Io;
 
 	using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS.Exporters.Validator;
 	using kCura.WinEDDS.Service.Export;
 
-	using Relativity.Import.Export.Media;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Media;
 
 	public class ExportInstaller : IWindsorInstaller
 	{
@@ -55,7 +54,7 @@
 			InstallConnectionToWinEdds(container);
 			InstallCustom(container);
 
-			container.Register(Classes.FromThisAssembly().InNamespace("Relativity.Export", true).WithService.DefaultInterfaces().WithService.Self());
+			container.Register(Classes.FromThisAssembly().InNamespace("Relativity.DataExchange.Export", true).WithService.DefaultInterfaces().WithService.Self());
 		}
 
 		private void InstallFromWinEdds(IWindsorContainer container)

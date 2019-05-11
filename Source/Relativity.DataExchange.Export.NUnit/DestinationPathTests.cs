@@ -13,7 +13,7 @@ namespace Relativity.Export.NUnit
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exceptions;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
 
     [TestFixture]
 	public class DestinationPathTests

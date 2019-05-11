@@ -7,14 +7,14 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.Collections.Generic;
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Io;
 
 	[TestFixture]
 	public class IoReporterContextTests

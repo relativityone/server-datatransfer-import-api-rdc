@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Media
+namespace Relativity.DataExchange.Media
 {
 	/// <summary>
 	/// Specifies the recognized image formats.

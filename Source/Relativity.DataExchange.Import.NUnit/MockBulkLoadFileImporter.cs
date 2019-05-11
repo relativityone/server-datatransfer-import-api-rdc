@@ -12,11 +12,11 @@ namespace Relativity.Import.Client.NUnit
 	using kCura.EDDS.WebAPI.BulkImportManagerBase;
 	using kCura.WinEDDS;
 
-	using Relativity.Import.Export.Io;
-	using Relativity.Import.Export.Process;
+	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Process;
 	using Relativity.Logging;
 
-	using ExecutionSource = Relativity.Import.Export.Service.ExecutionSource;
+	using ExecutionSource = Relativity.DataExchange.Service.ExecutionSource;
 
 	/// <summary>
 	/// Represents a mock class object for <see cref="BulkLoadFileImporter"/>.

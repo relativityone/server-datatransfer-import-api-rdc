@@ -1,9 +1,9 @@
 Imports System.Threading
 Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Service.Export
+Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Transfer
 Imports Relativity.DataTransfer.MessageService
-Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class ExportSearchProcess

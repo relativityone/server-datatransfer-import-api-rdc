@@ -11,7 +11,7 @@ Imports kCura.WinEDDS
 
 Imports Rhino.Mocks
 
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange.Service
 
 Namespace Relativity.Import.Client.NUnit
 

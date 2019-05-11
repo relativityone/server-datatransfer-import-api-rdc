@@ -6,7 +6,7 @@
 //   Represents <see cref="kCura.WinEDDS.Service.RelativityManager"/> tests.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
-namespace Relativity.Import.Export.NUnit.Integration
+namespace Relativity.DataExchange.NUnit.Integration
 {
 	using System;
 
@@ -14,7 +14,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 	using kCura.WinEDDS.Service;
 
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Testing.Identification;
 
 	/// <summary>

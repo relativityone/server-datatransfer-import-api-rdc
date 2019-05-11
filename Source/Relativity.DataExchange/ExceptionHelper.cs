@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
 	using System;
 	using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace Relativity.Import.Export
 	using System.Threading.Tasks;
 	using System.Web.Services.Protocols;
 
-	using Relativity.Import.Export.Resources;
+	using Relativity.DataExchange.Resources;
 
 	/// <summary>
 	/// Defines static helper methods to perform common exception handling.

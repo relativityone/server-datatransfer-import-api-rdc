@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Settings
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Settings
 {
 	using System.Collections.Generic;
 	using System.Linq;
@@ -6,8 +6,8 @@
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 
+	using Relativity.DataExchange.Service;
 	using Relativity.Logging;
-	using Relativity.Import.Export.Service;
 
 	public class FieldServiceFactory
 	{

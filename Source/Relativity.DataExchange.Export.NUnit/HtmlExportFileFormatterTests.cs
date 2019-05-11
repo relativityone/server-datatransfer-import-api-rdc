@@ -12,7 +12,8 @@ namespace Relativity.Export.NUnit
 
     using global::NUnit.Framework;
 
-    using Relativity.Import.Export.Service;
+    using Relativity.DataExchange.Export;
+    using Relativity.DataExchange.Service;
 
 	public class HtmlExportFileFormatterTests : ExportFileFormatterSetUp<HtmlExportFileFormatter>
 	{

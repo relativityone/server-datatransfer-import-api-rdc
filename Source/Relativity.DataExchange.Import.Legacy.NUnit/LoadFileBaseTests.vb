@@ -5,8 +5,8 @@
 ' -----------------------------------------------------------------------------------------------------
 
 Imports NUnit.Framework
-Imports Relativity.Import.Export.Data
-Imports Relativity.Import.Export.Io
+Imports Relativity.DataExchange.Data
+Imports Relativity.DataExchange.Io
 
 Namespace Relativity.Import.Client.NUnit
 

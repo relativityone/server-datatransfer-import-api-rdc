@@ -1,10 +1,10 @@
-﻿namespace Relativity.Export.VolumeManagerV2
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2
 {
 	using System;
 	using System.Threading;
 
-	using Relativity.Export.VolumeManagerV2.Batches;
-	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;

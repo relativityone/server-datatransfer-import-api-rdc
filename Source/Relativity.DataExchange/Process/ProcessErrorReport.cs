@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Process
+namespace Relativity.DataExchange.Process
 {
 	using System.Data;
 

@@ -12,8 +12,8 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Download.EncodingHelpers;
-	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.Logging;
     using Relativity.Transfer;
 

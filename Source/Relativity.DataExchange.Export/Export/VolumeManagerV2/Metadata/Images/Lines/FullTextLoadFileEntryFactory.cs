@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images.Lines
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines
 {
 	using System;
 
@@ -6,8 +6,8 @@
 
 	using kCura.WinEDDS;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Logging;
 
 	public class FullTextLoadFileEntryFactory

@@ -1,6 +1,6 @@
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Process
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Process
 
 Namespace kCura.WinEDDS
 

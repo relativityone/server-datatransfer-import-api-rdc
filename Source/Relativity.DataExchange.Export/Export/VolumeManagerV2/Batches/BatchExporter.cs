@@ -1,12 +1,12 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Batches
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Batches
 {
 	using System.Threading;
 
-	using Relativity.Export.VolumeManagerV2.Download;
-	using Relativity.Export.VolumeManagerV2.ImagesRollup;
-	using Relativity.Export.VolumeManagerV2.Metadata.Images;
-	using Relativity.Export.VolumeManagerV2.Metadata.Natives;
-	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
+	using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using kCura.WinEDDS.Exporters;
 
 	public class BatchExporter : IBatchExporter

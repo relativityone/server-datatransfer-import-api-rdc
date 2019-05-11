@@ -4,7 +4,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Transfer
+namespace Relativity.DataExchange.Transfer
 {
 	/// <summary>
 	/// The Transfer API constants.

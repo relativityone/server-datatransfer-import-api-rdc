@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Samples.NUnit.Tests
+namespace Relativity.DataExchange.Import.Samples.NUnit.Tests
 {
 	using System;
 	using System.Collections;
@@ -15,8 +15,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export;
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents an abstract base class object to provide common functionality and helper methods.

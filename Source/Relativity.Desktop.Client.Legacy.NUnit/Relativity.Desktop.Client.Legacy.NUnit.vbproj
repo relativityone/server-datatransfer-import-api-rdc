@@ -117,10 +117,6 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Relativity.Desktop.Client.Legacy\Relativity.Desktop.Client.Legacy.vbproj">
-      <Project>{49cde7eb-9385-41d9-8cd9-687c09c46996}</Project>
-      <Name>Relativity.Desktop.Client.Legacy</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Relativity.DataExchange.Legacy\Relativity.DataExchange.Legacy.vbproj">
       <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
       <Name>Relativity.DataExchange.Legacy</Name>
@@ -132,6 +128,10 @@
     <ProjectReference Include="..\Relativity.DataExchange\Relativity.DataExchange.csproj">
       <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
       <Name>Relativity.DataExchange</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.Desktop.Client.Legacy\Relativity.Desktop.Client.Legacy.vbproj">
+      <Project>{49cde7eb-9385-41d9-8cd9-687c09c46996}</Project>
+      <Name>Relativity.Desktop.Client.Legacy</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

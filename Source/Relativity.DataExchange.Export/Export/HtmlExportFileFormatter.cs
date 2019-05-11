@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export
+﻿namespace Relativity.DataExchange.Export
 {
 	using System;
 	using System.Collections.Generic;
@@ -7,7 +7,7 @@
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Service;
 
 	using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 

@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Writers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers
 {
 	using System;
 	using System.IO;
@@ -8,8 +8,8 @@
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exceptions;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
-	using Relativity.Import.Export;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
 	using Relativity.Logging;
 
 	public class ErrorFileWriter : IErrorFileWriter

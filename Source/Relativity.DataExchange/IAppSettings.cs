@@ -4,10 +4,12 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
 	using System;
 	using System.Collections.Generic;
+
+	using Relativity.DataExchange.Io;
 
 	/// <summary>
 	/// Represents an abstract object that provides thread-safe general import/export application settings.
@@ -543,7 +545,7 @@ namespace Relativity.Import.Export
 		/// <value>
 		/// The <see cref="RetryOptions"/> value.
 		/// </value>
-		Relativity.Import.Export.Io.RetryOptions RetryOptions
+		RetryOptions RetryOptions
 		{
 			get;
 		}

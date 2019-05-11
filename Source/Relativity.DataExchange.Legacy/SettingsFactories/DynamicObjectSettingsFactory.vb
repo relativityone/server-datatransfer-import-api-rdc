@@ -1,5 +1,5 @@
 Imports System.Collections.Generic
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS
 	Public Class DynamicObjectSettingsFactory

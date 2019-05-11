@@ -4,15 +4,15 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Samples.NUnit.Tests
+namespace Relativity.DataExchange.Import.Samples.NUnit.Tests
 {
 	using System.Collections.Generic;
 	using System.Linq;
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export;
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents a test that imports native documents with folders and validates the results.

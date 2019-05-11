@@ -504,6 +504,18 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Relativity.DataExchange.Export\Relativity.DataExchange.Export.csproj">
       <Project>{410ba79b-df60-4eda-86b3-608f3dee38f5}</Project>
       <Name>Relativity.DataExchange.Export</Name>
@@ -517,20 +529,9 @@
       <Name>Relativity.DataExchange</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.6.2">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.6.2 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>

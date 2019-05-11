@@ -4,11 +4,11 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit.Integration
+namespace Relativity.DataExchange.NUnit.Integration
 {
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents a global assembly-wide setup routine that's guaranteed to be executed before ANY NUnit test.

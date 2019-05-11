@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Transfer
+namespace Relativity.DataExchange.Transfer
 {
 	/// <summary>
 	/// Represents an enumeration of reasons why a transfer client has changed.

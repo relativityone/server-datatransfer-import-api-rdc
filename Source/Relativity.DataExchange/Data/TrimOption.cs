@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Data
+namespace Relativity.DataExchange.Data
 {
 	/// <summary>
 	/// Represents the supported whitespace trip options.

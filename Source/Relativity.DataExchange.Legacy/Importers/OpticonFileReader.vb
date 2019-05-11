@@ -1,6 +1,6 @@
-﻿Imports Relativity.Import.Export.Data
-Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Process
+﻿Imports Relativity.DataExchange.Data
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Process
 
 Namespace kCura.WinEDDS
 	Public Class OpticonFileReader
@@ -60,7 +60,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function CountRecords() As Long Implements Api.IImageReader.CountRecords
-			Return Global.Relativity.Import.Export.Io.FileSystem.Instance.File.CountLinesInFile(Me.Settings.FileName)
+			Return Global.Relativity.DataExchange.Io.FileSystem.Instance.File.CountLinesInFile(Me.Settings.FileName)
 		End Function
 
 		Public Sub Cancel() Implements Api.IImageReader.Cancel

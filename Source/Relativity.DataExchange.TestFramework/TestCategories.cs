@@ -4,16 +4,16 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.TestFramework
+namespace Relativity.DataExchange.TestFramework
 {
-    using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.CodeAnalysis;
 
-    /// <summary>
-    /// Represents all import and export API test categories.
-    /// </summary>
-    [ExcludeFromCodeCoverage]
-    public static class TestCategories
-    {
+	/// <summary>
+	/// Represents all import and export API test categories.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
+	public static class TestCategories
+	{
 		/// <summary>
 		/// The export test category.
 		/// </summary>

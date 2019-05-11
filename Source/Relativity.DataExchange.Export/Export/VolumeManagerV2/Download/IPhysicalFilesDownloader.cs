@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download
 {
 	using System.Collections.Generic;
 	using System.Threading;

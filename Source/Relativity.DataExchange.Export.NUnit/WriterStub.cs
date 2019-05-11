@@ -9,7 +9,7 @@ namespace Relativity.Export.NUnit
     using System.Text;
     using System.Threading;
 
-    using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 
     public class WriterStub : IRetryableStreamWriter
 	{

@@ -4,12 +4,12 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Process
+namespace Relativity.DataExchange.Process
 {
 	using System;
 	using System.Xml.Serialization;
 
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Io;
 
 	/// <summary>
 	/// Represents an abstract object that writes output events to a file. This class cannot be inherited.

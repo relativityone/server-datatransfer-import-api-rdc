@@ -1,9 +1,9 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	using System;
 
+	using Relativity.DataExchange.Transfer;
 	using Relativity.Transfer;
-	using Relativity.Import.Export.Transfer;
 
 	public interface ITapiBridge : IDisposable
 	{

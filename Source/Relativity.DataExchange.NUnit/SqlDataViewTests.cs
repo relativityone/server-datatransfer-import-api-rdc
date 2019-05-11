@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.Data;
@@ -18,8 +18,8 @@ namespace Relativity.Import.Export.NUnit
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.Data;
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange.Data;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents <see cref="SqlDataView"/> tests.

@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.Collections;
@@ -14,8 +14,7 @@ namespace Relativity.Import.Export.NUnit
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.Data;
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Data;
 
 	[TestFixture]
 	public static class ImporterExceptionSerializationTests
@@ -118,7 +117,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(exception, Is.TypeOf<BooleanImporterException>());
 			ValidateImporterException(
 				exception as BooleanImporterException,
-				Relativity.Import.Export.Resources.Strings.BooleanImporterErrorAdditionalInfo);
+				Relativity.DataExchange.Resources.Strings.BooleanImporterErrorAdditionalInfo);
 		}
 
 		private static void ValidateCellException(Exception exception)
@@ -126,7 +125,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(exception, Is.TypeOf<CellImporterException>());
 			ValidateImporterException(
 				exception as CellImporterException,
-				Relativity.Import.Export.Resources.Strings.CellImporterErrorAdditionalInfo);
+				Relativity.DataExchange.Resources.Strings.CellImporterErrorAdditionalInfo);
 		}
 
 		private static void ValidateDateException(Exception exception)
@@ -134,7 +133,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(exception, Is.TypeOf<DateImporterException>());
 			ValidateImporterException(
 				exception as DateImporterException,
-				Relativity.Import.Export.Resources.Strings.DateImporterErrorAdditionalInfo);
+				Relativity.DataExchange.Resources.Strings.DateImporterErrorAdditionalInfo);
 		}
 
 		private static void ValidateDecimalException(Exception exception)
@@ -142,7 +141,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(exception, Is.TypeOf<DecimalImporterException>());
 			ValidateImporterException(
 				exception as DecimalImporterException,
-				Relativity.Import.Export.Resources.Strings.DecimalImporterErrorAdditionalInfo);
+				Relativity.DataExchange.Resources.Strings.DecimalImporterErrorAdditionalInfo);
 		}
 
 		private static void ValidateIntegerException(Exception exception)
@@ -150,7 +149,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(exception, Is.TypeOf<IntegerImporterException>());
 			ValidateImporterException(
 				exception as IntegerImporterException,
-				Relativity.Import.Export.Resources.Strings.IntegerImporterErrorAdditionalInfo);
+				Relativity.DataExchange.Resources.Strings.IntegerImporterErrorAdditionalInfo);
 		}
 
 		private static void ValidateObjectNameException(Exception exception)

@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export
+﻿namespace Relativity.DataExchange.Export
 {
 	using kCura.WinEDDS.Exporters;
 

@@ -1,5 +1,5 @@
 ﻿Imports System.Net
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS.Service
 	Public Interface IBulkImportManager

@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download
 {
 	using System;
 	using System.Collections.Concurrent;
@@ -9,7 +9,7 @@
 
 	using kCura.WinEDDS;
 
-	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.Logging;
 
 	public class PhysicalFilesDownloader : IPhysicalFilesDownloader

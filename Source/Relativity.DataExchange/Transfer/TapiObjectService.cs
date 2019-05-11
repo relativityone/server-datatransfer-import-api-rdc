@@ -7,15 +7,15 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Transfer
+namespace Relativity.DataExchange.Transfer
 {
 	using System;
 	using System.Linq;
 	using System.Text;
 	using System.Threading.Tasks;
 
-	using Relativity.Import.Export.Resources;
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Resources;
+	using Relativity.DataExchange.Service;
 	using Relativity.Logging;
 
 	/// <summary>

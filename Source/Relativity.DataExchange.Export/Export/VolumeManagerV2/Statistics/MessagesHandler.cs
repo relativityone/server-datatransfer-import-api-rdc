@@ -1,10 +1,10 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Statistics
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Statistics
 {
 	using kCura.WinEDDS;
 
-	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
-	using Relativity.Import.Export.Process;
-	using Relativity.Import.Export.Transfer;
+	using Relativity.DataExchange.Process;
+	using Relativity.DataExchange.Transfer;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.Logging;
 
 	public class MessagesHandler : IMessagesHandler

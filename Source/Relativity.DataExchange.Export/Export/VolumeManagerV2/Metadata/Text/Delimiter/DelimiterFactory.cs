@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text.Delimiter
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text.Delimiter
 {
 	using kCura.WinEDDS;
 

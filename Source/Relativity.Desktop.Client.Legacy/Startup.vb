@@ -1,6 +1,7 @@
 Imports kCura.WinEDDS.Container
-Imports Relativity.Export.VolumeManagerV2.Container
-Imports Relativity.Import.Export
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Export.VolumeManagerV2.Container
+
 
 Namespace Relativity.Desktop.Client
 

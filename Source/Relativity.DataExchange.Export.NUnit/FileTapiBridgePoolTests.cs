@@ -14,10 +14,10 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
-	using Relativity.Export.VolumeManagerV2.Repository;
-	using Relativity.Export.VolumeManagerV2.Statistics;
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Io;
     using Relativity.Logging;
 
     [TestFixture]

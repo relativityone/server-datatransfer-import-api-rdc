@@ -1,6 +1,6 @@
 Imports System.Collections.Generic
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Transfer
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Transfer
 
 Namespace kCura.WinEDDS
 	<Obsolete("This class object will be deprecated in the future. Please use the AppSettings class to manage application settings.")>
@@ -45,11 +45,11 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Shared Function GetRegistryKeyValue(ByVal keyName As String) As String
-			Return Global.Relativity.Import.Export.AppSettingsManager.GetRegistryKeyValue(keyName)
+			Return Global.Relativity.DataExchange.AppSettingsManager.GetRegistryKeyValue(keyName)
 		End Function
 
 		Private Shared Function SetRegistryKeyValue(ByVal keyName As String, ByVal keyVal As String) As String
-			Global.Relativity.Import.Export.AppSettingsManager.SetRegistryKeyValue(keyName, keyVal)
+			Global.Relativity.DataExchange.AppSettingsManager.SetRegistryKeyValue(keyName, keyVal)
 			Return Nothing
 		End Function
 
@@ -446,7 +446,7 @@ Namespace kCura.WinEDDS
 		''' <remarks>
 		''' There are several other retry candidate behaviors and change should be limited to this property.
 		''' </remarks>
-		Public Shared ReadOnly Property RetryOptions As Global.Relativity.Import.Export.Io.RetryOptions
+		Public Shared ReadOnly Property RetryOptions As Global.Relativity.DataExchange.Io.RetryOptions
 			Get
 				Return AppSettings.Instance.RetryOptions
 			End Get

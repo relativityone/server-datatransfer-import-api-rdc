@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download
 {
 	using System;
 	using System.Collections.Generic;
@@ -6,10 +6,10 @@
 	using System.Threading;
 	using System.Threading.Tasks;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Logging;
 	using Relativity.Transfer;
-	using global::Relativity.Import.Export;
 
 	public class Downloader : IDownloader
 	{

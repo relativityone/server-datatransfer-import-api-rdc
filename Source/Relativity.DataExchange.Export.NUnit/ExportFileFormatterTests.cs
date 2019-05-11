@@ -11,6 +11,8 @@ namespace Relativity.Export.NUnit
 
     using global::NUnit.Framework;
 
+    using Relativity.DataExchange.Export;
+
     public class ExportFileFormatterTests : ExportFileFormatterSetUp<ExportFileFormatter>
 	{
 		[Test]

@@ -4,11 +4,11 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Transfer
+namespace Relativity.DataExchange.Transfer
 {
 	using System.Globalization;
 
-	using Relativity.Import.Export.Resources;
+	using Relativity.DataExchange.Resources;
 	using Relativity.Transfer;
 
 	/// <summary>

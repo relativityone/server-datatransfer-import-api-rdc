@@ -16,7 +16,7 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Validation;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Validation;
 	using Relativity.Logging;
 
 	[TestFixture]

@@ -1,10 +1,10 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Settings
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Settings
 {
 	using System.Collections.Generic;
 
 	using kCura.WinEDDS;
 
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Service;
 	using Relativity.Logging;
 
 	public class ColumnsOrdinalLookupFactory : IColumnsOrdinalLookupFactory

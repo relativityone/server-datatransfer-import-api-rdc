@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit.Integration
+namespace Relativity.DataExchange.Export.NUnit.Integration
 {
 	using System;
 	using System.Collections.Generic;
@@ -26,13 +26,12 @@ namespace Relativity.Export.Client.NUnit.Integration
 
 	using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Container;
-	using Relativity.Import.Export;
-	using Relativity.Import.Export.Process;
-	using Relativity.Import.Export.Service;
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Container;
+	using Relativity.DataExchange.Process;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
-	using Relativity.Transfer;
 
 	/// <summary>
 	/// Represents a base class for <see cref="Exporter"/> tests.

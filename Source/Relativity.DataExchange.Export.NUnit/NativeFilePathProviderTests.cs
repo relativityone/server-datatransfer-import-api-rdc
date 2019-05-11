@@ -8,8 +8,8 @@ namespace Relativity.Export.NUnit
 {
     using kCura.WinEDDS;
 
-    using Relativity.Export.VolumeManagerV2.Directories;
-    using Relativity.Import.Export.Io;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+    using Relativity.DataExchange.Io;
     using Relativity.Logging;
 
     public class NativeFilePathProviderTests : FilePathProviderTests

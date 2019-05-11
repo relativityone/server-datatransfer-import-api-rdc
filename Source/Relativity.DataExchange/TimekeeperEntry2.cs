@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
 	/// <summary>
 	/// Represents a single entry stored within <see cref="Timekeeper2"/> that contains metric information. This class cannot be inherited.

@@ -1,9 +1,9 @@
 Imports System.Threading
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Data
-Imports Relativity.Import.Export.Io
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Data
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Service
 Imports Relativity.Logging
-Imports Relativity.Import.Export.Service
 
 
 Namespace kCura.WinEDDS

@@ -1,9 +1,11 @@
 ﻿using System.Threading;
-using Relativity.Import.Export.Transfer;
+
 using Relativity.Logging;
 
-namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
+namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using Relativity.DataExchange.Transfer;
+
 	public class LongTextTapiBridgeWrapperFactory : ITapiBridgeWrapperFactory
 	{
 		private readonly ILog _logger;

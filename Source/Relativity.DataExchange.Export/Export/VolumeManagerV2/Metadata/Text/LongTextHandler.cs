@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text
 {
 	using Castle.Core;
 
@@ -6,7 +6,7 @@
 	using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS.LoadFileEntry;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Text.Delimiter;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text.Delimiter;
 	using Relativity.Logging;
 
 	public class LongTextHandler : ILongTextHandler

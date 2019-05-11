@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Natives
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives
 {
 	using System.Collections.Generic;
 	using System.Linq;
@@ -7,7 +7,7 @@
 	using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS.LoadFileEntry;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Logging;
 
 	public class LineFieldsValue : ILineFieldsValue

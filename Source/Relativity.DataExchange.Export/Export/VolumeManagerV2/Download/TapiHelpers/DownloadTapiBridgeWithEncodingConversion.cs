@@ -1,13 +1,13 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	using System;
 
-	using Relativity.Export.VolumeManagerV2.Download.EncodingHelpers;
-	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 	using Relativity.Transfer;
 
-	using ITransferStatistics = Relativity.Export.VolumeManagerV2.Statistics.ITransferStatistics;
+	using ITransferStatistics = Relativity.DataExchange.Export.VolumeManagerV2.Statistics.ITransferStatistics;
 
 	public class DownloadTapiBridgeWithEncodingConversion : DownloadTapiBridgeAdapter
 	{

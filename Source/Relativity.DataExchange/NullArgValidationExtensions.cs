@@ -6,7 +6,7 @@
 //   Extension to check null pointer arguments on the function call
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
 	using System;
 

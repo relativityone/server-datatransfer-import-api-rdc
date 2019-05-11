@@ -1,8 +1,9 @@
 ﻿Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Monitoring
+Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Service
+Imports Relativity.DataExchange.Transfer
 Imports Relativity.DataTransfer.MessageService
-Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Transfer
 
 Public MustInherit Class MonitoredProcessBase
 	Inherits ProcessBase2
@@ -20,7 +21,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected _hasFatalErrorOccured As Boolean
 	Protected _tapiClientName As String = TapiClient.None.ToString()
 
-	Public Property CaseInfo As Relativity.Import.Export.Service.CaseInfo
+	Public Property CaseInfo As CaseInfo
 
 	Public Sub New(messageService As IMessageService)
 		Me.MessageService = messageService

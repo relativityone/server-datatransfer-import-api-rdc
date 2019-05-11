@@ -1,10 +1,10 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images
 {
 	using System.Threading;
 
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 
 	public interface IImageLoadFileMetadataForArtifactBuilder
 	{

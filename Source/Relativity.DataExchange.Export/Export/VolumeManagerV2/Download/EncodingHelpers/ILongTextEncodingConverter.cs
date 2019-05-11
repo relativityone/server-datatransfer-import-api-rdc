@@ -1,6 +1,6 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download.EncodingHelpers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers
 {
-	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 
 	public interface ILongTextEncodingConverter
 	{

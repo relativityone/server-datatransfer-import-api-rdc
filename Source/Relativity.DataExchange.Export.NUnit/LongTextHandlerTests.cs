@@ -14,10 +14,10 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.Export.VolumeManagerV2.Metadata.Text.Delimiter;
-	using Relativity.Import.Export.TestFramework;
-    using Relativity.Logging;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text.Delimiter;
+	using Relativity.DataExchange.TestFramework;
+	using Relativity.Logging;
 
     [TestFixture]
 	public class LongTextHandlerTests

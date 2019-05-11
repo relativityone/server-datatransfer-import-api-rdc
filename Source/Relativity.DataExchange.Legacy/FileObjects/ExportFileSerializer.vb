@@ -1,5 +1,5 @@
 ﻿Imports System.Xml.Linq
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS
 	Public Class ExportFileSerializer
@@ -65,7 +65,7 @@ Namespace kCura.WinEDDS
 
 		Public Overridable Function DeserializeExportFile(ByVal xml As XDocument) As ExportFile
 			Dim scrubbed As String = Me.TransformExportFileXml(xml)
-			Dim deserialized As kCura.WinEDDS.ExportFile = Global.Relativity.Import.Export.SerializationHelper.DeserializeFromSoap(Of kCura.WinEDDS.ExportFile)(scrubbed)
+			Dim deserialized As kCura.WinEDDS.ExportFile = Global.Relativity.DataExchange.SerializationHelper.DeserializeFromSoap(Of kCura.WinEDDS.ExportFile)(scrubbed)
 			Return deserialized
 		End Function
 

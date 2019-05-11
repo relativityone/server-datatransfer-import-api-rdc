@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.Net;
@@ -15,6 +15,7 @@ namespace Relativity.Import.Export.NUnit
 
 	using Moq;
 
+	using Relativity.DataExchange;
 	using Relativity.Logging;
 
 	[TestFixture("Processing")]
@@ -31,7 +32,7 @@ namespace Relativity.Import.Export.NUnit
 		private RelativityInstanceInfo instanceInfo;
 		private IObjectCacheRepository objectCacheRepository;
 		private Mock<IAppSettings> appSettings;
-		private Mock<IAppSettingsInternal> appSettingsInternal;
+		private Mock<DataExchange.IAppSettingsInternal> appSettingsInternal;
 
 		public ImportExportCompatibilityCheckTests(string applicationName)
 		{
@@ -52,7 +53,7 @@ namespace Relativity.Import.Export.NUnit
 			this.objectCacheRepository = new MemoryCacheRepository(TimeSpan.FromSeconds(0));
 			this.appSettings = new Mock<IAppSettings>();
 			this.appSettings.SetupGet(settings => settings.ApplicationName).Returns(this.applicationName);
-			this.appSettingsInternal = new Mock<IAppSettingsInternal>();
+			this.appSettingsInternal = new Mock<DataExchange.IAppSettingsInternal>();
 			this.appSettingsInternal.SetupGet(settings => settings.EnforceVersionCompatibilityCheck).Returns(true);
 		}
 
@@ -164,7 +165,7 @@ namespace Relativity.Import.Export.NUnit
 				this.relativityVersionServiceMock.Object,
 				this.logMock.Object,
 				new Version(minRelativityVersion),
-				VersionConstants.RequiredWebApiVersion,
+				DataExchange.VersionConstants.RequiredWebApiVersion,
 				new Version(webApiStartFromRelativityVersion),
 				this.objectCacheRepository,
 				this.appSettings.Object,

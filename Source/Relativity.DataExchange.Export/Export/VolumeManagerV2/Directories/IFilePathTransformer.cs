@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Directories
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Directories
 {
 	public interface IFilePathTransformer
 	{

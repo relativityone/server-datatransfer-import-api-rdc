@@ -4,12 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.Net;
 
 	using global::NUnit.Framework;
+
+	using Relativity.DataExchange;
 
 	[TestFixture]
 	public class HttpServiceExceptionTests : SerializationTestsBase

@@ -1,10 +1,9 @@
-﻿namespace Relativity.Export.Logging
+﻿namespace Relativity.DataExchange.Logging
 {
-	using global::Relativity;
-	using global::Relativity.Logging;
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Service;
+	using Relativity.Logging;
 
-	public class LoggerProvider
+	internal class LoggerProvider
 	{
 		private static ILog _log;
 

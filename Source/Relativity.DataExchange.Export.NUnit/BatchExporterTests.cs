@@ -14,12 +14,12 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Batches;
-    using Relativity.Export.VolumeManagerV2.Download;
-    using Relativity.Export.VolumeManagerV2.ImagesRollup;
-    using Relativity.Export.VolumeManagerV2.Metadata.Images;
-    using Relativity.Export.VolumeManagerV2.Metadata.Natives;
-    using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Download;
+    using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
+    using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 
     [TestFixture]
 	public class BatchExporterTests

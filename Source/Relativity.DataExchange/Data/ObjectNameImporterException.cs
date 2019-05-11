@@ -4,13 +4,13 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Data
+namespace Relativity.DataExchange.Data
 {
 	using System;
 	using System.Globalization;
 	using System.Runtime.Serialization;
 
-	using Relativity.Import.Export.Resources;
+	using Relativity.DataExchange.Resources;
 
 	/// <summary>
 	/// Represents an exception that occured while attempting to import an object name. This class cannot be inherited.

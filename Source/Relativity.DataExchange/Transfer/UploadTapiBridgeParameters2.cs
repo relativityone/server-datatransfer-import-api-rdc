@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Transfer
+namespace Relativity.DataExchange.Transfer
 {
 	/// <summary>
 	/// Represents the generic parameters to setup a Transfer API bridge for upload. This class cannot be inherited, backwards compatibility isn't guaranteed, and should never be consumed by API users.

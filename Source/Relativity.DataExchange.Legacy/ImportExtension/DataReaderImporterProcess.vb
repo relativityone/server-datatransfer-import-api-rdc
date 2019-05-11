@@ -1,6 +1,6 @@
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImporterProcess

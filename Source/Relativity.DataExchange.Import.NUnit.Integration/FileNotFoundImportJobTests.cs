@@ -7,13 +7,12 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit.Integration
+namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.TestFramework;
-	using Relativity.Import.Export.Transfer;
-
+	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
 	/// <summary>

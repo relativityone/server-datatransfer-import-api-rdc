@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Batches
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Batches
 {
 	using System;
 	using System.Collections.Generic;

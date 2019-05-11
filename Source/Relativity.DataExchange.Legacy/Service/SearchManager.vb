@@ -1,5 +1,5 @@
 Imports kCura.WinEDDS.Service.Export
-Imports Relativity.Import.Export
+Imports Relativity.DataExchange
 
 Namespace kCura.WinEDDS.Service
 	Public Class SearchManager

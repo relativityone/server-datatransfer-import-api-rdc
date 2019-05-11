@@ -1,6 +1,6 @@
 ﻿Imports System.Threading
 Imports kCura.WinEDDS.Credentials
-Imports Relativity.Import.Export
+Imports Relativity.DataExchange
 
 Namespace kCura.WinEDDS.Api
 	Public Class LoginHelper

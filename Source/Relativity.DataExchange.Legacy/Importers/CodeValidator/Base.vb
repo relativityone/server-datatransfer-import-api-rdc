@@ -1,4 +1,4 @@
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS.CodeValidator
 	Public MustInherit Class Base

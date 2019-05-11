@@ -1,5 +1,5 @@
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS.Service
 	Public Class ProductionManager

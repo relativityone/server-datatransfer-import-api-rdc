@@ -1,9 +1,9 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text
 {
 	using System.IO;
 	using System.Text;
 
-	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 
 	public abstract class LongText
 	{

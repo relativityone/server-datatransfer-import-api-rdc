@@ -12,8 +12,8 @@ namespace Relativity.Export.NUnit
 
 	using kCura.WinEDDS;
 
-	using Relativity.Export.VolumeManagerV2.Settings;
-    using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Settings;
+    using Relativity.DataExchange.Service;
 	using Relativity.Logging;
 
     [TestFixture]

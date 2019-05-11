@@ -1,8 +1,8 @@
 Imports System.Collections.Concurrent
 Imports kCura.WinEDDS.Service.Export
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Service
-Imports Relativity.Import.Export.Transfer
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Service
+Imports Relativity.DataExchange.Transfer
 
 Namespace kCura.WinEDDS
 	Friend Class FileDownloader
@@ -16,11 +16,11 @@ Namespace kCura.WinEDDS
 		Private _userManager As kCura.WinEDDS.Service.UserManager
 		Private Shared _locationAccessMatrix As New ConcurrentDictionary(Of String, TapiClient)
 		
-		Private _fileHelper As Global.Relativity.Import.Export.Io.IFile
-		Public Property FileHelper() As Global.Relativity.Import.Export.Io.IFile Implements IExportFileDownloader.FileHelper
+		Private _fileHelper As Global.Relativity.DataExchange.Io.IFile
+		Public Property FileHelper() As Global.Relativity.DataExchange.Io.IFile Implements IExportFileDownloader.FileHelper
 			Get
 				If(_fileHelper Is Nothing) Then
-					_fileHelper = Global.Relativity.Import.Export.Io.FileSystem.Instance.File
+					_fileHelper = Global.Relativity.DataExchange.Io.FileSystem.Instance.File
 				End If
 				
 				Return _fileHelper
@@ -46,7 +46,7 @@ Namespace kCura.WinEDDS
 				destinationFolderPath &= "\"
 			End If
 			Me.DestinationFolderPath = destinationFolderPath
-			_downloadUrl = Global.Relativity.Import.Export.Io.FileSystem.Instance.Path.GetFullyQualifiedPath(New System.Uri(AppSettings.Instance.WebApiServiceUrl), downloadHandlerUrl)
+			_downloadUrl = Global.Relativity.DataExchange.Io.FileSystem.Instance.Path.GetFullyQualifiedPath(New System.Uri(AppSettings.Instance.WebApiServiceUrl), downloadHandlerUrl)
 			_userManager = New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer)
 
 			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New ConcurrentDictionary(Of String, TapiClient)

@@ -2,7 +2,7 @@
 Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.FileNaming.CustomFileNaming
 Imports kCura.WinEDDS.Service.Export
-Imports Relativity.Import.Export.Process
+Imports Relativity.DataExchange.Process
 
 Namespace kCura.WinEDDS
 	Public Class ExtendedExporter

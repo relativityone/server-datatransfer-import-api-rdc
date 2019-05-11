@@ -17,9 +17,9 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Batches;
-	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.DataExchange.Io;
     using Relativity.Logging;
 
     [TestFixture]
@@ -92,7 +92,7 @@ namespace Relativity.Export.NUnit
 			_instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
 
 			// ASSERT
-			ErrorFileWriter.Verify(x => x.Write(Relativity.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+			ErrorFileWriter.Verify(x => x.Write(Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -168,7 +168,7 @@ namespace Relativity.Export.NUnit
 			_instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
 
 			// ASSERT
-			ErrorFileWriter.Verify(x => x.Write(Relativity.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+			ErrorFileWriter.Verify(x => x.Write(Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 

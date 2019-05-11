@@ -1,7 +1,7 @@
 Imports System.Net
 Imports kCura.WinEDDS
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Service
 Imports Relativity.OAuth2Client.Exceptions
 
 Namespace Relativity.Desktop.Client

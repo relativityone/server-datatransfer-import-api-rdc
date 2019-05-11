@@ -1,9 +1,9 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Validation
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Validation
 {
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters.Validator;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
 
 	public class ExportValidation : IExportValidation
 	{

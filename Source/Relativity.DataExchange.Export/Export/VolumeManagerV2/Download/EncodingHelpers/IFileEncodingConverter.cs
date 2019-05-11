@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download.EncodingHelpers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers
 {
 	using System.Text;
 	using System.Threading;

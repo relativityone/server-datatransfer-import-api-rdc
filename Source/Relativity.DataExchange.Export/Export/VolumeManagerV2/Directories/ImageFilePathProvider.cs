@@ -1,8 +1,8 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Directories
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Directories
 {
 	using kCura.WinEDDS;
 
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Io;
 	using Relativity.Logging;
 
 	public class ImageFilePathProvider : FilePathProvider

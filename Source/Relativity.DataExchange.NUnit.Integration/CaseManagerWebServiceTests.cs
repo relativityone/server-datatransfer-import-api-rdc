@@ -7,11 +7,12 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit.Integration
+namespace Relativity.DataExchange.NUnit.Integration
 {
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Testing.Identification;
 
 	/// <summary>
@@ -32,7 +33,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 				this.RelativityInstance.WebApiServiceUrl.ToString(),
 				DefaultTimeOutMilliseconds))
 			{
-				Relativity.Import.Export.Service.CaseInfo caseInfo = caseManager.Read(this.TestParameters.WorkspaceId);
+				CaseInfo caseInfo = caseManager.Read(this.TestParameters.WorkspaceId);
 				Assert.That(caseInfo, Is.Not.Null);
 				Assert.That(caseInfo.ArtifactID, Is.Positive);
 				Assert.That(caseInfo.DocumentPath, Is.Not.Empty.Or.Null);

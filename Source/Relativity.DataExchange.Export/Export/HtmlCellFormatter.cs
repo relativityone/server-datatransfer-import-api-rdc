@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2
+﻿namespace Relativity.DataExchange.Export
 {
 	using System.Text;
 	using System.Web;
@@ -6,8 +6,8 @@
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.Directories;
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Service;
 
 	public class HtmlCellFormatter : ILoadFileCellFormatter
 	{
@@ -21,8 +21,8 @@
 
 		public HtmlCellFormatter(ExportFile settings, IFilePathTransformer filePathTransformer)
 		{
-			_settings = settings;
-			_filePathTransformer = filePathTransformer;
+			this._settings = settings;
+			this._filePathTransformer = filePathTransformer;
 		}
 
 		public string TransformToCell(string contents)
@@ -37,38 +37,38 @@
 
 		public string CreateImageCell(ObjectExportInfo artifact)
 		{
-			if (!_settings.ExportImages || !IsDocument())
+			if (!this._settings.ExportImages || !this.IsDocument())
 			{
 				return string.Empty;
 			}
 
-			return $"{COLUMN_PREFIX}{GetImagesHtmlString(artifact)}{COLUMN_SUFFIX}";
+			return $"{COLUMN_PREFIX}{this.GetImagesHtmlString(artifact)}{COLUMN_SUFFIX}";
 		}
 
 		public string CreateNativeCell(string location, ObjectExportInfo artifact)
 		{
-			return $"{COLUMN_PREFIX}{GetNativeHtmlString(artifact, location)}{COLUMN_SUFFIX}";
+			return $"{COLUMN_PREFIX}{this.GetNativeHtmlString(artifact, location)}{COLUMN_SUFFIX}";
 		}
 
 		private string GetNativeHtmlString(ObjectExportInfo artifact, string location)
 		{
-			if (IsDocument() && artifact.NativeCount == 0)
+			if (this.IsDocument() && artifact.NativeCount == 0)
 			{
 				return string.Empty;
 			}
 
-			if (!IsDocument() && artifact.FileID <= 0)
+			if (!this.IsDocument() && artifact.FileID <= 0)
 			{
 				return string.Empty;
 			}
 
-			string nativeFileName = artifact.NativeFileName(_settings.AppendOriginalFileName);
-			return GetLink(location, nativeFileName);
+			string nativeFileName = artifact.NativeFileName(this._settings.AppendOriginalFileName);
+			return this.GetLink(location, nativeFileName);
 		}
 
 		private bool IsDocument()
 		{
-			return _settings.ArtifactTypeID == (int)ArtifactType.Document;
+			return this._settings.ArtifactTypeID == (int)ArtifactType.Document;
 		}
 
 		private string GetImagesHtmlString(ObjectExportInfo artifact)
@@ -78,17 +78,17 @@
 			foreach (ImageExportInfo image in artifact.Images)
 			{
 				string location;
-				if (_settings.VolumeInfo.CopyImageFilesFromRepository)
+				if (this._settings.VolumeInfo.CopyImageFilesFromRepository)
 				{
-					location = _filePathTransformer.TransformPath(image.TempLocation);
+					location = this._filePathTransformer.TransformPath(image.TempLocation);
 				}
 				else
 				{
 					location = image.SourceLocation;
 				}
 
-				retval.Append(GetLink(location, image.FileName));
-				if (_settings.TypeOfImage == ExportFile.ImageType.MultiPageTiff || _settings.TypeOfImage == ExportFile.ImageType.Pdf)
+				retval.Append(this.GetLink(location, image.FileName));
+				if (this._settings.TypeOfImage == ExportFile.ImageType.MultiPageTiff || this._settings.TypeOfImage == ExportFile.ImageType.Pdf)
 				{
 					break;
 				}

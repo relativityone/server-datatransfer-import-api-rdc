@@ -2,7 +2,7 @@
 Imports System.Threading
 Imports System.Windows.Forms
 Imports kCura.WinEDDS.Service
-Imports Relativity.Import.Export
+Imports Relativity.DataExchange
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
 
@@ -64,4 +64,4 @@ Namespace kCura.WinEDDS.Credentials
 		Private Sub OnOAuth2ImplicitAccessTokenRetrieved(source As ITokenProvider, args As ITokenResponseEventArgs)
 		End Sub
 	End Class
-End NameSpace
+End Namespace

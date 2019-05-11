@@ -4,7 +4,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export
+namespace Relativity.DataExchange
 {
 	using System;
 	using System.Globalization;
@@ -17,7 +17,7 @@ namespace Relativity.Import.Export
 
 	using Polly;
 
-	using Relativity.Import.Export.Resources;
+	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 
 	/// <summary>

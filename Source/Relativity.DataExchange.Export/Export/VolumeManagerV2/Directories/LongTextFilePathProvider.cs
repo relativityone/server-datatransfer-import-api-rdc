@@ -1,9 +1,10 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Directories
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Directories
 {
-	using Relativity.Import.Export.Io;
 	using Relativity.Logging;
 
 	using kCura.WinEDDS;
+
+	using Relativity.DataExchange.Io;
 
 	public class LongTextFilePathProvider : FilePathProvider
 	{

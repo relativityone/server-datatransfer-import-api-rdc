@@ -4,12 +4,12 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Process
+namespace Relativity.DataExchange.Process
 {
 	using System;
 	using System.Threading;
 
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Io;
 
 	/// <summary>
 	/// Defines an abstract object that performs a runnable process.
@@ -36,8 +36,8 @@ namespace Relativity.Import.Export.Process
 		/// </summary>
 		protected ProcessBase2()
 			: this(
-				Relativity.Import.Export.Io.FileSystem.Instance,
-				Relativity.Import.Export.AppSettings.Instance,
+				Io.FileSystem.Instance,
+				DataExchange.AppSettings.Instance,
 				RelativityLogFactory.CreateLog(),
 				null)
 		{

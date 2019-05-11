@@ -10,8 +10,8 @@ Imports System.Threading
 
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.WinEDDS
-Imports Relativity.Import.Export.Io
-Imports Relativity.Import.Export.Process
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Process
 
 Imports Relativity.Logging
 

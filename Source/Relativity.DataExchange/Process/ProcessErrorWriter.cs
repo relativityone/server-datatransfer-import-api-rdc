@@ -4,14 +4,13 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Process
+namespace Relativity.DataExchange.Process
 {
 	using System;
 	using System.Globalization;
-	using System.IO;
 	using System.Threading;
 
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Io;
 
 	/// <summary>
 	/// Represents a class object that writes all process errors to a CSV file. This class cannot be inherited.

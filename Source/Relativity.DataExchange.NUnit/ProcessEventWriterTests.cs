@@ -7,15 +7,15 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System;
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.Io;
-	using Relativity.Import.Export.Process;
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Process;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents <see cref="ProcessEventWriter"/> tests.

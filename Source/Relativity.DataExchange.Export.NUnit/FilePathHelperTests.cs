@@ -8,7 +8,7 @@ namespace Relativity.Export.NUnit
 {
 	using global::NUnit.Framework;
 
-	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
     using Relativity.Logging;
 
     [TestFixture]

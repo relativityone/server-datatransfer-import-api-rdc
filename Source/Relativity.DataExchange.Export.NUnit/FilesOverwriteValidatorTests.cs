@@ -13,9 +13,9 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
-	using Relativity.Export.VolumeManagerV2.Validation;
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Validation;
+	using Relativity.DataExchange.Io;
 	using Relativity.Logging;
 
     [TestFixture]

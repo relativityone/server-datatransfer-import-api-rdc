@@ -4,9 +4,9 @@ Namespace kCura.WinEDDS.IO
 	Public Class FileStreamFactory
 		Implements IFileStreamFactory
 
-		Private Readonly _fileHelper As Global.Relativity.Import.Export.Io.IFile
+		Private Readonly _fileHelper As Global.Relativity.DataExchange.Io.IFile
 
-		Public Sub New(fileHelper As Global.Relativity.Import.Export.Io.IFile)
+		Public Sub New(fileHelper As Global.Relativity.DataExchange.Io.IFile)
 			_fileHelper = fileHelper
 		End Sub
 

@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text
 {
 	using System;
 	using System.Linq;
@@ -7,8 +7,8 @@
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.Repository;
-	using Relativity.Import.Export.Service;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 
 	public class LongTextHelper
 	{

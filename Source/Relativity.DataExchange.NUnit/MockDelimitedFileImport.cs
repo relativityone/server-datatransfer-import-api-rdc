@@ -7,14 +7,14 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Threading;
 
-	using Relativity.Import.Export.Data;
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Data;
+	using Relativity.DataExchange.Io;
 	using Relativity.Logging;
 
 	/// <summary>

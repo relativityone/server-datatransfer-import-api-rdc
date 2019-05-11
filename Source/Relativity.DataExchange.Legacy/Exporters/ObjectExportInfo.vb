@@ -46,7 +46,7 @@ Namespace kCura.WinEDDS.Exporters
 						retval = ProductionBeginBates
 					End If
 				End If
-				Return Global.Relativity.Import.Export.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(retval)
+				Return Global.Relativity.DataExchange.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(retval)
 			End Get
 		End Property
 
@@ -106,7 +106,7 @@ Namespace kCura.WinEDDS.Exporters
 					retval = IdentifierValue
 				End If
 			End If
-			Return Global.Relativity.Import.Export.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(retval)
+			Return Global.Relativity.DataExchange.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(retval)
 		End Function
 
 		Public Function FullTextFileName(ByVal nameFilesAfterIdentifier As Boolean, tryProductionBegBates As Boolean) As String
@@ -120,7 +120,7 @@ Namespace kCura.WinEDDS.Exporters
 				retval = Me.AppendOriginalFileName(retval)
 			End If
 
-			retval = Global.Relativity.Import.Export.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(retval)
+			retval = Global.Relativity.DataExchange.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(retval)
 			retval = AppendExtensionToFullTextFileName(retval)
 			Return retval
 		End Function

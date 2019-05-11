@@ -1,12 +1,12 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Batches
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Batches
 {
 	using System.Threading;
 
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
-	using Relativity.Import.Export.Io;
+	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Logging;
 
 	public class NativeFileBatchValidator : IBatchValidator

@@ -1,4 +1,4 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Metadata
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata
 {
 	using System;
 

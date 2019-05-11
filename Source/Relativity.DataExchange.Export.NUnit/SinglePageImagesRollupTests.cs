@@ -12,7 +12,7 @@ namespace Relativity.Export.NUnit
 
     using kCura.WinEDDS.Exporters;
 
-	using Relativity.Export.VolumeManagerV2.ImagesRollup;
+	using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
 
 	[TestFixture]
 	public class SinglePageImagesRollupTests

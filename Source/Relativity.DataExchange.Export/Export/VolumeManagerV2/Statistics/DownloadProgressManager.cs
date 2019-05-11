@@ -1,14 +1,14 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Statistics
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Statistics
 {
 	using System.Collections.Generic;
 	using System.Linq;
 
 	using kCura.WinEDDS;
 
-	using Relativity.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.Export.VolumeManagerV2.Repository;
-	using Relativity.Import.Export.Io;
-	using Relativity.Import.Export.Process;
+	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Process;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.Logging;
 
 	public class DownloadProgressManager : IDownloadProgress, IDownloadProgressManager

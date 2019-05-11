@@ -1,6 +1,6 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Settings
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Settings
 {
-	using global::Relativity.Import.Export;
+	using Relativity.DataExchange;
 
 	public class Config
 	{

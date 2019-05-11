@@ -1,13 +1,14 @@
-﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	using System;
 	using System.Threading;
 
-	using global::Relativity.Import.Export.Transfer;
 	using global::Relativity.Logging;
 	using global::Relativity.Transfer;
 
 	using kCura.WinEDDS;
+
+	using Relativity.DataExchange.Transfer;
 
 	public class SmartTapiBridge : ITapiBridge
 	{
