@@ -56,7 +56,7 @@ Write-Host "Merging SDK assemblies..."
     ("/allowMultiple"),
     ("/xmldocs"),
     ("/out:""$MergedSdkFile"""),
-    ("""$SolutionDir\Relativity.DataExchange\bin\Relativity.DataExchange.dll"""),
+    ("""$SolutionDir\Relativity.DataExchange.Core\bin\Relativity.DataExchange.Core.dll"""),
     ("""$SolutionDir\Relativity.DataExchange.Legacy\bin\Relativity.DataExchange.Legacy.dll"""),
     ("""$SolutionDir\Relativity.DataExchange.Export\bin\Relativity.DataExchange.Export.dll"""),
     ("""$SolutionDir\Relativity.DataExchange.Import\bin\Relativity.DataExchange.Import.dll"""))

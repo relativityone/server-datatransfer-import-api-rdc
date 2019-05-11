@@ -161,9 +161,9 @@
       <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
       <Name>Relativity.DataExchange.Legacy</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Relativity.DataExchange\Relativity.DataExchange.csproj">
+    <ProjectReference Include="..\Relativity.DataExchange.Core\Relativity.DataExchange.Core.csproj">
       <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
-      <Name>Relativity.DataExchange</Name>
+      <Name>Relativity.DataExchange.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

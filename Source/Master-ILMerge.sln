@@ -46,7 +46,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Exp
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5} = {410BA79B-DF60-4EDA-86B3-608F3DEE38F5}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange", "Relativity.DataExchange\Relativity.DataExchange.csproj", "{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Core", "Relativity.DataExchange.Core\Relativity.DataExchange.Core.csproj", "{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.NUnit.Integration", "Relativity.DataExchange.NUnit.Integration\Relativity.DataExchange.NUnit.Integration.csproj", "{B6E34ED3-1C41-4DB9-9BD7-24A256A05663}"
 EndProject
