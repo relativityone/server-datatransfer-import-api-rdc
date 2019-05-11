@@ -20,9 +20,9 @@ namespace Relativity.DataExchange.Io
 	internal class OutsideInFileTypeIdentifierService : IFileTypeIdentifier
 	{
 		/// <summary>
-		/// The default idle timeout value.
+		/// The default idle timeout value in seconds.
 		/// </summary>
-		public const int DefaultIdleTimeout = 10000;
+		public const int DefaultIdleTimeout = 10;
 
 		/// <summary>
 		/// The file identification configuration.
@@ -30,7 +30,7 @@ namespace Relativity.DataExchange.Io
 		private readonly FileTypeConfiguration configuration = new FileTypeConfiguration();
 
 		/// <summary>
-		/// The optional timeout.
+		/// The optional timeout in seconds.
 		/// </summary>
 		private readonly int timeout;
 
@@ -56,7 +56,7 @@ namespace Relativity.DataExchange.Io
 		/// Initializes a new instance of the <see cref="OutsideInFileTypeIdentifierService"/> class.
 		/// </summary>
 		/// <param name="timeout">
-		/// The optional timeout.
+		/// The optional timeout in seconds.
 		/// </param>
 		public OutsideInFileTypeIdentifierService(int? timeout)
 		{
@@ -222,10 +222,11 @@ namespace Relativity.DataExchange.Io
 				var oiConfiguration = new OutsideInConfig
 					                      {
 						                      InstallLocation = new System.IO.DirectoryInfo(path),
-						                      IdleWorkerTimeout = Convert.ToUInt32(this.timeout),
+						                      IdleWorkerTimeout = Convert.ToUInt32(
+							                      TimeSpan.FromSeconds(this.timeout).TotalMilliseconds),
 					                      };
 				OutsideIn.SetConfiguration(oiConfiguration);
-				this.configuration.Timeout = Convert.ToInt32(oiConfiguration.IdleWorkerTimeout);
+				this.configuration.Timeout = Convert.ToInt32(TimeSpan.FromMilliseconds(oiConfiguration.IdleWorkerTimeout).TotalSeconds);
 				this.configuration.InstallDirectory = oiConfiguration.InstallLocation.ToString();
 				this.ApplyVersion(path);
 			}

@@ -7,6 +7,7 @@ NUGET
     CsvHelper (12.1.2)
       System.ValueTuple (>= 4.4)
     extent (0.0.3)
+    FileHelpers (3.4)
     GitVersion.CommandLine (4.0)
     ILMerge (3.0.29)
     JetBrains.dotCover.CommandLineTools (2019.1.0-eap06)

@@ -332,6 +332,17 @@ namespace Relativity.DataExchange
 		}
 
 		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionImportExport,
+			AppSettingsConstants.FileTypeIdentifyTimeoutSecondsKey,
+			AppSettingsConstants.FileTypeIdentifyTimeoutSecondsDefaultValue)]
+		int IAppSettings.FileTypeIdentifyTimeoutSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
 			"Microsoft.Globalization",
 			"CA1308:NormalizeStringsToUppercase",
