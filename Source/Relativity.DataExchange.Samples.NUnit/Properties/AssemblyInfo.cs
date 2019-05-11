@@ -12,8 +12,8 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyProduct("Relativity Data Exchange SDK")]
-[assembly: AssemblyTitle("Relativity.DataExchange.Import.Samples.NUnit")]
-[assembly: AssemblyDescription("A Relativity import client API samples library.")]
+[assembly: AssemblyTitle("Relativity.DataExchange.Samples.NUnit")]
+[assembly: AssemblyDescription("A Relativity data exchange SDK client samples library.")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
