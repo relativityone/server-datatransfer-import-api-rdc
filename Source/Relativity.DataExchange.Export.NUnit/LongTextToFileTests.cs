@@ -4,28 +4,28 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Text;
+	using System.Text;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
-    using kCura.WinEDDS.LoadFileEntry;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
 
-    using Moq;
+	using Moq;
 
-    using Relativity.DataExchange.Export.VolumeManagerV2;
+	using Relativity.DataExchange.Export.VolumeManagerV2;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
-    using Relativity.DataExchange.Service;
-    using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
-    using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
+	using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
     [TestFixture]
 	public class LongTextToFileTests
@@ -42,19 +42,19 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_fieldFactory = new QueryFieldFactory();
-			_exportSettings = new ExportFile(1);
-			_longTextRepository = new LongTextRepository(null, new NullLogger());
+			this._fieldFactory = new QueryFieldFactory();
+			this._exportSettings = new ExportFile(1);
+			this._longTextRepository = new LongTextRepository(null, new NullLogger());
 
-			_fieldService = new Mock<IFieldService>();
-			_filePathTransformer = new Mock<IFilePathTransformer>();
-			_filePathTransformer.Setup(x => x.TransformPath(It.IsAny<string>())).Returns((string s) => s);
+			this._fieldService = new Mock<IFieldService>();
+			this._filePathTransformer = new Mock<IFilePathTransformer>();
+			this._filePathTransformer.Setup(x => x.TransformPath(It.IsAny<string>())).Returns((string s) => s);
 
-			_instance = new LongTextToFile(
-				_exportSettings,
-				_filePathTransformer.Object,
-				_longTextRepository,
-				new LongTextHelper(_exportSettings, _fieldService.Object, _longTextRepository),
+			this._instance = new LongTextToFile(
+				this._exportSettings,
+				this._filePathTransformer.Object,
+				this._longTextRepository,
+				new LongTextHelper(this._exportSettings, this._fieldService.Object, this._longTextRepository),
 				new NullLogger());
 		}
 
@@ -63,7 +63,7 @@ namespace Relativity.Export.NUnit
 		{
 			const string expectedResult = "file_location";
 
-			ViewFieldInfo field = _fieldFactory.GetArtifactIdField();
+			ViewFieldInfo field = this._fieldFactory.GetArtifactIdField();
 			ObjectExportInfo artifact = new ObjectExportInfo();
 
 			LongText longText = LongText.CreateFromMissingValue(
@@ -71,16 +71,16 @@ namespace Relativity.Export.NUnit
 				field.FieldArtifactId,
 				LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, expectedResult),
 				Encoding.Default);
-			_longTextRepository.Add(longText.InList());
+			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry entry = new DeferredEntry();
 
 			// ACT
-			_instance.HandleLongText(artifact, field, entry);
+			this._instance.HandleLongText(artifact, field, entry);
 
 			// ASSERT
 			Assert.That(entry.GetTextFromEntry(), Is.EqualTo(expectedResult));
-			_filePathTransformer.Verify(x => x.TransformPath(expectedResult));
+			this._filePathTransformer.Verify(x => x.TransformPath(expectedResult));
 		}
 
 		[Test]
@@ -89,9 +89,9 @@ namespace Relativity.Export.NUnit
 			const string location = "location";
 			const string expectedResult = "<a href='location' target='_textwindow'>location</a>";
 
-			_exportSettings.LoadFileIsHtml = true;
+			this._exportSettings.LoadFileIsHtml = true;
 
-			ViewFieldInfo field = _fieldFactory.GetArtifactIdField();
+			ViewFieldInfo field = this._fieldFactory.GetArtifactIdField();
 			ObjectExportInfo artifact = new ObjectExportInfo();
 
 			LongText longText = LongText.CreateFromMissingValue(
@@ -99,16 +99,16 @@ namespace Relativity.Export.NUnit
 				field.FieldArtifactId,
 				LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, location),
 				Encoding.Default);
-			_longTextRepository.Add(longText.InList());
+			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry entry = new DeferredEntry();
 
 			// ACT
-			_instance.HandleLongText(artifact, field, entry);
+			this._instance.HandleLongText(artifact, field, entry);
 
 			// ASSERT
 			Assert.That(entry.GetTextFromEntry(), Is.EqualTo(expectedResult));
-			_filePathTransformer.Verify(x => x.TransformPath(location));
+			this._filePathTransformer.Verify(x => x.TransformPath(location));
 		}
 
 		[Test]
@@ -116,19 +116,19 @@ namespace Relativity.Export.NUnit
 		{
 			const string expectedResult = "file_location";
 
-			FieldStub textPrecedenceField = new FieldStub(_fieldFactory.GetArtifactIdField());
+			FieldStub textPrecedenceField = new FieldStub(this._fieldFactory.GetArtifactIdField());
 			textPrecedenceField.SetAvfColumnName(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME);
 
-			ViewFieldInfo trueTextPrecedenceField = _fieldFactory.GetArtifactIdField();
+			ViewFieldInfo trueTextPrecedenceField = this._fieldFactory.GetArtifactIdField();
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 				                            {
 					                            Metadata = new object[] { trueTextPrecedenceField.FieldArtifactId }
 				                            };
 
-			_exportSettings.SelectedTextFields = new[] { trueTextPrecedenceField };
+			this._exportSettings.SelectedTextFields = new[] { trueTextPrecedenceField };
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
+			this._fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
 
 			LongText longText = LongText.CreateFromMissingValue(
 				artifact.ArtifactID,
@@ -138,12 +138,12 @@ namespace Relativity.Export.NUnit
 					trueTextPrecedenceField.FieldArtifactId,
 					expectedResult),
 				Encoding.Default);
-			_longTextRepository.Add(longText.InList());
+			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry entry = new DeferredEntry();
 
 			// ACT
-			_instance.HandleLongText(artifact, textPrecedenceField, entry);
+			this._instance.HandleLongText(artifact, textPrecedenceField, entry);
 
 			// ASSERT
 			Assert.That(entry.GetTextFromEntry(), Is.EqualTo(expectedResult));

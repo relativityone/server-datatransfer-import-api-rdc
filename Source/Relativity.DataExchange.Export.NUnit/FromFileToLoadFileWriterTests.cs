@@ -4,20 +4,20 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.IO;
-    using System.Text;
+	using System.IO;
+	using System.Text;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
-    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
-    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
-    using Relativity.Logging;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class FromFileToLoadFileWriterTests
 	{
 		private const char _QUOTE_DELIMITER = 'Q';
@@ -30,25 +30,25 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_filePath = Path.GetTempFileName();
+			this._filePath = Path.GetTempFileName();
 
-			_memoryStream = new MemoryStream();
-			_streamWriter = new StreamWriter(_memoryStream, Encoding.Default);
+			this._memoryStream = new MemoryStream();
+			this._streamWriter = new StreamWriter(this._memoryStream, Encoding.Default);
 
 			ExportFile exportSettings = new ExportFile(1)
 			{
 				QuoteDelimiter = _QUOTE_DELIMITER,
 				NewlineDelimiter = _NEWLINE_DELIMITER
 			};
-			_instance = new FromFileToLoadFileWriter(new NullLogger(), new DelimitedFileLongTextStreamFormatterFactory(exportSettings));
+			this._instance = new FromFileToLoadFileWriter(new NullLogger(), new DelimitedFileLongTextStreamFormatterFactory(exportSettings));
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			if (File.Exists(_filePath))
+			if (File.Exists(this._filePath))
 			{
-				File.Delete(_filePath);
+				File.Delete(this._filePath);
 			}
 		}
 
@@ -59,20 +59,20 @@ namespace Relativity.Export.NUnit
 		[TestCase("", "")]
 		public void ItShouldWriteFormattedText(string text, string expectedResult)
 		{
-			File.WriteAllText(_filePath, text, Encoding.Default);
+			File.WriteAllText(this._filePath, text, Encoding.Default);
 
 			// ACT
-			_instance.WriteLongTextFileToDatFile(_streamWriter, _filePath, Encoding.Default);
+			this._instance.WriteLongTextFileToDatFile(this._streamWriter, this._filePath, Encoding.Default);
 
 			// ASSERT
-			string actualResult = GetWrittenText();
+			string actualResult = this.GetWrittenText();
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
 		}
 
 		private string GetWrittenText()
 		{
-			_streamWriter.Flush();
-			return Encoding.Default.GetString(_memoryStream.ToArray());
+			this._streamWriter.Flush();
+			return Encoding.Default.GetString(this._memoryStream.ToArray());
 		}
 	}
 }

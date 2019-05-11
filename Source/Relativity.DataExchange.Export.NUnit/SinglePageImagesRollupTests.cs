@@ -4,13 +4,13 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections;
+	using System.Collections;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
 

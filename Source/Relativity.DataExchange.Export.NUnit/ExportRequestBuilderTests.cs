@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using System;
 	using System.Collections.Generic;
@@ -34,11 +34,11 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_filePathProvider = new Mock<IFilePathProvider>();
-			_fileNameProvider = new Mock<IFileNameProvider>();
-			_validator = new Mock<IExportFileValidator>();
-			_fileProcessingStatistics = new Mock<IFileProcessingStatistics>();
-			Instance = CreateInstance(_filePathProvider.Object, _fileNameProvider.Object, _validator.Object, _fileProcessingStatistics.Object);
+			this._filePathProvider = new Mock<IFilePathProvider>();
+			this._fileNameProvider = new Mock<IFileNameProvider>();
+			this._validator = new Mock<IExportFileValidator>();
+			this._fileProcessingStatistics = new Mock<IFileProcessingStatistics>();
+			this.Instance = this.CreateInstance(this._filePathProvider.Object, this._fileNameProvider.Object, this._validator.Object, this._fileProcessingStatistics.Object);
 		}
 
 		protected abstract ExportRequestBuilder CreateInstance(
@@ -60,16 +60,16 @@ namespace Relativity.Export.NUnit
 				NativeSourceLocation = "source_location"
 			};
 
-			_fileNameProvider.Setup(x => x.GetName(artifact)).Returns(fileName);
-			_filePathProvider.Setup(x => x.GetPathForFile(fileName, It.IsAny<int>())).Returns(exportPath);
-			_validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(false);
+			this._fileNameProvider.Setup(x => x.GetName(artifact)).Returns(fileName);
+			this._filePathProvider.Setup(x => x.GetPathForFile(fileName, It.IsAny<int>())).Returns(exportPath);
+			this._validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(false);
 
 			// ACT
-			IList<ExportRequest> requests = Instance.Create(artifact, CancellationToken.None);
+			IList<ExportRequest> requests = this.Instance.Create(artifact, CancellationToken.None);
 
 			// ASSERT
 			CollectionAssert.IsEmpty(requests);
-			_fileProcessingStatistics.Verify(x => x.UpdateStatisticsForFile(exportPath));
+			this._fileProcessingStatistics.Verify(x => x.UpdateStatisticsForFile(exportPath));
 		}
 
 		[Test]
@@ -85,12 +85,12 @@ namespace Relativity.Export.NUnit
 				NativeSourceLocation = "source_location"
 			};
 
-			_fileNameProvider.Setup(x => x.GetName(artifact)).Returns(fileName);
-			_filePathProvider.Setup(x => x.GetPathForFile(fileName, It.IsAny<int>())).Returns(exportPath);
-			_validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(true);
+			this._fileNameProvider.Setup(x => x.GetName(artifact)).Returns(fileName);
+			this._filePathProvider.Setup(x => x.GetPathForFile(fileName, It.IsAny<int>())).Returns(exportPath);
+			this._validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(true);
 
 			// ACT
-			IList<ExportRequest> requests = Instance.Create(artifact, CancellationToken.None);
+			IList<ExportRequest> requests = this.Instance.Create(artifact, CancellationToken.None);
 
 			// ASSERT
 			Assert.That(requests.Count, Is.EqualTo(1));

@@ -4,16 +4,16 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Linq;
-    using System.Text;
+	using System;
+	using System.Linq;
+	using System.Text;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using Relativity.DataExchange.Export;
-    using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Export;
+	using Relativity.DataExchange.Service;
 
 	public class HtmlExportFileFormatterTests : ExportFileFormatterSetUp<HtmlExportFileFormatter>
 	{
@@ -41,9 +41,9 @@ namespace Relativity.Export.NUnit
 			retString.Append("</head><body>" + Environment.NewLine);
 			retString.Append("<table width='100%'><tr>" + Environment.NewLine);
 
-			_headerPrefix = retString.ToString();
+			this._headerPrefix = retString.ToString();
 
-			ExpFile.CaseInfo = new CaseInfo
+			this.ExpFile.CaseInfo = new CaseInfo
 			{
 				Name = _WKSP_NAME
 			};
@@ -53,15 +53,15 @@ namespace Relativity.Export.NUnit
 		public void ItShouldReturnHeaderStringWithoutNativeAndWithoutImage()
 		{
 			// Arrange
-			ExpFile.ExportNative = false;
-			ExpFile.ExportImages = false;
-			SubjectUnderTest = new HtmlExportFileFormatter(ExpFile, FieldNameProviderMock.Object);
+			this.ExpFile.ExportNative = false;
+			this.ExpFile.ExportImages = false;
+			this.SubjectUnderTest = new HtmlExportFileFormatter(this.ExpFile, this.FieldNameProviderMock.Object);
 
 			string expectedHeaderRow = $"{_HTML_TH}{FileName1}{_HTML_TH_END}{_HTML_TH}{FieldName2}{_HTML_TH_END}";
-			string expectedHeader = GetExpectedHeaderText(expectedHeaderRow);
+			string expectedHeader = this.GetExpectedHeaderText(expectedHeaderRow);
 
 			// Act
-			string header = SubjectUnderTest.GetHeader(Fields.ToList());
+			string header = this.SubjectUnderTest.GetHeader(this.Fields.ToList());
 
 			// Assert
 			Assert.That(header, Is.EqualTo(expectedHeader));
@@ -71,17 +71,17 @@ namespace Relativity.Export.NUnit
 		public void ItShouldReturnHeaderStringWithoutNative()
 		{
 			// Arrange
-			ExpFile.ExportNative = false;
-			ExpFile.ExportImages = true;
-			SubjectUnderTest = new HtmlExportFileFormatter(ExpFile, FieldNameProviderMock.Object);
+			this.ExpFile.ExportNative = false;
+			this.ExpFile.ExportImages = true;
+			this.SubjectUnderTest = new HtmlExportFileFormatter(this.ExpFile, this.FieldNameProviderMock.Object);
 
 			string expectedHeaderRow = $"{_HTML_TH}{FileName1}{_HTML_TH_END}{_HTML_TH}{FieldName2}{_HTML_TH_END}" +
 									   $"{_HTML_TH}{_IMAGE_COL_NAME}{_HTML_TH_END}";
 
-			string expectedHeader = GetExpectedHeaderText(expectedHeaderRow);
+			string expectedHeader = this.GetExpectedHeaderText(expectedHeaderRow);
 
 			// Act
-			string header = SubjectUnderTest.GetHeader(Fields.ToList());
+			string header = this.SubjectUnderTest.GetHeader(this.Fields.ToList());
 
 			// Assert
 			Assert.That(header, Is.EqualTo(expectedHeader));
@@ -91,17 +91,17 @@ namespace Relativity.Export.NUnit
 		public void ItShouldReturnHeaderStringWithoutImage()
 		{
 			// Arrange
-			ExpFile.ExportNative = true;
-			ExpFile.ExportImages = false;
-			SubjectUnderTest = new HtmlExportFileFormatter(ExpFile, FieldNameProviderMock.Object);
+			this.ExpFile.ExportNative = true;
+			this.ExpFile.ExportImages = false;
+			this.SubjectUnderTest = new HtmlExportFileFormatter(this.ExpFile, this.FieldNameProviderMock.Object);
 
 			string expectedHeaderRow = $"{_HTML_TH}{FileName1}{_HTML_TH_END}{_HTML_TH}{FieldName2}{_HTML_TH_END}" +
 									   $"{_HTML_TH}{_NATIVE_COL_NAME}{_HTML_TH_END}";
 
-			string expectedHeader = GetExpectedHeaderText(expectedHeaderRow);
+			string expectedHeader = this.GetExpectedHeaderText(expectedHeaderRow);
 
 			// Act
-			string header = SubjectUnderTest.GetHeader(Fields.ToList());
+			string header = this.SubjectUnderTest.GetHeader(this.Fields.ToList());
 
 			// Assert
 			Assert.That(header, Is.EqualTo(expectedHeader));
@@ -109,7 +109,7 @@ namespace Relativity.Export.NUnit
 
 		private string GetExpectedHeaderText(string expectedHeaderRow)
 		{
-			return $"{_headerPrefix}{expectedHeaderRow}{_headerSuffix}{Environment.NewLine}";
+			return $"{this._headerPrefix}{expectedHeaderRow}{this._headerSuffix}{Environment.NewLine}";
 		}
 	}
 }

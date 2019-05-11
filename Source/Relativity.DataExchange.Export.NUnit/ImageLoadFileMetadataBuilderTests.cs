@@ -4,22 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections;
-    using System.Threading;
+	using System.Collections;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class ImageLoadFileMetadataBuilderTests
 	{
 		private ImageLoadFileMetadataBuilder _instance;
@@ -31,11 +31,11 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_forArtifactBuilder = new Mock<IImageLoadFileMetadataForArtifactBuilder>();
-			_unsuccessfulRollupForArtifactBuilder = new Mock<IImageLoadFileMetadataForArtifactBuilder>();
-			_writer = new Mock<IRetryableStreamWriter>();
+			this._forArtifactBuilder = new Mock<IImageLoadFileMetadataForArtifactBuilder>();
+			this._unsuccessfulRollupForArtifactBuilder = new Mock<IImageLoadFileMetadataForArtifactBuilder>();
+			this._writer = new Mock<IRetryableStreamWriter>();
 
-			_instance = new ImageLoadFileMetadataBuilder(_forArtifactBuilder.Object, _unsuccessfulRollupForArtifactBuilder.Object, _writer.Object, new NullLogger());
+			this._instance = new ImageLoadFileMetadataBuilder(this._forArtifactBuilder.Object, this._unsuccessfulRollupForArtifactBuilder.Object, this._writer.Object, new NullLogger());
 		}
 
 		[Test]
@@ -61,12 +61,12 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			_instance.CreateLoadFileEntries(new[] { artifact }, CancellationToken.None);
+			this._instance.CreateLoadFileEntries(new[] { artifact }, CancellationToken.None);
 
 			// ASSERT
-			_forArtifactBuilder.Verify(x => x.WriteLoadFileEntry(artifact, _writer.Object, CancellationToken.None), expectingCallToSuccessfulRollupBuilder ? Times.Once() : Times.Never());
-			_unsuccessfulRollupForArtifactBuilder.Verify(
-				x => x.WriteLoadFileEntry(artifact, _writer.Object, CancellationToken.None),
+			this._forArtifactBuilder.Verify(x => x.WriteLoadFileEntry(artifact, this._writer.Object, CancellationToken.None), expectingCallToSuccessfulRollupBuilder ? Times.Once() : Times.Never());
+			this._unsuccessfulRollupForArtifactBuilder.Verify(
+				x => x.WriteLoadFileEntry(artifact, this._writer.Object, CancellationToken.None),
 				expectingCallToSuccessfulRollupBuilder ? Times.Never() : Times.Once());
 		}
 
@@ -95,14 +95,14 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			_instance.CreateLoadFileEntries(new[] { artifact1, artifact2 }, CancellationToken.None);
+			this._instance.CreateLoadFileEntries(new[] { artifact1, artifact2 }, CancellationToken.None);
 
 			// ASSERT
-			_forArtifactBuilder.Verify(
-				x => x.WriteLoadFileEntry(artifact1, _writer.Object, CancellationToken.None),
+			this._forArtifactBuilder.Verify(
+				x => x.WriteLoadFileEntry(artifact1, this._writer.Object, CancellationToken.None),
 				Times.Once);
-			_unsuccessfulRollupForArtifactBuilder.Verify(
-				x => x.WriteLoadFileEntry(artifact2, _writer.Object, CancellationToken.None),
+			this._unsuccessfulRollupForArtifactBuilder.Verify(
+				x => x.WriteLoadFileEntry(artifact2, this._writer.Object, CancellationToken.None),
 				Times.Once);
 		}
 
@@ -115,10 +115,10 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT & ASSERT
-			Assert.DoesNotThrow(() => _instance.CreateLoadFileEntries(new[] { artifact }, CancellationToken.None));
+			Assert.DoesNotThrow(() => this._instance.CreateLoadFileEntries(new[] { artifact }, CancellationToken.None));
 
-			_forArtifactBuilder.Verify(x => x.WriteLoadFileEntry(artifact, _writer.Object, CancellationToken.None), Times.Never);
-			_unsuccessfulRollupForArtifactBuilder.Verify(x => x.WriteLoadFileEntry(artifact, _writer.Object, CancellationToken.None), Times.Never);
+			this._forArtifactBuilder.Verify(x => x.WriteLoadFileEntry(artifact, this._writer.Object, CancellationToken.None), Times.Never);
+			this._unsuccessfulRollupForArtifactBuilder.Verify(x => x.WriteLoadFileEntry(artifact, this._writer.Object, CancellationToken.None), Times.Never);
 		}
 	}
 }

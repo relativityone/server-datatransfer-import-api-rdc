@@ -12,7 +12,7 @@ Imports NUnit.Framework
 
 Imports Relativity.Logging
 
-Namespace Relativity.Import.Client.NUnit
+Namespace Relativity.DataExchange.Import.NUnit
 
     <TestFixture>
     Public Class OpticonFilenameComparerTests

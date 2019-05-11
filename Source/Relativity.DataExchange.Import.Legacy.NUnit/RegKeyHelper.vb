@@ -6,7 +6,7 @@
 
 Imports Microsoft.Win32
 
-Namespace Relativity.Import.Client.NUnit
+Namespace Relativity.DataExchange.Import.NUnit
 
 	Public Class RegKeyHelper
 		Public Shared ReadOnly Property RelativityKeyPath() As String

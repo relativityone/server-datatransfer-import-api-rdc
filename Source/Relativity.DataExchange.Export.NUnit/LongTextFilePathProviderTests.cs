@@ -4,15 +4,15 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using kCura.WinEDDS;
+	using kCura.WinEDDS;
 
-    using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
-    using Relativity.DataExchange.Io;
-    using Relativity.Logging;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Io;
+	using Relativity.Logging;
 
-    public class LongTextFilePathProviderTests : FilePathProviderTests
+	public class LongTextFilePathProviderTests : FilePathProviderTests
 	{
 		protected override string Subdirectory => "text_sub";
 

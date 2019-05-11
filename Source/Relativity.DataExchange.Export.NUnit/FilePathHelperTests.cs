@@ -4,14 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
-    using Relativity.Logging;
+	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class FilePathHelperTests
 	{
 		[Test]

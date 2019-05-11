@@ -4,24 +4,24 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
-    using System.Threading;
+	using System.Collections.Generic;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
-    using Relativity.DataExchange.Service;
-    using Relativity.Logging;
+	using Relativity.DataExchange.Service;
+	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class LongTextIproFullTextBuilderTests
 	{
 		private LongTextIproFullTextBuilder _instance;
@@ -35,8 +35,8 @@ namespace Relativity.Export.NUnit
 			{
 				LogFileFormat = LoadFileType.FileFormat.IPRO_FullText
 			};
-			_fieldService = new Mock<IFieldService>();
-			_instance = new LongTextIproFullTextBuilder(new LongTextHelper(exportSettings, _fieldService.Object, new LongTextRepository(null, new NullLogger())), new NullLogger());
+			this._fieldService = new Mock<IFieldService>();
+			this._instance = new LongTextIproFullTextBuilder(new LongTextHelper(exportSettings, this._fieldService.Object, new LongTextRepository(null, new NullLogger())), new NullLogger());
 		}
 
 		[Test]
@@ -46,10 +46,10 @@ namespace Relativity.Export.NUnit
 
 			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { notTooLongText } };
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME)).Returns(0);
+			this._fieldService.Setup(x => x.GetOrdinalIndex(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME)).Returns(0);
 
 			// ACT
-			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
+			IList<LongText> actualResult = this._instance.CreateLongText(artifact, CancellationToken.None);
 
 			// ASSERT
 			Assert.That(actualResult.Count, Is.EqualTo(1));
@@ -64,10 +64,10 @@ namespace Relativity.Export.NUnit
 
 			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { tooLongText } };
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME)).Returns(0);
+			this._fieldService.Setup(x => x.GetOrdinalIndex(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME)).Returns(0);
 
 			// ACT
-			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
+			IList<LongText> actualResult = this._instance.CreateLongText(artifact, CancellationToken.None);
 
 			// ASSERT
 			Assert.That(actualResult.Count, Is.EqualTo(1));

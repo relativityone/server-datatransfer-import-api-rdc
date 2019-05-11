@@ -4,17 +4,17 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Collections.Generic;
+	using System;
+	using System.Collections.Generic;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
-    using Relativity.Logging;
+	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class OpticonLoadFileEntryTests
     {
 		private OpticonLoadFileEntry _instance;
@@ -22,7 +22,7 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_instance = new OpticonLoadFileEntry(new NullLogger());
+			this._instance = new OpticonLoadFileEntry(new NullLogger());
 		}
 
 		[Test]
@@ -30,7 +30,7 @@ namespace Relativity.Export.NUnit
 		public void ItShouldCreateOpticonEntry(ImageLoadFileEntryDataSet dataSet)
 		{
 			// ACT
-			string actualResult = _instance.Create(dataSet.BatesNumber, dataSet.FilePath, dataSet.Volume, dataSet.PageNumber, dataSet.NumberOfImages);
+			string actualResult = this._instance.Create(dataSet.BatesNumber, dataSet.FilePath, dataSet.Volume, dataSet.PageNumber, dataSet.NumberOfImages);
 
 			// ASSERT
 			Assert.That(actualResult, Is.EqualTo(dataSet.ExpectedResult));

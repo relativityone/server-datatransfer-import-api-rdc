@@ -4,26 +4,26 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
-    using System.Linq;
+	using System.Collections.Generic;
+	using System.Linq;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
-    using kCura.WinEDDS.LoadFileEntry;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
 
-    using Moq;
+	using Moq;
 
-    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
-    using Relativity.DataExchange.Service;
-    using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class LineFieldsValueTests
 	{
 		private const char _QUOTE_DELIMITER = 'Q';
@@ -36,7 +36,7 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_queryFieldFactory = new QueryFieldFactory();
+			this._queryFieldFactory = new QueryFieldFactory();
 
 			ExportFile exportSettings = new ExportFile(1)
 			{
@@ -44,14 +44,14 @@ namespace Relativity.Export.NUnit
 				RecordDelimiter = _RECORD_DELIMITER
 			};
 
-			_fieldLookupService = new Mock<IFieldService>();
-			_longTextHandler = new Mock<ILongTextHandler>();
+			this._fieldLookupService = new Mock<IFieldService>();
+			this._longTextHandler = new Mock<ILongTextHandler>();
 
-			_instance = new LineFieldsValue(
-				_fieldLookupService.Object,
-				_longTextHandler.Object,
+			this._instance = new LineFieldsValue(
+				this._fieldLookupService.Object,
+				this._longTextHandler.Object,
 				new LongTextHelper(null, null, null),
-				new NonTextFieldHandler(_fieldLookupService.Object, new DelimitedCellFormatter(exportSettings), exportSettings, new NullLogger()),
+				new NonTextFieldHandler(this._fieldLookupService.Object, new DelimitedCellFormatter(exportSettings), exportSettings, new NullLogger()),
 				exportSettings,
 				new NullLogger());
 		}
@@ -59,28 +59,28 @@ namespace Relativity.Export.NUnit
 		[Test]
 		public void ItShouldDistinguishLongTextFields()
 		{
-			kCura.WinEDDS.ViewFieldInfo artifactIdField = _queryFieldFactory.GetArtifactIdField();
-            kCura.WinEDDS.ViewFieldInfo extractedTextField = _queryFieldFactory.GetExtractedTextField();
+			kCura.WinEDDS.ViewFieldInfo artifactIdField = this._queryFieldFactory.GetArtifactIdField();
+            kCura.WinEDDS.ViewFieldInfo extractedTextField = this._queryFieldFactory.GetExtractedTextField();
             ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { string.Empty } };
 
-            _fieldLookupService.Setup(x => x.GetColumns()).Returns(new[] { artifactIdField, extractedTextField });
-			_fieldLookupService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
+            this._fieldLookupService.Setup(x => x.GetColumns()).Returns(new[] { artifactIdField, extractedTextField });
+			this._fieldLookupService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
 			DeferredEntry lineEntry = new DeferredEntry();
 
 			// ACT
-			_instance.AddFieldsValue(lineEntry, artifact);
+			this._instance.AddFieldsValue(lineEntry, artifact);
 
 			// ASSERT
-			_longTextHandler.Verify(x => x.HandleLongText(artifact, extractedTextField, lineEntry), Times.Once);
-			_longTextHandler.Verify(x => x.HandleLongText(artifact, artifactIdField, lineEntry), Times.Never);
+			this._longTextHandler.Verify(x => x.HandleLongText(artifact, extractedTextField, lineEntry), Times.Once);
+			this._longTextHandler.Verify(x => x.HandleLongText(artifact, artifactIdField, lineEntry), Times.Never);
 		}
 
 		[Test]
 		public void ItShouldCreateLineForFields()
 		{
 			ObjectExportInfo artifact = new ObjectExportInfo();
-			List<kCura.WinEDDS.ViewFieldInfo> fields = PrepareDataSet(artifact);
+			List<kCura.WinEDDS.ViewFieldInfo> fields = this.PrepareDataSet(artifact);
 
 			DeferredEntry loadFileEntry = new DeferredEntry();
 
@@ -88,7 +88,7 @@ namespace Relativity.Export.NUnit
 			string expectedResult = string.Join(_RECORD_DELIMITER.ToString(), fieldsEntries);
 
 			// ACT
-			_instance.AddFieldsValue(loadFileEntry, artifact);
+			this._instance.AddFieldsValue(loadFileEntry, artifact);
 
 			// ASSERT
 			Assert.That(LoadFileTestHelpers.GetStringFromEntry(loadFileEntry), Is.EqualTo(expectedResult));
@@ -102,7 +102,7 @@ namespace Relativity.Export.NUnit
 		private List<kCura.WinEDDS.ViewFieldInfo> PrepareDataSet(ObjectExportInfo artifact)
         {
             kCura.WinEDDS.ViewFieldInfo[] allDocumentFields =
-                _queryFieldFactory.GetAllDocumentFields().ToArray();
+                this._queryFieldFactory.GetAllDocumentFields().ToArray();
 			List<kCura.WinEDDS.ViewFieldInfo> fields = allDocumentFields
 				.Where(x => x.FieldType != FieldType.Text && x.FieldType != FieldType.OffTableText).ToList();
 
@@ -114,10 +114,10 @@ namespace Relativity.Export.NUnit
 
 			artifact.Metadata = fieldValues.Cast<object>().ToArray();
 
-			_fieldLookupService.Setup(x => x.GetColumns()).Returns(allDocumentFields.ToArray);
-			_fieldLookupService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns((string columnName) => fields.FindIndex(x => x.AvfColumnName == columnName));
+			this._fieldLookupService.Setup(x => x.GetColumns()).Returns(allDocumentFields.ToArray);
+			this._fieldLookupService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns((string columnName) => fields.FindIndex(x => x.AvfColumnName == columnName));
 
-			_longTextHandler.Setup(x => x.HandleLongText(It.IsAny<ObjectExportInfo>(), It.IsAny<kCura.WinEDDS.ViewFieldInfo>(), It.IsAny<DeferredEntry>()))
+			this._longTextHandler.Setup(x => x.HandleLongText(It.IsAny<ObjectExportInfo>(), It.IsAny<kCura.WinEDDS.ViewFieldInfo>(), It.IsAny<DeferredEntry>()))
 				.Callback((ObjectExportInfo a, kCura.WinEDDS.ViewFieldInfo f, DeferredEntry l) => l.AddStringEntry(FormatFieldValue(f)));
 
 			return allDocumentFields.ToList();

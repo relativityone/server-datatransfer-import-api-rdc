@@ -4,18 +4,18 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Text;
-    using System.Threading;
+	using System.Text;
+	using System.Threading;
 
-    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 
-    public class WriterStub : IRetryableStreamWriter
+	public class WriterStub : IRetryableStreamWriter
 	{
 		private readonly StringBuilder _stringBuilder = new StringBuilder();
 
-		public string Text => _stringBuilder.ToString();
+		public string Text => this._stringBuilder.ToString();
 
 		public void Dispose()
 		{
@@ -31,12 +31,12 @@ namespace Relativity.Export.NUnit
 
 		public void WriteEntry(string loadFileEntry, CancellationToken token)
 		{
-			_stringBuilder.Append(loadFileEntry);
+			this._stringBuilder.Append(loadFileEntry);
 		}
 
 		public void WriteChunk(string chunk, CancellationToken token)
 		{
-			_stringBuilder.Append(chunk);
+			this._stringBuilder.Append(chunk);
 		}
 
 		public void FlushChunks(CancellationToken token)

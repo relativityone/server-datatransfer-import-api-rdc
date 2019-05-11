@@ -4,21 +4,21 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
+	using System;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Exporters;
-    using kCura.WinEDDS.LoadFileEntry;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class LoadFileLineTests
 	{
 		private LoadFileLine _instance;
@@ -30,16 +30,16 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_loadFileCellFormatter = new Mock<ILoadFileCellFormatter>();
-			_fieldsValue = new Mock<ILineFieldsValue>();
-			_nativeFilePath = new Mock<ILineNativeFilePath>();
+			this._loadFileCellFormatter = new Mock<ILoadFileCellFormatter>();
+			this._fieldsValue = new Mock<ILineFieldsValue>();
+			this._nativeFilePath = new Mock<ILineNativeFilePath>();
 
 			NullLogger nullLogger = new NullLogger();
-			LinePrefix linePrefix = new LinePrefix(_loadFileCellFormatter.Object, nullLogger);
-			LineImageField lineImageField = new LineImageField(_loadFileCellFormatter.Object, nullLogger);
-			LineSuffix lineSuffix = new LineSuffix(_loadFileCellFormatter.Object, nullLogger);
+			LinePrefix linePrefix = new LinePrefix(this._loadFileCellFormatter.Object, nullLogger);
+			LineImageField lineImageField = new LineImageField(this._loadFileCellFormatter.Object, nullLogger);
+			LineSuffix lineSuffix = new LineSuffix(this._loadFileCellFormatter.Object, nullLogger);
 
-			_instance = new LoadFileLine(linePrefix, _fieldsValue.Object, lineImageField, _nativeFilePath.Object, lineSuffix, new LineNewLine(), nullLogger);
+			this._instance = new LoadFileLine(linePrefix, this._fieldsValue.Object, lineImageField, this._nativeFilePath.Object, lineSuffix, new LineNewLine(), nullLogger);
 		}
 
 		[Test]
@@ -48,17 +48,17 @@ namespace Relativity.Export.NUnit
 		[TestCase(null, null, null, null, null)]
 		public void ItShouldPrepareLine(string prefix, string fieldsValue, string imageCell, string nativeFilePath, string suffix)
 		{
-			_loadFileCellFormatter.Setup(x => x.RowPrefix).Returns(prefix);
-			_loadFileCellFormatter.Setup(x => x.CreateImageCell(It.IsAny<ObjectExportInfo>())).Returns(imageCell);
-			_loadFileCellFormatter.Setup(x => x.RowSuffix).Returns(suffix);
+			this._loadFileCellFormatter.Setup(x => x.RowPrefix).Returns(prefix);
+			this._loadFileCellFormatter.Setup(x => x.CreateImageCell(It.IsAny<ObjectExportInfo>())).Returns(imageCell);
+			this._loadFileCellFormatter.Setup(x => x.RowSuffix).Returns(suffix);
 
-			_fieldsValue.Setup(x => x.AddFieldsValue(It.IsAny<DeferredEntry>(), It.IsAny<ObjectExportInfo>()))
+			this._fieldsValue.Setup(x => x.AddFieldsValue(It.IsAny<DeferredEntry>(), It.IsAny<ObjectExportInfo>()))
 				.Callback((DeferredEntry l, ObjectExportInfo a) => l.AddStringEntry(fieldsValue));
-			_nativeFilePath.Setup(x => x.AddNativeFilePath(It.IsAny<DeferredEntry>(), It.IsAny<ObjectExportInfo>()))
+			this._nativeFilePath.Setup(x => x.AddNativeFilePath(It.IsAny<DeferredEntry>(), It.IsAny<ObjectExportInfo>()))
 				.Callback((DeferredEntry l, ObjectExportInfo a) => l.AddStringEntry(nativeFilePath));
 
 			// ACT
-			ILoadFileEntry loadFileEntry = _instance.CreateLine(new ObjectExportInfo());
+			ILoadFileEntry loadFileEntry = this._instance.CreateLine(new ObjectExportInfo());
 
 			// ASSERT
 			DeferredEntry entry = loadFileEntry as DeferredEntry;

@@ -4,12 +4,12 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.DataSize;
 
@@ -25,60 +25,60 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_exportSettings = new ExportFile(1)
+			this._exportSettings = new ExportFile(1)
 			{
 				VolumeInfo = new VolumeInfo()
 			};
 
-			_volumePredictions = new VolumePredictions
+			this._volumePredictions = new VolumePredictions
 			{
 				NativeFileCount = _NATIVE_FILE_COUNT,
 				NativeFilesSize = _NATIVE_FILE_SIZE
 			};
 
-			_instance = new NativeExportableSize(_exportSettings);
+			this._instance = new NativeExportableSize(this._exportSettings);
 		}
 
 		[Test]
 		public void ItShouldResetSizeAndCountWhenNotExportingNatives()
 		{
-			_exportSettings.ExportNative = false;
-			_exportSettings.VolumeInfo.CopyNativeFilesFromRepository = true;
+			this._exportSettings.ExportNative = false;
+			this._exportSettings.VolumeInfo.CopyNativeFilesFromRepository = true;
 
 			// ACT
-			_instance.CalculateNativesSize(_volumePredictions);
+			this._instance.CalculateNativesSize(this._volumePredictions);
 
 			// ASSERT
-			Assert.That(_volumePredictions.NativeFileCount, Is.Zero);
-			Assert.That(_volumePredictions.NativeFilesSize, Is.Zero);
+			Assert.That(this._volumePredictions.NativeFileCount, Is.Zero);
+			Assert.That(this._volumePredictions.NativeFilesSize, Is.Zero);
 		}
 
 		[Test]
 		public void ItShouldResetSizeAndCountWhenNotCopyingFiles()
 		{
-			_exportSettings.ExportNative = true;
-			_exportSettings.VolumeInfo.CopyNativeFilesFromRepository = false;
+			this._exportSettings.ExportNative = true;
+			this._exportSettings.VolumeInfo.CopyNativeFilesFromRepository = false;
 
 			// ACT
-			_instance.CalculateNativesSize(_volumePredictions);
+			this._instance.CalculateNativesSize(this._volumePredictions);
 
 			// ASSERT
-			Assert.That(_volumePredictions.NativeFileCount, Is.Zero);
-			Assert.That(_volumePredictions.NativeFilesSize, Is.Zero);
+			Assert.That(this._volumePredictions.NativeFileCount, Is.Zero);
+			Assert.That(this._volumePredictions.NativeFilesSize, Is.Zero);
 		}
 
 		[Test]
 		public void ItShouldNotChangeSizeAndCountWhenExportingFiles()
 		{
-			_exportSettings.ExportNative = true;
-			_exportSettings.VolumeInfo.CopyNativeFilesFromRepository = true;
+			this._exportSettings.ExportNative = true;
+			this._exportSettings.VolumeInfo.CopyNativeFilesFromRepository = true;
 
 			// ACT
-			_instance.CalculateNativesSize(_volumePredictions);
+			this._instance.CalculateNativesSize(this._volumePredictions);
 
 			// ASSERT
-			Assert.That(_volumePredictions.NativeFileCount, Is.EqualTo(_NATIVE_FILE_COUNT));
-			Assert.That(_volumePredictions.NativeFilesSize, Is.EqualTo(_NATIVE_FILE_SIZE));
+			Assert.That(this._volumePredictions.NativeFileCount, Is.EqualTo(_NATIVE_FILE_COUNT));
+			Assert.That(this._volumePredictions.NativeFilesSize, Is.EqualTo(_NATIVE_FILE_SIZE));
 		}
 	}
 }

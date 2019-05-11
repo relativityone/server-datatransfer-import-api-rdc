@@ -4,19 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Collections.Generic;
+	using System;
+	using System.Collections.Generic;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
-    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
-    using Relativity.Logging;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
+	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class IproLoadFileEntryTests
 	{
 		private IproLoadFileEntry _instance;
@@ -26,9 +26,9 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_exportSettings = new ExportFile(1);
+			this._exportSettings = new ExportFile(1);
 
-			_instance = new IproLoadFileEntry(_exportSettings, new NullLogger());
+			this._instance = new IproLoadFileEntry(this._exportSettings, new NullLogger());
 		}
 
 		[Test]
@@ -36,10 +36,10 @@ namespace Relativity.Export.NUnit
 		[TestCaseSource(nameof(DataSetsMultiPage))]
 		public void ItShouldCreateIproEntry(ImageLoadFileEntryDataSet dataSet)
 		{
-			_exportSettings.TypeOfImage = dataSet.ImageType;
+			this._exportSettings.TypeOfImage = dataSet.ImageType;
 
 			// ACT
-			string actualResult = _instance.Create(dataSet.BatesNumber, dataSet.FilePath, dataSet.Volume, dataSet.PageNumber, dataSet.NumberOfImages);
+			string actualResult = this._instance.Create(dataSet.BatesNumber, dataSet.FilePath, dataSet.Volume, dataSet.PageNumber, dataSet.NumberOfImages);
 
 			// ASSERT
 			Assert.That(actualResult, Is.EqualTo(dataSet.ExpectedResult));

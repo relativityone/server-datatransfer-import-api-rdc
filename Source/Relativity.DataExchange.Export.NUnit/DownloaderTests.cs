@@ -4,14 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
-    using System.Threading;
+	using System.Collections.Generic;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
@@ -35,43 +35,43 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_nativeRepository = new NativeRepository();
-			_imageRepository = new ImageRepository();
-			_longTextRepository = new LongTextRepository(null, new NullLogger());
-			_exportRequestRetriever = new ExportRequestRetriever(_nativeRepository, _imageRepository, _longTextRepository);
+			this._nativeRepository = new NativeRepository();
+			this._imageRepository = new ImageRepository();
+			this._longTextRepository = new LongTextRepository(null, new NullLogger());
+			this._exportRequestRetriever = new ExportRequestRetriever(this._nativeRepository, this._imageRepository, this._longTextRepository);
 
-			_physicalFilesDownloader = new Mock<IPhysicalFilesDownloader>();
-			_longTextDownloader = new Mock<ILongTextDownloader>();
+			this._physicalFilesDownloader = new Mock<IPhysicalFilesDownloader>();
+			this._longTextDownloader = new Mock<ILongTextDownloader>();
 
-			_errorFileWriter = new Mock<IErrorFileWriter>();
-			_instance = new Downloader(_exportRequestRetriever, _physicalFilesDownloader.Object, _longTextDownloader.Object, _errorFileWriter.Object, new NullLogger());
+			this._errorFileWriter = new Mock<IErrorFileWriter>();
+			this._instance = new Downloader(this._exportRequestRetriever, this._physicalFilesDownloader.Object, this._longTextDownloader.Object, this._errorFileWriter.Object, new NullLogger());
 		}
 
 		[Test]
 		public void GoldWorkflow()
 		{
-			Native native = ModelFactory.GetNative(_nativeRepository);
-			ModelFactory.GetImage(native.Artifact.ArtifactID, _imageRepository);
-			ModelFactory.GetImage(native.Artifact.ArtifactID, _imageRepository);
-			ModelFactory.GetLongText(native.Artifact.ArtifactID, _longTextRepository);
+			Native native = ModelFactory.GetNative(this._nativeRepository);
+			ModelFactory.GetImage(native.Artifact.ArtifactID, this._imageRepository);
+			ModelFactory.GetImage(native.Artifact.ArtifactID, this._imageRepository);
+			ModelFactory.GetLongText(native.Artifact.ArtifactID, this._longTextRepository);
 
 			// ACT
-			_instance.DownloadFilesForArtifacts(CancellationToken.None);
+			this._instance.DownloadFilesForArtifacts(CancellationToken.None);
 
 			// ASSERT
-			_physicalFilesDownloader.Verify(x => x.DownloadFilesAsync(It.Is<List<ExportRequest>>(list => list.Count == 3), CancellationToken.None));
-			_longTextDownloader.Verify(x => x.DownloadAsync(It.Is<List<LongTextExportRequest>>(list => list.Count == 1), CancellationToken.None), Times.Once);
+			this._physicalFilesDownloader.Verify(x => x.DownloadFilesAsync(It.Is<List<ExportRequest>>(list => list.Count == 3), CancellationToken.None));
+			this._longTextDownloader.Verify(x => x.DownloadAsync(It.Is<List<LongTextExportRequest>>(list => list.Count == 1), CancellationToken.None), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldWriteErrorWhenTransferExceptionOccurred()
 		{
-			_physicalFilesDownloader.Setup(x => x.DownloadFilesAsync(It.IsAny<List<ExportRequest>>(), CancellationToken.None)).Throws<TransferException>();
+			this._physicalFilesDownloader.Setup(x => x.DownloadFilesAsync(It.IsAny<List<ExportRequest>>(), CancellationToken.None)).Throws<TransferException>();
 
 			// ACT & ASSERT
-			Assert.Throws<TransferException>(() => _instance.DownloadFilesForArtifacts(CancellationToken.None));
+			Assert.Throws<TransferException>(() => this._instance.DownloadFilesForArtifacts(CancellationToken.None));
 
-			_errorFileWriter.Verify(x => x.Write(ErrorFileWriter.ExportFileType.Generic, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
+			this._errorFileWriter.Verify(x => x.Write(ErrorFileWriter.ExportFileType.Generic, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
 		}
 	}
 }

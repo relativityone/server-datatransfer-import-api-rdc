@@ -4,16 +4,16 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
-    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
-    using Relativity.Logging;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class ErrorFileDestinationPathTests
 	{
 		private ErrorFileDestinationPath _instance;
@@ -23,15 +23,15 @@ namespace Relativity.Export.NUnit
 		{
 			ExportFile exportSettings = new ExportFile(1);
 
-			_instance = new ErrorFileDestinationPath(exportSettings, new NullLogger());
+			this._instance = new ErrorFileDestinationPath(exportSettings, new NullLogger());
 		}
 
 		[Test]
 		public void ItShouldReturnSamePathEveryTime()
 		{
 			// ACT
-			string path1 = _instance.Path;
-			string path2 = _instance.Path;
+			string path1 = this._instance.Path;
+			string path2 = this._instance.Path;
 
 			// ASSERT
 			Assert.That(path1, Is.Not.Null.Or.Empty);
@@ -42,9 +42,9 @@ namespace Relativity.Export.NUnit
 		public void ItShouldReturnItErrorFileCreated()
 		{
 			// ACT
-			bool beforeFirstPathCall = _instance.IsErrorFileCreated();
-			string path = _instance.Path;
-			bool afterFirstPathCall = _instance.IsErrorFileCreated();
+			bool beforeFirstPathCall = this._instance.IsErrorFileCreated();
+			string path = this._instance.Path;
+			bool afterFirstPathCall = this._instance.IsErrorFileCreated();
 
 			// ASSERT
 			Assert.That(beforeFirstPathCall, Is.False);

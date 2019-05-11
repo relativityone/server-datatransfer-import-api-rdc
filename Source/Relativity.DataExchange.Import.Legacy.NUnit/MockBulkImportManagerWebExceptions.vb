@@ -4,7 +4,7 @@
 ' </copyright>
 ' -----------------------------------------------------------------------------------------------------
 
-Namespace Relativity.Import.Client.NUnit
+Namespace Relativity.DataExchange.Import.NUnit
 
 	''' <summary>
 	''' Mock BulkImportManager for testing when the webservice throws timeout Exceptions

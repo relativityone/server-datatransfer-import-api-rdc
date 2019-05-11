@@ -4,23 +4,23 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Threading;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.DataExchange.Io;
-    using Relativity.Logging;
+	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class FileTapiBridgePoolTests
 	{
 		private const int _DOCUMENT_ARTIFACT_TYPE = 10;
@@ -47,42 +47,42 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void Setup()
 		{
-			_exportConfig = new Mock<IExportConfig>();
+			this._exportConfig = new Mock<IExportConfig>();
 
-			_exportFile = new ExportFile(_DOCUMENT_ARTIFACT_TYPE);
-			_tapiBridgeParametersFactory = new TapiBridgeParametersFactory(_exportFile, _exportConfig.Object);
+			this._exportFile = new ExportFile(_DOCUMENT_ARTIFACT_TYPE);
+			this._tapiBridgeParametersFactory = new TapiBridgeParametersFactory(this._exportFile, this._exportConfig.Object);
 
-			_nativeRepository = new NativeRepository();
-			_imageRepository = new ImageRepository();
-			_fileHelper = new Mock<IFile>();
-			_logger = new Mock<ILog>();
-			_longTextRepository = new LongTextRepository(_fileHelper.Object, _logger.Object);
-			_status = new Mock<IStatus>();
-			_downloadProgressManager = new DownloadProgressManager(_nativeRepository, _imageRepository, _longTextRepository, _fileHelper.Object, _status.Object, _logger.Object);
+			this._nativeRepository = new NativeRepository();
+			this._imageRepository = new ImageRepository();
+			this._fileHelper = new Mock<IFile>();
+			this._logger = new Mock<ILog>();
+			this._longTextRepository = new LongTextRepository(this._fileHelper.Object, this._logger.Object);
+			this._status = new Mock<IStatus>();
+			this._downloadProgressManager = new DownloadProgressManager(this._nativeRepository, this._imageRepository, this._longTextRepository, this._fileHelper.Object, this._status.Object, this._logger.Object);
 
-			_statistics = new kCura.WinEDDS.Statistics();
-			_filesStatistics = new FilesStatistics(_statistics, _fileHelper.Object, _logger.Object);
+			this._statistics = new kCura.WinEDDS.Statistics();
+			this._filesStatistics = new FilesStatistics(this._statistics, this._fileHelper.Object, this._logger.Object);
 
-			_messageHandler = new Mock<IMessagesHandler>();
+			this._messageHandler = new Mock<IMessagesHandler>();
 
-			_transferClientHandler = new Mock<ITransferClientHandler>();
+			this._transferClientHandler = new Mock<ITransferClientHandler>();
 
-			_uut = new FileTapiBridgePool(_exportConfig.Object, _tapiBridgeParametersFactory, _downloadProgressManager, _filesStatistics, _messageHandler.Object, _transferClientHandler.Object, _logger.Object);
+			this._uut = new FileTapiBridgePool(this._exportConfig.Object, this._tapiBridgeParametersFactory, this._downloadProgressManager, this._filesStatistics, this._messageHandler.Object, this._transferClientHandler.Object, this._logger.Object);
 		}
 
 		[Test]
 		public void ItShouldReturnBridgeWithNullSettings()
 		{
 			IDownloadTapiBridge bridge = null;
-			Assert.DoesNotThrow(() => bridge = _uut.Request(null, CancellationToken.None));
+			Assert.DoesNotThrow(() => bridge = this._uut.Request(null, CancellationToken.None));
 			Assert.IsNotNull(bridge);
 		}
 
 		[Test]
 		public void ItShouldNotThrowWhenReleasingNullSettingsBridge()
 		{
-			IDownloadTapiBridge bridge = _uut.Request(null, CancellationToken.None);
-			Assert.DoesNotThrow(() => _uut.Release(bridge));
+			IDownloadTapiBridge bridge = this._uut.Request(null, CancellationToken.None);
+			Assert.DoesNotThrow(() => this._uut.Release(bridge));
 		}
 	}
 }

@@ -4,12 +4,12 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.IO;
-    using System.Text;
+	using System.IO;
+	using System.Text;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
@@ -17,7 +17,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class FromFieldToLoadFileWriterTests
 	{
 		private const char _QUOTE_DELIMITER = 'Q';
@@ -29,15 +29,15 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_memoryStream = new MemoryStream();
-			_streamWriter = new StreamWriter(_memoryStream, Encoding.Default);
+			this._memoryStream = new MemoryStream();
+			this._streamWriter = new StreamWriter(this._memoryStream, Encoding.Default);
 
 			ExportFile exportSettings = new ExportFile(1)
 			{
 				QuoteDelimiter = _QUOTE_DELIMITER,
 				NewlineDelimiter = _NEWLINE_DELIMITER
 			};
-			_instance = new FromFieldToLoadFileWriter(new NullLogger(), new DelimitedFileLongTextStreamFormatterFactory(exportSettings));
+			this._instance = new FromFieldToLoadFileWriter(new NullLogger(), new DelimitedFileLongTextStreamFormatterFactory(exportSettings));
 		}
 
 		[Test]
@@ -48,17 +48,17 @@ namespace Relativity.Export.NUnit
 		public void ItShouldWriteFormattedText(string text, string expectedResult)
 		{
 			// ACT
-			_instance.WriteLongTextFileToDatFile(_streamWriter, text, Encoding.Default);
+			this._instance.WriteLongTextFileToDatFile(this._streamWriter, text, Encoding.Default);
 
 			// ASSERT
-			string actualResult = GetWrittenText();
+			string actualResult = this.GetWrittenText();
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
 		}
 
 		private string GetWrittenText()
 		{
-			_streamWriter.Flush();
-			return Encoding.Default.GetString(_memoryStream.ToArray());
+			this._streamWriter.Flush();
+			return Encoding.Default.GetString(this._memoryStream.ToArray());
 		}
 	}
 }

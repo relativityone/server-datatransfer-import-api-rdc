@@ -4,20 +4,20 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Linq;
+	using System.Linq;
 
-    using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
 	using Relativity.DataExchange.Io;
-    using Relativity.Logging;
+	using Relativity.Logging;
 
-    public class MultiPageTiffImagesRollupTests : MultiPageImagesRollupTests
+	public class MultiPageTiffImagesRollupTests : MultiPageImagesRollupTests
 	{
 		protected override MultiPageImagesRollup CreateInstance(ExportFile exportSettings, IFile fileHelper, IStatus status, IImage imageConverter)
 		{

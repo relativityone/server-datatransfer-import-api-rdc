@@ -4,7 +4,7 @@
 ' </copyright>
 ' -----------------------------------------------------------------------------------------------------
 
-Namespace Relativity.Import.Client.NUnit
+Namespace Relativity.DataExchange.Import.NUnit
 
 	Partial Public Class ExportFileSerializerTests
 

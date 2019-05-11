@@ -4,12 +4,11 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using Relativity.DataExchange;
-    using Relativity.DataExchange.Media;
+	using Relativity.DataExchange.Media;
 
-    public class ImageException : ImageConversionException
+	public class ImageException : ImageConversionException
 	{
 		public ImageException()
 			: base(string.Empty, null)

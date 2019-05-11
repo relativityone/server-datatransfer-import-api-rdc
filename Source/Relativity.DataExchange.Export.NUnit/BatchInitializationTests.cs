@@ -4,11 +4,11 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Threading;
 
 	using global::NUnit.Framework;
 
@@ -17,11 +17,11 @@ namespace Relativity.Export.NUnit
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
-    using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
-    using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class BatchInitializationTests
 	{
 		protected IBatchInitialization Instance { get; private set; }
@@ -37,45 +37,45 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			Artifacts = new[] { new ObjectExportInfo(), new ObjectExportInfo(), new ObjectExportInfo() };
-			VolumePredictions = new[] { new VolumePredictions(), new VolumePredictions(), new VolumePredictions() };
+			this.Artifacts = new[] { new ObjectExportInfo(), new ObjectExportInfo(), new ObjectExportInfo() };
+			this.VolumePredictions = new[] { new VolumePredictions(), new VolumePredictions(), new VolumePredictions() };
 
-			RepositoryBuilderMocks = new List<Mock<IRepositoryBuilder>>
+			this.RepositoryBuilderMocks = new List<Mock<IRepositoryBuilder>>
 			{
 				new Mock<IRepositoryBuilder>(),
 				new Mock<IRepositoryBuilder>(),
 				new Mock<IRepositoryBuilder>()
 			};
-			DirectoryManager = new Mock<IDirectoryManager>();
+			this.DirectoryManager = new Mock<IDirectoryManager>();
 
-			Instance = CreateBatchInitialization();
+			this.Instance = this.CreateBatchInitialization();
 		}
 
 		protected virtual IBatchInitialization CreateBatchInitialization()
 		{
-			return new BatchInitialization(RepositoryBuilderMocks.Select(x => x.Object).ToList(), DirectoryManager.Object, new NullLogger());
+			return new BatchInitialization(this.RepositoryBuilderMocks.Select(x => x.Object).ToList(), this.DirectoryManager.Object, new NullLogger());
 		}
 
 		[Test]
 		public virtual void ItShouldUpdateDirectoryManagerForEachArtifact()
 		{
 			// ACT
-			Instance.PrepareBatch(Artifacts, VolumePredictions, CancellationToken.None);
+			this.Instance.PrepareBatch(this.Artifacts, this.VolumePredictions, CancellationToken.None);
 
 			// ASSERT
-			VolumePredictions.ToList().ForEach(x => DirectoryManager.Verify(dm => dm.MoveNext(x), Times.Once));
+			this.VolumePredictions.ToList().ForEach(x => this.DirectoryManager.Verify(dm => dm.MoveNext(x), Times.Once));
 		}
 
 		[Test]
 		public void ItShouldAddAllArtifactsToRepositories()
 		{
 			// ACT
-			Instance.PrepareBatch(Artifacts, VolumePredictions, CancellationToken.None);
+			this.Instance.PrepareBatch(this.Artifacts, this.VolumePredictions, CancellationToken.None);
 
 			// ASSERT
-			foreach (var artifact in Artifacts)
+			foreach (var artifact in this.Artifacts)
 			{
-				foreach (var repositoryBuilderMock in RepositoryBuilderMocks)
+				foreach (var repositoryBuilderMock in this.RepositoryBuilderMocks)
 				{
 					repositoryBuilderMock.Verify(x => x.AddToRepository(artifact, CancellationToken.None), Times.Once);
 				}

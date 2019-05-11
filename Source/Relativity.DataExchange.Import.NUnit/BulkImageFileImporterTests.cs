@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit
+namespace Relativity.DataExchange.Import.NUnit
 {
 	using System;
 
@@ -15,9 +15,6 @@ namespace Relativity.Import.Client.NUnit
 	using kCura.WinEDDS.Api;
 
 	using Moq;
-
-	using CaseInfo = Relativity.DataExchange.Service.CaseInfo;
-	using ExecutionSource = Relativity.DataExchange.Service.ExecutionSource;
 
 	/// <summary>
 	/// Represents <see cref="BulkImageFileImporter"/> tests.
@@ -74,7 +71,7 @@ namespace Relativity.Import.Client.NUnit
 		protected override void OnSetup()
 		{
 			this.args = new ImageLoadFile();
-			this.args.CaseInfo = new CaseInfo();
+			this.args.CaseInfo = new Relativity.DataExchange.Service.CaseInfo();
 			this.args.CaseInfo.RootArtifactID = -1;
 			this.mockImageReader = new Mock<IImageReader>();
 			this.importer = new MockBulkImageFileImporter(
@@ -87,7 +84,7 @@ namespace Relativity.Import.Client.NUnit
 				this.MockBulkImportManager.Object,
 				this.mockImageReader.Object,
 				this.TokenSource,
-				ExecutionSource.Unknown);
+				Relativity.DataExchange.Service.ExecutionSource.Unknown);
 
 			this.importer.SetImportBatchSize(500);
 		}

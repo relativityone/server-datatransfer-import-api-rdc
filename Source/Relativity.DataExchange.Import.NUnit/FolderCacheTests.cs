@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit
+namespace Relativity.DataExchange.Import.NUnit
 {
 	using System;
 	using System.Collections.Generic;
@@ -23,6 +23,7 @@ namespace Relativity.Import.Client.NUnit
 
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.Logging;
 
 	/// <summary>
 	/// Represents <see cref="FolderCache"/> tests.
@@ -36,7 +37,7 @@ namespace Relativity.Import.Client.NUnit
 		private DataSet mockDataSet;
 		private DataTable mockDataTable;
 		private Mock<IHierarchicArtifactManager> mockFolderManager;
-		private Mock<Logging.ILog> mockLogger;
+		private Mock<Relativity.Logging.ILog> mockLogger;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
 			"Microsoft.Performance",
@@ -93,7 +94,7 @@ namespace Relativity.Import.Client.NUnit
 				.Returns(RandomHelper.NextInt32(2000000, 9000000));
 			this.mockFolderManager.Setup(x => x.Read(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
 				.Returns(FolderCache.FolderNotFoundId);
-			this.mockLogger = new Mock<Logging.ILog>();
+			this.mockLogger = new Mock<Relativity.Logging.ILog>();
 		}
 
 		/// <summary>
@@ -107,7 +108,7 @@ namespace Relativity.Import.Client.NUnit
 		}
 
 		/// <summary>
-		/// An exception is thrown when the <see cref="Logging.ILog"/> is null.
+		/// An exception is thrown when the <see cref="ILog"/> is null.
 		/// </summary>
 		[Test]
 		[Category(TestCategories.Folder)]

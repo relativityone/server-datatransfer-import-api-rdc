@@ -4,16 +4,16 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
+	using System;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 
@@ -27,7 +27,7 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_subdirectoryManager = new Mock<ISubdirectoryManager>();
+			this._subdirectoryManager = new Mock<ISubdirectoryManager>();
 		}
 
 		private void SetUpInstance(int volumeStartNumber, long maxSizeInMBs)
@@ -40,7 +40,7 @@ namespace Relativity.Export.NUnit
 					VolumeMaxSize = maxSizeInMBs
 				}
 			};
-			_instance = new Relativity.DataExchange.Export.VolumeManagerV2.Directories.VolumeManager(exportSettings, _subdirectoryManager.Object);
+			this._instance = new Relativity.DataExchange.Export.VolumeManagerV2.Directories.VolumeManager(exportSettings, this._subdirectoryManager.Object);
 		}
 
 		[Test]
@@ -48,24 +48,24 @@ namespace Relativity.Export.NUnit
 		[TestCase(123456)]
 		public void ItShouldStartNumberingFromGivenNumber(int volumeStartNumber)
 		{
-			SetUpInstance(volumeStartNumber, 1);
+			this.SetUpInstance(volumeStartNumber, 1);
 
 			// ASSERT
-			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(volumeStartNumber));
+			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(volumeStartNumber));
 		}
 
 		[Test]
 		public void ItShouldValidateStartNumberAndSize()
 		{
-			Assert.Throws<ArgumentException>(() => SetUpInstance(0, 1));
-			Assert.Throws<ArgumentException>(() => SetUpInstance(1, 0));
+			Assert.Throws<ArgumentException>(() => this.SetUpInstance(0, 1));
+			Assert.Throws<ArgumentException>(() => this.SetUpInstance(1, 0));
 		}
 
 		[Test]
 		public void ItShouldResetSubdirectoryAfterMovingToNextVolume()
 		{
 			const int sizeInMBs = 10;
-			SetUpInstance(1, sizeInMBs);
+			this.SetUpInstance(1, sizeInMBs);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -75,11 +75,11 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			_instance.MoveNext(predictions);
-			_instance.MoveNext(predictions);
+			this._instance.MoveNext(predictions);
+			this._instance.MoveNext(predictions);
 
 			// ASSERT
-			_subdirectoryManager.Verify(x => x.RestartSubdirectoryCounting(), Times.Once);
+			this._subdirectoryManager.Verify(x => x.RestartSubdirectoryCounting(), Times.Once);
 		}
 
 		[Test]
@@ -87,7 +87,7 @@ namespace Relativity.Export.NUnit
 		{
 			const int startNumber = 1;
 			const int sizeInMBs = 10;
-			SetUpInstance(startNumber, sizeInMBs);
+			this.SetUpInstance(startNumber, sizeInMBs);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -97,11 +97,11 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT & ASSERT
-			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
+			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
 
-			_instance.MoveNext(predictions);
+			this._instance.MoveNext(predictions);
 
-			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
+			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
 		}
 
 		[Test]
@@ -109,7 +109,7 @@ namespace Relativity.Export.NUnit
 		{
 			const int startNumber = 1;
 			const int sizeInMBs = 10;
-			SetUpInstance(startNumber, sizeInMBs);
+			this.SetUpInstance(startNumber, sizeInMBs);
 
 			VolumePredictions predictionsNative = new VolumePredictions
 			{
@@ -127,14 +127,14 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT & ASSERT
-			_instance.MoveNext(predictionsNative);
-			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
+			this._instance.MoveNext(predictionsNative);
+			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
 
-			_instance.MoveNext(predictionsImage);
-			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 1));
+			this._instance.MoveNext(predictionsImage);
+			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 1));
 
-			_instance.MoveNext(predictionsText);
-			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 2));
+			this._instance.MoveNext(predictionsText);
+			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 2));
 		}
 
 		[Test]
@@ -142,7 +142,7 @@ namespace Relativity.Export.NUnit
 		{
 			const int startNumber = 1;
 			const int sizeInMBs = 10;
-			SetUpInstance(startNumber, sizeInMBs);
+			this.SetUpInstance(startNumber, sizeInMBs);
 
 			VolumePredictions predictionsNotExceeding = new VolumePredictions
 			{
@@ -170,20 +170,20 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT & ASSERT
-			_instance.MoveNext(predictionsNotExceeding);
-			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
+			this._instance.MoveNext(predictionsNotExceeding);
+			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
 
-			_instance.MoveNext(predictionsNotExceeding2);
-			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
+			this._instance.MoveNext(predictionsNotExceeding2);
+			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
 
-			_instance.MoveNext(predictionsExceeding);
-			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 1));
+			this._instance.MoveNext(predictionsExceeding);
+			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 1));
 
-			_instance.MoveNext(predictionsNotExceeding3);
-			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 1));
+			this._instance.MoveNext(predictionsNotExceeding3);
+			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 1));
 
-			_instance.MoveNext(predictionsExceeding2);
-			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 2));
+			this._instance.MoveNext(predictionsExceeding2);
+			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 2));
 		}
 	}
 }

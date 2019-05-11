@@ -13,7 +13,7 @@ Imports NUnit.Framework
 
 Imports Relativity.DataExchange.Service
 
-Namespace Relativity.Import.Client.NUnit
+Namespace Relativity.DataExchange.Import.NUnit
 
 	<TestFixture>
 	Public Class FileIOTests
@@ -143,7 +143,7 @@ Namespace Relativity.Import.Client.NUnit
 		End Sub
 
 		Public Sub ModifySoapDetailsToThisExceptionType(exDetail As SoapExceptionDetail) Implements SoapDetailModifierForMockException.ModifySoapDetailsToEmulateThisExceptionType
-			Helper.ModifyRelativitySoapDetails("Relativity.Import.Client.NUnit.MockInsufficientAccessControlListPermissions", "Relativity.Core.Exception.InsufficientAccessControlListPermissions", exDetail)
+			Helper.ModifyRelativitySoapDetails("Relativity.DataExchange.Import.NUnit.MockInsufficientAccessControlListPermissions", "Relativity.Core.Exception.InsufficientAccessControlListPermissions", exDetail)
 		End Sub
 	End Class
 
@@ -156,7 +156,7 @@ Namespace Relativity.Import.Client.NUnit
 		End Sub
 
 		Public Sub ModifySoapDetailsToThisExceptionType(exDetail As SoapExceptionDetail) Implements SoapDetailModifierForMockException.ModifySoapDetailsToEmulateThisExceptionType
-			Helper.ModifyRelativitySoapDetails("Relativity.Import.Client.NUnit.MockArgumentException", "System.ArgumentException", exDetail)
+			Helper.ModifyRelativitySoapDetails("Relativity.DataExchange.Import.NUnit.MockArgumentException", "System.ArgumentException", exDetail)
 		End Sub
 	End Class
 End Namespace

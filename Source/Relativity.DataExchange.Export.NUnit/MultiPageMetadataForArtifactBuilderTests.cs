@@ -4,24 +4,24 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections;
-    using System.Threading;
+	using System.Collections;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class MultiPageMetadataForArtifactBuilderTests : ImageLoadFileMetadataForArtifactBuilderTests
 	{
 		protected override ImageLoadFileMetadataForArtifactBuilder CreateInstance(
@@ -62,12 +62,12 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			Instance.WriteLoadFileEntry(artifact, Writer.Object, CancellationToken.None);
+			this.Instance.WriteLoadFileEntry(artifact, this.Writer.Object, CancellationToken.None);
 
 			// ASSERT
-			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image1.BatesNumber, 0, long.MinValue, Writer.Object, CancellationToken.None), Times.Once);
-			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image2.BatesNumber, 1, (long)image3.PageOffset, Writer.Object, CancellationToken.None), Times.Never());
-			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image3.BatesNumber, 2, long.MinValue, Writer.Object, CancellationToken.None), Times.Never());
+			this.FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image1.BatesNumber, 0, long.MinValue, this.Writer.Object, CancellationToken.None), Times.Once);
+			this.FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image2.BatesNumber, 1, (long)image3.PageOffset, this.Writer.Object, CancellationToken.None), Times.Never());
+			this.FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image3.BatesNumber, 2, long.MinValue, this.Writer.Object, CancellationToken.None), Times.Never());
 		}
 
 		[Test]
@@ -86,11 +86,11 @@ namespace Relativity.Export.NUnit
 			ObjectExportInfo artifact = new ObjectExportInfo { Images = new ArrayList { image1, image2 } };
 
 			// ACT
-			Instance.WriteLoadFileEntry(artifact, Writer.Object, CancellationToken.None);
+			this.Instance.WriteLoadFileEntry(artifact, this.Writer.Object, CancellationToken.None);
 
 			// ASSERT
-			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image1.BatesNumber, 0, long.MinValue, Writer.Object, CancellationToken.None), Times.Once);
-			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image2.BatesNumber, 1, long.MinValue, Writer.Object, CancellationToken.None), Times.Never());
+			this.FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image1.BatesNumber, 0, long.MinValue, this.Writer.Object, CancellationToken.None), Times.Once);
+			this.FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image2.BatesNumber, 1, long.MinValue, this.Writer.Object, CancellationToken.None), Times.Never());
 		}
 	}
 }

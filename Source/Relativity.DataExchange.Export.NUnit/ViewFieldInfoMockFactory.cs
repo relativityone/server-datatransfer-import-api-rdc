@@ -4,11 +4,12 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data;
+	using System;
+	using System.Collections.Generic;
+	using System.Data;
+
 	using Relativity.DataExchange.Service;
 
 	internal class ViewFieldInfoMockFactory
@@ -42,43 +43,43 @@ namespace Relativity.Export.NUnit
 
 		public ViewFieldInfoMockFactory Build()
 		{
-			_dataRow = CreateMock().NewRow();
+			this._dataRow = CreateMock().NewRow();
 			return this;
 		}
 
 		public ViewFieldInfoMockFactory WithAvfId(int id)
 		{
-			_dataRow["AvfID"] = id;
+			this._dataRow["AvfID"] = id;
 			return this;
 		}
 
 		public ViewFieldInfoMockFactory WithDisplayName(string name)
 		{
-			_dataRow["DisplayName"] = name;
+			this._dataRow["DisplayName"] = name;
 			return this;
 		}
 
 		public ViewFieldInfoMockFactory WithAvfName(string avfName)
 		{
-			_dataRow["AvfColumnName"] = avfName;
+			this._dataRow["AvfColumnName"] = avfName;
 			return this;
 		}
 
 		public ViewFieldInfoMockFactory WithFieldType(FieldType fieldType)
 		{
-			_dataRow["FieldTypeID"] = fieldType;
+			this._dataRow["FieldTypeID"] = fieldType;
 			return this;
 		}
 
 		public ViewFieldInfoMockFactory WithFormatString(string formatString)
 		{
-			_dataRow["FormatString"] = formatString;
+			this._dataRow["FormatString"] = formatString;
 			return this;
 		}
 
 		public kCura.WinEDDS.ViewFieldInfo Create()
 		{
-			return new kCura.WinEDDS.ViewFieldInfo(_dataRow);
+			return new kCura.WinEDDS.ViewFieldInfo(this._dataRow);
 		}
 
 		private static DataTable CreateMock()

@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit
+namespace Relativity.DataExchange.Import.NUnit
 {
 	using System;
 	using System.Collections;
@@ -16,7 +16,6 @@ namespace Relativity.Import.Client.NUnit
 
 	using kCura.WinEDDS.Exceptions;
 
-	using Relativity.DataExchange;
 	using Relativity.DataExchange.Io;
 
 	[TestFixture]

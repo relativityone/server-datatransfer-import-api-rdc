@@ -4,22 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
-    using System.Threading;
+	using System.Collections.Generic;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 
-    public class NativeFileExportRequestBuilderTests : ExportRequestBuilderTests
+	public class NativeFileExportRequestBuilderTests : ExportRequestBuilderTests
 	{
 		protected override ExportRequestBuilder CreateInstance(
 			IFilePathProvider filePathProvider,
@@ -39,7 +39,7 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			IList<ExportRequest> requests = Instance.Create(artifact, CancellationToken.None);
+			IList<ExportRequest> requests = this.Instance.Create(artifact, CancellationToken.None);
 
 			// ASSERT
 			CollectionAssert.IsEmpty(requests);

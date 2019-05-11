@@ -4,25 +4,25 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
-    using System.Threading;
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Text;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Exporters;
-    using kCura.WinEDDS.LoadFileEntry;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
 
-    using Polly;
+	using Polly;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class LoadFileWriterTests
 	{
 		private LoadFileWriter _instance;
@@ -33,10 +33,10 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_memoryStream = new MemoryStream(1);
-			_streamWriter = new StreamWriter(_memoryStream, Encoding.Default);
+			this._memoryStream = new MemoryStream(1);
+			this._streamWriter = new StreamWriter(this._memoryStream, Encoding.Default);
 
-			_instance = new LoadFileWriter(new NullLogger());
+			this._instance = new LoadFileWriter(new NullLogger());
 		}
 
 		[Test]
@@ -52,10 +52,10 @@ namespace Relativity.Export.NUnit
 				                                                };
 
 			// ACT
-			_instance.Write(_streamWriter, linesToWrite, new ArtifactEnumerator(new ObjectExportInfo[0], new Context(string.Empty)), CancellationToken.None);
+			this._instance.Write(this._streamWriter, linesToWrite, new ArtifactEnumerator(new ObjectExportInfo[0], new Context(string.Empty)), CancellationToken.None);
 
 			// ASSERT
-			string actualText = GetWrittenText();
+			string actualText = this.GetWrittenText();
 			Assert.That(actualText, Is.EqualTo(header));
 		}
 
@@ -65,10 +65,10 @@ namespace Relativity.Export.NUnit
 			IDictionary<int, ILoadFileEntry> linesToWrite = new Dictionary<int, ILoadFileEntry>();
 
 			// ACT
-			_instance.Write(_streamWriter, linesToWrite, new ArtifactEnumerator(new ObjectExportInfo[0], new Context(string.Empty)), CancellationToken.None);
+			this._instance.Write(this._streamWriter, linesToWrite, new ArtifactEnumerator(new ObjectExportInfo[0], new Context(string.Empty)), CancellationToken.None);
 
 			// ASSERT
-			string actualText = GetWrittenText();
+			string actualText = this.GetWrittenText();
 			Assert.That(actualText, Is.Empty);
 		}
 
@@ -111,22 +111,22 @@ namespace Relativity.Export.NUnit
 				                                                };
 
 			// ACT
-			_instance.Write(
-				_streamWriter,
+			this._instance.Write(
+				this._streamWriter,
 				linesToWrite,
 				new ArtifactEnumerator(new[] { artifact3, artifact1, artifact2 }, new Context(string.Empty)),
 				CancellationToken.None);
 
 			// ASSERT
 			string expectedText = $"{artifact3Entry}{artifact1Entry}{artifact2Entry}";
-			string actualText = GetWrittenText();
+			string actualText = this.GetWrittenText();
 			Assert.That(actualText, Is.EqualTo(expectedText));
 		}
 
 		private string GetWrittenText()
 		{
-			_streamWriter.Flush();
-			return Encoding.Default.GetString(_memoryStream.ToArray());
+			this._streamWriter.Flush();
+			return Encoding.Default.GetString(this._memoryStream.ToArray());
 		}
 	}
 }

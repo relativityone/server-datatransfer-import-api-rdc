@@ -8,7 +8,7 @@ Imports kCura.WinEDDS.Exporters
 
 Imports NUnit.Framework
 
-Namespace Relativity.Import.Client.NUnit
+Namespace Relativity.DataExchange.Import.NUnit
 
 	<TestFixture>
 	Public Class ObjectExportInfoTests

@@ -4,21 +4,21 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.IO;
-    using System.Text;
-    using System.Threading;
+	using System;
+	using System.IO;
+	using System.Text;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
-    using Moq;
+	using Moq;
 
-    using Polly;
-    using Polly.NoOp;
+	using Polly;
+	using Polly.NoOp;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
@@ -26,7 +26,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class RetryableStreamWriterTests
 	{
 		private const string _FILE_PATH = "file_path";
@@ -39,33 +39,33 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_writersRetryPolicy = new Mock<IWritersRetryPolicy>();
+			this._writersRetryPolicy = new Mock<IWritersRetryPolicy>();
 			NoOpPolicy noOpPolicy = Policy.NoOp();
-			_writersRetryPolicy.Setup(x => x.CreateRetryPolicy(It.IsAny<Action<Exception, TimeSpan, int, Context>>())).Returns(noOpPolicy);
+			this._writersRetryPolicy.Setup(x => x.CreateRetryPolicy(It.IsAny<Action<Exception, TimeSpan, int, Context>>())).Returns(noOpPolicy);
 
-			_streamWriter = new StreamWriter(new MemoryStream());
-			_streamFactory = new Mock<IStreamFactory>();
-			_streamFactory.Setup(x => x.Create(null, 0, _FILE_PATH, Encoding.Default, false)).Returns(_streamWriter);
+			this._streamWriter = new StreamWriter(new MemoryStream());
+			this._streamFactory = new Mock<IStreamFactory>();
+			this._streamFactory.Setup(x => x.Create(null, 0, _FILE_PATH, Encoding.Default, false)).Returns(this._streamWriter);
 
 			Mock<IDestinationPath> destinationPath = new Mock<IDestinationPath>();
 			destinationPath.Setup(x => x.Path).Returns(_FILE_PATH);
 			destinationPath.Setup(x => x.Encoding).Returns(Encoding.Default);
 
-			_processingStatistics = new Mock<IProcessingStatistics>();
+			this._processingStatistics = new Mock<IProcessingStatistics>();
 			Mock<IStatus> status = new Mock<IStatus>();
 
-			_instance = new RetryableStreamWriter(_writersRetryPolicy.Object, _streamFactory.Object, destinationPath.Object, _processingStatistics.Object, status.Object, new NullLogger());
+			this._instance = new RetryableStreamWriter(this._writersRetryPolicy.Object, this._streamFactory.Object, destinationPath.Object, this._processingStatistics.Object, status.Object, new NullLogger());
 		}
 
 		[Test]
 		public void ItShouldSkipRestoringWhenStreamHasNotBeenInitialized()
 		{
 			// ACT
-			_instance.SaveState();
-			_instance.RestoreLastState();
+			this._instance.SaveState();
+			this._instance.RestoreLastState();
 
 			// ASSERT
-			_streamFactory.Verify(x => x.Create(It.IsAny<StreamWriter>(), It.IsAny<long>(), _FILE_PATH, Encoding.Default, true), Times.Never);
+			this._streamFactory.Verify(x => x.Create(It.IsAny<StreamWriter>(), It.IsAny<long>(), _FILE_PATH, Encoding.Default, true), Times.Never);
 		}
 
 		[Test]
@@ -74,23 +74,23 @@ namespace Relativity.Export.NUnit
 			const string loadFileEntry = "loadFileEntry";
 
 			// ACT
-			_instance.WriteEntry(loadFileEntry, CancellationToken.None);
-			_instance.SaveState();
-			_instance.WriteEntry("additional_entry", CancellationToken.None);
-			_instance.RestoreLastState();
+			this._instance.WriteEntry(loadFileEntry, CancellationToken.None);
+			this._instance.SaveState();
+			this._instance.WriteEntry("additional_entry", CancellationToken.None);
+			this._instance.RestoreLastState();
 
 			// ASSERT
-			_streamFactory.Verify(x => x.Create(_streamWriter, loadFileEntry.Length, _FILE_PATH, Encoding.Default, true), Times.Once);
+			this._streamFactory.Verify(x => x.Create(this._streamWriter, loadFileEntry.Length, _FILE_PATH, Encoding.Default, true), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldUpdateStatistics()
 		{
 			// ACT
-			_instance.WriteEntry("load_file_entry", CancellationToken.None);
+			this._instance.WriteEntry("load_file_entry", CancellationToken.None);
 
 			// ASSERT
-			_processingStatistics.Verify(x => x.UpdateStatisticsForFile(_FILE_PATH), Times.Once);
+			this._processingStatistics.Verify(x => x.UpdateStatisticsForFile(_FILE_PATH), Times.Once);
 		}
 	}
 }

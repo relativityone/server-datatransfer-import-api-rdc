@@ -4,19 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
-    using Relativity.Logging;
+	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class NativeFileParallelBatchValidatorTests : NativeFileBatchValidatorTests
 	{
 		protected override IBatchValidator CreateValidator()
 		{
-			return new NativeFileParallelBatchValidator(ErrorFileWriter.Object, FileHelper.Object, Status.Object, new NullLogger());
+			return new NativeFileParallelBatchValidator(this.ErrorFileWriter.Object, this.FileHelper.Object, this.Status.Object, new NullLogger());
 		}
 	}
 }

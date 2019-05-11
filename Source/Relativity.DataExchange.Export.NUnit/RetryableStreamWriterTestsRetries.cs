@@ -4,21 +4,21 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.IO;
-    using System.Text;
-    using System.Threading;
+	using System;
+	using System.IO;
+	using System.Text;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exceptions;
 
 	using Moq;
 
-    using Polly;
+	using Polly;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
@@ -41,35 +41,35 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			Policy policy = Policy.Handle<ExportBaseException>().Retry(OnRetry);
+			Policy policy = Policy.Handle<ExportBaseException>().Retry(this.OnRetry);
 
-			_writersRetryPolicy = new Mock<IWritersRetryPolicy>();
-			_writersRetryPolicy.Setup(x => x.CreateRetryPolicy(It.IsAny<Action<Exception, TimeSpan, int, Context>>())).Returns((Action<Exception, TimeSpan, int, Context> action) =>
+			this._writersRetryPolicy = new Mock<IWritersRetryPolicy>();
+			this._writersRetryPolicy.Setup(x => x.CreateRetryPolicy(It.IsAny<Action<Exception, TimeSpan, int, Context>>())).Returns((Action<Exception, TimeSpan, int, Context> action) =>
 			{
-				_retryAction = action;
+				this._retryAction = action;
 				return policy;
 			});
 
-			_streamWriter = new StreamWriter(new StreamStub(1));
-			_streamFactory = new Mock<IStreamFactory>();
-			_streamFactory.Setup(x => x.Create(It.IsAny<StreamWriter>(), It.IsAny<long>(), _FILE_PATH, Encoding.Default, It.IsAny<bool>())).Returns(_streamWriter);
+			this._streamWriter = new StreamWriter(new StreamStub(1));
+			this._streamFactory = new Mock<IStreamFactory>();
+			this._streamFactory.Setup(x => x.Create(It.IsAny<StreamWriter>(), It.IsAny<long>(), _FILE_PATH, Encoding.Default, It.IsAny<bool>())).Returns(this._streamWriter);
 
 			Mock<IDestinationPath> destinationPath = new Mock<IDestinationPath>();
 			destinationPath.Setup(x => x.Path).Returns(_FILE_PATH);
 			destinationPath.Setup(x => x.Encoding).Returns(Encoding.Default);
 
-			_processingStatistics = new Mock<IProcessingStatistics>();
+			this._processingStatistics = new Mock<IProcessingStatistics>();
 			Mock<IStatus> status = new Mock<IStatus>();
 
-			_hasRetryBeenExecuted = false;
+			this._hasRetryBeenExecuted = false;
 
-			_instance = new RetryableStreamWriter(_writersRetryPolicy.Object, _streamFactory.Object, destinationPath.Object, _processingStatistics.Object, status.Object, new NullLogger());
+			this._instance = new RetryableStreamWriter(this._writersRetryPolicy.Object, this._streamFactory.Object, destinationPath.Object, this._processingStatistics.Object, status.Object, new NullLogger());
 		}
 
 		private void OnRetry(Exception arg1, int arg2)
 		{
-			_retryAction.Invoke(new Exception(), TimeSpan.Zero, 1, new Context(string.Empty));
-			_hasRetryBeenExecuted = true;
+			this._retryAction.Invoke(new Exception(), TimeSpan.Zero, 1, new Context(string.Empty));
+			this._hasRetryBeenExecuted = true;
 		}
 
 		[Test]
@@ -78,12 +78,12 @@ namespace Relativity.Export.NUnit
 			const string loadFileEntry = "loadFileEntry";
 
 			// ACT
-			_instance.WriteEntry(loadFileEntry, CancellationToken.None);
-			_instance.WriteEntry(loadFileEntry, CancellationToken.None);
+			this._instance.WriteEntry(loadFileEntry, CancellationToken.None);
+			this._instance.WriteEntry(loadFileEntry, CancellationToken.None);
 
 			// ASSERT
-			Assert.That(_hasRetryBeenExecuted, Is.True);
-			_streamFactory.Verify(x => x.Create(_streamWriter, loadFileEntry.Length, _FILE_PATH, Encoding.Default, true), Times.Once);
+			Assert.That(this._hasRetryBeenExecuted, Is.True);
+			this._streamFactory.Verify(x => x.Create(this._streamWriter, loadFileEntry.Length, _FILE_PATH, Encoding.Default, true), Times.Once);
 		}
 	}
 }

@@ -4,13 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Threading;
+	using System;
+	using System.Threading;
 
-    using global::NUnit.Framework;
-    using kCura.WinEDDS.Exporters;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Exporters;
 
 	using Moq;
 
@@ -19,7 +20,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class BatchTests
 	{
 		private Batch _instance;
@@ -32,15 +33,15 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_batchExporter = new Mock<IBatchExporter>();
-			_batchInitialization = new Mock<IBatchInitialization>();
-			_batchCleanUp = new Mock<IBatchCleanUp>();
-			_batchValidator = new Mock<IBatchValidator>();
-			_batchState = new Mock<IBatchState>();
+			this._batchExporter = new Mock<IBatchExporter>();
+			this._batchInitialization = new Mock<IBatchInitialization>();
+			this._batchCleanUp = new Mock<IBatchCleanUp>();
+			this._batchValidator = new Mock<IBatchValidator>();
+			this._batchState = new Mock<IBatchState>();
 
 			Mock<IMessenger> messenger = new Mock<IMessenger>();
 
-			_instance = new Batch(_batchExporter.Object, _batchInitialization.Object, _batchCleanUp.Object, _batchValidator.Object, _batchState.Object, messenger.Object, new NullLogger());
+			this._instance = new Batch(this._batchExporter.Object, this._batchInitialization.Object, this._batchCleanUp.Object, this._batchValidator.Object, this._batchState.Object, messenger.Object, new NullLogger());
 		}
 
 		[Test]
@@ -50,16 +51,16 @@ namespace Relativity.Export.NUnit
 			VolumePredictions[] volumePredictions = new VolumePredictions[1];
 
 			// ACT
-			_instance.Export(artifacts, volumePredictions, CancellationToken.None);
+			this._instance.Export(artifacts, volumePredictions, CancellationToken.None);
 
 			// ASSERT
-			_batchInitialization.Verify(x => x.PrepareBatch(artifacts, volumePredictions, CancellationToken.None), Times.Once);
-			_batchExporter.Verify(x => x.Export(artifacts, CancellationToken.None), Times.Once);
-			_batchValidator.Verify(x => x.ValidateExportedBatch(artifacts, volumePredictions, CancellationToken.None), Times.Once);
-			_batchState.Verify(x => x.SaveState(), Times.Once);
-			_batchCleanUp.Verify(x => x.CleanUp(), Times.Once);
+			this._batchInitialization.Verify(x => x.PrepareBatch(artifacts, volumePredictions, CancellationToken.None), Times.Once);
+			this._batchExporter.Verify(x => x.Export(artifacts, CancellationToken.None), Times.Once);
+			this._batchValidator.Verify(x => x.ValidateExportedBatch(artifacts, volumePredictions, CancellationToken.None), Times.Once);
+			this._batchState.Verify(x => x.SaveState(), Times.Once);
+			this._batchCleanUp.Verify(x => x.CleanUp(), Times.Once);
 
-			_batchState.Verify(x => x.RestoreState(), Times.Never);
+			this._batchState.Verify(x => x.RestoreState(), Times.Never);
 		}
 
 		[Test]
@@ -68,12 +69,12 @@ namespace Relativity.Export.NUnit
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
 			VolumePredictions[] volumePredictions = new VolumePredictions[1];
 
-			_batchExporter.Setup(x => x.Export(artifacts, CancellationToken.None)).Throws<Exception>();
+			this._batchExporter.Setup(x => x.Export(artifacts, CancellationToken.None)).Throws<Exception>();
 
 			// ACT & ASSERT
-			Assert.Throws<Exception>(() => _instance.Export(artifacts, volumePredictions, CancellationToken.None));
+			Assert.Throws<Exception>(() => this._instance.Export(artifacts, volumePredictions, CancellationToken.None));
 
-			_batchCleanUp.Verify(x => x.CleanUp(), Times.Once);
+			this._batchCleanUp.Verify(x => x.CleanUp(), Times.Once);
 		}
 
 		[Test]
@@ -84,13 +85,13 @@ namespace Relativity.Export.NUnit
 
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
 
-			_batchExporter.Setup(x => x.Export(artifacts, tokenSource.Token)).Callback(() => tokenSource.Cancel());
+			this._batchExporter.Setup(x => x.Export(artifacts, tokenSource.Token)).Callback(() => tokenSource.Cancel());
 
 			// ACT
-			_instance.Export(artifacts, volumePredictions, tokenSource.Token);
+			this._instance.Export(artifacts, volumePredictions, tokenSource.Token);
 
 			// ASSERT
-			_batchState.Verify(x => x.RestoreState(), Times.Once);
+			this._batchState.Verify(x => x.RestoreState(), Times.Once);
 		}
 	}
 }

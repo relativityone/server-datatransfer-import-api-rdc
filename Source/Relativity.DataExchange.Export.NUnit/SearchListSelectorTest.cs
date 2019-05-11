@@ -4,14 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Data;
-    using System.Globalization;
+	using System.Data;
+	using System.Globalization;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    internal class SearchListSelectorTest : Relativity.Desktop.Client.SearchListSelector
+	internal class SearchListSelectorTest : Relativity.Desktop.Client.SearchListSelector
 	{
 		private DataTable _dt;
 
@@ -19,22 +19,22 @@ namespace Relativity.Export.NUnit
 		{
 			for (var i = 0; i < numberOfRows; i++)
 			{
-				_dt.Rows.Add(prefix + i, i);
+				this._dt.Rows.Add(prefix + i, i);
 			}
 		}
 
 		[SetUp]
 		public void SetUp()
 		{
-			_dt = new DataTable { Locale = CultureInfo.InvariantCulture };
-			_dt.Columns.Add("Name", typeof(string));
-			_dt.Columns.Add("ArtifactID", typeof(int));
+			this._dt = new DataTable { Locale = CultureInfo.InvariantCulture };
+			this._dt.Columns.Add("Name", typeof(string));
+			this._dt.Columns.Add("ArtifactID", typeof(int));
 		}
 
 		[Test]
 		public void ItShouldReturnNothingIfListIsEmpty()
 		{
-			System.Data.DataTable result = FilterRowsFromDataTable(_dt, "substr");
+			System.Data.DataTable result = this.FilterRowsFromDataTable(this._dt, "substr");
 			Assert.AreEqual(0, result.Rows.Count);
 		}
 
@@ -42,8 +42,8 @@ namespace Relativity.Export.NUnit
 		public void ItShouldReturnNothingIfPatternDoesNotMatch()
 		{
 			const int amount = 4;
-			AddRowsToDataTable(amount, "test");
-			System.Data.DataTable result = FilterRowsFromDataTable(_dt, "substr");
+			this.AddRowsToDataTable(amount, "test");
+			System.Data.DataTable result = this.FilterRowsFromDataTable(this._dt, "substr");
 			Assert.AreEqual(0, result.Rows.Count);
 		}
 
@@ -51,9 +51,9 @@ namespace Relativity.Export.NUnit
 		public void ItShouldReturnOneIfPatternMatchesOne()
 		{
 			const int amount = 4;
-			AddRowsToDataTable(amount, "test");
-			AddRowsToDataTable(1, "substr");
-			System.Data.DataTable result = FilterRowsFromDataTable(_dt, "substr");
+			this.AddRowsToDataTable(amount, "test");
+			this.AddRowsToDataTable(1, "substr");
+			System.Data.DataTable result = this.FilterRowsFromDataTable(this._dt, "substr");
 			Assert.AreEqual(1, result.Rows.Count);
 		}
 
@@ -61,9 +61,9 @@ namespace Relativity.Export.NUnit
 		public void ItShouldReturnMoreIfPatternMachesMoreThanOne()
 		{
 			const int amount = 4;
-			AddRowsToDataTable(amount, "test");
-			AddRowsToDataTable(amount, "substr");
-			System.Data.DataTable result = FilterRowsFromDataTable(_dt, "substr");
+			this.AddRowsToDataTable(amount, "test");
+			this.AddRowsToDataTable(amount, "substr");
+			System.Data.DataTable result = this.FilterRowsFromDataTable(this._dt, "substr");
 			Assert.AreEqual(amount, result.Rows.Count);
 		}
 
@@ -71,8 +71,8 @@ namespace Relativity.Export.NUnit
 		public void ItShouldReturnAllIfPatternMatchesAll()
 		{
 			const int amount = 4;
-			AddRowsToDataTable(amount, "substr");
-			System.Data.DataTable result = FilterRowsFromDataTable(_dt, "substr");
+			this.AddRowsToDataTable(amount, "substr");
+			System.Data.DataTable result = this.FilterRowsFromDataTable(this._dt, "substr");
 			Assert.AreEqual(amount, result.Rows.Count);
 		}
 
@@ -80,23 +80,23 @@ namespace Relativity.Export.NUnit
 		public void ItShouldReturnAllIfPatternIsEmpty()
 		{
 			const int amount = 4;
-			AddRowsToDataTable(amount, "substr");
-			System.Data.DataTable result = FilterRowsFromDataTable(_dt, string.Empty);
-			Assert.AreEqual(_dt, result);
+			this.AddRowsToDataTable(amount, "substr");
+			System.Data.DataTable result = this.FilterRowsFromDataTable(this._dt, string.Empty);
+			Assert.AreEqual(this._dt, result);
 		}
 
 		[Test]
 		public void ItShouldReturnIfPatternIsAnywhereInTheString()
 		{
-			AddRowsToDataTable(1, "Begining");
-			AddRowsToDataTable(1, "Middle");
-			AddRowsToDataTable(1, "End");
+			this.AddRowsToDataTable(1, "Begining");
+			this.AddRowsToDataTable(1, "Middle");
+			this.AddRowsToDataTable(1, "End");
 
 			DataTable[] dtArr =
 			{
-				FilterRowsFromDataTable(_dt, "Beg"),
-				FilterRowsFromDataTable(_dt, "iddle"),
-				FilterRowsFromDataTable(_dt, "nd")
+				this.FilterRowsFromDataTable(this._dt, "Beg"),
+				this.FilterRowsFromDataTable(this._dt, "iddle"),
+				this.FilterRowsFromDataTable(this._dt, "nd")
 			};
 			foreach (var dataTable in dtArr)
 			{
@@ -107,12 +107,12 @@ namespace Relativity.Export.NUnit
 		[Test]
 		public void ItShouldReturnAllNoMatterTheLettersAreCaps()
 		{
-			AddRowsToDataTable(1, "TEST");
-			AddRowsToDataTable(1, "test");
-			AddRowsToDataTable(1, "TeSt");
+			this.AddRowsToDataTable(1, "TEST");
+			this.AddRowsToDataTable(1, "test");
+			this.AddRowsToDataTable(1, "TeSt");
 			const int count = 3;
 
-			System.Data.DataTable result = FilterRowsFromDataTable(_dt, "test");
+			System.Data.DataTable result = this.FilterRowsFromDataTable(this._dt, "test");
 			Assert.AreEqual(count, result.Rows.Count);
 		}
 	}

@@ -4,30 +4,30 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.IO;
+	using System.IO;
 
-    public class StreamStub : MemoryStream
+	public class StreamStub : MemoryStream
 	{
 		private readonly int _failOn;
 		private int _counter;
 
 		public StreamStub(int failOn)
 		{
-			_failOn = failOn;
+			this._failOn = failOn;
 		}
 
 		public override void Write(byte[] buffer, int offset, int count)
 		{
-			if (_counter == _failOn)
+			if (this._counter == this._failOn)
 			{
-				_counter++;
+				this._counter++;
 				throw new IOException();
 			}
 
 			base.Write(buffer, offset, count);
-			_counter++;
+			this._counter++;
 		}
 	}
 }

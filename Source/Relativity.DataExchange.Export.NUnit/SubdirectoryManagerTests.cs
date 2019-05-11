@@ -4,12 +4,12 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 
@@ -28,7 +28,7 @@ namespace Relativity.Export.NUnit
 					SubdirectoryStartNumber = startNumber
 				}
 			};
-			_instance = new SubdirectoryManager(exportSettings);
+			this._instance = new SubdirectoryManager(exportSettings);
 		}
 
 		[Test]
@@ -37,7 +37,7 @@ namespace Relativity.Export.NUnit
 			const int maxFileCount = 3;
 			const int startNumber = 5;
 
-			SetUpSubdirectoryManager(startNumber, maxFileCount);
+			this.SetUpSubdirectoryManager(startNumber, maxFileCount);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -45,13 +45,13 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			_instance.MoveNext(predictions);
-			_instance.MoveNext(predictions);
+			this._instance.MoveNext(predictions);
+			this._instance.MoveNext(predictions);
 
-			_instance.RestartSubdirectoryCounting();
+			this._instance.RestartSubdirectoryCounting();
 
 			// ASSERT
-			Assert.That(_instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber));
+			Assert.That(this._instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber));
 		}
 
 		[Test]
@@ -63,7 +63,7 @@ namespace Relativity.Export.NUnit
 			const int maxFileCount = 3;
 			const int startNumber = 5;
 
-			SetUpSubdirectoryManager(startNumber, maxFileCount);
+			this.SetUpSubdirectoryManager(startNumber, maxFileCount);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -73,11 +73,11 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			_instance.MoveNext(predictions);
-			_instance.MoveNext(predictions);
+			this._instance.MoveNext(predictions);
+			this._instance.MoveNext(predictions);
 
 			// ASSERT
-			Assert.That(_instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber + 1));
+			Assert.That(this._instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber + 1));
 		}
 
 		[Test]
@@ -86,7 +86,7 @@ namespace Relativity.Export.NUnit
 			const int maxFileCount = 3;
 			const int startNumber = 5;
 
-			SetUpSubdirectoryManager(startNumber, maxFileCount);
+			this.SetUpSubdirectoryManager(startNumber, maxFileCount);
 
 			VolumePredictions predictionsNatives = new VolumePredictions
 			{
@@ -108,12 +108,12 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			_instance.MoveNext(predictionsNatives);
-			_instance.MoveNext(predictionsImages);
-			_instance.MoveNext(predictionsText);
+			this._instance.MoveNext(predictionsNatives);
+			this._instance.MoveNext(predictionsImages);
+			this._instance.MoveNext(predictionsText);
 
 			// ASSERT
-			Assert.That(_instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber));
+			Assert.That(this._instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber));
 		}
 
 		[Test]
@@ -125,7 +125,7 @@ namespace Relativity.Export.NUnit
 			const int maxFileCount = 1;
 			const int startNumber = 5;
 
-			SetUpSubdirectoryManager(startNumber, maxFileCount);
+			this.SetUpSubdirectoryManager(startNumber, maxFileCount);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -135,10 +135,10 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			_instance.MoveNext(predictions);
+			this._instance.MoveNext(predictions);
 
 			// ASSERT
-			Assert.That(_instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber));
+			Assert.That(this._instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber));
 		}
 
 		[Test]
@@ -150,7 +150,7 @@ namespace Relativity.Export.NUnit
 			const int maxFileCount = 1;
 			const int startNumber = 5;
 
-			SetUpSubdirectoryManager(startNumber, maxFileCount);
+			this.SetUpSubdirectoryManager(startNumber, maxFileCount);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -160,15 +160,15 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			_instance.MoveNext(predictions);
-			_instance.MoveNext(predictions);
+			this._instance.MoveNext(predictions);
+			this._instance.MoveNext(predictions);
 
-			_instance.RestartSubdirectoryCounting();
+			this._instance.RestartSubdirectoryCounting();
 
-			_instance.MoveNext(predictions);
+			this._instance.MoveNext(predictions);
 
 			// ASSERT
-			Assert.That(_instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber));
+			Assert.That(this._instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber));
 		}
 	}
 }

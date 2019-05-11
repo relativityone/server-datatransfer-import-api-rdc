@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
@@ -15,7 +15,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class ExportFileDownloaderStatusTests
 	{
 		private ExportFileDownloaderStatus _instance;
@@ -25,9 +25,9 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_tapiBridge = new Mock<ITapiBridge>();
+			this._tapiBridge = new Mock<ITapiBridge>();
 
-			_instance = new ExportFileDownloaderStatus(new NullLogger());
+			this._instance = new ExportFileDownloaderStatus(new NullLogger());
 		}
 
 		[Test]
@@ -41,18 +41,18 @@ namespace Relativity.Export.NUnit
 		{
 			TapiClient currentTapiClient = TapiClient.None;
 
-			_instance.Attach(_tapiBridge.Object);
-			_instance.UploadModeChangeEvent += newTapiClient =>
+			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.UploadModeChangeEvent += newTapiClient =>
 				{
 					currentTapiClient = newTapiClient;
 				};
 
 			// ACT
-			_tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(clientName, expectedTapiClient));
+			this._tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(clientName, expectedTapiClient));
 
 			// ASSERT
 			Assert.That(currentTapiClient, Is.EqualTo(expectedTapiClient));
-			Assert.That(_instance.UploaderType, Is.EqualTo(expectedTapiClient));
+			Assert.That(this._instance.UploaderType, Is.EqualTo(expectedTapiClient));
 		}
 
 		[Test]
@@ -62,22 +62,22 @@ namespace Relativity.Export.NUnit
 			const string web = "Web";
 			TapiClient currentTapiClient = TapiClient.None;
 
-			_instance.Attach(_tapiBridge.Object);
-			_instance.UploadModeChangeEvent += newTapiClient =>
+			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.UploadModeChangeEvent += newTapiClient =>
 				{
 					currentTapiClient = newTapiClient;
 				};
 
 			// ACT
-			_tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(aspera, TapiClient.Aspera));
+			this._tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(aspera, TapiClient.Aspera));
 
-			_instance.Detach();
+			this._instance.Detach();
 
-			_tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(web, TapiClient.Web));
+			this._tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(web, TapiClient.Web));
 
 			// ASSERT
 			Assert.That(currentTapiClient, Is.EqualTo(TapiClient.Aspera));
-			Assert.That(_instance.UploaderType, Is.EqualTo(TapiClient.Aspera));
+			Assert.That(this._instance.UploaderType, Is.EqualTo(TapiClient.Aspera));
 		}
 	}
 }

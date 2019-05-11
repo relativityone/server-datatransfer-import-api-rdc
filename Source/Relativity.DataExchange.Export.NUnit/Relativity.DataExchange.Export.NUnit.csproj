@@ -8,7 +8,7 @@
     <ProjectGuid>{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Relativity.Export.NUnit</RootNamespace>
+    <RootNamespace>Relativity.DataExchange.Export.NUnit</RootNamespace>
     <AssemblyName>Relativity.DataExchange.Export.NUnit</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -4,16 +4,16 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
-    public class IdentifierExportFileNameProviderTests
+	public class IdentifierExportFileNameProviderTests
 	{
 		private const int _ARTIFACT_ID = 10;
 		private ExportFile _exportFileMock;
@@ -23,9 +23,9 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_exportFileMock = new ExportFile(_ARTIFACT_ID);
-			_sut = new IdentifierExportFileNameProvider(_exportFileMock);
-			_objectExportInfoMock = new Mock<ObjectExportInfo>();
+			this._exportFileMock = new ExportFile(_ARTIFACT_ID);
+			this._sut = new IdentifierExportFileNameProvider(this._exportFileMock);
+			this._objectExportInfoMock = new Mock<ObjectExportInfo>();
 		}
 
 		[TestCase(false)]
@@ -34,10 +34,10 @@ namespace Relativity.Export.NUnit
 		public void GetNameShouldCallNativeFileNameMethodWithAppendOriginalFileNameProperty(bool appendOriginalFileName)
 		{
 			string expected = appendOriginalFileName.ToString();
-			_exportFileMock.AppendOriginalFileName = appendOriginalFileName;
-			_objectExportInfoMock.Setup(x => x.NativeFileName(It.IsAny<bool>())).Returns((bool b) => b.ToString());
+			this._exportFileMock.AppendOriginalFileName = appendOriginalFileName;
+			this._objectExportInfoMock.Setup(x => x.NativeFileName(It.IsAny<bool>())).Returns((bool b) => b.ToString());
 
-			string actual = _sut.GetName(_objectExportInfoMock.Object);
+			string actual = this._sut.GetName(this._objectExportInfoMock.Object);
 
 			Assert.AreEqual(expected, actual, "GetName should call NativeFileName method with AppendOriginalFileName value and return proper result.");
 		}
@@ -48,10 +48,10 @@ namespace Relativity.Export.NUnit
 		public void GetTextNameShouldCallFullTextFileNameMethodWithAppendOriginalFileNameProperty(bool appendOriginalFileName)
 		{
 			string expected = $"{true}{false}{appendOriginalFileName}";
-			_exportFileMock.AppendOriginalFileName = appendOriginalFileName;
-			_objectExportInfoMock.Setup(x => x.FullTextFileName(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns((bool b1, bool b2, bool b3) => $"{b1}{b2}{b3}");
+			this._exportFileMock.AppendOriginalFileName = appendOriginalFileName;
+			this._objectExportInfoMock.Setup(x => x.FullTextFileName(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns((bool b1, bool b2, bool b3) => $"{b1}{b2}{b3}");
 
-			string actual = _sut.GetTextName(_objectExportInfoMock.Object);
+			string actual = this._sut.GetTextName(this._objectExportInfoMock.Object);
 
 			Assert.AreEqual(expected, actual, "GetTextName should call FullTextFileName method with AppendOriginalFileName value and return proper result.");
 		}

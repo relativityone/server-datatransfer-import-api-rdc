@@ -4,20 +4,20 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
-    using System.Linq;
+	using System.Collections.Generic;
+	using System.Linq;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
-    using Relativity.DataExchange.Export.VolumeManagerV2.Settings;
-    using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Settings;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class ColumnsFactoryTests
 	{
 		private ColumnsFactory _instance;
@@ -25,7 +25,7 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_instance = new ColumnsFactory(new NullLogger());
+			this._instance = new ColumnsFactory(new NullLogger());
 		}
 
 		[Test]
@@ -40,7 +40,7 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			ViewFieldInfo[] actualFields = _instance.CreateColumns(exportSettings);
+			ViewFieldInfo[] actualFields = this._instance.CreateColumns(exportSettings);
 
 			// ASSERT
 			CollectionAssert.AreEquivalent(fields, actualFields);
@@ -68,7 +68,7 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			ViewFieldInfo[] actualFields = _instance.CreateColumns(exportSettings);
+			ViewFieldInfo[] actualFields = this._instance.CreateColumns(exportSettings);
 
 			// ASSERT
 			CollectionAssert.IsSubsetOf(fields, actualFields);
@@ -93,7 +93,7 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			ViewFieldInfo[] actualFields = _instance.CreateColumns(exportSettings);
+			ViewFieldInfo[] actualFields = this._instance.CreateColumns(exportSettings);
 
 			// ASSERT
 			Assert.That(actualFields.Length, Is.EqualTo(fields.Length));
@@ -126,7 +126,7 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			ViewFieldInfo[] actualFields = _instance.CreateColumns(exportSettings);
+			ViewFieldInfo[] actualFields = this._instance.CreateColumns(exportSettings);
 
 			// ASSERT
 			Assert.That(actualFields.Length, Is.EqualTo(fields.Length + 1));

@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
@@ -14,7 +14,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Transfer;
 
-    using ITransferStatistics = Relativity.DataExchange.Export.VolumeManagerV2.Statistics.ITransferStatistics;
+	using ITransferStatistics = Relativity.DataExchange.Export.VolumeManagerV2.Statistics.ITransferStatistics;
 
     [TestFixture]
 	public abstract class DownloadTapiBridgeAdapterTests
@@ -31,49 +31,49 @@ namespace Relativity.Export.NUnit
 
 		protected void SetUpMocks()
 		{
-			TapiBridge = new Mock<ITapiBridge>();
-			ProgressHandler = new Mock<IProgressHandler>();
-			MessagesHandler = new Mock<IMessagesHandler>();
-			TransferStatistics = new Mock<ITransferStatistics>();
+			this.TapiBridge = new Mock<ITapiBridge>();
+			this.ProgressHandler = new Mock<IProgressHandler>();
+			this.MessagesHandler = new Mock<IMessagesHandler>();
+			this.TransferStatistics = new Mock<ITransferStatistics>();
 		}
 
 		[Test]
 		public void ItShouldAttachAndDetach()
 		{
-			Instance.Dispose();
+			this.Instance.Dispose();
 
 			// ASSERT
-			ProgressHandler.Verify(x => x.Attach(TapiBridge.Object), Times.Once);
-			ProgressHandler.Verify(x => x.Detach(), Times.Once);
+			this.ProgressHandler.Verify(x => x.Attach(this.TapiBridge.Object), Times.Once);
+			this.ProgressHandler.Verify(x => x.Detach(), Times.Once);
 
-			MessagesHandler.Verify(x => x.Attach(TapiBridge.Object), Times.Once);
-			MessagesHandler.Verify(x => x.Detach(), Times.Once);
+			this.MessagesHandler.Verify(x => x.Attach(this.TapiBridge.Object), Times.Once);
+			this.MessagesHandler.Verify(x => x.Detach(), Times.Once);
 
-			TransferStatistics.Verify(x => x.Attach(TapiBridge.Object), Times.Once);
-			TransferStatistics.Verify(x => x.Detach(), Times.Once);
+			this.TransferStatistics.Verify(x => x.Attach(this.TapiBridge.Object), Times.Once);
+			this.TransferStatistics.Verify(x => x.Detach(), Times.Once);
 
-			TapiBridge.Verify(x => x.Dispose(), Times.Once);
+			this.TapiBridge.Verify(x => x.Dispose(), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldWaitForTransferJob()
 		{
 			// ACT
-			Instance.QueueDownload(new TransferPath());
-			Instance.WaitForTransferJob();
+			this.Instance.QueueDownload(new TransferPath());
+			this.Instance.WaitForTransferJob();
 
 			// ASSERT
-			TapiBridge.Verify(x => x.WaitForTransferJob(), Times.Once);
+			this.TapiBridge.Verify(x => x.WaitForTransferJob(), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldNotWaitForTransferJobWhenNothingHasBeenAddedToQueue()
 		{
 			// ACT
-			Instance.WaitForTransferJob();
+			this.Instance.WaitForTransferJob();
 
 			// ASSERT
-			TapiBridge.Verify(x => x.WaitForTransferJob(), Times.Never);
+			this.TapiBridge.Verify(x => x.WaitForTransferJob(), Times.Never);
 		}
 
 		[Test]
@@ -82,20 +82,20 @@ namespace Relativity.Export.NUnit
 			TransferPath transferPath = new TransferPath();
 
 			// ACT
-			Instance.QueueDownload(transferPath);
+			this.Instance.QueueDownload(transferPath);
 
 			// ASSERT
-			TapiBridge.Verify(x => x.AddPath(transferPath), Times.Once);
+			this.TapiBridge.Verify(x => x.AddPath(transferPath), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldDisconnect()
 		{
 			// ACT
-			Instance.Disconnect();
+			this.Instance.Disconnect();
 
 			// ASSERT
-			TapiBridge.Verify(x => x.Disconnect(), Times.Once);
+			this.TapiBridge.Verify(x => x.Disconnect(), Times.Once);
 		}
 	}
 }

@@ -4,26 +4,26 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
+	using System;
 
-    using FileNaming.CustomFileNaming;
+	using FileNaming.CustomFileNaming;
 
 	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.FileNaming.CustomFileNaming;
+	using kCura.WinEDDS.FileNaming.CustomFileNaming;
 
-    public class FileNamePartProviderContainerTest
+	public class FileNamePartProviderContainerTest
 	{
 		private FileNamePartProviderContainer _subjectUnderTest;
 
 		[Test]
 		public void ItShouldThrowExceptionForNotSupportedDescriptorType()
 		{
-			_subjectUnderTest = new FileNamePartProviderContainer();
+			this._subjectUnderTest = new FileNamePartProviderContainer();
 
-			Assert.Throws<ArgumentOutOfRangeException>(() => _subjectUnderTest.GetProvider(new HelperDescriptorBasePart()));
+			Assert.Throws<ArgumentOutOfRangeException>(() => this._subjectUnderTest.GetProvider(new HelperDescriptorBasePart()));
 		}
 
 		[Test]
@@ -31,9 +31,9 @@ namespace Relativity.Export.NUnit
 		{
 			var part = new FieldDescriptorPart(1);
 
-			_subjectUnderTest = new FileNamePartProviderContainer();
+			this._subjectUnderTest = new FileNamePartProviderContainer();
 
-			IFileNamePartProvider retProvider = _subjectUnderTest.GetProvider(part);
+			IFileNamePartProvider retProvider = this._subjectUnderTest.GetProvider(part);
 			Assert.That(retProvider, Is.TypeOf<FieldFileNamePartProvider>());
 		}
 
@@ -42,9 +42,9 @@ namespace Relativity.Export.NUnit
 		{
 			var part = new SeparatorDescriptorPart(string.Empty);
 
-			_subjectUnderTest = new FileNamePartProviderContainer();
+			this._subjectUnderTest = new FileNamePartProviderContainer();
 
-			IFileNamePartProvider retProvider = _subjectUnderTest.GetProvider(part);
+			IFileNamePartProvider retProvider = this._subjectUnderTest.GetProvider(part);
 			Assert.That(retProvider, Is.TypeOf<SeparatorFileNamePartProvider>());
 		}
 
@@ -53,9 +53,9 @@ namespace Relativity.Export.NUnit
 		{
 			var part = new CustomTextDescriptorPart("Custom Text");
 
-			_subjectUnderTest = new FileNamePartProviderContainer();
+			this._subjectUnderTest = new FileNamePartProviderContainer();
 
-			IFileNamePartProvider retProvider = _subjectUnderTest.GetProvider(part);
+			IFileNamePartProvider retProvider = this._subjectUnderTest.GetProvider(part);
 			Assert.That(retProvider, Is.TypeOf<CustomTextFileNamePartProvider>());
 		}
 

@@ -4,19 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Collections.Generic;
+	using System;
+	using System.Collections.Generic;
 
-    using FileNaming.CustomFileNaming;
+	using FileNaming.CustomFileNaming;
 
 	using global::NUnit.Framework;
 
-    using kCura.WinEDDS;
-    using kCura.WinEDDS.FileNaming.CustomFileNaming;
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.FileNaming.CustomFileNaming;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Service;
 
@@ -33,12 +33,12 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_fieldLookupServiceMock = new Mock<IFieldLookupService>();
-			_subjectUnderTest = new FieldFileNamePartProvider();
+			this._fieldLookupServiceMock = new Mock<IFieldLookupService>();
+			this._subjectUnderTest = new FieldFileNamePartProvider();
 
-			_fieldLookupServiceMock.Setup(item => item.GetOrdinalIndex(_NAME)).Returns(_COL_INDEX);
+			this._fieldLookupServiceMock.Setup(item => item.GetOrdinalIndex(_NAME)).Returns(_COL_INDEX);
 
-			_extendedObjectExportInfo = new ExtendedObjectExportInfo(_fieldLookupServiceMock.Object);
+			this._extendedObjectExportInfo = new ExtendedObjectExportInfo(this._fieldLookupServiceMock.Object);
 		}
 
 		[Test]
@@ -46,7 +46,7 @@ namespace Relativity.Export.NUnit
 		{
 			var fieldValue = new DateTime(2020, 1, 2, 10, 3, 5);
 
-			kCura.WinEDDS.ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
+			kCura.WinEDDS.ViewFieldInfo viewFieldInfo = this._fieldInfoMockFactory
 				.Build()
 				.WithAvfId(_AVF_ID)
 				.WithAvfName(_NAME)
@@ -55,7 +55,7 @@ namespace Relativity.Export.NUnit
 				.Create();
 
 			// first column represent col in load File, second column will refer to field value taken part in creation of native file name
-			_extendedObjectExportInfo.Metadata = new object[]
+			this._extendedObjectExportInfo.Metadata = new object[]
 			{
 				"Some Control Number",
 
@@ -64,12 +64,12 @@ namespace Relativity.Export.NUnit
 			};
 
 			// assumption: one column selected by user (Control Number)
-			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<kCura.WinEDDS.ViewFieldInfo>
+			this._extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<kCura.WinEDDS.ViewFieldInfo>
 			{
 				viewFieldInfo
 			};
 
-			string retFieldValue = _subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), _extendedObjectExportInfo);
+			string retFieldValue = this._subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), this._extendedObjectExportInfo);
 
 			Assert.That(retFieldValue, Is.EqualTo(fieldValue.ToString("o").Replace(":", "_")));
 		}
@@ -79,7 +79,7 @@ namespace Relativity.Export.NUnit
 		{
 			var fieldValue = "Some Custodian";
 
-            kCura.WinEDDS.ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
+            kCura.WinEDDS.ViewFieldInfo viewFieldInfo = this._fieldInfoMockFactory
 				.Build()
 				.WithAvfId(_AVF_ID)
 				.WithAvfName(_NAME)
@@ -87,7 +87,7 @@ namespace Relativity.Export.NUnit
 				.Create();
 
 			// first column represent col in load File, second column will refer to field value taken part in creation of native file name
-			_extendedObjectExportInfo.Metadata = new object[]
+			this._extendedObjectExportInfo.Metadata = new object[]
 			{
 				"Some Control Number",
 
@@ -96,12 +96,12 @@ namespace Relativity.Export.NUnit
 			};
 
 			// assumption: one column selected by user (Control Number)
-			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<kCura.WinEDDS.ViewFieldInfo>
+			this._extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<kCura.WinEDDS.ViewFieldInfo>
 			{
 				viewFieldInfo
 			};
 
-			string retFieldValue = _subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), _extendedObjectExportInfo);
+			string retFieldValue = this._subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), this._extendedObjectExportInfo);
 
 			Assert.That(retFieldValue, Is.EqualTo(fieldValue));
 		}
@@ -112,7 +112,7 @@ namespace Relativity.Export.NUnit
 		public void ItShouldReturnFieldDisplayTextWhenGivenBooleanField(string fieldValue, string expectedValue)
 		{
 			string displayName = "Has Native";
-            kCura.WinEDDS.ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
+            kCura.WinEDDS.ViewFieldInfo viewFieldInfo = this._fieldInfoMockFactory
 				.Build()
 				.WithAvfId(_AVF_ID)
 				.WithAvfName(_NAME)
@@ -120,18 +120,18 @@ namespace Relativity.Export.NUnit
 				.WithDisplayName(displayName)
 				.Create();
 
-			_extendedObjectExportInfo.Metadata = new object[]
+			this._extendedObjectExportInfo.Metadata = new object[]
 			{
 				"Some Control Number",
 				fieldValue
 			};
 
-			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<kCura.WinEDDS.ViewFieldInfo>
+			this._extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<kCura.WinEDDS.ViewFieldInfo>
 			{
 				viewFieldInfo
 			};
 
-			string retFieldValue = _subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), _extendedObjectExportInfo);
+			string retFieldValue = this._subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), this._extendedObjectExportInfo);
 
 			Assert.AreEqual(expectedValue, retFieldValue);
 		}
@@ -142,7 +142,7 @@ namespace Relativity.Export.NUnit
 			string fieldValue = "<object/><object/>QQ";
 			string displayName = "Production::Begin Bates";
 			string expectedVal = "QQ";
-            kCura.WinEDDS.ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
+            kCura.WinEDDS.ViewFieldInfo viewFieldInfo = this._fieldInfoMockFactory
 				.Build()
 				.WithAvfId(_AVF_ID)
 				.WithAvfName(_NAME)
@@ -150,18 +150,18 @@ namespace Relativity.Export.NUnit
 				.WithDisplayName(displayName)
 				.Create();
 
-			_extendedObjectExportInfo.Metadata = new object[]
+			this._extendedObjectExportInfo.Metadata = new object[]
 			{
 				"Some Control Number",
 				fieldValue
 			};
 
-			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<kCura.WinEDDS.ViewFieldInfo>
+			this._extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<kCura.WinEDDS.ViewFieldInfo>
 			{
 				viewFieldInfo
 			};
 
-			string retFieldValue = _subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), _extendedObjectExportInfo);
+			string retFieldValue = this._subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), this._extendedObjectExportInfo);
 
 			Assert.AreEqual(expectedVal, retFieldValue);
 		}
@@ -171,7 +171,7 @@ namespace Relativity.Export.NUnit
 		{
 			Assert.Throws<ArgumentOutOfRangeException>(() =>
 			{
-				_subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), _extendedObjectExportInfo);
+				this._subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), this._extendedObjectExportInfo);
 			});
 		}
 	}

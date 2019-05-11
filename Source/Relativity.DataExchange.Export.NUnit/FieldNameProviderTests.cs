@@ -4,24 +4,24 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using Relativity.DataExchange.Export;
+	using Relativity.DataExchange.Export;
 
-    public class FieldNameProviderTests
+	public class FieldNameProviderTests
 	{
 		private FieldNameProvider _subjectUnderTest;
 
 		[SetUp]
 		public void Init()
 		{
-			_subjectUnderTest = new FieldNameProvider();
+			this._subjectUnderTest = new FieldNameProvider();
 		}
 
 		[Test]
@@ -33,7 +33,7 @@ namespace Relativity.Export.NUnit
 				Tuple.Create<int, string>(1, expectedText)
 			}).FirstOrDefault();
 
-			string retName = _subjectUnderTest.GetDisplayName(fieldInfo);
+			string retName = this._subjectUnderTest.GetDisplayName(fieldInfo);
 
 			Assert.That(retName, Is.EqualTo(expectedText));
 		}

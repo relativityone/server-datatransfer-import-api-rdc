@@ -4,15 +4,15 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
-    using kCura.WinEDDS.LoadFileEntry;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Service;
@@ -35,14 +35,14 @@ namespace Relativity.Export.NUnit
 		{
 			ExportFile exportSettings = new ExportFile(1);
 
-			_fieldService = new Mock<IFieldService>();
+			this._fieldService = new Mock<IFieldService>();
 
-			LongTextHelper longTextHelper = new LongTextHelper(exportSettings, _fieldService.Object, null);
+			LongTextHelper longTextHelper = new LongTextHelper(exportSettings, this._fieldService.Object, null);
 
-			_tooLongTextToLoadFile = new Mock<ILongTextHandler>();
-			_notTooLongTextToLoadFile = new Mock<ILongTextHandler>();
+			this._tooLongTextToLoadFile = new Mock<ILongTextHandler>();
+			this._notTooLongTextToLoadFile = new Mock<ILongTextHandler>();
 
-			_instance = new LongTextToLoadFile(longTextHelper, _tooLongTextToLoadFile.Object, _notTooLongTextToLoadFile.Object, new NullLogger());
+			this._instance = new LongTextToLoadFile(longTextHelper, this._tooLongTextToLoadFile.Object, this._notTooLongTextToLoadFile.Object, new NullLogger());
 		}
 
 		[Test]
@@ -54,13 +54,13 @@ namespace Relativity.Export.NUnit
 
 			DeferredEntry lineEntry = new DeferredEntry();
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
+			this._fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
 			// ACT
-			_instance.HandleLongText(artifact, field, lineEntry);
+			this._instance.HandleLongText(artifact, field, lineEntry);
 
 			// ASSERT
-			_notTooLongTextToLoadFile.Verify(x => x.HandleLongText(artifact, field, lineEntry));
+			this._notTooLongTextToLoadFile.Verify(x => x.HandleLongText(artifact, field, lineEntry));
 		}
 
 		[Test]
@@ -75,13 +75,13 @@ namespace Relativity.Export.NUnit
 
 			DeferredEntry lineEntry = new DeferredEntry();
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
+			this._fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
 			// ACT
-			_instance.HandleLongText(artifact, field, lineEntry);
+			this._instance.HandleLongText(artifact, field, lineEntry);
 
 			// ASSERT
-			_tooLongTextToLoadFile.Verify(x => x.HandleLongText(artifact, field, lineEntry));
+			this._tooLongTextToLoadFile.Verify(x => x.HandleLongText(artifact, field, lineEntry));
 		}
 	}
 }

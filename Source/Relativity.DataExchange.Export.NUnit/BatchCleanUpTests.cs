@@ -4,21 +4,21 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
-    using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class BatchCleanUpTests
 	{
 		private BatchCleanUp _instance;
@@ -28,26 +28,26 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_repositoryMocks = new List<Mock<IClearable>>
+			this._repositoryMocks = new List<Mock<IClearable>>
 			{
 				new Mock<IClearable>(),
 				new Mock<IClearable>(),
 				new Mock<IClearable>()
 			};
 
-			_instance = new BatchCleanUp(_repositoryMocks.Select(x => x.Object).ToList(), new NullLogger());
+			this._instance = new BatchCleanUp(this._repositoryMocks.Select(x => x.Object).ToList(), new NullLogger());
 		}
 
 		[Test]
 		public void ItShouldExecuteCleanUpsIndependently()
 		{
-			_repositoryMocks[1].Setup(x => x.Clear()).Throws<Exception>();
+			this._repositoryMocks[1].Setup(x => x.Clear()).Throws<Exception>();
 
 			// ACT
-			_instance.CleanUp();
+			this._instance.CleanUp();
 
 			// ASSERT
-			foreach (var repositoryMock in _repositoryMocks)
+			foreach (var repositoryMock in this._repositoryMocks)
 			{
 				repositoryMock.Verify(x => x.Clear());
 			}

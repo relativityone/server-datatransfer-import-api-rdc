@@ -4,11 +4,11 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Data;
+	using System.Data;
 
-    using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Service;
 
 	public class FieldStub : kCura.WinEDDS.ViewFieldInfo
 	{
@@ -24,22 +24,22 @@ namespace Relativity.Export.NUnit
 
 		public void SetType(FieldType fieldType)
 		{
-			FieldType = fieldType;
+			this.FieldType = fieldType;
 		}
 
 		public void SetFieldArtifactId(int fieldArtifactId)
 		{
-			FieldArtifactId = fieldArtifactId;
+			this.FieldArtifactId = fieldArtifactId;
 		}
 
 		public void SetIsUnicodeEnabled(bool isUnicodeEnabled)
 		{
-			IsUnicodeEnabled = isUnicodeEnabled;
+			this.IsUnicodeEnabled = isUnicodeEnabled;
 		}
 
 		public void SetAvfColumnName(string avfColumnName)
 		{
-			AvfColumnName = avfColumnName;
+			this.AvfColumnName = avfColumnName;
 		}
 	}
 }

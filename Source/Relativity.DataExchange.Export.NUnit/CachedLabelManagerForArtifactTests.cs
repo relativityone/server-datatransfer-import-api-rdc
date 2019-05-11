@@ -4,18 +4,18 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 
@@ -51,54 +51,54 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_artifacts = new[]
+			this._artifacts = new[]
 				             {
 					             new ObjectExportInfo() { ArtifactID = 0 }, new ObjectExportInfo() { ArtifactID = 1 },
 					             new ObjectExportInfo() { ArtifactID = 2 }
 				             };
-			_volumePredictions = new[] { new VolumePredictions(), new VolumePredictions(), new VolumePredictions() };
+			this._volumePredictions = new[] { new VolumePredictions(), new VolumePredictions(), new VolumePredictions() };
 
-			_labelManager = new Mock<ILabelManager>();
-			_directoryManager = new Mock<IDirectoryManager>();
+			this._labelManager = new Mock<ILabelManager>();
+			this._directoryManager = new Mock<IDirectoryManager>();
 
-			_labelManager.SetupSequence(lm => lm.GetCurrentVolumeLabel()).Returns("VOL0").Returns("VOL1").Returns("VOL2");
-			_labelManager.SetupSequence(lm => lm.GetCurrentImageSubdirectoryLabel()).Returns("IMG0").Returns("IMG1").Returns("IMG2");
-			_labelManager.SetupSequence(lm => lm.GetCurrentNativeSubdirectoryLabel()).Returns("NAT0").Returns("NAT1").Returns("NAT2");
-			_labelManager.SetupSequence(lm => lm.GetCurrentTextSubdirectoryLabel()).Returns("TXT0").Returns("TXT1").Returns("TXT2");
+			this._labelManager.SetupSequence(lm => lm.GetCurrentVolumeLabel()).Returns("VOL0").Returns("VOL1").Returns("VOL2");
+			this._labelManager.SetupSequence(lm => lm.GetCurrentImageSubdirectoryLabel()).Returns("IMG0").Returns("IMG1").Returns("IMG2");
+			this._labelManager.SetupSequence(lm => lm.GetCurrentNativeSubdirectoryLabel()).Returns("NAT0").Returns("NAT1").Returns("NAT2");
+			this._labelManager.SetupSequence(lm => lm.GetCurrentTextSubdirectoryLabel()).Returns("TXT0").Returns("TXT1").Returns("TXT2");
 
-			_instance = new CachedLabelManagerForArtifact(_labelManager.Object, _directoryManager.Object);
+			this._instance = new CachedLabelManagerForArtifact(this._labelManager.Object, this._directoryManager.Object);
 		}
 
 		[Test]
 		public void MoveNextShouldBeCalledForEachArtifact()
 		{
-			_instance.InitializeFor(_artifacts, _volumePredictions, CancellationToken.None);
+			this._instance.InitializeFor(this._artifacts, this._volumePredictions, CancellationToken.None);
 
-			_volumePredictions.ToList().ForEach(x => _directoryManager.Verify(dm => dm.MoveNext(x), Times.Once));
+			this._volumePredictions.ToList().ForEach(x => this._directoryManager.Verify(dm => dm.MoveNext(x), Times.Once));
 		}
 
 		[Test]
 		public void DirectoryManagerShouldNotBeCalledAfterInitialization()
 		{
-			_instance.InitializeFor(_artifacts, _volumePredictions, CancellationToken.None);
+			this._instance.InitializeFor(this._artifacts, this._volumePredictions, CancellationToken.None);
 
-            _directoryManager.Invocations.Clear();
+            this._directoryManager.Invocations.Clear();
 
 			foreach (Func<CachedLabelManagerForArtifact, Func<int, string>> methodGenerator in MethodsToTest())
 			{
-				methodGenerator(_instance)(1);
+				methodGenerator(this._instance)(1);
 			}
 
-			_directoryManager.Verify(dm => dm.MoveNext(It.IsAny<VolumePredictions>()), Times.Never);
+			this._directoryManager.Verify(dm => dm.MoveNext(It.IsAny<VolumePredictions>()), Times.Never);
 		}
 
 		[Test]
 		[TestCaseSource(nameof(MethodsToTest))]
 		public void ItShouldReturnSameResultsForSameArtifact(Func<CachedLabelManagerForArtifact, Func<int, string>> testMethodGenerator)
 		{
-			_instance.InitializeFor(_artifacts, _volumePredictions, CancellationToken.None);
+			this._instance.InitializeFor(this._artifacts, this._volumePredictions, CancellationToken.None);
 
-			Func<int, string> testMethod = testMethodGenerator(_instance);
+			Func<int, string> testMethod = testMethodGenerator(this._instance);
 
 			string firstResult = testMethod(1);
 			string secondResult = testMethod(1);
@@ -110,9 +110,9 @@ namespace Relativity.Export.NUnit
 		[TestCaseSource(nameof(MethodsToTest))]
 		public void ItShouldReturnDifferentResultsForDifferentArtifacts(Func<CachedLabelManagerForArtifact, Func<int, string>> testMethodGenerator)
 		{
-			_instance.InitializeFor(_artifacts, _volumePredictions, CancellationToken.None);
+			this._instance.InitializeFor(this._artifacts, this._volumePredictions, CancellationToken.None);
 
-			Func<int, string> testMethod = testMethodGenerator(_instance);
+			Func<int, string> testMethod = testMethodGenerator(this._instance);
 
 			string firstResult = testMethod(1);
 			string secondResult = testMethod(2);
@@ -124,13 +124,13 @@ namespace Relativity.Export.NUnit
 		[TestCaseSource(nameof(MethodsToTest))]
 		public void ItShouldReturnCorrectResultsForDifferentArtifacts(Func<CachedLabelManagerForArtifact, Func<int, string>> testMethodGenerator)
 		{
-			_instance.InitializeFor(_artifacts, _volumePredictions, CancellationToken.None);
+			this._instance.InitializeFor(this._artifacts, this._volumePredictions, CancellationToken.None);
 
-			Func<int, string> testMethod = testMethodGenerator(_instance);
+			Func<int, string> testMethod = testMethodGenerator(this._instance);
 
-			for (int i = _artifacts.Length - 1; i >= 0; i--)
+			for (int i = this._artifacts.Length - 1; i >= 0; i--)
 			{
-				int artifactId = _artifacts[i].ArtifactID;
+				int artifactId = this._artifacts[i].ArtifactID;
 				string testMethodName = testMethod.Method.Name;
 
 				string expectedResult = $"{MethodNameToReturnedPrefix[testMethodName]}{artifactId}";

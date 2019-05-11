@@ -4,20 +4,20 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class BatchStateTests
 	{
 		private BatchState _instance;
@@ -26,57 +26,57 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_statefulComponentMocks = new List<Mock<IStateful>>
+			this._statefulComponentMocks = new List<Mock<IStateful>>
 			{
 				new Mock<IStateful>(),
 				new Mock<IStateful>(),
 				new Mock<IStateful>()
 			};
-			_instance = new BatchState(_statefulComponentMocks.Select(x => x.Object).ToList(), new NullLogger());
+			this._instance = new BatchState(this._statefulComponentMocks.Select(x => x.Object).ToList(), new NullLogger());
 		}
 
 		[Test]
 		public void ItShouldSaveStateForEveryStatefulComponent()
 		{
 			// ACT
-			_instance.SaveState();
+			this._instance.SaveState();
 
 			// ASSERT
-			_statefulComponentMocks.ForEach(x => x.Verify(sc => sc.SaveState()));
+			this._statefulComponentMocks.ForEach(x => x.Verify(sc => sc.SaveState()));
 		}
 
 		[Test]
 		public void ItShouldRestoreStateInEveryStatefulComponent()
 		{
 			// ACT
-			_instance.RestoreState();
+			this._instance.RestoreState();
 
 			// ASSERT
-			_statefulComponentMocks.ForEach(x => x.Verify(sc => sc.RestoreLastState()));
+			this._statefulComponentMocks.ForEach(x => x.Verify(sc => sc.RestoreLastState()));
 		}
 
 		[Test]
 		public void ItShouldNotFailSilentlyWhenSavingState()
 		{
-			_statefulComponentMocks[1].Setup(x => x.SaveState()).Throws<Exception>();
+			this._statefulComponentMocks[1].Setup(x => x.SaveState()).Throws<Exception>();
 
 			// ACT & ASSERT
-			Assert.Throws<Exception>(() => _instance.SaveState());
+			Assert.Throws<Exception>(() => this._instance.SaveState());
 
-			_statefulComponentMocks[0].Verify(x => x.SaveState());
-			_statefulComponentMocks[2].Verify(x => x.SaveState(), Times.Never);
+			this._statefulComponentMocks[0].Verify(x => x.SaveState());
+			this._statefulComponentMocks[2].Verify(x => x.SaveState(), Times.Never);
 		}
 
 		[Test]
 		public void ItShouldNotFailSilentlyWhenRestoringState()
 		{
-			_statefulComponentMocks[1].Setup(x => x.RestoreLastState()).Throws<Exception>();
+			this._statefulComponentMocks[1].Setup(x => x.RestoreLastState()).Throws<Exception>();
 
 			// ACT & ASSERT
-			Assert.Throws<Exception>(() => _instance.RestoreState());
+			Assert.Throws<Exception>(() => this._instance.RestoreState());
 
-			_statefulComponentMocks[0].Verify(x => x.RestoreLastState());
-			_statefulComponentMocks[2].Verify(x => x.RestoreLastState(), Times.Never);
+			this._statefulComponentMocks[0].Verify(x => x.RestoreLastState());
+			this._statefulComponentMocks[2].Verify(x => x.RestoreLastState(), Times.Never);
 		}
 	}
 }

@@ -4,30 +4,30 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
-    using System.Threading;
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Text;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
-    using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
-    using Relativity.DataExchange.Service;
-    using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
-    using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
+	using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
     [TestFixture]
 	public class LongTextPrecedenceBuilderTests
@@ -48,43 +48,43 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_textPrecedence = new QueryFieldFactory().GetArtifactIdField();
-			_exportSettings = new ExportFile(1)
+			this._textPrecedence = new QueryFieldFactory().GetArtifactIdField();
+			this._exportSettings = new ExportFile(1)
 				                  {
-					                  SelectedTextFields = new[] { _textPrecedence },
+					                  SelectedTextFields = new[] { this._textPrecedence },
 					                  TextFileEncoding = Encoding.Default
 				                  };
 
-			_filePathProvider = new Mock<IFilePathProvider>();
-			_fieldService = new Mock<IFieldService>();
-			_fileNameProvider = new Mock<IFileNameProvider>();
-			_exportFileValidator = new Mock<IExportFileValidator>();
-			_metadataProcessingStatistics = new Mock<IMetadataProcessingStatistics>();
+			this._filePathProvider = new Mock<IFilePathProvider>();
+			this._fieldService = new Mock<IFieldService>();
+			this._fileNameProvider = new Mock<IFileNameProvider>();
+			this._exportFileValidator = new Mock<IExportFileValidator>();
+			this._metadataProcessingStatistics = new Mock<IMetadataProcessingStatistics>();
 
-			_fileToDelete = Path.GetTempFileName();
+			this._fileToDelete = Path.GetTempFileName();
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
-			_fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(1);
+			this._fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
+			this._fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(1);
 
-			LongTextHelper longTextHelper = new LongTextHelper(_exportSettings, _fieldService.Object, new LongTextRepository(null, new NullLogger()));
+			LongTextHelper longTextHelper = new LongTextHelper(this._exportSettings, this._fieldService.Object, new LongTextRepository(null, new NullLogger()));
 
-			_instance = new LongTextPrecedenceBuilder(
-				_exportSettings,
-				_filePathProvider.Object,
-				_fieldService.Object,
+			this._instance = new LongTextPrecedenceBuilder(
+				this._exportSettings,
+				this._filePathProvider.Object,
+				this._fieldService.Object,
 				longTextHelper,
-				_fileNameProvider.Object,
+				this._fileNameProvider.Object,
 				new NullLogger(),
-				_exportFileValidator.Object,
-				_metadataProcessingStatistics.Object);
+				this._exportFileValidator.Object,
+				this._metadataProcessingStatistics.Object);
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			if (!string.IsNullOrWhiteSpace(_fileToDelete) && File.Exists(_fileToDelete))
+			if (!string.IsNullOrWhiteSpace(this._fileToDelete) && File.Exists(this._fileToDelete))
 			{
-				File.Delete(_fileToDelete);
+				File.Delete(this._fileToDelete);
 			}
 		}
 
@@ -93,19 +93,19 @@ namespace Relativity.Export.NUnit
 		{
 			const string notTooLongText = "not too long text";
 
-			_exportSettings.ExportFullTextAsFile = false;
+			this._exportSettings.ExportFullTextAsFile = false;
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
 				Metadata = new object[]
 				{
-					_textPrecedence.FieldArtifactId,
+					this._textPrecedence.FieldArtifactId,
 					notTooLongText
 				}
 			};
 
 			// ACT
-			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
+			IList<LongText> actualResult = this._instance.CreateLongText(artifact, CancellationToken.None);
 
 			// ASSERT
 			Assert.That(actualResult.Count, Is.EqualTo(1));
@@ -119,22 +119,22 @@ namespace Relativity.Export.NUnit
 		{
 			const string notTooLongText = "not too long text";
 
-			_exportSettings.ExportFullTextAsFile = true;
+			this._exportSettings.ExportFullTextAsFile = true;
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
 				Metadata = new object[]
 				{
-					_textPrecedence.FieldArtifactId,
+					this._textPrecedence.FieldArtifactId,
 					notTooLongText
 				}
 			};
 
-			_exportFileValidator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
-			_filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>(), It.IsAny<int>())).Returns(_fileToDelete);
+			this._exportFileValidator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+			this._filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>(), It.IsAny<int>())).Returns(this._fileToDelete);
 
 			// ACT
-			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
+			IList<LongText> actualResult = this._instance.CreateLongText(artifact, CancellationToken.None);
 
 			// ASSERT
 			Assert.That(actualResult.Count, Is.EqualTo(1));
@@ -151,19 +151,19 @@ namespace Relativity.Export.NUnit
 		{
 			const string tooLongText = ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
-			_exportSettings.ExportFullTextAsFile = false;
+			this._exportSettings.ExportFullTextAsFile = false;
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
 				Metadata = new object[]
 				{
-					_textPrecedence.FieldArtifactId,
+					this._textPrecedence.FieldArtifactId,
 					tooLongText
 				}
 			};
 
 			// ACT
-			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
+			IList<LongText> actualResult = this._instance.CreateLongText(artifact, CancellationToken.None);
 
 			// ASSERT
 			Assert.That(actualResult.Count, Is.EqualTo(1));
@@ -176,22 +176,22 @@ namespace Relativity.Export.NUnit
 		{
 			const string tooLongText = ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
-			_exportSettings.ExportFullTextAsFile = true;
+			this._exportSettings.ExportFullTextAsFile = true;
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
 				Metadata = new object[]
 				{
-					_textPrecedence.FieldArtifactId,
+					this._textPrecedence.FieldArtifactId,
 					tooLongText
 				}
 			};
 
-			_exportFileValidator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
-			_filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>(), It.IsAny<int>())).Returns(_fileToDelete);
+			this._exportFileValidator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+			this._filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>(), It.IsAny<int>())).Returns(this._fileToDelete);
 
 			// ACT
-			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
+			IList<LongText> actualResult = this._instance.CreateLongText(artifact, CancellationToken.None);
 
 			// ASSERT
 			Assert.That(actualResult.Count, Is.EqualTo(1));
@@ -204,22 +204,22 @@ namespace Relativity.Export.NUnit
 		{
 			const string tooLongText = ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
-			_exportSettings.ExportFullTextAsFile = true;
+			this._exportSettings.ExportFullTextAsFile = true;
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
 				Metadata = new object[]
 				{
-					_textPrecedence.FieldArtifactId,
+					this._textPrecedence.FieldArtifactId,
 					tooLongText
 				}
 			};
 
-			_exportFileValidator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
-			_filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>(), It.IsAny<int>())).Returns(_fileToDelete);
+			this._exportFileValidator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+			this._filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>(), It.IsAny<int>())).Returns(this._fileToDelete);
 
 			// ACT
-			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
+			IList<LongText> actualResult = this._instance.CreateLongText(artifact, CancellationToken.None);
 
 			// ASSERT
 			Assert.That(actualResult.Count, Is.EqualTo(1));

@@ -4,11 +4,11 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 
@@ -21,41 +21,41 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_labelManager = new Mock<ILabelManager>();
+			this._labelManager = new Mock<ILabelManager>();
 
-			_instance = new LabelManagerForArtifact(_labelManager.Object);
+			this._instance = new LabelManagerForArtifact(this._labelManager.Object);
 		}
 
 		[Test]
 		public void ItShouldDelegateGetVolumeLabelCallToLabelManager()
 		{
-			_instance.GetVolumeLabel(1);
+			this._instance.GetVolumeLabel(1);
 
-			_labelManager.Verify(manager => manager.GetCurrentVolumeLabel(), Times.Once);
+			this._labelManager.Verify(manager => manager.GetCurrentVolumeLabel(), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldDelegateGetImageSubdirectoryLabelCallToLabelManager()
 		{
-			_instance.GetImageSubdirectoryLabel(1);
+			this._instance.GetImageSubdirectoryLabel(1);
 
-			_labelManager.Verify(manager => manager.GetCurrentImageSubdirectoryLabel(), Times.Once);
+			this._labelManager.Verify(manager => manager.GetCurrentImageSubdirectoryLabel(), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldDelegateGetNativeSubdirectoryLabelCallToLabelManager()
 		{
-			_instance.GetNativeSubdirectoryLabel(1);
+			this._instance.GetNativeSubdirectoryLabel(1);
 
-			_labelManager.Verify(manager => manager.GetCurrentNativeSubdirectoryLabel(), Times.Once);
+			this._labelManager.Verify(manager => manager.GetCurrentNativeSubdirectoryLabel(), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldDelegateGetTextSubdirectoryLabelCallToLabelManager()
 		{
-			_instance.GetTextSubdirectoryLabel(1);
+			this._instance.GetTextSubdirectoryLabel(1);
 
-			_labelManager.Verify(manager => manager.GetCurrentTextSubdirectoryLabel(), Times.Once);
+			this._labelManager.Verify(manager => manager.GetCurrentTextSubdirectoryLabel(), Times.Once);
 		}
 	}
 }

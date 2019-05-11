@@ -4,13 +4,13 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
+	using System.Collections.Generic;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
@@ -25,12 +25,12 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_natives = CreateDataSet();
+			this._natives = this.CreateDataSet();
 
-			_instance = new NativeRepository();
-			foreach (Native native in _natives)
+			this._instance = new NativeRepository();
+			foreach (Native native in this._natives)
 			{
-				_instance.Add(native);
+				this._instance.Add(native);
 			}
 		}
 
@@ -38,24 +38,24 @@ namespace Relativity.Export.NUnit
 		public void ItShouldGetNativeByArtifactId()
 		{
 			// ACT
-			Native native1 = _instance.GetNative(1);
-			Native native2 = _instance.GetNative(2);
-			Native native3 = _instance.GetNative(3);
+			Native native1 = this._instance.GetNative(1);
+			Native native2 = this._instance.GetNative(2);
+			Native native3 = this._instance.GetNative(3);
 
 			// ASSERT
-			Assert.That(native1, Is.EqualTo(_natives[0]));
-			Assert.That(native2, Is.EqualTo(_natives[1]));
-			Assert.That(native3, Is.EqualTo(_natives[2]));
+			Assert.That(native1, Is.EqualTo(this._natives[0]));
+			Assert.That(native2, Is.EqualTo(this._natives[1]));
+			Assert.That(native3, Is.EqualTo(this._natives[2]));
 		}
 
 		[Test]
 		public void ItShouldGetAllNatives()
 		{
 			// ACT
-			IList<Native> natives = _instance.GetNatives();
+			IList<Native> natives = this._instance.GetNatives();
 
 			// ASSERT
-			CollectionAssert.AreEquivalent(_natives, natives);
+			CollectionAssert.AreEquivalent(this._natives, natives);
 		}
 
 		[Test]
@@ -63,12 +63,12 @@ namespace Relativity.Export.NUnit
 		{
 			var expectedExportRequests = new List<ExportRequest>
 			{
-				_natives[0].ExportRequest,
-				_natives[2].ExportRequest
+				this._natives[0].ExportRequest,
+				this._natives[2].ExportRequest
 			};
 
 			// ACT
-			IEnumerable<ExportRequest> exportRequests = _instance.GetExportRequests();
+			IEnumerable<ExportRequest> exportRequests = this._instance.GetExportRequests();
 
 			// ASSERT
 			CollectionAssert.AreEquivalent(expectedExportRequests, exportRequests);
@@ -78,22 +78,22 @@ namespace Relativity.Export.NUnit
 		public void ItShouldGetNativeByUniqueId()
 		{
 			// ACT
-			Native native1 = _instance.GetByLineNumber(1);
-			Native native2 = _instance.GetByLineNumber(2);
-			Native native3 = _instance.GetByLineNumber(3);
+			Native native1 = this._instance.GetByLineNumber(1);
+			Native native2 = this._instance.GetByLineNumber(2);
+			Native native3 = this._instance.GetByLineNumber(3);
 
 			// ASSERT
-			Assert.That(native1, Is.EqualTo(_natives[0]));
+			Assert.That(native1, Is.EqualTo(this._natives[0]));
 			Assert.That(native2, Is.Null);
-			Assert.That(native3, Is.EqualTo(_natives[2]));
+			Assert.That(native3, Is.EqualTo(this._natives[2]));
 		}
 
 		[Test]
 		public void ItShouldClearRepository()
 		{
 			// ACT
-			_instance.Clear();
-			IList<Native> natives = _instance.GetNatives();
+			this._instance.Clear();
+			IList<Native> natives = this._instance.GetNatives();
 
 			// ASSERT
 			CollectionAssert.IsEmpty(natives);

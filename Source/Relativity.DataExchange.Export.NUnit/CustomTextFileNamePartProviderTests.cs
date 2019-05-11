@@ -4,15 +4,15 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using FileNaming.CustomFileNaming;
 
 	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.FileNaming.CustomFileNaming;
+	using kCura.WinEDDS.FileNaming.CustomFileNaming;
 
-    public class CustomTextFileNamePartProviderTests
+	public class CustomTextFileNamePartProviderTests
 	{
 		private CustomTextFileNamePartProvider _subjectUnderTests;
 
@@ -21,9 +21,9 @@ namespace Relativity.Export.NUnit
 		{
 			const string expectedSep = "CustomText";
 
-			_subjectUnderTests = new CustomTextFileNamePartProvider();
+			this._subjectUnderTests = new CustomTextFileNamePartProvider();
 
-			string retSep = _subjectUnderTests.GetPartName(new CustomTextDescriptorPart(expectedSep), null);
+			string retSep = this._subjectUnderTests.GetPartName(new CustomTextDescriptorPart(expectedSep), null);
 
 			Assert.That(retSep, Is.EqualTo(expectedSep));
 		}

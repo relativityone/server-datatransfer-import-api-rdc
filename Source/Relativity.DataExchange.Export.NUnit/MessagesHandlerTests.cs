@@ -4,13 +4,13 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
-    using kCura.WinEDDS;
+	using kCura.WinEDDS;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
@@ -18,7 +18,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class MessagesHandlerTests
 	{
 		private MessagesHandler _instance;
@@ -29,10 +29,10 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_status = new Mock<IStatus>();
-			_tapiBridge = new Mock<ITapiBridge>();
+			this._status = new Mock<IStatus>();
+			this._tapiBridge = new Mock<ITapiBridge>();
 
-			_instance = new MessagesHandler(_status.Object, new NullLogger());
+			this._instance = new MessagesHandler(this._status.Object, new NullLogger());
 		}
 
 		[Test]
@@ -40,13 +40,13 @@ namespace Relativity.Export.NUnit
 		{
 			const string message = "error_message";
 
-			_instance.Attach(_tapiBridge.Object);
+			this._instance.Attach(this._tapiBridge.Object);
 
 			// ACT
-			_tapiBridge.Raise(x => x.TapiErrorMessage += null, new TapiMessageEventArgs(message, 0));
+			this._tapiBridge.Raise(x => x.TapiErrorMessage += null, new TapiMessageEventArgs(message, 0));
 
 			// ASSERT
-			_status.Verify(x => x.WriteError(message), Times.Once);
+			this._status.Verify(x => x.WriteError(message), Times.Once);
 		}
 
 		[Test]
@@ -54,13 +54,13 @@ namespace Relativity.Export.NUnit
 		{
 			const string message = "warning_message";
 
-			_instance.Attach(_tapiBridge.Object);
+			this._instance.Attach(this._tapiBridge.Object);
 
 			// ACT
-			_tapiBridge.Raise(x => x.TapiWarningMessage += null, new TapiMessageEventArgs(message, 0));
+			this._tapiBridge.Raise(x => x.TapiWarningMessage += null, new TapiMessageEventArgs(message, 0));
 
 			// ASSERT
-			_status.Verify(x => x.WriteWarning(message), Times.Once);
+			this._status.Verify(x => x.WriteWarning(message), Times.Once);
 		}
 
 		[Test]
@@ -68,13 +68,13 @@ namespace Relativity.Export.NUnit
 		{
 			const string message = "fatal_message";
 
-			_instance.Attach(_tapiBridge.Object);
+			this._instance.Attach(this._tapiBridge.Object);
 
 			// ACT
-			_tapiBridge.Raise(x => x.TapiFatalError += null, new TapiMessageEventArgs(message, 0));
+			this._tapiBridge.Raise(x => x.TapiFatalError += null, new TapiMessageEventArgs(message, 0));
 
 			// ASSERT
-			_status.Verify(x => x.WriteError(message), Times.Once);
+			this._status.Verify(x => x.WriteError(message), Times.Once);
 		}
 
 		[Test]
@@ -82,13 +82,13 @@ namespace Relativity.Export.NUnit
 		{
 			const string message = "status_message";
 
-			_instance.Attach(_tapiBridge.Object);
+			this._instance.Attach(this._tapiBridge.Object);
 
 			// ACT
-			_tapiBridge.Raise(x => x.TapiStatusMessage += null, new TapiMessageEventArgs(message, 0));
+			this._tapiBridge.Raise(x => x.TapiStatusMessage += null, new TapiMessageEventArgs(message, 0));
 
 			// ASSERT
-			_status.Verify(x => x.WriteStatusLine(EventType2.Status, message, false), Times.Once);
+			this._status.Verify(x => x.WriteStatusLine(EventType2.Status, message, false), Times.Once);
 		}
 
 		[Test]
@@ -96,19 +96,19 @@ namespace Relativity.Export.NUnit
 		{
 			const string message = "message";
 
-			_instance.Attach(_tapiBridge.Object);
-			_instance.Detach();
+			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Detach();
 
 			// ACT
-			_tapiBridge.Raise(x => x.TapiErrorMessage += null, new TapiMessageEventArgs(message, 0));
-			_tapiBridge.Raise(x => x.TapiWarningMessage += null, new TapiMessageEventArgs(message, 0));
-			_tapiBridge.Raise(x => x.TapiFatalError += null, new TapiMessageEventArgs(message, 0));
-			_tapiBridge.Raise(x => x.TapiStatusMessage += null, new TapiMessageEventArgs(message, 0));
+			this._tapiBridge.Raise(x => x.TapiErrorMessage += null, new TapiMessageEventArgs(message, 0));
+			this._tapiBridge.Raise(x => x.TapiWarningMessage += null, new TapiMessageEventArgs(message, 0));
+			this._tapiBridge.Raise(x => x.TapiFatalError += null, new TapiMessageEventArgs(message, 0));
+			this._tapiBridge.Raise(x => x.TapiStatusMessage += null, new TapiMessageEventArgs(message, 0));
 
 			// ASSERT
-			_status.Verify(x => x.WriteWarning(message), Times.Never);
-			_status.Verify(x => x.WriteError(message), Times.Never);
-			_status.Verify(x => x.WriteStatusLine(EventType2.Status, message, false), Times.Never);
+			this._status.Verify(x => x.WriteWarning(message), Times.Never);
+			this._status.Verify(x => x.WriteError(message), Times.Never);
+			this._status.Verify(x => x.WriteStatusLine(EventType2.Status, message, false), Times.Never);
 		}
 	}
 }

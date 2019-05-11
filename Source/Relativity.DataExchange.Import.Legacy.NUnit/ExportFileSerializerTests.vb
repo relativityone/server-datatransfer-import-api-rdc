@@ -9,7 +9,7 @@ Imports kCura.WinEDDS
 Imports NUnit.Framework
 Imports Relativity.DataExchange.TestFramework
 
-Namespace Relativity.Import.Client.NUnit
+Namespace Relativity.DataExchange.Import.NUnit
 
 	<TestFixture>
 	Public Class ExportFileSerializerTests

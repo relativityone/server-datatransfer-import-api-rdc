@@ -4,17 +4,17 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class DownloadTapiBridgeForFilesTests : DownloadTapiBridgeAdapterTests
 	{
 		private Mock<ITransferClientHandler> _transferClientHandler;
@@ -22,26 +22,26 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			SetUpMocks();
+			this.SetUpMocks();
 
-			_transferClientHandler = new Mock<ITransferClientHandler>();
+			this._transferClientHandler = new Mock<ITransferClientHandler>();
 
-			Instance = new DownloadTapiBridgeForFiles(
-				TapiBridge.Object,
-				ProgressHandler.Object,
-				MessagesHandler.Object,
-				TransferStatistics.Object,
-				_transferClientHandler.Object,
+			this.Instance = new DownloadTapiBridgeForFiles(
+				this.TapiBridge.Object,
+				this.ProgressHandler.Object,
+				this.MessagesHandler.Object,
+				this.TransferStatistics.Object,
+				this._transferClientHandler.Object,
 				new NullLogger());
 		}
 
 		[Test]
 		public void ItShouldDisposeTransferClientHandler()
 		{
-			Instance.Dispose();
+			this.Instance.Dispose();
 
 			// ASSERT
-			_transferClientHandler.Verify(x => x.Detach());
+			this._transferClientHandler.Verify(x => x.Detach());
 		}
 	}
 }

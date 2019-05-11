@@ -4,19 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
+	using System;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
-    using Relativity.DataExchange.Export;
-    using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Export;
+	using Relativity.DataExchange.Service;
 
 	public class ExportFileFormatterFactoryTests
 	{
@@ -26,9 +26,9 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void Init()
 		{
-			_fieldNameProviderMock = new Mock<IFieldNameProvider>();
+			this._fieldNameProviderMock = new Mock<IFieldNameProvider>();
 
-			_subjectUnderTest = new ExportFileFormatterFactory(_fieldNameProviderMock.Object);
+			this._subjectUnderTest = new ExportFileFormatterFactory(this._fieldNameProviderMock.Object);
 		}
 
 		[TestCase(typeof(ExportFileFormatter), false)]
@@ -42,7 +42,7 @@ namespace Relativity.Export.NUnit
 			};
 
 			// Act
-			ILoadFileHeaderFormatter retFormatter = _subjectUnderTest.Create(exportFile);
+			ILoadFileHeaderFormatter retFormatter = this._subjectUnderTest.Create(exportFile);
 
 			// Assert
 			Assert.IsInstanceOf(formatterType, retFormatter);

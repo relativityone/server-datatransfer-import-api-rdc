@@ -4,19 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
+	using System.Collections.Generic;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Settings;
-    using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Service;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class ColumnsOrdinalLookupFactoryTests
 	{
 		private ColumnsOrdinalLookupFactory _instance;
@@ -24,7 +24,7 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_instance = new ColumnsOrdinalLookupFactory(new NullLogger());
+			this._instance = new ColumnsOrdinalLookupFactory(new NullLogger());
 		}
 
 		[Test]
@@ -34,7 +34,7 @@ namespace Relativity.Export.NUnit
 			ExportFile exportSettings = new ExportFile(1);
 
 			// ACT
-			Dictionary<string, int> ordinalLookup = _instance.CreateOrdinalLookup(exportSettings, columnsInOrder);
+			Dictionary<string, int> ordinalLookup = this._instance.CreateOrdinalLookup(exportSettings, columnsInOrder);
 
 			// ASSERT
 			for (int i = 0; i < columnsInOrder.Length; i++)
@@ -55,7 +55,7 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			Dictionary<string, int> ordinalLookup = _instance.CreateOrdinalLookup(exportSettings, columnsInOrder);
+			Dictionary<string, int> ordinalLookup = this._instance.CreateOrdinalLookup(exportSettings, columnsInOrder);
 
 			// ASSERT
 			for (int i = 0; i < columnsInOrder.Length; i++)

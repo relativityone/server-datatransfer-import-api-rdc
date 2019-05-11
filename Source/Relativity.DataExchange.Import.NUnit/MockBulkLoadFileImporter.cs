@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit
+namespace Relativity.DataExchange.Import.NUnit
 {
 	using System;
 	using System.Threading;
@@ -15,8 +15,6 @@ namespace Relativity.Import.Client.NUnit
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Process;
 	using Relativity.Logging;
-
-	using ExecutionSource = Relativity.DataExchange.Service.ExecutionSource;
 
 	/// <summary>
 	/// Represents a mock class object for <see cref="BulkLoadFileImporter"/>.
@@ -36,7 +34,7 @@ namespace Relativity.Import.Client.NUnit
 			string bulkLoadFileFieldDelimiter,
 			kCura.WinEDDS.Service.IBulkImportManager manager,
 			CancellationTokenSource tokenSource,
-			ExecutionSource executionSource)
+			Relativity.DataExchange.Service.ExecutionSource executionSource)
 			: base(
 				args,
 				context,

@@ -4,22 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
-    using System.Threading;
+	using System.Collections.Generic;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class LongTextRepositoryBuilderTests
 	{
 		private LongTextRepositoryBuilder _instance;
@@ -33,17 +33,17 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_longTextPrecedenceBuilder = new Mock<ILongTextBuilder>();
-			_longTextFieldBuilder = new Mock<ILongTextBuilder>();
-			_longTextIproFullTextBuilder = new Mock<ILongTextBuilder>();
+			this._longTextPrecedenceBuilder = new Mock<ILongTextBuilder>();
+			this._longTextFieldBuilder = new Mock<ILongTextBuilder>();
+			this._longTextIproFullTextBuilder = new Mock<ILongTextBuilder>();
 
-			_longTextRepository = new LongTextRepository(null, new NullLogger());
+			this._longTextRepository = new LongTextRepository(null, new NullLogger());
 
-			_instance = new LongTextRepositoryBuilder(
-				_longTextPrecedenceBuilder.Object,
-				_longTextFieldBuilder.Object,
-				_longTextIproFullTextBuilder.Object,
-				_longTextRepository,
+			this._instance = new LongTextRepositoryBuilder(
+				this._longTextPrecedenceBuilder.Object,
+				this._longTextFieldBuilder.Object,
+				this._longTextIproFullTextBuilder.Object,
+				this._longTextRepository,
 				new NullLogger());
 		}
 
@@ -59,15 +59,15 @@ namespace Relativity.Export.NUnit
 
 			ObjectExportInfo artifact = new ObjectExportInfo();
 
-			_longTextPrecedenceBuilder.Setup(x => x.CreateLongText(artifact, CancellationToken.None))
+			this._longTextPrecedenceBuilder.Setup(x => x.CreateLongText(artifact, CancellationToken.None))
 				.Returns(new List<LongText> { longText1, longText3, longText5, longText5 });
-			_longTextFieldBuilder.Setup(x => x.CreateLongText(artifact, CancellationToken.None))
+			this._longTextFieldBuilder.Setup(x => x.CreateLongText(artifact, CancellationToken.None))
 				.Returns(new List<LongText> { longText2, longText4 });
-			_longTextIproFullTextBuilder.Setup(x => x.CreateLongText(artifact, CancellationToken.None))
+			this._longTextIproFullTextBuilder.Setup(x => x.CreateLongText(artifact, CancellationToken.None))
 				.Returns(new List<LongText> { longText4, longText6 });
 
 			// ACT
-			_instance.AddToRepository(artifact, CancellationToken.None);
+			this._instance.AddToRepository(artifact, CancellationToken.None);
 
 			// ASSERT
 			CollectionAssert.AreEquivalent(
@@ -80,7 +80,7 @@ namespace Relativity.Export.NUnit
 						longText5,
 						longText6
 					},
-				_longTextRepository.GetLongTexts());
+				this._longTextRepository.GetLongTexts());
 		}
 	}
 }

@@ -4,25 +4,25 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Threading;
+	using System;
+	using System.Collections;
+	using System.Collections.Generic;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class ImageExportRequestBuilderTests
 	{
 		private ImageExportRequestBuilder _instance;
@@ -34,11 +34,11 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_filePathProvider = new Mock<IFilePathProvider>();
-			_validator = new Mock<IExportFileValidator>();
-			_fileProcessingStatistics = new Mock<IFileProcessingStatistics>();
+			this._filePathProvider = new Mock<IFilePathProvider>();
+			this._validator = new Mock<IExportFileValidator>();
+			this._fileProcessingStatistics = new Mock<IFileProcessingStatistics>();
 
-			_instance = new ImageExportRequestBuilder(_filePathProvider.Object, _validator.Object, new NullLogger(), _fileProcessingStatistics.Object);
+			this._instance = new ImageExportRequestBuilder(this._filePathProvider.Object, this._validator.Object, new NullLogger(), this._fileProcessingStatistics.Object);
 		}
 
 		[Test]
@@ -56,7 +56,7 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			IList<ExportRequest> requests = _instance.Create(artifact, CancellationToken.None);
+			IList<ExportRequest> requests = this._instance.Create(artifact, CancellationToken.None);
 
 			// ASSERT
 			CollectionAssert.IsEmpty(requests);
@@ -80,15 +80,15 @@ namespace Relativity.Export.NUnit
 				Images = images
 			};
 
-			_filePathProvider.Setup(x => x.GetPathForFile(image.FileName, It.IsAny<int>())).Returns(exportPath);
-			_validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(false);
+			this._filePathProvider.Setup(x => x.GetPathForFile(image.FileName, It.IsAny<int>())).Returns(exportPath);
+			this._validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(false);
 
 			// ACT
-			IList<ExportRequest> requests = _instance.Create(artifact, CancellationToken.None);
+			IList<ExportRequest> requests = this._instance.Create(artifact, CancellationToken.None);
 
 			// ASSERT
 			CollectionAssert.IsEmpty(requests);
-			_fileProcessingStatistics.Verify(x => x.UpdateStatisticsForFile(exportPath));
+			this._fileProcessingStatistics.Verify(x => x.UpdateStatisticsForFile(exportPath));
 		}
 
 		[Test]
@@ -112,11 +112,11 @@ namespace Relativity.Export.NUnit
 				Images = images
 			};
 
-			_filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>(), It.IsAny<int>())).Returns((string fileName, int artifactId) => $"{fileName}.img");
-			_validator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+			this._filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>(), It.IsAny<int>())).Returns((string fileName, int artifactId) => $"{fileName}.img");
+			this._validator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
 
 			// ACT
-			IList<ExportRequest> requests = _instance.Create(artifact, CancellationToken.None);
+			IList<ExportRequest> requests = this._instance.Create(artifact, CancellationToken.None);
 
 			// ASSERT
 			Assert.That(requests.Count, Is.EqualTo(2));

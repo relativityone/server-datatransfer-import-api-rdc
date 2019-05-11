@@ -10,14 +10,12 @@ Imports kCura.WinEDDS
 Imports Moq
 
 Imports NUnit.Framework
-Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
-Imports Relativity.DataExchange.Service
 
 Imports Relativity.Logging
 
-Namespace Relativity.Import.Client.NUnit
+Namespace Relativity.DataExchange.Import.NUnit
 
 	<TestFixture>
 	Public Class BulkImageFileImporterTests

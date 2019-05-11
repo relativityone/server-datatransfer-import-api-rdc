@@ -4,14 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
+	using System;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.DataSize;
 
@@ -28,46 +28,46 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_exportSettings = new ExportFile(1)
+			this._exportSettings = new ExportFile(1)
 			{
 				VolumeInfo = new VolumeInfo()
 			};
 
-			_volumePredictions = new VolumePredictions
+			this._volumePredictions = new VolumePredictions
 			{
 				ImageFileCount = _IMAGE_FILE_COUNT,
 				ImageFilesSize = _IMAGE_FILE_SIZE
 			};
 
-			_instance = new ImageExportableSize(_exportSettings);
+			this._instance = new ImageExportableSize(this._exportSettings);
 		}
 
 		[Test]
 		public void ItShouldResetSizeAndCountWhenNotExportingImages()
 		{
-			_exportSettings.ExportImages = false;
-			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
+			this._exportSettings.ExportImages = false;
+			this._exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
 
 			// ACT
-			_instance.CalculateImagesSize(_volumePredictions);
+			this._instance.CalculateImagesSize(this._volumePredictions);
 
 			// ASSERT
-			Assert.That(_volumePredictions.ImageFileCount, Is.Zero);
-			Assert.That(_volumePredictions.ImageFilesSize, Is.Zero);
+			Assert.That(this._volumePredictions.ImageFileCount, Is.Zero);
+			Assert.That(this._volumePredictions.ImageFilesSize, Is.Zero);
 		}
 
 		[Test]
 		public void ItShouldResetSizeAndCountWhenNotCopyingFiles()
 		{
-			_exportSettings.ExportImages = true;
-			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = false;
+			this._exportSettings.ExportImages = true;
+			this._exportSettings.VolumeInfo.CopyImageFilesFromRepository = false;
 
 			// ACT
-			_instance.CalculateImagesSize(_volumePredictions);
+			this._instance.CalculateImagesSize(this._volumePredictions);
 
 			// ASSERT
-			Assert.That(_volumePredictions.ImageFileCount, Is.Zero);
-			Assert.That(_volumePredictions.ImageFilesSize, Is.Zero);
+			Assert.That(this._volumePredictions.ImageFileCount, Is.Zero);
+			Assert.That(this._volumePredictions.ImageFilesSize, Is.Zero);
 		}
 
 		[Test]
@@ -75,29 +75,29 @@ namespace Relativity.Export.NUnit
 		[TestCase(ExportFile.ImageType.SinglePage)]
 		public void ItShouldNotChangeSizeWhenExportingTiffFiles(ExportFile.ImageType imageType)
 		{
-			_exportSettings.ExportImages = true;
-			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
-			_exportSettings.TypeOfImage = imageType;
+			this._exportSettings.ExportImages = true;
+			this._exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
+			this._exportSettings.TypeOfImage = imageType;
 
 			// ACT
-			_instance.CalculateImagesSize(_volumePredictions);
+			this._instance.CalculateImagesSize(this._volumePredictions);
 
 			// ASSERT
-			Assert.That(_volumePredictions.ImageFilesSize, Is.EqualTo(_IMAGE_FILE_SIZE));
+			Assert.That(this._volumePredictions.ImageFilesSize, Is.EqualTo(_IMAGE_FILE_SIZE));
 		}
 
 		[Test]
 		public void ItShouldIncreaseSizeWhenExportingImagesAsPdf()
 		{
-			_exportSettings.ExportImages = true;
-			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
-			_exportSettings.TypeOfImage = ExportFile.ImageType.Pdf;
+			this._exportSettings.ExportImages = true;
+			this._exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
+			this._exportSettings.TypeOfImage = ExportFile.ImageType.Pdf;
 
 			// ACT
-			_instance.CalculateImagesSize(_volumePredictions);
+			this._instance.CalculateImagesSize(this._volumePredictions);
 
 			// ASSERT
-			Assert.That(_volumePredictions.ImageFilesSize, Is.EqualTo(Math.Ceiling(_IMAGE_FILE_SIZE * _PDF_MERGE_SIZE_ERROR_THRESHOLD)));
+			Assert.That(this._volumePredictions.ImageFilesSize, Is.EqualTo(Math.Ceiling(_IMAGE_FILE_SIZE * _PDF_MERGE_SIZE_ERROR_THRESHOLD)));
 		}
 
 		[Test]
@@ -105,29 +105,29 @@ namespace Relativity.Export.NUnit
 		[TestCase(ExportFile.ImageType.Pdf)]
 		public void ItShouldChangeCountWhenMergingImages(ExportFile.ImageType imageType)
 		{
-			_exportSettings.ExportImages = true;
-			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
-			_exportSettings.TypeOfImage = imageType;
+			this._exportSettings.ExportImages = true;
+			this._exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
+			this._exportSettings.TypeOfImage = imageType;
 
 			// ACT
-			_instance.CalculateImagesSize(_volumePredictions);
+			this._instance.CalculateImagesSize(this._volumePredictions);
 
 			// ASSERT
-			Assert.That(_volumePredictions.ImageFileCount, Is.EqualTo(1));
+			Assert.That(this._volumePredictions.ImageFileCount, Is.EqualTo(1));
 		}
 
 		[Test]
 		public void ItShouldNotChangeCountWhenNotMergingImages()
 		{
-			_exportSettings.ExportImages = true;
-			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
-			_exportSettings.TypeOfImage = ExportFile.ImageType.SinglePage;
+			this._exportSettings.ExportImages = true;
+			this._exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
+			this._exportSettings.TypeOfImage = ExportFile.ImageType.SinglePage;
 
 			// ACT
-			_instance.CalculateImagesSize(_volumePredictions);
+			this._instance.CalculateImagesSize(this._volumePredictions);
 
 			// ASSERT
-			Assert.That(_volumePredictions.ImageFileCount, Is.EqualTo(_IMAGE_FILE_COUNT));
+			Assert.That(this._volumePredictions.ImageFileCount, Is.EqualTo(_IMAGE_FILE_COUNT));
 		}
 
 		[Test]
@@ -135,16 +135,16 @@ namespace Relativity.Export.NUnit
 		[TestCase(ExportFile.ImageType.Pdf)]
 		public void ItShouldNotChangeCountWhenNoImagesToMerge(ExportFile.ImageType imageType)
 		{
-			_exportSettings.ExportImages = true;
-			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
-			_exportSettings.TypeOfImage = imageType;
-			_volumePredictions.ImageFileCount = 0;
+			this._exportSettings.ExportImages = true;
+			this._exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
+			this._exportSettings.TypeOfImage = imageType;
+			this._volumePredictions.ImageFileCount = 0;
 
 			// ACT
-			_instance.CalculateImagesSize(_volumePredictions);
+			this._instance.CalculateImagesSize(this._volumePredictions);
 
 			// ASSERT
-			Assert.That(_volumePredictions.ImageFileCount, Is.Zero);
+			Assert.That(this._volumePredictions.ImageFileCount, Is.Zero);
 		}
 	}
 }

@@ -4,25 +4,25 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Text;
+	using System.Text;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
-    using kCura.WinEDDS.LoadFileEntry;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
 
-    using Moq;
+	using Moq;
 
-    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
-    using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class NotTooLongTextToLoadFileTests
 	{
 		private NotTooLongTextToLoadFile _instance;
@@ -41,12 +41,12 @@ namespace Relativity.Export.NUnit
 				LoadFileEncoding = Encoding.Default
 			};
 
-			_fieldService = new Mock<IFieldService>();
+			this._fieldService = new Mock<IFieldService>();
 			LongTextRepository longTextRepository = new LongTextRepository(null, new NullLogger());
 			ILongTextStreamFormatterFactory formatterFactory = new DelimitedFileLongTextStreamFormatterFactory(exportSettings);
 			FromFieldToLoadFileWriter fileWriter = new FromFieldToLoadFileWriter(new NullLogger(), formatterFactory);
 
-			_instance = new NotTooLongTextToLoadFile(new LongTextHelper(exportSettings, _fieldService.Object, longTextRepository), fileWriter, new NullLogger(), exportSettings);
+			this._instance = new NotTooLongTextToLoadFile(new LongTextHelper(exportSettings, this._fieldService.Object, longTextRepository), fileWriter, new NullLogger(), exportSettings);
 		}
 
 		[Test]
@@ -61,12 +61,12 @@ namespace Relativity.Export.NUnit
 				Metadata = new object[] { expectedText }
 			};
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
+			this._fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
 			DeferredEntry lineEntry = new DeferredEntry();
 
 			// ACT
-			_instance.HandleLongText(artifact, field, lineEntry);
+			this._instance.HandleLongText(artifact, field, lineEntry);
 
 			// ASSERT
 			Assert.That(lineEntry.GetTextFromEntry(), Is.EqualTo(expectedText));

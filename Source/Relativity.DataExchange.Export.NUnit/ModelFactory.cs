@@ -4,19 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Text;
+	using System;
+	using System.Text;
 
 	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2;
-    using Relativity.DataExchange.Export.VolumeManagerV2.Download;
-    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
-    using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 
-    public class ModelFactory
+	public class ModelFactory
 	{
 		private static int _artifactId = 1;
 		private static int _order = 1;

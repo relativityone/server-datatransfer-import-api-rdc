@@ -4,24 +4,24 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
+	using System.Collections.Generic;
+	using System.Threading;
+	using System.Threading.Tasks;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.Logging;
-    using Relativity.Transfer;
+	using Relativity.Transfer;
 
-    [TestFixture]
+	[TestFixture]
 	public class LongTextDownloaderTests
 	{
 		private LongTextDownloader _instance;
@@ -32,23 +32,23 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_longTextTapiBridgePool = new Mock<ILongTextTapiBridgePool>();
-			_bridge = new Mock<IDownloadTapiBridge>();
+			this._longTextTapiBridgePool = new Mock<ILongTextTapiBridgePool>();
+			this._bridge = new Mock<IDownloadTapiBridge>();
 
-			_longTextTapiBridgePool.Setup(x => x.Request(CancellationToken.None)).Returns(_bridge.Object);
+			this._longTextTapiBridgePool.Setup(x => x.Request(CancellationToken.None)).Returns(this._bridge.Object);
 
-			_instance = new LongTextDownloader(new SafeIncrement(), _longTextTapiBridgePool.Object, new NullLogger());
+			this._instance = new LongTextDownloader(new SafeIncrement(), this._longTextTapiBridgePool.Object, new NullLogger());
 		}
 
 		[Test]
 		public async Task ItShouldRequestAndReleaseBridge()
 		{
 			// ACT
-			await _instance.DownloadAsync(new List<LongTextExportRequest>(), CancellationToken.None).ConfigureAwait(false);
+			await this._instance.DownloadAsync(new List<LongTextExportRequest>(), CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_longTextTapiBridgePool.Verify(x => x.Request(CancellationToken.None), Times.Once);
-			_longTextTapiBridgePool.Verify(x => x.Release(_bridge.Object), Times.Once);
+			this._longTextTapiBridgePool.Verify(x => x.Request(CancellationToken.None), Times.Once);
+			this._longTextTapiBridgePool.Verify(x => x.Release(this._bridge.Object), Times.Once);
 		}
 
 		[Test]
@@ -62,19 +62,19 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			await _instance.DownloadAsync(longTextExportRequests, CancellationToken.None).ConfigureAwait(false);
+			await this._instance.DownloadAsync(longTextExportRequests, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_bridge.Verify(x => x.WaitForTransferJob(), Times.Once);
-			_bridge.Verify(x => x.QueueDownload(It.Is<TransferPath>(t => t.Order == 1)));
-			_bridge.Verify(x => x.QueueDownload(It.Is<TransferPath>(t => t.Order == 2)));
+			this._bridge.Verify(x => x.WaitForTransferJob(), Times.Once);
+			this._bridge.Verify(x => x.QueueDownload(It.Is<TransferPath>(t => t.Order == 1)));
+			this._bridge.Verify(x => x.QueueDownload(It.Is<TransferPath>(t => t.Order == 2)));
 		}
 
 		[Test]
 		public async Task ItShouldSetTextFileName()
 		{
 			const string expectedFileName = "file name";
-			_bridge.Setup(x => x.QueueDownload(It.IsAny<TransferPath>())).Returns(expectedFileName);
+			this._bridge.Setup(x => x.QueueDownload(It.IsAny<TransferPath>())).Returns(expectedFileName);
 
 			ObjectExportInfo artifact = new ObjectExportInfo();
 			List<LongTextExportRequest> longTextExportRequests = new List<LongTextExportRequest>
@@ -83,7 +83,7 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			await _instance.DownloadAsync(longTextExportRequests, CancellationToken.None).ConfigureAwait(false);
+			await this._instance.DownloadAsync(longTextExportRequests, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.That(longTextExportRequests[0].FileName, Is.EqualTo(expectedFileName));

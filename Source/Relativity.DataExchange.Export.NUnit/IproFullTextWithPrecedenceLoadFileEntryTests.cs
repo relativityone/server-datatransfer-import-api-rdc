@@ -4,22 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Text;
+	using System.Text;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
-    using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Service;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class IproFullTextWithPrecedenceLoadFileEntryTests : IproFullTextLoadFileEntryTests
 	{
 		protected override IproFullTextLoadFileEntry CreateInstance(IFieldService fieldService, LongTextHelper longTextHelper, IFullTextLineWriter fullTextLineWriter)
@@ -29,7 +29,7 @@ namespace Relativity.Export.NUnit
 
 		protected override void PrepareDataSet(ObjectExportInfo artifact, string textToWrite)
 		{
-			FieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
+			this.FieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
 			artifact.Metadata = new object[] { textToWrite };
 		}
 
@@ -38,15 +38,15 @@ namespace Relativity.Export.NUnit
 			const int fieldArtifactId = 998687;
 			const int artifactId = 817225;
 
-			FieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
+			this.FieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
 
-			FieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(1);
+			this.FieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(1);
 
 			artifact.ArtifactID = artifactId;
 			artifact.Metadata = new object[] { textToWrite, fieldArtifactId };
 
 			LongText longText = LongText.CreateFromExistingFile(artifactId, fieldArtifactId, fileLocation, Encoding.Default);
-			LongTextRepository.Add(longText.InList());
+			this.LongTextRepository.Add(longText.InList());
 		}
 	}
 }

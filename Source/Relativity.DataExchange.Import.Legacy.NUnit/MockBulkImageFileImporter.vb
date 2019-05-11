@@ -13,7 +13,7 @@ Imports Relativity.DataExchange.Process
 
 Imports Relativity.Logging
 
-Namespace Relativity.Import.Client.NUnit
+Namespace Relativity.DataExchange.Import.NUnit
 
 	''' <summary>
 	''' Inheriting the BulkLoadFileImporter to override its BulkImportManager property (the part we want to throw timeout exceptions)

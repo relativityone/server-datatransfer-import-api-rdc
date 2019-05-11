@@ -4,24 +4,24 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Threading;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
-    using Relativity.DataExchange.Export.VolumeManagerV2.Download;
-    using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
-    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images;
-    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
-    using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
+	using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 
-    [TestFixture]
+	[TestFixture]
 	public class BatchExporterTests
 	{
 		private BatchExporter _instance;
@@ -33,12 +33,12 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_downloader = new Mock<IDownloader>();
-			_imagesRollupManager = new Mock<IImagesRollupManager>();
-			_imageLoadFile = new Mock<IImageLoadFile>();
-			_loadFile = new Mock<ILoadFile>();
+			this._downloader = new Mock<IDownloader>();
+			this._imagesRollupManager = new Mock<IImagesRollupManager>();
+			this._imageLoadFile = new Mock<IImageLoadFile>();
+			this._loadFile = new Mock<ILoadFile>();
 
-			_instance = new BatchExporter(_downloader.Object, _imagesRollupManager.Object, new Mock<IMessenger>().Object, _imageLoadFile.Object, _loadFile.Object);
+			this._instance = new BatchExporter(this._downloader.Object, this._imagesRollupManager.Object, new Mock<IMessenger>().Object, this._imageLoadFile.Object, this._loadFile.Object);
 		}
 
 		[Test]
@@ -47,13 +47,13 @@ namespace Relativity.Export.NUnit
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
 
 			// ACT
-			_instance.Export(artifacts, CancellationToken.None);
+			this._instance.Export(artifacts, CancellationToken.None);
 
 			// ASSERT
-			_downloader.Verify(x => x.DownloadFilesForArtifacts(CancellationToken.None), Times.Once);
-			_imagesRollupManager.Verify(x => x.RollupImagesForArtifacts(artifacts, CancellationToken.None), Times.Once);
-			_imageLoadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
-			_loadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
+			this._downloader.Verify(x => x.DownloadFilesForArtifacts(CancellationToken.None), Times.Once);
+			this._imagesRollupManager.Verify(x => x.RollupImagesForArtifacts(artifacts, CancellationToken.None), Times.Once);
+			this._imageLoadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
+			this._loadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
 		}
 	}
 }

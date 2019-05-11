@@ -4,16 +4,16 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
-    using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
-    using Relativity.Logging;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class PrefixFilePathTransformerTests
 	{
 		[Test]

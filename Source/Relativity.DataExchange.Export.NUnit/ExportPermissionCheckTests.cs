@@ -4,19 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Service;
-    using kCura.WinEDDS.Service.Export;
+	using kCura.WinEDDS.Service;
+	using kCura.WinEDDS.Service.Export;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Validation;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class ExportPermissionCheckTests
 	{
 		private ExportPermissionCheck _instance;
@@ -26,9 +26,9 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_exportManagerMock = new Mock<IExportManager>();
+			this._exportManagerMock = new Mock<IExportManager>();
 
-			_instance = new ExportPermissionCheck(_exportManagerMock.Object, new Mock<ILog>().Object);
+			this._instance = new ExportPermissionCheck(this._exportManagerMock.Object, new Mock<ILog>().Object);
 		}
 
 		[Test]
@@ -36,9 +36,9 @@ namespace Relativity.Export.NUnit
 		{
 			const int workspaceId = 368144;
 
-			_exportManagerMock.Setup(x => x.HasExportPermissions(workspaceId)).Returns(false);
+			this._exportManagerMock.Setup(x => x.HasExportPermissions(workspaceId)).Returns(false);
 
-			Assert.Throws<ExportManager.InsufficientPermissionsForExportException>(() => _instance.CheckPermissions(workspaceId));
+			Assert.Throws<ExportManager.InsufficientPermissionsForExportException>(() => this._instance.CheckPermissions(workspaceId));
 		}
 
 		[Test]
@@ -46,9 +46,9 @@ namespace Relativity.Export.NUnit
 		{
 			const int workspaceId = 143521;
 
-			_exportManagerMock.Setup(x => x.HasExportPermissions(workspaceId)).Returns(true);
+			this._exportManagerMock.Setup(x => x.HasExportPermissions(workspaceId)).Returns(true);
 
-			Assert.DoesNotThrow(() => _instance.CheckPermissions(workspaceId));
+			Assert.DoesNotThrow(() => this._instance.CheckPermissions(workspaceId));
 		}
 	}
 }

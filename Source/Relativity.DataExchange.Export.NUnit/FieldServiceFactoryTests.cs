@@ -4,22 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
+	using System.Collections.Generic;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
-    using Relativity.DataExchange.Export.VolumeManagerV2.Settings;
-    using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Settings;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class FieldServiceFactoryTests
 	{
 		private FieldServiceFactory _instance;
@@ -30,11 +30,11 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_formatter = new Mock<ILoadFileHeaderFormatter>();
-			_columnsOrdinalLookup = new Mock<IColumnsOrdinalLookupFactory>();
-			_columnsFactory = new Mock<IColumnsFactory>();
+			this._formatter = new Mock<ILoadFileHeaderFormatter>();
+			this._columnsOrdinalLookup = new Mock<IColumnsOrdinalLookupFactory>();
+			this._columnsFactory = new Mock<IColumnsFactory>();
 
-			_instance = new FieldServiceFactory(_formatter.Object, _columnsOrdinalLookup.Object, _columnsFactory.Object, new NullLogger());
+			this._instance = new FieldServiceFactory(this._formatter.Object, this._columnsOrdinalLookup.Object, this._columnsFactory.Object, new NullLogger());
 		}
 
 		[Test]
@@ -61,7 +61,7 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			_instance.Create(exportSettings, null);
+			this._instance.Create(exportSettings, null);
 
 			// ASSERT
 			return exportSettings.ExportFullText;
@@ -77,15 +77,15 @@ namespace Relativity.Export.NUnit
 			var columnNamesInOrder = new string[0];
 
             kCura.WinEDDS.ViewFieldInfo[] fields = new kCura.WinEDDS.ViewFieldInfo[1];
-			_columnsFactory.Setup(x => x.CreateColumns(exportSettings)).Returns(fields);
+			this._columnsFactory.Setup(x => x.CreateColumns(exportSettings)).Returns(fields);
 
 			// ACT
-			_instance.Create(exportSettings, columnNamesInOrder);
+			this._instance.Create(exportSettings, columnNamesInOrder);
 
 			// ASSERT
-			_columnsFactory.Verify(x => x.CreateColumns(exportSettings));
-			_formatter.Verify(x => x.GetHeader(It.IsAny<List<kCura.WinEDDS.ViewFieldInfo>>()));
-			_columnsOrdinalLookup.Verify(x => x.CreateOrdinalLookup(exportSettings, columnNamesInOrder));
+			this._columnsFactory.Verify(x => x.CreateColumns(exportSettings));
+			this._formatter.Verify(x => x.GetHeader(It.IsAny<List<kCura.WinEDDS.ViewFieldInfo>>()));
+			this._columnsOrdinalLookup.Verify(x => x.CreateOrdinalLookup(exportSettings, columnNamesInOrder));
 		}
 	}
 }

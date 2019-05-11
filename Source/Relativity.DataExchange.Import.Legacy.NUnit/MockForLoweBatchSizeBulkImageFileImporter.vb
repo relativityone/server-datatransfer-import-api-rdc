@@ -15,7 +15,7 @@ Imports Relativity.DataExchange.Process
 
 Imports Relativity.Logging
 
-Namespace Relativity.Import.Client.NUnit
+Namespace Relativity.DataExchange.Import.NUnit
 
 	Public Class MockForLoweBatchSizeBulkImageFileImporter
 		Inherits kCura.WinEDDS.BulkImageFileImporter

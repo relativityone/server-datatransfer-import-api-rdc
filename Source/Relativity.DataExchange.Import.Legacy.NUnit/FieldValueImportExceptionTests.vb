@@ -6,9 +6,8 @@
 
 Imports NUnit.Framework
 Imports Relativity.DataExchange.Data
-Imports Relativity.DataExchange.Io
 
-Namespace Relativity.Import.Client.NUnit
+Namespace Relativity.DataExchange.Import.NUnit
 
 	<TestFixture>
 	Public Class FieldValueImportExceptionFixture

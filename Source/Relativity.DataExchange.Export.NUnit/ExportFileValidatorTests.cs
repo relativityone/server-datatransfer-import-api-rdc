@@ -4,13 +4,13 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
-    using kCura.WinEDDS;
+	using kCura.WinEDDS;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
@@ -18,7 +18,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.DataExchange.Process;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class ExportFileValidatorTests
 	{
 		private ExportFileValidator _instance;
@@ -32,13 +32,13 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_exportSettings = new ExportFile(1);
+			this._exportSettings = new ExportFile(1);
 
-			_status = new Mock<IStatus>();
-			_fileHelper = new Mock<IFile>();
-			_exportRequestRepository = new Mock<IExportRequestRepository>();
+			this._status = new Mock<IStatus>();
+			this._fileHelper = new Mock<IFile>();
+			this._exportRequestRepository = new Mock<IExportRequestRepository>();
 
-			_instance = new ExportFileValidator(_exportSettings, _exportRequestRepository.Object, _status.Object, _fileHelper.Object, new NullLogger());
+			this._instance = new ExportFileValidator(this._exportSettings, this._exportRequestRepository.Object, this._status.Object, this._fileHelper.Object, new NullLogger());
 		}
 
 		[Test]
@@ -50,11 +50,11 @@ namespace Relativity.Export.NUnit
 		{
 			const string filePath = "file_path";
 
-			_fileHelper.Setup(x => x.Exists(filePath)).Returns(fileExists);
-			_exportSettings.Overwrite = overwrite;
+			this._fileHelper.Setup(x => x.Exists(filePath)).Returns(fileExists);
+			this._exportSettings.Overwrite = overwrite;
 
 			// ACT & ASSERT
-			return _instance.CanExport(filePath, string.Empty);
+			return this._instance.CanExport(filePath, string.Empty);
 		}
 
 		[Test]
@@ -62,14 +62,14 @@ namespace Relativity.Export.NUnit
 		{
 			const string filePath = "file_path";
 
-			_fileHelper.Setup(x => x.Exists(filePath)).Returns(true);
-			_exportSettings.Overwrite = false;
+			this._fileHelper.Setup(x => x.Exists(filePath)).Returns(true);
+			this._exportSettings.Overwrite = false;
 
 			// ACT
-			_instance.CanExport(filePath, string.Empty);
+			this._instance.CanExport(filePath, string.Empty);
 
 			// ASSERT
-			_status.Verify(x => x.WriteWarning(It.IsAny<string>()));
+			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()));
 		}
 
 		[Test]
@@ -77,15 +77,15 @@ namespace Relativity.Export.NUnit
 		{
 			const string filePath = "file_path";
 
-			_fileHelper.Setup(x => x.Exists(filePath)).Returns(true);
-			_exportSettings.Overwrite = true;
+			this._fileHelper.Setup(x => x.Exists(filePath)).Returns(true);
+			this._exportSettings.Overwrite = true;
 
 			// ACT
-			_instance.CanExport(filePath, string.Empty);
+			this._instance.CanExport(filePath, string.Empty);
 
 			// ASSERT
-			_status.Verify(x => x.WriteStatusLine(EventType2.Status, It.IsAny<string>(), false));
-			_fileHelper.Verify(x => x.Delete(filePath));
+			this._status.Verify(x => x.WriteStatusLine(EventType2.Status, It.IsAny<string>(), false));
+			this._fileHelper.Verify(x => x.Delete(filePath));
 		}
 
 		[Test]
@@ -93,15 +93,15 @@ namespace Relativity.Export.NUnit
 		{
 			const string filePath = "file_path";
 
-			_exportRequestRepository.Setup(repository => repository.AnyRequestForLocation(filePath)).Returns(true);
-			_exportSettings.Overwrite = false;
+			this._exportRequestRepository.Setup(repository => repository.AnyRequestForLocation(filePath)).Returns(true);
+			this._exportSettings.Overwrite = false;
 
 			// ACT
-			bool canExport = _instance.CanExport(filePath, string.Empty);
+			bool canExport = this._instance.CanExport(filePath, string.Empty);
 
 			// ASSERT
 			Assert.That(canExport, Is.False);
-			_status.Verify(x => x.WriteWarning(It.IsAny<string>()));
+			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()));
 		}
 
 		[Test]
@@ -109,16 +109,16 @@ namespace Relativity.Export.NUnit
 		{
 			const string filePath = "file_path";
 
-			_exportRequestRepository.Setup(repository => repository.AnyRequestForLocation(filePath)).Returns(true);
-			_exportSettings.Overwrite = true;
+			this._exportRequestRepository.Setup(repository => repository.AnyRequestForLocation(filePath)).Returns(true);
+			this._exportSettings.Overwrite = true;
 
 			// ACT
-			bool canExport = _instance.CanExport(filePath, string.Empty);
+			bool canExport = this._instance.CanExport(filePath, string.Empty);
 
 			// ASSERT
 			Assert.That(canExport, Is.False);
-			_status.Verify(x => x.WriteStatusLine(EventType2.Status, It.IsAny<string>(), false));
-			_fileHelper.Verify(x => x.Delete(filePath), Times.Never);
+			this._status.Verify(x => x.WriteStatusLine(EventType2.Status, It.IsAny<string>(), false));
+			this._fileHelper.Verify(x => x.Delete(filePath), Times.Never);
 		}
 	}
 }

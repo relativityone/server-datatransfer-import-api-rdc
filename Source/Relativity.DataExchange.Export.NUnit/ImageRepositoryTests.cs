@@ -4,20 +4,20 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
+	using System.Collections.Generic;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Relativity.DataExchange;
+	using Relativity.DataExchange;
 	using Relativity.DataExchange.Export.VolumeManagerV2;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 
-    [TestFixture]
+	[TestFixture]
 	public class ImageRepositoryTests
 	{
 		private ImageRepository _instance;
@@ -27,46 +27,46 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_images = CreateDataSet();
+			this._images = this.CreateDataSet();
 
-			_instance = new ImageRepository();
-			_instance.Add(_images);
+			this._instance = new ImageRepository();
+			this._instance.Add(this._images);
 		}
 
 		[Test]
 		public void ItShouldSearchImageByArtifactIdAndBatesNumber()
 		{
 			// ACT
-			Image image1 = _instance.GetImage(1, "bates_1");
-			Image image2 = _instance.GetImage(1, "bates_2");
-			Image image3 = _instance.GetImage(2, "bates_3");
+			Image image1 = this._instance.GetImage(1, "bates_1");
+			Image image2 = this._instance.GetImage(1, "bates_2");
+			Image image3 = this._instance.GetImage(2, "bates_3");
 
 			// ASSERT
-			Assert.That(image1, Is.EqualTo(_images[0]));
-			Assert.That(image2, Is.EqualTo(_images[1]));
-			Assert.That(image3, Is.EqualTo(_images[2]));
+			Assert.That(image1, Is.EqualTo(this._images[0]));
+			Assert.That(image2, Is.EqualTo(this._images[1]));
+			Assert.That(image3, Is.EqualTo(this._images[2]));
 		}
 
 		[Test]
 		public void ItShouldGetImagesForArtifact()
 		{
 			// ACT
-			IList<Image> images1 = _instance.GetArtifactImages(1);
-			IList<Image> images2 = _instance.GetArtifactImages(2);
+			IList<Image> images1 = this._instance.GetArtifactImages(1);
+			IList<Image> images2 = this._instance.GetArtifactImages(2);
 
 			// ASSERT
-			CollectionAssert.AreEquivalent(_images.GetRange(0, 2), images1);
-			CollectionAssert.AreEquivalent(_images[2].InList(), images2);
+			CollectionAssert.AreEquivalent(this._images.GetRange(0, 2), images1);
+			CollectionAssert.AreEquivalent(this._images[2].InList(), images2);
 		}
 
 		[Test]
 		public void ItShouldGetAllImages()
 		{
 			// ACT
-			IList<Image> images = _instance.GetImages();
+			IList<Image> images = this._instance.GetImages();
 
 			// ASSERT
-			CollectionAssert.AreEquivalent(_images, images);
+			CollectionAssert.AreEquivalent(this._images, images);
 		}
 
 		[Test]
@@ -74,12 +74,12 @@ namespace Relativity.Export.NUnit
 		{
 			var expectedExportRequests = new List<ExportRequest>
 			{
-				_images[0].ExportRequest,
-				_images[2].ExportRequest
+				this._images[0].ExportRequest,
+				this._images[2].ExportRequest
 			};
 
 			// ACT
-			IEnumerable<ExportRequest> exportRequests = _instance.GetExportRequests();
+			IEnumerable<ExportRequest> exportRequests = this._instance.GetExportRequests();
 
 			// ASSERT
 			CollectionAssert.AreEquivalent(expectedExportRequests, exportRequests);
@@ -89,22 +89,22 @@ namespace Relativity.Export.NUnit
 		public void ItShouldGetImageByUniqueId()
 		{
 			// ACT
-			Image image1 = _instance.GetByLineNumber(1);
-			Image image2 = _instance.GetByLineNumber(2);
-			Image image3 = _instance.GetByLineNumber(3);
+			Image image1 = this._instance.GetByLineNumber(1);
+			Image image2 = this._instance.GetByLineNumber(2);
+			Image image3 = this._instance.GetByLineNumber(3);
 
 			// ASSERT
-			Assert.That(image1, Is.EqualTo(_images[0]));
+			Assert.That(image1, Is.EqualTo(this._images[0]));
 			Assert.That(image2, Is.Null);
-			Assert.That(image3, Is.EqualTo(_images[2]));
+			Assert.That(image3, Is.EqualTo(this._images[2]));
 		}
 
 		[Test]
 		public void ItShouldClearRepository()
 		{
 			// ACT
-			_instance.Clear();
-			IList<Image> images = _instance.GetImages();
+			this._instance.Clear();
+			IList<Image> images = this._instance.GetImages();
 
 			// ASSERT
 			CollectionAssert.IsEmpty(images);

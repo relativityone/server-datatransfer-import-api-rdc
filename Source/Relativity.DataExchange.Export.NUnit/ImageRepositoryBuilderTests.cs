@@ -4,24 +4,24 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
+	using System.Collections;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class ImageRepositoryBuilderTests
 	{
 		private ImageRepositoryBuilder _instance;
@@ -33,11 +33,11 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_imageRepository = new ImageRepository();
+			this._imageRepository = new ImageRepository();
 
-			_imageExportRequestBuilder = new Mock<IExportRequestBuilder>();
+			this._imageExportRequestBuilder = new Mock<IExportRequestBuilder>();
 
-			_instance = new ImageRepositoryBuilder(_imageRepository, _imageExportRequestBuilder.Object, new NullLogger());
+			this._instance = new ImageRepositoryBuilder(this._imageRepository, this._imageExportRequestBuilder.Object, new NullLogger());
 		}
 
 		[Test]
@@ -59,13 +59,13 @@ namespace Relativity.Export.NUnit
 				}
 			};
 
-			_imageExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<ExportRequest>());
+			this._imageExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<ExportRequest>());
 
 			// ACT
-			_instance.AddToRepository(artifact, CancellationToken.None);
+			this._instance.AddToRepository(artifact, CancellationToken.None);
 
 			// ASSERT
-			Assert.That(_imageRepository.GetImage(artifactId1, batesNumber).HasBeenDownloaded, Is.True);
+			Assert.That(this._imageRepository.GetImage(artifactId1, batesNumber).HasBeenDownloaded, Is.True);
 		}
 
 		[Test]
@@ -89,18 +89,18 @@ namespace Relativity.Export.NUnit
 				}
 			};
 
-			_imageExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<ExportRequest>
+			this._imageExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<ExportRequest>
 			{
 				new PhysicalFileExportRequest(artifact, tempLocation)
 			});
 
 			// ACT
-			_instance.AddToRepository(artifact, CancellationToken.None);
+			this._instance.AddToRepository(artifact, CancellationToken.None);
 
 			// ASSERT
-			Assert.That(_imageRepository.GetImage(artifactId1, batesNumber).HasBeenDownloaded, Is.False);
-			CollectionAssert.IsNotEmpty(_imageRepository.GetExportRequests());
-			Assert.That(_imageRepository.GetExportRequests().ToList()[0].ArtifactId, Is.EqualTo(artifactId1));
+			Assert.That(this._imageRepository.GetImage(artifactId1, batesNumber).HasBeenDownloaded, Is.False);
+			CollectionAssert.IsNotEmpty(this._imageRepository.GetExportRequests());
+			Assert.That(this._imageRepository.GetExportRequests().ToList()[0].ArtifactId, Is.EqualTo(artifactId1));
 		}
 
 		[Test]
@@ -155,21 +155,21 @@ namespace Relativity.Export.NUnit
 				new PhysicalFileExportRequest(artifact1, "invalid_path"),
 				new PhysicalFileExportRequest(artifact1, tempLocation2)
 			};
-			_imageExportRequestBuilder.Setup(x => x.Create(artifact1, CancellationToken.None)).Returns(exportRequests1);
+			this._imageExportRequestBuilder.Setup(x => x.Create(artifact1, CancellationToken.None)).Returns(exportRequests1);
 			IList<ExportRequest> exportRequests2 = new List<ExportRequest>
 			{
 				new PhysicalFileExportRequest(artifact2, tempLocation3)
 			};
-			_imageExportRequestBuilder.Setup(x => x.Create(artifact2, CancellationToken.None)).Returns(exportRequests2);
+			this._imageExportRequestBuilder.Setup(x => x.Create(artifact2, CancellationToken.None)).Returns(exportRequests2);
 
 			// ACT
-			_instance.AddToRepository(artifact1, CancellationToken.None);
-			_instance.AddToRepository(artifact2, CancellationToken.None);
+			this._instance.AddToRepository(artifact1, CancellationToken.None);
+			this._instance.AddToRepository(artifact2, CancellationToken.None);
 
 			// ASSERT
-			Image image1 = _imageRepository.GetImage(artifactId1, bates1);
-			Image image2 = _imageRepository.GetImage(artifactId1, bates2);
-			Image image3 = _imageRepository.GetImage(artifactId2, bates3);
+			Image image1 = this._imageRepository.GetImage(artifactId1, bates1);
+			Image image2 = this._imageRepository.GetImage(artifactId1, bates2);
+			Image image3 = this._imageRepository.GetImage(artifactId2, bates3);
 
 			Assert.That(image1.ExportRequest, Is.Null);
 

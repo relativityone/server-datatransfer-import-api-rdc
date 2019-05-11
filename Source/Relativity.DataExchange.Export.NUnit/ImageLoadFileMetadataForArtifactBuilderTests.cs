@@ -4,12 +4,12 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
 	using Moq;
 
@@ -18,7 +18,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 
-    [TestFixture]
+	[TestFixture]
 	public abstract class ImageLoadFileMetadataForArtifactBuilderTests
 	{
 		protected ImageLoadFileMetadataForArtifactBuilder Instance { get; private set; }
@@ -36,16 +36,16 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			ExportSettings = new ExportFile(1)
+			this.ExportSettings = new ExportFile(1)
 			{
 				VolumeInfo = new VolumeInfo()
 			};
-			FilePathTransformer = new Mock<IFilePathTransformer>();
-			ImageLoadFileEntry = new Mock<IImageLoadFileEntry>();
-			FullTextLoadFileEntry = new Mock<IFullTextLoadFileEntry>();
-			Writer = new Mock<IRetryableStreamWriter>();
+			this.FilePathTransformer = new Mock<IFilePathTransformer>();
+			this.ImageLoadFileEntry = new Mock<IImageLoadFileEntry>();
+			this.FullTextLoadFileEntry = new Mock<IFullTextLoadFileEntry>();
+			this.Writer = new Mock<IRetryableStreamWriter>();
 
-			Instance = CreateInstance(ExportSettings, FilePathTransformer.Object, ImageLoadFileEntry.Object, FullTextLoadFileEntry.Object);
+			this.Instance = this.CreateInstance(this.ExportSettings, this.FilePathTransformer.Object, this.ImageLoadFileEntry.Object, this.FullTextLoadFileEntry.Object);
 		}
 
 		protected abstract ImageLoadFileMetadataForArtifactBuilder CreateInstance(

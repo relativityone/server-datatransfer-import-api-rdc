@@ -4,14 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS.Exporters;
 
@@ -29,13 +29,13 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_validatorMocks = new List<Mock<IBatchValidator>>
+			this._validatorMocks = new List<Mock<IBatchValidator>>
 			{
 				new Mock<IBatchValidator>(),
 				new Mock<IBatchValidator>(),
 				new Mock<IBatchValidator>()
 			};
-			_instance = new BatchValidator(_validatorMocks.Select(x => x.Object).ToList(), new NullLogger());
+			this._instance = new BatchValidator(this._validatorMocks.Select(x => x.Object).ToList(), new NullLogger());
 		}
 
 		[Test]
@@ -45,10 +45,10 @@ namespace Relativity.Export.NUnit
 			VolumePredictions[] predictions = new VolumePredictions[1];
 
 			// ACT
-			_instance.ValidateExportedBatch(artifacts, predictions, CancellationToken.None);
+			this._instance.ValidateExportedBatch(artifacts, predictions, CancellationToken.None);
 
 			// ASSERT
-			_validatorMocks.ForEach(x => x.Verify(v => v.ValidateExportedBatch(artifacts, predictions, CancellationToken.None)));
+			this._validatorMocks.ForEach(x => x.Verify(v => v.ValidateExportedBatch(artifacts, predictions, CancellationToken.None)));
 		}
 
 		[Test]
@@ -57,13 +57,13 @@ namespace Relativity.Export.NUnit
 			ObjectExportInfo[] artifacts = null;
 			VolumePredictions[] predictions = null;
 
-			_validatorMocks[1].Setup(x => x.ValidateExportedBatch(artifacts, predictions, CancellationToken.None)).Throws<Exception>();
+			this._validatorMocks[1].Setup(x => x.ValidateExportedBatch(artifacts, predictions, CancellationToken.None)).Throws<Exception>();
 
 			// ACT & ASSERT
-			Assert.Throws<Exception>(() => _instance.ValidateExportedBatch(artifacts, predictions, CancellationToken.None));
+			Assert.Throws<Exception>(() => this._instance.ValidateExportedBatch(artifacts, predictions, CancellationToken.None));
 
 			// ASSERT
-			_validatorMocks[2].Verify(x => x.ValidateExportedBatch(artifacts, predictions, CancellationToken.None), Times.Never);
+			this._validatorMocks[2].Verify(x => x.ValidateExportedBatch(artifacts, predictions, CancellationToken.None), Times.Never);
 		}
 	}
 }

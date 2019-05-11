@@ -4,17 +4,17 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
+	using System.Collections.Generic;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
-    using kCura.WinEDDS.Exporters.Validator;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters.Validator;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Validation;
 	using Relativity.Logging;
@@ -54,24 +54,24 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_userNotificationMock = new Mock<IUserNotification>();
-			_userNotificationMock.Setup(x => x.AlertWarningSkippable(It.IsAny<string>())).Returns(false);
+			this._userNotificationMock = new Mock<IUserNotification>();
+			this._userNotificationMock.Setup(x => x.AlertWarningSkippable(It.IsAny<string>())).Returns(false);
 
-			_instance = new VolumeAndSubdirectoryValidator(new PaddingWarningValidator(), _userNotificationMock.Object, new Mock<ILog>().Object);
+			this._instance = new VolumeAndSubdirectoryValidator(new PaddingWarningValidator(), this._userNotificationMock.Object, new Mock<ILog>().Object);
 		}
 
 		[Test]
 		[TestCaseSource(nameof(_volumePaddingValidationTestCaseData))]
 		public bool ItShouldValidateVolumePadding(int volumeStartNumber, int totalFiles, int configuredPadding)
 		{
-			return ValidateVolumeAndSubdirectoryPadding(volumeStartNumber, 0, totalFiles, configuredPadding, _MAX_DIGIT_PADDING);
+			return this.ValidateVolumeAndSubdirectoryPadding(volumeStartNumber, 0, totalFiles, configuredPadding, _MAX_DIGIT_PADDING);
 		}
 
 		[Test]
 		[TestCaseSource(nameof(_volumePaddingValidationTestCaseData))]
 		public bool ItShouldValidateSubdirectoryPadding(int subdirectoryStartNumber, int totalFiles, int configuredPadding)
 		{
-			return ValidateVolumeAndSubdirectoryPadding(0, subdirectoryStartNumber, totalFiles, _MAX_DIGIT_PADDING, configuredPadding);
+			return this.ValidateVolumeAndSubdirectoryPadding(0, subdirectoryStartNumber, totalFiles, _MAX_DIGIT_PADDING, configuredPadding);
 		}
 
 		[Test]
@@ -79,7 +79,7 @@ namespace Relativity.Export.NUnit
 		{
 			ExportFile exportSettings = CreateExportSettings(false);
 
-			bool result = _instance.Validate(exportSettings, _DEFAULT_NUMBER_OF_FILES);
+			bool result = this._instance.Validate(exportSettings, _DEFAULT_NUMBER_OF_FILES);
 
 			Assert.That(result, Is.True);
 		}
@@ -87,11 +87,11 @@ namespace Relativity.Export.NUnit
 		[Test]
 		public void ItShouldNotValidatePaddingWhenWarningIsSkippable()
 		{
-			_userNotificationMock.Setup(x => x.AlertWarningSkippable(It.IsAny<string>())).Returns(true);
+			this._userNotificationMock.Setup(x => x.AlertWarningSkippable(It.IsAny<string>())).Returns(true);
 
 			ExportFile exportSettings = CreateExportSettings(true);
 
-			bool result = _instance.Validate(exportSettings, _DEFAULT_NUMBER_OF_FILES);
+			bool result = this._instance.Validate(exportSettings, _DEFAULT_NUMBER_OF_FILES);
 
 			Assert.That(result, Is.True);
 		}
@@ -118,7 +118,7 @@ namespace Relativity.Export.NUnit
 		{
 			ExportFile exportSettings = CreateExportSettings(true, volumeStartNumber, subdirectoryStartNumber, configuredVolumeDigitPadding, configuredSubdirectoryDigitPadding);
 
-			return _instance.Validate(exportSettings, totalFiles);
+			return this._instance.Validate(exportSettings, totalFiles);
 		}
 	}
 }

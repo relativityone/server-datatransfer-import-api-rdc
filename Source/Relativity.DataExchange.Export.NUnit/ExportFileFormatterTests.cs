@@ -4,28 +4,28 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Linq;
+	using System;
+	using System.Linq;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using Relativity.DataExchange.Export;
+	using Relativity.DataExchange.Export;
 
-    public class ExportFileFormatterTests : ExportFileFormatterSetUp<ExportFileFormatter>
+	public class ExportFileFormatterTests : ExportFileFormatterSetUp<ExportFileFormatter>
 	{
 		[Test]
 		public void ItShouldReturnHeaderStringWithoutFilePathCol()
 		{
 			// Arrange
-			ExpFile.ExportNative = false;
-			SubjectUnderTest = new ExportFileFormatter(ExpFile, FieldNameProviderMock.Object);
+			this.ExpFile.ExportNative = false;
+			this.SubjectUnderTest = new ExportFileFormatter(this.ExpFile, this.FieldNameProviderMock.Object);
 
 			string expectedHeader = $"{QuoteDelimiter}{FileName1}{QuoteDelimiter}{RecordDelimiter}{QuoteDelimiter}{FieldName2}{QuoteDelimiter}{Environment.NewLine}";
 
 			// Act
-			string header = SubjectUnderTest.GetHeader(Fields.ToList());
+			string header = this.SubjectUnderTest.GetHeader(this.Fields.ToList());
 
 			// Assert
 			Assert.That(header, Is.EqualTo(expectedHeader));
@@ -35,15 +35,15 @@ namespace Relativity.Export.NUnit
 		public void ItShouldReturnHeaderStringWithFilePathCol()
 		{
 			// Arrange
-			ExpFile.ExportNative = true;
-			SubjectUnderTest = new ExportFileFormatter(ExpFile, FieldNameProviderMock.Object);
+			this.ExpFile.ExportNative = true;
+			this.SubjectUnderTest = new ExportFileFormatter(this.ExpFile, this.FieldNameProviderMock.Object);
 
 			string filePathCol = "FILE_PATH";
 			string expectedHeader = $"{QuoteDelimiter}{FileName1}{QuoteDelimiter}{RecordDelimiter}{QuoteDelimiter}{FieldName2}{QuoteDelimiter}" +
 			                        $"{RecordDelimiter}{QuoteDelimiter}{filePathCol}{QuoteDelimiter}{Environment.NewLine}";
 
 			// Act
-			string header = SubjectUnderTest.GetHeader(Fields.ToList());
+			string header = this.SubjectUnderTest.GetHeader(this.Fields.ToList());
 
 			// Assert
 			Assert.That(header, Is.EqualTo(expectedHeader));
@@ -53,11 +53,11 @@ namespace Relativity.Export.NUnit
 		public void ItShouldReturnEmptyHeader()
 		{
 			// Arrange
-			ExpFile.ExportNative = true;
-			SubjectUnderTest = new ExportFileFormatter(ExpFile, FieldNameProviderMock.Object);
+			this.ExpFile.ExportNative = true;
+			this.SubjectUnderTest = new ExportFileFormatter(this.ExpFile, this.FieldNameProviderMock.Object);
 
 			// Act
-			string header = SubjectUnderTest.GetHeader(null);
+			string header = this.SubjectUnderTest.GetHeader(null);
 
 			// Assert
 			Assert.That(header, Is.Empty);

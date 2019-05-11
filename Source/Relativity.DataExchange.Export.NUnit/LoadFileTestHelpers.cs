@@ -4,14 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.IO;
-    using System.Text;
+	using System.IO;
+	using System.Text;
 
-    using kCura.WinEDDS.LoadFileEntry;
+	using kCura.WinEDDS.LoadFileEntry;
 
-    public class LoadFileTestHelpers
+	public class LoadFileTestHelpers
 	{
 		public static string GetStringFromEntry(DeferredEntry entry)
 		{

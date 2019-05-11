@@ -4,18 +4,18 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using FileNaming.CustomFileNaming;
+	using FileNaming.CustomFileNaming;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.FileNaming.CustomFileNaming;
+	using kCura.WinEDDS.FileNaming.CustomFileNaming;
 
-    using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework;
 
-    public class NativeFileNameViewFieldsHelperTests
+	public class NativeFileNameViewFieldsHelperTests
 	{
 		private readonly INativeFileNameViewFieldsHelper _helper = new NativeFileNameViewFieldsHelper();
 
@@ -33,7 +33,7 @@ namespace Relativity.Export.NUnit
 				CustomFileNaming = model
 			};
 
-			_helper.PopulateNativeFileNameViewFields(exportFile);
+			this._helper.PopulateNativeFileNameViewFields(exportFile);
 			Assert.AreEqual("Artifact ID", exportFile.SelectedNativesNameViewFields[0].DisplayName);
 		}
 
@@ -56,7 +56,7 @@ namespace Relativity.Export.NUnit
 				CustomFileNaming = model
 			};
 
-			_helper.PopulateNativeFileNameViewFields(exportFile);
+			this._helper.PopulateNativeFileNameViewFields(exportFile);
 			Assert.AreEqual(numOfFields, exportFile.SelectedNativesNameViewFields.Count);
 			Assert.AreEqual("Extracted Text", exportFile.SelectedNativesNameViewFields[0].DisplayName);
 			Assert.AreEqual("Artifact ID", exportFile.SelectedNativesNameViewFields[1].DisplayName);
@@ -67,7 +67,7 @@ namespace Relativity.Export.NUnit
 		{
 			var exportFile = new ExtendedExportFile(0);
 
-			_helper.PopulateNativeFileNameViewFields(exportFile);
+			this._helper.PopulateNativeFileNameViewFields(exportFile);
 			Assert.AreEqual(0, exportFile.SelectedNativesNameViewFields.Count);
 		}
 
@@ -86,7 +86,7 @@ namespace Relativity.Export.NUnit
 				CustomFileNaming = model
 			};
 
-			_helper.PopulateNativeFileNameViewFields(exportFile);
+			this._helper.PopulateNativeFileNameViewFields(exportFile);
 			Assert.AreEqual(0, exportFile.SelectedNativesNameViewFields.Count);
 		}
 	}

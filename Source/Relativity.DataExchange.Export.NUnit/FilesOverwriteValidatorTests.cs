@@ -4,21 +4,21 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Validation;
 	using Relativity.DataExchange.Io;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class FilesOverwriteValidatorTests
 	{
 		private FilesOverwriteValidator _instance;
@@ -31,7 +31,7 @@ namespace Relativity.Export.NUnit
 		public void SetUp()
 		{
 			Mock<IUserNotification> userNotificationMock = new Mock<IUserNotification>();
-			_fileHelperMock = new Mock<IFile>();
+			this._fileHelperMock = new Mock<IFile>();
 
 			var exportSettings = new ExportFile(1)
 			{
@@ -41,20 +41,20 @@ namespace Relativity.Export.NUnit
 				LogFileFormat = LoadFileType.FileFormat.Opticon
 			};
 
-			_loadFileDestinationPath = new LoadFileDestinationPath(exportSettings);
-			_imageLoadFileDestinationPath = new ImageLoadFileDestinationPath(exportSettings);
+			this._loadFileDestinationPath = new LoadFileDestinationPath(exportSettings);
+			this._imageLoadFileDestinationPath = new ImageLoadFileDestinationPath(exportSettings);
 
-			_instance = new FilesOverwriteValidator(userNotificationMock.Object, _fileHelperMock.Object, new Mock<ILog>().Object);
+			this._instance = new FilesOverwriteValidator(userNotificationMock.Object, this._fileHelperMock.Object, new Mock<ILog>().Object);
 		}
 
 		[Test]
 		[TestCaseSource(nameof(TestCases))]
 		public void ItShouldPassWhenOverwritingFiles(FilesOverwriteTestData testData)
 		{
-			_fileHelperMock.Setup(x => x.Exists(_loadFileDestinationPath.Path)).Returns(testData.LoadFileExists);
-			_fileHelperMock.Setup(x => x.Exists(_imageLoadFileDestinationPath.Path)).Returns(testData.ImageLoadFileExists);
+			this._fileHelperMock.Setup(x => x.Exists(this._loadFileDestinationPath.Path)).Returns(testData.LoadFileExists);
+			this._fileHelperMock.Setup(x => x.Exists(this._imageLoadFileDestinationPath.Path)).Returns(testData.ImageLoadFileExists);
 
-			bool actualResult = _instance.ValidateLoadFilesOverwriting(testData.Overwrite, testData.ExportImages, _loadFileDestinationPath, _imageLoadFileDestinationPath);
+			bool actualResult = this._instance.ValidateLoadFilesOverwriting(testData.Overwrite, testData.ExportImages, this._loadFileDestinationPath, this._imageLoadFileDestinationPath);
 
 			Assert.That(actualResult, Is.EqualTo(testData.ExpectedResult));
 		}

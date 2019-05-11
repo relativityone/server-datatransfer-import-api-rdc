@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit
+namespace Relativity.DataExchange.Import.NUnit
 {
 	using System;
 	using System.Threading;

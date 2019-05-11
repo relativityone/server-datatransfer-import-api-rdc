@@ -4,20 +4,20 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
+	using System;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.DataExchange.Transfer;
-    using Relativity.Transfer;
+	using Relativity.Transfer;
 
-    [TestFixture]
+	[TestFixture]
 	public abstract class ProgressHandlerTests
 	{
 		private ProgressHandler _instance;
@@ -28,10 +28,10 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_downloadProgressManager = new Mock<IDownloadProgressManager>();
-			_tapiBridge = new Mock<ITapiBridge>();
+			this._downloadProgressManager = new Mock<IDownloadProgressManager>();
+			this._tapiBridge = new Mock<ITapiBridge>();
 
-			_instance = CreateInstance(_downloadProgressManager.Object);
+			this._instance = this.CreateInstance(this._downloadProgressManager.Object);
 		}
 
 		[Test]
@@ -40,11 +40,11 @@ namespace Relativity.Export.NUnit
 			const string id = "812216";
 
 			// ACT
-			_instance.Attach(_tapiBridge.Object);
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
+			this._instance.Attach(this._tapiBridge.Object);
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT
-			VerifyFileMarkedAsDownloaded(_downloadProgressManager, id, 1);
+			this.VerifyFileMarkedAsDownloaded(this._downloadProgressManager, id, 1);
 		}
 
 		[Test]
@@ -53,11 +53,11 @@ namespace Relativity.Export.NUnit
 			const string id = "812216";
 
 			// ACT
-			_instance.Attach(_tapiBridge.Object);
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, false, TransferPathStatus.Failed, 1, 1, DateTime.Now, DateTime.Now));
+			this._instance.Attach(this._tapiBridge.Object);
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, false, TransferPathStatus.Failed, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT
-			VerifyFileNotMarkedAsDownloaded(_downloadProgressManager, id, 1);
+			this.VerifyFileNotMarkedAsDownloaded(this._downloadProgressManager, id, 1);
 		}
 
 		[Test]
@@ -67,15 +67,15 @@ namespace Relativity.Export.NUnit
 			const string id2 = "267641";
 
 			// ACT
-			_instance.Attach(_tapiBridge.Object);
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id1, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
+			this._instance.Attach(this._tapiBridge.Object);
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id1, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
 
-			_instance.Detach();
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id2, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
+			this._instance.Detach();
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id2, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT
-			VerifyFileMarkedAsDownloaded(_downloadProgressManager, id1, 1);
-			VerifyFileNotMarkedAsDownloaded(_downloadProgressManager, id2, 2);
+			this.VerifyFileMarkedAsDownloaded(this._downloadProgressManager, id1, 1);
+			this.VerifyFileNotMarkedAsDownloaded(this._downloadProgressManager, id2, 2);
 		}
 
 		protected abstract ProgressHandler CreateInstance(IDownloadProgressManager downloadProgressManager);

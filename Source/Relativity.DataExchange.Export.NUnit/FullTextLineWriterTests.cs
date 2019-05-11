@@ -4,19 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
-    using System.Threading;
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Text;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
 
-    [TestFixture]
+	[TestFixture]
 	public class FullTextLineWriterTests
 	{
 		private const string _BATES_NUMBER = "batesNumber";
@@ -25,7 +25,7 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_instance = new FullTextLineWriter();
+			this._instance = new FullTextLineWriter();
 		}
 
 		[Test]
@@ -36,7 +36,7 @@ namespace Relativity.Export.NUnit
 			TextReader textReader = new StringReader(textToWrite);
 
 			// ACT
-			_instance.WriteLine(_BATES_NUMBER, long.MinValue, writer, textReader, CancellationToken.None);
+			this._instance.WriteLine(_BATES_NUMBER, long.MinValue, writer, textReader, CancellationToken.None);
 
 			// ASSERT
 			Assert.That(writer.Text, Is.EqualTo(expectedResult));
@@ -81,7 +81,7 @@ namespace Relativity.Export.NUnit
 			// ACT
 			while (textReader.Peek() != -1)
 			{
-				_instance.WriteLine(_BATES_NUMBER, pageOffset, writer, textReader, CancellationToken.None);
+				this._instance.WriteLine(_BATES_NUMBER, pageOffset, writer, textReader, CancellationToken.None);
 			}
 
 			// ASSERT

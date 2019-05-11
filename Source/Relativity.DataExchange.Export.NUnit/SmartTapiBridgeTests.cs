@@ -4,24 +4,24 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
+	using System;
+	using System.Threading;
+	using System.Threading.Tasks;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Transfer;
-    using Relativity.Logging;
-    using Relativity.Transfer;
+	using Relativity.Logging;
+	using Relativity.Transfer;
 
-    [TestFixture]
+	[TestFixture]
 	public class SmartTapiBridgeTests
 	{
 		private const long _FILE_BYTES = 512;
@@ -35,71 +35,71 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_config = new Mock<IExportConfig>();
-			_innerTapiBridge = new Mock<ITapiBridgeWrapper>();
-			_wrapperFactory = new Mock<ITapiBridgeWrapperFactory>();
-			_wrapperFactory.Setup(factory => factory.Create()).Returns(_innerTapiBridge.Object);
-			_log = new Mock<ILog>();
-			_bridge = new SmartTapiBridge(_config.Object, _wrapperFactory.Object, _log.Object, CancellationToken.None);
+			this._config = new Mock<IExportConfig>();
+			this._innerTapiBridge = new Mock<ITapiBridgeWrapper>();
+			this._wrapperFactory = new Mock<ITapiBridgeWrapperFactory>();
+			this._wrapperFactory.Setup(factory => factory.Create()).Returns(this._innerTapiBridge.Object);
+			this._log = new Mock<ILog>();
+			this._bridge = new SmartTapiBridge(this._config.Object, this._wrapperFactory.Object, this._log.Object, CancellationToken.None);
 		}
 
 		[Test]
 		public void ItShouldCreateInnerTapiBridgeOnFirstPath()
 		{
-			_bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.AddPath(new TransferPath("Mock Path"));
 
-			_wrapperFactory.Verify(factory => factory.Create(), Times.Once);
+			this._wrapperFactory.Verify(factory => factory.Create(), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldCreateInnerTapiBridgeOnce()
 		{
-			_bridge.AddPath(new TransferPath("Mock Path"));
-			_bridge.AddPath(new TransferPath("Mock Path 2"));
+			this._bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.AddPath(new TransferPath("Mock Path 2"));
 
-			_wrapperFactory.Verify(factory => factory.Create(), Times.Once);
+			this._wrapperFactory.Verify(factory => factory.Create(), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldDisposeInnerTapiBridgeOnDispose()
 		{
-			_bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.AddPath(new TransferPath("Mock Path"));
 
-			_bridge.Dispose();
+			this._bridge.Dispose();
 
-			_innerTapiBridge.Verify(b => b.Dispose());
+			this._innerTapiBridge.Verify(b => b.Dispose());
 		}
 
 		[Test]
 		public void ItShouldDisposeInnerTapiBridgeOnDisconnect()
 		{
-			_bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.AddPath(new TransferPath("Mock Path"));
 
-			_bridge.Disconnect();
+			this._bridge.Disconnect();
 
-			_innerTapiBridge.Verify(b => b.Dispose());
+			this._innerTapiBridge.Verify(b => b.Dispose());
 		}
 
 		[Test]
 		public void ItShouldCreateNewInnerTapiBridgeAfterOldDisposed()
 		{
-			_bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.AddPath(new TransferPath("Mock Path"));
 
-			_bridge.Disconnect();
+			this._bridge.Disconnect();
 
-			_bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.AddPath(new TransferPath("Mock Path"));
 
-			_wrapperFactory.Verify(factory => factory.Create(), Times.Exactly(2));
+			this._wrapperFactory.Verify(factory => factory.Create(), Times.Exactly(2));
 		}
 
 		[Test]
 		public void ItShouldForwardTapiStatusMessage()
 		{
 			bool eventRaised = false;
-			_bridge.TapiStatusMessage += (sender, args) => eventRaised = true;
-			_bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.TapiStatusMessage += (sender, args) => eventRaised = true;
+			this._bridge.AddPath(new TransferPath("Mock Path"));
 
-			_innerTapiBridge.Raise(b => b.TapiStatusMessage += null, new TapiMessageEventArgs("Mock message", _LINE_NUMBER));
+			this._innerTapiBridge.Raise(b => b.TapiStatusMessage += null, new TapiMessageEventArgs("Mock message", _LINE_NUMBER));
 
 			Assert.IsTrue(eventRaised);
 		}
@@ -108,10 +108,10 @@ namespace Relativity.Export.NUnit
 		public void ItShouldForwardTapiErrorMessage()
 		{
 			bool eventRaised = false;
-			_bridge.TapiErrorMessage += (sender, args) => eventRaised = true;
-			_bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.TapiErrorMessage += (sender, args) => eventRaised = true;
+			this._bridge.AddPath(new TransferPath("Mock Path"));
 
-			_innerTapiBridge.Raise(b => b.TapiErrorMessage += null, new TapiMessageEventArgs("Mock message", _LINE_NUMBER));
+			this._innerTapiBridge.Raise(b => b.TapiErrorMessage += null, new TapiMessageEventArgs("Mock message", _LINE_NUMBER));
 
 			Assert.IsTrue(eventRaised);
 		}
@@ -120,10 +120,10 @@ namespace Relativity.Export.NUnit
 		public void ItShouldForwardTapiWarningMessage()
 		{
 			bool eventRaised = false;
-			_bridge.TapiWarningMessage += (sender, args) => eventRaised = true;
-			_bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.TapiWarningMessage += (sender, args) => eventRaised = true;
+			this._bridge.AddPath(new TransferPath("Mock Path"));
 
-			_innerTapiBridge.Raise(b => b.TapiWarningMessage += null, new TapiMessageEventArgs("Mock message", _LINE_NUMBER));
+			this._innerTapiBridge.Raise(b => b.TapiWarningMessage += null, new TapiMessageEventArgs("Mock message", _LINE_NUMBER));
 
 			Assert.IsTrue(eventRaised);
 		}
@@ -132,10 +132,10 @@ namespace Relativity.Export.NUnit
 		public void ItShouldForwardTapiFatalError()
 		{
 			bool eventRaised = false;
-			_bridge.TapiFatalError += (sender, args) => eventRaised = true;
-			_bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.TapiFatalError += (sender, args) => eventRaised = true;
+			this._bridge.AddPath(new TransferPath("Mock Path"));
 
-			_innerTapiBridge.Raise(b => b.TapiFatalError += null, new TapiMessageEventArgs("Mock message", _LINE_NUMBER));
+			this._innerTapiBridge.Raise(b => b.TapiFatalError += null, new TapiMessageEventArgs("Mock message", _LINE_NUMBER));
 
 			Assert.IsTrue(eventRaised);
 		}
@@ -144,10 +144,10 @@ namespace Relativity.Export.NUnit
 		public void ItShouldForwardTapiClientChanged()
 		{
 			bool eventRaised = false;
-			_bridge.TapiClientChanged += (sender, args) => eventRaised = true;
-			_bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.TapiClientChanged += (sender, args) => eventRaised = true;
+			this._bridge.AddPath(new TransferPath("Mock Path"));
 
-			_innerTapiBridge.Raise(b => b.TapiClientChanged += null, new TapiClientEventArgs("Client name", TapiClient.Aspera));
+			this._innerTapiBridge.Raise(b => b.TapiClientChanged += null, new TapiClientEventArgs("Client name", TapiClient.Aspera));
 
 			Assert.IsTrue(eventRaised);
 		}
@@ -156,10 +156,10 @@ namespace Relativity.Export.NUnit
 		public void ItShouldForwardTapiProgress()
 		{
 			bool eventRaised = false;
-			_bridge.TapiProgress += (sender, args) => eventRaised = true;
-			_bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.TapiProgress += (sender, args) => eventRaised = true;
+			this._bridge.AddPath(new TransferPath("Mock Path"));
 
-			_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
+			this._innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
 
 			Assert.IsTrue(eventRaised);
 		}
@@ -168,10 +168,10 @@ namespace Relativity.Export.NUnit
 		public void ItShouldForwardTapiStatistics()
 		{
 			bool eventRaised = false;
-			_bridge.TapiStatistics += (sender, args) => eventRaised = true;
-			_bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.TapiStatistics += (sender, args) => eventRaised = true;
+			this._bridge.AddPath(new TransferPath("Mock Path"));
 
-			_innerTapiBridge.Raise(b => b.TapiStatistics += null, new TapiStatisticsEventArgs(1024, 100, 1024 * 1024, 5.55));
+			this._innerTapiBridge.Raise(b => b.TapiStatistics += null, new TapiStatisticsEventArgs(1024, 100, 1024 * 1024, 5.55));
 
 			Assert.IsTrue(eventRaised);
 		}
@@ -179,85 +179,85 @@ namespace Relativity.Export.NUnit
 		[Test]
 		public void ItShouldForwardAddPath()
 		{
-			_bridge.AddPath(new TransferPath("Mock Path"));
-			_bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.AddPath(new TransferPath("Mock Path"));
+			this._bridge.AddPath(new TransferPath("Mock Path"));
 
-			_innerTapiBridge.Verify(inner => inner.AddPath(It.IsAny<TransferPath>()), Times.Exactly(2));
+			this._innerTapiBridge.Verify(inner => inner.AddPath(It.IsAny<TransferPath>()), Times.Exactly(2));
 		}
 
 		[Test]
 		public async Task ItShouldWaitForTransferJobWithoutSideEffects()
 		{
-			_config.SetupGet(conf => conf.MaximumFilesForTapiBridge).Returns(3);
-			_config.SetupGet(conf => conf.TapiBridgeExportTransferWaitingTimeInSeconds).Returns(1);
+			this._config.SetupGet(conf => conf.MaximumFilesForTapiBridge).Returns(3);
+			this._config.SetupGet(conf => conf.TapiBridgeExportTransferWaitingTimeInSeconds).Returns(1);
 
-			_bridge = new SmartTapiBridge(_config.Object, _wrapperFactory.Object, _log.Object, CancellationToken.None);
+			this._bridge = new SmartTapiBridge(this._config.Object, this._wrapperFactory.Object, this._log.Object, CancellationToken.None);
 
-			_bridge.AddPath(new TransferPath("File 1"));
-			_bridge.AddPath(new TransferPath("File 2"));
+			this._bridge.AddPath(new TransferPath("File 1"));
+			this._bridge.AddPath(new TransferPath("File 2"));
 
 			Task raiseEventsTask = Task.Delay(1).ContinueWith(_ =>
 			{
-				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
-				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
+				this._innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
+				this._innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
 			});
 
-			_bridge.WaitForTransferJob();
+			this._bridge.WaitForTransferJob();
 
 			await raiseEventsTask.ConfigureAwait(false);
 
-			_innerTapiBridge.Verify(inner => inner.WaitForTransferJob(), Times.Never);
-			_innerTapiBridge.Verify(inner => inner.Dispose(), Times.Never);
+			this._innerTapiBridge.Verify(inner => inner.WaitForTransferJob(), Times.Never);
+			this._innerTapiBridge.Verify(inner => inner.Dispose(), Times.Never);
 		}
 
 		[Test]
 		public async Task ItShouldForwardWaitForTransferJobAndDisposeWhenWaitingTimePassed()
 		{
-			_config.SetupGet(conf => conf.MaximumFilesForTapiBridge).Returns(3);
-			_config.SetupGet(conf => conf.TapiBridgeExportTransferWaitingTimeInSeconds).Returns(0);
+			this._config.SetupGet(conf => conf.MaximumFilesForTapiBridge).Returns(3);
+			this._config.SetupGet(conf => conf.TapiBridgeExportTransferWaitingTimeInSeconds).Returns(0);
 
-			_bridge = new SmartTapiBridge(_config.Object, _wrapperFactory.Object, _log.Object, CancellationToken.None);
+			this._bridge = new SmartTapiBridge(this._config.Object, this._wrapperFactory.Object, this._log.Object, CancellationToken.None);
 
-			_bridge.AddPath(new TransferPath("File 1"));
-			_bridge.AddPath(new TransferPath("File 2"));
+			this._bridge.AddPath(new TransferPath("File 1"));
+			this._bridge.AddPath(new TransferPath("File 2"));
 
 			Task raiseEventsTask = Task.Delay(1).ContinueWith(_ =>
 			{
-				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
-				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
+				this._innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
+				this._innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
 			});
 
-			_bridge.WaitForTransferJob();
+			this._bridge.WaitForTransferJob();
 
 			await raiseEventsTask.ConfigureAwait(false);
 
-			_innerTapiBridge.Verify(inner => inner.WaitForTransferJob(), Times.Once);
-			_innerTapiBridge.Verify(inner => inner.Dispose(), Times.Once);
+			this._innerTapiBridge.Verify(inner => inner.WaitForTransferJob(), Times.Once);
+			this._innerTapiBridge.Verify(inner => inner.Dispose(), Times.Once);
 		}
 
 		[Test]
 		public async Task ItShouldForwardWaitForTransferJobAndDisposeWhenMaximumFilesLimitReached()
 		{
-			_config.SetupGet(conf => conf.MaximumFilesForTapiBridge).Returns(2);
-			_config.SetupGet(conf => conf.TapiBridgeExportTransferWaitingTimeInSeconds).Returns(1);
+			this._config.SetupGet(conf => conf.MaximumFilesForTapiBridge).Returns(2);
+			this._config.SetupGet(conf => conf.TapiBridgeExportTransferWaitingTimeInSeconds).Returns(1);
 
-			_bridge = new SmartTapiBridge(_config.Object, _wrapperFactory.Object, _log.Object, CancellationToken.None);
+			this._bridge = new SmartTapiBridge(this._config.Object, this._wrapperFactory.Object, this._log.Object, CancellationToken.None);
 
-			_bridge.AddPath(new TransferPath("File 1"));
-			_bridge.AddPath(new TransferPath("File 2"));
+			this._bridge.AddPath(new TransferPath("File 1"));
+			this._bridge.AddPath(new TransferPath("File 2"));
 
 			Task raiseEventsTask = Task.Delay(1).ContinueWith(_ =>
 			{
-				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
-				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
+				this._innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
+				this._innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
 			});
 
-			_bridge.WaitForTransferJob();
+			this._bridge.WaitForTransferJob();
 
 			await raiseEventsTask.ConfigureAwait(false);
 
-			_innerTapiBridge.Verify(inner => inner.WaitForTransferJob(), Times.Once);
-			_innerTapiBridge.Verify(inner => inner.Dispose(), Times.Once);
+			this._innerTapiBridge.Verify(inner => inner.WaitForTransferJob(), Times.Once);
+			this._innerTapiBridge.Verify(inner => inner.Dispose(), Times.Once);
 		}
 	}
 }

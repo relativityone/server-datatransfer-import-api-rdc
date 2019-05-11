@@ -11,7 +11,7 @@ Imports NUnit.Framework
 
 Imports Relativity.DataExchange.Service
 
-Namespace Relativity.Import.Client.NUnit
+Namespace Relativity.DataExchange.Import.NUnit
 
 	<TestFixture>
 	Public Class PreviewChoicesHelperTests

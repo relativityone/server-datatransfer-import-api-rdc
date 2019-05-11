@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using Castle.Windsor;
 
@@ -19,7 +19,7 @@ namespace Relativity.Export.NUnit
 	using Relativity.DataExchange.Service;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class ImagesRollupFactoryTests
 	{
 		[Test]

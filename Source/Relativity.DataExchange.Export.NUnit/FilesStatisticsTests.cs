@@ -4,22 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
+	using System;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.DataExchange.Io;
-    using Relativity.DataExchange.Transfer;
-    using Relativity.Logging;
-    using Relativity.Transfer;
+	using Relativity.DataExchange.Transfer;
+	using Relativity.Logging;
+	using Relativity.Transfer;
 
-    [TestFixture]
+	[TestFixture]
 	public class FilesStatisticsTests
 	{
 		private FilesStatistics _instance;
@@ -31,11 +31,11 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_statistics = new kCura.WinEDDS.Statistics();
-			_fileHelper = new Mock<IFile>();
-			_tapiBridge = new Mock<ITapiBridge>();
+			this._statistics = new kCura.WinEDDS.Statistics();
+			this._fileHelper = new Mock<IFile>();
+			this._tapiBridge = new Mock<ITapiBridge>();
 
-			_instance = new FilesStatistics(_statistics, _fileHelper.Object, new NullLogger());
+			this._instance = new FilesStatistics(this._statistics, this._fileHelper.Object, new NullLogger());
 		}
 
 		[Test]
@@ -47,20 +47,20 @@ namespace Relativity.Export.NUnit
 			DateTime start = new DateTime(2017, 10, 10, 10, 10, 10);
 			DateTime end = new DateTime(2017, 10, 10, 10, 10, 11);
 
-			_instance.Attach(_tapiBridge.Object);
+			this._instance.Attach(this._tapiBridge.Object);
 
 			// ACT
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size1, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size1, start, end));
 
-			_instance.SaveState();
+			this._instance.SaveState();
 
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size2, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size2, start, end));
 
-			_instance.RestoreLastState();
+			this._instance.RestoreLastState();
 
 			// ASSERT
-			Assert.That(_statistics.FileBytes, Is.EqualTo(size1));
-			Assert.That(_statistics.FileTime, Is.EqualTo(end.Ticks - start.Ticks));
+			Assert.That(this._statistics.FileBytes, Is.EqualTo(size1));
+			Assert.That(this._statistics.FileTime, Is.EqualTo(end.Ticks - start.Ticks));
 		}
 
 		[Test]
@@ -73,16 +73,16 @@ namespace Relativity.Export.NUnit
 			DateTime start = new DateTime(2017, 10, 10, 10, 10, 10);
 			DateTime end = new DateTime(2017, 10, 10, 10, 10, 11);
 
-			_instance.Attach(_tapiBridge.Object);
+			this._instance.Attach(this._tapiBridge.Object);
 
 			// ACT
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, sizeDownload1, start, end));
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, false, TransferPathStatus.Failed, 0, sizeNotDownload1, start, end));
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, sizeDownload2, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, sizeDownload1, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, false, TransferPathStatus.Failed, 0, sizeNotDownload1, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, sizeDownload2, start, end));
 
 			// ASSERT
-			Assert.That(_statistics.FileBytes, Is.EqualTo(sizeDownload1 + sizeDownload2));
-			Assert.That(_statistics.FileTime, Is.EqualTo((end.Ticks - start.Ticks) * 2));
+			Assert.That(this._statistics.FileBytes, Is.EqualTo(sizeDownload1 + sizeDownload2));
+			Assert.That(this._statistics.FileTime, Is.EqualTo((end.Ticks - start.Ticks) * 2));
 		}
 
 		[Test]
@@ -94,18 +94,18 @@ namespace Relativity.Export.NUnit
 			DateTime start = new DateTime(2017, 10, 10, 10, 10, 10);
 			DateTime end = new DateTime(2017, 10, 10, 10, 10, 11);
 
-			_instance.Attach(_tapiBridge.Object);
+			this._instance.Attach(this._tapiBridge.Object);
 
 			// ACT
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size1, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size1, start, end));
 
-			_instance.Detach();
+			this._instance.Detach();
 
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size2, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size2, start, end));
 
 			// ASSERT
-			Assert.That(_statistics.FileBytes, Is.EqualTo(size1));
-			Assert.That(_statistics.FileTime, Is.EqualTo(end.Ticks - start.Ticks));
+			Assert.That(this._statistics.FileBytes, Is.EqualTo(size1));
+			Assert.That(this._statistics.FileTime, Is.EqualTo(end.Ticks - start.Ticks));
 		}
 
 		[Test]
@@ -114,14 +114,14 @@ namespace Relativity.Export.NUnit
 			const string fileName = "file_name";
 			const long fileSize = 407452;
 
-			_fileHelper.Setup(x => x.Exists(fileName)).Returns(true);
-			_fileHelper.Setup(x => x.GetFileSize(fileName)).Returns(fileSize);
+			this._fileHelper.Setup(x => x.Exists(fileName)).Returns(true);
+			this._fileHelper.Setup(x => x.GetFileSize(fileName)).Returns(fileSize);
 
 			// ACT
-			_instance.UpdateStatisticsForFile(fileName);
+			this._instance.UpdateStatisticsForFile(fileName);
 
 			// ASSERT
-			Assert.That(_statistics.FileBytes, Is.EqualTo(fileSize));
+			Assert.That(this._statistics.FileBytes, Is.EqualTo(fileSize));
 		}
 
 		[Test]
@@ -129,10 +129,10 @@ namespace Relativity.Export.NUnit
 		{
 			const string fileName = "file_name";
 
-			_fileHelper.Setup(x => x.Exists(fileName)).Returns(false);
+			this._fileHelper.Setup(x => x.Exists(fileName)).Returns(false);
 
 			// ACT & ASSERT
-			Assert.DoesNotThrow(() => _instance.UpdateStatisticsForFile(fileName));
+			Assert.DoesNotThrow(() => this._instance.UpdateStatisticsForFile(fileName));
 		}
 	}
 }

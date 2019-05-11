@@ -4,22 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
-    using kCura.WinEDDS.LoadFileEntry;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text.Delimiter;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class LongTextHandlerTests
 	{
 		private const string _DELIMITER_START = "delimiter_start";
@@ -31,12 +31,12 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_textPrecedenceHandler = new Mock<ILongTextHandler>();
-			_textToLoadFile = new Mock<ILongTextHandler>();
+			this._textPrecedenceHandler = new Mock<ILongTextHandler>();
+			this._textToLoadFile = new Mock<ILongTextHandler>();
 
 			IDelimiter delimiter = new ConfigurableDelimiter(_DELIMITER_START, _DELIMITER_END);
 
-			_instance = new LongTextHandler(_textPrecedenceHandler.Object, _textToLoadFile.Object, delimiter, new NullLogger());
+			this._instance = new LongTextHandler(this._textPrecedenceHandler.Object, this._textToLoadFile.Object, delimiter, new NullLogger());
 		}
 
 		[Test]
@@ -49,10 +49,10 @@ namespace Relativity.Export.NUnit
 			DeferredEntry lineEntry = new DeferredEntry();
 
 			// ACT
-			_instance.HandleLongText(artifact, field, lineEntry);
+			this._instance.HandleLongText(artifact, field, lineEntry);
 
 			// ASSERT
-			_textToLoadFile.Verify(x => x.HandleLongText(artifact, field, lineEntry));
+			this._textToLoadFile.Verify(x => x.HandleLongText(artifact, field, lineEntry));
 			Assert.That(lineEntry.GetTextFromEntry(), Is.EqualTo($"{_DELIMITER_START}{_DELIMITER_END}"));
 		}
 
@@ -66,10 +66,10 @@ namespace Relativity.Export.NUnit
 			DeferredEntry lineEntry = new DeferredEntry();
 
 			// ACT
-			_instance.HandleLongText(artifact, field, lineEntry);
+			this._instance.HandleLongText(artifact, field, lineEntry);
 
 			// ASSERT
-			_textPrecedenceHandler.Verify(x => x.HandleLongText(artifact, field, lineEntry));
+			this._textPrecedenceHandler.Verify(x => x.HandleLongText(artifact, field, lineEntry));
 			Assert.That(lineEntry.GetTextFromEntry(), Is.EqualTo($"{_DELIMITER_START}{_DELIMITER_END}"));
 		}
 	}

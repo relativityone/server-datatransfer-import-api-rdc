@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using System.Collections.Generic;
 	using System.Text;
@@ -34,73 +34,73 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_exportSettings = new ExportFile(1)
+			this._exportSettings = new ExportFile(1)
 			{
 				VolumeInfo = new VolumeInfo()
 			};
 
-			_volumePredictions = new VolumePredictions
+			this._volumePredictions = new VolumePredictions
 			{
 				TextFileCount = _TEXT_FILE_COUNT,
 				TextFilesSize = _TEXT_FILE_SIZE
 			};
 
-			_fieldService = new Mock<IFieldService>();
+			this._fieldService = new Mock<IFieldService>();
 
-			_instance = new TextExportableSize(_exportSettings, new LongTextHelper(_exportSettings, _fieldService.Object, null), _fieldService.Object);
+			this._instance = new TextExportableSize(this._exportSettings, new LongTextHelper(this._exportSettings, this._fieldService.Object, null), this._fieldService.Object);
 		}
 
 		[Test]
 		public void ItShouldResetSizeAndCountWhenNotExportingText()
 		{
-			_exportSettings.ExportFullText = false;
-			_exportSettings.ExportFullTextAsFile = true;
+			this._exportSettings.ExportFullText = false;
+			this._exportSettings.ExportFullTextAsFile = true;
 
 			// ACT
-			_instance.CalculateTextSize(_volumePredictions, null);
+			this._instance.CalculateTextSize(this._volumePredictions, null);
 
 			// ASSERT
-			Assert.That(_volumePredictions.TextFileCount, Is.Zero);
-			Assert.That(_volumePredictions.TextFilesSize, Is.Zero);
+			Assert.That(this._volumePredictions.TextFileCount, Is.Zero);
+			Assert.That(this._volumePredictions.TextFilesSize, Is.Zero);
 		}
 
 		[Test]
 		public void ItShouldResetSizeAndCountWhenNotExportingTextAsFile()
 		{
-			_exportSettings.ExportFullText = true;
-			_exportSettings.ExportFullTextAsFile = false;
+			this._exportSettings.ExportFullText = true;
+			this._exportSettings.ExportFullTextAsFile = false;
 
 			// ACT
-			_instance.CalculateTextSize(_volumePredictions, null);
+			this._instance.CalculateTextSize(this._volumePredictions, null);
 
 			// ASSERT
-			Assert.That(_volumePredictions.TextFileCount, Is.Zero);
-			Assert.That(_volumePredictions.TextFilesSize, Is.Zero);
+			Assert.That(this._volumePredictions.TextFileCount, Is.Zero);
+			Assert.That(this._volumePredictions.TextFilesSize, Is.Zero);
 		}
 
 		[Test]
 		public void ItShouldResetSizeAndCountWhenNoTextFieldsSelected()
 		{
-			_exportSettings.ExportFullText = true;
-			_exportSettings.ExportFullTextAsFile = true;
-			_exportSettings.SelectedTextFields = null;
+			this._exportSettings.ExportFullText = true;
+			this._exportSettings.ExportFullTextAsFile = true;
+			this._exportSettings.SelectedTextFields = null;
 
 			// ACT
-			_instance.CalculateTextSize(_volumePredictions, null);
+			this._instance.CalculateTextSize(this._volumePredictions, null);
 
 			// ASSERT
-			Assert.That(_volumePredictions.TextFileCount, Is.Zero);
-			Assert.That(_volumePredictions.TextFilesSize, Is.Zero);
+			Assert.That(this._volumePredictions.TextFileCount, Is.Zero);
+			Assert.That(this._volumePredictions.TextFilesSize, Is.Zero);
 		}
 
 		[Test]
 		[TestCaseSource(nameof(NonTextFieldDataSet))]
 		public void ItShouldNotCountFieldsOtherThanText(kCura.WinEDDS.ViewFieldInfo field)
 		{
-			SetExportingTextAsFiles();
+			this.SetExportingTextAsFiles();
 
 			kCura.WinEDDS.ViewFieldInfo[] fields = { field };
-			_fieldService.Setup(x => x.GetColumns()).Returns(fields);
+			this._fieldService.Setup(x => x.GetColumns()).Returns(fields);
 
 			const int textFileCount = 3;
 			const int textFileSize = 978153;
@@ -112,7 +112,7 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			_instance.CalculateTextSize(predictions, new ObjectExportInfo());
+			this._instance.CalculateTextSize(predictions, new ObjectExportInfo());
 
 			// ASSERT
 			Assert.That(predictions.TextFileCount, Is.EqualTo(textFileCount));
@@ -126,7 +126,7 @@ namespace Relativity.Export.NUnit
 		{
 			const string fieldTextValue = "Lorem ipsum dolor sit amet enim. Etiam ullamcorper.";
 
-			SetUpMocksForField(fieldType, Encoding.UTF8);
+			this.SetUpMocksForField(fieldType, Encoding.UTF8);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -137,11 +137,11 @@ namespace Relativity.Export.NUnit
 			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { fieldTextValue } };
 
 			// ACT
-			_instance.CalculateTextSize(predictions, artifact);
+			this._instance.CalculateTextSize(predictions, artifact);
 
 			// ASSERT
 			Assert.That(predictions.TextFileCount, Is.EqualTo(1));
-			int expectedSize = _exportSettings.TextFileEncoding.GetByteCount(fieldTextValue);
+			int expectedSize = this._exportSettings.TextFileEncoding.GetByteCount(fieldTextValue);
 			Assert.That(predictions.TextFilesSize, Is.EqualTo(expectedSize));
 		}
 
@@ -151,7 +151,7 @@ namespace Relativity.Export.NUnit
 		{
 			const string fieldTextValue = "Lorem ipsum dolor sit amet enim. Etiam ullamcorper.";
 
-			SetUpMocksForField(FieldType.Text, encoding);
+			this.SetUpMocksForField(FieldType.Text, encoding);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -162,7 +162,7 @@ namespace Relativity.Export.NUnit
 			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { fieldTextValue } };
 
 			// ACT
-			_instance.CalculateTextSize(predictions, artifact);
+			this._instance.CalculateTextSize(predictions, artifact);
 
 			// ASSERT
 			Assert.That(predictions.TextFileCount, Is.EqualTo(1));
@@ -175,10 +175,10 @@ namespace Relativity.Export.NUnit
 		{
 			const long textSize = 280402;
 
-			SetUpMocksForField(FieldType.Text, Encoding.Unicode);
+			this.SetUpMocksForField(FieldType.Text, Encoding.Unicode);
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
-			_fieldService.Setup(x => x.ContainsFieldName(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
+			this._fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
+			this._fieldService.Setup(x => x.ContainsFieldName(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -196,7 +196,7 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			_instance.CalculateTextSize(predictions, artifact);
+			this._instance.CalculateTextSize(predictions, artifact);
 
 			// ASSERT
 			Assert.That(predictions.TextFileCount, Is.EqualTo(1));
@@ -209,10 +209,10 @@ namespace Relativity.Export.NUnit
 		{
 			const long textSize = 893212;
 
-			SetUpMocksForField(FieldType.Text, encoding);
+			this.SetUpMocksForField(FieldType.Text, encoding);
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
-			_fieldService.Setup(x => x.ContainsFieldName(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
+			this._fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
+			this._fieldService.Setup(x => x.ContainsFieldName(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -230,7 +230,7 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT
-			_instance.CalculateTextSize(predictions, artifact);
+			this._instance.CalculateTextSize(predictions, artifact);
 
 			// ASSERT
 			Assert.That(predictions.TextFileCount, Is.EqualTo(1));
@@ -243,9 +243,9 @@ namespace Relativity.Export.NUnit
 		{
 			const long extractedTextSizeNaive = 2097152;
 
-			SetUpMocksForField(FieldType.Text, Encoding.Unicode);
+			this.SetUpMocksForField(FieldType.Text, Encoding.Unicode);
 
-			_fieldService.Setup(x => x.ContainsFieldName(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(false);
+			this._fieldService.Setup(x => x.ContainsFieldName(ServiceConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(false);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -262,7 +262,7 @@ namespace Relativity.Export.NUnit
 			};
 
 			// ACT & ASSERT
-			Assert.DoesNotThrow(() => _instance.CalculateTextSize(predictions, artifact));
+			Assert.DoesNotThrow(() => this._instance.CalculateTextSize(predictions, artifact));
 
 			Assert.That(predictions.TextFilesSize, Is.EqualTo(extractedTextSizeNaive));
 		}
@@ -304,23 +304,23 @@ namespace Relativity.Export.NUnit
 
 		private void SetUpMocksForField(FieldType fieldType, Encoding encoding)
 		{
-			SetExportingTextAsFiles();
-			_exportSettings.TextFileEncoding = encoding;
+			this.SetExportingTextAsFiles();
+			this._exportSettings.TextFileEncoding = encoding;
 
             FieldStub fieldStub = GetTextFieldStub();
 			fieldStub.SetType(fieldType);
 
 			CoalescedTextViewField field = new CoalescedTextViewField(fieldStub, true);
 
-			_fieldService.Setup(x => x.GetColumns()).Returns(new kCura.WinEDDS.ViewFieldInfo[] { field });
-			_fieldService.Setup(x => x.GetOrdinalIndex(field.AvfColumnName)).Returns(0);
+			this._fieldService.Setup(x => x.GetColumns()).Returns(new kCura.WinEDDS.ViewFieldInfo[] { field });
+			this._fieldService.Setup(x => x.GetOrdinalIndex(field.AvfColumnName)).Returns(0);
 		}
 
 		private void SetExportingTextAsFiles()
 		{
-			_exportSettings.ExportFullText = true;
-			_exportSettings.ExportFullTextAsFile = true;
-			_exportSettings.SelectedTextFields = new kCura.WinEDDS.ViewFieldInfo[1];
+			this._exportSettings.ExportFullText = true;
+			this._exportSettings.ExportFullTextAsFile = true;
+			this._exportSettings.SelectedTextFields = new kCura.WinEDDS.ViewFieldInfo[1];
 		}
 	}
 }

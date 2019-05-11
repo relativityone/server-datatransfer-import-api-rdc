@@ -4,25 +4,25 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Text;
-    using System.Threading;
+	using System;
+	using System.Text;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Transfer;
-    using Relativity.Logging;
-    using Relativity.Transfer;
+	using Relativity.Logging;
+	using Relativity.Transfer;
 
-    [TestFixture]
+	[TestFixture]
 	public class LongTextEncodingConverterTests
 	{
 		private LongTextEncodingConverter _instance;
@@ -35,11 +35,11 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_longTextRepository = new LongTextRepository(null, new NullLogger());
-			_fileEncodingConverter = new Mock<IFileEncodingConverter>();
-			_tapiBridge = new Mock<ITapiBridge>();
+			this._longTextRepository = new LongTextRepository(null, new NullLogger());
+			this._fileEncodingConverter = new Mock<IFileEncodingConverter>();
+			this._tapiBridge = new Mock<ITapiBridge>();
 
-			_instance = new LongTextEncodingConverter(_longTextRepository, _fileEncodingConverter.Object, new NullLogger(), CancellationToken.None);
+			this._instance = new LongTextEncodingConverter(this._longTextRepository, this._fileEncodingConverter.Object, new NullLogger(), CancellationToken.None);
 		}
 
 		[Test]
@@ -47,19 +47,19 @@ namespace Relativity.Export.NUnit
 		{
 			const string fileName = "fileName";
 
-			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(1, _longTextRepository, fileName, Encoding.Unicode);
+			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(1, this._longTextRepository, fileName, Encoding.Unicode);
 			longText.SourceEncoding = Encoding.ASCII;
 
 			// ACT
-			_instance.StartListening(_tapiBridge.Object);
-			_instance.StopListening(_tapiBridge.Object);
+			this._instance.StartListening(this._tapiBridge.Object);
+			this._instance.StopListening(this._tapiBridge.Object);
 
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
-			_instance.WaitForConversionCompletion();
+			this._instance.WaitForConversionCompletion();
 
 			// ASSERT
-			_fileEncodingConverter.Verify(x => x.Convert(It.IsAny<string>(), It.IsAny<Encoding>(), It.IsAny<Encoding>(), CancellationToken.None), Times.Never);
+			this._fileEncodingConverter.Verify(x => x.Convert(It.IsAny<string>(), It.IsAny<Encoding>(), It.IsAny<Encoding>(), CancellationToken.None), Times.Never);
 		}
 
 		[Test]
@@ -67,20 +67,20 @@ namespace Relativity.Export.NUnit
 		{
 			const string fileName = "fileName";
 
-			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(1, _longTextRepository, fileName, Encoding.Unicode);
+			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(1, this._longTextRepository, fileName, Encoding.Unicode);
 			longText.SourceEncoding = Encoding.Unicode;
 
 			// ACT
-			_instance.StartListening(_tapiBridge.Object);
+			this._instance.StartListening(this._tapiBridge.Object);
 
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
-			_instance.StopListening(_tapiBridge.Object);
+			this._instance.StopListening(this._tapiBridge.Object);
 
-			_instance.WaitForConversionCompletion();
+			this._instance.WaitForConversionCompletion();
 
 			// ASSERT
-			_fileEncodingConverter.Verify(x => x.Convert(It.IsAny<string>(), It.IsAny<Encoding>(), It.IsAny<Encoding>(), CancellationToken.None), Times.Never);
+			this._fileEncodingConverter.Verify(x => x.Convert(It.IsAny<string>(), It.IsAny<Encoding>(), It.IsAny<Encoding>(), CancellationToken.None), Times.Never);
 		}
 
 		[Test]
@@ -88,20 +88,20 @@ namespace Relativity.Export.NUnit
 		{
 			const string fileName = "fileName";
 
-			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(1, _longTextRepository, fileName, Encoding.Unicode);
+			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(1, this._longTextRepository, fileName, Encoding.Unicode);
 			longText.SourceEncoding = Encoding.UTF8;
 
 			// ACT
-			_instance.StartListening(_tapiBridge.Object);
+			this._instance.StartListening(this._tapiBridge.Object);
 
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
-			_instance.StopListening(_tapiBridge.Object);
+			this._instance.StopListening(this._tapiBridge.Object);
 
-			_instance.WaitForConversionCompletion();
+			this._instance.WaitForConversionCompletion();
 
 			// ASSERT
-			_fileEncodingConverter.Verify(x => x.Convert(fileName, Encoding.UTF8, Encoding.Unicode, CancellationToken.None), Times.Once);
+			this._fileEncodingConverter.Verify(x => x.Convert(fileName, Encoding.UTF8, Encoding.Unicode, CancellationToken.None), Times.Once);
 			Assert.That(longText.SourceEncoding, Is.EqualTo(longText.DestinationEncoding));
 		}
 
@@ -110,25 +110,25 @@ namespace Relativity.Export.NUnit
 		{
 			const string fileName = "fileName";
 
-			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(1, _longTextRepository, fileName, Encoding.Unicode);
+			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(1, this._longTextRepository, fileName, Encoding.Unicode);
 			longText.SourceEncoding = Encoding.UTF8;
 
 			bool waited = false;
 
-			_fileEncodingConverter.Setup(x => x.Convert(fileName, Encoding.UTF8, Encoding.Unicode, CancellationToken.None)).Callback(() =>
+			this._fileEncodingConverter.Setup(x => x.Convert(fileName, Encoding.UTF8, Encoding.Unicode, CancellationToken.None)).Callback(() =>
 			{
 				Thread.Sleep(2000);
 				waited = true;
 			});
 
 			// ACT
-			_instance.StartListening(_tapiBridge.Object);
+			this._instance.StartListening(this._tapiBridge.Object);
 
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
-			_instance.StopListening(_tapiBridge.Object);
+			this._instance.StopListening(this._tapiBridge.Object);
 
-			_instance.WaitForConversionCompletion();
+			this._instance.WaitForConversionCompletion();
 
 			// ASSERT
 			Assert.That(waited, Is.True);

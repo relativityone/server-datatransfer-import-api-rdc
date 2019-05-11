@@ -4,22 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Collections.Generic;
+	using System;
+	using System.Collections.Generic;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
-    using Relativity.DataExchange.Export;
-    using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Export;
+	using Relativity.DataExchange.Service;
 
-    public class ExportFileFormatterSetUp<T>
+	public class ExportFileFormatterSetUp<T>
 	    where T : ExportFileFormatterBase
 	{
 		protected const string FileName1 = "Name1";
@@ -38,24 +38,24 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void Init()
 		{
-			InitTestCase();
+			this.InitTestCase();
 		}
 
 		protected virtual void InitTestCase()
 		{
-			FieldNameProviderMock = new Mock<IFieldNameProvider>();
+			this.FieldNameProviderMock = new Mock<IFieldNameProvider>();
 
-			FieldNameProviderMock.Setup(mock => mock.GetDisplayName(It.IsAny<kCura.WinEDDS.ViewFieldInfo>()))
+			this.FieldNameProviderMock.Setup(mock => mock.GetDisplayName(It.IsAny<kCura.WinEDDS.ViewFieldInfo>()))
 				.Returns((kCura.WinEDDS.ViewFieldInfo field) => field.DisplayName);
 
 			int index = 1;
-			Fields = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(new List<Tuple<int, string>>
+			this.Fields = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(new List<Tuple<int, string>>
 			{
 				Tuple.Create(index++, FileName1),
 				Tuple.Create(index, FieldName2)
 			});
 
-			ExpFile = new ExportFile((int)ArtifactType.Document)
+			this.ExpFile = new ExportFile((int)ArtifactType.Document)
 				          {
 					          QuoteDelimiter = QuoteDelimiter, RecordDelimiter = RecordDelimiter
 				          };

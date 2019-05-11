@@ -4,20 +4,20 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.IO;
+	using System.IO;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Io;
 
-    [TestFixture]
+	[TestFixture]
 	public abstract class FilePathProviderTests
 	{
 		private readonly string _volumeLabel = "volume_label";
@@ -32,20 +32,20 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_directoryHelper = new Mock<IDirectory>();
+			this._directoryHelper = new Mock<IDirectory>();
 
-			_labelManager = new Mock<ILabelManagerForArtifact>();
-			_labelManager.Setup(x => x.GetVolumeLabel(It.IsAny<int>())).Returns(_volumeLabel);
-			_labelManager.Setup(x => x.GetImageSubdirectoryLabel(It.IsAny<int>())).Returns(Subdirectory);
-			_labelManager.Setup(x => x.GetNativeSubdirectoryLabel(It.IsAny<int>())).Returns(Subdirectory);
-			_labelManager.Setup(x => x.GetTextSubdirectoryLabel(It.IsAny<int>())).Returns(Subdirectory);
+			this._labelManager = new Mock<ILabelManagerForArtifact>();
+			this._labelManager.Setup(x => x.GetVolumeLabel(It.IsAny<int>())).Returns(this._volumeLabel);
+			this._labelManager.Setup(x => x.GetImageSubdirectoryLabel(It.IsAny<int>())).Returns(this.Subdirectory);
+			this._labelManager.Setup(x => x.GetNativeSubdirectoryLabel(It.IsAny<int>())).Returns(this.Subdirectory);
+			this._labelManager.Setup(x => x.GetTextSubdirectoryLabel(It.IsAny<int>())).Returns(this.Subdirectory);
 
-			_exportSettings = new ExportFile(1)
+			this._exportSettings = new ExportFile(1)
 			{
-				FolderPath = _folderPath
+				FolderPath = this._folderPath
 			};
 
-			_instance = CreateInstance(_directoryHelper.Object, _labelManager.Object, _exportSettings);
+			this._instance = this.CreateInstance(this._directoryHelper.Object, this._labelManager.Object, this._exportSettings);
 		}
 
 		protected abstract FilePathProvider CreateInstance(IDirectory directoryHelper, ILabelManagerForArtifact labelManager, ExportFile exportSettings);
@@ -55,14 +55,14 @@ namespace Relativity.Export.NUnit
 		{
 			const string fileName = "file_name.txt";
 
-			_directoryHelper.Setup(x => x.Exists(It.IsAny<string>())).Returns(false);
+			this._directoryHelper.Setup(x => x.Exists(It.IsAny<string>())).Returns(false);
 
 			// ACT
-			_instance.GetPathForFile(fileName, 0);
+			this._instance.GetPathForFile(fileName, 0);
 
 			// ASSERT
-			string expectedPath = Path.Combine(_folderPath, _volumeLabel, Subdirectory);
-			_directoryHelper.Verify(x => x.CreateDirectory(expectedPath), Times.Once);
+			string expectedPath = Path.Combine(this._folderPath, this._volumeLabel, this.Subdirectory);
+			this._directoryHelper.Verify(x => x.CreateDirectory(expectedPath), Times.Once);
 		}
 
 		[Test]
@@ -71,10 +71,10 @@ namespace Relativity.Export.NUnit
 			const string fileName = "file_name.txt";
 
 			// ACT
-			string result = _instance.GetPathForFile(fileName, 0);
+			string result = this._instance.GetPathForFile(fileName, 0);
 
 			// ASSERT
-			string expectedFilePath = Path.Combine(_folderPath, _volumeLabel, Subdirectory, fileName);
+			string expectedFilePath = Path.Combine(this._folderPath, this._volumeLabel, this.Subdirectory, fileName);
 			Assert.That(result, Is.EqualTo(expectedFilePath));
 		}
 	}

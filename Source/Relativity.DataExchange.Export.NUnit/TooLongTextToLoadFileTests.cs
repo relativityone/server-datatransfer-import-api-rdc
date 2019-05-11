@@ -4,28 +4,28 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.IO;
-    using System.Text;
+	using System.IO;
+	using System.Text;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
-    using kCura.WinEDDS.LoadFileEntry;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
 
-    using Moq;
+	using Moq;
 
-    using Relativity.DataExchange.Export.VolumeManagerV2;
+	using Relativity.DataExchange.Export.VolumeManagerV2;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
-    using Relativity.DataExchange.Service;
-    using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class TooLongTextToLoadFileTests
 	{
 		private TooLongTextToLoadFile _instance;
@@ -39,17 +39,17 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_longTextRepository = new LongTextRepository(null, new NullLogger());
+			this._longTextRepository = new LongTextRepository(null, new NullLogger());
 
-			_exportSettings = new ExportFile(1);
+			this._exportSettings = new ExportFile(1);
 
-			_fieldService = new Mock<IFieldService>();
+			this._fieldService = new Mock<IFieldService>();
 
-			LongTextHelper longTextHelper = new LongTextHelper(_exportSettings, _fieldService.Object, _longTextRepository);
+			LongTextHelper longTextHelper = new LongTextHelper(this._exportSettings, this._fieldService.Object, this._longTextRepository);
 
-			_fileWriter = new Mock<ILongTextEntryWriter>();
+			this._fileWriter = new Mock<ILongTextEntryWriter>();
 
-			_instance = new TooLongTextToLoadFile(longTextHelper, _longTextRepository, _fileWriter.Object, new NullLogger());
+			this._instance = new TooLongTextToLoadFile(longTextHelper, this._longTextRepository, this._fileWriter.Object, new NullLogger());
 		}
 
 		[Test]
@@ -71,18 +71,18 @@ namespace Relativity.Export.NUnit
 				LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, expectedPath),
 				Encoding.Unicode,
 				expectedEncoding);
-			_longTextRepository.Add(longText.InList());
+			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry lineEntry = new DeferredEntry();
 
 			// ACT
-			_instance.HandleLongText(artifact, field, lineEntry);
+			this._instance.HandleLongText(artifact, field, lineEntry);
 
 			StreamWriter writer = new StreamWriter(new MemoryStream());
 			lineEntry.Write(ref writer);
 
 			// ASSERT
-			_fileWriter.Verify(x => x.WriteLongTextFileToDatFile(writer, expectedPath, expectedEncoding));
+			this._fileWriter.Verify(x => x.WriteLongTextFileToDatFile(writer, expectedPath, expectedEncoding));
 		}
 
 		[Test]
@@ -94,7 +94,7 @@ namespace Relativity.Export.NUnit
 			CoalescedTextViewField field = new CoalescedTextViewField(new QueryFieldFactory().GetArtifactIdField(), true);
 
 			kCura.WinEDDS.ViewFieldInfo trueTextPrecedenceField = new QueryFieldFactory().GetGenericDateField();
-			_exportSettings.SelectedTextFields = new[] { trueTextPrecedenceField };
+			this._exportSettings.SelectedTextFields = new[] { trueTextPrecedenceField };
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 				                            {
@@ -102,7 +102,7 @@ namespace Relativity.Export.NUnit
 					                            Metadata = new object[] { trueTextPrecedenceField.FieldArtifactId }
 				                            };
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
+			this._fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
 
 			LongText longText = LongText.CreateFromMissingFile(
 				artifact.ArtifactID,
@@ -113,18 +113,18 @@ namespace Relativity.Export.NUnit
 					expectedPath),
 				Encoding.Unicode,
 				expectedEncoding);
-			_longTextRepository.Add(longText.InList());
+			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry lineEntry = new DeferredEntry();
 
 			// ACT
-			_instance.HandleLongText(artifact, field, lineEntry);
+			this._instance.HandleLongText(artifact, field, lineEntry);
 
 			StreamWriter writer = new StreamWriter(new MemoryStream());
 			lineEntry.Write(ref writer);
 
 			// ASSERT
-			_fileWriter.Verify(x => x.WriteLongTextFileToDatFile(writer, expectedPath, expectedEncoding));
+			this._fileWriter.Verify(x => x.WriteLongTextFileToDatFile(writer, expectedPath, expectedEncoding));
 		}
 	}
 }

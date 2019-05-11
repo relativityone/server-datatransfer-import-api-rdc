@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit
+namespace Relativity.DataExchange.Import.NUnit
 {
 	using System;
 	using System.IO;
@@ -16,8 +16,6 @@ namespace Relativity.Import.Client.NUnit
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Process;
 	using Relativity.Logging;
-
-	using ExecutionSource = Relativity.DataExchange.Service.ExecutionSource;
 
 	/// <summary>
 	/// Represents a mock class object for <see cref="BulkImageFileImporter"/>.
@@ -34,7 +32,7 @@ namespace Relativity.Import.Client.NUnit
 			kCura.WinEDDS.Service.IBulkImportManager manager,
 			kCura.WinEDDS.Api.IImageReader reader,
 			CancellationTokenSource tokenSource,
-			ExecutionSource executionSource)
+			Relativity.DataExchange.Service.ExecutionSource executionSource)
 			: base(
 				0,
 				args,

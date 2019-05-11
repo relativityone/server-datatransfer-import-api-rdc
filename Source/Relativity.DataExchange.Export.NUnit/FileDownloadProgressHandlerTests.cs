@@ -4,14 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 
-    public class FileDownloadProgressHandlerTests : ProgressHandlerTests
+	public class FileDownloadProgressHandlerTests : ProgressHandlerTests
 	{
 		protected override ProgressHandler CreateInstance(IDownloadProgressManager downloadProgressManager)
 		{

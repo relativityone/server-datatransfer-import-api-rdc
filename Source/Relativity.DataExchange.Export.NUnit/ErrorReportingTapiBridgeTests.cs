@@ -4,14 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
-    using Relativity.Transfer;
+	using Relativity.Transfer;
 
-    [TestFixture]
+	[TestFixture]
 	public class ErrorReportingTapiBridgeTests
 	{
 		[Test]

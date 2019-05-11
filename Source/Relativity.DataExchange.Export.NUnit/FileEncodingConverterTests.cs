@@ -4,21 +4,21 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.Text;
-    using System.Threading;
+	using System;
+	using System.Text;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Io;
-    using Relativity.Logging;
+	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class FileEncodingConverterTests
 	{
 		private FileEncodingConverter _instance;
@@ -29,9 +29,9 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_encodingRewrite = new Mock<IFileEncodingRewrite>();
-			_fileHelper = new Mock<IFile>();
-			_instance = new FileEncodingConverter(_encodingRewrite.Object, _fileHelper.Object, new NullLogger());
+			this._encodingRewrite = new Mock<IFileEncodingRewrite>();
+			this._fileHelper = new Mock<IFile>();
+			this._instance = new FileEncodingConverter(this._encodingRewrite.Object, this._fileHelper.Object, new NullLogger());
 		}
 
 		[Test]
@@ -42,12 +42,12 @@ namespace Relativity.Export.NUnit
 			Encoding destinationEncoding = Encoding.UTF8;
 
 			// ACT
-			_instance.Convert(filePath, sourceEncoding, destinationEncoding, CancellationToken.None);
+			this._instance.Convert(filePath, sourceEncoding, destinationEncoding, CancellationToken.None);
 
 			// ASSERT
-			_encodingRewrite.Verify(x => x.RewriteFile(filePath, GetTempFilePath(filePath), sourceEncoding, destinationEncoding, CancellationToken.None));
-			_fileHelper.Verify(x => x.Delete(filePath));
-			_fileHelper.Verify(x => x.Move(GetTempFilePath(filePath), filePath));
+			this._encodingRewrite.Verify(x => x.RewriteFile(filePath, GetTempFilePath(filePath), sourceEncoding, destinationEncoding, CancellationToken.None));
+			this._fileHelper.Verify(x => x.Delete(filePath));
+			this._fileHelper.Verify(x => x.Move(GetTempFilePath(filePath), filePath));
 		}
 
 		[Test]
@@ -57,13 +57,13 @@ namespace Relativity.Export.NUnit
 			Encoding sourceEncoding = Encoding.Unicode;
 			Encoding destinationEncoding = Encoding.UTF8;
 
-			_encodingRewrite.Setup(x => x.RewriteFile(filePath, GetTempFilePath(filePath), sourceEncoding, destinationEncoding, CancellationToken.None)).Throws<Exception>();
-			_fileHelper.Setup(x => x.Exists(GetTempFilePath(filePath))).Returns(true);
+			this._encodingRewrite.Setup(x => x.RewriteFile(filePath, GetTempFilePath(filePath), sourceEncoding, destinationEncoding, CancellationToken.None)).Throws<Exception>();
+			this._fileHelper.Setup(x => x.Exists(GetTempFilePath(filePath))).Returns(true);
 
 			// ACT & ASSERT
-			Assert.Throws<Exception>(() => _instance.Convert(filePath, sourceEncoding, destinationEncoding, CancellationToken.None));
+			Assert.Throws<Exception>(() => this._instance.Convert(filePath, sourceEncoding, destinationEncoding, CancellationToken.None));
 
-			_fileHelper.Verify(x => x.Delete(GetTempFilePath(filePath)));
+			this._fileHelper.Verify(x => x.Delete(GetTempFilePath(filePath)));
 		}
 
 		private static string GetTempFilePath(string filePath)

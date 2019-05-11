@@ -4,27 +4,27 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.IO;
-    using System.Threading;
+	using System.IO;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Io;
-    using Relativity.DataExchange.Service;
-    using Relativity.Logging;
+	using Relativity.DataExchange.Service;
+	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public abstract class IproFullTextLoadFileEntryTests
 	{
 		private const string _BATES_NUMBER = "batesNumber";
@@ -46,26 +46,26 @@ namespace Relativity.Export.NUnit
 				LogFileFormat = LoadFileType.FileFormat.IPRO_FullText
 			};
 
-			FieldService = new Mock<IFieldService>();
-			_fullTextLineWriter = new Mock<IFullTextLineWriter>();
-			_writer = new Mock<IRetryableStreamWriter>();
+			this.FieldService = new Mock<IFieldService>();
+			this._fullTextLineWriter = new Mock<IFullTextLineWriter>();
+			this._writer = new Mock<IRetryableStreamWriter>();
 
-			LongTextRepository = new LongTextRepository(new Mock<IFile>().Object, new NullLogger());
+			this.LongTextRepository = new LongTextRepository(new Mock<IFile>().Object, new NullLogger());
 
-			LongTextHelper longTextHelper = new LongTextHelper(exportSettings, FieldService.Object, LongTextRepository);
+			LongTextHelper longTextHelper = new LongTextHelper(exportSettings, this.FieldService.Object, this.LongTextRepository);
 
-			_instance = CreateInstance(FieldService.Object, longTextHelper, _fullTextLineWriter.Object);
+			this._instance = this.CreateInstance(this.FieldService.Object, longTextHelper, this._fullTextLineWriter.Object);
 
-			_tempFile = Path.GetTempFileName();
+			this._tempFile = Path.GetTempFileName();
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			_instance?.Dispose();
-			if (File.Exists(_tempFile))
+			this._instance?.Dispose();
+			if (File.Exists(this._tempFile))
 			{
-				File.Delete(_tempFile);
+				File.Delete(this._tempFile);
 			}
 		}
 
@@ -75,20 +75,20 @@ namespace Relativity.Export.NUnit
 			const string textToWrite = "text to write";
 
 			ObjectExportInfo artifact = new ObjectExportInfo();
-			PrepareDataSet(artifact, textToWrite);
+			this.PrepareDataSet(artifact, textToWrite);
 
 			TextReader textReader = null;
 
-			_fullTextLineWriter.Setup(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, _writer.Object, It.IsAny<TextReader>(), CancellationToken.None)).Callback(
+			this._fullTextLineWriter.Setup(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, this._writer.Object, It.IsAny<TextReader>(), CancellationToken.None)).Callback(
 				(string bn, long po, IRetryableStreamWriter w, TextReader tr, CancellationToken t) => textReader = tr);
 
 			// ACT
-			_instance.WriteFullTextLine(artifact, _BATES_NUMBER, 0, _PAGE_OFFSET, _writer.Object, CancellationToken.None);
-			_instance.WriteFullTextLine(artifact, _BATES_NUMBER, 1, _PAGE_OFFSET, _writer.Object, CancellationToken.None);
+			this._instance.WriteFullTextLine(artifact, _BATES_NUMBER, 0, _PAGE_OFFSET, this._writer.Object, CancellationToken.None);
+			this._instance.WriteFullTextLine(artifact, _BATES_NUMBER, 1, _PAGE_OFFSET, this._writer.Object, CancellationToken.None);
 
 			// ASSERT
 			Assert.That(textReader.ReadToEnd(), Is.EqualTo(textToWrite));
-			_fullTextLineWriter.Verify(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, _writer.Object, textReader, CancellationToken.None), Times.Exactly(2));
+			this._fullTextLineWriter.Verify(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, this._writer.Object, textReader, CancellationToken.None), Times.Exactly(2));
 		}
 
 		[Test]
@@ -98,16 +98,16 @@ namespace Relativity.Export.NUnit
 			const string textToWrite2 = "text to write 2";
 
 			ObjectExportInfo artifact1 = new ObjectExportInfo();
-			PrepareDataSet(artifact1, textToWrite1);
+			this.PrepareDataSet(artifact1, textToWrite1);
 
 			ObjectExportInfo artifact2 = new ObjectExportInfo();
-			PrepareDataSet(artifact2, textToWrite2);
+			this.PrepareDataSet(artifact2, textToWrite2);
 
 			TextReader[] textReaders = new TextReader[2];
 			string[] texts = new string[2];
 			int i = 0;
 
-			_fullTextLineWriter.Setup(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, _writer.Object, It.IsAny<TextReader>(), CancellationToken.None)).Callback(
+			this._fullTextLineWriter.Setup(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, this._writer.Object, It.IsAny<TextReader>(), CancellationToken.None)).Callback(
 				(string bn, long po, IRetryableStreamWriter w, TextReader tr, CancellationToken t) =>
 				{
 					texts[i] = tr.ReadToEnd();
@@ -115,15 +115,15 @@ namespace Relativity.Export.NUnit
 				});
 
 			// ACT
-			_instance.WriteFullTextLine(artifact1, _BATES_NUMBER, 0, _PAGE_OFFSET, _writer.Object, CancellationToken.None);
-			_instance.WriteFullTextLine(artifact2, _BATES_NUMBER, 0, _PAGE_OFFSET, _writer.Object, CancellationToken.None);
+			this._instance.WriteFullTextLine(artifact1, _BATES_NUMBER, 0, _PAGE_OFFSET, this._writer.Object, CancellationToken.None);
+			this._instance.WriteFullTextLine(artifact2, _BATES_NUMBER, 0, _PAGE_OFFSET, this._writer.Object, CancellationToken.None);
 
 			// ASSERT
 			Assert.That(texts[0], Is.EqualTo(textToWrite1));
 			Assert.That(texts[1], Is.EqualTo(textToWrite2));
 
-			_fullTextLineWriter.Verify(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, _writer.Object, textReaders[0], CancellationToken.None), Times.Once);
-			_fullTextLineWriter.Verify(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, _writer.Object, textReaders[1], CancellationToken.None), Times.Once);
+			this._fullTextLineWriter.Verify(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, this._writer.Object, textReaders[0], CancellationToken.None), Times.Once);
+			this._fullTextLineWriter.Verify(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, this._writer.Object, textReaders[1], CancellationToken.None), Times.Once);
 		}
 
 		[Test]
@@ -132,22 +132,22 @@ namespace Relativity.Export.NUnit
 			const string textToWrite = ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 			const string textInFile = "text in file";
 
-			File.WriteAllText(_tempFile, textInFile);
+			File.WriteAllText(this._tempFile, textInFile);
 
 			ObjectExportInfo artifact = new ObjectExportInfo();
-			PrepareDataSetForTooLongText(artifact, textToWrite, _tempFile);
+			this.PrepareDataSetForTooLongText(artifact, textToWrite, this._tempFile);
 
 			TextReader textReader = null;
 
-			_fullTextLineWriter.Setup(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, _writer.Object, It.IsAny<TextReader>(), CancellationToken.None)).Callback(
+			this._fullTextLineWriter.Setup(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, this._writer.Object, It.IsAny<TextReader>(), CancellationToken.None)).Callback(
 				(string bn, long po, IRetryableStreamWriter w, TextReader tr, CancellationToken t) => textReader = tr);
 
 			// ACT
-			_instance.WriteFullTextLine(artifact, _BATES_NUMBER, 0, _PAGE_OFFSET, _writer.Object, CancellationToken.None);
+			this._instance.WriteFullTextLine(artifact, _BATES_NUMBER, 0, _PAGE_OFFSET, this._writer.Object, CancellationToken.None);
 
 			// ASSERT
 			Assert.That(textReader.ReadToEnd(), Is.EqualTo(textInFile));
-			_fullTextLineWriter.Verify(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, _writer.Object, textReader, CancellationToken.None), Times.Once);
+			this._fullTextLineWriter.Verify(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, this._writer.Object, textReader, CancellationToken.None), Times.Once);
 		}
 
 		protected abstract IproFullTextLoadFileEntry CreateInstance(IFieldService fieldService, LongTextHelper longTextHelper, IFullTextLineWriter fullTextLineWriter);

@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
 	using System;
 
@@ -30,12 +30,12 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_exportFile = new ExportFile(_ARTIFACT_ID)
+			this._exportFile = new ExportFile(_ARTIFACT_ID)
 			{
 				TypeOfExport = ExportFile.ExportType.Production
 			};
-			_sut = new ProductionExportFileNameProvider(_exportFile, false);
-			_exportedObjectInfo = new ObjectExportInfo
+			this._sut = new ProductionExportFileNameProvider(this._exportFile, false);
+			this._exportedObjectInfo = new ObjectExportInfo
 			{
 				IdentifierValue = _CONTROL_NUMBER,
 				ProductionBeginBates = _BEGIN_BATES,
@@ -49,10 +49,10 @@ namespace Relativity.Export.NUnit
 		{
 			// arrange
 			string expected = $"{_BEGIN_BATES}.{_NATIVE_EXTENSION}";
-			_exportFile.AppendOriginalFileName = false;
+			this._exportFile.AppendOriginalFileName = false;
 
 			// act
-			string actual = _sut.GetName(_exportedObjectInfo);
+			string actual = this._sut.GetName(this._exportedObjectInfo);
 
 			// assert
 			Assert.AreEqual(expected, actual);
@@ -63,10 +63,10 @@ namespace Relativity.Export.NUnit
 		{
 			// arrange
 			string expected = $"{_BEGIN_BATES}{_ORIGINAL_FILE_NAME_PART}";
-			_exportFile.AppendOriginalFileName = true;
+			this._exportFile.AppendOriginalFileName = true;
 
 			// act
-			string actual = _sut.GetName(_exportedObjectInfo);
+			string actual = this._sut.GetName(this._exportedObjectInfo);
 
 			// assert
 			Assert.AreEqual(expected, actual);
@@ -79,11 +79,11 @@ namespace Relativity.Export.NUnit
 			// arrange
 			string expected = $"{_BEGIN_BATES}";
 			expected = AppendOriginalFileNameAndExtension(expected, "txt", originalFileNamePart);
-			_exportFile.AppendOriginalFileName = appendOriginalFileName;
-			_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production;
+			this._exportFile.AppendOriginalFileName = appendOriginalFileName;
+			this._exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production;
 
 			// act
-			string actual = _sut.GetTextName(_exportedObjectInfo);
+			string actual = this._sut.GetTextName(this._exportedObjectInfo);
 
 			// assert
 			Assert.AreEqual(expected, actual);
@@ -96,11 +96,11 @@ namespace Relativity.Export.NUnit
 			// arrange
 			string expected = $"{_CONTROL_NUMBER}";
 			expected = AppendOriginalFileNameAndExtension(expected, "txt", originalFileNamePart);
-			_exportFile.AppendOriginalFileName = appendOriginalFileName;
-			_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier;
+			this._exportFile.AppendOriginalFileName = appendOriginalFileName;
+			this._exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier;
 
 			// act
-			string actual = _sut.GetTextName(_exportedObjectInfo);
+			string actual = this._sut.GetTextName(this._exportedObjectInfo);
 
 			// assert
 			Assert.AreEqual(expected, actual);
@@ -109,13 +109,13 @@ namespace Relativity.Export.NUnit
 		[Test]
 		public void GetTextNameShouldThrowArgumentNullExceptionIfParameterPassedIsNull()
 		{
-			Assert.Throws<ArgumentNullException>(() => _sut.GetTextName(null));
+			Assert.Throws<ArgumentNullException>(() => this._sut.GetTextName(null));
 		}
 
 		[Test]
 		public void GetNameShouldThrowArgumentNullExceptionIfParameterPassedIsNull()
 		{
-			Assert.Throws<ArgumentNullException>(() => _sut.GetName(null));
+			Assert.Throws<ArgumentNullException>(() => this._sut.GetName(null));
 		}
 
 		private static string AppendOriginalFileNameAndExtension(string filename, string extension, string originalFileNamePart = "")

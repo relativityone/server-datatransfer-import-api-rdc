@@ -6,7 +6,7 @@
 
 Imports kCura.WinEDDS.ImportExtension
 
-Namespace Relativity.Import.Client.NUnit
+Namespace Relativity.DataExchange.Import.NUnit
 
 	Friend Class StubDataReaderReader
 		Inherits DataReaderReader

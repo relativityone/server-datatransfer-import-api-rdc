@@ -4,23 +4,23 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System;
-    using System.IO;
-    using System.Text;
+	using System;
+	using System.IO;
+	using System.Text;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
 
-    using Moq;
+	using Moq;
 
-    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
-    using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
-    using Relativity.Logging;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class ErrorFileWriterTests
 	{
 		private const string _HEADER = "\"File Type\",\"Document Identifier\",\"File Guid\",\"Error Description\"";
@@ -34,18 +34,18 @@ namespace Relativity.Export.NUnit
 		public void SetUp()
 		{
 			const string errorFilePath = "error_file_path";
-			_memoryStream = new MemoryStream();
-			_streamWriter = new StreamWriter(_memoryStream, Encoding.Default);
+			this._memoryStream = new MemoryStream();
+			this._streamWriter = new StreamWriter(this._memoryStream, Encoding.Default);
 
 			Mock<IStreamFactory> streamFactory = new Mock<IStreamFactory>();
-			streamFactory.Setup(x => x.Create(It.IsAny<StreamWriter>(), It.IsAny<long>(), errorFilePath, Encoding.Default, It.IsAny<bool>())).Returns(_streamWriter);
+			streamFactory.Setup(x => x.Create(It.IsAny<StreamWriter>(), It.IsAny<long>(), errorFilePath, Encoding.Default, It.IsAny<bool>())).Returns(this._streamWriter);
 
 			Mock<IDestinationPath> destinationPath = new Mock<IDestinationPath>();
 			destinationPath.Setup(x => x.Path).Returns(errorFilePath);
 			destinationPath.Setup(x => x.Encoding).Returns(Encoding.Default);
 
-			_status = new Mock<IStatus>();
-			_instance = new ErrorFileWriter(streamFactory.Object, destinationPath.Object, _status.Object, new NullLogger());
+			this._status = new Mock<IStatus>();
+			this._instance = new ErrorFileWriter(streamFactory.Object, destinationPath.Object, this._status.Object, new NullLogger());
 		}
 
 		[Test]
@@ -59,21 +59,21 @@ namespace Relativity.Export.NUnit
 			const string errorText = "error_text";
 
 			// ACT
-			_instance.Write(type, recordIdentifier, fileLocation, errorText);
-			_instance.Write(type, recordIdentifier, fileLocation, errorText);
+			this._instance.Write(type, recordIdentifier, fileLocation, errorText);
+			this._instance.Write(type, recordIdentifier, fileLocation, errorText);
 
 			// ASSERT
 			string expectedText = $"{_HEADER}{Environment.NewLine}{string.Format(_ERROR_LINE, type)}{Environment.NewLine}{string.Format(_ERROR_LINE, type)}{Environment.NewLine}";
-			string writtenText = GetWrittenText();
+			string writtenText = this.GetWrittenText();
 			Assert.That(writtenText, Is.EqualTo(expectedText));
 
-			_status.Verify(x => x.WriteError($"{type} - Document [{recordIdentifier}] - File [{fileLocation}] - Error: {Environment.NewLine}{errorText}"), Times.Exactly(2));
+			this._status.Verify(x => x.WriteError($"{type} - Document [{recordIdentifier}] - File [{fileLocation}] - Error: {Environment.NewLine}{errorText}"), Times.Exactly(2));
 		}
 
 		private string GetWrittenText()
 		{
-			_streamWriter.Flush();
-			return Encoding.Default.GetString(_memoryStream.ToArray());
+			this._streamWriter.Flush();
+			return Encoding.Default.GetString(this._memoryStream.ToArray());
 		}
 	}
 }

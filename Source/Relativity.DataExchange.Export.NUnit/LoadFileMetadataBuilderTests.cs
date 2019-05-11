@@ -4,23 +4,23 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.NUnit
+namespace Relativity.DataExchange.Export.NUnit
 {
-    using System.Collections.Generic;
-    using System.Threading;
+	using System.Collections.Generic;
+	using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Exporters;
-    using kCura.WinEDDS.LoadFileEntry;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
 
-    using Moq;
+	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
 	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class LoadFileMetadataBuilderTests
 	{
 		private LoadFileMetadataBuilder _instance;
@@ -31,23 +31,23 @@ namespace Relativity.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_fieldLookupService = new Mock<IFieldService>();
-			LoadFileHeader loadFileHeader = new LoadFileHeader(_fieldLookupService.Object, new NullLogger());
+			this._fieldLookupService = new Mock<IFieldService>();
+			LoadFileHeader loadFileHeader = new LoadFileHeader(this._fieldLookupService.Object, new NullLogger());
 
-			_loadFileLine = new Mock<ILoadFileLine>();
+			this._loadFileLine = new Mock<ILoadFileLine>();
 
-			_instance = new LoadFileMetadataBuilder(loadFileHeader, _loadFileLine.Object, new NullLogger());
+			this._instance = new LoadFileMetadataBuilder(loadFileHeader, this._loadFileLine.Object, new NullLogger());
 		}
 
 		[Test]
 		public void ItShouldAddHeaderOnlyOnce()
 		{
 			const string columnHeader = "column_header";
-			_fieldLookupService.Setup(x => x.GetColumnHeader()).Returns(columnHeader);
+			this._fieldLookupService.Setup(x => x.GetColumnHeader()).Returns(columnHeader);
 
 			// ACT
-			IDictionary<int, ILoadFileEntry> loadFileEntriesWithHeader = _instance.AddLines(new ObjectExportInfo[0], CancellationToken.None);
-			IDictionary<int, ILoadFileEntry> loadFileEntriesWithoutHeader = _instance.AddLines(new ObjectExportInfo[0], CancellationToken.None);
+			IDictionary<int, ILoadFileEntry> loadFileEntriesWithHeader = this._instance.AddLines(new ObjectExportInfo[0], CancellationToken.None);
+			IDictionary<int, ILoadFileEntry> loadFileEntriesWithoutHeader = this._instance.AddLines(new ObjectExportInfo[0], CancellationToken.None);
 
 			// ASSERT
 			Assert.That(loadFileEntriesWithHeader.ContainsKey(-1), Is.True);
@@ -73,13 +73,13 @@ namespace Relativity.Export.NUnit
 			};
 
 			ILoadFileEntry line1 = new CompletedLoadFileEntry("value_1");
-			_loadFileLine.Setup(x => x.CreateLine(artifact1)).Returns(line1);
+			this._loadFileLine.Setup(x => x.CreateLine(artifact1)).Returns(line1);
 
 			ILoadFileEntry line2 = new CompletedLoadFileEntry("value_2");
-			_loadFileLine.Setup(x => x.CreateLine(artifact2)).Returns(line2);
+			this._loadFileLine.Setup(x => x.CreateLine(artifact2)).Returns(line2);
 
 			// ACT
-			IDictionary<int, ILoadFileEntry> loadFileEntries = _instance.AddLines(
+			IDictionary<int, ILoadFileEntry> loadFileEntries = this._instance.AddLines(
 				new[] { artifact1, artifact2 },
 				CancellationToken.None);
 
