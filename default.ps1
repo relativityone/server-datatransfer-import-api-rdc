@@ -556,19 +556,13 @@ Function Invoke-SignFile {
     $Signed = $false
     $Signtool = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, "Microsoft SDKs", "Windows", "v7.1A", "Bin", "signtool.exe")
     & $Signtool verify /pa /q $File
-    if ($? -eq 0) {
-        $Signed = $true
-    }
-
+    $Signed = $?
     if (-not $Signed) {
         For ($i = 0; $i -lt $RetryAttempts; $i++) {
             ForEach ($Site in $SignSites) {
                 Write-Host "Attempting to sign" $File "using" $Site "..."
                 & $Signtool sign /a /t $Site /d "Relativity" /du "http://www.kcura.com" $File
-                if ($? -eq 0) {
-                    $Signed = $true
-                }
-
+                $Signed = $?
                 if ($Signed) {
                     Write-Host "Signed $File Successfully!"
                     break
