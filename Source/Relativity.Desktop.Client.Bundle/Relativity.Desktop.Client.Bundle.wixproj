@@ -61,6 +61,12 @@
     <Content Include="Variables.wxi" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
+  <Target Name="SignBundleEngine">
+    <Exec Command="&quot;$(SignScriptPath)&quot; &quot;@(SignBundleEngine)&quot; &quot;$(SignToolPath)&quot;" />
+  </Target>
+  <Target Name="SignBundle">
+    <Exec Command="&quot;$(SignScriptPath)&quot; &quot;@(SignBundle)&quot; &quot;$(SignToolPath)&quot;" />
+  </Target>
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

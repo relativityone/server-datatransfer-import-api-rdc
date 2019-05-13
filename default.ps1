@@ -34,6 +34,10 @@ properties {
     $ProgetUrl = "https://proget.kcura.corp/nuget/NuGet"
     $ProgetApiKey = "03abad83-912d-4f24-ae99-03b15444eec8"
 
+    # Installer paths
+    $SignToolPath = "${Env:ProgramFiles(x86)}\Windows Kits\8.1\bin\x86\signtool.exe"
+    $SignScriptPath = Join-Path $ScriptsDir "Sign.bat"
+
     # Properties below this line are defined in build.ps1
     $Target = $Null
     $Configuration = $Null
@@ -114,7 +118,9 @@ task Build -Description "Builds the source code"  {
 task BuildInstallPackages -Description "Builds all install packages" {
     Initialize-Folder $InstallersArtifactsDir
     Initialize-Folder $LogsDir -Safe
-    Write-Output "Building all RDC MSI packages..."
+    Write-Output "Building all RDC MSI and bootstrapper packages..."
+    
+    # Note: Digitally signing MSI/bootstrapper relies on MSBuild targets and a special sign script.
     $BuildPlatforms = @("x86", "x64")
     foreach ($platform in $BuildPlatforms) {
         Write-Output "Solution: $InstallersSolution"
@@ -136,6 +142,9 @@ task BuildInstallPackages -Description "Builds all install packages" {
                         ("-p:Configuration=$Configuration"),
                         ("-p:BuildProjectReferences=false"),
                         ("-p:CopyArtifacts=true"),
+                        ("/property:SignOutput=$Sign"),
+                        ("/property:SignToolPath=`"$SignToolPath`""),
+                        ("/property:SignScriptPath=`"$SignScriptPath`""),
                         ("-clp:Summary"),
                         ("-nodeReuse:false"),
                         ("-nologo"),
@@ -144,10 +153,6 @@ task BuildInstallPackages -Description "Builds all install packages" {
                         ("-flp2:errorsonly;LogFile=`"$ErrorFilePath`""))
                 Write-Output "Successfully built the $platform RDC MSI package."
             } -errorMessage "There was an error building the RDC MSI."
-
-            if ($Sign) {
-                Invoke-SignDirectoryFiles -DirectoryCandidates @($InstallersArtifactsDir)
-            }
         }
         finally {
             Remove-EmptyLogFile $ErrorFilePath
@@ -171,6 +176,9 @@ task BuildInstallPackages -Description "Builds all install packages" {
                     ("-p:Configuration=$Configuration-bootstrapper"),
                     ("-p:BuildProjectReferences=false"),
                     ("-p:CopyArtifacts=true"),
+                    ("/property:SignOutput=$Sign"),
+                    ("/property:SignToolPath=`"$SignToolPath`""),
+                    ("/property:SignScriptPath=`"$SignScriptPath`""),
                     ("-clp:Summary"),
                     ("-nodeReuse:false"),
                     ("-nologo"),
@@ -180,10 +188,7 @@ task BuildInstallPackages -Description "Builds all install packages" {
             Write-Output "Successfully built the RDC bootstrapper package."
         } -errorMessage "There was an error building the RDC bootstrapper."
 
-        if ($Sign) {
-            $FileToSign = Join-Path $InstallersArtifactsDir "Relativity.Desktop.Client.Setup.exe"
-            Invoke-SignFile $FileToSign
-        }
+		Write-Output "Successfuly built all RDC MSI and bootstrapper packages."
     }
     finally {
         Remove-EmptyLogFile $ErrorFilePath
@@ -554,14 +559,13 @@ Function Invoke-SignFile {
     )
 
     $Signed = $false
-    $Signtool = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, "Microsoft SDKs", "Windows", "v7.1A", "Bin", "signtool.exe")
-    & $Signtool verify /pa /q $File
+    & $SigntoolPath verify /pa /q $File
     $Signed = $?
     if (-not $Signed) {
         For ($i = 0; $i -lt $RetryAttempts; $i++) {
             ForEach ($Site in $SignSites) {
                 Write-Host "Attempting to sign" $File "using" $Site "..."
-                & $Signtool sign /a /t $Site /d "Relativity" /du "http://www.kcura.com" $File
+                & $SigntoolPath sign /a /t $Site /d "Relativity" /du "http://www.kcura.com" $File
                 $Signed = $?
                 if ($Signed) {
                     Write-Host "Signed $File Successfully!"
