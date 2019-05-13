@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit
+namespace Relativity.DataExchange.NUnit
 {
 	using System.Collections.Generic;
 	using System.IO;
@@ -16,9 +16,9 @@ namespace Relativity.Import.Export.NUnit
 
 	using kCura.WinEDDS;
 
-	using Relativity.Import.Export;
-	using Relativity.Import.Export.Service;
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class ExportFileDeserializationTests
