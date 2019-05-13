@@ -31,7 +31,6 @@ namespace Relativity.DataExchange.NUnit
 		{
 			var loadFile = SerializationHelper.DeserializeFromSoapFile<LoadFile>(filename);
 
-			Assert.AreEqual(@"S:\100M\loadFile.csv", loadFile.FilePath);
 			Assert.IsTrue(loadFile.FirstLineContainsHeaders);
 			Assert.IsFalse(loadFile.LoadNativeFiles);
 			Assert.IsNull(loadFile.OverlayBehavior);
