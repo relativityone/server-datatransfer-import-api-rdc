@@ -1,5 +1,5 @@
 Imports kCura.WinEDDS
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange.Service
 
 Namespace Relativity.Desktop.Client
 	Public Class LoadFileForm

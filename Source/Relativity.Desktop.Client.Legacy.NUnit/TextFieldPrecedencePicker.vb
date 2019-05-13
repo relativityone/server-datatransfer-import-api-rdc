@@ -1,7 +1,7 @@
 ﻿Imports System.Collections.Generic
 Imports System.Linq
 Imports NUnit.Framework
-Imports Relativity.Import.Export.TestFramework
+Imports Relativity.DataExchange.TestFramework
 
 Namespace Relativity.Desktop.Client.Legacy.NUnit
 

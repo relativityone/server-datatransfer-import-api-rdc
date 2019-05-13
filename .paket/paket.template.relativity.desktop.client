@@ -29,5 +29,4 @@ copyright
 tags
 	relativity desktop client RDC
 files
-    ../Artifacts/installers/en-us/Relativity.Desktop.Client.x64.msi ==> tools
-	../Artifacts/installers/en-us/Relativity.Desktop.Client.x86.msi ==> tools
+    ../Artifacts/installers/Relativity.Desktop.Client.Setup.exe ==> tools

@@ -1,7 +1,7 @@
 ﻿Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Exporters
-Imports Relativity.Export
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange.Export
+Imports Relativity.DataExchange.Service
 
 Namespace Relativity.Desktop.Client
 

@@ -98,20 +98,23 @@ task Build -Description "Builds the source code"  {
 }
 
 task BuildInstallers -Description "Builds all installers" {
+    Initialize-Folder $InstallersArtifactsDir
     Initialize-Folder $LogsDir -Safe
+    Write-Output "Building all RDC MSI packages..."
     $BuildPlatforms = @("x86", "x64")
     foreach ($platform in $BuildPlatforms) {
         Write-Output "Solution: $InstallersSolution"
         Write-Output "Configuration: $Configuration"
         Write-Output "Build platform: $platform"
         Write-Output "Target: $Target"
-        Write-Output "Verbosity: $Verbosity"
+        Write-Output "Verbosity: $Verbosity"        
         $LogFilePath = Join-Path $LogsDir "installers-buildsummary-$platform.log"
         $ErrorFilePath = Join-Path $LogsDir "installers-builderrors-$platform.log"
         
         try {
             exec { 
                 # Note: BuildProjectReferences must be disabled to prevent overwriting digitally signed binaries!
+                Write-Output "Building the $platform RDC MSI package..."
                 msbuild @(($InstallersSolution),
                         ("-t:$Target"),
                         ("-v:$Verbosity"),
@@ -125,11 +128,43 @@ task BuildInstallers -Description "Builds all installers" {
                         ("-maxcpucount"),
                         ("-flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity"),
                         ("-flp2:errorsonly;LogFile=`"$ErrorFilePath`""))
-            } -errorMessage "There was an error building the installer solution."
+                Write-Output "Successfully built the $platform RDC MSI package."
+            } -errorMessage "There was an error building the RDC MSI."
         }
         finally {
             Remove-EmptyLogFile $ErrorFilePath
         }
+    }
+
+    Write-Output "Successfully built all RDC MSI packages."
+    try {
+        Write-Output "Solution: $InstallersSolution"
+        Write-Output "Configuration: $Configuration-bootstrapper"
+        Write-Output "Target: $Target"
+        Write-Output "Verbosity: $Verbosity"
+        $LogFilePath = Join-Path $LogsDir "bootstrapper-buildsummary-$platform.log"
+        $ErrorFilePath = Join-Path $LogsDir "bootstrapper-builderrors-$platform.log"
+        exec { 
+            # Note: BuildProjectReferences must be disabled to prevent overwriting digitally signed binaries!
+            Write-Output "Building the RDC bootstrapper package..."
+            msbuild @(($InstallersSolution),
+                    ("-t:$Target"),
+                    ("-v:$Verbosity"),
+                    ("-p:Platform=$platform"),
+                    ("-p:Configuration=$Configuration-bootstrapper"),
+                    ("-p:BuildProjectReferences=false"),
+                    ("-p:CopyArtifacts=true"),
+                    ("-clp:Summary"),
+                    ("-nodeReuse:false"),
+                    ("-nologo"),
+                    ("-maxcpucount"),
+                    ("-flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity"),
+                    ("-flp2:errorsonly;LogFile=`"$ErrorFilePath`""))
+            Write-Output "Successfully built the RDC bootstrapper package."
+        } -errorMessage "There was an error building the RDC bootstrapper."
+    }
+    finally {
+        Remove-EmptyLogFile $ErrorFilePath
     }
 }
 
@@ -247,7 +282,8 @@ task DigitallySignBinaries -Description "Digitally sign all binaries" {
         # The RDC binaries contained within the project must be signed to ensure harvesting includes digitally signed binaries.
         (Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Legacy") "bin"),
         (Join-Path $BinariesArtifactsDir "Relativity.Desktop.Client.Legacy"),
-        (Join-Path $BinariesArtifactsDir "Relativity.Import.Client")
+        (Join-Path $BinariesArtifactsDir "Relativity.DataExchange.Import"),
+		(Join-Path $BinariesArtifactsDir "sdk")
     )
 
     Invoke-DigitallSignFiles -DirectoryCandidates $directoryCandidates

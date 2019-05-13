@@ -5,13 +5,13 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{49CDE7EB-9385-41D9-8CD9-687C09C46996}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <StartupObject>Relativity.Desktop.Client.Startup</StartupObject>
     <RootNamespace>
     </RootNamespace>
     <AssemblyName>Relativity.Desktop.Client</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <MyType>WindowsForms</MyType>
+    <MyType>Console</MyType>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -96,6 +96,9 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="itextsharp">
@@ -379,6 +382,8 @@
     <Compile Include="Startup.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="WebHelpUrls.vb" />
+    <Compile Include="TaskDialogs.vb" />
     <Compile Include="ThreadExceptionHandler.vb" />
     <Compile Include="Utility.vb">
       <SubType>Code</SubType>
@@ -502,20 +507,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Relativity.Export.Client\Relativity.Export.Client.csproj">
-      <Project>{410ba79b-df60-4eda-86b3-608f3dee38f5}</Project>
-      <Name>Relativity.Export.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj">
-      <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
-      <Name>Relativity.Import.Export.Legacy</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
-      <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
-      <Name>Relativity.Import.Export</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.2">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.6.2 %28x86 and x64%29</ProductName>
@@ -527,8 +518,23 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Relativity.DataExchange.Export\Relativity.DataExchange.Export.csproj">
+      <Project>{410ba79b-df60-4eda-86b3-608f3dee38f5}</Project>
+      <Name>Relativity.DataExchange.Export</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.DataExchange.Legacy\Relativity.DataExchange.Legacy.vbproj">
+      <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
+      <Name>Relativity.DataExchange.Legacy</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.DataExchange.Core\Relativity.DataExchange.Core.csproj">
+      <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
+      <Name>Relativity.DataExchange.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
@@ -538,6 +544,17 @@
       <ItemGroup>
         <Reference Include="oi">
           <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Microsoft.WindowsAPICodePack">
+          <HintPath>..\..\packages\Microsoft-WindowsAPICodePack-Core\lib\net452\Microsoft.WindowsAPICodePack.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

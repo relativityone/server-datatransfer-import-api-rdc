@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+     xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+  <?include $(sys.CURRENTDIR)\Variables.wxi ?>
+  <Bundle Name="Relativity Desktop Client"
+          Version="!(bind.packageVersion.Relativity.Desktop.Client.x64)"
+          Manufacturer="Relativity ODA LLC"
+          UpgradeCode="$(var.UpgradeCode)"
+          Compressed="yes"
+          Copyright="Relativity ODA LLC"
+          IconSourceFile="$(var.ProjectDir)..\..\Images\relativity-icon.ICO"
+          AboutUrl="https://help.relativity.com/RelativityOne/Content/Relativity/RelativityOne_Staging_Explorer/Staging_Explorer.htm"
+          Condition="((VersionNT = v6.1 OR VersionNT64 = v6.1) AND ServicePackLevel = 1) OR VersionNT &gt; v6.2 OR VersionNT64 &gt; v6.2">    
+    <!-- Bundle will be installed only on Win 7 SP1 or later for both x64 x86-->
+    
+    <!-- All variables used to capture custom install options go here -->
+    <Variable Name="INSTALLFOLDER" bal:Overridable="yes" Value="[InstallFolder]" />
+    <Variable Name="RELATIVITYONE_ENV" bal:Overridable="yes" Value="1" />
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkLicense">
+      <bal:WixStandardBootstrapperApplication SuppressOptionsUI="no"
+                                              LicenseUrl=""
+                                              LogoFile="$(var.ProjectDir)..\..\Images\relativity-icon.bmp"
+                                              ShowVersion="yes"
+                                              ThemeFile="Themes\RdcCustomTheme.xml"
+                                              LocalizationFile="Themes\RdcCustomTheme.wxl" />
+      <Payload SourceFile="$(var.ProjectDir)..\..\Images\horiz-divider.bmp"/>
+    </BootstrapperApplicationRef>
+    <Chain>
+      <PackageGroupRef Id="DotNetPrereq" />
+      <PackageGroupRef Id="VCPP2010X86REDISTPKGGRP" />
+      <PackageGroupRef Id="VCPP2010X64REDISTPKGGRP" />
+      <PackageGroupRef Id="VCPP2017X86REDISTPKGGRP" />
+      <PackageGroupRef Id="VCPP2017X64REDISTPKGGRP" />
+      <RollbackBoundary />
+      <!-- Combine both MSI's into a single package. -->
+      <MsiPackage Id="Relativity.Desktop.Client.x86"
+                  SourceFile="$(sys.CURRENTDIR)..\..\artifacts\installers\en-us\Relativity.Desktop.Client.x86.msi"
+                  DisplayName="$(var.ProductName)"
+                  Visible="no"
+                  DisplayInternalUI="no"
+                  Vital="yes"
+                  EnableFeatureSelection="no"
+                  Compressed="yes"
+                  InstallCondition="NOT VersionNT64">
+        <MsiProperty Name="INSTALLFOLDER" Value="[INSTALLFOLDER]" />
+        <MsiProperty Name="RELATIVITYONE_ENV" Value="[RELATIVITYONE_ENV]" />
+      </MsiPackage>
+      <MsiPackage Id="Relativity.Desktop.Client.x64"
+                  SourceFile="$(sys.CURRENTDIR)..\..\artifacts\installers\en-us\Relativity.Desktop.Client.x64.msi"
+                  DisplayName="$(var.ProductName)"
+                  Visible="no"
+                  DisplayInternalUI="no"
+                  Vital="yes"
+                  EnableFeatureSelection="no"
+                  Compressed="yes"
+                  InstallCondition="VersionNT64">
+        <MsiProperty Name="INSTALLFOLDER" Value="[INSTALLFOLDER]" />
+        <MsiProperty Name="RELATIVITYONE_ENV" Value="[RELATIVITYONE_ENV]" />
+      </MsiPackage>
+    </Chain>
+  </Bundle>
+</Wix>

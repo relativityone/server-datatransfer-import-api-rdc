@@ -7,7 +7,7 @@
            Name="$(var.ProductName)"
            Codepage="1252"
            Language="1033"
-           Version="!(bind.FileVersion.Relativity.Desktop.Client.exe)"
+           Version="$(var.ProductVersion)"
            UpgradeCode="$(var.UpgradeCode)"
            Manufacturer="Relativity ODA LLC">
     <Package Description="$(var.ProductName) Installer package"
@@ -316,9 +316,9 @@
     <!-- Sequences -->
     <InstallExecuteSequence>     
       <Custom Action="CloseRunningApplications" After="InstallInitialize">1</Custom>
-      <Custom Action="BackupConfiguration" After="CloseRunningApplications">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</Custom>
-      <Custom Action="RestoreConfiguration" After="WriteRegistryValues">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</Custom>
-      <Custom Action="Cleanup" After="RestoreConfiguration">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="BackupConfiguration" After="CloseRunningApplications">WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="RestoreConfiguration" After="WriteRegistryValues">WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="Cleanup" After="RestoreConfiguration">WIX_UPGRADE_DETECTED</Custom>
     </InstallExecuteSequence>
   </Product>
 </Wix>

@@ -1,5 +1,5 @@
-﻿# Relativity Import API and RDC for .NET
-You can use the Import API (IAPI) to build application components that import documents, objects, images, and productions using a flexible number of transfer clients. The Remote Desktop Client (RDC) is a Windows desktop application built on Import API. It should be noted that this repository also includes Export API; however, this is heavily dependent on the RDC and has never been officially supported.
+﻿# Relativity Data Exchange API and RDC for .NET
+You can use the data exchange API to build application components that import documents, objects, images, and productions using a flexible number of transfer clients. The Remote Desktop Client (RDC) is a Windows desktop application built on Import API. It should be noted that this repository also includes Export API; however, this is heavily dependent on the RDC and has never been officially supported.
 
 ## System requirements
 * .NET 4.6.2
@@ -70,10 +70,10 @@ The implementation details are as follows:
 * .\Scripts\Invoke-ILMerge.ps1
   * Performs all ILMERGE functionality
   * The final assembly is stored in the .\Artifacts\binaries\sdk sub-folder
-* .\.paket\paket.template.relativity.import.client.sdk
+* .\.paket\paket.template.relativity.dataexchange.client.sdk
   * Represents the new SDK package template
   * References the ILMERGE'd assembly file
-* Relativity.Export.Client.csproj
+* Relativity.DataExchange.Export.csproj
   * Post-build event calls Invoke-ILMerge.ps1
   * MSBUILD parameters are passed
   * **Debug|Release**: Do nothing; otherwise, execute ILMERGE
@@ -163,7 +163,7 @@ The build scripts extend the testing framework to include code coverage using th
 ```
 
 ### Test categories
-To provide a convenient way to filter tests, `TestCategories` class exists within the `Relativity.Import.Export.TestFramework` assembly. The most important category is `Integration` because it's used as a filter when running unit or integration tests.
+To provide a convenient way to filter tests, `TestCategories` class exists within the `Relativity.DataExchange.TestFramework` assembly. The most important category is `Integration` because it's used as a filter when running unit or integration tests.
 
 ```csharp
 [Test]
@@ -284,20 +284,20 @@ The project structure is similar to other repos. Important folders and files are
 │   ├───Relativity.Desktop.Client.Legacy.NUnit
 │   ├───Relativity.Desktop.Client.NUnit.Integration
 │   ├───Relativity.Desktop.Client.Setup
-│   ├───Relativity.Export.Client
-│   ├───Relativity.Export.Client.NUnit
-│   ├───Relativity.Export.Client.NUnit.Integration
-│   ├───Relativity.Import.Client
-│   ├───Relativity.Import.Client.Legacy.NUnit
-│   ├───Relativity.Import.Client.NUnit
-│   ├───Relativity.Import.Client.NUnit.Integration
-│   ├───Relativity.Import.Client.Samples.NUnit
-│   ├───Relativity.Import.Export
-│   ├───Relativity.Import.Export.Legacy
-│   ├───Relativity.Import.Export.NUnit
-│   ├───Relativity.Import.Export.NUnit.Integration
-│   ├───Relativity.Import.Export.Services.Interfaces
-│   ├───Relativity.Import.Export.TestFramework
+│   ├───Relativity.DataExchange.Export
+│   ├───Relativity.DataExchange.Export.NUnit
+│   ├───Relativity.DataExchange.Export.NUnit.Integration
+│   ├───Relativity.DataExchange.Import
+│   ├───Relativity.DataExchange.Import.Legacy.NUnit
+│   ├───Relativity.DataExchange.Import.NUnit
+│   ├───Relativity.DataExchange.Import.NUnit.Integration
+│   ├───Relativity.DataExchange.Import.Samples.NUnit
+│   ├───Relativity.DataExchange
+│   ├───Relativity.DataExchange.Legacy
+│   ├───Relativity.DataExchange.NUnit
+│   ├───Relativity.DataExchange.NUnit.Integration
+│   ├───Relativity.DataExchange.Services.Interfaces
+│   ├───Relativity.DataExchange.TestFramework
 │   │
 │   │   Installers.sln
 │   │   Master.sln
@@ -323,28 +323,28 @@ The project structure is similar to other repos. Important folders and files are
 │   paket.lock
 ```
 ### Projects
-|Name                                           |Project Type|Published|Description                                                                                                                 |
-|:----------------------------------------------|:----------:|:-------:|:---------------------------------------------------------------------------------------------------------------------------|
-|Relativity.Desktop.Client.Controls.Legacy      |   `VB.NET` |         |The RDC user controls project.                                                                                              |
-|Relativity.Desktop.Client.CustomActions        |     C#     |         |The RDC WIX custom actions project.                                                                                         |
-|Relativity.Desktop.Client.CustomActions.NUnit  |     C#     |         |The RDC WIX custom actions test project.                                                                                    |
-|Relativity.Desktop.Client.Legacy               |   `VB.NET` |    X    |The RDC application/EXE project.                                                                                            |
-|Relativity.Desktop.Client.Legacy.NUnit         |   `VB.NET` |         |The RDC unit test project.                                                                                                  |
-|Relativity.Desktop.Client.NUnit.Integration    |     C#     |         |The RDC integration test project.                                                                                           |
-|Relativity.Desktop.Client.Setup                |     C#     |    x    |The RDC WIX setup/MSI project.                                                                                              |
-|Relativity.Export.Client                       |     C#     |         |The export API project.                                                                                                     |
-|Relativity.Export.Client.NUnit                 |     C#     |         |The export API unit test project.                                                                                           |
-|Relativity.Export.Client.NUnit.Integration     |     C#     |         |The export API integration test project.                                                                                    |
-|Relativity.Import.Client                       |     C#     |    X    |The import API project.                                                                                                     |
-|Relativity.Import.Client.Legacy.NUnit          |   `VB.NET` |         |The import API unit test project.                                                                                           |
-|Relativity.Import.Client.NUnit                 |     C#     |         |The import API unit test project.                                                                                           |
-|Relativity.Import.Client.NUnit.Integration     |     C#     |         |The C# import API integration test project.                                                                                 |
-|Relativity.Import.Client.Samples.NUnit         |     C#     |    x    |The C# import API Github samples test project.                                                                              |
-|Relativity.Import.Export                       |     C#     |         |The C# import/export class library project.                                                                                 |
-|Relativity.Import.Export.Legacy                |   `VB.NET` |         |The import/export shared class library project.                                                                             |
-|Relativity.Import.Export.NUnit                 |     C#     |         |The C# import/export unit test project.                                                                                     |
-|Relativity.Import.Export.NUnit.Integration     |     C#     |         |The C# import/export integration test project.                                                                              |
-|Relativity.Import.Export.TestFramework         |     C#     |         |The import/export test framework projecty.                                                                                  |
+|Name                                             |Project Type|Published|Description                                                                                                                 |
+|:------------------------------------------------|:----------:|:-------:|:---------------------------------------------------------------------------------------------------------------------------|
+|Relativity.Desktop.Client.Controls.Legacy        |   `VB.NET` |         |The RDC user controls project.                                                                                              |
+|Relativity.Desktop.Client.CustomActions          |     C#     |         |The RDC WIX custom actions project.                                                                                         |
+|Relativity.Desktop.Client.CustomActions.NUnit    |     C#     |         |The RDC WIX custom actions test project.                                                                                    |
+|Relativity.Desktop.Client.Legacy                 |   `VB.NET` |    X    |The RDC application/EXE project.                                                                                            |
+|Relativity.Desktop.Client.Legacy.NUnit           |   `VB.NET` |         |The RDC unit test project.                                                                                                  |
+|Relativity.Desktop.Client.NUnit.Integration      |     C#     |         |The RDC integration test project.                                                                                           |
+|Relativity.Desktop.Client.Setup                  |     C#     |    x    |The RDC WIX setup/MSI project.                                                                                              |
+|Relativity.DataExchange.Export                   |     C#     |         |The export API project.                                                                                                     |
+|Relativity.DataExchange.Export.NUnit             |     C#     |         |The export API unit test project.                                                                                           |
+|Relativity.DataExchange.Export.NUnit.Integration |     C#     |         |The export API integration test project.                                                                                    |
+|Relativity.DataExchange.Import                   |     C#     |    X    |The import API project.                                                                                                     |
+|Relativity.DataExchange.Import.Legacy.NUnit      |   `VB.NET` |         |The import API unit test project.                                                                                           |
+|Relativity.DataExchange.Import.NUnit             |     C#     |         |The import API unit test project.                                                                                           |
+|Relativity.DataExchange.Import.NUnit.Integration |     C#     |         |The C# import API integration test project.                                                                                 |
+|Relativity.DataExchange.Import.Samples.NUnit     |     C#     |    x    |The C# import API Github samples test project.                                                                              |
+|Relativity.DataExchange                          |     C#     |         |The C# import/export class library project.                                                                                 |
+|Relativity.DataExchange.Legacy                   |   `VB.NET` |         |The import/export shared class library project.                                                                             |
+|Relativity.DataExchange.NUnit                    |     C#     |         |The C# import/export unit test project.                                                                                     |
+|Relativity.DataExchange.NUnit.Integration        |     C#     |         |The C# import/export integration test project.                                                                              |
+|Relativity.DataExchange.TestFramework            |     C#     |         |The import/export test framework projecty.                                                                                  |
 
 ### Resharper Team Shared Layer
 To ensure that all team members use the same `Resharper` settings, `Master.sln.DotSettings` is added to source control and adjacent to the master solution file.

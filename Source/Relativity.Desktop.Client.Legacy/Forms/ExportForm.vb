@@ -1,8 +1,10 @@
 Imports kCura.Vendor.Castle.Core.Internal
 Imports FileNaming.CustomFileNaming
 Imports kCura.WinEDDS
+Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Service
 Imports Relativity.Desktop.Client
-Imports Relativity.Import.Export.Service
+Imports ViewFieldInfo = Relativity.DataExchange.Service.ViewFieldInfo
 
 Public Class ExportForm
 	Inherits System.Windows.Forms.Form
@@ -1262,7 +1264,7 @@ Public Class ExportForm
 	Protected _exportFile As kCura.WinEDDS.ExportFile
 	Protected WithEvents _precedenceForm As ProductionPrecedenceForm
 	Protected WithEvents _textFieldPrecedenceForm As TextPrecedenceForm
-	Private _allExportableFields As Relativity.Import.Export.Service.ViewFieldInfo
+	Private _allExportableFields As ViewFieldInfo
 	Private _dataSourceIsSet As Boolean = False
 	Private _objectTypeName As String = ""
 	Private _isLoadingExport As Boolean = False
@@ -1533,7 +1535,7 @@ Public Class ExportForm
 
 	Private Async Sub LoadExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LoadExportSettings.Click
 		If _loadExportSettingsDialog.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
-			Dim settings As String = Relativity.Import.Export.Io.FileSystem.Instance.File.ReadAllText(_loadExportSettingsDialog.FileName)
+			Dim settings As String = FileSystem.Instance.File.ReadAllText(_loadExportSettingsDialog.FileName)
 			Dim newFile As ExtendedExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
 			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
 				MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)

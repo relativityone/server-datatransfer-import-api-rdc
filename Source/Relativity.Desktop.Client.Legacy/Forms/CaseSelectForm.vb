@@ -1,11 +1,13 @@
+Imports Relativity.DataExchange.Service
+
 Namespace Relativity.Desktop.Client
 	Public Class CaseSelectForm
 		Inherits SelectFormBase
 
 #Region " Declarations & Properties "
-		Private _selectedCaseInfo As Generic.List(Of Relativity.Import.Export.Service.CaseInfo)
+		Private _selectedCaseInfo As Generic.List(Of CaseInfo)
 
-		Public ReadOnly Property SelectedCaseInfo() As Generic.List(Of Relativity.Import.Export.Service.CaseInfo)
+		Public ReadOnly Property SelectedCaseInfo() As Generic.List(Of CaseInfo)
 			Get
 				Return _selectedCaseInfo
 			End Get
@@ -26,10 +28,10 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Protected Overrides Sub ItemListView_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ItemListView.SelectedIndexChanged
-			Dim list As New Generic.List(Of Relativity.Import.Export.Service.CaseInfo)
+			Dim list As New Generic.List(Of CaseInfo)
 			If ItemListView.SelectedItems.Count <> 0 Then
 				For Each si As ListViewItem In ItemListView.SelectedItems
-					list.Add(DirectCast(si.Tag, Relativity.Import.Export.Service.CaseInfo))
+					list.Add(DirectCast(si.Tag, CaseInfo))
 				Next
 				_selectedCaseInfo = list
 				ConfirmButton.Enabled = True
@@ -50,7 +52,7 @@ Namespace Relativity.Desktop.Client
 			Dim listItem As New System.Windows.Forms.ListViewItem With
 			{
 				.Text = CType(caseTableRow.Item("Name"), String),
-				.Tag = New Relativity.Import.Export.Service.CaseInfo(caseTableRow)
+				.Tag = New CaseInfo(caseTableRow)
 			}
 			Return listItem
 		End Function

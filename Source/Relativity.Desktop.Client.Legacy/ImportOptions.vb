@@ -1,5 +1,6 @@
 ﻿Imports kCura.WinEDDS
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Service
 Imports Relativity.Desktop.Client
 
 Public Class ImportOptions
@@ -262,7 +263,7 @@ Public Class ImportOptions
 					xmlDoc.LoadXml(doc)
 
 					Dim soap As String = Global.Relativity.Desktop.Client.Application.Instance.CleanLoadFile(xmlDoc)
-					Dim tempLoadFile As LoadFile = Relativity.Import.Export.SerializationHelper.DeserializeFromSoap(Of LoadFile)(soap)
+					Dim tempLoadFile As LoadFile = SerializationHelper.DeserializeFromSoap(Of LoadFile)(soap)
 					If Not String.IsNullOrEmpty(LoadFilePath) Then
 						tempLoadFile.FilePath = LoadFilePath
 					Else

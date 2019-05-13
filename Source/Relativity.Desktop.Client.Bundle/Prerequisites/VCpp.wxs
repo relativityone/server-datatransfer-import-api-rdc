@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+		 xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <?include $(sys.CURRENTDIR)\Variables.wxi ?>
+  <Fragment>
+    <!-- Visual C++ General Note.                                                                                         -->
+    <!-- Starting with VC++ 2015 and extending to 2019, all VC++ installations share the same major version number!       -->
+    <!-- The approach that most take where you simply check the "Installed" Registry value can no longer be used.         -->
+    <!-- This is why explicit major.minor.bld condition checks are performed.                                             -->
+    <!--                                                                                                                  -->
+    <!-- Note: See the SO link for details on how to properly check for VC++                                              -->
+    <!--                                                                                                                  -->
+    <!-- Note: Heat was used to auto-generate the payload parameters                                                      -->
+    <!--       e.g. heat.exe payload {filename} -o payload.wxs                                                            -->
+    <!--                                                                                                                  -->
+    <!-- Note: VC++ 2017 is backwards compatible with VC++ 2015; therefore, VC++ 2015 is no longer required.              -->
+
+    <!-- The Visual C++ 2010 x86 runtime is required for ALL platforms! -->
+    <util:ProductSearch Id="VCPP2010X86REDIST"
+                        UpgradeCode="1F4F1D2A-D9DA-32CF-9909-48485DA06DD5"
+                        Result="version"
+                        Variable="VCPP2010X86REDIST" />
+    <PackageGroup Id="VCPP2010X86REDISTPKGGRP">
+      <ExePackage Id="VCPP2010X86REDISTPKG"
+                  Cache="yes"
+                  Compressed="no"
+                  PerMachine="yes"
+                  Permanent="yes"
+                  Vital="yes"
+                  DisplayName="Microsoft Visual C++ 2010 x86 Redistributable"
+                  InstallCommand="/q /norestart"
+                  Name="vcredist_x86.exe"
+                  DownloadUrl="https://download.microsoft.com/download/5/B/C/5BC5DBB3-652D-4DCE-B14A-475AB85EEF6E/vcredist_x86.exe"
+                  DetectCondition="(VCPP2010X86REDIST &gt;= v10.0.30319)"
+                  SuppressSignatureVerification="yes">
+        <ExitCode Value="0" Behavior="success" />
+        <ExitCode Value="1641" Behavior="forceReboot"/>
+        <ExitCode Value="3010" Behavior="forceReboot"/>
+        <ExitCode Behavior="error"/>
+        <RemotePayload CertificatePublicKey="672605E36DD71EC6B8325B91C5FE6971390CB6B6"
+                       CertificateThumbprint="9617094A1CFB59AE7C1F7DFDB6739E4E7C40508F"
+                       Description="Microsoft Visual C++ 2010  x86 Redistributable Setup"
+                       Hash="372D9C1670343D3FB252209BA210D4DC4D67D358"
+                       ProductName="Microsoft Visual C++ 2010  x86 Redistributable"
+                       Size="5073240"
+                       Version="10.0.30319.1" />
+      </ExePackage>
+    </PackageGroup>
+    <!-- The Visual C++ 2010 x64 runtime is ONLY required for 64-bit platforms! -->
+    <util:ProductSearch Id="VCPP2010X64REDIST"
+                        UpgradeCode="5B75F761-BAC8-33BC-A381-464DDDD813A3"
+                        Result="version"
+                        Variable="VCPP2010X64REDIST" />
+    <PackageGroup Id="VCPP2010X64REDISTPKGGRP">
+      <ExePackage Id="VCPP2010X64REDISTPKG"
+                  Cache="yes"
+                  Compressed="no"
+                  PerMachine="yes"
+                  Permanent="yes"
+                  Vital="yes"
+                  DisplayName="Microsoft Visual C++ 2010 x64 Redistributable"
+                  InstallCommand="/q /norestart"
+                  Name="vcredist_x64.exe"
+                  DownloadUrl="https://download.microsoft.com/download/3/2/2/3224B87F-CFA0-4E70-BDA3-3DE650EFEBA5/vcredist_x64.exe"
+                  InstallCondition="VersionNT64"
+                  DetectCondition="(VCPP2010X64REDIST &gt;= v10.0.30319)"
+                  SuppressSignatureVerification="yes">
+        <ExitCode Value="0" Behavior="success" />
+        <ExitCode Value="1641" Behavior="forceReboot"/>
+        <ExitCode Value="3010" Behavior="forceReboot"/>
+        <ExitCode Behavior="error"/>
+        <RemotePayload CertificatePublicKey="672605E36DD71EC6B8325B91C5FE6971390CB6B6"
+                       CertificateThumbprint="9617094A1CFB59AE7C1F7DFDB6739E4E7C40508F"
+                       Description="Microsoft Visual C++ 2010  x64 Redistributable Setup"
+                       Hash="B330B760A8F16D5A31C2DC815627F5EB40861008"
+                       ProductName="Microsoft Visual C++ 2010  x64 Redistributable"
+                       Size="5718872"
+                       Version="10.0.30319.1" />
+      </ExePackage>
+    </PackageGroup>
+    <!-- The Visual C++ 2017 x86 runtime is required for ALL platforms! -->
+    <util:ProductSearch Id="VCPP2017X86REDIST"
+                        UpgradeCode="65E5BD06-6392-3027-8C26-853107D3CF1A"
+                        Result="version"
+                        Variable="VCPP2017X86REDIST" />
+    <PackageGroup Id="VCPP2017X86REDISTPKGGRP">
+      <ExePackage Id="VCPP2017X86REDISTPKG"
+                  Cache="yes"
+                  Compressed="no"
+                  PerMachine="yes"
+                  Permanent="yes"
+                  Vital="yes"
+                  DisplayName="Microsoft Visual C++ 2017 x86 Redistributable"
+                  InstallCommand="/q /norestart"
+                  Name="vcredist_x86.exe"
+                  DownloadUrl="https://aka.ms/vs/15/release/vc_redist.x86.exe"
+                  DetectCondition="(VCPP2017X86REDIST &gt;= v14.15.26706)"
+                  SuppressSignatureVerification="yes">
+        <ExitCode Value="0" Behavior="success" />
+        <ExitCode Value="1641" Behavior="forceReboot"/>
+        <ExitCode Value="3010" Behavior="forceReboot"/>
+        <ExitCode Behavior="error"/>
+        <RemotePayload CertificatePublicKey="793980B0038EBF0A88DAA08420FD3E66F53CC0CE"
+                       CertificateThumbprint="9DC17888B5CFAD98B3CB35C1994E96227F061675"
+                       Description="Microsoft Visual C++ 2017 Redistributable (x86) - 14.16.27027"
+                       Hash="71370C923679EA07E38B4E7BACC52B23E5EF9652"
+                       ProductName="Microsoft Visual C++ 2017 Redistributable (x86) - 14.16.27027"
+                       Size="14656504"
+                       Version="14.16.27027.1" />
+      </ExePackage>
+    </PackageGroup>
+    <!-- The Visual C++ 2017 x64 runtime is ONLY required for 64-bit platforms! -->
+    <util:ProductSearch Id="VCPP2017X64REDIST"
+                        UpgradeCode="36F68A90-239C-34DF-B58C-64B30153CE35"
+                        Result="version"
+                        Variable="VCPP2017X64REDIST" />
+    <PackageGroup Id="VCPP2017X64REDISTPKGGRP">
+      <ExePackage Id="VCPP2017X64REDISTPKG"
+                  Cache="yes"
+                  Compressed="no"
+                  PerMachine="yes"
+                  Permanent="yes"
+                  Vital="yes"
+                  DisplayName="Microsoft Visual C++ 2017 x64 Redistributable"
+                  InstallCommand="/q /norestart"
+                  Name="vcredist_x64.exe"
+                  DownloadUrl="https://aka.ms/vs/15/release/vc_redist.x64.exe"
+                  InstallCondition="VersionNT64"
+                  DetectCondition="(VCPP2017X64REDIST &gt;= v14.15.26706)"
+                  SuppressSignatureVerification="yes">
+        <ExitCode Value="0" Behavior="success" />
+        <ExitCode Value="1641" Behavior="forceReboot"/>
+        <ExitCode Value="3010" Behavior="forceReboot"/>
+        <ExitCode Behavior="error"/>
+        <RemotePayload CertificatePublicKey="793980B0038EBF0A88DAA08420FD3E66F53CC0CE"
+                       CertificateThumbprint="9DC17888B5CFAD98B3CB35C1994E96227F061675"
+                       Description="Microsoft Visual C++ 2017 Redistributable (x64) - 14.16.27027"
+                       Hash="7ECF5797BC24EDED2454AAE6F3CA95C4F6EAB807"
+                       ProductName="Microsoft Visual C++ 2017 Redistributable (x64) - 14.16.27027"
+                       Size="15338176"
+                       Version="14.16.27027.1" />
+      </ExePackage>
+    </PackageGroup>
+  </Fragment>
+</Wix>

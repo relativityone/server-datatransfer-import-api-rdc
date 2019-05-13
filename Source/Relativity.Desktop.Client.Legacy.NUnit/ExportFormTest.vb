@@ -2,7 +2,8 @@
 Imports System.Windows.Forms
 
 Imports NUnit.Framework
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange.Service
+Imports Relativity.DataExchange.TestFramework
 
 Namespace Relativity.Desktop.Client.Legacy.NUnit
 
@@ -10,7 +11,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 	Public Class ExportFormTest
 
 		Private _form As ExportForm
-		Private _queryFieldFactory As New Relativity.Import.Export.TestFramework.QueryFieldFactory()
+		Private _queryFieldFactory As New QueryFieldFactory()
 		Private _filtersDataTable As New DataTable()
 
 		<SetUp>

@@ -1,7 +1,7 @@
 Imports System.Net
 Imports kCura.WinEDDS
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Service
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Service
 Imports Relativity.OAuth2Client.Exceptions
 
 Namespace Relativity.Desktop.Client
@@ -9,6 +9,8 @@ Namespace Relativity.Desktop.Client
 		Inherits System.Windows.Forms.Form
 
 #Region " Windows Form Designer generated code "
+
+		Private Shared _mainWindowHandle As IntPtr = IntPtr.Zero
 
 		Public Sub New()
 			MyBase.New()
@@ -19,6 +21,20 @@ Namespace Relativity.Desktop.Client
 			'Add any initialization after the InitializeComponent() call
 			_application = Global.Relativity.Desktop.Client.Application.Instance
 		End Sub
+
+		''' <summary>
+		''' Gets the handle to the main window form.
+		''' </summary>
+		''' <value>
+		''' The <see cref="IntPtr"/> value.
+		''' </value>
+		Public Shared ReadOnly Property MainWindowHandle As IntPtr
+			Get
+				' Note: the Window handle must be used because the RDC doesn't employ proper marshalling calls from non-GUI threads
+				'       and WinForms will throw an exception whenever attempting to access such properties.
+				Return _mainWindowHandle
+			End Get
+		End Property
 
 		'Form overrides dispose to clean up the component list.
 		Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
@@ -444,6 +460,7 @@ Namespace Relativity.Desktop.Client
 		Private Async Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 
 			ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
+			_mainWindowHandle = Me.Handle
 			LoadWindowSize()
 			Me.CenterToScreen()
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor

@@ -6,13 +6,13 @@ Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Monitoring
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Export
+Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Service
+Imports Relativity.DataExchange.Transfer
 Imports Relativity.DataTransfer.MessageService
 Imports Relativity.DataTransfer.MessageService.Tools
-Imports Relativity.Export
-Imports Relativity.Import.Export
-Imports Relativity.Import.Export.Process
-Imports Relativity.Import.Export.Service
-Imports Relativity.Import.Export.Transfer
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
@@ -55,7 +55,7 @@ Namespace Relativity.Desktop.Client
 		Private _isCaseFolderSelected As Boolean = True
 		Private _showCaseSelectDialog As Boolean = True
 		Private _processPool As ProcessPool2
-		Private _selectedCaseInfo As Relativity.Import.Export.Service.CaseInfo
+		Private _selectedCaseInfo As CaseInfo
 		Private _selectedCaseFolderID As Int32
 		Private _fieldProviderCache As IFieldProviderCache
 		Private _selectedCaseFolderPath As String
@@ -118,13 +118,13 @@ Namespace Relativity.Desktop.Client
 			End Set
 		End Property
 
-		Public ReadOnly Property SelectedCaseInfo() As Relativity.Import.Export.Service.CaseInfo
+		Public ReadOnly Property SelectedCaseInfo() As CaseInfo
 			Get
 				Return _selectedCaseInfo
 			End Get
 		End Property
 
-		Public Async Function RefreshSelectedCaseInfoAsync(Optional ByVal caseInfo As Relativity.Import.Export.Service.CaseInfo = Nothing) As Task
+		Public Async Function RefreshSelectedCaseInfoAsync(Optional ByVal caseInfo As CaseInfo = Nothing) As Task
 			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Await Me.GetCredentialsAsync(), _CookieContainer)
 			If caseInfo Is Nothing Then
 				_selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
@@ -810,7 +810,7 @@ Namespace Relativity.Desktop.Client
 #End Region
 
 #Region "Form Initializers"
-		Public Async Function NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.Import.Export.Service.CaseInfo) As Task
+		Public Async Function NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As CaseInfo) As Task
 			If Not Await Me.IsConnected() Then
 				CursorDefault()
 				Return
@@ -836,11 +836,11 @@ Namespace Relativity.Desktop.Client
 			frm.Show()
 		End Function
 
-		Public Async Function NewProductionExport(ByVal caseInfo As Relativity.Import.Export.Service.CaseInfo) As Task
+		Public Async Function NewProductionExport(ByVal caseInfo As CaseInfo) As Task
 			Await Me.NewSearchExport(caseInfo.RootFolderID, caseInfo, ExportFile.ExportType.Production)
 		End Function
 
-		Public Async Function NewSearchExport(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.Import.Export.Service.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType) As Task
+		Public Async Function NewSearchExport(ByVal selectedFolderId As Int32, ByVal caseInfo As CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType) As Task
 			Dim frm As ExportForm = New ExportForm()
 			Dim exportFile As kCura.WinEDDS.ExportFile
 			Try
@@ -879,7 +879,7 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 
-		Public Async Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.Import.Export.Service.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As Task(Of kCura.WinEDDS.ExportFile)
+		Public Async Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As Task(Of kCura.WinEDDS.ExportFile)
 			Dim exportFile As New kCura.WinEDDS.ExtendedExportFile(artifactTypeID)
 			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Await Me.GetCredentialsAsync(), _CookieContainer)
 			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer)
@@ -924,7 +924,7 @@ Namespace Relativity.Desktop.Client
 			Return searchExportDataSet.Tables(0)
 		End Function
 
-		Public Async Function NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Relativity.Import.Export.Service.CaseInfo) As Task
+		Public Async Function NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As CaseInfo) As Task
 			CursorWait()
 			If Not Await Me.IsConnected() Then
 				CursorDefault()
@@ -952,7 +952,7 @@ Namespace Relativity.Desktop.Client
 			CursorDefault()
 		End Function
 
-		Public Async Function NewProductionFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Relativity.Import.Export.Service.CaseInfo) As Task
+		Public Async Function NewProductionFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As CaseInfo) As Task
 			CursorWait()
 			If Not Await Me.IsConnected() Then
 				CursorDefault()
@@ -1246,7 +1246,7 @@ Namespace Relativity.Desktop.Client
 
 		Private Sub SaveFileObject(ByVal fileObject As Object, ByVal path As String)
 			Try
-				Relativity.Import.Export.SerializationHelper.SerializeToSoapFile(fileObject, path)
+				Relativity.DataExchange.SerializationHelper.SerializeToSoapFile(fileObject, path)
 			Catch ex As System.Exception
 				MsgBox("Save Failed" + vbCrLf + ex.Message, MsgBoxStyle.Critical)
 			End Try
@@ -1281,7 +1281,7 @@ Namespace Relativity.Desktop.Client
 
 			Try
 				Dim scrubbed As String = Me.CleanLoadFile(xmlDoc)
-				tempLoadFile = Global.Relativity.Import.Export.SerializationHelper.DeserializeFromSoap(Of kCura.WinEDDS.LoadFile)(scrubbed)
+				tempLoadFile = Global.Relativity.DataExchange.SerializationHelper.DeserializeFromSoap(Of kCura.WinEDDS.LoadFile)(scrubbed)
 			Catch ex As System.Exception
 				If Not isSilent Then MsgBox("Load Failed", MsgBoxStyle.Critical, "Relativity Desktop Client")
 				'TODO: Log Exception
@@ -1339,7 +1339,7 @@ Namespace Relativity.Desktop.Client
 			kCura.WinEDDS.Service.Settings.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
 			Dim retval As ImageLoadFile
 			Try
-				retval = Relativity.Import.Export.SerializationHelper.DeserializeFromSoapFile(Of ImageLoadFile)(path)
+				retval = Relativity.DataExchange.SerializationHelper.DeserializeFromSoapFile(Of ImageLoadFile)(path)
 			Catch ex As System.Exception
 				MsgBox("Load Failed", MsgBoxStyle.Critical, "Relativity Desktop Client")
 				'TODO: Log Exception
@@ -1455,7 +1455,7 @@ Namespace Relativity.Desktop.Client
 				HandleWebException(ex)
 				_lastCredentialCheckResult = CredentialCheckResult.Fail
 				Return
-			Catch ex As Relativity.Import.Export.RelativityNotSupportedException
+			Catch ex As Relativity.DataExchange.RelativityNotSupportedException
 				Me.HandleRelativityNotSupportedException(ex)
 				_lastCredentialCheckResult = CredentialCheckResult.Fail
 				Return
@@ -1528,8 +1528,9 @@ Namespace Relativity.Desktop.Client
 			End If
 		End Sub
 
-		Public Sub HandleRelativityNotSupportedException(exception As Relativity.Import.Export.RelativityNotSupportedException)
-			ChangeWebServiceUrl(exception.Message + vbCrLf + vbCrLf + "Try a new URL?")
+		Public Sub HandleRelativityNotSupportedException(exception As Relativity.DataExchange.RelativityNotSupportedException)
+			Dim tryAnotherUrl As Boolean = TaskDialogs.ShowRelativityNotSupportedTaskDialog(MainForm.MainWindowHandle, exception)
+			OnChangeWebServiceUrl(tryAnotherUrl)
 		End Sub
 
 		Public Function IsAccessDisabledException(ByVal ex As System.Exception) As Boolean
@@ -1608,6 +1609,14 @@ Namespace Relativity.Desktop.Client
 
 		Public Sub ChangeWebServiceUrl(ByVal message As String)
 			If MsgBox(message, MsgBoxStyle.YesNo, "Relativity Desktop Client") = MsgBoxResult.Yes Then
+				OnChangeWebServiceUrl(True)
+			Else
+				OnChangeWebServiceUrl(False)
+			End If
+		End Sub
+
+		Private Sub OnChangeWebServiceUrl(ByVal tryAnotherUrl As Boolean)
+			If tryAnotherUrl Then
 				Dim url As String = InputBox("Enter New URL:", Title:="Set Relativity URL", DefaultResponse:=AppSettings.Instance.WebApiServiceUrl)
 				If url <> String.Empty Then
 					AppSettings.Instance.WebApiServiceUrl = url
@@ -1678,7 +1687,7 @@ Namespace Relativity.Desktop.Client
 		End Function
 #End Region
 
-		Public Overridable Async Function GetProductionPrecendenceList(ByVal caseInfo As Relativity.Import.Export.Service.CaseInfo) As Task(Of System.Data.DataTable)
+		Public Overridable Async Function GetProductionPrecendenceList(ByVal caseInfo As CaseInfo) As Task(Of System.Data.DataTable)
 			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
 			Dim dt As System.Data.DataTable
 			Try
@@ -1710,22 +1719,9 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Public Async Function DoHelp() As Task
-			Dim cloudIsEnabled As Boolean = Await GetIsCloudInstance()
-			'Default cloud setting
-
-			Dim urlPrefix As String = "https://help.kcura.com/"
-
-			'Go to appropriate documentation site
-			Dim relativityVersion As System.Version = GetRelativityBuildVersion()
-
-			' Always direct the user to the R1 site when this application is installed stand-alone.
-			If cloudIsEnabled OrElse relativityVersion Is Nothing Then
-				System.Diagnostics.Process.Start(urlPrefix & "RelativityOne/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
-			Else
-				Dim majMin As String = $"{relativityVersion.Major}.{relativityVersion.Minor}"
-				System.Diagnostics.Process.Start(urlPrefix & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
-			End If
-
+			Dim cloudInstance As Boolean = Await GetIsCloudInstance()
+			Dim url = WebHelpUrls.GetHomePageUrl(cloudInstance)
+			System.Diagnostics.Process.Start(url)
 		End Function
 
 		Public Async Function GetIsCloudInstance() As Task(Of System.Boolean)

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Client.NUnit", "Relativity.Import.Client.NUnit\Relativity.Import.Client.NUnit.csproj", "{10DF5B1F-2D12-4201-BA36-D074574F2510}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Import.NUnit", "Relativity.DataExchange.Import.NUnit\Relativity.DataExchange.Import.NUnit.csproj", "{10DF5B1F-2D12-4201-BA36-D074574F2510}"
 	ProjectSection(ProjectDependencies) = postProject
 		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D} = {AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}
 	EndProjectSection
@@ -12,45 +12,45 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{44D529
 	ProjectSection(SolutionItems) = preProject
 		..\paket.dependencies = ..\paket.dependencies
 		..\.paket\paket.template.relativity.desktop.client = ..\.paket\paket.template.relativity.desktop.client
-		..\.paket\paket.template.relativity.import.export.client.sdk = ..\.paket\paket.template.relativity.import.export.client.sdk
-		..\.paket\Relativity.Import.Export.Client.SDK.targets = ..\.paket\Relativity.Import.Export.Client.SDK.targets
+		..\.paket\paket.template.Relativity.DataExchange.client.sdk = ..\.paket\paket.template.Relativity.DataExchange.client.sdk
+		..\.paket\Relativity.DataExchange.Client.SDK.targets = ..\.paket\Relativity.DataExchange.Client.SDK.targets
 	EndProjectSection
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Import.Client.Legacy.NUnit", "Relativity.Import.Client.Legacy.NUnit\Relativity.Import.Client.Legacy.NUnit.vbproj", "{6B2E3939-E33B-4672-B420-F3B6021DDA78}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.DataExchange.Import.Legacy.NUnit", "Relativity.DataExchange.Import.Legacy.NUnit\Relativity.DataExchange.Import.Legacy.NUnit.vbproj", "{6B2E3939-E33B-4672-B420-F3B6021DDA78}"
 	ProjectSection(ProjectDependencies) = postProject
 		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D} = {AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Export.Client.NUnit", "Relativity.Export.Client.NUnit\Relativity.Export.Client.NUnit.csproj", "{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Export.NUnit", "Relativity.DataExchange.Export.NUnit\Relativity.DataExchange.Export.NUnit.csproj", "{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}"
 	ProjectSection(ProjectDependencies) = postProject
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5} = {410BA79B-DF60-4EDA-86B3-608F3DEE38F5}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Export.TestFramework", "Relativity.Import.Export.TestFramework\Relativity.Import.Export.TestFramework.csproj", "{FED61746-80EC-40CB-998E-9299B804CE7D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.TestFramework", "Relativity.DataExchange.TestFramework\Relativity.DataExchange.TestFramework.csproj", "{FED61746-80EC-40CB-998E-9299B804CE7D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D} = {AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Client.NUnit.Integration", "Relativity.Import.Client.NUnit.Integration\Relativity.Import.Client.NUnit.Integration.csproj", "{4BC26612-C72D-45D9-9902-88562017EDA0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Import.NUnit.Integration", "Relativity.DataExchange.Import.NUnit.Integration\Relativity.DataExchange.Import.NUnit.Integration.csproj", "{4BC26612-C72D-45D9-9902-88562017EDA0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D} = {AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Client.Samples.NUnit", "Relativity.Import.Client.Samples.NUnit\Relativity.Import.Client.Samples.NUnit.csproj", "{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Samples.NUnit", "Relativity.DataExchange.Samples.NUnit\Relativity.DataExchange.Samples.NUnit.csproj", "{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}"
 	ProjectSection(ProjectDependencies) = postProject
 		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D} = {AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Export.Client.NUnit.Integration", "Relativity.Export.Client.NUnit.Integration\Relativity.Export.Client.NUnit.Integration.csproj", "{5AEF327E-1D3A-4231-B4C6-041769248B33}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Export.NUnit.Integration", "Relativity.DataExchange.Export.NUnit.Integration\Relativity.DataExchange.Export.NUnit.Integration.csproj", "{5AEF327E-1D3A-4231-B4C6-041769248B33}"
 	ProjectSection(ProjectDependencies) = postProject
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5} = {410BA79B-DF60-4EDA-86B3-608F3DEE38F5}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Export", "Relativity.Import.Export\Relativity.Import.Export.csproj", "{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Core", "Relativity.DataExchange.Core\Relativity.DataExchange.Core.csproj", "{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Export.NUnit.Integration", "Relativity.Import.Export.NUnit.Integration\Relativity.Import.Export.NUnit.Integration.csproj", "{B6E34ED3-1C41-4DB9-9BD7-24A256A05663}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.NUnit.Integration", "Relativity.DataExchange.NUnit.Integration\Relativity.DataExchange.NUnit.Integration.csproj", "{B6E34ED3-1C41-4DB9-9BD7-24A256A05663}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Export.NUnit", "Relativity.Import.Export.NUnit\Relativity.Import.Export.NUnit.csproj", "{EBDD2E81-9CF1-4070-823D-6ACDF08CDEEE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.NUnit", "Relativity.DataExchange.NUnit\Relativity.DataExchange.NUnit.csproj", "{EBDD2E81-9CF1-4070-823D-6ACDF08CDEEE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Rdc", "Rdc", "{272C7D84-8FCE-4F14-8D39-E0422E0FF922}"
 EndProject
@@ -62,14 +62,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api-Import", "Api-Import", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api-Export", "Api-Export", "{1114F579-C126-48A5-8182-50AB87366325}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Client", "Relativity.Import.Client\Relativity.Import.Client.csproj", "{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Import", "Relativity.DataExchange.Import\Relativity.DataExchange.Import.csproj", "{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5} = {410BA79B-DF60-4EDA-86B3-608F3DEE38F5}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Export.Client", "Relativity.Export.Client\Relativity.Export.Client.csproj", "{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Export", "Relativity.DataExchange.Export\Relativity.DataExchange.Export.csproj", "{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Import.Export.Legacy", "Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj", "{2022E24B-46A1-46DA-A715-36D137436B3A}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.DataExchange.Legacy", "Relativity.DataExchange.Legacy\Relativity.DataExchange.Legacy.vbproj", "{2022E24B-46A1-46DA-A715-36D137436B3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

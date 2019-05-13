@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <?define ProductName="Relativity Desktop Client" ?>
+  <?define UpgradeCode="{5687C47E-53A0-42A4-8B69-97C8991A6C01}" ?>
+</Include>
