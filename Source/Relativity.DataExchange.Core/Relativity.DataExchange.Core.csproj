@@ -137,6 +137,8 @@
     <Compile Include="MemoryCacheRepository.cs" />
     <Compile Include="Process\EventType2.cs" />
     <Compile Include="Process\ProcessBase2.cs" />
+    <Compile Include="Process\NullProcessEventWriter.cs" />
+    <Compile Include="Process\NullProcessErrorWriter.cs" />
     <Compile Include="Process\ProcessPool2.cs" />
     <Compile Include="RestClient.cs" />
     <Compile Include="AppSettingsDictionary.cs" />

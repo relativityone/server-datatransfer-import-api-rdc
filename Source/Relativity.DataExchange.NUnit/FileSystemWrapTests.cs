@@ -141,6 +141,8 @@ namespace Relativity.DataExchange.NUnit
 			}
 
 			Assert.That(this.fileSystem.Directory.Exists(directory), Is.True);
+			Assert.That(this.fileSystem.Directory.Exists(directory, true), Is.True);
+			Assert.That(this.fileSystem.Directory.Exists(directory, false), Is.True);
 			Assert.That(directory, Does.Exist);
 		}
 
@@ -154,6 +156,10 @@ namespace Relativity.DataExchange.NUnit
 			string directory = this.GenerateUniqueDirectoryPath(folderName);
 			this.fileSystem.Directory.CreateDirectory(directory);
 			this.fileSystem.Directory.Delete(directory, recursive);
+			Assert.That(directory, Does.Not.Exist);
+			this.fileSystem.Directory.DeleteIfExists(directory, recursive, true);
+			Assert.That(directory, Does.Not.Exist);
+			this.fileSystem.Directory.DeleteIfExists(directory, recursive, false);
 			Assert.That(directory, Does.Not.Exist);
 		}
 

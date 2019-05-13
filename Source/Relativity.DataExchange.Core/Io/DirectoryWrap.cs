@@ -48,13 +48,49 @@ namespace Relativity.DataExchange.Io
 		/// <inheritdoc />
 		public void Delete(string path)
 		{
+			path = this.instance.NormalizePath(path);
 			System.IO.Directory.Delete(path);
 		}
 
 		/// <inheritdoc />
 		public void Delete(string path, bool recursive)
 		{
+			path = this.instance.NormalizePath(path);
 			System.IO.Directory.Delete(path, recursive);
+		}
+
+		/// <inheritdoc />
+		public void DeleteIfExists(string path, bool recursive, bool throwOnExistsCheck)
+		{
+			if (this.Exists(path, throwOnExistsCheck))
+			{
+				this.Delete(path, recursive);
+			}
+		}
+
+		/// <inheritdoc />
+		public bool Exists(string path)
+		{
+			path = this.instance.NormalizePath(path);
+			return System.IO.Directory.Exists(path);
+		}
+
+		/// <inheritdoc />
+		public bool Exists(string path, bool throwOnExistsCheck)
+		{
+			path = this.instance.NormalizePath(path);
+			if (!throwOnExistsCheck)
+			{
+				return System.IO.Directory.Exists(path);
+			}
+
+			// System.IO.Directory.Exists will eat any exception that occurs
+			// when trying to check if a directory exists, which is not
+			// helpful when there's a network problem. GetCreationTimeUtc
+			// will except if there's an access issue to the directory in
+			// question. If the directory legitimitely doesn't exist, it
+			// will return January 1, 1601 (according to http://msdn.microsoft.com/en-us/library/system.io.directory.getcreationtimeutc.aspx)
+			return System.IO.Directory.GetCreationTimeUtc(path) != new DateTime(1601, 1, 1);
 		}
 
 		/// <inheritdoc />
@@ -68,13 +104,6 @@ namespace Relativity.DataExchange.Io
 			}
 
 			return new DirectoryInfoWrap(directoryInfo);
-		}
-
-		/// <inheritdoc />
-		public bool Exists(string path)
-		{
-			path = this.instance.NormalizePath(path);
-			return System.IO.Directory.Exists(path);
 		}
 	}
 }

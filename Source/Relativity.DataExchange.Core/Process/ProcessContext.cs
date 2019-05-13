@@ -11,6 +11,7 @@ namespace Relativity.DataExchange.Process
 	using System.Threading;
 
 	using Relativity.DataExchange.Resources;
+	using Relativity.Logging;
 
 	/// <summary>
 	/// Represents a thread-safe context for a <see cref="IRunnable"/> process to publish events. This class cannot be inherited.
@@ -41,6 +42,18 @@ namespace Relativity.DataExchange.Process
 		/// The record count backing.
 		/// </summary>
 		private int recordCount;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ProcessContext"/> class.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Reliability",
+			"CA2000:Dispose objects before losing scope",
+			Justification = "Both object perform no actual disposal.")]
+		public ProcessContext()
+			: this(new NullProcessEventWriter(), new NullProcessErrorWriter(), AppSettings.Instance, new NullLogger())
+		{
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProcessContext"/> class.

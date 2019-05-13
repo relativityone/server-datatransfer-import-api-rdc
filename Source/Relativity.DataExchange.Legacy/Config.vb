@@ -3,7 +3,6 @@ Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Transfer
 
 Namespace kCura.WinEDDS
-	<Obsolete("This class object will be deprecated in the future. Please use the AppSettings class to manage application settings.")>
 	Public Class Config
 
 		Private Const mainFormWindowHeightKey As String = "MainFormWindowHeight"

@@ -6,7 +6,7 @@
 	using ZetaLongPaths;
 	using ZetaLongPaths.Native;
 
-	internal class LongPathFileHelper : IFile
+	public class LongPathFileHelper : IFile
 	{
 		public FileStream Create(string filePath)
 		{

@@ -8,6 +8,29 @@ Namespace kCura.WinEDDS.Api
 		Private Shared _windowsAuthRelativityManager As kCura.WinEDDS.Service.RelativityManager
 
 		Public Shared Function LoginUsernamePassword(ByVal username As String,
+		                                             ByVal password As String,
+		                                             ByVal cookieContainer As Net.CookieContainer) As System.Net.NetworkCredential
+			Return LoginUsernamePassword(
+				username, 
+				password, 
+				cookieContainer, 
+				AppSettings.Instance.WebApiServiceUrl)
+		End Function
+
+		Public Shared Function LoginUsernamePassword(ByVal username As String,
+		                                             ByVal password As String,
+		                                             ByVal cookieContainer As Net.CookieContainer,
+		                                             ByVal webServiceUrl As String) As System.Net.NetworkCredential
+			Return LoginUsernamePassword(
+				username, 
+				password, 
+				cookieContainer, 
+				AppSettings.Instance.WebApiServiceUrl, 
+				CancellationToken.None,
+				New Global.Relativity.Logging.NullLogger())
+		End Function
+
+		Public Shared Function LoginUsernamePassword(ByVal username As String,
 													 ByVal password As String,
 													 ByVal cookieContainer As Net.CookieContainer,
 													 ByVal webServiceUrl As String,
@@ -40,6 +63,14 @@ Namespace kCura.WinEDDS.Api
 				ValidateVersionCompatibility(credentials, cookieContainer, webServiceUrl, token, logger)
 				Return credentials
 			End Using
+		End Function
+
+		Public Shared Function LoginWindowsAuth(ByVal cookieContainer As System.Net.CookieContainer) As System.Net.NetworkCredential
+			Return LoginWindowsAuth(
+				cookieContainer, 
+				AppSettings.Instance.WebApiServiceUrl, 
+				CancellationToken.None,
+				New Global.Relativity.Logging.NullLogger())
 		End Function
 
 		Public Shared Function LoginWindowsAuth(ByVal cookieContainer As System.Net.CookieContainer,

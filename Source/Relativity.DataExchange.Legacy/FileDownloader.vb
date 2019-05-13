@@ -5,7 +5,7 @@ Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
 
 Namespace kCura.WinEDDS
-	Friend Class FileDownloader
+	Public Class FileDownloader
 		Implements Service.Export.IExportFileDownloader
 
 		Private _gateway As kCura.WinEDDS.Service.FileIO

@@ -2,7 +2,7 @@
 {
 	using ZetaLongPaths;
 
-	internal class LongPathDirectoryHelper : IDirectory
+	public class LongPathDirectoryHelper : IDirectory
     {
         private object _lockObject = new object();
 
@@ -39,10 +39,31 @@
 			throw new System.NotImplementedException();
 		}
 
+		public void DeleteIfExists(string path, bool recursive, bool throwOnExistsCheck)
+		{
+			// Note: this method is only implemented to enhance backwards compatibility with IDirectory (e.g. the export code never calls it as of today).
+			if (this.Exists(path, throwOnExistsCheck))
+			{
+				this.Delete(path, recursive);
+			}
+		}
+
 		public bool Exists(string path)
         {
             return ZlpIOHelper.DirectoryExists(path);
         }
+
+		public bool Exists(string path, bool throwOnExistsCheck)
+		{
+			// Note: this method in only implemented to enhance backwards compatibility with IDirectory (e.g. the export code never calls it as of today).
+			if (!throwOnExistsCheck)
+			{
+				return ZlpIOHelper.DirectoryExists(path);
+			}
+
+			// <see cref="Relativity.DataExchange.Io.DirectoryWrap"/> for more details.
+			return ZlpIOHelper.GetFileCreationTime(path) != new System.DateTime(1601, 1, 1);
+		}
 
 		public IDirectoryInfo GetParent(string path)
 		{

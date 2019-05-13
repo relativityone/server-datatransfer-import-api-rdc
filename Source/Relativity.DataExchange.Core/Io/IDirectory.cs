@@ -100,6 +100,81 @@ namespace Relativity.DataExchange.Io
 		void Delete(string path, bool recursive);
 
 		/// <summary>
+		/// Deletes the specified directory and, if indicated, any subdirectories and files in the directory only when it exists and optionally throw when a failure occurs.
+		/// </summary>
+		/// <param name="path">
+		/// The name of the directory to remove.
+		/// </param>
+		/// <param name="recursive">
+		/// <see langword="true" /> to remove directories, subdirectories, and files in <paramref name="path" />; otherwise, <see langword="false" />.
+		/// </param>
+		/// <param name="throwOnExistsCheck">
+		/// <see langword="true" /> to throw an exception if the exists check fails; otherwise, <see langword="false" />.
+		/// </param>
+		/// <exception cref="T:System.IO.IOException">
+		/// A file with the same name and location specified by <paramref name="path" /> exists.-or-The directory specified by <paramref name="path" /> is read-only, or <paramref name="recursive" /> is <see langword="false" /> and <paramref name="path" /> is not an empty directory. -or-The directory is the application's current working directory. -or-The directory contains a read-only file.-or-The directory is being used by another process.
+		/// </exception>
+		/// <exception cref="T:System.UnauthorizedAccessException">
+		/// The caller does not have the required permission.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentException">
+		/// <paramref name="path" /> is a zero-length string, contains only white space, or contains one or more invalid characters. You can query for invalid characters by using the <see cref="M:System.IO.Path.GetInvalidPathChars" /> method.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentNullException">
+		/// <paramref name="path" /> is <see langword="null" />.
+		/// </exception>
+		/// <exception cref="T:System.IO.PathTooLongException">
+		/// The specified path, file name, or both exceed the system-defined maximum length. For example, on Windows-based platforms, paths must be less than 248 characters and file names must be less than 260 characters.
+		/// </exception>
+		/// <exception cref="T:System.IO.DirectoryNotFoundException">
+		/// <paramref name="path" /> does not exist or could not be found.-or-The specified path is invalid (for example, it is on an unmapped drive).
+		/// </exception>
+		void DeleteIfExists(string path, bool recursive, bool throwOnExistsCheck);
+
+		/// <summary>
+		/// Determines whether the given path refers to an existing directory on disk.
+		/// </summary>
+		/// <param name="path">
+		/// The path to test.
+		/// </param>
+		/// <returns>
+		/// <see langword="true" /> if <paramref name="path" /> refers to an existing directory; <see langword="false" /> if the directory does not exist or an error occurs when trying to determine if the specified directory exists.
+		/// </returns>
+		bool Exists(string path);
+
+		/// <summary>
+		/// Determines whether the given path refers to an existing directory on disk and optionally throw when a failure occurs.
+		/// </summary>
+		/// <param name="path">
+		/// The path to test.
+		/// </param>
+		/// <param name="throwOnExistsCheck">
+		/// <see langword="true" /> to throw an exception if the exists check fails; otherwise, <see langword="false" />.
+		/// </param>
+		/// <returns>
+		/// <see langword="true" /> if <paramref name="path" /> refers to an existing directory; <see langword="false" /> if the directory does not exist or an error occurs when trying to determine if the specified directory exists.
+		/// </returns>
+		/// <exception cref="T:System.IO.IOException">
+		/// A file with the same name and location specified by <paramref name="path" /> exists.-or-The directory specified by <paramref name="path" /> is read-only. -or-The directory is the application's current working directory. -or-The directory contains a read-only file.-or-The directory is being used by another process.
+		/// </exception>
+		/// <exception cref="T:System.UnauthorizedAccessException">
+		/// The caller does not have the required permission.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentException">
+		/// <paramref name="path" /> is a zero-length string, contains only white space, or contains one or more invalid characters. You can query for invalid characters by using the <see cref="M:System.IO.Path.GetInvalidPathChars" /> method.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentNullException">
+		/// <paramref name="path" /> is <see langword="null" />.
+		/// </exception>
+		/// <exception cref="T:System.IO.PathTooLongException">
+		/// The specified path, file name, or both exceed the system-defined maximum length. For example, on Windows-based platforms, paths must be less than 248 characters and file names must be less than 260 characters.
+		/// </exception>
+		/// <exception cref="T:System.IO.DirectoryNotFoundException">
+		/// <paramref name="path" /> does not exist or could not be found.-or-The specified path is invalid (for example, it is on an unmapped drive).
+		/// </exception>
+		bool Exists(string path, bool throwOnExistsCheck);
+
+		/// <summary>
 		/// Retrieves the parent directory of the specified path, including both absolute and relative paths.
 		/// </summary>
 		/// <param name="path">
@@ -127,14 +202,5 @@ namespace Relativity.DataExchange.Io
 		/// The specified path was not found.
 		/// </exception>
 		IDirectoryInfo GetParent(string path);
-
-		/// <summary>
-		/// Determines whether the given path refers to an existing directory on disk.
-		/// </summary>
-		/// <param name="path">The path to test. </param>
-		/// <returns>
-		/// <see langword="true" /> if <paramref name="path" /> refers to an existing directory; <see langword="false" /> if the directory does not exist or an error occurs when trying to determine if the specified directory exists.
-		/// </returns>
-		bool Exists(string path);
 	}
 }

@@ -12,9 +12,9 @@ namespace Relativity.DataExchange.Io
 	using System;
 
 	/// <summary>
-	/// Represents a <see langword="null" /> design pattern for occasions where a valid <see cref="IIoReporter"/> is used wherever the object is <see langword="null" />.
+	/// Represents a <see langword="null" /> design pattern for occasions where a valid <see cref="IIoReporter"/> is referenced but whose functionality isn't actually used or required. This class cannot be inherited.
 	/// </summary>
-	internal class NullIoReporter : IIoReporter
+	internal sealed class NullIoReporter : IIoReporter
 	{
 		private readonly IFileSystem fileSystem;
 
