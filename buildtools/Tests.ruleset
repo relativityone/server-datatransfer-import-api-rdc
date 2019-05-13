@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Test rules" Description="This is a custom ruleset to enable all but formatting rules." ToolsVersion="14.0">
+<RuleSet Name="Test rules" Description="This is a custom ruleset to enable all but formatting rules." ToolsVersion="15.0">
   <Localization ResourceAssembly="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.dll" ResourceBaseName="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.Localized">
     <Name Resource="AllRules_Name" />
     <Description Resource="AllRules_Description" />
@@ -131,8 +131,8 @@
     <Rule Id="CA1806" Action="Error" />
     <Rule Id="CA1809" Action="Error" />
     <Rule Id="CA1810" Action="Error" />
-    <Rule Id="CA1811" Action="Error" />
-    <Rule Id="CA1812" Action="Error" />
+    <Rule Id="CA1811" Action="None" />
+    <Rule Id="CA1812" Action="Warning" />
     <Rule Id="CA1813" Action="Error" />
     <Rule Id="CA1814" Action="Error" />
     <Rule Id="CA1815" Action="Error" />
@@ -140,7 +140,7 @@
     <Rule Id="CA1819" Action="Error" />
     <Rule Id="CA1820" Action="Error" />
     <Rule Id="CA1821" Action="Error" />
-    <Rule Id="CA1822" Action="Error" />
+    <Rule Id="CA1822" Action="None" />
     <Rule Id="CA1823" Action="Error" />
     <Rule Id="CA1824" Action="Error" />
     <Rule Id="CA1900" Action="Error" />
@@ -238,7 +238,7 @@
     <Rule Id="CA2242" Action="Error" />
     <Rule Id="CA2243" Action="Error" />
     <Rule Id="CA5122" Action="Error" />
-  </Rules>  
+  </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1027" Action="None" />
     <Rule Id="SA1137" Action="None" />
