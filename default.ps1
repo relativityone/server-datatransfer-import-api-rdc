@@ -49,6 +49,7 @@ properties {
     $TestVMName = $Null
     $PackageTemplateRegex = $Null
     $ILMerge = $Null
+    $Sign = $Null
 }
 
 task Build -Description "Builds the source code"  {
@@ -95,9 +96,22 @@ task Build -Description "Builds the source code"  {
     finally {
         Remove-EmptyLogFile $ErrorFilePath
     }
+
+    if ($Sign) {
+        # To reduce spending a significant amount of time signing unnecessary files, limit the candidate folders.
+        $directoryCandidates =  @(
+            # The RDC binaries contained within the project must be signed to ensure harvesting includes digitally signed binaries.
+            (Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Legacy") "bin"),
+            (Join-Path $BinariesArtifactsDir "Relativity.Desktop.Client.Legacy"),
+            (Join-Path $BinariesArtifactsDir "Relativity.DataExchange.Import"),
+            (Join-Path $BinariesArtifactsDir "sdk")
+        )
+
+        Invoke-SignDirectoryFiles -DirectoryCandidates $directoryCandidates
+    }
 }
 
-task BuildInstallers -Description "Builds all installers" {
+task BuildInstallPackages -Description "Builds all install packages" {
     Initialize-Folder $InstallersArtifactsDir
     Initialize-Folder $LogsDir -Safe
     Write-Output "Building all RDC MSI packages..."
@@ -107,7 +121,7 @@ task BuildInstallers -Description "Builds all installers" {
         Write-Output "Configuration: $Configuration"
         Write-Output "Build platform: $platform"
         Write-Output "Target: $Target"
-        Write-Output "Verbosity: $Verbosity"        
+        Write-Output "Verbosity: $Verbosity"
         $LogFilePath = Join-Path $LogsDir "installers-buildsummary-$platform.log"
         $ErrorFilePath = Join-Path $LogsDir "installers-builderrors-$platform.log"
         
@@ -130,13 +144,16 @@ task BuildInstallers -Description "Builds all installers" {
                         ("-flp2:errorsonly;LogFile=`"$ErrorFilePath`""))
                 Write-Output "Successfully built the $platform RDC MSI package."
             } -errorMessage "There was an error building the RDC MSI."
+
+            if ($Sign) {
+                Invoke-SignDirectoryFiles -DirectoryCandidates @($InstallersArtifactsDir)
+            }
         }
         finally {
             Remove-EmptyLogFile $ErrorFilePath
         }
     }
 
-    Write-Output "Successfully built all RDC MSI packages."
     try {
         Write-Output "Solution: $InstallersSolution"
         Write-Output "Configuration: $Configuration-bootstrapper"
@@ -162,6 +179,11 @@ task BuildInstallers -Description "Builds all installers" {
                     ("-flp2:errorsonly;LogFile=`"$ErrorFilePath`""))
             Write-Output "Successfully built the RDC bootstrapper package."
         } -errorMessage "There was an error building the RDC bootstrapper."
+
+        if ($Sign) {
+            $FileToSign = Join-Path $InstallersArtifactsDir "Relativity.Desktop.Client.Setup.exe"
+            Invoke-SignFile $FileToSign
+        }
     }
     finally {
         Remove-EmptyLogFile $ErrorFilePath
@@ -274,24 +296,6 @@ task CodeCoverageReport -Description "Create a code coverage report" {
             ("-targetdir:""$CodeCoverageReportDir"""),
             ("-reporttypes:Html"))
     } -errorMessage "There was an error creating a code coverage report."
-}
-
-task DigitallySignBinaries -Description "Digitally sign all binaries" {
-    # To reduce spending a significant amount of time signing unnecessary files, limit the candidate folders.
-    $directoryCandidates =  @(
-        # The RDC binaries contained within the project must be signed to ensure harvesting includes digitally signed binaries.
-        (Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Legacy") "bin"),
-        (Join-Path $BinariesArtifactsDir "Relativity.Desktop.Client.Legacy"),
-        (Join-Path $BinariesArtifactsDir "Relativity.DataExchange.Import"),
-		(Join-Path $BinariesArtifactsDir "sdk")
-    )
-
-    Invoke-DigitallSignFiles -DirectoryCandidates $directoryCandidates
-}
-
-task DigitallySignInstallers -Description "Digitally sign all installers" {
-    # All MSI's are contained underneath 1 folder.
-    Invoke-DigitallSignFiles -DirectoryCandidates @($InstallersArtifactsDir)
 }
 
 task ExtendedCodeAnalysis -Description "Perform extended code analysis checks." {
@@ -503,12 +507,11 @@ Function Initialize-Folder {
     Write-Host "Created the '$Path' directory."
 }
 
-Function Invoke-DigitallSignFiles {
+Function Invoke-SignDirectoryFiles {
     param(
         [String[]] $DirectoryCandidates
     )
 
-    $signtool = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, "Microsoft SDKs", "Windows", "v7.1A", "Bin", "signtool.exe")
     $retryAttempts = 3
     $sites = @(
         "http://timestamp.comodoca.com/authenticode",
@@ -528,36 +531,61 @@ Function Invoke-DigitallSignFiles {
         }
 
         Write-Output "Signing $totalFilesToSign total files in $directory"
-        foreach ($fileToSign in $filesToSign) {
-            $file = $fileToSign.FullName
-            & $signtool verify /pa /q $file
-            $signed = $?
+        foreach ($FileToSign in $filesToSign) {
+            Invoke-SignFile $FileToSign.FullName
+        }
+    }
+}
 
-            if (-not $signed) {
-                For ($i = 0; $i -lt $retryAttempts; $i++) {
-                    ForEach ($site in $sites) {
-                        Write-Host "Attempting to sign" $file "using" $site "..."
-                        & $signtool sign /a /t $site /d "Relativity" /du "http://www.kcura.com" $file
-                        $signed = $?                    
-                        if ($signed) {
-                            Write-Host "Signed" $file "Successfully!"
-                            break
-                        }
-                    }  
-					
-                    if ($signed) {
-                        break
-                    }
+Function Invoke-SignFile {
+    param(
+        [String] $File
+    )
+
+    if (!$File) {
+        Throw "You must specify a non-null path to digitally sign a file. Check to make sure the path value or variable passed to this method is valid."
+    }
+    
+    $RetryAttempts = 3
+    $SignSites = @(
+        "http://timestamp.comodoca.com/authenticode",
+        "http://timestamp.verisign.com/scripts/timstamp.dll",
+        "http://tsa.starfieldtech.com"
+    )
+
+    $Signed = $false
+    $Signtool = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, "Microsoft SDKs", "Windows", "v7.1A", "Bin", "signtool.exe")
+    & $Signtool verify /pa /q $File
+    if ($? -eq 0) {
+        $Signed = $true
+    }
+
+    if (-not $Signed) {
+        For ($i = 0; $i -lt $RetryAttempts; $i++) {
+            ForEach ($Site in $SignSites) {
+                Write-Host "Attempting to sign" $File "using" $Site "..."
+                & $Signtool sign /a /t $Site /d "Relativity" /du "http://www.kcura.com" $File
+                if ($? -eq 0) {
+                    $Signed = $true
                 }
-		
-                if (-not $signed) {
-                    Throw "Failed to sign the dlls. See the error above."
+
+                if ($Signed) {
+                    Write-Host "Signed $File Successfully!"
+                    break
                 }
-            }
-            else {
-                Write-Host $file "is already signed!"
+            }  
+                    
+            if ($Signed) {
+                break
             }
         }
+        
+        if (-not $Signed) {
+            Throw "Failed to sign $File. See the error above."
+        }
+    }
+    else {
+        Write-Host $File "is already signed."
     }
 }
 
@@ -570,11 +598,11 @@ Function Invoke-SetTestParameters {
 
     [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", $SkipIntegrationTests, "Process")
     if ($TestParametersFile) {
-		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_TEST_JSON_FILE", $TestParametersFile , "Process")
+        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_TEST_JSON_FILE", $TestParametersFile , "Process")
     }
 
-	if ($TestEnvironment) {
-		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_TEST_ENV", $TestEnvironment , "Process")
+    if ($TestEnvironment) {
+        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_TEST_ENV", $TestEnvironment , "Process")
     }
 }
 

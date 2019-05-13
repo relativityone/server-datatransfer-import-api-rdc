@@ -10,11 +10,19 @@ This script is responsible for all build processes.
 Build the solution.
 
 .EXAMPLE
+.\build.ps1 Build,BuildInstallPackages
+Build the solution and creates the install packages.
+
+.EXAMPLE
+.\build.ps1 Build,BuildInstallPackages -Sign
+Build the solution, creates the install packages, and digitally signs all associated binaries.
+
+.EXAMPLE
 .\build.ps1 Build,UnitTests
 Builds the solution and then executes all unit tests.
 
 .EXAMPLE
-.\build.ps1 Build
+.\build.ps1 UnitTests
 Skips building the solution and only executes all unit tests.
 
 .EXAMPLE
@@ -75,6 +83,9 @@ The optional regular expression used to determine which package templates to bui
 
 .PARAMETER ILMerge
 The optional parameter to apply ILMerge configurations to the build.
+
+.PARAMETER Sign
+The optional parameter to digitally sign the appropriate artifacts for the associated task. This will not work without a signing certificate installed onto your machine.
 #>
 
 #Requires -Version 5.0
@@ -112,7 +123,9 @@ param(
     [Parameter()]
     [String]$PackageTemplateRegex = "paket.template.*$",
     [Parameter()]
-    [Switch]$ILMerge
+    [Switch]$ILMerge,
+    [Parameter()]
+    [Switch]$Sign
 )
 
 $BaseDir = $PSScriptRoot
@@ -183,6 +196,7 @@ $Params = @{
         TestVMName = $TestVMName
         PackageTemplateRegex = $PackageTemplateRegex
         ILMerge = $ILMerge
+        Sign = $Sign
     }
 
     Verbose = $VerbosePreference

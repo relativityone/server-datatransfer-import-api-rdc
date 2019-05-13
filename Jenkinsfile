@@ -72,28 +72,14 @@ timestamps
                     stage('Build binaries')
                     {
                         echo "Building the binaries for version $buildVersion"
-                        output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge"
+                        output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge -Sign"
                         echo output
                     }
 
-                    stage('Digitally sign binaries')
-                    {
-                        echo "Digitally signing all binaries"
-                        output = powershell ".\\build.ps1 DigitallySignBinaries -Verbosity '${params.buildVerbosity}'"
-                        echo output
-                    }
-
-                    stage('Build installers')
+                    stage('Build install packages')
                     {
                         echo "Building the installers for version $buildVersion"
-                        output = powershell ".\\build.ps1 BuildInstallers -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}'"
-                        echo output
-                    }
-
-                    stage('Digitally sign installers')
-                    {
-                        echo "Digitally signing all installers"
-                        output = powershell ".\\build.ps1 DigitallySignInstallers -Verbosity '${params.buildVerbosity}'"
+                        output = powershell ".\\build.ps1 BuildInstallPackages -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -Sign"
                         echo output
                     }
 
