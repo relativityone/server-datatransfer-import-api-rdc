@@ -292,7 +292,7 @@ The project structure is similar to other repos. Important folders and files are
 │   ├───Relativity.DataExchange.Import.NUnit
 │   ├───Relativity.DataExchange.Import.NUnit.Integration
 │   ├───Relativity.DataExchange.Import.Samples.NUnit
-│   ├───Relativity.DataExchange
+│   ├───Relativity.DataExchange.Core
 │   ├───Relativity.DataExchange.Legacy
 │   ├───Relativity.DataExchange.NUnit
 │   ├───Relativity.DataExchange.NUnit.Integration
@@ -325,23 +325,23 @@ The project structure is similar to other repos. Important folders and files are
 ### Projects
 |Name                                             |Project Type|Published|Description                                                                                                                 |
 |:------------------------------------------------|:----------:|:-------:|:---------------------------------------------------------------------------------------------------------------------------|
-|Relativity.Desktop.Client.Controls.Legacy        |   `VB.NET` |         |The RDC user controls project.                                                                                              |
+|Relativity.Desktop.Client.Bundle                 |     WIX    |         |The RDC WIX bootstrapper project.                                                                                           |
 |Relativity.Desktop.Client.CustomActions          |     C#     |         |The RDC WIX custom actions project.                                                                                         |
 |Relativity.Desktop.Client.CustomActions.NUnit    |     C#     |         |The RDC WIX custom actions test project.                                                                                    |
-|Relativity.Desktop.Client.Legacy                 |   `VB.NET` |    X    |The RDC application/EXE project.                                                                                            |
-|Relativity.Desktop.Client.Legacy.NUnit           |   `VB.NET` |         |The RDC unit test project.                                                                                                  |
+|Relativity.Desktop.Client.Legacy                 |   VB.NET   |    X    |The RDC application/EXE project.                                                                                            |
+|Relativity.Desktop.Client.Legacy.NUnit           |   VB.NET   |         |The RDC unit test project.                                                                                                  |
 |Relativity.Desktop.Client.NUnit.Integration      |     C#     |         |The RDC integration test project.                                                                                           |
-|Relativity.Desktop.Client.Setup                  |     C#     |    x    |The RDC WIX setup/MSI project.                                                                                              |
+|Relativity.Desktop.Client.Setup                  |     WIX    |         |The RDC WIX setup/MSI project.                                                                                              |
 |Relativity.DataExchange.Export                   |     C#     |         |The export API project.                                                                                                     |
 |Relativity.DataExchange.Export.NUnit             |     C#     |         |The export API unit test project.                                                                                           |
 |Relativity.DataExchange.Export.NUnit.Integration |     C#     |         |The export API integration test project.                                                                                    |
 |Relativity.DataExchange.Import                   |     C#     |    X    |The import API project.                                                                                                     |
-|Relativity.DataExchange.Import.Legacy.NUnit      |   `VB.NET` |         |The import API unit test project.                                                                                           |
+|Relativity.DataExchange.Import.Legacy.NUnit      |   VB.NET   |         |The import API unit test project.                                                                                           |
 |Relativity.DataExchange.Import.NUnit             |     C#     |         |The import API unit test project.                                                                                           |
 |Relativity.DataExchange.Import.NUnit.Integration |     C#     |         |The C# import API integration test project.                                                                                 |
 |Relativity.DataExchange.Import.Samples.NUnit     |     C#     |    x    |The C# import API Github samples test project.                                                                              |
 |Relativity.DataExchange                          |     C#     |         |The C# import/export class library project.                                                                                 |
-|Relativity.DataExchange.Legacy                   |   `VB.NET` |         |The import/export shared class library project.                                                                             |
+|Relativity.DataExchange.Legacy                   |   VB.NET   |         |The import/export shared class library project.                                                                             |
 |Relativity.DataExchange.NUnit                    |     C#     |         |The C# import/export unit test project.                                                                                     |
 |Relativity.DataExchange.NUnit.Integration        |     C#     |         |The C# import/export integration test project.                                                                              |
 |Relativity.DataExchange.TestFramework            |     C#     |         |The import/export test framework projecty.                                                                                  |
