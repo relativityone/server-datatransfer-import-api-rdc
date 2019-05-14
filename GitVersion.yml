@@ -7,34 +7,39 @@ next-version: 1.0.0
 commit-message-incrementing: Disabled
 branches:
   master:
+    regex: (origin/)?master$
     tag: ''
     increment: None
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
-    regex: origin/master$
+    is-release-branch: true
   develop:
+    regex: (origin/)?develop$
     tag: beta
     increment: None
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
-    regex: origin/develop$
+    is-release-branch: false
   feature:
+    regex: (origin/)?rel-.*$
     tag: alpha
     increment: None
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
-    regex: (origin/)?rel-.*$
+    is-release-branch: false
   hotfix:
+    regex: (origin/)?hotfix-.*$
     tag: ''
     increment: None
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
-    regex: origin/hotfix-.*$
+    is-release-branch: false
   release:
+    regex: (origin/)?release.*$
     tag: rc
     increment: None
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
-    regex: origin/release.*$
+    is-release-branch: false
 ignore:
   commits-before: 2019-03-01
