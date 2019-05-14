@@ -7,18 +7,13 @@
 namespace Relativity.DataExchange
 {
 	using System.IO;
-	using System.Runtime.Serialization;
+	using System.Runtime.Serialization.Formatters.Soap;
 
 	/// <summary>
 	/// Defines static methods to serialize and deserialize objects.
 	/// </summary>
 	internal static class SerializationHelper
 	{
-		/// <summary>
-		/// The SOAP formatter instance.
-		/// </summary>
-		private static readonly System.Runtime.Serialization.Formatters.Soap.SoapFormatter SoapFormatter = new System.Runtime.Serialization.Formatters.Soap.SoapFormatter();
-
 		/// <summary>
 		/// Serializes the specified object to a file.
 		/// </summary>
@@ -30,9 +25,10 @@ namespace Relativity.DataExchange
 		/// </param>
 		public static void SerializeToSoapFile(object value, string file)
 		{
-			using (System.IO.StreamWriter writer = new System.IO.StreamWriter(file))
+			using (FileStream stream = File.OpenWrite(file))
 			{
-				SoapFormatter.Serialize(writer.BaseStream, value);
+				var soapFormatter = new SoapFormatter();
+				soapFormatter.Serialize(stream, value);
 			}
 		}
 
@@ -73,19 +69,7 @@ namespace Relativity.DataExchange
 				return default(T);
 			}
 
-			try
-			{
-				return SoapFormatterDeserialize<T>(soap);
-			}
-			catch (SerializationException)
-			{
-				System.Type t = typeof(T);
-				string assemblyName = t.Assembly.GetName().Name;
-
-				// HACK! This is a temporary workaround to address serialization compatibility until a proper solution is in place.
-				soap = soap.Replace("/kCura.WinEDDS%2C%20Version%3D", $"/{assemblyName}%2C%20Version%3D");
-				return SoapFormatterDeserialize<T>(soap);
-			}
+			return SoapFormatterDeserialize<T>(soap);
 		}
 
 		/// <summary>
@@ -102,9 +86,14 @@ namespace Relativity.DataExchange
 		/// </returns>
 		private static T SoapFormatterDeserialize<T>(string soap)
 		{
-			using (System.IO.MemoryStream ms = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(soap)))
+			using (MemoryStream ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(soap)))
 			{
-				T deserialized = (T)SoapFormatter.Deserialize(ms);
+				var soapFormatter = new SoapFormatter
+				{
+					Binder = new RdcFileSerializationBinder(typeof(T).Assembly),
+				};
+
+				T deserialized = (T)soapFormatter.Deserialize(ms);
 				return deserialized;
 			}
 		}

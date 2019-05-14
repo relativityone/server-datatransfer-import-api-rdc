@@ -140,6 +140,7 @@
     <Compile Include="Process\NullProcessEventWriter.cs" />
     <Compile Include="Process\NullProcessErrorWriter.cs" />
     <Compile Include="Process\ProcessPool2.cs" />
+    <Compile Include="RdcFileSerializationBinder.cs" />
     <Compile Include="RestClient.cs" />
     <Compile Include="AppSettingsDictionary.cs" />
     <Compile Include="AppSettingsConstants.cs" />

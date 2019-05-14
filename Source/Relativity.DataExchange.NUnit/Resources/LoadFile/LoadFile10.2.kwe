@@ -1,0 +1,67 @@
+<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:clr="http://schemas.microsoft.com/soap/encoding/clr/1.0" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<SOAP-ENV:Body>
+<a1:LoadFile id="ref-1" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D10.2.99.73%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<FilePath id="ref-3">S:\100M\loadFile.csv</FilePath>
+<FirstLineContainsHeaders>true</FirstLineContainsHeaders>
+<LoadNativeFiles>false</LoadNativeFiles>
+<OverlayBehavior xsi:null="1"/>
+<RecordDelimiter>44</RecordDelimiter>
+<QuoteDelimiter>34</QuoteDelimiter>
+<NewlineDelimiter>174</NewlineDelimiter>
+<MultiRecordDelimiter>59</MultiRecordDelimiter>
+<OverwriteDestination>None</OverwriteDestination>
+<FieldMap href="#ref-4"/>
+<NativeFilePathColumn xsi:null="1"/>
+<SelectedIdentifierField href="#ref-5"/>
+<FolderStructureContainedInColumn xsi:null="1"/>
+<CreateFolderStructure>false</CreateFolderStructure>
+<FullTextColumnContainsFileLocation>false</FullTextColumnContainsFileLocation>
+<LongTextColumnThatContainsPathToFullText xsi:null="1"/>
+<GroupIdentifierColumn xsi:null="1"/>
+<DataGridIDColumn xsi:null="1"/>
+<HierarchicalValueDelimiter>92</HierarchicalValueDelimiter>
+<SourceFileEncoding>65001</SourceFileEncoding>
+<ArtifactTypeID>10</ArtifactTypeID>
+<StartLineNumber>0</StartLineNumber>
+<IdentityFieldId>1003667</IdentityFieldId>
+<SendEmailOnLoadCompletion>false</SendEmailOnLoadCompletion>
+<ForceFolderPreview>true</ForceFolderPreview>
+</a1:LoadFile>
+<a1:LoadFileFieldMap id="ref-4" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D10.2.99.73%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_al href="#ref-6"/>
+</a1:LoadFileFieldMap>
+<a1:DocumentField id="ref-5" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D10.2.99.73%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_fieldName id="ref-7">Control Number</_fieldName>
+<_fieldID>1003667</_fieldID>
+<_fieldTypeID>0</_fieldTypeID>
+<_value xsi:null="1"/>
+<_fieldCategoryID>2</_fieldCategoryID>
+<_fileColumnIndex>0</_fileColumnIndex>
+</a1:DocumentField>
+<a3:ArrayList id="ref-6" xmlns:a3="http://schemas.microsoft.com/clr/ns/System.Collections">
+<_items href="#ref-8"/>
+<_size>2</_size>
+<_version>2</_version>
+</a3:ArrayList>
+<SOAP-ENC:Array id="ref-8" SOAP-ENC:arrayType="xsd:anyType[4]">
+<item href="#ref-9"/>
+<item href="#ref-10"/>
+</SOAP-ENC:Array>
+<a1:LoadFileFieldMap_x002B_LoadFileFieldMapItem id="ref-9" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D10.2.99.73%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_documentField href="#ref-5"/>
+<_nativeFileColumnIndex>1</_nativeFileColumnIndex>
+</a1:LoadFileFieldMap_x002B_LoadFileFieldMapItem>
+<a1:LoadFileFieldMap_x002B_LoadFileFieldMapItem id="ref-10" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D10.2.99.73%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_documentField href="#ref-11"/>
+<_nativeFileColumnIndex>2</_nativeFileColumnIndex>
+</a1:LoadFileFieldMap_x002B_LoadFileFieldMapItem>
+<a1:DocumentField id="ref-11" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D10.2.99.73%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_fieldName id="ref-12">Extracted Text</_fieldName>
+<_fieldID>1003668</_fieldID>
+<_fieldTypeID>4</_fieldTypeID>
+<_value xsi:null="1"/>
+<_fieldCategoryID>1</_fieldCategoryID>
+<_fileColumnIndex>0</_fileColumnIndex>
+</a1:DocumentField>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
