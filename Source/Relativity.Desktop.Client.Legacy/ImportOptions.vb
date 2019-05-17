@@ -397,7 +397,7 @@ Public Class ImportOptions
 	End Function
 
 	Private Function EnsureImagePrecedence(selectedPrecedenceItems As Pair(), availablePrecendenceItems As Pair()) As Pair()
-		Dim nameProvider As Func(Of Pair, String) = Function(pair) pair.Display
+		Dim nameProvider As Func(Of Pair, String) = Function(pair) pair.Value
 		Return EnsureSelectedFields(selectedPrecedenceItems, availablePrecendenceItems, nameProvider, "image precedence productions")
 	End Function
 
