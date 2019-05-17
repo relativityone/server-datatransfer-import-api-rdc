@@ -19,9 +19,9 @@ namespace Relativity.Desktop.Client.CustomActions
 	/// </summary>
 	public class AppConfigService
 	{
+		public const string PropertyNameOldRdcPath = "OLDRDCPATH";
 		public const string PropertyNameSourceAppConfigFile = "SOURCEAPPCONFIGFILE";
 		public const string PropertyNameTargetAppConfigFile = "TARGETAPPCONFIGFILE";
-		private const string LegacyConfigFileName = "kCura.EDDS.WinForm.exe.config";
 		private readonly IWixSession session;
 		private readonly string directory;
 
@@ -93,34 +93,29 @@ namespace Relativity.Desktop.Client.CustomActions
 				this.session.Log($"Retrieved the '{PropertyNameSourceAppConfigFile}' source config file. Value='{sourceConfigFile}'");
 				if (string.IsNullOrEmpty(sourceConfigFile))
 				{
+					this.session.Log($"Retrieving the '{PropertyNameOldRdcPath}' old RDC path...");
+					string oldRdcPath = this.session.GetStringPropertyValue(PropertyNameOldRdcPath);
+					this.session.Log($"Retrieved the '{PropertyNameOldRdcPath}' old RDC path. Value='{oldRdcPath}'");
+					if (!string.IsNullOrEmpty(oldRdcPath))
+					{
+						sourceConfigFile = $"{oldRdcPath}.config";
+					}
+				}
+
+				if (string.IsNullOrEmpty(sourceConfigFile))
+				{
 					// This is expected when NOT upgrading.
-					this.session.Log("Configuration file is not defined.");
+					this.session.Log("The configuration file is not defined.");
 					return ActionResult.Success;
 				}
 
 				if (!File.Exists(sourceConfigFile))
 				{
-					this.session.Log($"The configuration file '{sourceConfigFile}' doesn't exist. Checking to see if a migration is required...");
-
-					// Is this a legacy upgrade?
-					string sourceConfigDirectory = System.IO.Path.GetDirectoryName(sourceConfigFile);
-					string migratedConfigFile = !string.IsNullOrEmpty(sourceConfigDirectory)
-						? System.IO.Path.Combine(sourceConfigDirectory, LegacyConfigFileName)
-						: LegacyConfigFileName;
-					if (!File.Exists(migratedConfigFile))
-					{
-						this.session.Log($"The legacy configuration file '{migratedConfigFile}' doesn't exist. No migration is required.");
-						return ActionResult.Success;
-					}
-
-					this.session.Log($"The legacy configuration file '{migratedConfigFile}' exists and will be backed up and migrated.");
-					sourceConfigFile = migratedConfigFile;
-				}
-				else
-				{
-					this.session.Log($"The configuration file '{sourceConfigFile}' exists and will be backed up.");
+					this.session.Log($"The configuration file '{sourceConfigFile}' doesn't exist. No backup is required.");
+					return ActionResult.Success;
 				}
 
+				this.session.Log($"The configuration file '{sourceConfigFile}' exists and will be backed up.");
 				string tempConfigFile = Path.Combine(this.directory, Path.GetFileName(sourceConfigFile) + Guid.NewGuid());
 				File.Copy(sourceConfigFile, tempConfigFile, true);
 				this.BackupConfigFile = tempConfigFile;
@@ -177,12 +172,11 @@ namespace Relativity.Desktop.Client.CustomActions
 		public ActionResult Merge()
 		{
 			string sourceConfig = string.Empty;
-			string targetConfig = string.Empty;
 
 			try
 			{
 				sourceConfig = this.session.GetStringPropertyValue(PropertyNameSourceAppConfigFile);
-				targetConfig = this.session.GetStringPropertyValue(PropertyNameTargetAppConfigFile);
+				string targetConfig = this.session.GetStringPropertyValue(PropertyNameTargetAppConfigFile);
 				if (File.Exists(sourceConfig))
 				{
 					XmlConfigurationManager sourceSectionManager = new XmlConfigurationManager(sourceConfig);

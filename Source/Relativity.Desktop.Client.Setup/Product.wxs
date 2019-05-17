@@ -19,6 +19,17 @@
 		         InstallScope="perMachine"  />
     <Condition Message="!(loc.AdminPrivilegesRequired)">Privileged</Condition>
 
+    <!-- Fetch the old RDC path in order for the CA to perform the app.config backup for old RDC->new RCC and new RDC->new RDC -->
+    <Property Id="OLDRDCPATH"
+              Secure="yes">
+      <RegistrySearch Id="OldRdcInstallDirSearch"
+                      Root="HKLM"
+                      Key="Software\kCura\RelativityDesktopClient"
+                      Name="Path"
+                      Type="file">
+      </RegistrySearch>
+    </Property>
+
     <!-- Set AllowSameVersionUpgrades to 'yes' to support PATCH upgrades (e.g. for SEMVER support) -->
     <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeErrorMessage)"
                   AllowSameVersionUpgrades="yes"
@@ -233,6 +244,10 @@
                    ForceCreateOnInstall="yes"
                    ForceDeleteOnUninstall="yes">
         <RegistryValue Type="string"
+                       Name="Version"
+                       Value="$(var.ProductVersion)"
+                       KeyPath="no" />
+        <RegistryValue Type="string"
                        Name="Path"
                        Value="[INSTALLFOLDER]Relativity.Desktop.Client.exe"
                        KeyPath="yes" />
@@ -263,7 +278,7 @@
             DiskId="1"
             Source="$(var.ProjectDir)..\..\Images\relativity-icon.ICO" />
     </Component>
-    
+
     <!-- Features -->
     <Feature Id="Complete"
              Title="$(var.ProductName) $(var.ProductVersion)"
@@ -296,29 +311,35 @@
     </Feature>
 
     <!-- Don't overwrite the existing app.config during the upgrade! -->
+    <SetProperty Id="BackupConfigurationOldRdcPath"
+                 Value="OLDRDCPATH=[OLDRDCPATH]"
+                 Before="BackupConfiguration"
+                 Sequence="execute">OLDRDCFOUND</SetProperty>
     <SetProperty Id="BackupConfiguration"
                  Value="SOURCEAPPCONFIGFILE=[SOURCEAPPCONFIGFILE]"
                  Before="BackupConfiguration"
                  Sequence="execute">WIX_UPGRADE_DETECTED</SetProperty>
-    <SetProperty Id="RestoreConfiguration" 
+    <SetProperty Id="RestoreConfiguration"
                  Value="SOURCEAPPCONFIGFILE=[SOURCEAPPCONFIGFILE];TARGETAPPCONFIGFILE=[#Relativity.Desktop.Client.Config];UILevel=[UILevel];ProductName=[ProductName]"
                  Before="RestoreConfiguration"
-                 Sequence="execute">WIX_UPGRADE_DETECTED</SetProperty>
+                 Sequence="execute">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</SetProperty>
     <SetProperty Id="Cleanup"
                  Value="SOURCEAPPCONFIGFILE=[SOURCEAPPCONFIGFILE]"
                  Before="Cleanup"
-                 Sequence="execute">WIX_UPGRADE_DETECTED</SetProperty>
+                 Sequence="execute">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</SetProperty>
     <SetProperty Id="CloseRunningApplications"
                  Value="APP_PROCESS_NAME=[APP_PROCESS_NAME];UILevel=[UILevel];ProductName=[ProductName]"
                  Before="CloseRunningApplications"
                  Sequence="execute"/>
 
     <!-- Sequences -->
-    <InstallExecuteSequence>     
+    <InstallExecuteSequence>
+      <!-- Note: this MUST be scheduled before the installation; otherwise, it will already be uninstalled. -->
+      <Custom Action="GetOldRdcVersion" Before="InstallInitialize">OLDRDCFOUND</Custom>
       <Custom Action="CloseRunningApplications" After="InstallInitialize">1</Custom>
-      <Custom Action="BackupConfiguration" After="CloseRunningApplications">WIX_UPGRADE_DETECTED</Custom>
-      <Custom Action="RestoreConfiguration" After="WriteRegistryValues">WIX_UPGRADE_DETECTED</Custom>
-      <Custom Action="Cleanup" After="RestoreConfiguration">WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="BackupConfiguration" After="CloseRunningApplications">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="RestoreConfiguration" After="WriteRegistryValues">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="Cleanup" After="RestoreConfiguration">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</Custom>
     </InstallExecuteSequence>
   </Product>
 </Wix>
