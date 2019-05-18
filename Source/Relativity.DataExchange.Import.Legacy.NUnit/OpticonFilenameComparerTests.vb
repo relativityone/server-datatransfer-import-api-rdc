@@ -6,7 +6,7 @@
 
 Imports kCura.WinEDDS.Exporters
 
-Imports NSubstitute
+Imports Moq
 
 Imports NUnit.Framework
 
@@ -40,13 +40,13 @@ Namespace Relativity.DataExchange.Import.NUnit
 			"TEST0000005,VOL01,.\VOL01\IMAGES\IMG001\TEST0000004_4.tif"
 		}
 
-        Private _logger As ILog
+        Private _logger As Mock(Of ILog)
         Private _comparer As OpticonFilenameComparer
 
         <SetUp>
         Public Sub SetUp()
-			_logger = Substitute.For(Of ILog)
-            _comparer = New OpticonFilenameComparer(_logger)
+	        _logger = New Mock(Of ILog)
+	        _comparer = New OpticonFilenameComparer(_logger.Object)
         End Sub
 
         <Test>
@@ -64,7 +64,8 @@ Namespace Relativity.DataExchange.Import.NUnit
                     End If
                 Next
             Next
-			_logger.DidNotReceive().LogError(Arg.Any(Of String), Arg.Any(Of Object()))
+
+	        _logger.Verify(Sub(x) x.LogError(It.IsAny(Of String), It.IsAny(Of Object())), Times.Never())
         End Sub
 
         <Test>
@@ -76,7 +77,8 @@ Namespace Relativity.DataExchange.Import.NUnit
 					Assert.Less(comparisonResult, 0, message)
                 Next
             Next
-	        _logger.DidNotReceive().LogError(Arg.Any(Of String), Arg.Any(Of Object()))
+
+	        _logger.Verify(Sub(x) x.LogError(It.IsAny(Of String), It.IsAny(Of Object())), Times.Never())
         End Sub
 
 		<Test>
@@ -94,8 +96,8 @@ Namespace Relativity.DataExchange.Import.NUnit
 					End If
 				Next
 			Next
-			_logger.Received(2 * _malformedPageLines.Count * _malformedPageLines.Count).LogError(OpticonFilenameComparer.InvalidFileColumnCount, Arg.Any(Of Object()))
-		End Sub
 
+			_logger.Verify(Sub(x) x.LogError(OpticonFilenameComparer.InvalidFileColumnCount, It.IsAny(Of Object())), Times.Exactly(2 * _malformedPageLines.Count * _malformedPageLines.Count))
+		End Sub
     End Class
 End Namespace

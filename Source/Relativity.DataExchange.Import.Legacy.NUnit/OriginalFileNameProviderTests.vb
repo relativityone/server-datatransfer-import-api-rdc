@@ -9,8 +9,7 @@ Imports System.Reflection
 
 Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Exporters
-
-Imports NSubstitute
+Imports Moq
 
 Imports NUnit.Framework
 
@@ -23,12 +22,12 @@ Namespace Relativity.DataExchange.Import.NUnit
 
 		Private Const _FILE_NAME_FIELD_ARTIFACT_ID As Integer = 534343
 		Private Const _FILE_NAME_COLUMN_NAME As String = "FileName"
-		Private _fieldLookupService As IFieldLookupService
+		Private _fieldLookupService As Mock(Of IFieldLookupService)
 		Private _numberOfCallsToWriteWarning As Integer
 
 		<SetUp>
 		Public Sub SetUp()
-			_fieldLookupService = Substitute.For(Of IFieldLookupService)()
+			_fieldLookupService = New Mock(Of IFieldLookupService)
 			_numberOfCallsToWriteWarning = 0
 		End Sub
 
@@ -130,7 +129,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		Public Sub ItShouldReturnFileTableFileNameWhenFileNameFieldIsNotPresent()
 			'Arrange
 			Dim fileNameFromFileTable As String = "CN0001.txt"
-			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(False, _fieldLookupService, AddressOf WriteWarning)
+			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(False, _fieldLookupService.Object, AddressOf WriteWarning)
 			Dim metadata As Object() = New Object() {}
 			Dim nativeFileData As DataRowView = CreateFileDataRowView(fileNameFromFileTable)
 			'Act
@@ -145,9 +144,9 @@ Namespace Relativity.DataExchange.Import.NUnit
 			'Arrange
 			Dim fileNameFromFileTable As String = "CN0001.txt"
 			Dim fileNameFromDocumentTable As String = "originalFile.html"
-			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService, AddressOf WriteWarning)
+			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService.Object, AddressOf WriteWarning)
 			Dim metadata As Object() = New Object() {fileNameFromDocumentTable}
-			_fieldLookupService.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME).Returns(0)
+			_fieldLookupService.Setup(Function(x) x.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME)).Returns(0)
 			Dim nativeFileData As DataRowView = CreateFileDataRowView(fileNameFromFileTable)
 
 			'Act
@@ -162,9 +161,9 @@ Namespace Relativity.DataExchange.Import.NUnit
 			'Arrange
 			Dim fileNameFromFileTable As String = "CN0001.txt"
 			Dim fileNameFromDocumentTable As String = "originalFile.html"
-			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService, AddressOf WriteWarning)
+			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService.Object, AddressOf WriteWarning)
 			Dim metadata As Object() = New Object() {fileNameFromDocumentTable}
-			_fieldLookupService.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME).Returns(0)
+			_fieldLookupService.Setup(Function(x) x.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME)).Returns(0)
 			Dim nativeFileData As DataRowView = CreateFileDataRowView(fileNameFromFileTable)
 
 			'Act
@@ -179,9 +178,9 @@ Namespace Relativity.DataExchange.Import.NUnit
 			'Arrange
 			Dim fileNameFromFileTable As String = "CN0001.txt"
 			Dim fileNameFromDocumentTable As String = "originalFile.html"
-			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(False, _fieldLookupService, AddressOf WriteWarning)
+			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(False, _fieldLookupService.Object, AddressOf WriteWarning)
 			Dim metadata As Object() = New Object() {fileNameFromDocumentTable}
-			_fieldLookupService.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME).Returns(0)
+			_fieldLookupService.Setup(Function(x) x.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME)).Returns(0)
 			Dim nativeFileData As DataRowView = CreateFileDataRowView(fileNameFromFileTable)
 
 			'Act
@@ -196,9 +195,9 @@ Namespace Relativity.DataExchange.Import.NUnit
 			'Arrange
 			Dim fileNameFromFileTable As String = "CN0001.txt"
 			Dim fileNameFromDocumentTable As String = "originalFile.html"
-			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(False, _fieldLookupService, AddressOf WriteWarning)
+			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(False, _fieldLookupService.Object, AddressOf WriteWarning)
 			Dim metadata As Object() = New Object() {fileNameFromDocumentTable}
-			_fieldLookupService.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME).Returns(0)
+			_fieldLookupService.Setup(Function(x) x.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME)).Returns(0)
 			Dim nativeFileData As DataRowView = CreateFileDataRowView(fileNameFromFileTable)
 
 			'Act
@@ -213,9 +212,9 @@ Namespace Relativity.DataExchange.Import.NUnit
 			'Arrange
 			Dim fileNameFromFileTable As String = "CN0001.txt"
 			Dim fileNameFromDocumentTable As String = ""
-			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService, AddressOf WriteWarning)
+			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService.Object, AddressOf WriteWarning)
 			Dim metadata As Object() = New Object() {fileNameFromDocumentTable}
-			_fieldLookupService.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME).Returns(0)
+			_fieldLookupService.Setup(Function(x) x.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME)).Returns(0)
 			Dim nativeFileData As DataRowView = CreateFileDataRowView(fileNameFromFileTable)
 
 			'Act
@@ -231,9 +230,9 @@ Namespace Relativity.DataExchange.Import.NUnit
 			'Arrange
 			Dim fileNameFromFileTable As String = "CN0001.txt"
 			Dim fileNameFromDocumentTable As String = Nothing
-			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService, AddressOf WriteWarning)
+			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService.Object, AddressOf WriteWarning)
 			Dim metadata As Object() = New Object() {fileNameFromDocumentTable}
-			_fieldLookupService.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME).Returns(0)
+			_fieldLookupService.Setup(Function(x) x.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME)).Returns(0)
 			Dim nativeFileData As DataRowView = CreateFileDataRowView(fileNameFromFileTable)
 
 			'Act
@@ -256,9 +255,9 @@ Namespace Relativity.DataExchange.Import.NUnit
 			'Arrange
 			Dim fileNameFromFileTable As String = "CN0001.txt"
 			Dim fileNameFromDocumentTable As String = ""
-			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService, AddressOf WriteWarning)
+			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService.Object, AddressOf WriteWarning)
 			Dim metadata As Object() = New Object() {fileNameFromDocumentTable}
-			_fieldLookupService.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME).Returns(0)
+			_fieldLookupService.Setup(Function(x) x.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME)).Returns(0)
 			Dim nativeFileData As DataRowView = CreateFileDataRowView(fileNameFromFileTable)
 
 			'Act
@@ -273,10 +272,10 @@ Namespace Relativity.DataExchange.Import.NUnit
 			'Arrange
 			Dim fileNameFromFileTable As String = "CN0001.txt"
 			Dim fileNameFromDocumentTable As String = "originalFile.html"
-			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService, AddressOf WriteWarning)
+			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService.Object, AddressOf WriteWarning)
 			Dim validMetadata As Object() = New Object() {fileNameFromDocumentTable}
 			Dim invalidMetadata As Object() = New Object() {""}
-			_fieldLookupService.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME).Returns(0)
+			_fieldLookupService.Setup(Function(x) x.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME)).Returns(0)
 			Dim nativeFileData As DataRowView = CreateFileDataRowView(fileNameFromFileTable)
 
 			'Act
@@ -293,10 +292,10 @@ Namespace Relativity.DataExchange.Import.NUnit
 			'Arrange
 			Dim fileNameFromFileTable As String = "CN0001.txt"
 			Dim fileNameFromDocumentTable As String = "originalFile.html"
-			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService, AddressOf WriteWarning)
+			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService.Object, AddressOf WriteWarning)
 			Dim validMetadata As Object() = New Object() {fileNameFromDocumentTable}
 			Dim invalidMetadata As Object() = New Object() {""}
-			_fieldLookupService.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME).Returns(0)
+			_fieldLookupService.Setup(Function(x) x.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME)).Returns(0)
 			Dim nativeFileData As DataRowView = CreateFileDataRowView(fileNameFromFileTable)
 
 			'Act
@@ -407,9 +406,9 @@ Namespace Relativity.DataExchange.Import.NUnit
 			'Arrange
 			Dim fileNameFromFileTable As String = "CN0001.txt"
 			Dim fileNameFromDocumentTable As String = "file" + invalidCharacter + "name.txt"
-			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService, AddressOf WriteWarning)
+			Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService.Object, AddressOf WriteWarning)
 			Dim metadata As Object() = New Object() {fileNameFromDocumentTable}
-			_fieldLookupService.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME).Returns(0)
+			_fieldLookupService.Setup(Function(x) x.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME)).Returns(0)
 			Dim nativeFileData As DataRowView = CreateFileDataRowView(fileNameFromFileTable)
 
 			'Act

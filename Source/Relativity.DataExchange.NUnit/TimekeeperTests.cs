@@ -60,7 +60,7 @@ namespace Relativity.DataExchange.NUnit
 		[Category(TestCategories.Framework)]
 		public void ShouldOnlyTrackTimeWhenTheLogAllEventsSettingIsTrue(bool logAllEvents)
 		{
-			this.mockAppSettings.Invocations.Clear();
+			this.mockAppSettings.ResetCalls();
 			this.mockAppSettings.SetupGet(x => x.LogAllEvents).Returns(logAllEvents);
 			this.timekeeper.MarkStart("a");
 			System.Threading.Thread.Sleep(100);
@@ -90,7 +90,7 @@ namespace Relativity.DataExchange.NUnit
 		[Category(TestCategories.Framework)]
 		public void ShouldOnlyGenerateTheCsvReportWhenTheLogAllEventsSettingIsTrue(bool logAllEvents)
 		{
-			this.mockAppSettings.Invocations.Clear();
+			this.mockAppSettings.ResetCalls();
 			this.mockAppSettings.SetupGet(x => x.LogAllEvents).Returns(logAllEvents);
 			this.timekeeper.MarkStart("a");
 			System.Threading.Thread.Sleep(100);
