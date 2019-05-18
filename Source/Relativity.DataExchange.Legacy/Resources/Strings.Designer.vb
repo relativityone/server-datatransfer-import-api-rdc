@@ -65,6 +65,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Failed to access the BCP share due to possible network, connectivity, or permission issue. Try again. If the problem persists, contact your system administrator for assistance..
+        '''</summary>
+        Friend Shared ReadOnly Property BcpAccessExceptionMessage() As String
+            Get
+                Return ResourceManager.GetString("BcpAccessExceptionMessage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Failed to retrieve the import/export API version. Contact your system administrator for assistance if this problem persists..
         '''</summary>
         Friend Shared ReadOnly Property GetImportExportWebApiVersionExceptionMessage() As String
@@ -88,6 +97,15 @@ Namespace My.Resources
         Friend Shared ReadOnly Property GetRelativityVersionFailedExceptionMessage() As String
             Get
                 Return ResourceManager.GetString("GetRelativityVersionFailedExceptionMessage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to The metadata transfer job failed because the maximum time limit of {0} minute(s) was reached waiting for all metadata load files to transfer. Try again. If the problem persists, contact your system administrator for assistance..
+        '''</summary>
+        Friend Shared ReadOnly Property MetadataTransferExceptionMessage() As String
+            Get
+                Return ResourceManager.GetString("MetadataTransferExceptionMessage", resourceCulture)
             End Get
         End Property
     End Class

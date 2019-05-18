@@ -126,4 +126,10 @@
   <data name="GetRelativityVersionFailedExceptionMessage" xml:space="preserve">
     <value>Failed to retrieve the Relativity version. Contact your system administrator for assistance if this problem persists.</value>
   </data>
+  <data name="BcpAccessExceptionMessage" xml:space="preserve">
+    <value>Failed to access the BCP share due to possible network, connectivity, or permission issue. Try again. If the problem persists, contact your system administrator for assistance.</value>
+  </data>
+  <data name="MetadataTransferExceptionMessage" xml:space="preserve">
+    <value>The metadata transfer job failed because the maximum time limit of {0} minute(s) was reached waiting for all metadata load files to transfer. Try again. If the problem persists, contact your system administrator for assistance.</value>
+  </data>
 </root>

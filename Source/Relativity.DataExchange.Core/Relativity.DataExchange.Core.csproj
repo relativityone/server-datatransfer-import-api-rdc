@@ -201,6 +201,7 @@
     <Compile Include="Timekeeper2.cs" />
     <Compile Include="TimekeeperEntry2.cs" />
     <Compile Include="Transfer\DownloadTapiBridge2.cs" />
+    <Compile Include="Transfer\MetadataTransferException.cs" />
     <Compile Include="Transfer\TapiBridgeBase2.cs" />
     <Compile Include="Transfer\TapiBridgeFactory.cs" />
     <Compile Include="Transfer\TapiBridgeParameters2.cs" />

@@ -4,9 +4,13 @@
 ' </copyright>
 ' ----------------------------------------------------------------------------
 
+Imports System.Globalization
 Imports System.Threading
+
 Imports kCura.WinEDDS.Helpers
+
 Imports Polly
+
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
@@ -22,6 +26,8 @@ Namespace kCura.WinEDDS
 	Public MustInherit Class ImportExportTapiBase
 
 #Region "Members"
+		Private Const _fileCheckRetryCount As Int32 = 6000
+		Private Const _fileCheckWaitBetweenRetriesMilliseconds As Int32 = 10
 		Private ReadOnly _ioReporter As IIoReporter
 		Private ReadOnly _syncRoot As Object = New Object
 		Private ReadOnly _fileSystem As Global.Relativity.DataExchange.Io.IFileSystem
@@ -33,8 +39,6 @@ Namespace kCura.WinEDDS
 		Private _fileTapiClient As TapiClient = TapiClient.None
 		Private _fileTapiClientName As String
 		Private _statisticsLastUpdated As DateTime = DateTime.Now
-		Private _fileCheckRetryCount As Int32 = 6000
-		Private _fileCheckWaitBetweenRetries As Int32 = 10
 		Private _batchFileTapiProgressCount As Int32 = 0
 		Private _batchMetadataTapiProgressCount As Int32 = 0
 		Private ReadOnly _logger As ILog
@@ -157,7 +161,7 @@ Namespace kCura.WinEDDS
 		''' Gets the file system instance.
 		''' </summary>
 		''' <value>
-		''' The <see cref="Global.Relativity.DataExchange.Io.IFileSystem"/> instance.
+		''' The <see cref="IFileSystem"/> instance.
 		''' </value>
 		Protected ReadOnly Property FileSystem As Global.Relativity.DataExchange.Io.IFileSystem
 			Get
@@ -630,61 +634,79 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Sub WaitForPendingMetadataUploads()
-			WaitForRetry(Function()
-							 Return _batchMetadataTapiProgressCount >= Me.MetadataFilesCount
-						 End Function,
-						 "Waiting for all metadata files to upload...",
-						 "Metadata file uploads completed.",
-						 "Unable to successfully wait for pending metadata uploads",
-						 _fileCheckRetryCount,
-						 _fileCheckWaitBetweenRetries)
+			Dim metadataFileCheckRetryCount As Integer = Me.GetMetadataFileCheckRetryCount()
+			Dim waitResult As Boolean = WaitForRetry(
+				Function()
+					Return _batchMetadataTapiProgressCount >= Me.MetadataFilesCount
+				End Function,
+				"Waiting for all metadata files to upload...",
+				"Metadata file uploads completed.",
+				"Failed to wait for all pending metadata file uploads.",
+				metadataFileCheckRetryCount,
+				_fileCheckWaitBetweenRetriesMilliseconds)
 
 			_batchMetadataTapiProgressCount = 0
 			Me.MetadataFilesCount = 0
+
+			' REL-317973: Design expectations require ALL BCP load files to transfer successfully!
+			'             Otherwise, subsequent exceptions are virtually guaranteed.
+			If Not waitResult And Me.ShouldImport
+				Dim maxWaitPeriod As TimeSpan = TimeSpan.FromMilliseconds(metadataFileCheckRetryCount * _fileCheckWaitBetweenRetriesMilliseconds)
+				Dim errorMessage As String = String.Format(
+					CultureInfo.CurrentCulture,
+					My.Resources.Strings.MetadataTransferExceptionMessage,
+					maxWaitPeriod.TotalMinutes)
+				Throw New MetadataTransferException(errorMessage)
+			End If
 		End Sub
 
 		Public Sub WaitForPendingFileUploads()
-			WaitForRetry(Function()
-							 Return _batchFileTapiProgressCount >= Me.ImportFilesCount
-						 End Function,
-						 "Waiting for all files to upload...",
-						 "File uploads completed.",
-						 "Unable to successfully wait for pending uploads",
-						 _fileCheckRetryCount,
-						 _fileCheckWaitBetweenRetries)
+			WaitForRetry(
+				Function()
+					Return _batchFileTapiProgressCount >= Me.ImportFilesCount
+				End Function,
+				"Waiting for all native files to upload...",
+				"Native file uploads completed.",
+				"Failed to wait for all pending native file uploads.",
+				_fileCheckRetryCount,
+				_fileCheckWaitBetweenRetriesMilliseconds)
 
 			_batchFileTapiProgressCount = 0
 			Me.ImportFilesCount = 0
 		End Sub
 
-		Public Sub WaitForRetry(ByVal retryFunction As Func(Of Boolean),
-								ByVal startMessage As String,
-								ByVal stopMessage As String,
-								ByVal errorMessage As String,
-								ByVal retryCount As Int32,
-								ByVal waitBetweenRetries As Int32)
+		Public Function WaitForRetry(ByVal retryFunction As Func(Of Boolean),
+		                             ByVal startMessage As String,
+		                             ByVal successMessage As String,
+		                             ByVal warningMessage As String,
+		                             ByVal retryCount As Int32,
+		                             ByVal waitBetweenRetriesMilliseconds As Int32) As Boolean
+			' REL-317973: Raise success/warning messages and make appropriate log entries for clarity and diagnostics purposes.
 			Dim waitSuccess As Boolean = False
-
 			Dim retryPolicy As Retry.RetryPolicy(Of Boolean) = Policy.HandleResult(False).WaitAndRetry(
 				retryCount,
 				Function(count) As TimeSpan
-					Return TimeSpan.FromMilliseconds(waitBetweenRetries)
+					Return TimeSpan.FromMilliseconds(waitBetweenRetriesMilliseconds)
 				End Function)
 
 			Me.OnWriteStatusMessage(EventType2.Status, startMessage, 0, 0)
+			Me.LogInformation(startMessage)
 
 			retryPolicy.Execute(Function()
-									waitSuccess = retryFunction()
+				waitSuccess = retryFunction()
 
-									Return waitSuccess
-								End Function, _cancellationTokenSource.Token)
-
-			Me.OnWriteStatusMessage(EventType2.Status, stopMessage, 0, 0)
-
-			If Not waitSuccess Then
-				Me.LogWarning(errorMessage)
+				Return waitSuccess
+			End Function, _cancellationTokenSource.Token)
+			If waitSuccess Then
+				Me.OnWriteStatusMessage(EventType2.Status, successMessage, 0, 0)
+				Me.LogInformation(successMessage)
+			Else
+				Me.OnWriteStatusMessage(EventType2.Status, warningMessage, 0, 0)
+				Me.LogWarning(warningMessage)
 			End If
-		End Sub
+
+			Return waitSuccess
+		End Function
 
 		Private Function DidFileComplete(ByVal status As TransferPathStatus) As Boolean
 			If status = TransferPathStatus.Failed Or
@@ -696,6 +718,23 @@ Namespace kCura.WinEDDS
 			End If
 
 			Return False
+		End Function
+
+		Private Function GetMetadataFileCheckRetryCount() As Integer
+			' Default to 10 minutes
+			Dim retryCount As Integer = 60000
+			If Not Me.BulkLoadTapiBridge Is Nothing Then
+				' Use common sense to scale the time limits
+				Select Case Me.BulkLoadTapiBridge.Client
+					Case TapiClient.Direct:
+						' 3.3 minutes
+						retryCount = 20000
+					Case TapiClient.Aspera:
+						' 5 minutes
+						retryCount = 30000
+				End Select
+			End If
+			Return retryCount
 		End Function
 	End Class
 End Namespace

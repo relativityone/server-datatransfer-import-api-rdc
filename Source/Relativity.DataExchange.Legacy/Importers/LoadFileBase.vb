@@ -1,10 +1,10 @@
 Imports System.Threading
+
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Data
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Service
 Imports Relativity.Logging
-
 
 Namespace kCura.WinEDDS
 	Public MustInherit Class LoadFileBase
@@ -1054,11 +1054,25 @@ Namespace kCura.WinEDDS
 			''' <summary>
 			''' Initializes a new instance of the <see cref="BcpPathAccessException"/> class.
 			''' </summary>
-			''' <param name="details">
-			''' The error details.
+			''' <param name="message">
+			''' The message that describes the error.
 			''' </param>
-			Public Sub New(ByVal details As String)
-				MyBase.New("Error accessing the bcp share. Please contact your system administrator with the following details: " & System.Environment.NewLine & details)
+			Public Sub New(ByVal message As String)
+				' Retained for backwards compatibility only. The next constructor should always be used.
+				MyBase.New("Error accessing the bcp share. Please contact your system administrator with the following details: " & System.Environment.NewLine & message)
+			End Sub
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="BcpPathAccessException"/> class.
+			''' </summary>
+			''' <param name="message">
+			''' The message that describes the error.
+			''' </param>
+			''' <param name="innerException">
+			''' The inner exception.
+			''' </param>
+			Public Sub New(ByVal message As String, ByVal innerException As Exception)
+				MyBase.New(message, innerException)
 			End Sub
 
 			''' <inheritdoc />

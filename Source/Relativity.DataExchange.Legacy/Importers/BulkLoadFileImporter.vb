@@ -1,7 +1,9 @@
 Imports System.Collections.Generic
 Imports System.Threading
 Imports System.Threading.Tasks
+
 Imports kCura.WinEDDS.Api
+
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Data
 Imports Relativity.DataExchange.Io
@@ -1354,9 +1356,11 @@ Namespace kCura.WinEDDS
 				Else
 					WaitForPendingMetadataUploads()
 				End If
+			Catch ex As MetadataTransferException
+				Throw
 			Catch ex As Exception
 				' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
-				Throw New BcpPathAccessException("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
+				Throw New kCura.WinEDDS.LoadFilebase.BcpPathAccessException(My.Resources.Strings.BcpAccessExceptionMessage, ex)
 			End Try
 
 			_lastRunMetadataImport = System.DateTime.Now.Ticks
