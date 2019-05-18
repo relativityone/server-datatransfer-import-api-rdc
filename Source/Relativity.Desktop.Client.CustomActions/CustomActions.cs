@@ -13,6 +13,7 @@ namespace Relativity.Desktop.Client.CustomActions
 	using System.Windows.Forms;
 
 	using Microsoft.Deployment.WindowsInstaller;
+	using Microsoft.Win32;
 
 	using Relativity.Desktop.Client.CustomActions.Resources;
 
@@ -32,16 +33,6 @@ namespace Relativity.Desktop.Client.CustomActions
 			AppConfigService service = new AppConfigService(new WixSession(session));
 			ActionResult result = service.Backup();
 			return result;
-		}
-
-		[CustomAction]
-		public static ActionResult RestoreConfiguration(Session session)
-		{
-			AppConfigService service = new AppConfigService(new WixSession(session));
-			ActionResult result = service.Merge();
-			return result == ActionResult.Success
-				       ? result
-				       : HandleInstallationError(session, Strings.ConfigurationRestoreError);
 		}
 
 		[CustomAction]
@@ -72,7 +63,7 @@ namespace Relativity.Desktop.Client.CustomActions
 				}
 				else
 				{
-					DialogResult dialogResult = MessageBox.Show(new Form {TopMost = true},
+					DialogResult dialogResult = MessageBox.Show(new Form { TopMost = true },
 						string.Format(Strings.FilesInUseError, productName), productName,
 						MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
 					if (dialogResult == DialogResult.OK)
@@ -94,6 +85,58 @@ namespace Relativity.Desktop.Client.CustomActions
 			}
 		}
 
+		[CustomAction]
+		public static ActionResult GetOldRdcVersion(Session session)
+		{
+			try
+			{
+				IWixSession wixSession = new WixSession(session);
+				List<RegistryView> views = new List<RegistryView> { RegistryView.Registry64, RegistryView.Registry32 };
+				foreach (RegistryView view in views)
+				{
+					using (RegistryKey localKey = RegistryKey.OpenBaseKey(Microsoft.Win32.RegistryHive.LocalMachine, view))
+					using (var key = localKey.OpenSubKey(@"SOFTWARE\kCura\RelativityDesktopClient"))
+					{
+						if (key != null)
+						{
+							session.Log($"The RDC {view} Registry key exists.");
+							string path = key.GetValue("Path") as string;
+							if (!string.IsNullOrEmpty(path))
+							{
+								session.Log($"The old RDC Registry path value DOES exist. Path={path}");
+								wixSession.SetPropertyValue(AppConfigService.PropertyNameOldRdcPath, path);
+							}
+							else
+							{
+								session.Log($"The old RDC Registry path value does NOT exist. Path={path}");
+							}
+
+							break;
+						}
+
+						session.Log($"The RDC {view} Registry key does NOT exist.");
+					}
+				}
+
+				return ActionResult.Success;
+			}
+			catch (Exception e)
+			{
+				session.Log($"Unable to get the OLD RDC version due to exception {e}");
+				return ActionResult.Failure;
+			}
+		}
+
+		[CustomAction]
+		public static ActionResult RestoreConfiguration(Session session)
+		{
+			AppConfigService service = new AppConfigService(new WixSession(session));
+			ActionResult result = service.Merge();
+			return result == ActionResult.Success
+				? result
+				: HandleInstallationError(session, Strings.ConfigurationRestoreError);
+		}
+
 		private static void CloseAllInstances(IEnumerable<Process> processes)
 		{
 			foreach (Process process in processes)
@@ -104,9 +147,17 @@ namespace Relativity.Desktop.Client.CustomActions
 
 		private static bool IsSilentMode(Session session)
 		{
-			WixSession wixSession = new WixSession(session);
-			int uiLevel = wixSession.GetPropertyValue<int>(PropertyNameUiLevel);
-			return uiLevel == UiLevelNone;
+			try
+			{
+				WixSession wixSession = new WixSession(session);
+				int uiLevel = wixSession.GetPropertyValue<int>(PropertyNameUiLevel);
+				return uiLevel == UiLevelNone;
+			}
+			catch (Exception)
+			{
+				// If we fail just to determine the mode, this is very likely a deferred CA trying to access
+				return true;
+			}
 		}
 
 		private static ActionResult HandleInstallationError(Session session, string message)

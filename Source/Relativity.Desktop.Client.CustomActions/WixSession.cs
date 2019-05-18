@@ -49,7 +49,15 @@ namespace Relativity.Desktop.Client.CustomActions
 
 			if (!isPropertyFound)
 			{
-				stringValue = session[propertyName];
+				try
+				{
+					// The Try pattern is expected.
+					stringValue = session[propertyName];
+				}
+				catch
+				{
+					stringValue = string.Empty;
+				}
 			}
 
 			return stringValue;

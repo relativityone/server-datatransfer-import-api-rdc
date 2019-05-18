@@ -1,10 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Fragment>
-		<Binary Id="CA.dll" SourceFile="$(var.Relativity.Desktop.Client.CustomActions.TargetDir)$(var.Relativity.Desktop.Client.CustomActions.TargetName).CA.dll" />
-		<CustomAction Id="BackupConfiguration" BinaryKey="CA.dll" DllEntry="BackupConfiguration" Execute="immediate" Return="check" />
-		<CustomAction Id="RestoreConfiguration" BinaryKey="CA.dll" DllEntry="RestoreConfiguration" Execute="deferred" Return="check" Impersonate="no"/>
-		<CustomAction Id="Cleanup" BinaryKey="CA.dll" DllEntry="Cleanup" Execute="deferred" Return="check" Impersonate="no" />
-		<CustomAction Id="CloseRunningApplications" BinaryKey="CA.dll" DllEntry="CloseRunningApplications" Execute="immediate" Return="check"/>
-	</Fragment>
+  <Fragment>
+    <Binary Id="CA.dll"
+            SourceFile="$(var.Relativity.Desktop.Client.CustomActions.TargetDir)$(var.Relativity.Desktop.Client.CustomActions.TargetName).CA.dll" />
+    <CustomAction Id="GetOldRdcVersion"
+                  BinaryKey="CA.dll"
+                  DllEntry="GetOldRdcVersion"
+                  Execute="immediate"
+                  Return="check"/>
+    <CustomAction Id="BackupConfiguration"
+                  BinaryKey="CA.dll"
+                  DllEntry="BackupConfiguration"
+                  Execute="immediate"
+                  Return="check" />
+    <CustomAction Id="RestoreConfiguration"
+                  BinaryKey="CA.dll"
+                  DllEntry="RestoreConfiguration"
+                  Execute="deferred"
+                  Return="check"
+                  Impersonate="no"/>
+    <CustomAction Id="Cleanup"
+                  BinaryKey="CA.dll"
+                  DllEntry="Cleanup"
+                  Execute="deferred"
+                  Return="check"
+                  Impersonate="no" />
+    <CustomAction Id="CloseRunningApplications"
+                  BinaryKey="CA.dll"
+                  DllEntry="CloseRunningApplications"
+                  Execute="immediate"
+                  Return="check"/>
+  </Fragment>
 </Wix>
