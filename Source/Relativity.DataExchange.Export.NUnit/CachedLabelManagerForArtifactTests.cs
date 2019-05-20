@@ -82,7 +82,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			this._instance.InitializeFor(this._artifacts, this._volumePredictions, CancellationToken.None);
 
-            this._directoryManager.Invocations.Clear();
+            this._directoryManager.ResetCalls();
 
 			foreach (Func<CachedLabelManagerForArtifact, Func<int, string>> methodGenerator in MethodsToTest())
 			{

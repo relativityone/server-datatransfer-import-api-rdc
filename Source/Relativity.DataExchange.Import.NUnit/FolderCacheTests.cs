@@ -212,7 +212,7 @@ namespace Relativity.DataExchange.Import.NUnit
 				this.mockDataTable.Rows.Clear();
 				this.mockDataTable.Constraints.Clear();
 				this.mockDataSet.Relations.Clear();
-				this.mockFolderManager.Invocations.Clear();
+				this.mockFolderManager.ResetCalls();
 				Exception fatalException;
 
 				try
@@ -274,7 +274,7 @@ namespace Relativity.DataExchange.Import.NUnit
 		public void ShouldThrowWhenReadingFoldersFails()
 		{
 			// Arrange
-			this.mockFolderManager.Invocations.Clear();
+			this.mockFolderManager.ResetCalls();
 			this.mockDataTable.Rows.Clear();
 			this.mockFolderManager.Setup(x => x.RetrieveArtifacts(It.IsAny<int>(), It.IsAny<int>()))
 				.Throws(new SoapException());
@@ -307,7 +307,7 @@ namespace Relativity.DataExchange.Import.NUnit
 		public void ShouldThrowWhenCreatingFoldersFails()
 		{
 			// Arrange
-			this.mockFolderManager.Invocations.Clear();
+			this.mockFolderManager.ResetCalls();
 			this.mockDataTable.Rows.Clear();
 			this.mockFolderManager.Setup(x => x.Create(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
 				.Throws(new SoapException());
@@ -381,7 +381,7 @@ namespace Relativity.DataExchange.Import.NUnit
 		public void ShouldCreateTheFolder(string folderPath, int expectedCacheCount, bool clearRows)
 		{
 			// Arrange
-			this.mockFolderManager.Invocations.Clear();
+			this.mockFolderManager.ResetCalls();
 			if (clearRows)
 			{
 				this.mockDataTable.Rows.Clear();
@@ -442,7 +442,7 @@ namespace Relativity.DataExchange.Import.NUnit
 				this.mockFolderManager.Object,
 				100000,
 				TestWorkspaceId);
-			this.mockFolderManager.Invocations.Clear();
+			this.mockFolderManager.ResetCalls();
 
 			// This will ensure the total number of items in the cache never increases.
 			for (int i = 0; i < 3; i++)

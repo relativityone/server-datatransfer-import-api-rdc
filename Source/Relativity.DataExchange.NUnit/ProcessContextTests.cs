@@ -163,8 +163,8 @@ namespace Relativity.DataExchange.NUnit
 		{
 			// Note: fatal exceptions are always logged regardless of logEvents.
 			this.ClearContext();
-			this.mockLogger.Invocations.Clear();
-			this.mockAppSettings.Invocations.Clear();
+			this.mockLogger.ResetCalls();
+			this.mockAppSettings.ResetCalls();
 			this.mockAppSettings.SetupGet(settings => settings.LogAllEvents).Returns(logEvents);
 			this.context.PublishFatalException(new InvalidOperationException());
 			Assert.That(this.fatalExceptionEvents.Count, Is.EqualTo(1));
@@ -259,8 +259,8 @@ namespace Relativity.DataExchange.NUnit
 		{
 			// Note: process events are only logged when configured.
 			this.ClearContext();
-			this.mockLogger.Invocations.Clear();
-			this.mockAppSettings.Invocations.Clear();
+			this.mockLogger.ResetCalls();
+			this.mockAppSettings.ResetCalls();
 			this.mockAppSettings.SetupGet(settings => settings.LogAllEvents).Returns(writeEvents);
 			this.context.SafeMode = false;
 			this.context.PublishErrorEvent("a", "b");
@@ -428,7 +428,7 @@ namespace Relativity.DataExchange.NUnit
 				table.Locale = CultureInfo.CurrentCulture;
 				ProcessErrorReport report =
 					new ProcessErrorReport { MaxLengthExceeded = false, Report = table };
-				this.mockProcessErrorWriter.Invocations.Clear();
+				this.mockProcessErrorWriter.ResetCalls();
 				this.mockProcessErrorWriter.SetupGet(x => x.HasErrors).Returns(true);
 				this.mockProcessErrorWriter.Setup(x => x.BuildErrorReport(It.IsAny<CancellationToken>())).Returns(report);
 				this.context.PublishProcessCompleted(false, "a", false);

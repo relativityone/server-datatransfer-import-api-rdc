@@ -561,7 +561,7 @@ namespace Relativity.DataExchange.NUnit
 
 		private void ResetMockLogger()
 		{
-			this.mockLogger.Invocations.Clear();
+			this.mockLogger.ResetCalls();
 			this.actualLoggedErrorException = null;
 			this.actualLoggedErrorMessage = null;
 			this.actualLoggedWarningException = null;

@@ -2,7 +2,6 @@ kcura.outsidein.fi.win32
 moq
 nbuilder
 newtonsoft.json
-nsubstitute
 nunit
 relativity.logging
 relativity.logging.interfaces
