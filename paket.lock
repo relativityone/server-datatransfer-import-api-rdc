@@ -32,7 +32,7 @@ NUGET
       StyleCop.Analyzers.Unstable (>= 1.1.1.114)
     StyleCop.Analyzers.Unstable (1.1.1.114)
     System.ValueTuple (4.5)
-    ZetaLongPaths (1.0.0.27)
+    ZetaLongPaths (1.0.0.16)
   remote: https://proget.kcura.corp/NuGet/NuGet
     kCura.OutsideIn.FI.Win32 (2019.2.2)
     kCura.Relativity.Client (10.3.37.48-DEV)
