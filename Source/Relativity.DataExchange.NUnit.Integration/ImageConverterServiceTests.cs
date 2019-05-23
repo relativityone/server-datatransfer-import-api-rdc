@@ -44,6 +44,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 
 		private readonly ImageConverterService _subjectUnderTest = new ImageConverterService(new FileSystemWrap());
 		private PathWrap _pathWrap;
+		private FileWrap _fieWrap;
 
 		public static IEnumerable ImageFileNames
 		{
@@ -58,6 +59,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		public void Init()
 		{
 			this._pathWrap = new PathWrap();
+			this._fieWrap = new FileWrap(this._pathWrap);
 		}
 
 		[Test]
@@ -84,15 +86,19 @@ namespace Relativity.DataExchange.NUnit.Integration
 			this._subjectUnderTest.ConvertTiffsToMultiPageTiff(imageList, fullFilePath);
 
 			// Assert
-			Image outputTiffImage = Image.FromFile(fullFilePath);
-			var compressionPropTag = outputTiffImage.GetPropertyItem(PropertyTagCompression);
-			var pageCount = outputTiffImage.GetFrameCount(FrameDimension.Page);
+			using (Image outputTiffImage = Image.FromFile(fullFilePath))
+			{
+				var compressionPropTag = outputTiffImage.GetPropertyItem(PropertyTagCompression);
+				var pageCount = outputTiffImage.GetFrameCount(FrameDimension.Page);
 
-			// We expect that image is compressed with CCITT Group 4 method
-			Assert.That(compressionPropTag.Value[0], Is.EqualTo(expectedCompressionType));
+				// We expect that image is compressed with CCITT Group 4 method
+				Assert.That(compressionPropTag.Value[0], Is.EqualTo(expectedCompressionType));
 
-			// We expect that image is consists of two pages
-			Assert.That(pageCount, Is.EqualTo(imageList.Count));
+				// We expect that image is consists of two pages
+				Assert.That(pageCount, Is.EqualTo(imageList.Count));
+			}
+
+			this._fieWrap.Delete(fullFilePath);
 		}
 
 		private static string GenerateTiffFileName(string name)
