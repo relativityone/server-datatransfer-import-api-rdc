@@ -29,9 +29,7 @@ namespace Relativity.DataExchange.NUnit
 		Justification = "The test class handles the disposal.")]
 	public class OutsideInFileTypeIdentifierServiceTests
 	{
-		private const int Timeout = 35;
 		private static bool dumpBinaries;
-		private IFileTypeIdentifier service;
 		private TempDirectory2 tempDirectory;
 		private string tempFile;
 
@@ -54,19 +52,12 @@ namespace Relativity.DataExchange.NUnit
 				DumpBinaries();
 				throw;
 			}
-
-			this.service = new OutsideInFileTypeIdentifierService(Timeout);
 		}
 
 		[TearDown]
 		public void Teardown()
 		{
 			this.tempDirectory.Dispose();
-			if (this.service != null)
-			{
-				this.service.Dispose();
-				this.service = null;
-			}
 		}
 
 		[Test]
@@ -78,8 +69,8 @@ namespace Relativity.DataExchange.NUnit
 				for (int i = 0; i < 2; i++)
 				{
 					// Reinitializing should have no impact.
-					this.service.Reinitialize();
-					IFileTypeInfo fileTypeInfo = this.service.Identify(this.tempFile);
+					FileTypeIdentifierService.Instance.Reinitialize();
+					IFileTypeInfo fileTypeInfo = FileTypeIdentifierService.Instance.Identify(this.tempFile);
 					Assert.That(fileTypeInfo, Is.Not.Null);
 					Assert.That(fileTypeInfo.Id, Is.GreaterThan(0));
 					Assert.That(fileTypeInfo.Description, Is.Not.Null.Or.Empty);
@@ -102,7 +93,7 @@ namespace Relativity.DataExchange.NUnit
 		{
 			try
 			{
-				Assert.Throws<System.ArgumentNullException>(() => this.service.Identify(file));
+				Assert.Throws<System.ArgumentNullException>(() => FileTypeIdentifierService.Instance.Identify(file));
 			}
 			catch
 			{
@@ -119,7 +110,7 @@ namespace Relativity.DataExchange.NUnit
 			{
 				string fileName = System.Guid.NewGuid().ToString("D").ToUpperInvariant();
 				string invalidFile = System.IO.Path.Combine(this.tempDirectory.Directory, fileName);
-				Assert.Throws<System.IO.FileNotFoundException>(() => this.service.Identify(invalidFile));
+				Assert.Throws<System.IO.FileNotFoundException>(() => FileTypeIdentifierService.Instance.Identify(invalidFile));
 				this.ValidateConfigInfo();
 			}
 			catch
@@ -142,7 +133,7 @@ namespace Relativity.DataExchange.NUnit
 				try
 				{
 					FileTypeIdentifyException exception =
-						Assert.Throws<FileTypeIdentifyException>(() => this.service.Identify(this.tempFile));
+						Assert.Throws<FileTypeIdentifyException>(() => FileTypeIdentifierService.Instance.Identify(this.tempFile));
 					Assert.That(exception.Error, Is.EqualTo(FileTypeIdentifyError.Permissions));
 					this.ValidateConfigInfo();
 				}
@@ -163,9 +154,9 @@ namespace Relativity.DataExchange.NUnit
 				try
 				{
 					this.ValidateConfigInfo();
-					this.service.Identify(this.tempFile);
+					FileTypeIdentifierService.Instance.Identify(this.tempFile);
 					this.ValidateConfigInfo();
-					this.service.Reinitialize();
+					FileTypeIdentifierService.Instance.Reinitialize();
 					this.ValidateConfigInfo();
 				}
 				catch
@@ -219,13 +210,12 @@ namespace Relativity.DataExchange.NUnit
 
 		private void ValidateConfigInfo()
 		{
-			var configuration = this.service.Configuration;
+			var configuration = FileTypeIdentifierService.Instance.Configuration;
 			Assert.That(configuration, Is.Not.Null);
 			Assert.That(configuration.Exception, Is.Null);
 			Assert.That(configuration.InstallDirectory, Does.Exist);
 			Assert.That(configuration.Version, Is.Not.Null.Or.Empty);
 			Assert.That(configuration.HasError, Is.False);
-			Assert.That(configuration.Timeout, Is.EqualTo(Timeout));
 		}
 	}
 }
