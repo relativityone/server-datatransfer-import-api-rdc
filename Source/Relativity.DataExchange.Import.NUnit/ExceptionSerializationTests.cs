@@ -17,6 +17,7 @@ namespace Relativity.DataExchange.Import.NUnit
 	using kCura.WinEDDS.Exceptions;
 
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Transfer;
 
 	[TestFixture]
 	public static class ExceptionSerializationTests
@@ -97,6 +98,15 @@ namespace Relativity.DataExchange.Import.NUnit
 					validateNoOp);
 				yield return new TestCaseData(
 					new kCura.WinEDDS.LoadFileBase.BcpPathAccessException("Message"),
+					validateNoOp);
+				yield return new TestCaseData(
+					new kCura.WinEDDS.LoadFileBase.BcpPathAccessException("Message", new InvalidOperationException()),
+					validateNoOp);
+				yield return new TestCaseData(
+					new MetadataTransferException("Message"),
+					validateNoOp);
+				yield return new TestCaseData(
+					new MetadataTransferException("Message", new InvalidOperationException()),
 					validateNoOp);
 				yield return new TestCaseData(
 					new kCura.WinEDDS.LoadFileBase.DuplicateMulticodeValueException(1, 1, "Message"), validateNoOp);
