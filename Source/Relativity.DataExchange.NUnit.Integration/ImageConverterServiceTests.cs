@@ -26,7 +26,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	[Category(TestCategories.Integration)]
 	public class ImageConverterServiceTests
 	{
-		private const string MultiTiffCcittImageFileName = "MultiTiffCcittImage";
+		private const string MultiTiffImageFileName = "MultiTiffImage";
 
 		/// <summary>
 		/// This const specify flag/propertytag where we get info on compression method.
@@ -80,7 +80,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 			// Arrange
 			string path = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-			string fullFilePath = this._pathWrap.Combine(path, GenerateTiffFileName(MultiTiffCcittImageFileName));
+			string fullFilePath = this._pathWrap.Combine(path, GenerateTiffFileName(MultiTiffImageFileName));
 
 			// Act
 			this._subjectUnderTest.ConvertTiffsToMultiPageTiff(imageList, fullFilePath);
@@ -91,7 +91,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 				var compressionPropTag = outputTiffImage.GetPropertyItem(PropertyTagCompression);
 				var pageCount = outputTiffImage.GetFrameCount(FrameDimension.Page);
 
-				// We expect that image is compressed with CCITT Group 4 method
+				// We expect that image is compressed with CCITT Group 4 method or LZW
 				Assert.That(compressionPropTag.Value[0], Is.EqualTo(expectedCompressionType));
 
 				// We expect that image is consists of two pages
