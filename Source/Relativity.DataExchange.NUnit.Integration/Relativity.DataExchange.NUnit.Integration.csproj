@@ -148,6 +148,7 @@
     </Compile>
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="ApplicationVersionServiceTests.cs" />
+    <Compile Include="ImageConverterServiceTests.cs" />
     <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
     <Compile Include="RestClientTests.cs" />
     <Compile Include="RelativityManagerWebServiceTests.cs" />
@@ -167,6 +168,15 @@
     <None Include="App.config" />
     <None Include="app.manifest" />
     <None Include="paket.references" />
+    <Content Include="Resources\Media\AZIPPER_0011111.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Media\AZIPPER_0011374.TIF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Media\AZIPPER_0011374_01.TIF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\OutsideIn\Test-FileTypeId-List-2018-9.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -468,4 +478,5 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
 </Project>
