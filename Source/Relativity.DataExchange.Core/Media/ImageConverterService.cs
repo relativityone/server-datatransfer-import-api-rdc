@@ -103,7 +103,7 @@ namespace Relativity.DataExchange.Media
 					{
 						multiPageTiff = this.GetImage(sourceImageFile);
 						encoderParams.Param[1] =
-							multiPageTiff.PixelFormat != System.Drawing.Imaging.PixelFormat.Format1bppIndexed
+							multiPageTiff.PixelFormat == System.Drawing.Imaging.PixelFormat.Format1bppIndexed
 								? new System.Drawing.Imaging.EncoderParameter(
 									compression,
 									(long)System.Drawing.Imaging.EncoderValue.CompressionCCITT4)
@@ -122,7 +122,7 @@ namespace Relativity.DataExchange.Media
 							(long)System.Drawing.Imaging.EncoderValue.FrameDimensionPage);
 						System.Drawing.Image bitmap = this.GetImage(sourceImageFile);
 						encoderParams.Param[1] =
-							bitmap.PixelFormat != System.Drawing.Imaging.PixelFormat.Format1bppIndexed
+							bitmap.PixelFormat == System.Drawing.Imaging.PixelFormat.Format1bppIndexed
 								? new System.Drawing.Imaging.EncoderParameter(
 									compression,
 									(long)System.Drawing.Imaging.EncoderValue.CompressionCCITT4)
