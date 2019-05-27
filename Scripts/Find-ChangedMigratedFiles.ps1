@@ -39,7 +39,7 @@ Push-Location -Path $RepoPath
 $commits = (git log --since="$sinceDate" --branches=$Branch* --reverse --format=%h)
 if ($commits.Length -gt 0)
 {
-    $files = & git diff --name-only $commit $Branch
+    $files = & git diff --name-only $commits[0] $Branch
     $patterns = @(
         "kCura/kCura/"
         "kCura/kCura.CommandLine/",
