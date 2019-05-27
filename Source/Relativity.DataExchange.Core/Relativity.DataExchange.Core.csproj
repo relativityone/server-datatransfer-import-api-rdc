@@ -111,6 +111,7 @@
     <Compile Include="Data\StringImporterException.cs" />
     <Compile Include="Data\TrimOption.cs" />
     <Compile Include="ExceptionHelper.cs" />
+    <Compile Include="Io\FileTypeIdentifierService.cs" />
     <Compile Include="IAppSettingsInternal.cs" />
     <Compile Include="IObjectCacheRepository.cs" />
     <Compile Include="Io\FileTypeConfiguration.cs" />
