@@ -205,10 +205,16 @@ timestamps
                                 echo "Publishing the SDK and RDC packages to Proget"
                                 powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}'"
                             }
-                            else
+
+                            // REL-322232: until the GitVersion + NuGet + feature branch configuration issue is resolved, only publish for the develop branch.
+                            else if (env.BRANCH_NAME == 'develop')
                             {
                                 echo "Publishing only the SDK package to Proget"
                                 powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}' -PackageTemplateRegex "^paket.template.relativity.import.client.sdk$""
+                            }
+                            else
+                            {
+                                echo "Skip publishing package(s) for this branch type."
                             }
                         }
                     }
