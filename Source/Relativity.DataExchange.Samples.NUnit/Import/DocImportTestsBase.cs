@@ -188,6 +188,18 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			job.OnError += row =>
 			{
 				this.PublishedErrors.Add(row);
+				StringBuilder rowMetaData = new StringBuilder();
+				foreach (string key in row.Keys)
+				{
+					if (rowMetaData.Length > 0)
+					{
+						rowMetaData.Append(",");
+					}
+
+					rowMetaData.AppendFormat("{0}={1}", key, row[key]);
+				}
+
+				Console.WriteLine("[Job Error Metadata]: " + rowMetaData);
 			};
 
 			job.OnFatalException += report =>
@@ -210,6 +222,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			job.OnProgress += row =>
 			{
 				this.PublishedProgressRows.Add(row);
+				Console.WriteLine("[Job Progress]: " + row);
 			};
 		}
 	}
