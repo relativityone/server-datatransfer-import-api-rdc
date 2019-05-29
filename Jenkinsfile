@@ -18,7 +18,7 @@ properties([
         booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport'),
         choice(defaultValue: 'hyperv', choices: ["hyperv"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment'),
         booleanParam(defaultValue: true, description: "Enable or disable publishing NuGet packages", name: 'publishPackages'),
-        booleanParam(defaultValue: true, description: "Enable or disable publishing an RDC MSI NuGet package", name: 'publishRdcPackage')
+        booleanParam(defaultValue: false, description: "Enable or disable publishing an RDC MSI NuGet package", name: 'publishRdcPackage')
     ])
 ])
 
@@ -199,22 +199,25 @@ timestamps
                     {
                         stage ('Publish packages to proget')
                         {
-                            // Only need to publish large RDC MSI packages for official releases or by request.
-                            if (env.BRANCH_NAME == 'master' || params.publishRdcPackage)
+                            // REL-322232: until the GitVersion + NuGet + feature branch configuration issue is resolved, only publish for the master and develop branches.
+                            if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop')
                             {
-                                echo "Publishing the SDK and RDC packages to Proget"
-                                powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}'"
-                            }
-
-                            // REL-322232: until the GitVersion + NuGet + feature branch configuration issue is resolved, only publish for the develop branch.
-                            else if (env.BRANCH_NAME == 'develop')
-                            {
-                                echo "Publishing only the SDK package to Proget"
-                                powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}' -PackageTemplateRegex "^paket.template.relativity.import.client.sdk$""
+                                // Only need to publish large RDC MSI packages for official releases or by request.                            
+                                if (env.BRANCH_NAME == 'master' || params.publishRdcPackage)
+                                {
+                                    echo "Publishing the SDK and RDC packages to Proget"
+                                    powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}'"
+                                }
+                                else
+                                {
+                                    echo "Publishing only the SDK package to Proget"
+                                    powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}' -PackageTemplateRegex "^paket.template.relativity.import.client.sdk$""
+                                }
                             }
                             else
                             {
-                                echo "Skip publishing package(s) for this branch type."
+                                // Assume all other branches are SLFB's.
+                                echo "Skip publishing package(s) for this feature branch. See REL-322232 for details."
                             }
                         }
                     }
