@@ -216,6 +216,9 @@ timestamps
                             }
                             else
                             {
+                                echo "Creating the SDK package only"
+                                powershell ".\\build.ps1 BuildPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}'"
+
                                 // Assume all other branches are SLFB's.
                                 echo "Skip publishing package(s) for this feature branch. See REL-322232 for details."
                             }
