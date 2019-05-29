@@ -4,11 +4,8 @@
   <?define RdcEventLogEntryName="Logging_RDC" ?>
   <?define Logname="kCura"?>
   <?define ProductName="Relativity Desktop Client" ?>
-  <?define ProductVersion="!(bind.FileVersion.Relativity.Desktop.Client.exe)" ?>
-  <?define UpgradeCode="{5AC5909F-9E1D-4E2F-A3E2-55E50AD4F072}" ?>
+  <?define UpgradeCode="{E32BA6D3-7C36-4D52-B93B-302E360B20B3}" ?>
   <?define RegistryKey="Software\kCura\RelativityDesktopClient" ?>
   <?define ConfigFile="$(var.Relativity.Desktop.Client.Legacy.TargetFileName).config"?>
   <?define ProcessName="Relativity.Desktop.Client"?>
-  <!-- This represents the old RDC installer upgrade code. -->
-  <?define LegacyUpgradeCode="{E32BA6D3-7C36-4D52-B93B-302E360B20B3}" ?>
 </Include>

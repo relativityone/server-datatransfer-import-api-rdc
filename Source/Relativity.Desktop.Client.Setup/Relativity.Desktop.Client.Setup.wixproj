@@ -61,6 +61,7 @@
     <Compile Include="Product.wxs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Version.wxi" />
     <Content Include="README.md" />
     <Content Include="Variables.wxi" />
     <Content Include="Relativity.Desktop.Client.Setup.xsl" />
