@@ -90,6 +90,9 @@ The optional parameter to digitally sign the appropriate artifacts for the assoc
 .PARAMETER SkipPublishRdcPackage
 The optional parameter that skips publishing the RDC package.
 
+.PARAMETER SkipPublishSdkPackage
+The optional parameter that skips publishing the SDK package.
+
 .PARAMETER Simulate
 The optional parameter that simulates executing a command. This is generally reserved for debug purposes.
 #>
@@ -134,6 +137,8 @@ param(
     [Switch]$Sign,
     [Parameter()]
     [Switch]$SkipPublishRdcPackage,
+    [Parameter()]
+    [Switch]$SkipPublishSdkPackage,
     [Parameter()]
     [Switch]$Simulate
 )
@@ -207,6 +212,7 @@ $Params = @{
         ILMerge = $ILMerge
         Sign = $Sign
         SkipPublishRdcPackage = $SkipPublishRdcPackage
+        SkipPublishSdkPackage = $SkipPublishSdkPackage
         Simulate = $Simulate
     }
 

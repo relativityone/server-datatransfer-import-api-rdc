@@ -55,6 +55,7 @@ properties {
     $ILMerge = $Null
     $Sign = $Null
     $SkipPublishRdcPackage = $Null
+    $SkipPublishSdkPackage = $Null
     $Simulate = $Null
 }
 
@@ -382,9 +383,18 @@ task PublishBuildArtifacts -Description "Publish build artifacts" {
 task PublishPackages -Description "Publishes packages to the NuGet feed" {
     $packageLogFile = Join-Path $LogsDir "package-publish.log"
     $filter = "*.nupkg"
+    if ($SkipPublishRdcPackage -and $SkipPublishSdkPackage) {
+        Write-Host "Skip publishing the the SDK and REC packages."
+        return
+    }
+    
     if ($SkipPublishRdcPackage) {
-        $filter = "*SDK*.nupkg"
+        $filter = "Relativity.DataExchange.Client.SDK*.nupkg"
         Write-Host "Pushing just the SDK .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
+    }
+    elseif ($SkipPublishSdkPackage) {
+        $filter = "*Relativity.Desktop.Client*.nupkg"
+        Write-Host "Pushing just the RDC .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
     }
     else {
         Write-Host "Pushing all SDK and RDC .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
