@@ -514,9 +514,11 @@ Function Copy-Folder {
 
     $robocopy = "robocopy.exe"
     Write-Output "Copying the build artifacts from $SourceDir to $TargetDir"
-    & $robocopy "$SourceDir" "$TargetDir" /MIR /is
-    if ($LASTEXITCODE -ne 1) {
-        Throw "An error occured while copying the build artifacts from $SourceDir to $TargetDir"
+    & $robocopy "$SourceDir" "$TargetDir" /MIR /is /R:6 /W:10 /FP /MT
+
+    # https://ss64.com/nt/robocopy-exit.html
+    if ($LASTEXITCODE -ge 8) {
+        Throw "An error occured while copying the build artifacts from $SourceDir to $TargetDir. Robocopy exit code = $LASTEXITCODE"
     }
 }
 
