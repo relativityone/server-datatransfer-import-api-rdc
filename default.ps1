@@ -500,10 +500,23 @@ task UnitTestResults -Description "Retrieve the unit test results from the Xml f
     Write-TestResultsOutput $UnitTestsResultXmlFile
 }
 
-task UpdateAssemblyInfo -Description "Update the AssemblySharedInfo files in \Version\" {
+task UpdateAssemblyInfo -Depends UpdateSdkAssemblyInfo,UpdateRdcAssemblyInfo -Description "Update the version contained within the SDK and RDC assembly shared info source files" {
+}
+
+task UpdateSdkAssemblyInfo -Description "Update the version contained within the SDK assembly shared info source file" {
     exec { 
          & $GitVersionExe /updateassemblyinfo .\Version\AssemblySharedInfo.cs .\Version\AssemblySharedInfo.vb 
     } -errorMessage "There was an error updating the assembly info."
+}
+
+task UpdateRdcAssemblyInfo -Description "Update the version contained within the RDC assembly shared info source file" {    
+    exec { 
+        $majorMinorPatchVersion = Get-RdcWixVersion
+        $InformationalVersion = Format-NuGetPackageVersion -MajorMinorPatchVersion $majorMinorPatchVersion
+        $VersionPath = Join-Path $Root "Version"
+        $ScriptPath = Join-Path $VersionPath "Update-RdcAssemblySharedInfo.ps1"
+        & $ScriptPath -Version "$majorMinorPatchVersion.0" -InformationalVersion $InformationalVersion -VersionFolderPath $VersionPath
+   } -errorMessage "There was an error updating the RDC assembly info."
 }
 
 Function Copy-Folder {
@@ -526,21 +539,65 @@ Function Format-NuGetPackageVersion {
     param(
         [String]$MajorMinorPatchVersion
     )
+
+    if (!$MajorMinorPatchVersion -or $MajorMinorPatchVersion.Length -eq 0) {
+        Throw "The NuGet package version cannot be formatted because the Major.Minor.Patch value is null or empty."
+    }
     
-    # The package version is made unique for any branch configuration that define a pre-release label.
-    # See https://gitversion.readthedocs.io/en/latest/more-info/version-increments/ for more details on issues with semantic versioning and NuGet.
-    $formattedVersion = $MajorMinorPatchVersion
+    $currentBranchName = & $GitVersionExe /output json /showvariable BranchName
+    if (!$currentBranchName -or $currentBranchName.Length -eq 0) {
+        Throw "The NuGet package version cannot be formatted because the branch name is null or empty."
+    }
+
     $preReleaseLabel = & $GitVersionExe /output json /showvariable PreReleaseLabel
-    if (!$preReleaseLabel -or $preReleaseLabel.Length -gt 0) {
-        $formattedVersion = "$MajorMinorPatchVersion-$preReleaseLabel"
-        if (!$BuildNumber -or $BuildNumber.Length -gt 0) {
-            $paddedBuildNumber = $BuildNumber.PadLeft(4, '0')
-            $formattedVersion += "$paddedBuildNumber"
+    $commitsSinceVersionSourcePadded = & $GitVersionExe /output json /showvariable CommitsSinceVersionSourcePadded
+    $formattedVersion = ""
+
+    # All validation exception messages go here.
+    $preReleaseLabelExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the pre-release label is null or empty."
+    $commitsSinceVersionSourcePaddedExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the total number of commits since the last tag is null or empty."
+    $buildNumberExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the build number is null or empty."
+        
+    if ($currentBranchName -eq "master") {
+        $formattedVersion = $MajorMinorPatchVersion
+    }
+    elseif ($currentBranchName -eq "develop") {
+        if (!$preReleaseLabel -or $preReleaseLabel.Length -eq 0) {
+            Throw $preReleaseLabelExceptionMessage
         }
 
+        if (!$commitsSinceVersionSourcePadded -or $commitsSinceVersionSourcePadded.Length -eq 0) {
+            Throw $commitsSinceVersionSourcePaddedExceptionMessage
+        }
+
+        $formattedVersion = "$MajorMinorPatchVersion-$preReleaseLabel$commitsSinceVersionSourcePadded"
+    }
+    else {
+        # Feature branches will always be prefixed with the JIRA ticket number.
         $jiraTicketNumber = Get-JiraTicketNumberFromBranchName
-        if (!$jiraTicketNumber -or $jiraTicketNumber.Length -gt 0) {
-            $formattedVersion += "-$jiraTicketNumber"
+        if ($jiraTicketNumber -and $jiraTicketNumber.Length -gt 0) {
+            # See https://gitversion.readthedocs.io/en/latest/more-info/version-increments/ for more details on issues with semantic versioning, NuGet, and feature branches.
+            if (!$preReleaseLabel -or $preReleaseLabel.Length -eq 0) {
+                Throw $preReleaseLabelExceptionMessage
+            }
+            
+            if (!$BuildNumber -or $BuildNumber.Length -eq 0) {
+                Throw $buildNumberExceptionMessage
+            }
+
+            $paddedBuildNumber = $BuildNumber.PadLeft(4, '0')
+            $formattedVersion = "$MajorMinorPatchVersion-$jiraTicketNumber-$preReleaseLabel$paddedBuildNumber"
+        }
+        else {
+            # A hotfix may not include a pre-release label.
+            $formattedVersion = $MajorMinorPatchVersion
+            if ($preReleaseLabel -and $preReleaseLabel.Length -gt 0) {
+                if (!$commitsSinceVersionSourcePadded -or $commitsSinceVersionSourcePadded.Length -eq 0) {
+                    Throw $commitsSinceVersionSourcePaddedExceptionMessage
+                }
+
+                $formattedVersion += "$MajorMinorPatchVersion-$preReleaseLabel$commitsSinceVersionSourcePadded"
+            }
         }
     }
 
@@ -548,24 +605,23 @@ Function Format-NuGetPackageVersion {
 }
 
 Function Get-JiraTicketNumberFromBranchName {
-    # Remove the REL number to reduce the package sizer 
-    $currentBranchName = $Branch
+    # Remove the REL number to reduce the version length.
     $options = [Text.RegularExpressions.RegexOptions]::IgnoreCase
-    $regexMatch = [regex]::Match($currentBranchName, "(?<jira>REL-\d+)-.*", $options)
+    $regexMatch = [regex]::Match($Branch, "(?<jira>REL-\d+)-.*", $options)
     if (!$regexMatch.Success) {
-        return $currentBranchName
+        return $null
     }
 
     if (!$regexMatch.Groups["jira"]) {
-        return $currentBranchName
+        return $null
     }
 
     $jiraTicketNumber = $regexMatch.Groups["jira"].Value
-    if (!$jiraTicketNumber -or $jiraTicketNumber.Length -le 0) {
-        return $currentBranchName
+    if ($jiraTicketNumber -and $jiraTicketNumber.Length -gt 0) {
+        return $jiraTicketNumber
     }
 
-    return $jiraTicketNumber
+    return $null
 }
 
 Function Get-RdcWixVersion {
@@ -591,12 +647,12 @@ Function Get-RdcWixVersion {
         Throw "The RDC version cannot be determined because the WIX RDC version source file '$rdcVersionWixFile' defines the ProductionVersion variable but the value cannot be determined from the regular expresssion match."
     }
 
-    $productVersion = $regexMatch.Groups["value"].Value
+    [string]$productVersion = $regexMatch.Groups["value"].Value
     if (!$productVersion -or $productVersion.Length -le 0) {
         Throw "The RDC version cannot be determined because the WIX RDC version source file '$rdcVersionWixFile' defines the ProductionVersion variable but the version is empty."
     }
 
-    return $productVersion
+    return $productVersion.Trim()
 }
 
 Function Initialize-Folder {

@@ -185,8 +185,8 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Version\AssemblySharedInfo.vb">
-      <Link>My Project\AssemblySharedInfo.vb</Link>
+    <Compile Include="..\..\Version\RdcAssemblySharedInfo.vb">
+      <Link>My Project\RdcAssemblySharedInfo.vb</Link>
     </Compile>
     <Compile Include="Collection.vb" />
     <Compile Include="CommandLine\Command.vb" />
