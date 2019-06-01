@@ -11,7 +11,7 @@
           Compressed="yes"
           Copyright="Relativity ODA LLC"
           IconSourceFile="$(var.ProjectDir)..\..\Images\relativity-icon.ICO"
-          AboutUrl="https://help.relativity.com/RelativityOne/Content/Relativity/RelativityOne_Staging_Explorer/Staging_Explorer.htm"
+          AboutUrl="https://help.kcura.com/$(var.ProductMajorVersion).$(var.ProductMinorVersion)/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm"
           Condition="((VersionNT = v6.1 OR VersionNT64 = v6.1) AND ServicePackLevel = 1) OR VersionNT &gt; v6.2 OR VersionNT64 &gt; v6.2">    
     <!-- Bundle will be installed only on Win 7 SP1 or later for both x64 x86-->
     
