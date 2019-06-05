@@ -5,7 +5,7 @@
 	''' </summary>
 	Public Class WebHelpUrls
 
-		Private Const UrlPrefix As String = "https://help.kcura.com/"
+		Private Const UrlPrefix As String = "https://help.relativity.com/"
 
 		''' <summary>
 		''' Gets the RDC home page URL.
