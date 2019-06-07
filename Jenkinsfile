@@ -18,7 +18,7 @@ properties([
         booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport'),
         choice(defaultValue: 'hyperv', choices: ["hyperv"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment'),
         booleanParam(defaultValue: true, description: "Enable or disable publishing NuGet packages", name: 'publishPackages'),
-        booleanParam(defaultValue: true, description: "Enable or disable publishing an RDC MSI NuGet package", name: 'publishRdcPackage')
+        booleanParam(defaultValue: false, description: "Enable or disable force publishing an RDC MSI NuGet package", name: 'forcePublishRdcPackage')
     ])
 ])
 
@@ -210,32 +210,15 @@ timestamps
                     {
                         stage ('Publish packages to proget')
                         {
-                            // REL-322232: until the GitVersion + NuGet + feature branch configuration issue is resolved, only publish for the master and develop branches.
-                            if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop')
+                            if (env.BRANCH_NAME == 'master' || params.forcePublishRdcPackage)
                             {
-                                // Only need to publish large RDC MSI packages for official releases or by request.
-                                if (env.BRANCH_NAME == 'master' || params.publishRdcPackage)
-                                {
-                                    echo "Publishing the SDK and RDC package(s)"
-                                    powershell ".\\build.ps1 PublishPackages"
-                                }
-                                else
-                                {
-                                    echo "Publishing only the SDK package(s)"
-                                    powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage"
-                                }
+                                echo "Publishing the SDK and RDC package(s)"
+                                powershell ".\\build.ps1 PublishPackages"
                             }
                             else
                             {
-                                if (params.publishRdcPackage)
-                                {
-                                    echo "Publishing only the RDC package(s)"
-                                    powershell ".\\build.ps1 PublishPackages -SkipPublishSdkPackage"
-                                }
-                                else
-                                {
-                                    echo "Skip publishing package(s) for this feature branch. See REL-322232 for details."
-                                }
+                                echo "Publishing only the SDK package(s)"
+                                powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage"
                             }
                         }
                     }
