@@ -57,6 +57,9 @@
     <EmbeddedResource Include="Themes\RdcCustomTheme.wxl" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Relativity.Desktop.Client.Setup\Version.wxi">
+      <Link>Version.wxi</Link>
+    </Content>
     <Content Include="Themes\RdcCustomTheme.xml" />
     <Content Include="Variables.wxi" />
   </ItemGroup>

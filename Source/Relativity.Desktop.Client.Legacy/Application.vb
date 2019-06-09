@@ -1644,12 +1644,12 @@ Namespace Relativity.Desktop.Client
 
 #Region "System Configuration"
 
-		Public Shared Function GetRelativityBuildVersion() As System.Version
+		Public Shared Function GetProductVersion() As System.Version
 			Try
 				' Never throw unnecessarily from this method.
 				Using key As Microsoft.Win32.RegistryKey = GetRegistryKey()
 					If Not key Is Nothing Then
-						Dim value As String = key.GetValue("RelativityBuildVersion", String.Empty)
+						Dim value As String = key.GetValue("Version", String.Empty)
 						Dim version As System.Version = Nothing
 						If Not String.IsNullOrWhiteSpace(value) AndAlso System.Version.TryParse(value, version) Then
 							Return version
@@ -1666,8 +1666,21 @@ Namespace Relativity.Desktop.Client
 			Return System.Reflection.Assembly.GetExecutingAssembly()
 		End Function
 
+		Public Shared Function GetAssemblyFileVersion() As System.Version
+			Dim assembly As System.Reflection.Assembly = GetExecutingAssembly()
+
+			Try
+				Dim fvi As FileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location)
+				Dim version As Version = System.Version.Parse(fvi.FileVersion)
+				Return version
+			Catch ex As Exception
+				Return Nothing
+			End Try
+		End Function
+
 		Public Shared Function GetAssemblyVersion() As System.Version
-			Return GetExecutingAssembly().GetName.Version()
+			Dim assembly As System.Reflection.Assembly = GetExecutingAssembly()
+			Return assembly.GetName().Version
 		End Function
 
 		Public Async Function GetSystemConfiguration() As Task(Of System.Data.DataTable)

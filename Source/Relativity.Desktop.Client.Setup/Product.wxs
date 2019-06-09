@@ -3,6 +3,7 @@
 		 xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension"
 		 xmlns:fw="http://schemas.microsoft.com/wix/FirewallExtension">
   <?include $(sys.CURRENTDIR)\Variables.wxi ?>
+  <?include $(sys.CURRENTDIR)\Version.wxi ?>
   <Product Id="*"
            Name="$(var.ProductName)"
            Codepage="1252"
@@ -30,21 +31,10 @@
       </RegistrySearch>
     </Property>
 
-    <!-- Set AllowSameVersionUpgrades to 'yes' to support PATCH upgrades (e.g. for SEMVER support) -->
     <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeErrorMessage)"
-                  AllowSameVersionUpgrades="yes"
+                  AllowSameVersionUpgrades="no"
                   Schedule="afterInstallInitialize"
                   AllowDowngrades="no"/>
-
-    <!-- Force the old RDC to uninstall. -->
-    <Upgrade Id ="$(var.LegacyUpgradeCode)">
-      <UpgradeVersion Property="OLDRDCFOUND"
-                      Minimum="1.0.0"
-                      IncludeMinimum="yes"
-                      OnlyDetect="no"
-                      IgnoreRemoveFailure="no"
-                      MigrateFeatures="no" />
-    </Upgrade>
 
     <!-- UI Extensions -->
     <UIRef Id="WixUI_MondoNoLicense" />
@@ -84,10 +74,6 @@
     <!-- This represents whether the RDC is used for RelativityOne environments. -->
     <Property Id="RELATIVITYONE_ENV"
               Value="1" />
-
-    <!-- This represents the actual Relativity build version when the MSI is bundled with the bootstrapper. -->
-    <Property Id="RELATIVITY_BUILD_VERSION"
-              Value="(stand-alone)"/>
 
     <!-- We always want verbose logging -->
     <Property Id="MsiLogging" Value="v" />
@@ -259,10 +245,6 @@
                        Name="RelativityOneEnv"
                        Value="[RELATIVITYONE_ENV]"
                        KeyPath="no" />
-        <RegistryValue Type="string"
-                       Name="RelativityBuildVersion"
-                       Value="[RELATIVITY_BUILD_VERSION]"
-                       KeyPath="no" />
       </RegistryKey>
     </Component>
     <Component Id="ImagesComponent"
@@ -314,7 +296,7 @@
     <SetProperty Id="BackupConfigurationOldRdcPath"
                  Value="OLDRDCPATH=[OLDRDCPATH]"
                  Before="BackupConfiguration"
-                 Sequence="execute">OLDRDCFOUND</SetProperty>
+                 Sequence="execute">WIX_UPGRADE_DETECTED</SetProperty>
     <SetProperty Id="BackupConfiguration"
                  Value="SOURCEAPPCONFIGFILE=[SOURCEAPPCONFIGFILE]"
                  Before="BackupConfiguration"
@@ -322,11 +304,11 @@
     <SetProperty Id="RestoreConfiguration"
                  Value="SOURCEAPPCONFIGFILE=[SOURCEAPPCONFIGFILE];TARGETAPPCONFIGFILE=[#Relativity.Desktop.Client.Config];UILevel=[UILevel];ProductName=[ProductName]"
                  Before="RestoreConfiguration"
-                 Sequence="execute">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</SetProperty>
+                 Sequence="execute">WIX_UPGRADE_DETECTED</SetProperty>
     <SetProperty Id="Cleanup"
                  Value="SOURCEAPPCONFIGFILE=[SOURCEAPPCONFIGFILE]"
                  Before="Cleanup"
-                 Sequence="execute">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</SetProperty>
+                 Sequence="execute">WIX_UPGRADE_DETECTED</SetProperty>
     <SetProperty Id="CloseRunningApplications"
                  Value="APP_PROCESS_NAME=[APP_PROCESS_NAME];UILevel=[UILevel];ProductName=[ProductName]"
                  Before="CloseRunningApplications"
@@ -335,11 +317,11 @@
     <!-- Sequences -->
     <InstallExecuteSequence>
       <!-- Note: this MUST be scheduled before the installation; otherwise, it will already be uninstalled. -->
-      <Custom Action="GetOldRdcVersion" Before="InstallInitialize">OLDRDCFOUND</Custom>
+      <Custom Action="GetOldRdcVersion" Before="InstallInitialize">WIX_UPGRADE_DETECTED</Custom>
       <Custom Action="CloseRunningApplications" After="InstallInitialize">1</Custom>
-      <Custom Action="BackupConfiguration" After="CloseRunningApplications">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</Custom>
-      <Custom Action="RestoreConfiguration" After="WriteRegistryValues">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</Custom>
-      <Custom Action="Cleanup" After="RestoreConfiguration">OLDRDCFOUND OR WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="BackupConfiguration" After="CloseRunningApplications">WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="RestoreConfiguration" After="WriteRegistryValues">WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="Cleanup" After="RestoreConfiguration">WIX_UPGRADE_DETECTED</Custom>
     </InstallExecuteSequence>
   </Product>
 </Wix>

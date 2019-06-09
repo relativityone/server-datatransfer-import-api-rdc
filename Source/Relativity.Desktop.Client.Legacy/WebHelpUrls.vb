@@ -5,7 +5,7 @@
 	''' </summary>
 	Public Class WebHelpUrls
 
-		Private Const UrlPrefix As String = "https://help.kcura.com/"
+		Private Const UrlPrefix As String = "https://help.relativity.com/"
 
 		''' <summary>
 		''' Gets the RDC home page URL.
@@ -17,13 +17,13 @@
 		''' The URL.
 		''' </returns>
 		Public Shared Function GetHomePageUrl(ByVal cloudInstance As Boolean) As String
-			Dim relativityVersion As System.Version = Application.GetRelativityBuildVersion()
+			Dim productVersion As System.Version = Application.GetProductVersion()
 
 			' Always direct the user to the R1 site when this application is installed stand-alone.
-			If cloudInstance OrElse relativityVersion Is Nothing Then
+			If cloudInstance OrElse productVersion Is Nothing Then
 				Return $"{UrlPrefix}RelativityOne/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm"
 			Else
-				Return $"{UrlPrefix}{relativityVersion.Major}.{relativityVersion.Minor}/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm"
+				Return $"{UrlPrefix}{productVersion.Major}.{productVersion.Minor}/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm"
 			End If
 		End Function
 

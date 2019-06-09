@@ -25,13 +25,17 @@ Public Class AboutForm
 		End If
 
 		sb.Append(String.Format("Relativity Desktop Client {0} {1}", bitness, nl))
-		Dim version As System.Version = Relativity.Desktop.Client.Application.GetRelativityBuildVersion()
+		Dim version As System.Version = Relativity.Desktop.Client.Application.GetProductVersion()
 		If (Not version Is Nothing) Then
 			' Prefer displaying the Relativity version...
 			sb.Append($"Version {version.ToString()}" & nl)
 		Else
-			' Otherwise, use the assembly version for stand-alone installations.
-			version = Relativity.Desktop.Client.Application.GetAssemblyVersion()
+			' Otherwise, use the assembly file or simply assembly version for stand-alone installations.
+			version = Relativity.Desktop.Client.Application.GetAssemblyFileVersion()
+			If version Is Nothing Then
+				version = Relativity.Desktop.Client.Application.GetAssemblyVersion()
+			End If
+
 			sb.Append($"Version {version.ToString()} (stand-alone)" & nl)
 		End If
 

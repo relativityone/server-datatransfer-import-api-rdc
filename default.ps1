@@ -44,8 +44,8 @@ properties {
     $BuildPlatform = $Null
     $BuildUrl = $Null
     $Version = $Null
-    $PackageVersion = $Null
     $Branch = $Null
+    $BuildNumber = $Null
     $Verbosity = $Null
     $TestTimeoutInMS = $Null
     $TestParametersFile = $Null
@@ -54,6 +54,9 @@ properties {
     $PackageTemplateRegex = $Null
     $ILMerge = $Null
     $Sign = $Null
+    $SkipPublishRdcPackage = $Null
+    $SkipPublishSdkPackage = $Null
+    $Simulate = $Null
 }
 
 task Build -Description "Builds the source code"  {
@@ -195,29 +198,48 @@ task BuildInstallPackages -Description "Builds all install packages" {
     }
 }
 
-task BuildPackages -Description "Builds all NuGet packages" {
-    Assert ($Branch -ne "") "Branch is a required argument for publishing packages"
-    Assert ($PackageVersion -ne "") "PackageVersion is a required argument for publishing packages"
+task BuildPackages -Depends BuildSdkPackages,BuildRdcPackage -Description "Builds all NuGet packages" {
+}
 
+task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
     Initialize-Folder $LogsDir -Safe
     Initialize-Folder $PackagesArtifactsDir -Safe
-    $preReleaseLabel = & $GitVersionExe /output json /showvariable PreReleaseLabel
-    Write-Host "Branch name: $Branch"
-    Write-Host "Pre-release label: $preReleaseLabel"
+    
+    $majorMinorPatchVersion = & $GitVersionExe /output json /showvariable MajorMinorPatch
+    $packageVersion =  Format-NuGetPackageVersion -MajorMinorPatchVersion $majorMinorPatchVersion
+    Write-Host "Package version: $packageVersion"
     Write-Host "Working directory: $PSScriptRoot"
     $packageLogFile = Join-Path $LogsDir "package-build.log"
-    Write-Host "Creating packages for all package templates contained within '$PaketDir' matching '$PackageTemplateRegex' with version '$PackageVersion' and outputting to '$PackagesArtifactsDir'."
-    foreach ($file in Get-ChildItem $PaketDir) {
-        if (!($file.Name -match [regex]$PackageTemplateRegex)) {
-            Write-Host "Package template $($file.Name) doesn't match the package template regular expression."
-            continue
-        }
 
-        Write-Host "Creating package for template '$($file.FullName)' and outputting to '$PackagesArtifactsDir'."
+    # Add any new package templates to the array.
+    $packageTemplateFileNames = @("paket.template.relativity.dataexchange.client.sdk")
+    foreach ($packageTemplateFileName in $packageTemplateFileNames) {
+        $packageTemplateFile = Join-Path $PaketDir $packageTemplateFileName
+        if (-Not (Test-Path $packageTemplateFile -PathType Leaf)) {
+            Throw "The package cannot be created from template file '$packageTemplateFile' because it doesn't exist."
+        }
+        
+        Write-Host "Creating package for template '$packageTemplateFile' and outputting to '$PackagesArtifactsDir'."
         exec {
-             & $PaketExe pack --template `"$($file.FullName)`" --version $PackageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" 
-        } -errorMessage "There was an error creating the package."
+             & $PaketExe pack --template `"$packageTemplateFile`" --version $packageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" 
+        } -errorMessage "There was an error creating the SDK package."
     }
+}
+
+task BuildRdcPackage -Description "Builds the RDC NuGet package" {
+    Initialize-Folder $LogsDir -Safe
+    Initialize-Folder $PackagesArtifactsDir -Safe
+
+    $majorMinorPatchVersion = Get-RdcWixVersion 
+    $packageVersion =  Format-NuGetPackageVersion -MajorMinorPatchVersion $majorMinorPatchVersion
+    Write-Host "Package version: $packageVersion"
+    Write-Host "Working directory: $PSScriptRoot"
+    $packageLogFile = Join-Path $LogsDir "rdc-package-build.log"
+    Write-Host "Creating the RDC package and outputting to '$PackagesArtifactsDir'."
+    $packageFile = Join-Path $PaketDir "paket.template.relativity.desktop.client"
+    exec {
+        & $PaketExe pack --template `"$packageFile`" --version $packageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" 
+    } -errorMessage "There was an error creating the RDC package."
 }
 
 task BuildVersion -Description "Retrieves the build version from GitVersion" {
@@ -358,24 +380,36 @@ task PublishBuildArtifacts -Description "Publish build artifacts" {
     Copy-Folder -SourceDir $TestReportsDir -TargetDir "$targetDir\test-reports"
 }
 
-task PublishPackages -Depends BuildPackages -Description "Builds all package templates and pushes each to the NuGet feed" {
-    Assert ($Branch -ne "") "Branch is a required argument for publishing packages"
-    Assert ($PackageVersion -ne "") "PackageVersion is a required argument for publishing packages"
-    if (($Branch -ne "master" -and (-not $Branch -like "hotfix-*")) -and [string]::IsNullOrWhiteSpace($preReleaseLabel)) {
-        Write-Warning "PPP: Current branch '$Branch' has version that appears to be a release version and is not master. Packing and publishing will not occur. Exiting..."
-        exit 0
+task PublishPackages -Description "Publishes packages to the NuGet feed" {
+    $packageLogFile = Join-Path $LogsDir "package-publish.log"
+    $filter = "*.nupkg"
+    if ($SkipPublishRdcPackage -and $SkipPublishSdkPackage) {
+        Write-Host "Skip publishing the the SDK and REC packages."
+        return
+    }
+    
+    if ($SkipPublishRdcPackage) {
+        $filter = "Relativity.DataExchange.Client.SDK*.nupkg"
+        Write-Host "Pushing just the SDK .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
+    }
+    elseif ($SkipPublishSdkPackage) {
+        $filter = "*Relativity.Desktop.Client*.nupkg"
+        Write-Host "Pushing just the RDC .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
+    }
+    else {
+        Write-Host "Pushing all SDK and RDC .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
     }
 
-    $packageLogFile = Join-Path $LogsDir "package-publish.log"
-    Write-Host "Pushing all .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
-    foreach ($file in Get-ChildItem $PackagesArtifactsDir) {
-        if ($file.Extension -ne '.nupkg') {
-            continue
-        }
-
+    $path = Join-Path $PackagesArtifactsDir "*.*"
+    foreach ($file in Get-ChildItem $path -Include $filter) {
         $packageFile = $file.FullName
         exec { 
-            & $PaketExe push `"$packageFile`" --url `"$ProgetUrl`" --api-key `"$ProgetApiKey`" --verbose --log-file `"$packageLogFile`" 
+            if (!$Simulate) {
+                & $PaketExe push `"$packageFile`" --url `"$ProgetUrl`" --api-key `"$ProgetApiKey`" --verbose --log-file `"$packageLogFile`" 
+            }
+            else {
+                Write-Host "Simulated pushing '$packageFile' to the '$ProgetUrl' NuGet feed."
+            }
         } -errorMessage "There was an error pushing the packages."
     }
 }
@@ -466,10 +500,23 @@ task UnitTestResults -Description "Retrieve the unit test results from the Xml f
     Write-TestResultsOutput $UnitTestsResultXmlFile
 }
 
-task UpdateAssemblyInfo -Description "Update the AssemblySharedInfo files in \Version\" {
+task UpdateAssemblyInfo -Depends UpdateSdkAssemblyInfo,UpdateRdcAssemblyInfo -Description "Update the version contained within the SDK and RDC assembly shared info source files" {
+}
+
+task UpdateSdkAssemblyInfo -Description "Update the version contained within the SDK assembly shared info source file" {
     exec { 
          & $GitVersionExe /updateassemblyinfo .\Version\AssemblySharedInfo.cs .\Version\AssemblySharedInfo.vb 
     } -errorMessage "There was an error updating the assembly info."
+}
+
+task UpdateRdcAssemblyInfo -Description "Update the version contained within the RDC assembly shared info source file" {    
+    exec { 
+        $majorMinorPatchVersion = Get-RdcWixVersion
+        $InformationalVersion = Format-NuGetPackageVersion -MajorMinorPatchVersion $majorMinorPatchVersion
+        $VersionPath = Join-Path $Root "Version"
+        $ScriptPath = Join-Path $VersionPath "Update-RdcAssemblySharedInfo.ps1"
+        & $ScriptPath -Version "$majorMinorPatchVersion.0" -InformationalVersion $InformationalVersion -VersionFolderPath $VersionPath
+   } -errorMessage "There was an error updating the RDC assembly info."
 }
 
 Function Copy-Folder {
@@ -480,10 +527,132 @@ Function Copy-Folder {
 
     $robocopy = "robocopy.exe"
     Write-Output "Copying the build artifacts from $SourceDir to $TargetDir"
-    & $robocopy "$SourceDir" "$TargetDir" /MIR /is
-    if ($LASTEXITCODE -ne 1) {
-        Throw "An error occured while copying the build artifacts from $SourceDir to $TargetDir"
+    & $robocopy "$SourceDir" "$TargetDir" /MIR /is /R:6 /W:10 /FP /MT
+
+    # https://ss64.com/nt/robocopy-exit.html
+    if ($LASTEXITCODE -ge 8) {
+        Throw "An error occured while copying the build artifacts from $SourceDir to $TargetDir. Robocopy exit code = $LASTEXITCODE"
     }
+}
+
+Function Format-NuGetPackageVersion {
+    param(
+        [String]$MajorMinorPatchVersion
+    )
+
+    if (!$MajorMinorPatchVersion -or $MajorMinorPatchVersion.Length -eq 0) {
+        Throw "The NuGet package version cannot be formatted because the Major.Minor.Patch value is null or empty."
+    }
+    
+    $currentBranchName = & $GitVersionExe /output json /showvariable BranchName
+    if (!$currentBranchName -or $currentBranchName.Length -eq 0) {
+        Throw "The NuGet package version cannot be formatted because the branch name is null or empty."
+    }
+
+    $preReleaseLabel = & $GitVersionExe /output json /showvariable PreReleaseLabel
+    $commitsSinceVersionSourcePadded = & $GitVersionExe /output json /showvariable CommitsSinceVersionSourcePadded
+    $formattedVersion = ""
+
+    # All validation exception messages go here.
+    $preReleaseLabelExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the pre-release label is null or empty."
+    $commitsSinceVersionSourcePaddedExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the total number of commits since the last tag is null or empty."
+    $buildNumberExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the build number is null or empty."
+        
+    if ($currentBranchName -eq "master") {
+        $formattedVersion = $MajorMinorPatchVersion
+    }
+    elseif ($currentBranchName -eq "develop") {
+        if (!$preReleaseLabel -or $preReleaseLabel.Length -eq 0) {
+            Throw $preReleaseLabelExceptionMessage
+        }
+
+        if (!$commitsSinceVersionSourcePadded -or $commitsSinceVersionSourcePadded.Length -eq 0) {
+            Throw $commitsSinceVersionSourcePaddedExceptionMessage
+        }
+
+        $formattedVersion = "$MajorMinorPatchVersion-$preReleaseLabel$commitsSinceVersionSourcePadded"
+    }
+    else {
+        # Feature branches will always be prefixed with the JIRA ticket number.
+        $jiraTicketNumber = Get-JiraTicketNumberFromBranchName
+        if ($jiraTicketNumber -and $jiraTicketNumber.Length -gt 0) {
+            # See https://gitversion.readthedocs.io/en/latest/more-info/version-increments/ for more details on issues with semantic versioning, NuGet, and feature branches.
+            if (!$preReleaseLabel -or $preReleaseLabel.Length -eq 0) {
+                Throw $preReleaseLabelExceptionMessage
+            }
+            
+            if (!$BuildNumber -or $BuildNumber.Length -eq 0) {
+                Throw $buildNumberExceptionMessage
+            }
+
+            $paddedBuildNumber = $BuildNumber.PadLeft(4, '0')
+            $formattedVersion = "$MajorMinorPatchVersion-$jiraTicketNumber-$preReleaseLabel$paddedBuildNumber"
+        }
+        else {
+            # A hotfix may not include a pre-release label.
+            $formattedVersion = $MajorMinorPatchVersion
+            if ($preReleaseLabel -and $preReleaseLabel.Length -gt 0) {
+                if (!$commitsSinceVersionSourcePadded -or $commitsSinceVersionSourcePadded.Length -eq 0) {
+                    Throw $commitsSinceVersionSourcePaddedExceptionMessage
+                }
+
+                $formattedVersion += "$MajorMinorPatchVersion-$preReleaseLabel$commitsSinceVersionSourcePadded"
+            }
+        }
+    }
+
+    return $formattedVersion
+}
+
+Function Get-JiraTicketNumberFromBranchName {
+    # Remove the REL number to reduce the version length.
+    $options = [Text.RegularExpressions.RegexOptions]::IgnoreCase
+    $regexMatch = [regex]::Match($Branch, "(?<jira>REL-\d+)-.*", $options)
+    if (!$regexMatch.Success) {
+        return $null
+    }
+
+    if (!$regexMatch.Groups["jira"]) {
+        return $null
+    }
+
+    $jiraTicketNumber = $regexMatch.Groups["jira"].Value
+    if ($jiraTicketNumber -and $jiraTicketNumber.Length -gt 0) {
+        return $jiraTicketNumber
+    }
+
+    return $null
+}
+
+Function Get-RdcWixVersion {
+    $rdcVersionWixFile = Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Setup") "Version.wxi"
+    if (-Not (Test-Path $rdcVersionWixFile -PathType Leaf)) {
+        Throw "The RDC version cannot be determined because the WIX RCD version source file '$rdcVersionWixFile' doesn't exist."
+    }
+
+    [xml]$xml = Get-Content $rdcVersionWixFile
+    $selector = "//processing-instruction('define')[starts-with(., 'ProductVersion')]"
+    $node = $xml.SelectSingleNode($selector)
+    if (!$node) {
+        Throw "The RDC version cannot be determined because the WIX RDC version source file '$rdcVersionWixFile' doesn't define the expected ProductVersion variable."
+    }
+
+    $options = [Text.RegularExpressions.RegexOptions]::IgnoreCase
+    $regexMatch = [regex]::Match($node.InnerText, "ProductVersion[ ]*=[ ]*""(?<value>.*)\""", $options)
+    if (!$regexMatch.Success) {
+        Throw "The RDC version cannot be determined because the WIX RDC version source file '$rdcVersionWixFile' defines the ProductionVersion variable but the regular expression match failed."
+    }
+
+    if (!$regexMatch.Groups["value"]) {
+        Throw "The RDC version cannot be determined because the WIX RDC version source file '$rdcVersionWixFile' defines the ProductionVersion variable but the value cannot be determined from the regular expresssion match."
+    }
+
+    [string]$productVersion = $regexMatch.Groups["value"].Value
+    if (!$productVersion -or $productVersion.Length -le 0) {
+        Throw "The RDC version cannot be determined because the WIX RDC version source file '$rdcVersionWixFile' defines the ProductionVersion variable but the version is empty."
+    }
+
+    return $productVersion.Trim()
 }
 
 Function Initialize-Folder {

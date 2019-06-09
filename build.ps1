@@ -60,6 +60,9 @@ The verbosity of the build log.
 .PARAMETER Branch
 An optional branch name. This is only required for the PublishBuildArtifacts task.
 
+.PARAMETER BuildNumber
+An optional build number. This is only used when building feature branch packages.
+
 .PARAMETER BuildPlatform
 An optional build platform. (e.g. 'Any CPU', 'x86', 'x64')
 
@@ -78,14 +81,20 @@ An optional test environment that maps to a test parameters JSON file.
 .PARAMETER TestVMName
 The optional TestVM used to execute all integration tests. This is only relevant for the IntegrationTests task.
 
-.PARAMETER PackageTemplateRegex
-The optional regular expression used to determine which package templates to build.
-
 .PARAMETER ILMerge
 The optional parameter to apply ILMerge configurations to the build.
 
 .PARAMETER Sign
 The optional parameter to digitally sign the appropriate artifacts for the associated task. This will not work without a signing certificate installed onto your machine.
+
+.PARAMETER SkipPublishRdcPackage
+The optional parameter that skips publishing the RDC package.
+
+.PARAMETER SkipPublishSdkPackage
+The optional parameter that skips publishing the SDK package.
+
+.PARAMETER Simulate
+The optional parameter that simulates executing a command. This is generally reserved for debug purposes.
 #>
 
 #Requires -Version 5.0
@@ -102,12 +111,12 @@ param(
     [Parameter()]
     [Version]$Version = "1.0.0.0",
     [Parameter()]
-    [string]$PackageVersion = "1.0.0-alpha000000",
-    [Parameter()]
     [ValidateSet("quiet", "minimal", "normal", "detailed", "diagnostic")]
     [String]$Verbosity = "quiet",
     [Parameter()]
     [String]$Branch,
+    [Parameter()]
+    [String]$BuildNumber = "1",
     [Parameter()]
     [String]$BuildPlatform = "Any CPU",
     [Parameter()]
@@ -125,7 +134,13 @@ param(
     [Parameter()]
     [Switch]$ILMerge,
     [Parameter()]
-    [Switch]$Sign
+    [Switch]$Sign,
+    [Parameter()]
+    [Switch]$SkipPublishRdcPackage,
+    [Parameter()]
+    [Switch]$SkipPublishSdkPackage,
+    [Parameter()]
+    [Switch]$Simulate
 )
 
 $BaseDir = $PSScriptRoot
@@ -185,8 +200,8 @@ $Params = @{
         Target = $Target
         Configuration = $Configuration
         Version = $Version
-        PackageVersion = $PackageVersion
         Branch = $Branch
+        BuildNumber = $BuildNumber
         BuildPlatform = $BuildPlatform
         BuildUrl = $BuildUrl
         Verbosity = $Verbosity
@@ -194,9 +209,11 @@ $Params = @{
         TestParametersFile = $TestParametersFile
         TestEnvironment = $TestEnvironment
         TestVMName = $TestVMName
-        PackageTemplateRegex = $PackageTemplateRegex
         ILMerge = $ILMerge
         Sign = $Sign
+        SkipPublishRdcPackage = $SkipPublishRdcPackage
+        SkipPublishSdkPackage = $SkipPublishSdkPackage
+        Simulate = $Simulate
     }
 
     Verbose = $VerbosePreference

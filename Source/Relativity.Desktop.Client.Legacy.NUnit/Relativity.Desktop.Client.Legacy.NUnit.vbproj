@@ -99,8 +99,8 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Version\AssemblySharedInfo.vb">
-      <Link>My Project\AssemblySharedInfo.vb</Link>
+    <Compile Include="..\..\Version\RdcAssemblySharedInfo.vb">
+      <Link>My Project\RdcAssemblySharedInfo.vb</Link>
     </Compile>
     <Compile Include="AuthenticationOptionsTests.vb" />
     <Compile Include="ExportFilterSelectForm.vb" />
