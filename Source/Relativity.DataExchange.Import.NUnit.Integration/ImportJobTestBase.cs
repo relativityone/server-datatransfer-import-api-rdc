@@ -352,6 +352,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			lock (SyncRoot)
 			{
 				this.completedJobReport = jobReport;
+				Console.WriteLine("[Job Complete]");
 			}
 		}
 
@@ -366,6 +367,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			lock (SyncRoot)
 			{
 				this.progressCompletedRows.Add(completedRow);
+				Console.WriteLine("[Job Progress]: " + completedRow);
 			}
 		}
 
@@ -380,7 +382,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			lock (SyncRoot)
 			{
 				this.jobMessages.Add(status.Message);
-				Console.WriteLine(status.Message);
+				Console.WriteLine("[Job Message]: " + status.Message);
 			}
 		}
 
@@ -395,7 +397,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			lock (SyncRoot)
 			{
 				this.jobFatalExceptions.Add(jobReport.FatalException);
-				Console.WriteLine(jobReport.FatalException.ToString());
+				Console.WriteLine("[Job Fatal Exception]: " + jobReport.FatalException);
 			}
 		}
 
@@ -410,6 +412,18 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			lock (SyncRoot)
 			{
 				this.errorRows.Add(row);
+				StringBuilder rowMetaData = new StringBuilder();
+				foreach (string key in row.Keys)
+				{
+					if (rowMetaData.Length > 0)
+					{
+						rowMetaData.Append(",");
+					}
+
+					rowMetaData.AppendFormat("{0}={1}", key, row[key]);
+				}
+
+				Console.WriteLine("[Job Error Metadata]: " + rowMetaData);
 			}
 		}
 	}
