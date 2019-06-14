@@ -1388,6 +1388,7 @@ Namespace Relativity.Desktop.Client
 				Case Application.CredentialCheckResult.Success
 					LogOn()
 					If (Not Me.IsCaseFolderSelected) Then
+						ShowCaseSelectDialog = False
 						Await ShowCaseSelectDialogAsync().ConfigureAwait(False)
 					End If
 					EnhancedMenuProvider.Hook(callingForm)
