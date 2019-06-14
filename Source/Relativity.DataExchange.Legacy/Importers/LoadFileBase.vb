@@ -193,7 +193,7 @@ Namespace kCura.WinEDDS
 
 			_keyFieldID = args.IdentityFieldId
 			_multiValueSeparator = args.MultiRecordDelimiter.ToString.ToCharArray
-			_folderID = args.DestinationFolderID
+			_folderID = args.DetermineDestinationFolderID()
 			_caseSystemID = args.CaseInfo.RootArtifactID
 			_uploadFiles = args.LoadNativeFiles
 			_createFolderStructure = args.CreateFolderStructure

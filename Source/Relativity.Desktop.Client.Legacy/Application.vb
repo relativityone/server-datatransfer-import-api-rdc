@@ -819,11 +819,7 @@ Namespace Relativity.Desktop.Client
 			Dim loadFile As New LoadFile
 			frm._application = Me
 			loadFile.SelectedCasePath = caseInfo.DocumentPath
-			If Me.ArtifactTypeID = ArtifactType.Document Then
-				loadFile.DestinationFolderID = destinationArtifactID
-			Else
-				loadFile.DestinationFolderID = caseInfo.RootArtifactID
-			End If
+			loadFile.DestinationFolderID = destinationArtifactID
 			loadFile.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
 			loadFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
 			loadFile.CaseInfo = caseInfo
