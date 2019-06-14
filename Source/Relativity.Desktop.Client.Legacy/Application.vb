@@ -1530,6 +1530,8 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Public Sub HandleRelativityNotSupportedException(exception As Relativity.DataExchange.RelativityNotSupportedException)
+			' REL-324321: Expiring all cookies forces the version check loop to execute.
+			ClearAllCookies()
 			Dim tryAnotherUrl As Boolean = TaskDialogs.ShowRelativityNotSupportedTaskDialog(MainForm.MainWindowHandle, exception)
 			OnChangeWebServiceUrl(tryAnotherUrl)
 		End Sub
@@ -1819,5 +1821,22 @@ Namespace Relativity.Desktop.Client
 				Me.CursorDefaultWhichWorks()
 			End Try
 		End Function
+
+		Private Sub ClearAllCookies()
+			If Not String.IsNullOrEmpty(AppSettings.Instance.WebApiServiceUrl) Then
+
+				Try
+					Dim oldUrl As Uri = New Uri(AppSettings.Instance.WebApiServiceUrl)
+					For Each cookie As Cookie in _CookieContainer.GetCookies(oldUrl)
+						If Not cookie Is Nothing Then
+							cookie.Expired = true
+						End If
+					Next
+				Catch ex As Exception
+					' Never allow this check to fail.
+					_logger.LogWarning(ex, "Failed to clear all cookies in the cookie container.")
+				End Try
+			End If
+		End Sub
 	End Class
 End Namespace
