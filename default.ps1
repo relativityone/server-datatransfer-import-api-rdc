@@ -607,7 +607,7 @@ Function Format-NuGetPackageVersion {
 Function Get-JiraTicketNumberFromBranchName {
     # Remove the REL number to reduce the version length.
     $options = [Text.RegularExpressions.RegexOptions]::IgnoreCase
-    $regexMatch = [regex]::Match($Branch, "(?<jira>REL-\d+)-.*", $options)
+    $regexMatch = [regex]::Match($Branch, "(?<jira>REL-\d+).*", $options)
     if (!$regexMatch.Success) {
         return $null
     }
