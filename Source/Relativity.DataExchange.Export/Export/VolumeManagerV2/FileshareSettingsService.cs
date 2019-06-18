@@ -51,6 +51,11 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 			// settings will be null here if the fileUrl belongs to no known file share, e.g. if the path in the database was somehow modified,
 			// or if the file share to which it was uploaded no longer exists in Relativity.
 			RelativityFileShareSettings settings = _cachedSettings.FirstOrDefault(n => n.IsBaseOf(fileUrl));
+			if (settings == null)
+			{
+				this._logger.LogError($"{_cachedSettings.Count} file share(s) have been found for workspace {_workspaceId}. But the file '{fileUrl}' URL does not match the base address of any of the found fileshares. This may be caused by missing reference to the Fileshare in the Resource Pool");
+			}
+
 			return settings;
 		}
 
