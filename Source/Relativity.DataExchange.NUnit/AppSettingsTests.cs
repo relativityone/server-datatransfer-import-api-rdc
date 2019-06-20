@@ -921,7 +921,7 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		public void ShouldGetTheActualAppConfigSettings()
 		{
-			// Make sure the entire design works against a real App.config file that was ripped from the RDC but with different values.
+			// Make sure the entire design works against a real app.config file that was ripped from the RDC but with different values.
 			const bool Refresh = false;
 			this.settings = DataExchange.AppSettingsManager.Create(Refresh);
 			for (int i = 0; i < 3; i++)

@@ -252,7 +252,7 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
+    <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
     <None Include="Controls\CaseFolderExplorer.xsx">

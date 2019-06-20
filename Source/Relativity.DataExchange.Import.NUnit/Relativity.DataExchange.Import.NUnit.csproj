@@ -158,7 +158,7 @@
     <AdditionalFiles Include="..\..\buildtools\stylecop.json">
       <Link>stylecop.json</Link>
     </AdditionalFiles>
-    <None Include="App.config" />
+    <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="paket.references" />
   </ItemGroup>
