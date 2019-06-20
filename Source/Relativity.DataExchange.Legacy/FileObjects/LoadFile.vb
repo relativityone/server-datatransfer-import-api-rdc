@@ -84,6 +84,17 @@ Namespace kCura.WinEDDS
 			Me.OverlayBehavior = Nothing
 		End Sub
 
+		' One of the finest pieces of work. Since the RDC has broken window dependencies, it's possible to open the LoadFileForm for a different object
+		' and load kwe file for a Document. This can also happen when async/await calls take longer and the client changes object type on the main form.
+		' Because of that we need to defer the decision of selecting DestinationFolderID till the actual load.
+		Public Function DetermineDestinationFolderID() As Integer
+			If Me.ArtifactTypeID = ArtifactType.Document Then
+				Return DestinationFolderID
+			Else
+				Return caseInfo.RootArtifactID
+			End If
+		End Function
+
 		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
 			'info.AddValue("CaseInfo", Me.CaseInfo, CaseInfo.GetType)
 			info.AddValue("FilePath", Me.FilePath, GetType(String))

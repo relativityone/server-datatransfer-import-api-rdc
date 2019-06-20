@@ -1182,7 +1182,7 @@ Namespace Relativity.Desktop.Client
 			If Not String.IsNullOrEmpty(LoadFile.FilePath) Then
 				_filePath.Text = LoadFile.FilePath
 			End If
-			_importDestinationText.Text = _application.GetCaseFolderPath(LoadFile.DestinationFolderID)
+			_importDestinationText.Text = _application.GetCaseFolderPath(LoadFile.DetermineDestinationFolderID())
 			_fieldMap.ClearAll()
 			_fileColumnHeaders.Items.Clear()
 			_nativeFilePathField.Items.Clear()

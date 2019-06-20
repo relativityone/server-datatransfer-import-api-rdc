@@ -197,7 +197,7 @@ Namespace kCura.WinEDDS
 				retval.Bound = LoadFile.QuoteDelimiter
 				retval.Delimiter = LoadFile.RecordDelimiter
 				retval.NestedValueDelimiter = LoadFile.HierarchicalValueDelimiter
-				retval.DestinationFolderArtifactID = LoadFile.DestinationFolderID
+				retval.DestinationFolderArtifactID = LoadFile.DetermineDestinationFolderID()
 				If LoadFile.ArtifactTypeID <> ArtifactType.Document Then retval.DestinationFolderArtifactID = -1
 				Dim fieldMap As New System.Collections.ArrayList
 				Dim mappedExtractedText As Boolean = False
