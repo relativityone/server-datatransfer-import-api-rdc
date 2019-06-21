@@ -26,6 +26,7 @@ Namespace kCura.WinEDDS
 	Public MustInherit Class ImportExportTapiBase
 
 #Region "Members"
+		Private Const _metadataFileCheckRetryCount As Int32 = 60000
 		Private Const _fileCheckRetryCount As Int32 = 6000
 		Private Const _fileCheckWaitBetweenRetriesMilliseconds As Int32 = 10
 		Private ReadOnly _ioReporter As IIoReporter
@@ -634,7 +635,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Sub WaitForPendingMetadataUploads()
-			Dim metadataFileCheckRetryCount As Integer = Me.GetMetadataFileCheckRetryCount()
 			Dim waitResult As Boolean = WaitForRetry(
 				Function()
 					Return _batchMetadataTapiProgressCount >= Me.MetadataFilesCount
@@ -642,7 +642,7 @@ Namespace kCura.WinEDDS
 				"Waiting for all metadata files to upload...",
 				"Metadata file uploads completed.",
 				"Failed to wait for all pending metadata file uploads.",
-				metadataFileCheckRetryCount,
+				_metadataFileCheckRetryCount,
 				_fileCheckWaitBetweenRetriesMilliseconds)
 
 			_batchMetadataTapiProgressCount = 0
@@ -651,7 +651,7 @@ Namespace kCura.WinEDDS
 			' REL-317973: Design expectations require ALL BCP load files to transfer successfully!
 			'             Otherwise, subsequent exceptions are virtually guaranteed.
 			If Not waitResult And Me.ShouldImport
-				Dim maxWaitPeriod As TimeSpan = TimeSpan.FromMilliseconds(metadataFileCheckRetryCount * _fileCheckWaitBetweenRetriesMilliseconds)
+				Dim maxWaitPeriod As TimeSpan = TimeSpan.FromMilliseconds(_metadataFileCheckRetryCount * _fileCheckWaitBetweenRetriesMilliseconds)
 				Dim errorMessage As String = String.Format(
 					CultureInfo.CurrentCulture,
 					My.Resources.Strings.MetadataTransferExceptionMessage,
@@ -718,23 +718,6 @@ Namespace kCura.WinEDDS
 			End If
 
 			Return False
-		End Function
-
-		Private Function GetMetadataFileCheckRetryCount() As Integer
-			' Default to 10 minutes
-			Dim retryCount As Integer = 60000
-			If Not Me.BulkLoadTapiBridge Is Nothing Then
-				' Use common sense to scale the time limits
-				Select Case Me.BulkLoadTapiBridge.Client
-					Case TapiClient.Direct:
-						' 3.3 minutes
-						retryCount = 20000
-					Case TapiClient.Aspera:
-						' 5 minutes
-						retryCount = 30000
-				End Select
-			End If
-			Return retryCount
 		End Function
 	End Class
 End Namespace
