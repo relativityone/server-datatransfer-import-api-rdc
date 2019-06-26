@@ -22,7 +22,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	[Feature.DataTransfer.ImportApi]
 	public class CaseManagerWebServiceTests : WebServiceTestsBase
 	{
-		[Test]
+		[IdentifiedTest("010641be-b75c-4eac-b871-eab2cf153790")]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.WebService)]
 		public void ShouldReadTheCaseInfo()

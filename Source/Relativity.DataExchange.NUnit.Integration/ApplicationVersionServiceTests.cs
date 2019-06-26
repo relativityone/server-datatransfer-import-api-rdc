@@ -24,7 +24,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	[Feature.DataTransfer.ImportApi]
 	public class ApplicationVersionServiceTests : WebServiceTestsBase
 	{
-		[Test]
+		[IdentifiedTest("d54cce55-4d67-4488-8d1f-2e2f40d7bf28")]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.WebService)]
 		public async Task ShouldGetTheBackendApiVersionAsync()
@@ -39,7 +39,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 			Assert.That(version.Major, Is.Positive);
 		}
 
-		[Test]
+		[IdentifiedTest("4a236132-09c9-4767-968e-cb15ea2ee5c2")]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.WebService)]
 		public async Task ShouldGetTheRelativityVersionAsync()
