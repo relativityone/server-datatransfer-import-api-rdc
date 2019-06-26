@@ -346,9 +346,10 @@ END";
 				parameters.RelativityUrl);
 			Logger = Relativity.Logging.Factory.LogFactory.GetLogger(loggerOptions);
 
-			// Until Import API supports passing a logger instance via constructor, the API
-			// internally uses the Logger singleton instance if defined.
-			Relativity.Logging.Log.Logger = Logger;
+			// Note: Wrapping the ILog instance to ensure all logs written via tests are dumped to the console.
+			//       Until Import API supports passing a logger instance via constructor, the API
+			//       internally uses the Logger singleton instance if defined.
+			Relativity.Logging.Log.Logger = new RelativityTestLogger(Logger);
 		}
 	}
 }

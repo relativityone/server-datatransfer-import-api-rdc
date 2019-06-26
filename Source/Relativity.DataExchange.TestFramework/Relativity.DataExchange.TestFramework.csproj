@@ -83,6 +83,7 @@
     <Compile Include="IntegrationTestHelper.cs" />
     <Compile Include="FieldHelper.cs" />
     <Compile Include="IntegrationTestParameterAttribute.cs" />
+    <Compile Include="RelativityTestLogger.cs" />
     <Compile Include="TestDirectory.cs" />
     <Compile Include="TestStrings.cs" />
     <Compile Include="ServiceHelper.cs" />
@@ -329,6 +330,17 @@
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Http">
           <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Serilog">
+          <HintPath>..\..\packages\Serilog\lib\net46\Serilog.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

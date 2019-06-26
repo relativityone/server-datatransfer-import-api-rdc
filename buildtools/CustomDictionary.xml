@@ -7,6 +7,7 @@
       <Word>RDO</Word>
       <Word>nunit</Word>
       <Word>TapiBridge</Word>
+      <Word>Serilog</Word>
     </Recognized>    
   </Words>
 </Dictionary>

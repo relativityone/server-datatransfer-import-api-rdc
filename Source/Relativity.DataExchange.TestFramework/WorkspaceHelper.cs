@@ -14,6 +14,8 @@ namespace Relativity.DataExchange.TestFramework
 	using kCura.Relativity.Client;
 	using kCura.Relativity.Client.DTOs;
 
+	using Polly;
+
 	/// <summary>
 	/// Defines static helper methods to manage workspaces.
 	/// </summary>
@@ -31,45 +33,62 @@ namespace Relativity.DataExchange.TestFramework
 				throw new ArgumentNullException(nameof(logger));
 			}
 
-			using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
-			{
-				logger.LogInformation(
-					"Retrieving the {TemplateName} workspace template...",
-					parameters.WorkspaceTemplate);
-				client.APIOptions.WorkspaceID = -1;
-				QueryResultSet<Workspace> resultSet = QueryWorkspaceTemplate(client, parameters.WorkspaceTemplate);
-				if (!resultSet.Success)
-				{
-					throw new InvalidOperationException(
-						$"An error occurred while attempting to create a workspace from template {parameters.WorkspaceTemplate}: {resultSet.Message}");
-				}
+			// Prevent integration tests from failing due to workspace creation failures.
+			const int MaxRetryCount = 3;
+			int retryCount = 0;
+			Policy.Handle<Exception>().WaitAndRetry(
+				3,
+				i => TimeSpan.FromSeconds(MaxRetryCount),
+				(exception, span) =>
+					{
+						retryCount++;
+						Console.WriteLine($"The workspace helper failed to create a test workspace. Retry: {retryCount} of {MaxRetryCount}, Error: {exception}");
+					}).Execute(
+				() =>
+					{
+						using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
+						{
+							logger.LogInformation(
+								"Retrieving the {TemplateName} workspace template...",
+								parameters.WorkspaceTemplate);
+							client.APIOptions.WorkspaceID = -1;
+							QueryResultSet<Workspace> resultSet = QueryWorkspaceTemplate(
+								client,
+								parameters.WorkspaceTemplate);
+							if (!resultSet.Success)
+							{
+								throw new InvalidOperationException(
+									$"An error occurred while attempting to create a workspace from template {parameters.WorkspaceTemplate}: {resultSet.Message}");
+							}
 
-				if (resultSet.Results.Count == 0)
-				{
-					throw new InvalidOperationException(
-						$"Trying to create a workspace. Template with the following name does not exist: {parameters.WorkspaceTemplate}");
-				}
+							if (resultSet.Results.Count == 0)
+							{
+								throw new InvalidOperationException(
+									$"Trying to create a workspace. Template with the following name does not exist: {parameters.WorkspaceTemplate}");
+							}
 
-				int templateWorkspaceId = resultSet.Results[0].Artifact.ArtifactID;
-				logger.LogInformation(
-					"Retrieved the {TemplateName} workspace template. TemplateWorkspaceId={TemplateWorkspaceId}.",
-					parameters.WorkspaceTemplate,
-					templateWorkspaceId);
-				Workspace workspace = new Workspace
-				{
-					Name = $"Import API Sample Workspace ({DateTime.Now:MM-dd HH.mm.ss.fff})",
-					DownloadHandlerApplicationPath = "Relativity.Distributed",
-				};
+							int templateWorkspaceId = resultSet.Results[0].Artifact.ArtifactID;
+							logger.LogInformation(
+								"Retrieved the {TemplateName} workspace template. TemplateWorkspaceId={TemplateWorkspaceId}.",
+								parameters.WorkspaceTemplate,
+								templateWorkspaceId);
+							Workspace workspace = new Workspace
+								                      {
+									                      Name =
+										                      $"Import API Sample Workspace ({DateTime.Now:MM-dd HH.mm.ss.fff})",
+									                      DownloadHandlerApplicationPath = "Relativity.Distributed",
+								                      };
 
-				logger.LogInformation("Creating the {WorkspaceName} workspace...", workspace.Name);
-				ProcessOperationResult result =
-					client.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspace);
-				parameters.WorkspaceId = QueryWorkspaceArtifactId(client, result, logger);
-				logger.LogInformation(
-					"Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
-					workspace.Name,
-					parameters.WorkspaceId);
-			}
+							logger.LogInformation("Creating the {WorkspaceName} workspace...", workspace.Name);
+							ProcessOperationResult result =
+								client.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspace);
+							parameters.WorkspaceId = QueryWorkspaceArtifactId(client, result, logger);
+							logger.LogInformation(
+								"Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
+								workspace.Name,
+								parameters.WorkspaceId);
+						}
+					});
 		}
 
 		public static void DeleteTestWorkspace(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)

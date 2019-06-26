@@ -10,4 +10,5 @@ relativity.productions.services.interfaces
 relativity.services.datacontracts
 relativity.services.interfaces
 relativity.transfer.client
+serilog
 stylecop.analyzers
