@@ -21,11 +21,13 @@ namespace Relativity.DataExchange.NUnit.Integration
 
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents <see cref="OutsideInFileTypeIdentifierService"/> tests.
 	/// </summary>
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
@@ -74,7 +76,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("12b6eb4c-37f6-4a8e-b2e5-f4e0735b1c02")]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.OutsideIn)]
 		public void ShouldVerifyTheOutsideInGoldenDataset()

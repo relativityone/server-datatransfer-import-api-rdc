@@ -50,8 +50,8 @@ namespace Relativity.DataExchange.NUnit.Integration
 		{
 			get
 			{
-				yield return new TestCaseData(CcIttCompressionValue, new string[] { "AZIPPER_0011374.TIF", "AZIPPER_0011374_01.TIF" });
-				yield return new TestCaseData(LzwCompressionValue, new string[] { "AZIPPER_0011111.jpg" });
+				yield return new TestCaseData(CcIttCompressionValue, new string[] { "AZIPPER_0011374.TIF", "AZIPPER_0011374_01.TIF" }).WithId("B426B1EC-E8D4-48A5-9F25-BC2D75ACBC1F");
+				yield return new TestCaseData(LzwCompressionValue, new string[] { "AZIPPER_0011111.jpg" }).WithId("5ACC0658-A56B-4A4B-9138-FAD34F70F740");
 			}
 		}
 
@@ -62,7 +62,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 			this._fieWrap = new FileWrap(this._pathWrap);
 		}
 
-		[Test]
 		[TestCaseSource(nameof(ImageFileNames))]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
 			"Microsoft.Design",

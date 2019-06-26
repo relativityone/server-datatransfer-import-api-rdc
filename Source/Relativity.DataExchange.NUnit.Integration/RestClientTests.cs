@@ -26,7 +26,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		private const string InstanceDetailsServiceRelPath =
 			"/Relativity.Rest/api/Relativity.Services.InstanceDetails.IInstanceDetailsModule/InstanceDetailsService/GetRelativityVersionAsync";
 
-		[Test]
+		[IdentifiedTest("38dc313f-a8d4-48ae-b1c5-6cde45305608")]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.WebService)]
 		public async Task ShouldGetTheRelativityVersionFromKeplerAsync()
