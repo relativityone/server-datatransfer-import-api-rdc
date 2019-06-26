@@ -51,11 +51,11 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.Attach(this._tapiBridge.Object);
 
 			// ACT
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size1, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, size1, start, end));
 
 			this._instance.SaveState();
 
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size2, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, size2, start, end));
 
 			this._instance.RestoreLastState();
 
@@ -77,9 +77,9 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.Attach(this._tapiBridge.Object);
 
 			// ACT
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, sizeDownload1, start, end));
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, false, TransferPathStatus.Failed, 0, sizeNotDownload1, start, end));
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, sizeDownload2, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, sizeDownload1, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, false, false, 0, sizeNotDownload1, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, sizeDownload2, start, end));
 
 			// ASSERT
 			Assert.That(this._statistics.MetadataBytes, Is.EqualTo(sizeDownload1 + sizeDownload2));
@@ -98,11 +98,11 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.Attach(this._tapiBridge.Object);
 
 			// ACT
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size1, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, size1, start, end));
 
 			this._instance.Detach();
 
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size2, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, size2, start, end));
 
 			// ASSERT
 			Assert.That(this._statistics.MetadataBytes, Is.EqualTo(size1));

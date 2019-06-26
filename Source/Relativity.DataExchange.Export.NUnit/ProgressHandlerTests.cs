@@ -41,7 +41,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			// ACT
 			this._instance.Attach(this._tapiBridge.Object);
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, true, true, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT
 			this.VerifyFileMarkedAsDownloaded(this._downloadProgressManager, id, 1);
@@ -54,7 +54,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			// ACT
 			this._instance.Attach(this._tapiBridge.Object);
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, false, TransferPathStatus.Failed, 1, 1, DateTime.Now, DateTime.Now));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, false, false, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT
 			this.VerifyFileNotMarkedAsDownloaded(this._downloadProgressManager, id, 1);
@@ -68,10 +68,10 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			// ACT
 			this._instance.Attach(this._tapiBridge.Object);
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id1, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id1, true, true, 1, 1, DateTime.Now, DateTime.Now));
 
 			this._instance.Detach();
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id2, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id2, true, true, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT
 			this.VerifyFileMarkedAsDownloaded(this._downloadProgressManager, id1, 1);

@@ -12,34 +12,43 @@
 		private readonly IMessagesHandler _messageHandler;
 		private readonly ITransferStatistics _transferStatistics;
 
-		protected ITapiBridge TapiBridge { get; }
-
-		protected DownloadTapiBridgeAdapter(ITapiBridge tapiBridge, IProgressHandler progressHandler, IMessagesHandler messageHandler, ITransferStatistics transferStatistics)
+		protected DownloadTapiBridgeAdapter(
+			ITapiBridge bridge,
+			IProgressHandler progressHandler,
+			IMessagesHandler messageHandler,
+			ITransferStatistics transferStatistics)
 		{
-			TapiBridge = tapiBridge;
+			bridge.ThrowIfNull(nameof(bridge));
+			progressHandler.ThrowIfNull(nameof(progressHandler));
+			messageHandler.ThrowIfNull(nameof(messageHandler));
+			transferStatistics.ThrowIfNull(nameof(transferStatistics));
+			this.TapiBridge = bridge;
 			_progressHandler = progressHandler;
 			_messageHandler = messageHandler;
 			_transferStatistics = transferStatistics;
 
-			_messageHandler.Attach(TapiBridge);
-			_progressHandler.Attach(TapiBridge);
-			_transferStatistics.Attach(TapiBridge);
+			_messageHandler.Attach(this.TapiBridge);
+			_progressHandler.Attach(this.TapiBridge);
+			_transferStatistics.Attach(this.TapiBridge);
 		}
+
+		public TapiClient Client => this.TapiBridge.Client;
+
+		protected ITapiBridge TapiBridge { get; }
 
 		public virtual void Dispose()
 		{
 			_progressHandler.Detach();
 			_messageHandler.Detach();
 			_transferStatistics.Detach();
-			TapiBridge.Dispose();
+			this.TapiBridge.Dispose();
 		}
 
-		public TapiClient ClientType => TapiBridge.ClientType;
 		public abstract string QueueDownload(TransferPath transferPath);
-		public abstract void WaitForTransferJob();
+		public abstract void WaitForTransfers();
 		public void Disconnect()
 		{
-			TapiBridge.Disconnect();
+			this.TapiBridge.Disconnect();
 		}
 	}
 }

@@ -7,9 +7,9 @@
 
 	public class EmptyTapiBridge : ITapiBridge
 	{
-		private readonly ITapiBridgeWrapper _tapiBridge;
+		private readonly ITapiBridge _tapiBridge;
 
-		public EmptyTapiBridge(ITapiBridgeWrapper tapiBridge)
+		public EmptyTapiBridge(ITapiBridge tapiBridge)
 		{
 			_tapiBridge = tapiBridge;
 		}
@@ -44,6 +44,12 @@
 			remove { _tapiBridge.TapiProgress -= value; }
 		}
 
+		public event EventHandler<TapiLargeFileProgressEventArgs> TapiLargeFileProgress
+		{
+			add { _tapiBridge.TapiLargeFileProgress += value; }
+			remove { _tapiBridge.TapiLargeFileProgress -= value; }
+		}
+
 		public event EventHandler<TapiStatisticsEventArgs> TapiStatistics
 		{
 			add { _tapiBridge.TapiStatistics += value; }
@@ -56,16 +62,20 @@
 			remove { _tapiBridge.TapiFatalError -= value; }
 		}
 
-		public TapiClient ClientType => _tapiBridge.ClientType;
+		public TapiClient Client => _tapiBridge.Client;
+
+		public long TotalJobFileTransferRequests => this._tapiBridge.TotalJobFileTransferRequests;
+
+		public long TotalJobCompletedFileTransfers => this._tapiBridge.TotalJobCompletedFileTransfers;
 
 		public string AddPath(TransferPath transferPath)
 		{
 			return _tapiBridge.AddPath(transferPath);
 		}
 
-		public void WaitForTransferJob()
+		public long WaitForTransfers(string waitMessage, string successMessage, string errorMessage, bool batchOptimization)
 		{
-			_tapiBridge.WaitForTransferJob();
+			return _tapiBridge.WaitForTransfers(waitMessage, successMessage, errorMessage, batchOptimization);
 		}
 
 		public void Disconnect()

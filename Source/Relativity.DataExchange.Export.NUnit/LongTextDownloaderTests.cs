@@ -65,7 +65,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			await this._instance.DownloadAsync(longTextExportRequests, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			this._bridge.Verify(x => x.WaitForTransferJob(), Times.Once);
+			this._bridge.Verify(x => x.WaitForTransfers(), Times.Once);
 			this._bridge.Verify(x => x.QueueDownload(It.Is<TransferPath>(t => t.Order == 1)));
 			this._bridge.Verify(x => x.QueueDownload(It.Is<TransferPath>(t => t.Order == 2)));
 		}

@@ -97,7 +97,6 @@
     <Compile Include="SeparatorFileNamePartProviderTests.cs" />
     <Compile Include="SinglePageImagesRollupTests.cs" />
     <Compile Include="SinglePageMetadataForArtifactBuilderTests.cs" />
-    <Compile Include="SmartTapiBridgeTests.cs" />
     <Compile Include="StreamStub.cs" />
     <Compile Include="SubdirectoryManagerTests.cs" />
     <Compile Include="TextExportableSizeTests.cs" />

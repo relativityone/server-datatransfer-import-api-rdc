@@ -20,13 +20,13 @@ namespace Relativity.DataExchange.Export.NUnit
 	{
 		private LongTextTapiBridgePool _instance;
 
-		private Mock<ILongTextTapiBridgeFactory> _factory;
+		private Mock<ILongTextDownloadTapiBridgeFactory> _factory;
 		private Mock<IDownloadTapiBridge> _bridge;
 
 		[SetUp]
 		public void SetUp()
 		{
-			this._factory = new Mock<ILongTextTapiBridgeFactory>();
+			this._factory = new Mock<ILongTextDownloadTapiBridgeFactory>();
 			this._bridge = new Mock<IDownloadTapiBridge>();
 
 			this._factory.Setup(x => x.Create(CancellationToken.None)).Returns(this._bridge.Object);

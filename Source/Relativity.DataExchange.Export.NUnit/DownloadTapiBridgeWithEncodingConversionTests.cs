@@ -53,11 +53,11 @@ namespace Relativity.DataExchange.Export.NUnit
 		[Test]
 		public void ItShouldAlwaysStopConverterAfterDownloadFinished()
 		{
-			this.TapiBridge.Setup(x => x.WaitForTransferJob()).Throws<Exception>();
+			this.TapiBridge.Setup(x => x.WaitForTransfers(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).Throws<Exception>();
 
 			// ACT
 			this.Instance.QueueDownload(new TransferPath());
-			Assert.Throws<Exception>(() => this.Instance.WaitForTransferJob());
+			Assert.Throws<Exception>(() => this.Instance.WaitForTransfers());
 
 			// ASSERT
 			this._longTextEncodingConverter.Verify(x => x.StopListening(this.TapiBridge.Object), Times.Once);
@@ -68,7 +68,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			// ACT
 			this.Instance.QueueDownload(new TransferPath());
-			this.Instance.WaitForTransferJob();
+			this.Instance.WaitForTransfers();
 
 			// ASSERT
 			this._longTextEncodingConverter.Verify(x => x.WaitForConversionCompletion(), Times.Once);

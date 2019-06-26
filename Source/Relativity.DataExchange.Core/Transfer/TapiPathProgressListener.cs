@@ -35,6 +35,11 @@ namespace Relativity.DataExchange.Transfer
 		/// </summary>
 		public event EventHandler<TapiProgressEventArgs> ProgressEvent;
 
+		/// <summary>
+		/// Occurs when a large file is transferring.
+		/// </summary>
+		public event EventHandler<TapiLargeFileProgressEventArgs> LargeFileProgressEvent;
+
 		/// <inheritdoc />
 		protected override void OnLargeFileProgress(object sender, LargeFileProgressEventArgs e)
 		{
@@ -44,11 +49,15 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			base.OnLargeFileProgress(sender, e);
-			if (e.TotalChunks > 0)
+			if (e.Progress > 0)
 			{
-				this.PublishStatusMessage(
-					$"Large file transfer progress: {(int)(((double)e.ChunkNumber / (double)e.TotalChunks) * 100)}%.",
-					e.Path.Order);
+				this.PublishStatusMessage($"Large file transfer progress: {e.Progress:00.00}%.", e.Path.Order);
+				TapiLargeFileProgressEventArgs args = new TapiLargeFileProgressEventArgs(
+					e.Path,
+					e.TotalBytes,
+					e.TotalTransferredBytes,
+					e.Progress);
+				this.LargeFileProgressEvent?.Invoke(this, args);
 			}
 		}
 
@@ -60,23 +69,17 @@ namespace Relativity.DataExchange.Transfer
 				throw new ArgumentNullException(nameof(e));
 			}
 
-			if (e.Status != TransferPathStatus.Successful)
-			{
-				return;
-			}
-
 			// Guard against null timestamps.
 			var args = new TapiProgressEventArgs(
 				!string.IsNullOrEmpty(e.Path.TargetFileName)
 					? e.Path.TargetFileName
 					: Path.GetFileName(e.Path.SourcePath),
+				e.Completed,
 				e.Status == TransferPathStatus.Successful,
-				e.Status,
 				e.Path.Order,
 				e.BytesTransferred,
 				e.StartTime ?? DateTime.Now,
 				e.EndTime ?? DateTime.Now);
-
 			this.ProgressEvent?.Invoke(this, args);
 		}
 	}

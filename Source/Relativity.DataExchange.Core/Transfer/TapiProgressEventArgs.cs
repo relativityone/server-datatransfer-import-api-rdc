@@ -11,8 +11,6 @@ namespace Relativity.DataExchange.Transfer
 {
 	using System;
 
-	using Relativity.Transfer;
-
 	/// <summary>
 	/// Represents Transfer API progress event arguments data. This class cannot be inherited.
 	/// </summary>
@@ -25,11 +23,11 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="fileName">
 		/// The transferred filename.
 		/// </param>
-		/// <param name="didTransferSucceed">
-		/// Specify whether the file is successfully transferred.
+		/// <param name="completed">
+		/// Specify whether the file transfer is completed.
 		/// </param>
-		/// <param name="transferStatus">
-		/// The transfer status.
+		/// <param name="successful">
+		/// Specify whether the file is successfully transferred.
 		/// </param>
 		/// <param name="lineNumber">
 		/// The line number.
@@ -45,20 +43,31 @@ namespace Relativity.DataExchange.Transfer
 		/// </param>
 		public TapiProgressEventArgs(
 			string fileName,
-			bool didTransferSucceed,
-			TransferPathStatus transferStatus,
+			bool completed,
+			bool successful,
 			int lineNumber,
 			long fileBytes,
 			DateTime startTime,
 			DateTime endTime)
 		{
+			this.Completed = completed;
 			this.EndTime = endTime;
 			this.FileBytes = fileBytes;
 			this.FileName = fileName;
 			this.LineNumber = lineNumber;
 			this.StartTime = startTime;
-			this.DidTransferSucceed = didTransferSucceed;
-			this.TransferStatus = transferStatus;
+			this.Successful = successful;
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the file transfer has completed. See <see cref="Successful"/> to determine whether the file transfer is successful or failed.
+		/// </summary>
+		/// <value>
+		/// <see langword="true"/> if the file transfer has completed; otherwise, <see langword="false"/>.
+		/// </value>
+		public bool Completed
+		{
+			get;
 		}
 
 		/// <summary>
@@ -105,17 +114,9 @@ namespace Relativity.DataExchange.Transfer
 		/// Gets a value indicating whether the file was successfully transferred.
 		/// </summary>
 		/// <value>
-		/// <see langword="true"/> if successfully transferred; otherwise, /// <see langword="false"/>.
+		/// <see langword="true"/> if successfully transferred; otherwise, <see langword="false"/>.
 		/// </value>
-		public bool DidTransferSucceed
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Gets the transfer status.
-		/// </summary>
-		public TransferPathStatus TransferStatus
+		public bool Successful
 		{
 			get;
 		}

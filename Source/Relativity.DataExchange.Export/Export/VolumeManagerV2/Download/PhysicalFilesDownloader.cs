@@ -67,7 +67,7 @@
 
 					DownloadFiles(bridge, exportRequestWithFileshareSettings.Requests,
 						downloadCancellationTokenSourceSource.Token);
-					bridge.WaitForTransferJob();
+					bridge.WaitForTransfers();
 				}
 				catch (TaskCanceledException)
 				{

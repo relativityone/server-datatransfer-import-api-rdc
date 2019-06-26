@@ -7,9 +7,9 @@
 
 	public interface IDownloadTapiBridge : IDisposable
 	{
-		TapiClient ClientType { get; }
+		TapiClient Client { get; }
 		string QueueDownload(TransferPath transferPath);
-		void WaitForTransferJob();
+		void WaitForTransfers();
 		void Disconnect();
 	}
 }

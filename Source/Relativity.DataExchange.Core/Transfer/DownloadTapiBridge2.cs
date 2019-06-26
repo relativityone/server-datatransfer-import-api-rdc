@@ -35,9 +35,6 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="token">
 		/// The cancellation token.
 		/// </param>
-		/// <remarks>
-		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
-		/// </remarks>
 		public DownloadTapiBridge2(TapiBridgeParameters2 parameters, ITransferLog log, CancellationToken token)
 			: this(new TapiObjectService(), parameters, log, token)
 		{
@@ -58,15 +55,40 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="token">
 		/// The cancellation token.
 		/// </param>
-		/// <remarks>
-		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
-		/// </remarks>
 		public DownloadTapiBridge2(
 			ITapiObjectService factory,
 			TapiBridgeParameters2 parameters,
 			ITransferLog log,
 			CancellationToken token)
-			: base(factory, parameters, TransferDirection.Download, log, token)
+			: this(factory, parameters, null, log, token)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DownloadTapiBridge2" /> class.
+		/// </summary>
+		/// <param name="factory">
+		/// The Transfer API object factory.
+		/// </param>
+		/// <param name="parameters">
+		/// The native file transfer parameters.
+		/// </param>
+		/// <param name="context">
+		/// The transfer context.
+		/// </param>
+		/// <param name="log">
+		/// The transfer log.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token.
+		/// </param>
+		public DownloadTapiBridge2(
+			ITapiObjectService factory,
+			TapiBridgeParameters2 parameters,
+			TransferContext context,
+			ITransferLog log,
+			CancellationToken token)
+			: base(factory, parameters, TransferDirection.Download, context, log, token)
 		{
 			this.parameters = parameters;
 		}

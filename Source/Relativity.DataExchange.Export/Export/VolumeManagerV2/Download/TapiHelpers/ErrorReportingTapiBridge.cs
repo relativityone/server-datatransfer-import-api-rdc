@@ -12,7 +12,24 @@
 	/// </summary>
 	public class ErrorReportingTapiBridge : ITapiBridge
 	{
-		public TapiClient ClientType => TapiClient.None;
+		private readonly object syncRoot = new object();
+
+		private long aggregateFileTransferRequests;
+
+		public TapiClient Client => TapiClient.None;
+
+		public long TotalJobFileTransferRequests
+		{
+			get
+			{
+				lock (this.syncRoot)
+				{
+					return this.aggregateFileTransferRequests;
+				}
+			}
+		}
+
+		public long TotalJobCompletedFileTransfers => 0;
 
 		public event EventHandler<TapiClientEventArgs> TapiClientChanged;
 		public event EventHandler<TapiMessageEventArgs> TapiErrorMessage;
@@ -21,22 +38,27 @@
 		public event EventHandler<TapiStatisticsEventArgs> TapiStatistics;
 		public event EventHandler<TapiMessageEventArgs> TapiStatusMessage;
 		public event EventHandler<TapiMessageEventArgs> TapiWarningMessage;
+		public event EventHandler<TapiLargeFileProgressEventArgs> TapiLargeFileProgress;
 
 		public string AddPath(TransferPath transferPath)
 		{
+			lock (this.syncRoot)
+			{
+				this.aggregateFileTransferRequests++;
+			}
+
 			var progressArgs = new TapiProgressEventArgs(
 				!string.IsNullOrEmpty(transferPath.TargetFileName)
 					? transferPath.TargetFileName
 					: System.IO.Path.GetFileName(transferPath.SourcePath),
 				false,
-				TransferPathStatus.BadPathError,
+				false,
 				transferPath.Order,
 				transferPath.Bytes,
-				DateTime.UtcNow,
-				DateTime.UtcNow);
+				DateTime.Now,
+				DateTime.Now);
 
-			TapiProgress?.Invoke(this, progressArgs);
-
+			this.TapiProgress?.Invoke(this, progressArgs);
 			return transferPath.TargetFileName;
 		}
 
@@ -48,8 +70,9 @@
 		{
 		}
 
-		public void WaitForTransferJob()
+		public long WaitForTransfers(string startMessage, string successMessage, string errorMessage, bool optimized)
 		{
+			return 0;
 		}
 	}
 }

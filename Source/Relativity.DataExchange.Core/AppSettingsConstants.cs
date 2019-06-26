@@ -89,8 +89,6 @@ namespace Relativity.DataExchange
 		public const bool LogAllEventsDefaultValue = false;
 		public const string LogConfigXmlFileNameKey = "LogConfigFile";
 		public const string LogConfigXmlFileNameDefaultValue = "LogConfig.xml";
-		public const string MaxFilesForTapiBridgeKey = "MaximumFilesForTapiBridge";
-		public const int MaxFilesForTapiBridgeDefaultValue = 10000;
 		public const string MaxNumberOfFileExportTasksKey = "MaxNumberOfFileExportTasks";
 		public const int MaxNumberOfFileExportTasksDefaultValue = 2;
 		public const string MinBatchSizeKey = "MinimumBatchSize";
@@ -114,8 +112,6 @@ namespace Relativity.DataExchange
 		public const int TapiAsperaNativeDocRootLevelsDefaultValue = 1;
 		public const string TapiBadPathErrorsRetryKey = "BadPathErrorsRetry";
 		public const bool TapiBadPathErrorsRetryDefaultValue = false;
-		public const string TapiBridgeExportTransferWaitingTimeInSecondsKey = "TapiBridgeExportTransferWaitingTimeInSeconds";
-		public const int TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue = 600;
 		public const string TapiFileNotFoundErrorsDisabledKey = "TapiFileNotFoundErrorsDisabled";
 		public const bool TapiFileNotFoundErrorsDisabledDefaultValue = false;
 		public const string TapiFileNotFoundErrorsRetryKey = "TapiFileNotFoundErrorsRetry";
@@ -131,7 +127,9 @@ namespace Relativity.DataExchange
 		public const string TapiForceHttpClientKey = "TapiForceHttpClient";
 		public const bool TapiForceHttpClientDefaultValue = false;
 		public const string TapiLargeFileProgressEnabledKey = "TapiLargeFileProgressEnabled";
-		public const bool TapiLargeFileProgressEnabledDefaultValue = false;
+		public const bool TapiLargeFileProgressEnabledDefaultValue = true;
+		public const string TapiMaxInactivitySecondsKey = "TapiMaxInactivitySeconds";
+		public const int TapiMaxInactivitySecondsDefaultValue = 60;
 		public const string TapiMaxJobParallelismKey = "TapiMaxJobParallelism";
 		public const int TapiMaxJobParallelismDefaultValue = 10;
 		public const string TapiMinDataRateMbpsKey = "TapiMinDataRateMbps";

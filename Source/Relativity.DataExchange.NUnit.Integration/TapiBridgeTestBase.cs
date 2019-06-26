@@ -380,7 +380,11 @@ namespace Relativity.DataExchange.NUnit.Integration
 			{
 				lock (SyncRoot)
 				{
-					this.filesTransferred++;
+					if (args.Successful)
+					{
+						this.filesTransferred++;
+					}
+
 					Console.WriteLine($"[TapiBridge Progress]: {args.FileName} ({args.LineNumber})");
 				}
 			};

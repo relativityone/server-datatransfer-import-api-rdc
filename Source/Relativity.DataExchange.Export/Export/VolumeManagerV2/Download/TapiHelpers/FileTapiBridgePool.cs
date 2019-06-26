@@ -14,9 +14,7 @@
 	public class FileTapiBridgePool : IFileTapiBridgePool
 	{
 		private readonly object _sync = new object();
-
 		private readonly IDictionary<IRelativityFileShareSettings, PoolEntry> _fileTapiBridges;
-
 		private readonly IExportConfig _exportConfig;
 		private readonly TapiBridgeParametersFactory _tapiBridgeParametersFactory;
 		private readonly DownloadProgressManager _downloadProgressManager;
@@ -26,57 +24,62 @@
 		private readonly ILog _logger;
 
 		public FileTapiBridgePool(IExportConfig exportConfig,
-			TapiBridgeParametersFactory tapiBridgeParametersFactory,
+			TapiBridgeParametersFactory factory,
 			DownloadProgressManager downloadProgressManager,
 			FilesStatistics filesStatistics,
 			IMessagesHandler messageHandler,
 			ITransferClientHandler transferClientHandler,
 			ILog logger)
 		{
+			exportConfig.ThrowIfNull(nameof(exportConfig));
+			factory.ThrowIfNull(nameof(factory));
+			downloadProgressManager.ThrowIfNull(nameof(downloadProgressManager));
+			filesStatistics.ThrowIfNull(nameof(filesStatistics));
+			messageHandler.ThrowIfNull(nameof(messageHandler));
+			transferClientHandler.ThrowIfNull(nameof(transferClientHandler));
+			logger.ThrowIfNull(nameof(logger));
 			_exportConfig = exportConfig;
-			_tapiBridgeParametersFactory = tapiBridgeParametersFactory;
+			_tapiBridgeParametersFactory = factory;
 			_downloadProgressManager = downloadProgressManager;
 			_filesStatistics = filesStatistics;
 			_messageHandler = messageHandler;
 			_transferClientHandler = transferClientHandler;
 			_logger = logger;
-
 			_fileTapiBridges = new Dictionary<IRelativityFileShareSettings, PoolEntry>();
 		}
 
-		public IDownloadTapiBridge Request(IRelativityFileShareSettings fileshareSettings, CancellationToken token)
+		public IDownloadTapiBridge Request(IRelativityFileShareSettings settings, CancellationToken token)
 		{
-			if (fileshareSettings == null)
+			if (settings == null)
 			{
-				// fileshareSettings will be null if the source path for a file does not correspond to any known file server.
-				// Since we can't create a bridge without fileshare settings, we return a default implementation that reports
+				// settings will be null if the source path for a file does not correspond to any known file server.
+				// Since we can't create a bridge without file share settings, we return a default implementation that reports
 				// errors for all attempted downloads.
 
 				return ErrorReportingTapiBridge;
 			}
 
-			if (!_fileTapiBridges.ContainsKey(fileshareSettings))
+			if (!_fileTapiBridges.ContainsKey(settings))
 			{
-				CreateTapiBridge(fileshareSettings, token);
+				CreateTapiBridge(settings, token);
 			}
 
-			if (_fileTapiBridges[fileshareSettings].Bridge.ClientType == TapiClient.Web && !_exportConfig.TapiForceHttpClient)
+			if (_fileTapiBridges[settings].Bridge.Client == TapiClient.Web && !_exportConfig.TapiForceHttpClient)
 			{
-				TryDisposeTapiBridge(_fileTapiBridges[fileshareSettings].Bridge);
-				CreateTapiBridge(fileshareSettings, token);
+				TryDisposeTapiBridge(_fileTapiBridges[settings].Bridge);
+				CreateTapiBridge(settings, token);
 			}
 
 			PoolEntry connectedNotUsed = FindRedundantTapiBridge();
 
-			if (connectedNotUsed != null && connectedNotUsed != _fileTapiBridges[fileshareSettings])
+			if (connectedNotUsed != null && connectedNotUsed != _fileTapiBridges[settings])
 			{
 				connectedNotUsed.Bridge.Disconnect();
 			}
 
-			_fileTapiBridges[fileshareSettings].Connected = true;
-			_fileTapiBridges[fileshareSettings].InUse = true;
-
-			return _fileTapiBridges[fileshareSettings].Bridge;
+			_fileTapiBridges[settings].Connected = true;
+			_fileTapiBridges[settings].InUse = true;
+			return _fileTapiBridges[settings].Bridge;
 		}
 
 		private PoolEntry FindRedundantTapiBridge()
@@ -108,15 +111,17 @@
 			}
 		}
 
-		private void CreateTapiBridge(IRelativityFileShareSettings fileshareSettings, CancellationToken token)
+		private void CreateTapiBridge(IRelativityFileShareSettings settings, CancellationToken token)
 		{
-			ITapiBridgeWrapperFactory tapiBridgeWrapperFactory =
-				new FilesTapiBridgeWrapperFactory(_tapiBridgeParametersFactory, _logger, fileshareSettings, token);
-			var smartTapiBridge = new SmartTapiBridge(_exportConfig, tapiBridgeWrapperFactory, _logger, token);
-
+			ITapiBridgeFactory tapiBridgeFactory = new FilesTapiBridgeFactory(
+				_tapiBridgeParametersFactory,
+				_logger,
+				settings,
+				token);
+			ITapiBridge bridge = tapiBridgeFactory.Create();
 			IProgressHandler progressHandler = new FileDownloadProgressHandler(_downloadProgressManager, _logger);
-			var downloadTapiBridgeForFiles = new DownloadTapiBridgeForFiles(smartTapiBridge, progressHandler, _messageHandler, _filesStatistics, _transferClientHandler, _logger);
-			_fileTapiBridges[fileshareSettings] = new PoolEntry(downloadTapiBridgeForFiles);
+			var downloadTapiBridgeForFiles = new DownloadTapiBridgeForFiles(bridge, progressHandler, _messageHandler, _filesStatistics, _transferClientHandler, _logger);
+			_fileTapiBridges[settings] = new PoolEntry(downloadTapiBridgeForFiles);
 		}
 
 		public void Release(IDownloadTapiBridge bridge)
