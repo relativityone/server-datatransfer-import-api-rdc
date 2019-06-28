@@ -67,8 +67,6 @@ namespace Relativity.DataExchange
 		public const string FileTypeIdentifyTimeoutSecondsKey = "FileTypeIdentifyTimeoutSeconds";
 		public const int FileTypeIdentifyTimeoutSecondsDefaultValue = Relativity.DataExchange.Io.OutsideInFileTypeIdentifierService.DefaultIdleTimeout;
 		public const bool ForceFolderPreviewDefaultValue = true;
-		public const string ForceParallelismInNewExportKey = "ForceParallelismInNewExport";
-		public const bool ForceParallelismInNewExportDefaultValue = false;
 		public const string ForceWebUploadKey = "ForceWebUpload";
 		public const bool ForceWebUploadDefaultValue = false;
 		public const string HttpTimeoutSecondsKey = "HttpTimeoutSeconds";

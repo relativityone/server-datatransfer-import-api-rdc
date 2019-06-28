@@ -362,17 +362,6 @@ namespace Relativity.DataExchange
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			AppSettingsConstants.ForceParallelismInNewExportKey,
-			AppSettingsConstants.ForceParallelismInNewExportDefaultValue)]
-		bool IAppSettings.ForceParallelismInNewExport
-		{
-			get;
-			set;
-		}
-
-		/// <inheritdoc />
-		[AppSetting(
-			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.ForceWebUploadKey,
 			AppSettingsConstants.ForceWebUploadDefaultValue)]
 		bool IAppSettings.ForceWebUpload

@@ -8,8 +8,6 @@ Public Interface IExportConfig
 
 	ReadOnly Property UseOldExport() As Boolean
 
-	ReadOnly Property ForceParallelismInNewExport() As Boolean
-
 	ReadOnly Property ExportIOErrorWaitTime() As Int32
 
 	ReadOnly Property ExportIOErrorNumberOfRetries() As Int32

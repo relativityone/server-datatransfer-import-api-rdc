@@ -23,11 +23,6 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public ReadOnly Property ForceParallelismInNewExport As Boolean Implements IExportConfig.ForceParallelismInNewExport
-			Get
-				Return AppSettings.Instance.ForceParallelismInNewExport
-			End Get
-		End Property
 		
 		Public ReadOnly Property ExportIOErrorWaitTime As Integer Implements IExportConfig.ExportIOErrorWaitTime
 			Get

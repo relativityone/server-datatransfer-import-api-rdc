@@ -304,19 +304,6 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldGetAndSetTheForceParallelismInNewExportSetting()
-		{
-			Assert.That(
-				this.settings.ForceParallelismInNewExport,
-				Is.EqualTo(DataExchange.AppSettingsConstants.ForceParallelismInNewExportDefaultValue));
-			bool expectedValue = RandomHelper.NextBoolean();
-			this.settings.ForceParallelismInNewExport = expectedValue;
-			Assert.That(this.settings.ForceParallelismInNewExport, Is.EqualTo(expectedValue));
-			this.settings.ForceParallelismInNewExport = !expectedValue;
-			Assert.That(this.settings.ForceParallelismInNewExport, Is.EqualTo(!expectedValue));
-		}
-
-		[Test]
 		public void ShouldGetAndSetTheForceWebUploadSetting()
 		{
 			Assert.That(
@@ -948,7 +935,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.DynamicBatchResizingOn, Is.False);
 				Assert.That(this.settings.ExportBatchSize, Is.EqualTo(255));
 				Assert.That(this.settings.ExportThreadCount, Is.EqualTo(3));
-				Assert.That(this.settings.ForceParallelismInNewExport, Is.False);
 				Assert.That(this.settings.ForceWebUpload, Is.True);
 				Assert.That(this.settings.ImportBatchMaxVolume, Is.EqualTo(12345));
 				Assert.That(this.settings.ImportBatchSize, Is.EqualTo(102));
@@ -1014,7 +1000,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.DynamicBatchResizingOnKey], Is.False);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportBatchSizeKey], Is.EqualTo(255));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportThreadCountKey], Is.EqualTo(3));
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.ForceParallelismInNewExportKey], Is.False);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ForceWebUploadKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ImportBatchMaxVolumeKey], Is.EqualTo(12345));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ImportBatchSizeKey], Is.EqualTo(102));
@@ -1105,8 +1090,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.ExportBatchSize, Is.EqualTo(9));
 				dictionary[DataExchange.AppSettingsConstants.ExportThreadCountKey] = 10;
 				Assert.That(this.settings.ExportThreadCount, Is.EqualTo(10));
-				dictionary[DataExchange.AppSettingsConstants.ForceParallelismInNewExportKey] = true;
-				Assert.That(this.settings.ForceParallelismInNewExport, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.ForceWebUploadKey] = true;
 				Assert.That(this.settings.ForceWebUpload, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.ImportBatchMaxVolumeKey] = 11;
