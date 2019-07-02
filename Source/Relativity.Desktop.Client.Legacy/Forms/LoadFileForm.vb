@@ -1848,27 +1848,31 @@ Namespace Relativity.Desktop.Client
 			ActionMenuEnabled = ReadyToRun
 		End Sub
 
-		Private Sub _characterDropdown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _recordDelimiter.SelectedIndexChanged, _quoteDelimiter.SelectedIndexChanged, _newLineDelimiter.SelectedIndexChanged, _multiRecordDelimiter.SelectedIndexChanged, _hierarchicalValueDelimiter.SelectedIndexChanged
-			'PopulateLoadFileObject()
-			Dim tag As Object = DirectCast(sender, System.Windows.Forms.ComboBox).Tag
-			If TypeOf tag Is Boolean AndAlso CType(tag, Boolean) = False Then
-				'do nothing
-			Else
-				PopulateLoadFileDelimiters()
-				RefreshNativeFilePathFieldAndFileColumnHeaders()
-			End If
-		End Sub
+        Private Sub _characterDropdown_KeyPress(ByVal sender As Object, ByVal e As KeyPressEventArgs) Handles _recordDelimiter.KeyPress, _quoteDelimiter.KeyPress, _newLineDelimiter.KeyPress, _multiRecordDelimiter.KeyPress, _hierarchicalValueDelimiter.KeyPress
+            e.Handled = True
+        End Sub
 
-		Private Sub PopulateLoadFileDelimiters()
-			LoadFile.QuoteDelimiter = ChrW(CType(_quoteDelimiter.SelectedValue, Int32))
-			LoadFile.RecordDelimiter = ChrW(CType(_recordDelimiter.SelectedValue, Int32))
-			LoadFile.MultiRecordDelimiter = ChrW(CType(_multiRecordDelimiter.SelectedValue, Int32))
-			LoadFile.NewlineDelimiter = ChrW(CType(_newLineDelimiter.SelectedValue, Int32))
-			LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
-			LoadFile.HierarchicalValueDelimiter = ChrW(CType(_hierarchicalValueDelimiter.SelectedValue, Int32))
-		End Sub
+        Private Sub _characterDropdown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As EventArgs) Handles _recordDelimiter.SelectedIndexChanged, _quoteDelimiter.SelectedIndexChanged, _newLineDelimiter.SelectedIndexChanged, _multiRecordDelimiter.SelectedIndexChanged, _hierarchicalValueDelimiter.SelectedIndexChanged
+            'PopulateLoadFileObject()
+            Dim tag As Object = DirectCast(sender, System.Windows.Forms.ComboBox).Tag
+            If TypeOf tag Is Boolean AndAlso CType(tag, Boolean) = False Then
+                'do nothing
+            Else
+                PopulateLoadFileDelimiters()
+                RefreshNativeFilePathFieldAndFileColumnHeaders()
+            End If
+        End Sub
 
-		Private Async Function BuildMappingFromLoadFile(ByVal caseFieldsCollection As DocumentFieldCollection, ByVal columnHeaders As String()) As Task
+        Private Sub PopulateLoadFileDelimiters()
+            LoadFile.QuoteDelimiter = ChrW(CType(_quoteDelimiter.SelectedValue, Int32))
+            LoadFile.RecordDelimiter = ChrW(CType(_recordDelimiter.SelectedValue, Int32))
+            LoadFile.MultiRecordDelimiter = ChrW(CType(_multiRecordDelimiter.SelectedValue, Int32))
+            LoadFile.NewlineDelimiter = ChrW(CType(_newLineDelimiter.SelectedValue, Int32))
+            LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
+            LoadFile.HierarchicalValueDelimiter = ChrW(CType(_hierarchicalValueDelimiter.SelectedValue, Int32))
+        End Sub
+
+        Private Async Function BuildMappingFromLoadFile(ByVal caseFieldsCollection As DocumentFieldCollection, ByVal columnHeaders As String()) As Task
 			Dim selectedFieldNameList As New ArrayList
 			Dim selectedColumnNameList As New ArrayList
 			Dim item As LoadFileFieldMap.LoadFileFieldMapItem
