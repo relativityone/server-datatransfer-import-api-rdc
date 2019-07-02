@@ -405,18 +405,6 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets the maximum number of file export tasks.
-		/// </summary>
-		/// <value>
-		/// The maximum number of tasks.
-		/// </value>
-		int MaxNumberOfFileExportTasks
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Gets or sets the maximum number of WebAPI login attempts.
 		/// </summary>
 		/// <value>

@@ -29,12 +29,10 @@ namespace Relativity.DataExchange.Export.NUnit
 	public class PhysicalFilesDownloaderTests
 	{
 		private const int _DEFAULT_FILES_PER_FILESHARE = 3;
-		private const int _DEFAULT_TASK_COUNT = 2;
 		private readonly object _lockToken = new object();
 		private Dictionary<string, IRelativityFileShareSettings> _fileShareSettingsCache;
 		private ILog _logger;
 		private List<Mock<IDownloadTapiBridge>> _mockTapiBridges;
-		private Mock<IExportConfig> _mockExportConfig;
 		private Mock<IFileShareSettingsService> _fileshareSettingsService;
 		private Mock<IFileTapiBridgePool> _fileTapiBridgePool;
 		private PhysicalFilesDownloader _downloader;
@@ -55,9 +53,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileTapiBridgePool
 				.Setup(pool => pool.Request(It.IsAny<IRelativityFileShareSettings>(), It.IsAny<CancellationToken>()))
 				.Returns(this.ReturnNewMockTapiBridge);
-			this._mockExportConfig = new Mock<IExportConfig>();
-			this._mockExportConfig.SetupGet(config => config.MaxNumberOfFileExportTasks).Returns(_DEFAULT_TASK_COUNT);
-			this._downloader = new PhysicalFilesDownloader(this._fileshareSettingsService.Object, this._fileTapiBridgePool.Object, this._mockExportConfig.Object, this._safeIncrement, this._logger);
+			this._downloader = new PhysicalFilesDownloader(this._fileshareSettingsService.Object, this._fileTapiBridgePool.Object, this._safeIncrement, this._logger);
 		}
 
 		[Test]
@@ -101,7 +97,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				.Returns(mockTapiBridge.Object);
 			List<ExportRequest> requests = this.CreateThreeExportRequestsPerFileShare(this._availableFileShares).ToList();
 
-			var downloader = new PhysicalFilesDownloader(this._fileshareSettingsService.Object, this._fileTapiBridgePool.Object, this._mockExportConfig.Object, this._safeIncrement, this._logger);
+			var downloader = new PhysicalFilesDownloader(this._fileshareSettingsService.Object, this._fileTapiBridgePool.Object, this._safeIncrement, this._logger);
 
 			Assert.ThrowsAsync<TaskCanceledException>(async () => await downloader.DownloadFilesAsync(requests, CancellationToken.None).ConfigureAwait(false));
 		}

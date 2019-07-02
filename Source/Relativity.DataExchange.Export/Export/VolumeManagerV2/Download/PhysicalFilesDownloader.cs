@@ -16,15 +16,13 @@
 	{
 		private readonly IFileShareSettingsService _settingsService;
 		private readonly IFileTapiBridgePool _fileTapiBridgePool;
-		private readonly IExportConfig _exportConfig;
 		private readonly ILog _logger;
 		private readonly SafeIncrement _safeIncrement;
 
-		public PhysicalFilesDownloader(IFileShareSettingsService settingsService, IFileTapiBridgePool fileTapiBridgePool, IExportConfig exportConfig, SafeIncrement safeIncrement, ILog logger)
+		public PhysicalFilesDownloader(IFileShareSettingsService settingsService, IFileTapiBridgePool fileTapiBridgePool, SafeIncrement safeIncrement, ILog logger)
 		{
 			_settingsService = settingsService;
 			_fileTapiBridgePool = fileTapiBridgePool;
-			_exportConfig = exportConfig;
 			_safeIncrement = safeIncrement;
 			_logger = logger;
 		}
@@ -33,60 +31,56 @@
 		{
 			var taskCancellationTokenSource = new DownloadCancellationTokenSource(batchCancellationToken);
 
-			ConcurrentQueue<ExportRequestsWithFileshareSettings> queue = CreateTransferQueue(requests);
-			_logger.LogVerbose("Adding {filesToExportCount} requests for files through {tapiBridgeCount} TAPI bridges.", requests.Count, queue.Count);
+			var exportRequestsFileshareSettingsList = GetExportRequestFileShareSettings(requests);
+			_logger.LogVerbose("Adding {filesToExportCount} requests for files through {tapiBridgeCount} TAPI bridges.", requests.Count,
+				exportRequestsFileshareSettingsList.Count);
 
 			var tasks = new List<Task>();
 
-			for (var i = 0; i < _exportConfig.MaxNumberOfFileExportTasks; i++)
+			foreach(ExportRequestsWithFileshareSettings exportRequestsWithFileshareSettings in exportRequestsFileshareSettingsList)
 			{
-				tasks.Add(Task.Run(() => CreateJobTask(queue, taskCancellationTokenSource), taskCancellationTokenSource.Token));
+				tasks.Add(Task.Run(() => CreateJobTask(exportRequestsWithFileshareSettings, taskCancellationTokenSource), taskCancellationTokenSource.Token));
 			}
 
 			await Task.WhenAll(tasks).ConfigureAwait(false);
 		}
 
-		private ConcurrentQueue<ExportRequestsWithFileshareSettings> CreateTransferQueue(List<ExportRequest> requests)
+		private List<ExportRequestsWithFileshareSettings> GetExportRequestFileShareSettings(List<ExportRequest> requests)
 		{
 			ILookup<IRelativityFileShareSettings, ExportRequest> result = requests.ToLookup(r => _settingsService.GetSettingsForFileshare(r.SourceLocation));
 
-			return new ConcurrentQueue<ExportRequestsWithFileshareSettings>(result.Select(r => new ExportRequestsWithFileshareSettings(r.Key, r)));
+			return new List<ExportRequestsWithFileshareSettings>(result.Select(r => new ExportRequestsWithFileshareSettings(r.Key, r)));
 		}
 
-		private void CreateJobTask(ConcurrentQueue<ExportRequestsWithFileshareSettings> queue, DownloadCancellationTokenSource downloadCancellationTokenSourceSource)
+		private void CreateJobTask(ExportRequestsWithFileshareSettings exportRequestWithFileshareSettings, DownloadCancellationTokenSource downloadCancellationTokenSourceSource)
 		{
-			ExportRequestsWithFileshareSettings exportRequestWithFileshareSettings;
-
-			while (queue.TryDequeue(out exportRequestWithFileshareSettings))
+			IDownloadTapiBridge bridge = null;
+			try
 			{
-				IDownloadTapiBridge bridge = null;
-				try
-				{
-					bridge = _fileTapiBridgePool.Request(exportRequestWithFileshareSettings.FileshareSettings,
-						downloadCancellationTokenSourceSource.Token);
+				bridge = _fileTapiBridgePool.Request(exportRequestWithFileshareSettings.FileshareSettings,
+					downloadCancellationTokenSourceSource.Token);
 
-					DownloadFiles(bridge, exportRequestWithFileshareSettings.Requests,
-						downloadCancellationTokenSourceSource.Token);
-					bridge.WaitForTransferJob();
-				}
-				catch (TaskCanceledException)
+				DownloadFiles(bridge, exportRequestWithFileshareSettings.Requests,
+					downloadCancellationTokenSourceSource.Token);
+				bridge.WaitForTransferJob();
+			}
+			catch (TaskCanceledException)
+			{
+				if (!downloadCancellationTokenSourceSource.IsBatchCancelled())
 				{
-					if (!downloadCancellationTokenSourceSource.IsBatchCancelled())
-					{
-						throw;
-					}
-				}
-				catch (Exception)
-				{
-					downloadCancellationTokenSourceSource.Cancel();
 					throw;
 				}
-				finally
+			}
+			catch (Exception)
+			{
+				downloadCancellationTokenSourceSource.Cancel();
+				throw;
+			}
+			finally
+			{
+				if (bridge != null)
 				{
-					if (bridge != null)
-					{
-						_fileTapiBridgePool.Release(bridge);
-					}
+					_fileTapiBridgePool.Release(bridge);
 				}
 			}
 		}

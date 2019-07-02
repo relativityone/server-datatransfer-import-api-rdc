@@ -84,13 +84,10 @@
 			PoolEntry connectedNotUsed = null;
 			lock (_sync)
 			{
-				if (_fileTapiBridges.Values.Count(x => x.Connected) >= _exportConfig.MaxNumberOfFileExportTasks)
+				connectedNotUsed = _fileTapiBridges.Values.FirstOrDefault(x => x.Connected && !x.InUse);
+				if (connectedNotUsed != null)
 				{
-					connectedNotUsed = _fileTapiBridges.Values.FirstOrDefault(x => x.Connected && !x.InUse);
-					if (connectedNotUsed != null)
-					{
-						connectedNotUsed.Connected = false;
-					}
+					connectedNotUsed.Connected = false;
 				}
 			}
 

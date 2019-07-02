@@ -31,7 +31,6 @@ namespace Relativity.DataExchange
 		private int httpTimeoutSeconds;
 		private int maximumFilesForTapiBridge;
 		private int maximumReloginTries;
-		private int maxNumberOfFileExportTasks;
 		private int tapiBridgeExportTransferWaitingTimeInSeconds;
 		private int tapiMinDataRateMbps;
 		private int tapiMaxJobParallelism;
@@ -537,26 +536,6 @@ namespace Relativity.DataExchange
 			}
 
 			set => this.maximumReloginTries = value;
-		}
-
-		/// <inheritdoc />
-		[AppSetting(
-			AppSettingsConstants.SectionLegacyUtility,
-			AppSettingsConstants.MaxNumberOfFileExportTasksKey,
-			AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue)]
-		int IAppSettings.MaxNumberOfFileExportTasks
-		{
-			get
-			{
-				if (this.maxNumberOfFileExportTasks < 1)
-				{
-					this.maxNumberOfFileExportTasks = AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue;
-				}
-
-				return this.maxNumberOfFileExportTasks;
-			}
-
-			set => this.maxNumberOfFileExportTasks = value;
 		}
 
 		/// <inheritdoc />

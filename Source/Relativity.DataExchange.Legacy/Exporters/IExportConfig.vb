@@ -16,8 +16,6 @@ Public Interface IExportConfig
 
 	ReadOnly Property ExportErrorWaitTime() As Int32
 
-	ReadOnly Property MaxNumberOfFileExportTasks() As Int32
-
 	ReadOnly Property TapiBridgeExportTransferWaitingTimeInSeconds As Int32
 
 	ReadOnly Property TapiForceHttpClient As Boolean

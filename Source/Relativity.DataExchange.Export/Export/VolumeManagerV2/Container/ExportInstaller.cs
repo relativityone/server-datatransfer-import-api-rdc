@@ -97,7 +97,7 @@
 			container.Register(Component.For<ILog>().UsingFactoryMethod(k => RelativityLogFactory.CreateLog(_EXPORT_SUB_SYSTEM_NAME)));
 
 			container.Register(Component.For<ILabelManagerForArtifact>().UsingFactoryMethod(k =>
-				 (ILabelManagerForArtifact)k.Resolve<CachedLabelManagerForArtifact>()));
+				 (ILabelManagerForArtifact)k.Resolve<LabelManagerForArtifact>()));
 		}
 
 		private void InstallFieldService(IWindsorContainer container)

@@ -431,17 +431,6 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldGetAndSetTheMaxNumberOfFileExportTasksSetting()
-		{
-			Assert.That(
-				this.settings.MaxNumberOfFileExportTasks,
-				Is.EqualTo(DataExchange.AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.MaxNumberOfFileExportTasks = expectedValue;
-			Assert.That(this.settings.MaxNumberOfFileExportTasks, Is.EqualTo(expectedValue));
-		}
-
-		[Test]
 		public void ShouldGetAndSetTheMaxReloginTriesSetting()
 		{
 			Assert.That(
@@ -921,7 +910,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.ExportErrorWaitTimeInSeconds, Is.EqualTo(15));
 				Assert.That(this.settings.IoErrorNumberOfRetries, Is.EqualTo(8));
 				Assert.That(this.settings.IoErrorWaitTimeInSeconds, Is.EqualTo(16));
-				Assert.That(this.settings.MaxNumberOfFileExportTasks, Is.EqualTo(4));
 
 				// The kCura.WinEDDS section asserts go here.
 				Assert.That(this.settings.ApplicationName, Is.EqualTo("Custom App"));
@@ -987,7 +975,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportErrorWaitTimeInSecondsKey], Is.EqualTo(15));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.IoErrorNumberOfRetriesKey], Is.EqualTo(8));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.IoErrorWaitTimeInSecondsKey], Is.EqualTo(16));
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.MaxNumberOfFileExportTasksKey], Is.EqualTo(4));
 
 				// The kCura.WinEDDS section asserts go here.
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ApplicationNameKey], Is.EqualTo("Custom App"));
@@ -1066,8 +1053,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.IoErrorNumberOfRetries, Is.EqualTo(5));
 				dictionary[DataExchange.AppSettingsConstants.IoErrorWaitTimeInSecondsKey] = 6;
 				Assert.That(this.settings.IoErrorWaitTimeInSeconds, Is.EqualTo(6));
-				dictionary[DataExchange.AppSettingsConstants.MaxNumberOfFileExportTasksKey] = 7;
-				Assert.That(this.settings.MaxNumberOfFileExportTasks, Is.EqualTo(7));
 
 				// The kCura.WinEDDS section asserts go here.
 				dictionary[DataExchange.AppSettingsConstants.ApplicationNameKey] = "The App";

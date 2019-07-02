@@ -111,7 +111,6 @@
     <Compile Include="Export\VolumeManagerV2\DataSize\ObjectExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\TextExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\AbsoluteFilePathTransformer.cs" />
-    <Compile Include="Export\VolumeManagerV2\Directories\CachedLabelManagerForArtifact.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\DirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\FilePathHelper.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\FilePathProvider.cs" />

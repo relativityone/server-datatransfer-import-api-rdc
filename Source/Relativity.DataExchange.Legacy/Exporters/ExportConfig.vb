@@ -48,12 +48,6 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public ReadOnly Property MaxNumberOfFileExportTasks As Integer Implements IExportConfig.MaxNumberOfFileExportTasks
-		    Get
-		        Return AppSettings.Instance.MaxNumberOfFileExportTasks
-		    End Get
-		End Property
-
 		Public ReadOnly Property TapiBridgeExportTransferWaitingTimeInSeconds As Integer Implements IExportConfig.TapiBridgeExportTransferWaitingTimeInSeconds
 			Get
 				Return AppSettings.Instance.TapiBridgeExportTransferWaitingTimeInSeconds

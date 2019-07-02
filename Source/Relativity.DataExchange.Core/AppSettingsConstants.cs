@@ -89,8 +89,6 @@ namespace Relativity.DataExchange
 		public const string LogConfigXmlFileNameDefaultValue = "LogConfig.xml";
 		public const string MaxFilesForTapiBridgeKey = "MaximumFilesForTapiBridge";
 		public const int MaxFilesForTapiBridgeDefaultValue = 10000;
-		public const string MaxNumberOfFileExportTasksKey = "MaxNumberOfFileExportTasks";
-		public const int MaxNumberOfFileExportTasksDefaultValue = 2;
 		public const string MinBatchSizeKey = "MinimumBatchSize";
 		public const int MinBatchSizeDefaultValue = 100;
 		public const string MaximumReloginTriesKey = "MaximumReloginTries";

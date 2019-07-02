@@ -115,7 +115,6 @@
     <Compile Include="BatchStateTests.cs" />
     <Compile Include="BatchTests.cs" />
     <Compile Include="BatchValidatorTests.cs" />
-    <Compile Include="CachedLabelManagerForArtifactTests.cs" />
     <Compile Include="ColumnsFactoryTests.cs" />
     <Compile Include="ColumnsOrdinalLookupFactoryTests.cs" />
     <Compile Include="CustomFileNameProviderTest.cs" />
