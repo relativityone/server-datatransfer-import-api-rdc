@@ -43,7 +43,6 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			// ACT
 			bool beforeFirstPathCall = this._instance.IsErrorFileCreated();
-			string path = this._instance.Path;
 			bool afterFirstPathCall = this._instance.IsErrorFileCreated();
 
 			// ASSERT

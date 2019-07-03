@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace kCura.Relativity.ImportAPI.Data
+﻿namespace kCura.Relativity.ImportAPI.Data
 {
 	/// <summary>
 	/// Represents a production set for use with an import job.
