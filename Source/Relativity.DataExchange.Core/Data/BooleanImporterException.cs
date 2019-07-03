@@ -79,11 +79,5 @@ namespace Relativity.DataExchange.Data
 			: base(info, context)
 		{
 		}
-
-		/// <inheritdoc />
-		public override void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			base.GetObjectData(info, context);
-		}
 	}
 }
