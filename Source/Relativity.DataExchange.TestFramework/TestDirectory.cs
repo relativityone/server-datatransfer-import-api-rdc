@@ -71,10 +71,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </summary>
 		public void Create()
 		{
-			if (!System.IO.Directory.Exists(this.Directory))
-			{
-				System.IO.Directory.CreateDirectory(this.Directory);
-			}
+			System.IO.Directory.CreateDirectory(this.Directory);
 		}
 
 		/// <summary>

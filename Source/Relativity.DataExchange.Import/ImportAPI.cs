@@ -546,10 +546,7 @@ namespace kCura.Relativity.ImportAPI
 				//If the destination folder path is empty, we only need to test file Read/Write permissions
 				if (!String.IsNullOrEmpty(destFolderPath))
 				{
-					if (!System.IO.Directory.Exists(destFolderPath))
-					{
 						System.IO.Directory.CreateDirectory(destFolderPath);
-					}
 				}
 
 				System.IO.File.Create(destFolderPath + dummyText).Close();
