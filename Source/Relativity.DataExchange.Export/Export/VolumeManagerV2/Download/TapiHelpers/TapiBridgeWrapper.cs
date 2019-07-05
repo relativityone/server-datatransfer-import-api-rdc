@@ -1,8 +1,7 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	using System;
-
-	using global::Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
+	
 	using global::Relativity.Transfer;
 
 	using Relativity.DataExchange.Transfer;

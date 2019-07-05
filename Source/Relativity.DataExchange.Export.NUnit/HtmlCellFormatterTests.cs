@@ -177,9 +177,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		[Test]
 		public void ItShouldReturnEmptyNativeCellWhenArtifactIsDocumentAndHasNoNatives()
 		{
-			ExportFile settings = new ExportFile((int)ArtifactType.Document)
-			{
-			};
+			ExportFile settings = new ExportFile((int)ArtifactType.Document);
 
 			HtmlCellFormatter subject = new HtmlCellFormatter(settings, new Mock<IFilePathTransformer>().Object);
 

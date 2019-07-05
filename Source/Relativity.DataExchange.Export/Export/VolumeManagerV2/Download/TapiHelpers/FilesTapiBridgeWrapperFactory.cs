@@ -3,7 +3,6 @@
 	using System.Threading;
 
 	using Relativity.DataExchange.Transfer;
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.Logging;
 
 	public class FilesTapiBridgeWrapperFactory : ITapiBridgeWrapperFactory

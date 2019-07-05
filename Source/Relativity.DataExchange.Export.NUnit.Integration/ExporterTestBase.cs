@@ -371,7 +371,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 					ExportImages = true,
 					LogFileFormat = LoadFileType.FileFormat.Opticon,
 					TypeOfImage = ExportFile.ImageType.Pdf,
-					ImagePrecedence = new Pair[]
+					ImagePrecedence = new[]
 					{
 						new Pair("-1", "Original"),
 						new Pair("-1", "Original"),
