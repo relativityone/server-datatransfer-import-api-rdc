@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using kCura.Relativity.ImportAPI.Enumeration;
 
 namespace kCura.Relativity.ImportAPI.Data
