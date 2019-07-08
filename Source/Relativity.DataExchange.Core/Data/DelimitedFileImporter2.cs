@@ -987,8 +987,8 @@ namespace Relativity.DataExchange.Data
 					if (this.TrimOption == TrimOption.Both ||
 					    this.TrimOption == TrimOption.Trailing)
 					{
-						char[] whitespace = new char[2] { ' ', Microsoft.VisualBasic.ControlChars.Tab };
-						while (System.Array.IndexOf<char>(whitespace, Microsoft.VisualBasic.Strings.ChrW(this.Peek())) != EofChar)
+						char[] whitespace = { ' ', Microsoft.VisualBasic.ControlChars.Tab };
+						while (System.Array.IndexOf(whitespace, Microsoft.VisualBasic.Strings.ChrW(this.Peek())) != EofChar)
 						{
 							this.Read();
 						}
