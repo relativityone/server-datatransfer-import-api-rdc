@@ -30,12 +30,7 @@ namespace Relativity.DataExchange.Io
 		/// </exception>
 		internal DirectoryWrap(IPath path)
 		{
-			if (path == null)
-			{
-				throw new ArgumentNullException(nameof(path));
-			}
-
-			this.instance = path;
+			this.instance = path ?? throw new ArgumentNullException(nameof(path));
 		}
 
 		/// <inheritdoc />

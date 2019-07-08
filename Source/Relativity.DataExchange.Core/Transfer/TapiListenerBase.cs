@@ -37,18 +37,8 @@ namespace Relativity.DataExchange.Transfer
 		/// </param>
 		protected TapiListenerBase(ITransferLog log, TransferContext context)
 		{
-			if (log == null)
-			{
-				throw new ArgumentNullException(nameof(log));
-			}
-
-			if (context == null)
-			{
-				throw new ArgumentNullException(nameof(context));
-			}
-
-			this.TransferLog = log;
-			this.Context = context;
+			this.TransferLog = log ?? throw new ArgumentNullException(nameof(log));
+			this.Context = context ?? throw new ArgumentNullException(nameof(context));
 			this.Context.LargeFileProgress += this.OnLargeFileProgress;
 			this.Context.TransferPathProgress += this.OnTransferPathProgress;
 			this.Context.TransferPathIssue += this.OnTransferPathIssue;

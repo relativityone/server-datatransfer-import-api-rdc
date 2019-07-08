@@ -25,12 +25,7 @@ namespace Relativity.DataExchange.Process
 		/// </param>
 		public ShowReportEventArgs(DataTable report, bool maxLengthExceeded)
 		{
-			if (report == null)
-			{
-				throw new ArgumentNullException(nameof(report));
-			}
-
-			this.Report = report;
+			this.Report = report ?? throw new ArgumentNullException(nameof(report));
 			this.MaxLengthExceeded = maxLengthExceeded;
 		}
 

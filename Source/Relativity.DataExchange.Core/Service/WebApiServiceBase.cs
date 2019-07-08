@@ -61,16 +61,6 @@ namespace Relativity.DataExchange.Service
 				throw new ArgumentNullException(nameof(instanceInfo));
 			}
 
-			if (repository == null)
-			{
-				throw new ArgumentNullException(nameof(repository));
-			}
-
-			if (appSettings == null)
-			{
-				throw new ArgumentNullException(nameof(appSettings));
-			}
-
 			if (instanceInfo.WebApiServiceUrl == null)
 			{
 				throw new ArgumentException("The WebApiServiceUrl must be non-null.", nameof(instanceInfo));
@@ -86,8 +76,8 @@ namespace Relativity.DataExchange.Service
 				throw new ArgumentException("The CookieContainer must be non-null.", nameof(instanceInfo));
 			}
 
-			this.AppSettings = appSettings;
-			this.CacheRepository = repository;
+			this.AppSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+			this.CacheRepository = repository ?? throw new ArgumentNullException(nameof(repository));
 			this.InstanceInfo = instanceInfo;
 			this.logger = Relativity.Logging.Log.Logger ?? new NullLogger();
 		}

@@ -52,12 +52,7 @@ namespace Relativity.DataExchange.Io
 		/// </exception>
 		internal DirectoryInfoWrap(System.IO.DirectoryInfo info)
 		{
-			if (info == null)
-			{
-				throw new ArgumentNullException(nameof(info));
-			}
-
-			this.instance = info;
+			this.instance = info ?? throw new ArgumentNullException(nameof(info));
 		}
 
 		/// <inheritdoc />

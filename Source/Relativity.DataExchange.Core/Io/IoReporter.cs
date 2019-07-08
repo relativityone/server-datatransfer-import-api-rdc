@@ -48,18 +48,8 @@ namespace Relativity.DataExchange.Io
 				throw new ArgumentNullException(nameof(context));
 			}
 
-			if (logger == null)
-			{
-				throw new ArgumentNullException(nameof(logger));
-			}
-
-			if (context == null)
-			{
-				throw new ArgumentNullException(nameof(context));
-			}
-
-			this.Logger = logger;
-			this.Context = context;
+			this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+			this.Context = context ?? throw new ArgumentNullException(nameof(context));
 			this.CancellationToken = token;
 			this.CachedAppSettings = context.AppSettings.DeepCopy();
 		}

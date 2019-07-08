@@ -10,13 +10,8 @@
 
 		public ExportRequestsWithFileshareSettings(IRelativityFileShareSettings fileshareSettings, IEnumerable<ExportRequest> requests)
 		{
-			if (requests == null)
-			{
-				throw new ArgumentNullException($"Argument name {nameof(requests)} cannot be null.");
-			}
-
 			FileshareSettings = fileshareSettings;
-			Requests = requests;
+			Requests = requests ?? throw new ArgumentNullException($"Argument name {nameof(requests)} cannot be null.");
 		}
 	}
 }

@@ -60,25 +60,10 @@ namespace Relativity.DataExchange.Process
 		/// </param>
 		protected ProcessBase2(IFileSystem fileSystem, IAppSettings settings, Relativity.Logging.ILog logger, CancellationTokenSource tokenSource)
 		{
-			if (fileSystem == null)
-			{
-				throw new ArgumentNullException(nameof(fileSystem));
-			}
-
-			if (settings == null)
-			{
-				throw new ArgumentNullException(nameof(settings));
-			}
-
-			if (logger == null)
-			{
-				throw new ArgumentNullException(nameof(logger));
-			}
-
-			this.AppSettings = settings;
+			this.AppSettings = settings ?? throw new ArgumentNullException(nameof(settings));
 			this.CancellationTokenSource = tokenSource ?? new CancellationTokenSource();
-			this.FileSystem = fileSystem;
-			this.Logger = logger;
+			this.FileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+			this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 			this.processErrorWriter = new ProcessErrorWriter(fileSystem, logger);
 			this.processEventWriter = new ProcessEventWriter(fileSystem);
 			this.Context = new ProcessContext(this.processEventWriter, this.processErrorWriter, settings, logger);

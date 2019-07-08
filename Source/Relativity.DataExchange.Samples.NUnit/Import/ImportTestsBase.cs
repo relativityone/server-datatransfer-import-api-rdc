@@ -120,12 +120,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		/// </param>
 		protected ImportTestsBase(Relativity.Logging.ILog log)
 		{
-			if (log == null)
-			{
-				throw new ArgumentNullException(nameof(log));
-			}
-
-			this.Logger = log;
+			this.Logger = log ?? throw new ArgumentNullException(nameof(log));
 			Assert.That(this.Logger, Is.Not.Null);
 		}
 

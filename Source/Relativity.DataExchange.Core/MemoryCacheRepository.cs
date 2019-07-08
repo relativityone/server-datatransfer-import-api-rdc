@@ -67,12 +67,7 @@ namespace Relativity.DataExchange
 		/// </param>
 		public MemoryCacheRepository(MemoryCache cache, TimeSpan expiration)
 		{
-			if (cache == null)
-			{
-				throw new ArgumentNullException(nameof(cache));
-			}
-
-			this.cache = cache;
+			this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
 			this.Expiration = expiration;
 		}
 

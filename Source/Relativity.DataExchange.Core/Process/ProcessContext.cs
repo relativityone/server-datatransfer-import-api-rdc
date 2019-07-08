@@ -76,30 +76,10 @@ namespace Relativity.DataExchange.Process
 			IAppSettings settings,
 			Relativity.Logging.ILog logger)
 		{
-			if (eventWriter == null)
-			{
-				throw new ArgumentNullException(nameof(eventWriter));
-			}
-
-			if (errorWriter == null)
-			{
-				throw new ArgumentNullException(nameof(errorWriter));
-			}
-
-			if (settings == null)
-			{
-				throw new ArgumentNullException(nameof(settings));
-			}
-
-			if (logger == null)
-			{
-				throw new ArgumentNullException(nameof(logger));
-			}
-
-			this.eventWriter = eventWriter;
-			this.errorWriter = errorWriter;
-			this.settings = settings;
-			this.logger = logger;
+			this.eventWriter = eventWriter ?? throw new ArgumentNullException(nameof(eventWriter));
+			this.errorWriter = errorWriter ?? throw new ArgumentNullException(nameof(errorWriter));
+			this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+			this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
 			this.SafeMode = false;
 		}
 

@@ -39,12 +39,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </param>
 		public RelativityTestLogger(Relativity.Logging.ILog logger)
 		{
-			if (logger == null)
-			{
-				throw new ArgumentNullException(nameof(logger));
-			}
-
-			this.logger = logger;
+			this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
 		/// <inheritdoc />
