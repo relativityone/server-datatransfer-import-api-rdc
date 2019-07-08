@@ -42,7 +42,7 @@ namespace Relativity.DataExchange.NUnit
 		private Mock<ILog> mockLogger;
 		private IoReporterContext context;
 		private long actualFileLength;
-		private Func<int, TimeSpan> actualRetryDuractionFunc = null;
+		private Func<int, TimeSpan> actualRetryDuractionFunc;
 		private Exception expectedException;
 		private bool actualFileExists;
 		private Exception actualLoggedWarningException;
