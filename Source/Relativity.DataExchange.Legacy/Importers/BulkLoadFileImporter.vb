@@ -449,7 +449,7 @@ Namespace kCura.WinEDDS
 			OverlayArtifactId = args.IdentityFieldId
 
 			If String.IsNullOrEmpty(bulkLoadFileFieldDelimiter) Then
-				Throw New ArgumentNullException("bulkLoadFileFieldDelimiter")
+				Throw New ArgumentNullException(NameOf(bulkLoadFileFieldDelimiter))
 			End If
 
 			Me.BulkLoadFileFieldDelimiter = bulkLoadFileFieldDelimiter
