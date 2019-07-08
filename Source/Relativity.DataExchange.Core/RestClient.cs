@@ -28,7 +28,7 @@ namespace Relativity.DataExchange
 		/// <summary>
 		/// The no status code.
 		/// </summary>
-		private const HttpStatusCode NoHttpStatusCode = (HttpStatusCode)0;
+		private const HttpStatusCode NoHttpStatusCode = 0;
 
 		/// <summary>
 		/// The HTTP GET request method.
