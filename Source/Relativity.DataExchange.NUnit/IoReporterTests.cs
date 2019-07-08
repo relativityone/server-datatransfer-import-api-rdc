@@ -489,9 +489,9 @@ namespace Relativity.DataExchange.NUnit
 
 		private void ThenTheActualRetryDurationShouldCalculated(int retryAttempt, int waitTimeBetweenRetryAttempts)
 		{
-			TimeSpan actualRetryDuraction = this.actualRetryDurationFunc(retryAttempt);
+			TimeSpan actualRetryDuration = this.actualRetryDurationFunc(retryAttempt);
 			Assert.That(
-				actualRetryDuraction,
+				actualRetryDuration,
 				retryAttempt == 1 ? Is.EqualTo(TimeSpan.FromSeconds(0)) : Is.EqualTo(TimeSpan.FromSeconds(waitTimeBetweenRetryAttempts)));
 		}
 
