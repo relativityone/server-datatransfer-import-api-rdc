@@ -36,8 +36,7 @@
 
 		private void WriteHeaderIfNeeded(StreamWriter streamWriter, IDictionary<int, ILoadFileEntry> linesToWrite)
 		{
-			ILoadFileEntry loadFileEntry;
-			if (linesToWrite.TryGetValue(LoadFileHeader.HEADER_KEY, out loadFileEntry))
+			if (linesToWrite.TryGetValue(LoadFileHeader.HEADER_KEY, out var loadFileEntry))
 			{
 				_logger.LogVerbose("Writing header to load file.");
 				loadFileEntry?.Write(ref streamWriter);
@@ -54,8 +53,7 @@
 					return;
 				}
 
-				ILoadFileEntry loadFileEntry;
-				if (linesToWrite.TryGetValue(artifacts.Current.ArtifactID, out loadFileEntry))
+				if (linesToWrite.TryGetValue(artifacts.Current.ArtifactID, out var loadFileEntry))
 				{
 					_logger.LogVerbose("Writing entry to load file for artifact {artifactId}.", artifacts.Current.ArtifactID);
 					loadFileEntry?.Write(ref streamWriter);
