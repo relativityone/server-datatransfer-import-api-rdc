@@ -480,7 +480,7 @@ namespace Relativity.DataExchange
 			}
 
 			object defaultValue = null;
-			if (value == null && attribute != null)
+			if (value == null)
 			{
 				if (attribute.DefaultValue != null)
 				{
