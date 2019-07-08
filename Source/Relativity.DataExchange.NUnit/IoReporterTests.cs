@@ -42,7 +42,7 @@ namespace Relativity.DataExchange.NUnit
 		private Mock<ILog> mockLogger;
 		private IoReporterContext context;
 		private long actualFileLength;
-		private Func<int, TimeSpan> actualRetryDuractionFunc;
+		private Func<int, TimeSpan> actualRetryDurationFunc;
 		private Exception expectedException;
 		private bool actualFileExists;
 		private Exception actualLoggedWarningException;
@@ -125,7 +125,7 @@ namespace Relativity.DataExchange.NUnit
 			this.actualLoggedInformationMessage = null;
 			this.actualLoggedWarningException = null;
 			this.actualLoggedWarningMessage = null;
-			this.actualRetryDuractionFunc = null;
+			this.actualRetryDurationFunc = null;
 			this.mockAppSettings = new Mock<IAppSettings>();
 			this.mockAppSettings.SetupGet(x => x.DisableThrowOnIllegalCharacters).Returns(false);
 			this.mockAppSettings.Setup(x => x.DeepCopy()).Callback(
@@ -402,7 +402,7 @@ namespace Relativity.DataExchange.NUnit
 					CancellationToken>(
 					(exceptionPredicate, retryDuration, retryAction, execFunc, token) =>
 					{
-						this.actualRetryDuractionFunc = retryDuration;
+						this.actualRetryDurationFunc = retryDuration;
 						retryAction(this.expectedException, TimeSpan.Zero);
 						execFunc(token);
 					});
@@ -442,7 +442,7 @@ namespace Relativity.DataExchange.NUnit
 					Func<CancellationToken, long>, CancellationToken>(
 					(exceptionPredicate, retryDuration, retryAction, execFunc, token) =>
 					{
-						this.actualRetryDuractionFunc = retryDuration;
+						this.actualRetryDurationFunc = retryDuration;
 						retryAction(null, TimeSpan.Zero);
 						execFunc(token);
 					});
@@ -489,7 +489,7 @@ namespace Relativity.DataExchange.NUnit
 
 		private void ThenTheActualRetryDurationShouldCalculated(int retryAttempt, int waitTimeBetweenRetryAttempts)
 		{
-			TimeSpan actualRetryDuraction = this.actualRetryDuractionFunc(retryAttempt);
+			TimeSpan actualRetryDuraction = this.actualRetryDurationFunc(retryAttempt);
 			Assert.That(
 				actualRetryDuraction,
 				retryAttempt == 1 ? Is.EqualTo(TimeSpan.FromSeconds(0)) : Is.EqualTo(TimeSpan.FromSeconds(waitTimeBetweenRetryAttempts)));
