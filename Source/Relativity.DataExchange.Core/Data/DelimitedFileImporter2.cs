@@ -537,13 +537,13 @@ namespace Relativity.DataExchange.Data
 		{
 			try
 			{
-				decimal? returnmDecimal = this.ParseNullableDecimal(value);
-				if (returnmDecimal.HasValue && Conversions.ToString(decimal.Truncate(returnmDecimal.Value)).Length > 15)
+				decimal? returnDecimal = this.ParseNullableDecimal(value);
+				if (returnDecimal.HasValue && Conversions.ToString(decimal.Truncate(returnDecimal.Value)).Length > 15)
 				{
 					throw new FormatException($"The decimal value {value} exceeds the max length.");
 				}
 
-				return returnmDecimal;
+				return returnDecimal;
 			}
 			catch (Exception e)
 			{
