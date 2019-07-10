@@ -97,12 +97,6 @@ namespace Relativity.DataExchange.Import.NUnit
 					new kCura.WinEDDS.LoadFileBase.ParentObjectReferenceRequiredException(1, 1),
 					validateNoOp);
 				yield return new TestCaseData(
-					new kCura.WinEDDS.LoadFileBase.BcpPathAccessException("Message"),
-					validateNoOp);
-				yield return new TestCaseData(
-					new kCura.WinEDDS.LoadFileBase.BcpPathAccessException("Message", new InvalidOperationException()),
-					validateNoOp);
-				yield return new TestCaseData(
 					new MetadataTransferException("Message"),
 					validateNoOp);
 				yield return new TestCaseData(

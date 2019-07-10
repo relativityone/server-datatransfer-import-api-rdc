@@ -1339,38 +1339,20 @@ Namespace kCura.WinEDDS
 
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
 			settings.UseBulkDataImport = True
-			Dim nativeFileUploadKey As String
-			Dim codeFileUploadKey As String
-			Dim objectFileUploadKey As String
-			Dim dataGridFileUploadKey As String
+			Dim nativeFileUploadKey As String = BulkLoadTapiBridge.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
+			Dim codeFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
+			Dim objectFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
+			Dim dataGridFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
 
-			Try
-				nativeFileUploadKey = BulkLoadTapiBridge.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
-				codeFileUploadKey = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
-				objectFileUploadKey = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
-				dataGridFileUploadKey = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
+			' keep track of the total count of added files
+			MetadataFilesCount += 4
+			_jobCompleteMetadataCount += 4
 
-				' keep track of the total count of added files
-				MetadataFilesCount += 4
-				_jobCompleteMetadataCount += 4
-
-				If lastRun Then
-					CompletePendingBulkLoadFileTransfers()
-				Else
-					WaitForPendingMetadataUploads()
-				End If
-			Catch ex As MetadataTransferException
-				Throw
-			Catch ex As TransferException
-				Throw
-			Catch ex As IOException
-				Throw
-			Catch ex As WebException
-				Throw
-			Catch ex As Exception
-				' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
-				Throw New kCura.WinEDDS.LoadFilebase.BcpPathAccessException(My.Resources.Strings.BcpAccessExceptionMessage, ex)
-			End Try
+			If lastRun Then
+				CompletePendingBulkLoadFileTransfers()
+			Else
+				WaitForPendingMetadataUploads()
+			End If
 
 			_lastRunMetadataImport = System.DateTime.Now.Ticks
 

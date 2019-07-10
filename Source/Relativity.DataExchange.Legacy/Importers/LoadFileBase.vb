@@ -1045,44 +1045,6 @@ Namespace kCura.WinEDDS
 		End Class
 
 		''' <summary>
-		''' The exception thrown when a failure occurs accessing the BCP share.
-		''' </summary>
-		<Serializable>
-		Public Class BcpPathAccessException
-			Inherits ImporterException
-
-			''' <summary>
-			''' Initializes a new instance of the <see cref="BcpPathAccessException"/> class.
-			''' </summary>
-			''' <param name="message">
-			''' The message that describes the error.
-			''' </param>
-			Public Sub New(ByVal message As String)
-				' Retained for backwards compatibility only. The next constructor should always be used.
-				MyBase.New("Error accessing the bcp share. Please contact your system administrator with the following details: " & System.Environment.NewLine & message)
-			End Sub
-
-			''' <summary>
-			''' Initializes a new instance of the <see cref="BcpPathAccessException"/> class.
-			''' </summary>
-			''' <param name="message">
-			''' The message that describes the error.
-			''' </param>
-			''' <param name="innerException">
-			''' The inner exception.
-			''' </param>
-			Public Sub New(ByVal message As String, ByVal innerException As Exception)
-				MyBase.New(message, innerException)
-			End Sub
-
-			''' <inheritdoc />
-			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
-			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
-				MyBase.New(info, context)
-			End Sub
-		End Class
-
-		''' <summary>
 		''' The exception thrown when a multi-choice value already exists and would result in a duplicate if allowed to be imported.
 		''' </summary>
 		<Serializable>

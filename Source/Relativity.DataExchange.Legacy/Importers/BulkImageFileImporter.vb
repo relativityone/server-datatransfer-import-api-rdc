@@ -574,32 +574,19 @@ Namespace kCura.WinEDDS
 			_batchCount = 0
 			Const retry As Boolean = True
 			Me.Statistics.MetadataBytes += (Me.GetFileLength(bulkLoadFilePath, retry) + Me.GetFileLength(dataGridFilePath, retry))
+			
+			_uploadKey = Me.BulkLoadTapiBridge.AddPath(bulkLoadFilePath, Guid.NewGuid().ToString(), 1)
+			_uploadDataGridKey = Me.BulkLoadTapiBridge.AddPath(dataGridFilePath, Guid.NewGuid().ToString(), 2)
 
-			try
-				_uploadKey = Me.BulkLoadTapiBridge.AddPath(bulkLoadFilePath, Guid.NewGuid().ToString(), 1)
-				_uploadDataGridKey = Me.BulkLoadTapiBridge.AddPath(dataGridFilePath, Guid.NewGuid().ToString(), 2)
+			' keep track of the total count of added files
+			MetadataFilesCount += 2
+			_jobCompleteMetadataCount += 2
 
-				' keep track of the total count of added files
-				MetadataFilesCount += 2
-				_jobCompleteMetadataCount += 2
-
-				If lastRun Then
-					CompletePendingBulkLoadFileTransfers()
-				Else
-					WaitForPendingMetadataUploads()
-				End If
-			Catch ex As MetadataTransferException
-				Throw
-			Catch ex As TransferException
-				Throw
-			Catch ex As IOException
-				Throw
-			Catch ex As WebException
-				Throw
-			Catch ex As Exception
-				' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
-				Throw New kCura.WinEDDS.LoadFilebase.BcpPathAccessException(My.Resources.Strings.BcpAccessExceptionMessage, ex)
-			End Try
+			If lastRun Then
+				CompletePendingBulkLoadFileTransfers()
+			Else
+				WaitForPendingMetadataUploads()
+			End If
 
 			_lastRunMetadataImport = System.DateTime.Now.Ticks
 
