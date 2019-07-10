@@ -1,4 +1,6 @@
 Imports System.Collections.Generic
+Imports System.IO
+Imports System.Net
 Imports System.Threading
 Imports System.Threading.Tasks
 
@@ -10,6 +12,7 @@ Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
+Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
@@ -1279,7 +1282,7 @@ Namespace kCura.WinEDDS
 						End If
 						sw.Write(c)
 						charactersProcessed += 1
-						hasReachedEof = (sr.Peek = -1)
+						hasReachedEof = (sr.Peek = -1) 
 					End While
 					sw.Flush()
 				End Using
@@ -1357,6 +1360,12 @@ Namespace kCura.WinEDDS
 					WaitForPendingMetadataUploads()
 				End If
 			Catch ex As MetadataTransferException
+				Throw
+			Catch ex As TransferException
+				Throw
+			Catch ex As IOException
+				Throw
+			Catch ex As WebException
 				Throw
 			Catch ex As Exception
 				' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
