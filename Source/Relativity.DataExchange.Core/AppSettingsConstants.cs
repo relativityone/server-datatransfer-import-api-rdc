@@ -129,7 +129,7 @@ namespace Relativity.DataExchange
 		public const string TapiLargeFileProgressEnabledKey = "TapiLargeFileProgressEnabled";
 		public const bool TapiLargeFileProgressEnabledDefaultValue = true;
 		public const string TapiMaxInactivitySecondsKey = "TapiMaxInactivitySeconds";
-		public const int TapiMaxInactivitySecondsDefaultValue = 60;
+		public const int TapiMaxInactivitySecondsDefaultValue = 180;
 		public const string TapiMaxJobParallelismKey = "TapiMaxJobParallelism";
 		public const int TapiMaxJobParallelismDefaultValue = 10;
 		public const string TapiMinDataRateMbpsKey = "TapiMinDataRateMbps";

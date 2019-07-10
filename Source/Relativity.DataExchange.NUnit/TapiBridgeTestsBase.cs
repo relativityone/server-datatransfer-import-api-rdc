@@ -110,6 +110,7 @@ namespace Relativity.DataExchange.NUnit
 					{
 						new JobTransferPath { Path = TestTransferPath, Status = TransferPathStatus.Started }
 					});
+			this.MockTransferJobService.Setup(x => x.Issues).Returns(new List<ITransferIssue>());
 			this.MockTransferJobService.Setup(x => x.GetRetryableRequestTransferPaths())
 				.Returns(new List<TransferPath>());
 			this.MockTransferJob = new Mock<ITransferJob>();
@@ -583,8 +584,46 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
+		[TestCase(false)]
+		[TestCase(true)]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldThrowWhenSwitchingToWebModWhenAlreadyInWebMode()
+		public void ShouldThrowWhenSwitchingToWebModeWhenTheJobContainsPermissionIssues(bool batchedOptimization)
+		{
+			this.MockTransferJob.Setup(x => x.CompleteAsync(It.IsAny<CancellationToken>())).Returns(
+				Task.FromResult(new TransferResult { Status = TransferStatus.Fatal } as ITransferResult));
+			this.MockTransferJob.Setup(x => x.Status).Returns(TransferJobStatus.Fatal);
+			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+			this.TapiBridgeInstance.AddPath(TestTransferPath);
+			this.TestTransferContext.PublishTransferPathProgress(
+				new TransferRequest(),
+				new TransferPathResult
+					{
+						Completed = false,
+						Path = TestTransferPath,
+						Status = TransferPathStatus.Fatal
+					});
+			this.TestTransferContext.PublishTransferPathIssue(
+				new TransferRequest(),
+				new TransferIssue
+					{
+						Attributes = IssueAttributes.ReadWritePermissions,
+						Path = TestTransferPath,
+						Message = "You don't have permission to the file."
+					});
+			TransferException exception = Assert.Throws<TransferException>(
+				() => this.TapiBridgeInstance.WaitForTransfers(
+					TestWaitMessage,
+					TestSuccessMessage,
+					TestErrorMessage,
+					batchedOptimization));
+			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Direct));
+			Assert.That(exception.Fatal, Is.True);
+			this.MockTransferJob.Verify(x => x.Dispose(), Times.Once);
+		}
+
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldThrowWhenSwitchingToWebModeWhenAlreadyInWebMode()
 		{
 			this.MockTransferJob.Setup(x => x.Status).Returns(TransferJobStatus.Fatal);
 			this.CreateTapiBridge(WellKnownTransferClient.Http);
@@ -593,9 +632,9 @@ namespace Relativity.DataExchange.NUnit
 				new TransferRequest(),
 				new TransferPathResult
 					{
-						Completed = true,
+						Completed = false,
 						Path = TestTransferPath,
-						Status = TransferPathStatus.Successful
+						Status = TransferPathStatus.Failed
 					});
 
 			const bool BatchOptimization = true;

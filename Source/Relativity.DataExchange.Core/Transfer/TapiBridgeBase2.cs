@@ -85,6 +85,16 @@ namespace Relativity.DataExchange.Transfer
 		private ITransferRequest jobRequest;
 
 		/// <summary>
+		/// The flag that indicates whether a transfer permission issue has occurred.
+		/// </summary>
+		private bool raisedPermissionIssue;
+
+		/// <summary>
+		/// The transfer permission issue message.
+		/// </summary>
+		private string raisedPermissionIssueMessage;
+
+		/// <summary>
 		/// The lazy constructed transfer client. Always call <see cref="CreateTransferHost"/>
 		/// to get the reference instead of directly accessing this field.
 		/// </summary>
@@ -317,6 +327,56 @@ namespace Relativity.DataExchange.Transfer
 		/// The unique identifier.
 		/// </value>
 		public int WorkspaceId => this.parameters.WorkspaceId;
+
+		/// <summary>
+		/// Gets a value indicating whether any permission related transfer issue has been raised.
+		/// </summary>
+		/// <returns>
+		/// <see langword="true" /> if any permission related transfer issue has been raised; otherwise, <see langword="false" />.
+		/// </returns>
+		protected bool RaisedPermissionIssue
+		{
+			get
+			{
+				lock (this.syncRoot)
+				{
+					return this.raisedPermissionIssue;
+				}
+			}
+
+			private set
+			{
+				lock (this.syncRoot)
+				{
+					this.raisedPermissionIssue = value;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the permission related transfer issue message.
+		/// </summary>
+		/// <returns>
+		/// The message.
+		/// </returns>
+		protected string RaisedPermissionIssueMessage
+		{
+			get
+			{
+				lock (this.syncRoot)
+				{
+					return this.raisedPermissionIssueMessage;
+				}
+			}
+
+			private set
+			{
+				lock (this.syncRoot)
+				{
+					this.raisedPermissionIssueMessage = value;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Gets the current transfer job.
@@ -629,6 +689,98 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
+		/// Checks to see whether all transfer paths have been completed.
+		/// </summary>
+		/// <returns>
+		/// <see langword="true" /> when all transfer paths are completed; otherwise, <see langword="false" />.
+		/// </returns>
+		private bool CheckCompletedTransfers()
+		{
+			lock (this.syncRoot)
+			{
+				return this.totalBatchedFileTransferRequests == this.totalBatchedCompletedFileTransfers;
+			}
+		}
+
+		/// <summary>
+		/// Perform a validation check to determine whether the data inactivity time has been exceeded.
+		/// </summary>
+		/// <returns>
+		/// <see langword="true" /> when the time has been exceeded; otherwise, <see langword="false" />.
+		/// </returns>
+		private bool CheckDataInactivityTimeExceeded()
+		{
+			lock (this.syncRoot)
+			{
+				// Note: the timestamp is updated when ANY movement of data occurs.
+				DateTime lastTransferActivityTimestamp = this.transferActivityTimestamp;
+				bool exceeded = (DateTime.Now - lastTransferActivityTimestamp).TotalSeconds > this.maxInactivitySeconds;
+				if (exceeded)
+				{
+					this.TransferLog.LogWarning2(
+						this.jobRequest,
+						"Exceeded the max inactivity time of {MaxInactivitySeconds} seconds since the previous {LastTransferActivityTimestamp} timestamp update.",
+						this.maxInactivitySeconds,
+						lastTransferActivityTimestamp);
+				}
+
+				return exceeded;
+			}
+		}
+
+		/// <summary>
+		/// Checks to see whether any permission issues have been raised.
+		/// </summary>
+		/// <returns>
+		/// <see langword="true" /> when a permission issue is raised; otherwise, <see langword="false" />.
+		/// </returns>
+		private bool CheckRaisedPermissionIssues()
+		{
+			if (this.TransferJob == null)
+			{
+				return false;
+			}
+
+			bool result = this.RaisedPermissionIssue;
+			if (result)
+			{
+				this.TransferLog.LogWarning2(
+					this.jobRequest,
+					"The transfer job will abort because a file permission issue was raised. {Error}",
+					this.RaisedPermissionIssueMessage);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Validates the transfer job is either running or retrying.
+		/// </summary>
+		/// <returns>
+		/// <see langword="true" /> when the transfer job is validated; otherwise, <see langword="false" />.
+		/// </returns>
+		private bool CheckTransferJobRunning()
+		{
+			if (this.TransferJob == null)
+			{
+				return false;
+			}
+
+			TransferJobStatus status = this.TransferJob.Status;
+			bool result = status == TransferJobStatus.RetryPending || status == TransferJobStatus.Retrying
+			                                                       || status == TransferJobStatus.Running;
+			if (!result)
+			{
+				this.TransferLog.LogWarning2(
+					this.jobRequest,
+					"The transfer job status {TransferJobStatus} is neither running or retrying and is considered invalid.",
+					status);
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Creates the best transfer client.
 		/// </summary>
 		private void CreateTransferClient()
@@ -771,6 +923,8 @@ namespace Relativity.DataExchange.Transfer
 
 			this.currentJobNumber++;
 			this.currentJobId = Guid.NewGuid();
+			this.RaisedPermissionIssue = false;
+			this.RaisedPermissionIssueMessage = null;
 			this.jobRequest = this.CreateTransferRequestForJob(this.transferContext);
 			this.jobRequest.Application = this.parameters.Application;
 			if (string.IsNullOrEmpty(this.jobRequest.Application))
@@ -851,6 +1005,7 @@ namespace Relativity.DataExchange.Transfer
 		{
 			this.transferListeners.Add(
 				new TapiPathIssueListener(this.TransferLog, this.currentDirection, this.transferContext));
+			this.transferContext.TransferPathIssue += this.OnTransferPathIssue;
 		}
 
 		/// <summary>
@@ -958,6 +1113,7 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			this.transferListeners.Clear();
+			this.transferContext.TransferPathIssue -= this.OnTransferPathIssue;
 		}
 
 		/// <summary>
@@ -995,11 +1151,23 @@ namespace Relativity.DataExchange.Transfer
 		/// </param>
 		private void SwitchToWebMode(Exception exception, TransferPath addedPath)
 		{
+			// Note: permission issues are fatal and cannot be "fixed" by switching to web mode.
+			//       this check will prevent unnecessary spinning and force an immediate job failure.
+			const bool Fatal = true;
+			if (this.RaisedPermissionIssue)
+			{
+				this.DestroyTransferJob();
+				string permissionMessage = string.Format(
+					CultureInfo.CurrentCulture,
+					Strings.WebModeFallbackPermissionsFatalExceptionMessage,
+					this.RaisedPermissionIssueMessage);
+				throw new TransferException(permissionMessage, exception, Fatal);
+			}
+
 			if (this.transferClient?.Id == new Guid(TransferClientConstants.HttpClientId))
 			{
 				this.DestroyTransferJob();
-				const bool Fatal = true;
-				throw new TransferException(Strings.WebModeFallbackAlreadyWebModeExceptionMessage, exception, Fatal);
+				throw new TransferException(Strings.WebModeFallbackAlreadyWebModeFatalExceptionMessage, exception, Fatal);
 			}
 
 			this.TransferLog.LogWarning("Preparing to fallback to web mode.");
@@ -1113,6 +1281,24 @@ namespace Relativity.DataExchange.Transfer
 				"The file transfer has been cancelled. ClientId={ClientId}, JobId={JobId} ",
 				this.parameters.ClientRequestId,
 				this.currentJobId);
+		}
+
+		/// <summary>
+		/// Handles the <see cref="E:TransferContextOnTransferPathIssue" /> event.
+		/// </summary>
+		/// <param name="sender">
+		/// The sender.
+		/// </param>
+		/// <param name="e">
+		/// The <see cref="TransferPathIssueEventArgs"/> instance containing the event data.
+		/// </param>
+		private void OnTransferPathIssue(object sender, TransferPathIssueEventArgs e)
+		{
+			if (e.Issue.Attributes.HasFlag(IssueAttributes.ReadWritePermissions))
+			{
+				this.RaisedPermissionIssue = true;
+				this.RaisedPermissionIssueMessage = e.Issue.Message;
+			}
 		}
 
 		/// <summary>
@@ -1293,73 +1479,6 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
-		/// Perform a validation check to determine whether all transfer paths have been completed.
-		/// </summary>
-		/// <returns>
-		/// <see langword="true" /> when all transfer paths are accounted for and completed; otherwise, <see langword="false" />.
-		/// </returns>
-		private bool ValidateCompletedTransfers()
-		{
-			lock (this.syncRoot)
-			{
-				return this.totalBatchedFileTransferRequests == this.totalBatchedCompletedFileTransfers;
-			}
-		}
-
-		/// <summary>
-		/// Perform a validation check to determine whether the data inactivity time has been exceeded.
-		/// </summary>
-		/// <returns>
-		/// <see langword="true" /> when the time has been exceeded; otherwise, <see langword="false" />.
-		/// </returns>
-		private bool ValidateDataInactivityTimeExceeded()
-		{
-			lock (this.syncRoot)
-			{
-				// Note: the timestamp is updated when ANY movement of data occurs.
-				DateTime lastTransferActivityTimestamp = this.transferActivityTimestamp;
-				bool exceeded = (DateTime.Now - lastTransferActivityTimestamp).TotalSeconds > this.maxInactivitySeconds;
-				if (exceeded)
-				{
-					this.TransferLog.LogWarning2(
-						this.jobRequest,
-						"Exceeded the max inactivity time of {MaxInactivitySeconds} seconds since the previous {LastTransferActivityTimestamp} timestamp update.",
-						this.maxInactivitySeconds,
-						lastTransferActivityTimestamp);
-				}
-
-				return exceeded;
-			}
-		}
-
-		/// <summary>
-		/// Validates the transfer job is either running or retrying.
-		/// </summary>
-		/// <returns>
-		/// <see langword="true" /> when the transfer job is validated; otherwise, <see langword="false" />.
-		/// </returns>
-		private bool ValidateTransferJobStatus()
-		{
-			if (this.TransferJob == null)
-			{
-				return false;
-			}
-
-			TransferJobStatus status = this.TransferJob.Status;
-			bool result = status == TransferJobStatus.RetryPending || status == TransferJobStatus.Retrying
-			                                                       || status == TransferJobStatus.Running;
-			if (!result)
-			{
-				this.TransferLog.LogWarning2(
-					this.jobRequest,
-					"The transfer job status {TransferJobStatus} is neither running or retrying and is considered invalid.",
-					status);
-			}
-
-			return result;
-		}
-
-		/// <summary>
 		/// Waits for all files to transfer without destroying the job.
 		/// </summary>
 		/// <returns>
@@ -1369,11 +1488,12 @@ namespace Relativity.DataExchange.Transfer
 		{
 			try
 			{
-				// 1. When all files in the request are completed, return the total number of completed files for the batch.
+				// 1. Stop as soon as all file transfers are completed.
 				// 2. Stop as soon as cancellation is requested and rethrow OperationCanceledException.
-				// 3. Switch to web mode when the transfer job is no longer valid or the inactivity time is exceeded.
-				// 4. All non-cancellation exceptions force switching to web mode.
-				// 5. When all else fails, call WaitForCompletedTransferJob.
+				// 3. Stop as soon as a permission issue is raised.
+				// 4. Switch to web mode when the transfer job is no longer valid or the inactivity time is exceeded.
+				// 5. All non-cancellation exceptions force switching to web mode.
+				// 6. When all else fails, call WaitForCompletedTransferJob.
 				const int WaitTimeBetweenChecks = 250;
 				Policy.HandleResult(false).WaitAndRetryForever(
 					i => TimeSpan.FromMilliseconds(WaitTimeBetweenChecks),
@@ -1385,13 +1505,16 @@ namespace Relativity.DataExchange.Transfer
 						{
 							try
 							{
-								if (!this.ValidateTransferJobStatus())
+								if (!this.CheckTransferJobRunning())
 								{
 									this.SwitchToWebMode(null, null);
 								}
 
 								this.cancellationToken.ThrowIfCancellationRequested();
-								return this.ValidateCompletedTransfers() || this.ValidateDataInactivityTimeExceeded();
+								bool terminateWait = this.CheckCompletedTransfers()
+								                     || this.CheckDataInactivityTimeExceeded()
+								                     || this.CheckRaisedPermissionIssues();
+								return terminateWait;
 							}
 							catch (OperationCanceledException)
 							{
@@ -1407,29 +1530,32 @@ namespace Relativity.DataExchange.Transfer
 								}
 
 								// Note: this will throw if already in web mode.
-								this.TransferLog.LogError(e, "An unexpected exception was thrown waiting for the transfers to complete.");
+								this.TransferLog.LogError(
+									e,
+									"An exception was thrown waiting for the transfers to complete.");
 								this.SwitchToWebMode(e, null);
 								return true;
 							}
 						});
 
-				if (this.ValidateCompletedTransfers())
+				// When all else fails, just wait for the transfer job.
+				if (!this.CheckCompletedTransfers())
 				{
-					lock (this.syncRoot)
-					{
-						return this.totalBatchedCompletedFileTransfers;
-					}
+					this.TransferLog.LogWarning(
+						"The max data inactivity {MaxInactivitySeconds} seconds has been exceeded. Now waiting for the transfer job to complete.",
+						this.maxInactivitySeconds);
+
+					// Do NOT return WaitForCompletedTransferJob because it returns the job totals.
+					this.WaitForCompletedTransferJob();
 				}
 
-				// When all else fails, just wait for the transfer job.
-				this.TransferLog.LogWarning(
-					"The max data inactivity {MaxInactivitySeconds} seconds has been exceeded. Now waiting for the transfer job to complete.",
-					this.maxInactivitySeconds);
-
-				// Do NOT return WaitForCompletedTransferJob because it returns the job totals.
-				this.WaitForCompletedTransferJob();
 				lock (this.syncRoot)
 				{
+					this.TransferLog.LogInformation(
+						"{Name} total batch transferred files: {TotalBatchedCompletedFileTransfers} of {TotalBatchedFileTransferRequests}",
+						this.ClientDisplayName,
+						this.totalBatchedCompletedFileTransfers,
+						this.totalBatchedFileTransferRequests);
 					return this.totalBatchedCompletedFileTransfers;
 				}
 			}
@@ -1492,11 +1618,11 @@ namespace Relativity.DataExchange.Transfer
 
 								// Note: Fatal status is non-retryable and normally indicative of issues with data or permissions.
 								const int ValidLineNumber = 1;
-								var message = "This operation failed due to a fatal transfer error.";
-								var lineNumber = ValidLineNumber;
-								var lastIssue =
-									transferResult.Issues.OrderBy(x => x.Index).ToList()
-										.FindLast(x => x.Path != null) ?? transferResult.TransferError;
+								string message = "This operation failed due to a fatal transfer error.";
+								int lineNumber = ValidLineNumber;
+								ITransferIssue lastIssue =
+									transferResult.Issues.OrderBy(x => x.Index).ToList().FindLast(x => x.Path != null)
+									?? transferResult.TransferError;
 								if (lastIssue != null && lastIssue.Path != null)
 								{
 									var formattedMessage = this.TransferFileFatalMessage();
@@ -1510,7 +1636,7 @@ namespace Relativity.DataExchange.Transfer
 								this.PublishStatusMessage(message, lineNumber);
 								if (handledException == null)
 								{
-									// Force the fallback.
+									// Force web mode.
 									throw new TransferException(Strings.TransferJobExceptionMessage);
 								}
 

@@ -770,11 +770,11 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A serious file transfer error occurred but the transfer job cannot switch to web mode because it&apos;s already in this mode..
+        ///   Looks up a localized string similar to A fatal file transfer error occurred and an attempt has already been made to resolve the issue by switching to web mode. Check the logs for more details or contact your system administrator for assistance if this problem persists..
         /// </summary>
-        internal static string WebModeFallbackAlreadyWebModeExceptionMessage {
+        internal static string WebModeFallbackAlreadyWebModeFatalExceptionMessage {
             get {
-                return ResourceManager.GetString("WebModeFallbackAlreadyWebModeExceptionMessage", resourceCulture);
+                return ResourceManager.GetString("WebModeFallbackAlreadyWebModeFatalExceptionMessage", resourceCulture);
             }
         }
         
@@ -784,6 +784,15 @@ namespace Relativity.DataExchange.Resources {
         internal static string WebModeFallbackNoErrorWarningMessage {
             get {
                 return ResourceManager.GetString("WebModeFallbackNoErrorWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A fatal file transfer error occurred due to insufficient permissions and cannot be resolved by switching to web mode. Error: {0}.
+        /// </summary>
+        internal static string WebModeFallbackPermissionsFatalExceptionMessage {
+            get {
+                return ResourceManager.GetString("WebModeFallbackPermissionsFatalExceptionMessage", resourceCulture);
             }
         }
         

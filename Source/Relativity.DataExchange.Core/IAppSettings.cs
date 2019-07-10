@@ -717,7 +717,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets the maximum number of seconds to wait before considering a transfer where data isn't being written inactive.
+		/// Gets or sets the maximum number of seconds in which no data movement occurs before treating the transfer inactive. When this occurs, the import or export job continues but performance may be degraded.
 		/// </summary>
 		/// <value>
 		/// The total number of seconds.

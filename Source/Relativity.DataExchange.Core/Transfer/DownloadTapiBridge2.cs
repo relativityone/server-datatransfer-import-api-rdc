@@ -153,6 +153,7 @@ namespace Relativity.DataExchange.Transfer
 			var clientConfiguration = base.CreateClientConfiguration();
 			clientConfiguration.FileNotFoundErrorsDisabled = true;
 			clientConfiguration.FileNotFoundErrorsRetry = false;
+			clientConfiguration.PermissionErrorsRetry = false;
 			return clientConfiguration;
 		}
 	}
