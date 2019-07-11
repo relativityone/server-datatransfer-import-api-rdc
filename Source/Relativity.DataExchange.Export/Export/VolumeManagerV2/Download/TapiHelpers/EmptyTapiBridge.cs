@@ -64,16 +64,14 @@
 
 		public TapiClient Client => _tapiBridge.Client;
 
-		public long TotalJobFileTransferRequests => this._tapiBridge.TotalJobFileTransferRequests;
-
-		public long TotalJobCompletedFileTransfers => this._tapiBridge.TotalJobCompletedFileTransfers;
+		public TapiTotals JobTotals => this._tapiBridge.JobTotals;
 
 		public string AddPath(TransferPath transferPath)
 		{
 			return _tapiBridge.AddPath(transferPath);
 		}
 
-		public long WaitForTransfers(string waitMessage, string successMessage, string errorMessage, bool batchOptimization)
+		public TapiTotals WaitForTransfers(string waitMessage, string successMessage, string errorMessage, bool batchOptimization)
 		{
 			return _tapiBridge.WaitForTransfers(waitMessage, successMessage, errorMessage, batchOptimization);
 		}

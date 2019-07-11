@@ -330,15 +330,18 @@ namespace Relativity.DataExchange.NUnit
 					});
 
 			const bool BatchedOptimization = true;
-			long transferredFiles = this.TapiBridgeInstance.WaitForTransfers(
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
 				TestWaitMessage,
 				TestSuccessMessage,
 				TestErrorMessage,
 				BatchedOptimization);
-			Assert.That(transferredFiles, Is.EqualTo(1));
+			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
 			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Direct));
-			Assert.That(this.TapiBridgeInstance.TotalJobFileTransferRequests, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.TotalJobCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Never);
 		}
 
@@ -365,16 +368,19 @@ namespace Relativity.DataExchange.NUnit
 			}
 
 			const bool BatchedOptimization = true;
-			long transferredFiles = this.TapiBridgeInstance.WaitForTransfers(
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
 				TestWaitMessage,
 				TestSuccessMessage,
 				TestErrorMessage,
 				BatchedOptimization);
-			Assert.That(transferredFiles, Is.EqualTo(TotalFiles));
+			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(TotalFiles));
+			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(TotalFiles));
+			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(TotalFiles));
 			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
 			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.TotalJobFileTransferRequests, Is.EqualTo(TotalFiles));
-			Assert.That(this.TapiBridgeInstance.TotalJobCompletedFileTransfers, Is.EqualTo(TotalFiles));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(TotalFiles));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(TotalFiles));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(TotalFiles));
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Once);
 		}
 
@@ -409,8 +415,9 @@ namespace Relativity.DataExchange.NUnit
 					BatchedOptimization));
 			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Direct));
 			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Direct));
-			Assert.That(this.TapiBridgeInstance.TotalJobFileTransferRequests, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.TotalJobCompletedFileTransfers, Is.EqualTo(0));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(0));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -465,15 +472,18 @@ namespace Relativity.DataExchange.NUnit
 					});
 
 			const bool BatchedOptimization = false;
-			long transferredFiles = this.TapiBridgeInstance.WaitForTransfers(
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
 				TestWaitMessage,
 				TestSuccessMessage,
 				TestErrorMessage,
 				BatchedOptimization);
-			Assert.That(transferredFiles, Is.EqualTo(1));
+			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
 			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Direct));
-			Assert.That(this.TapiBridgeInstance.TotalJobFileTransferRequests, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.TotalJobCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
 			this.MockTransferJob.Verify(x => x.Dispose());
 		}
 
@@ -497,18 +507,21 @@ namespace Relativity.DataExchange.NUnit
 					});
 
 			const bool BatchedOptimization = false;
-			long transferredFiles = this.TapiBridgeInstance.WaitForTransfers(
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
 				TestWaitMessage,
 				TestSuccessMessage,
 				TestErrorMessage,
 				BatchedOptimization);
 
 			// Retrying the job forces a switch to web mode.
-			Assert.That(transferredFiles, Is.EqualTo(1));
+			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
 			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
 			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.TotalJobFileTransferRequests, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.TotalJobCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
 			this.MockTransferJob.Verify(x => x.Dispose());
 		}
 
@@ -524,15 +537,18 @@ namespace Relativity.DataExchange.NUnit
 			this.TapiBridgeInstance.AddPath(TestTransferPath);
 
 			const bool BatchOptimization = true;
-			long transferredFiles = this.TapiBridgeInstance.WaitForTransfers(
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
 				TestWaitMessage,
 				TestSuccessMessage,
 				TestErrorMessage,
 				BatchOptimization);
-			Assert.That(transferredFiles, Is.EqualTo(0));
+			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(0));
+			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(0));
 			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Direct));
-			Assert.That(this.TapiBridgeInstance.TotalJobFileTransferRequests, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.TotalJobCompletedFileTransfers, Is.EqualTo(0));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(0));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(0));
 			this.MockTransferJob.Verify(x => x.CompleteAsync(It.IsAny<CancellationToken>()));
 		}
 
@@ -570,16 +586,19 @@ namespace Relativity.DataExchange.NUnit
 			}
 
 			const bool BatchOptimization = true;
-			long transferredFiles = this.TapiBridgeInstance.WaitForTransfers(
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
 				TestWaitMessage,
 				TestSuccessMessage,
 				TestErrorMessage,
 				BatchOptimization);
-			Assert.That(transferredFiles, Is.EqualTo(totalPaths));
+			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(totalPaths));
+			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(totalPaths));
+			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(totalPaths));
 			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
 			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.TotalJobFileTransferRequests, Is.EqualTo(totalPaths));
-			Assert.That(this.TapiBridgeInstance.TotalJobCompletedFileTransfers, Is.EqualTo(totalPaths));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(totalPaths));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(totalPaths));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(totalPaths));
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Once);
 		}
 

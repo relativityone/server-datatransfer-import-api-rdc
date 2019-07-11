@@ -73,23 +73,12 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
-		/// Gets the total number of files that have been added to the the job request.
+		/// Gets the transfer totals for the current job.
 		/// </summary>
 		/// <value>
-		/// The total number of files.
+		/// The <see cref="TapiTotals"/> instance.
 		/// </value>
-		long TotalJobFileTransferRequests
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Gets the total number of file transfers that have been completed for the job.
-		/// </summary>
-		/// <value>
-		/// The total number of files.
-		/// </value>
-		long TotalJobCompletedFileTransfers
+		TapiTotals JobTotals
 		{
 			get;
 		}
@@ -118,7 +107,7 @@ namespace Relativity.DataExchange.Transfer
 		string AddPath(TransferPath path);
 
 		/// <summary>
-		/// Waits for all pending transfers in the queue to complete.
+		/// Waits for all pending transfers in the queue to complete and returns the transfer totals.
 		/// </summary>
 		/// <param name="waitMessage">
 		/// The message that's published when the wait begins.
@@ -133,7 +122,7 @@ namespace Relativity.DataExchange.Transfer
 		/// <see langword="true" /> to enable a transfer optimization designed for scenarios where transfers are continually done in batches; otherwise, <see langword="false" /> to use the standard job-based design where the job is destroyed once all transfers have completed.
 		/// </param>
 		/// <returns>
-		/// The total number of successfully transferred files.
+		/// The <see cref="TapiTotals"/> instance.
 		/// </returns>
 		/// <exception cref="InvalidOperationException">
 		/// Thrown when the transfer job wasn't successfully created.
@@ -144,7 +133,7 @@ namespace Relativity.DataExchange.Transfer
 		/// <exception cref="TransferException">
 		/// Thrown when a fatal transfer exception occurs.
 		/// </exception>
-		long WaitForTransfers(string waitMessage, string successMessage, string errorMessage, bool batchOptimization);
+		TapiTotals WaitForTransfers(string waitMessage, string successMessage, string errorMessage, bool batchOptimization);
 
 		/// <summary>
 		/// Cleanup all transfer jobs.

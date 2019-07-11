@@ -12,22 +12,11 @@
 	/// </summary>
 	public class ErrorReportingTapiBridge : ITapiBridge
 	{
-		private readonly object syncRoot = new object();
-
-		private long aggregateFileTransferRequests;
+		private readonly TapiTotals tapiTotals = new TapiTotals();
 
 		public TapiClient Client => TapiClient.None;
 
-		public long TotalJobFileTransferRequests
-		{
-			get
-			{
-				lock (this.syncRoot)
-				{
-					return this.aggregateFileTransferRequests;
-				}
-			}
-		}
+		public TapiTotals JobTotals => this.tapiTotals;
 
 		public long TotalJobCompletedFileTransfers => 0;
 
@@ -42,11 +31,7 @@
 
 		public string AddPath(TransferPath transferPath)
 		{
-			lock (this.syncRoot)
-			{
-				this.aggregateFileTransferRequests++;
-			}
-
+			this.tapiTotals.IncrementTotalFileTransferRequests();
 			var progressArgs = new TapiProgressEventArgs(
 				!string.IsNullOrEmpty(transferPath.TargetFileName)
 					? transferPath.TargetFileName
@@ -70,9 +55,9 @@
 		{
 		}
 
-		public long WaitForTransfers(string startMessage, string successMessage, string errorMessage, bool optimized)
+		public TapiTotals WaitForTransfers(string startMessage, string successMessage, string errorMessage, bool optimized)
 		{
-			return 0;
+			return this.tapiTotals;
 		}
 	}
 }
