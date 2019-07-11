@@ -451,7 +451,7 @@ namespace Relativity.DataExchange.Transfer
 									if (handledException == null)
 									{
 										// Force the fallback.
-										throw new TransferException(Strings.TransferJobExceptionMessage, handledException, true);
+										throw new TransferException(Strings.TransferJobExceptionMessage);
 									}
 
 									// Gracefully terminate.
@@ -461,7 +461,7 @@ namespace Relativity.DataExchange.Transfer
 								case TransferStatus.Failed:
 
 									// Note: Failed status indicates a problem with the transport.
-									throw new TransferException(Strings.TransferJobExceptionMessage, handledException);
+									throw new TransferException(Strings.TransferJobExceptionMessage);
 							}
 						});
 			}
