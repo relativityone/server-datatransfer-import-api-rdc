@@ -7,13 +7,18 @@
 namespace Relativity.DataExchange.Import.NUnit
 {
 	using System;
+	using System.Net;
+	using System.Reflection;
 	using System.Threading;
 
 	using kCura.EDDS.WebAPI.BulkImportManagerBase;
 	using kCura.WinEDDS;
 
+	using Moq;
+
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Process;
+	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 
 	/// <summary>
@@ -54,6 +59,8 @@ namespace Relativity.DataExchange.Import.NUnit
 			this.ImportBatchSize = 500;
 			this.ImportBatchVolume = 1000000;
 		}
+
+		public int GetMetadataFilesCount => this.MetadataFilesCount;
 
 		public int BatchSize
 		{
@@ -105,6 +112,33 @@ namespace Relativity.DataExchange.Import.NUnit
 		{
 			const bool IncludeExtractedTextEncoding = true;
 			return this.BulkImport(settings, IncludeExtractedTextEncoding);
+		}
+
+		public void SetTapiBridges()
+		{
+			UploadTapiBridgeParameters2 parameters = new UploadTapiBridgeParameters2
+				                                         {
+					                                         Credentials = new NetworkCredential(),
+					                                         WebServiceUrl = "https://relativity.one.com",
+					                                         WorkspaceId = 1337,
+					                                         TargetPath = "./",
+					                                         FileShare = "./somepath/",
+					                                         TimeoutSeconds = 0,
+				                                         };
+			this.CreateTapiBridges(parameters, parameters.ShallowCopy());
+		}
+
+		public void SetBatchCounter(int numberToSet)
+		{
+			typeof(BulkLoadFileImporter).GetField("_batchCounter", BindingFlags.Instance | BindingFlags.NonPublic)
+				.SetValue(this, numberToSet);
+		}
+
+		public void PushNativeBatchReflected(string outputNativePath, bool shouldCompleteJob, bool lastRun)
+		{
+			typeof(BulkLoadFileImporter).GetMethod("PushNativeBatch", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(
+				this,
+				new object[] { outputNativePath, shouldCompleteJob, lastRun });
 		}
 
 		protected override void RaiseWarningAndPause(Exception exception, int timeoutSeconds, int retryCount, int totalRetryCount)
