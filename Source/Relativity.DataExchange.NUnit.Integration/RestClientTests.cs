@@ -46,7 +46,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 
 			// Assert
 			Assert.That(response, Is.Not.Null);
-			Assert.That(Version.TryParse(version, out var resultToTest));
+			Assert.That(Version.TryParse(version, out Version resultToTest));
 			Assert.That(resultToTest, Is.GreaterThanOrEqualTo(Version.Parse("10.3")));
 		}
 	}

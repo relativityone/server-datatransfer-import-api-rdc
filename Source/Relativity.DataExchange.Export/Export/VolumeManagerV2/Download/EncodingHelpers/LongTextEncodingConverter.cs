@@ -63,7 +63,7 @@
 		{
 			try
 			{
-				while (_longTextFilesToConvert.TryTake(out var longTextFile, Timeout.Infinite, _cancellationToken))
+				while (_longTextFilesToConvert.TryTake(out string longTextFile, Timeout.Infinite, _cancellationToken))
 				{
 					_logger.LogVerbose("New item in conversion queue {file}. Proceeding.", longTextFile);
 					LongText longText = GetLongTextForFile(longTextFile);

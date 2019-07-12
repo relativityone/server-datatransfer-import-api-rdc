@@ -102,7 +102,7 @@ namespace Relativity.DataExchange
 				default:
 					if (value != string.Empty)
 					{
-						if (int.TryParse(value, out var parsedValue))
+						if (int.TryParse(value, out int parsedValue))
 						{
 							value = parsedValue == 0 ? "False" : "True";
 						}

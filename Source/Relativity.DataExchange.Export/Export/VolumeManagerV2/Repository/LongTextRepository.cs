@@ -88,7 +88,7 @@
 		{
 			lock (_syncLock)
 			{
-				return _longTextsByArtifactIdDictionary.TryGetValue(artifactId, out var longTextsForArtifact)
+				return _longTextsByArtifactIdDictionary.TryGetValue(artifactId, out List<LongText> longTextsForArtifact)
 					? longTextsForArtifact
 					: Enumerable.Empty<LongText>();
 			}
@@ -143,7 +143,7 @@
 		{
 			int longTextArtifactId = longText.ArtifactId;
 
-			if (!_longTextsByArtifactIdDictionary.TryGetValue(longTextArtifactId, out var dictionaryItemForLongText))
+			if (!_longTextsByArtifactIdDictionary.TryGetValue(longTextArtifactId, out List<LongText> dictionaryItemForLongText))
 			{
 				dictionaryItemForLongText = new List<LongText>();
 				_longTextsByArtifactIdDictionary[longTextArtifactId] = dictionaryItemForLongText;

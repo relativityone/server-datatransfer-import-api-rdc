@@ -51,7 +51,7 @@
 					return Enumerable.Empty<ExportRequest>().ToList();
 				}
 
-				if (TryCreate(artifact, image, out var exportRequest))
+				if (TryCreate(artifact, image, out ExportRequest exportRequest))
 				{
 					fileExportRequests.Add(exportRequest);
 				}

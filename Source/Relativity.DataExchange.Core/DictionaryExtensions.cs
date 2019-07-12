@@ -91,7 +91,7 @@ namespace Relativity.DataExchange
 
 			if (ContainsNonNullValue(dictionary, name))
 			{
-				if (int.TryParse(dictionary[name].ToString(), out var value))
+				if (int.TryParse(dictionary[name].ToString(), out int value))
 				{
 					if (minValue.HasValue && value < minValue)
 					{
@@ -170,7 +170,7 @@ namespace Relativity.DataExchange
 
 			if (ContainsNonNullValue(dictionary, name))
 			{
-				if (bool.TryParse(dictionary[name].ToString(), out var value))
+				if (bool.TryParse(dictionary[name].ToString(), out bool value))
 				{
 					return value;
 				}

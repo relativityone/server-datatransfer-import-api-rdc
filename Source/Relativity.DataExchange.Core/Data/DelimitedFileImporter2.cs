@@ -426,7 +426,7 @@ namespace Relativity.DataExchange.Data
 				return false;
 			}
 
-			if (int.TryParse(value, out var parsedValue))
+			if (int.TryParse(value, out int parsedValue))
 			{
 				return parsedValue != 0;
 			}

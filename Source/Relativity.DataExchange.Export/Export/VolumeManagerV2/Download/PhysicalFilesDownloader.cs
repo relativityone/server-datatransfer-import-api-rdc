@@ -55,7 +55,7 @@
 
 		private void CreateJobTask(ConcurrentQueue<ExportRequestsWithFileshareSettings> queue, DownloadCancellationTokenSource downloadCancellationTokenSourceSource)
 		{
-			while (queue.TryDequeue(out var exportRequestWithFileshareSettings))
+			while (queue.TryDequeue(out ExportRequestsWithFileshareSettings exportRequestWithFileshareSettings))
 			{
 				IDownloadTapiBridge bridge = null;
 				try
