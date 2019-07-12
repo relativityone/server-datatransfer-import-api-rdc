@@ -21,7 +21,12 @@ namespace Relativity.DataExchange.Process
 		/// </param>
 		public FatalExceptionEventArgs(Exception exception)
 		{
-			this.FatalException = exception ?? throw new ArgumentNullException(nameof(exception));
+			if (exception == null)
+			{
+				throw new ArgumentNullException(nameof(exception));
+			}
+
+			this.FatalException = exception;
 		}
 
 		/// <summary>

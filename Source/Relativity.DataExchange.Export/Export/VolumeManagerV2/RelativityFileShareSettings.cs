@@ -11,7 +11,12 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 
 		public RelativityFileShareSettings(RelativityFileShare fileShare)
 		{
-			_fileShare = fileShare ?? throw new ArgumentNullException(nameof(fileShare));
+			if (fileShare == null)
+			{
+				throw new ArgumentNullException(nameof(fileShare));
+			}
+
+			_fileShare = fileShare;
 		}
 
 		public AsperaCredential TransferCredential => _fileShare.TransferCredential;

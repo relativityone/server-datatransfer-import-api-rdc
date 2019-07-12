@@ -42,7 +42,12 @@ namespace Relativity.DataExchange
 		/// </param>
 		public WaitAndRetryPolicy(IAppSettings settings)
 		{
-			this.appSettings = settings ?? throw new ArgumentNullException(nameof(settings));
+			if (settings == null)
+			{
+				throw new ArgumentNullException(nameof(settings));
+			}
+
+			this.appSettings = settings;
 		}
 
 		/// <inheritdoc />

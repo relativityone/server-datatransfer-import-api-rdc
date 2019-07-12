@@ -27,7 +27,12 @@ namespace Relativity.DataExchange.Data
 		/// </param>
 		public SqlDataRow(DataRowView row)
 		{
-			this.row = row ?? throw new ArgumentNullException(nameof(row));
+			if (row == null)
+			{
+				throw new ArgumentNullException(nameof(row));
+			}
+
+			this.row = row;
 		}
 
 		/// <summary>

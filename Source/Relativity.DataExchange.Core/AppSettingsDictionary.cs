@@ -34,7 +34,12 @@ namespace Relativity.DataExchange
 		/// </param>
 		public AppSettingsDictionary(IAppSettings settings)
 		{
-			this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+			if (settings == null)
+			{
+				throw new ArgumentNullException(nameof(settings));
+			}
+
+			this.settings = settings;
 			AppSettingsManager.Copy(settings, this);
 		}
 

@@ -29,7 +29,12 @@ namespace Relativity.DataExchange.Process
 		/// </param>
 		public ProcessEventWriter(IFileSystem fileSystem)
 		{
-			this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+			if (fileSystem == null)
+			{
+				throw new ArgumentNullException(nameof(fileSystem));
+			}
+
+			this.fileSystem = fileSystem;
 			this.File = null;
 			this.streamWriter = null;
 			this.disposed = false;

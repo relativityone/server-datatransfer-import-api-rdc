@@ -75,8 +75,18 @@ namespace Relativity.DataExchange
 		/// </exception>
 		public RestClient(RelativityInstanceInfo instance, ILog log, double timeoutSeconds, int maxRetryAttempts)
 		{
-			this.instance = instance ?? throw new ArgumentNullException(nameof(instance));
-			this.logger = log ?? throw new ArgumentNullException(nameof(log));
+			if (instance == null)
+			{
+				throw new ArgumentNullException(nameof(instance));
+			}
+
+			if (log == null)
+			{
+				throw new ArgumentNullException(nameof(log));
+			}
+
+			this.instance = instance;
+			this.logger = log;
 			this.TimeoutSeconds = timeoutSeconds;
 			this.MaxRetryAttempts = maxRetryAttempts;
 		}

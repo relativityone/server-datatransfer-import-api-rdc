@@ -26,7 +26,12 @@ namespace Relativity.DataExchange.Io
 		/// </param>
 		public NullIoReporter(IFileSystem fileSystem)
 		{
-			this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+			if (fileSystem == null)
+			{
+				throw new ArgumentNullException(nameof(fileSystem));
+			}
+
+			this.fileSystem = fileSystem;
 		}
 
 		/// <inheritdoc />

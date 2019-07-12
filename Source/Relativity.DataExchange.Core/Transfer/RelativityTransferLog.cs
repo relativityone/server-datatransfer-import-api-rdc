@@ -77,7 +77,12 @@ namespace Relativity.DataExchange.Transfer
 		/// </exception>
 		public RelativityTransferLog(ILog log, bool disposeLogger)
 		{
-			this.logger = log ?? throw new ArgumentNullException(nameof(log));
+			if (log == null)
+			{
+				throw new ArgumentNullException(nameof(log));
+			}
+
+			this.logger = log;
 			this.disposeLogger = disposeLogger;
 			this.IsEnabled = log.IsEnabled;
 		}

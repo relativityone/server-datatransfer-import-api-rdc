@@ -39,7 +39,12 @@ namespace Relativity.DataExchange.Media
 		/// </param>
 		public ImageConverterService(IFileSystem fileSystem)
 		{
-			this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+			if (fileSystem == null)
+			{
+				throw new ArgumentNullException(nameof(fileSystem));
+			}
+
+			this.fileSystem = fileSystem;
 		}
 
 		/// <inheritdoc />

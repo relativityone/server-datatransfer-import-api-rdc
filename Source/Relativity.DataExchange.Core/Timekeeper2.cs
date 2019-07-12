@@ -47,8 +47,18 @@ namespace Relativity.DataExchange
 		/// </param>
 		public Timekeeper2(IFileSystem fileSystem, IAppSettings settings)
 		{
-			this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-			this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+			if (fileSystem == null)
+			{
+				throw new ArgumentNullException(nameof(fileSystem));
+			}
+
+			if (settings == null)
+			{
+				throw new ArgumentNullException(nameof(settings));
+			}
+
+			this.fileSystem = fileSystem;
+			this.settings = settings;
 			this.dictionary = new ConcurrentDictionary<string, ConcurrentDictionary<int, TimekeeperEntry2>>();
 		}
 

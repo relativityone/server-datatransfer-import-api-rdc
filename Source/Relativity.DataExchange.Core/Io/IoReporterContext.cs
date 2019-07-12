@@ -41,9 +41,24 @@ namespace Relativity.DataExchange.Io
 			IAppSettings settings,
 			IWaitAndRetryPolicy waitAndRetryPolicy)
 		{
-			this.FileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-			this.AppSettings = settings ?? throw new ArgumentNullException(nameof(settings));
-			this.WaitAndRetryPolicy = waitAndRetryPolicy ?? throw new ArgumentNullException(nameof(waitAndRetryPolicy));
+			if (fileSystem == null)
+			{
+				throw new ArgumentNullException(nameof(fileSystem));
+			}
+
+			if (settings == null)
+			{
+				throw new ArgumentNullException(nameof(settings));
+			}
+
+			if (waitAndRetryPolicy == null)
+			{
+				throw new ArgumentNullException(nameof(waitAndRetryPolicy));
+			}
+
+			this.FileSystem = fileSystem;
+			this.AppSettings = settings;
+			this.WaitAndRetryPolicy = waitAndRetryPolicy;
 			this.RetryOptions = settings.RetryOptions;
 		}
 

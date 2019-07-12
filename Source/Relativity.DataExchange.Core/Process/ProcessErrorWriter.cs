@@ -37,8 +37,18 @@ namespace Relativity.DataExchange.Process
 		/// </exception>
 		public ProcessErrorWriter(IFileSystem fileSystem, Relativity.Logging.ILog logger)
 		{
-			this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-			this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+			if (fileSystem == null)
+			{
+				throw new ArgumentNullException(nameof(fileSystem));
+			}
+
+			if (logger == null)
+			{
+				throw new ArgumentNullException(nameof(logger));
+			}
+
+			this.fileSystem = fileSystem;
+			this.logger = logger;
 		}
 
 		/// <inheritdoc />
