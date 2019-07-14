@@ -34,6 +34,8 @@
 
 		public TapiClient Client => this.TapiBridge.Client;
 
+		public TapiBridgeParameters2 Parameters => this.TapiBridge.Parameters;
+
 		protected ITapiBridge TapiBridge { get; }
 
 		public virtual void Dispose()
@@ -45,10 +47,7 @@
 		}
 
 		public abstract string QueueDownload(TransferPath transferPath);
+
 		public abstract void WaitForTransfers();
-		public void Disconnect()
-		{
-			this.TapiBridge.Disconnect();
-		}
 	}
 }

@@ -128,7 +128,6 @@
     <Compile Include="DownloadTapiBridgeWithEncodingConversionTests.cs" />
     <Compile Include="ErrorFileDestinationPathTests.cs" />
     <Compile Include="ErrorFileWriterTests.cs" />
-    <Compile Include="ErrorReportingTapiBridgeTests.cs" />
     <Compile Include="ExportFileDownloaderStatusTests.cs" />
     <Compile Include="ExportFileFormatterFactoryTests.cs" />
     <Compile Include="ExportFileFormatterSetUp.cs" />

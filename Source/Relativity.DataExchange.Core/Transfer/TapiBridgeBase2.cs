@@ -268,6 +268,9 @@ namespace Relativity.DataExchange.Transfer
 		/// <inheritdoc />
 		public TapiTotals JobTotals => this.jobTotals;
 
+		/// <inheritdoc />
+		public TapiBridgeParameters2 Parameters => this.parameters;
+
 		/// <summary>
 		/// Gets or sets the target path.
 		/// </summary>
@@ -472,12 +475,6 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public void Disconnect()
-		{
-			// Do nothing - for now.
-		}
-
-		/// <inheritdoc />
 		public void Dispose()
 		{
 			this.Dispose(true);
@@ -583,10 +580,7 @@ namespace Relativity.DataExchange.Transfer
 					                    BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
 					                    BcpRootFolder = this.parameters.AsperaBcpRootFolder,
 					                    CookieContainer = this.parameters.WebCookieContainer,
-					                    Credential =
-						                    this.parameters.FileshareCredentials != null
-							                    ? this.parameters.FileshareCredentials.CreateCredential()
-							                    : null,
+					                    Credential = this.parameters.TransferCredential,
 					                    FileTransferHint = FileTransferHint.Natives,
 					                    FileNotFoundErrorsDisabled = this.parameters.FileNotFoundErrorsDisabled,
 					                    FileNotFoundErrorsRetry = this.parameters.FileNotFoundErrorsRetry,

@@ -8,8 +8,8 @@
 	public interface IDownloadTapiBridge : IDisposable
 	{
 		TapiClient Client { get; }
+		TapiBridgeParameters2 Parameters { get; }
 		string QueueDownload(TransferPath transferPath);
 		void WaitForTransfers();
-		void Disconnect();
 	}
 }

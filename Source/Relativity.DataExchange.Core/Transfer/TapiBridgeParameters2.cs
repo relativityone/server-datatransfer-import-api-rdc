@@ -33,7 +33,6 @@ namespace Relativity.DataExchange.Transfer
 			this.FileNotFoundErrorsDisabled = AppSettingsConstants.TapiFileNotFoundErrorsDisabledDefaultValue;
 			this.FileNotFoundErrorsRetry = AppSettingsConstants.TapiFileNotFoundErrorsRetryDefaultValue;
 			this.FileShare = null;
-			this.FileshareCredentials = null;
 			this.ForceAsperaClient = AppSettingsConstants.TapiForceAsperaClientDefaultValue;
 			this.ForceClientCandidates = AppSettingsConstants.TapiForceClientCandidatesDefaultValue;
 			this.ForceHttpClient = AppSettingsConstants.TapiForceHttpClientDefaultValue;
@@ -50,6 +49,7 @@ namespace Relativity.DataExchange.Transfer
 			this.SupportCheckPath = null;
 			this.TargetDataRateMbps = AppSettingsConstants.TapiTargetDataRateMbpsDefaultValue;
 			this.TargetPath = null;
+			this.TransferCredential = null;
 			this.TransferLogDirectory = null;
 			this.TimeoutSeconds = AppSettingsConstants.HttpTimeoutSecondsDefaultValue;
 			this.WaitTimeBetweenRetryAttempts = AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue;
@@ -80,7 +80,6 @@ namespace Relativity.DataExchange.Transfer
 			this.FileNotFoundErrorsRetry = copy.FileNotFoundErrorsRetry;
 			this.FileNotFoundErrorsDisabled = copy.FileNotFoundErrorsDisabled;
 			this.FileShare = copy.FileShare;
-			this.FileshareCredentials = copy.FileshareCredentials;
 			this.ForceAsperaClient = copy.ForceAsperaClient;
 			this.ForceClientCandidates = copy.ForceClientCandidates;
 			this.ForceHttpClient = copy.ForceHttpClient;
@@ -98,6 +97,7 @@ namespace Relativity.DataExchange.Transfer
 			this.SupportCheckPath = copy.SupportCheckPath;
 			this.TargetPath = copy.TargetPath;
 			this.TimeoutSeconds = copy.TimeoutSeconds;
+			this.TransferCredential = copy.TransferCredential;
 			this.TransferLogDirectory = copy.TransferLogDirectory;
 			this.WaitTimeBetweenRetryAttempts = copy.WaitTimeBetweenRetryAttempts;
 			this.WebServiceUrl = copy.WebServiceUrl;
@@ -196,18 +196,6 @@ namespace Relativity.DataExchange.Transfer
 		/// <see langword="true" /> to retry missing file errors; otherwise, <see langword="false" />.
 		/// </value>
 		public bool FileNotFoundErrorsRetry
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Gets or sets the Aspera credentials.
-		/// </summary>
-		/// <value>
-		/// The <see cref="AsperaCredential"/> instance.
-		/// </value>
-		public AsperaCredential FileshareCredentials
 		{
 			get;
 			set;
@@ -424,6 +412,18 @@ namespace Relativity.DataExchange.Transfer
 		/// The total number of seconds.
 		/// </value>
 		public int TimeoutSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the transfer credential.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Credential"/> instance.
+		/// </value>
+		public Credential TransferCredential
 		{
 			get;
 			set;

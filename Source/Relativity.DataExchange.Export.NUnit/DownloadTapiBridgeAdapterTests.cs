@@ -88,15 +88,5 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ASSERT
 			this.TapiBridge.Verify(x => x.AddPath(transferPath), Times.Once);
 		}
-
-		[Test]
-		public void ItShouldDisconnect()
-		{
-			// ACT
-			this.Instance.Disconnect();
-
-			// ASSERT
-			this.TapiBridge.Verify(x => x.Disconnect(), Times.Once);
-		}
 	}
 }

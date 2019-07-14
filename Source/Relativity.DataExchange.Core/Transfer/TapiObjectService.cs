@@ -12,11 +12,13 @@ namespace Relativity.DataExchange.Transfer
 	using System;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
 	using System.Threading.Tasks;
 
 	using Relativity.DataExchange.Resources;
 	using Relativity.DataExchange.Service;
 	using Relativity.Logging;
+	using Relativity.Transfer;
 
 	/// <summary>
 	/// Represents a class object to provide Transfer API object services to the transfer bridges. This class cannot be inherited.
@@ -174,6 +176,18 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			return clientId;
+		}
+
+		/// <inheritdoc />
+		public string GetUnmappedFileRepositoryClients()
+		{
+			// Note: only direct/web modes support transfer jobs that can access files from
+			//       any given file repository without any additional configuration.
+			string candidates = string.Join(
+				";",
+				Relativity.Transfer.WellKnownTransferClient.FileShare.ToString(),
+				Relativity.Transfer.WellKnownTransferClient.Http.ToString());
+			return candidates;
 		}
 
 		/// <inheritdoc />

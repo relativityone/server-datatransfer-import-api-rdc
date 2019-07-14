@@ -84,6 +84,17 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
+		/// Gets the transfer parameters.
+		/// </summary>
+		/// <value>
+		/// The <see cref="TapiBridgeParameters2"/> instance.
+		/// </value>
+		TapiBridgeParameters2 Parameters
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Adds the path to a transfer job.
 		/// </summary>
 		/// <param name="path">
@@ -134,10 +145,5 @@ namespace Relativity.DataExchange.Transfer
 		/// Thrown when a fatal transfer exception occurs.
 		/// </exception>
 		TapiTotals WaitForTransfers(string waitMessage, string successMessage, string errorMessage, bool batchOptimization);
-
-		/// <summary>
-		/// Cleanup all transfer jobs.
-		/// </summary>
-		void Disconnect();
 	}
 }

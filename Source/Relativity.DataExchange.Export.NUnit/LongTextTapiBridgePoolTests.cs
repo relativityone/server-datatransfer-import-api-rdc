@@ -41,7 +41,6 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.Release(this._bridge.Object);
 
 			// ASSERT
-			this._bridge.Verify(x => x.Disconnect(), Times.Never);
 			this._bridge.Verify(x => x.Dispose(), Times.Once);
 		}
 
