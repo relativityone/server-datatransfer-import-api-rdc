@@ -102,8 +102,7 @@ namespace Relativity.DataExchange
 				default:
 					if (value != string.Empty)
 					{
-						int parsedValue;
-						if (int.TryParse(value, out parsedValue))
+						if (int.TryParse(value, out int parsedValue))
 						{
 							value = parsedValue == 0 ? "False" : "True";
 						}
@@ -390,9 +389,9 @@ namespace Relativity.DataExchange
 			Justification = "For backwards compatibility concerns.")]
 		public static decimal? ToNullableDecimal(string value, NumberStyles style = NumberStyles.Number | NumberStyles.AllowCurrencySymbol)
 		{
-			return !string.IsNullOrWhiteSpace(value)
-				       ? new decimal?(decimal.Parse(value, style, (IFormatProvider)CultureInfo.InvariantCulture))
-				       : null;
+			return string.IsNullOrWhiteSpace(value)
+				       ? null
+				       : new decimal?(decimal.Parse(value, style, CultureInfo.InvariantCulture));
 		}
 
 		/// <summary>
@@ -415,9 +414,9 @@ namespace Relativity.DataExchange
 			string value,
 			NumberStyles style = NumberStyles.Number | NumberStyles.AllowCurrencySymbol)
 		{
-			return !string.IsNullOrWhiteSpace(value)
-				       ? new decimal?(decimal.Parse(value, style, (IFormatProvider)CultureInfo.CurrentCulture))
-				       : null;
+			return string.IsNullOrWhiteSpace(value)
+				       ? null
+				       : new decimal?(decimal.Parse(value, style, CultureInfo.CurrentCulture));
 		}
 
 		/// <summary>

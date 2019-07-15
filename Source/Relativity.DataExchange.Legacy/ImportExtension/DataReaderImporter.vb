@@ -167,18 +167,11 @@ Namespace kCura.WinEDDS.ImportExtension
 									columnIndex))
 						Else
 							Dim s_FolderStructureContainedInColumn As String
-							Dim s_NativeFilePathColumn As String
 
 							If _settings.FolderStructureContainedInColumn Is Nothing Then
 								s_FolderStructureContainedInColumn = String.Empty
 							Else
 								s_FolderStructureContainedInColumn = _settings.FolderStructureContainedInColumn.ToLower
-							End If
-
-							If _settings.NativeFilePathColumn Is Nothing Then
-								s_NativeFilePathColumn = String.Empty
-							Else
-								s_NativeFilePathColumn = _settings.NativeFilePathColumn.ToLower
 							End If
 
 							If Not field.DisplayName = s_FolderStructureContainedInColumn Then

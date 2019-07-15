@@ -33,11 +33,11 @@
 			 		return;
 			 	}
    
-			 	ValidateNativesForArtifact(artifacts[i], predictions[i]);
+			 	ValidateNativesForArtifact(artifacts[i]);
 			 }
 		}
 
-		private void ValidateNativesForArtifact(ObjectExportInfo artifact, VolumePredictions prediction)
+		private void ValidateNativesForArtifact(ObjectExportInfo artifact)
 		{
 			if (string.IsNullOrWhiteSpace(artifact.NativeTempLocation))
 			{

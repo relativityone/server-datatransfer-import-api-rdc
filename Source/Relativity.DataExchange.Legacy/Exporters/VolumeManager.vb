@@ -521,7 +521,6 @@ Namespace kCura.WinEDDS
 			Dim totalFileSize As Int64 = 0
 			Dim extractedTextFileSizeForVolume As Int64 = 0
 			Dim image As Exporters.ImageExportInfo = Nothing
-			Dim imageSuccess As Boolean = True
 			If Me.Settings.ExportImages Then
 				For Each image In artifact.Images
 					_timekeeper.MarkStart("VolumeManager_DownloadImage", threadNumber)
@@ -536,7 +535,6 @@ Namespace kCura.WinEDDS
 						Else
 							image.TempLocation = ""
 							Me.LogFileExportError(ExportFileType.Image, artifact.IdentifierValue, image.FileGuid, ex.ToString)
-							imageSuccess = False
 						End If
 					End Try
 					_timekeeper.MarkEnd("VolumeManager_DownloadImage", threadNumber)
@@ -953,16 +951,9 @@ Namespace kCura.WinEDDS
 					Case LoadFileType.FileFormat.IPRO
 						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile, linesToWriteOpt, currentVolumeNumber)
 					Case LoadFileType.FileFormat.IPRO_FullText
-						Dim currentPageFirstByteNumber As Long
 						If fullTextReader Is Nothing Then
 							If pageNumber = 1 AndAlso expectingTextForPage Then _parent.WriteWarning(String.Format("Could not retrieve full text for document '{0}'", batesNumber))
 						Else
-							If pageNumber = 1 Then
-								currentPageFirstByteNumber = 0
-							Else
-								currentPageFirstByteNumber = fullTextReader.BaseStream.Position
-							End If
-
 							lineToWrite.Append("FT,")
 							lineToWrite.Append(batesNumber)
 							lineToWrite.Append(",1,1,")

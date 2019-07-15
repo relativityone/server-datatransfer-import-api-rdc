@@ -1087,8 +1087,7 @@ namespace Relativity.DataExchange
 			}
 
 			// Replaced the original implementation that used a try/catch and full object construction with one that's more debugger friendly and isn't quite so ominous.
-			Uri uri = null;
-			return Uri.TryCreate(value, UriKind.Absolute, out uri) ? value : string.Empty;
+			return Uri.TryCreate(value, UriKind.Absolute, out _) ? value : string.Empty;
 		}
 
 		/// <inheritdoc />

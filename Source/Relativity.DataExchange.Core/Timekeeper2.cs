@@ -272,7 +272,7 @@ namespace Relativity.DataExchange
 				writer.WriteLine("\"Function Name\",\"Number of calls\",\"Total Length (ms)\"");
 				string[] keys = new string[checked(this.dictionary.Keys.Count - 1 + 1)];
 				this.dictionary.Keys.CopyTo(keys, 0);
-				System.Array.Sort<string>(keys);
+				System.Array.Sort(keys);
 				foreach (string key in keys)
 				{
 					ConcurrentDictionary<int, TimekeeperEntry2> dict = this.dictionary[key];

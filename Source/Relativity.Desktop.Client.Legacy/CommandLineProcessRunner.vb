@@ -20,7 +20,7 @@ Namespace Relativity.Desktop.Client
 
 		Public Sub New(ByVal context As ProcessContext, ByVal exportErrorFileLocation As String, ByVal exportErrorReportLocation As String)
 			If context Is Nothing Then
-				Throw New ArgumentNullException("context")
+				Throw New ArgumentNullException(NameOf(context))
 			End If
 
 			_context = context

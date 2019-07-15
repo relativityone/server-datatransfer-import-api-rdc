@@ -79,7 +79,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 		{
 			// arrange
 			int rowIndex = 0;
-			int skipped = 0;
 			string testCsvPath = ResourceFileHelper.GetResourceFilePath("OutsideIn", "Test-FileTypeId-List-2018-9.csv");
 			string goldenCsvPath = ResourceFileHelper.GetResourceFilePath("OutsideIn", "Test-FileTypeId-List-Golden-2018-9.csv");
 			using (DataTable goldenCsvImport = CsvEngine.CsvToDataTable(goldenCsvPath, ','))
@@ -100,7 +99,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 					if (!System.IO.File.Exists(sourcePath))
 					{
 						testResults.Rows.Add(int.MinValue, string.Empty, string.Empty);
-						skipped++;
 						Console.WriteLine($">>> Skipping {sourcePath}");
 					}
 					else

@@ -597,7 +597,7 @@ Namespace kCura.Relativity.DataReaderClient
 			End Get
 			Set(ByVal value As String)
 				If String.IsNullOrEmpty(value) Then
-					Throw New ArgumentNullException("bulkLoadFileFieldDelimiter")
+					Throw New ArgumentNullException(NameOf(bulkLoadFileFieldDelimiter))
 				End If
 
 				_bulkLoadFileFieldDelimiter = value
