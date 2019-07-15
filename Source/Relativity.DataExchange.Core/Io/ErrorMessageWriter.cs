@@ -4,7 +4,6 @@
 
 namespace Relativity.DataExchange.Io
 {
-	using System.Collections;
 	using System.IO;
 
 	using Microsoft.VisualBasic;
