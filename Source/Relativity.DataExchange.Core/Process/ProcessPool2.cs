@@ -36,8 +36,7 @@ namespace Relativity.DataExchange.Process
 		/// </param>
 		public void Abort(Guid processId)
 		{
-			Thread value;
-			if (this.threadDictionary.TryRemove(processId, out value))
+			if (this.threadDictionary.TryRemove(processId, out Thread value))
 			{
 				// Note: the thread has already been removed from the collection.
 				value.Abort();
@@ -52,8 +51,7 @@ namespace Relativity.DataExchange.Process
 		/// </param>
 		public void Remove(Guid processId)
 		{
-			Thread value;
-			if (this.threadDictionary.TryRemove(processId, out value))
+			if (this.threadDictionary.TryRemove(processId, out Thread value))
 			{
 				if (value.ThreadState != ThreadState.Stopped)
 				{

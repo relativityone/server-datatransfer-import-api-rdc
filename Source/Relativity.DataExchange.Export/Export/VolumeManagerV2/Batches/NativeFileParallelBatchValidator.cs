@@ -30,7 +30,7 @@
 		{
 			ParallelQuery<Action> validationResults =
 				Enumerable.Range(0, artifacts.Length).AsParallel().AsOrdered()
-					.Select(i => GetErrorMessageForArtifact(artifacts[i], predictions[i], cancellationToken));
+					.Select(i => GetErrorMessageForArtifact(artifacts[i], cancellationToken));
 
 			foreach (var validationAction in validationResults.Where(result => result != null))
 			{
@@ -43,7 +43,7 @@
 			}
 		}
 
-		private Action GetErrorMessageForArtifact(ObjectExportInfo artifact, VolumePredictions prediction, CancellationToken cancellationToken)
+		private Action GetErrorMessageForArtifact(ObjectExportInfo artifact, CancellationToken cancellationToken)
 		{
 			if (string.IsNullOrWhiteSpace(artifact.NativeTempLocation) || cancellationToken.IsCancellationRequested)
 			{

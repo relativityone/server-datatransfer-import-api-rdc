@@ -60,7 +60,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			If logger Is Nothing Then
-				Throw New ArgumentNullException("logger")
+				Throw New ArgumentNullException(NameOf(logger))
 			End If
 
 			If cancellationTokenSource Is Nothing Then

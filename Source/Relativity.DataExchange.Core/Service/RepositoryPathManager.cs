@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.Service
 		private readonly int maxVolumeSize;
 		private string currentSubDirectory;
 		private string lastSubdirectory;
-		private int currentFileNumber = 0;
+		private int currentFileNumber;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RepositoryPathManager"/> class.
