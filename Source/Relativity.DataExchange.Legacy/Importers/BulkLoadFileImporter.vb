@@ -2004,39 +2004,22 @@ Namespace kCura.WinEDDS
 			ht.Add("Message", line)
 			ht.Add("Line Number", currentLineNumber)
 			ht.Add("Identifier", _artifactReader.SourceIdentifierValue)
-			RaiseReportError(ht, currentLineNumber, _artifactReader.SourceIdentifierValue, "client")
+			RaiseReportError(ht, _artifactReader.SourceIdentifierValue, "client")
 			WriteStatusLine(EventType2.Error, line)
 		End Sub
 
-		Private Sub RaiseReportError(ByVal row As System.Collections.Hashtable, ByVal lineNumber As Int32, ByVal identifier As String, ByVal type As String)
+		Private Sub RaiseReportError(ByVal row As Hashtable,ByVal identifier As String, ByVal type As String)
 			_errorCount += 1
-			If String.IsNullOrEmpty(_errorMessageFileLocation) Then
-				_errorMessageFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
-			End If
-
-			Dim errorMessageFileWriter As New System.IO.StreamWriter(_errorMessageFileLocation, True, System.Text.Encoding.Default)
 			If _errorCount < MaxNumberOfErrorsInGrid Then
 				OnReportErrorEvent(row)
 			ElseIf _errorCount = MaxNumberOfErrorsInGrid Then
-				Dim moretobefoundMessage As New System.Collections.Hashtable
-				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
+				Dim moreToBeFoundMessage As New Hashtable
+				moreToBeFoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
 				OnReportErrorEvent(moretobefoundMessage)
 			End If
-			errorMessageFileWriter.WriteLine(String.Format("{0},{1},{2},{3}", CSVFormat(row("Line Number").ToString), CSVFormat(row("Message").ToString), CSVFormat(identifier), CSVFormat(type)))
-			errorMessageFileWriter.Close()
+			Dim errorMessageFileWriter as ErrorMessageWriter = New ErrorMessageWriter(_errorMessageFileLocation)
+			errorMessageFileWriter.WriteErrorMessage(row("Line Number").ToString, row("Message").ToString, identifier, type)
 		End Sub
-
-		''' <summary>
-		''' CSVFormat will take in a string, replace a double quote characters with a pair of double quote characters, then surround the string with double quote characters
-		''' This preps it for being written as a field in a CSV file
-		''' </summary>
-		''' <param name="fieldValue">The string to convert to CSV format</param>
-		''' <returns>
-		''' the converted data
-		''' </returns>
-		Private Function CSVFormat(ByVal fieldValue As String) As String
-			Return ControlChars.Quote + fieldValue.Replace(ControlChars.Quote, ControlChars.Quote + ControlChars.Quote) + ControlChars.Quote
-		End Function
 
 		Protected Sub WriteWarning(ByVal line As String)
 			WriteStatusLine(EventType2.Warning, line)
@@ -2274,7 +2257,7 @@ Namespace kCura.WinEDDS
 							ht.Add("Message", line(1))
 							ht.Add("Identifier", line(2))
 							ht.Add("Line Number", Int32.Parse(line(0)))
-							RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
+							RaiseReportError(ht, line(2), "server")
 							OnStatusMessage(New StatusEventArgs(EventType2.Error, Int32.Parse(line(0)) - 1, RecordCount, "[Line " & line(0) & "]" & line(1), CurrentStatisticsSnapshot, Statistics))
 							line = sr.ReadLine
 						End While

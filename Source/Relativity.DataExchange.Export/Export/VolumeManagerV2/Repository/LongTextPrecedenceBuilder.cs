@@ -16,6 +16,9 @@
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Io;
+
+	using TempFileBuilder = kCura.WinEDDS.TempFileBuilder;
 
 	public class LongTextPrecedenceBuilder : ILongTextBuilder
 	{

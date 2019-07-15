@@ -7,6 +7,10 @@
 	using kCura.WinEDDS.Exceptions;
 	using kCura.WinEDDS;
 
+	using Relativity.DataExchange.Io;
+
+	using TempFileBuilder = kCura.WinEDDS.TempFileBuilder;
+
 	public class ErrorFileDestinationPath : IDestinationPath, IErrorFile
 	{
 		private string _errorFilePath;
