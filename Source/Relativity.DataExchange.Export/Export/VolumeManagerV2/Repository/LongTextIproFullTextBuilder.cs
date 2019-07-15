@@ -4,15 +4,11 @@
 	using System.Linq;
 	using System.Text;
 	using System.Threading;
-
 	using kCura.WinEDDS.Exporters;
-
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Io;
 	using Relativity.Logging;
-
-	using TempFileBuilder = kCura.WinEDDS.TempFileBuilder;
 
 	public class LongTextIproFullTextBuilder : ILongTextBuilder
 	{

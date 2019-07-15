@@ -4,7 +4,6 @@
 ' </copyright>
 ' -----------------------------------------------------------------------------------------------------
 
-
 Imports NUnit.Framework
 Imports Relativity.DataExchange.Io
 
@@ -54,11 +53,11 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		Private Sub WhenGettingTheTempFileWithoutTheSuffix()
-			_tempFile = kCura.WinEDDS.TempFileBuilder.GetTempFileName()
+			_tempFile = TempFileBuilder.GetTempFileName()
 		End Sub
 
 		Private Sub WhenGettingTheTempFile(suffix As String)
-			_tempFile = kCura.WinEDDS.TempFileBuilder.GetTempFileName(suffix)
+			_tempFile = TempFileBuilder.GetTempFileName(suffix)
 		End Sub
 
 		Private Sub ThenTheTempFileExists()
