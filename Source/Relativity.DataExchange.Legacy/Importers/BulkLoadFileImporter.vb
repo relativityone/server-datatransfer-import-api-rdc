@@ -1852,11 +1852,7 @@ Namespace kCura.WinEDDS
 
 		Private Function IsSupportedRelativityFileType(ByVal fileTypeInfo As IFileTypeInfo) As Boolean
 			If fileTypeInfo Is Nothing Then
-				If Me.DisableNativeValidation Then
-					Return True
-				Else
-					Return False
-				End If
+				Return Me.DisableNativeValidation
 			End If
 			If _oixFileLookup Is Nothing Then
 				_oixFileLookup = New System.Collections.Specialized.HybridDictionary
