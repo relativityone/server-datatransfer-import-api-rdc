@@ -23,7 +23,7 @@ namespace Relativity.DataExchange.Transfer
 	/// <summary>
 	/// Represents a class object to provide Transfer API object services to the transfer bridges. This class cannot be inherited.
 	/// </summary>
-	internal sealed class TapiObjectService : ITapiObjectService
+	internal class TapiObjectService : ITapiObjectService
 	{
 		/// <summary>
 		/// The singleton instance.
@@ -31,13 +31,13 @@ namespace Relativity.DataExchange.Transfer
 		private static readonly Relativity.Transfer.IFileSystemService Instance = new Relativity.Transfer.FileSystemService();
 
 		/// <inheritdoc />
-		public Relativity.Transfer.IFileSystemService CreateFileSystemService()
+		public virtual Relativity.Transfer.IFileSystemService CreateFileSystemService()
 		{
 			return Instance;
 		}
 
 		/// <inheritdoc />
-		public string BuildFileTransferModeDocText(bool includeBulk)
+		public virtual string BuildFileTransferModeDocText(bool includeBulk)
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
 			sb.AppendLine("FILE TRANSFER MODES:");
@@ -67,7 +67,7 @@ namespace Relativity.DataExchange.Transfer
 		/// <returns>
 		/// The <see cref="Relativity.Transfer.RelativityConnectionInfo"/> instance.
 		/// </returns>
-		public Relativity.Transfer.RelativityConnectionInfo CreateRelativityConnectionInfo(TapiBridgeParameters2 parameters)
+		public virtual Relativity.Transfer.RelativityConnectionInfo CreateRelativityConnectionInfo(TapiBridgeParameters2 parameters)
 		{
 			if (parameters == null)
 			{
@@ -126,13 +126,13 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public Relativity.Transfer.IRelativityTransferHost CreateRelativityTransferHost(Relativity.Transfer.RelativityConnectionInfo connectionInfo, Relativity.Transfer.ITransferLog log)
+		public virtual Relativity.Transfer.IRelativityTransferHost CreateRelativityTransferHost(Relativity.Transfer.RelativityConnectionInfo connectionInfo, Relativity.Transfer.ITransferLog log)
 		{
 			return new Relativity.Transfer.RelativityTransferHost(connectionInfo, log);
 		}
 
 		/// <inheritdoc />
-		public string GetClientDisplayName(Guid clientId)
+		public virtual string GetClientDisplayName(Guid clientId)
 		{
 			if (clientId == Guid.Empty)
 			{
@@ -154,7 +154,7 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public Guid GetClientId(TapiBridgeParameters2 parameters)
+		public virtual Guid GetClientId(TapiBridgeParameters2 parameters)
 		{
 			if (parameters == null)
 			{
@@ -179,7 +179,7 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public string GetUnmappedFileRepositoryClients()
+		public virtual string GetUnmappedFileRepositoryClients()
 		{
 			// Note: only direct/web modes support transfer jobs that can access files from
 			//       any given file repository without any additional configuration.
@@ -191,7 +191,7 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public TapiClient GetTapiClient(Guid clientId)
+		public virtual TapiClient GetTapiClient(Guid clientId)
 		{
 			switch (clientId.ToString("D").ToUpperInvariant())
 			{
@@ -210,14 +210,30 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public async Task<string> GetWorkspaceClientDisplayNameAsync(TapiBridgeParameters2 parameters)
+		public virtual Task<Workspace> GetWorkspaceAsync(TapiBridgeParameters2 parameters, ILog logger, CancellationToken token)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			RelativityConnectionInfo connectionInfo = this.CreateRelativityConnectionInfo(parameters);
+			using (ITransferLog transferLog = new RelativityTransferLog(logger, false))
+			using (IRelativityTransferHost transferHost = new RelativityTransferHost(connectionInfo, transferLog))
+			{
+				return transferHost.GetWorkspaceAsync(parameters.WorkspaceId, token);
+			}
+		}
+
+		/// <inheritdoc />
+		public virtual async Task<string> GetWorkspaceClientDisplayNameAsync(TapiBridgeParameters2 parameters)
 		{
 			Relativity.Transfer.ITransferClient transferClient = await this.GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
 			return transferClient.DisplayName;
 		}
 
 		/// <inheritdoc />
-		public async Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters2 parameters)
+		public virtual async Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters2 parameters)
 		{
 			if (parameters == null)
 			{
@@ -229,7 +245,30 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public void SetTapiClient(TapiBridgeParameters2 parameters, TapiClient targetClient)
+		public virtual async Task<ITapiFileStorageSearchResults> SearchFileStorageAsync(
+			TapiBridgeParameters2 parameters,
+			ILog logger,
+			CancellationToken token)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			RelativityConnectionInfo connectionInfo = this.CreateRelativityConnectionInfo(parameters);
+			using (ITransferLog transferLog = new RelativityTransferLog(logger, false))
+			using (IRelativityTransferHost transferHost = new RelativityTransferHost(connectionInfo, transferLog))
+			{
+				IFileStorageSearch service = transferHost.CreateFileStorageSearch();
+				FileStorageSearchContext context =
+					new FileStorageSearchContext { WorkspaceId = parameters.WorkspaceId };
+				FileStorageSearchResults results = await service.SearchAsync(context, token).ConfigureAwait(false);
+				return new TapiFileStorageSearchResults(results);
+			}
+		}
+
+		/// <inheritdoc />
+		public virtual void SetTapiClient(TapiBridgeParameters2 parameters, TapiClient targetClient)
 		{
 			if (parameters == null)
 			{

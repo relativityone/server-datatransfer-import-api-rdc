@@ -49,13 +49,18 @@
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory;
 		}
 
-		public void Install(IWindsorContainer container, IConfigurationStore store)
+		public virtual void Install(IWindsorContainer container, IConfigurationStore store)
 		{
 			InstallFromWinEdds(container);
 			InstallConnectionToWinEdds(container);
 			InstallCustom(container);
 
 			container.Register(Classes.FromThisAssembly().InNamespace("Relativity.DataExchange.Export", true).WithService.DefaultInterfaces().WithService.Self());
+			this.OnInstall(container, store);
+		}
+
+		protected virtual void OnInstall(IWindsorContainer container, IConfigurationStore store)
+		{
 		}
 
 		private void InstallFromWinEdds(IWindsorContainer container)

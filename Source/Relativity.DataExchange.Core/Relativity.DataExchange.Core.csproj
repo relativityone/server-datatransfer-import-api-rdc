@@ -202,6 +202,8 @@
     <Compile Include="Timekeeper2.cs" />
     <Compile Include="TimekeeperEntry2.cs" />
     <Compile Include="Transfer\DownloadTapiBridge2.cs" />
+    <Compile Include="Transfer\TapiFileStorageSearchResults.cs" />
+    <Compile Include="Transfer\ITapiObjectService.cs" />
     <Compile Include="Transfer\TapiTotals.cs" />
     <Compile Include="Transfer\ITapiBridge.cs" />
     <Compile Include="Transfer\MetadataTransferException.cs" />
@@ -258,7 +260,7 @@
     <Compile Include="Process\IRunnable.cs" />
     <Compile Include="Transfer\ClientChangeReason.cs" />
     <Compile Include="Transfer\RelativityTransferLog.cs" />
-    <Compile Include="Transfer\ITapiObjectService.cs" />
+    <Compile Include="Transfer\ITapiFileStorageSearchResults.cs" />
     <Compile Include="Transfer\TapiClient.cs" />
     <Compile Include="Transfer\TapiClientEventArgs.cs" />
     <Compile Include="Transfer\TapiConstants.cs" />

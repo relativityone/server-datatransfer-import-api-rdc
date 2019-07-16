@@ -129,4 +129,7 @@
   <data name="ExportSettingsNullCredentialExceptionMessage" xml:space="preserve">
     <value>The export configuration settings must supply a valid credential.</value>
   </data>
+  <data name="ExportContainerDisposedExceptionMessage" xml:space="preserve">
+    <value>This operation cannot be performed because the export container instance has already been disposed.</value>
+  </data>
 </root>

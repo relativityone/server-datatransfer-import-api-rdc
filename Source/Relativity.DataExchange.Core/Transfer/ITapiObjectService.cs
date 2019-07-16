@@ -10,7 +10,11 @@
 namespace Relativity.DataExchange.Transfer
 {
 	using System;
+	using System.Threading;
 	using System.Threading.Tasks;
+
+	using Relativity.Logging;
+	using Relativity.Transfer;
 
 	/// <summary>
 	/// Represents an abstract object to provide Transfer API object services to the transfer bridges.
@@ -110,6 +114,23 @@ namespace Relativity.DataExchange.Transfer
 		string GetUnmappedFileRepositoryClients();
 
 		/// <summary>
+		/// Asynchronously gets the workspace.
+		/// </summary>
+		/// <param name="parameters">
+		/// The bridge connection parameters.
+		/// </param>
+		/// <param name="logger">
+		/// The logger.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token.
+		/// </param>
+		/// <returns>
+		/// The <see cref="Workspace"/> instance.
+		/// </returns>
+		Task<Workspace> GetWorkspaceAsync(TapiBridgeParameters2 parameters, ILog logger, CancellationToken token);
+
+		/// <summary>
 		/// Asynchronously gets the Transfer API client display name that will be used for the given workspace.
 		/// </summary>
 		/// <param name="parameters">
@@ -130,6 +151,26 @@ namespace Relativity.DataExchange.Transfer
 		/// The <see cref="Guid"/> value.
 		/// </returns>
 		Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters2 parameters);
+
+		/// <summary>
+		/// Asynchronously searches for all available file storage and returns the search result.
+		/// </summary>
+		/// <param name="parameters">
+		/// The bridge connection parameters.
+		/// </param>
+		/// <param name="logger">
+		/// The logger.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token.
+		/// </param>
+		/// <returns>
+		/// The <see cref="FileStorageSearchResults"/> instance.
+		/// </returns>
+		Task<ITapiFileStorageSearchResults> SearchFileStorageAsync(
+			TapiBridgeParameters2 parameters,
+			ILog logger,
+			CancellationToken token);
 
 		/// <summary>
 		/// Sets the appropriate flags on <paramref name="parameters"/> to match the target Transfer API client.

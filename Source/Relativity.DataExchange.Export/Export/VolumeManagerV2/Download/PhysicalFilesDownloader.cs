@@ -39,7 +39,7 @@
 			var taskCancellationTokenSource = new DownloadCancellationTokenSource(token);
 			await _settingsService.ReadFileSharesAsync(token);
 
-			ConcurrentQueue<ExportRequestsWithFileshareSettings> queue = CreateTransferQueue(requests);
+			ConcurrentQueue<ExportRequestsWithFileshareSettings> queue = this.CreateTransferQueue(requests);
 			_logger.LogVerbose(
 				"Adding {filesToExportCount} requests for files through {tapiBridgeCount} TAPI bridges.",
 				requests.Count,
@@ -49,7 +49,7 @@
 
 			for (var i = 0; i < _exportConfig.MaxNumberOfFileExportTasks; i++)
 			{
-				tasks.Add(Task.Run(() => CreateJobTask(queue, taskCancellationTokenSource), taskCancellationTokenSource.Token));
+				tasks.Add(Task.Run(() => this.CreateJobTask(queue, taskCancellationTokenSource), taskCancellationTokenSource.Token));
 			}
 
 			await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -72,13 +72,12 @@
 			ExportRequestsWithFileshareSettings requests;
 			while (queue.TryDequeue(out requests))
 			{
-				IDownloadTapiBridge bridge = null;
 				try
 				{
-					bridge = _fileTapiBridgePool.Request(
+					IDownloadTapiBridge bridge = _fileTapiBridgePool.Request(
 						requests.FileshareSettings,
 						downloadCancellationTokenSourceSource.Token);
-					DownloadFiles(bridge, requests.Requests, downloadCancellationTokenSourceSource.Token);
+					this.DownloadFiles(bridge, requests.Requests, downloadCancellationTokenSourceSource.Token);
 					bridge.WaitForTransfers();
 				}
 				catch (TaskCanceledException)
