@@ -145,8 +145,8 @@
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
+    <Compile Include="FolderAndSubFolderExportTests.cs" />
     <Compile Include="ExporterTestBase.cs" />
-    <Compile Include="ExporterTests.cs" />
     <Compile Include="GlobalSuppressions.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
