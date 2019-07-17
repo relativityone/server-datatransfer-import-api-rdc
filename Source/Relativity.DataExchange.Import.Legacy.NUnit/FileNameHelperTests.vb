@@ -13,7 +13,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 
 		<Test>
 		Public Sub ItShouldAddExtensionWhenIsMissing()
-			'Arrage
+			'Arrange
 			Dim fileName As String = "file"
 			Dim extension As String = ".html" 
 
@@ -27,7 +27,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 
 		<Test>
 		Public Sub ItShouldAddExtensionWhenIsOtherExtensionIsPresent()
-			'Arrage
+			'Arrange
 			Dim fileName As String = "file.txt"
 			Dim extension As String = ".html" 
 
@@ -41,7 +41,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 
 		<Test>
 		Public Sub ItShouldAddExtensionToEmptyFileName()
-			'Arrage
+			'Arrange
 			Dim fileName As String = ""
 			Dim extension As String = ".html" 
 
@@ -58,7 +58,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		<TestCase("index.HTML")>
 		<TestCase("index.hTMl")>
 		Public Sub ItShouldNotAddExtensionWhenIsAlreadyPresent(fileName As String)
-			'Arrage
+			'Arrange
 			Dim extension As String = ".html" 
 
 			'Act
@@ -70,7 +70,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 
 		<Test>
 		Public Sub ItShouldReturnNullWhenFileNameIsNull()
-			'Arrage
+			'Arrange
 			Dim fileName As String = Nothing
 			Dim extension As String = ".html" 
 
@@ -83,7 +83,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 
 		<Test>
 		Public Sub ItShouldReturnFileNameWhenExtensionIsNull()
-			'Arrage
+			'Arrange
 			Dim fileName As String = "filename"
 			Dim extension As String = Nothing
 
@@ -97,7 +97,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 
 		<Test>
 		Public Sub ItShouldReturnFileNameWhenExtensionIsEmpty()
-			'Arrage
+			'Arrange
 			Dim fileName As String = "filename"
 			Dim extension As String = ""
 
@@ -111,7 +111,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 
 		<Test>
 		Public Sub ItShouldReturnFileNameWhenExtensionIsWhitespace()
-			'Arrage
+			'Arrange
 			Dim fileName As String = "filename"
 			Dim extension As String = "   "
 
