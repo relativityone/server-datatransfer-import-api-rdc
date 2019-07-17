@@ -54,12 +54,12 @@
 
 			try
 			{
-				const bool BatchOptimization = true;
+				const bool KeepJobAlive = true;
 				this.TapiBridge.WaitForTransfers(
 					"Waiting for all long files to download...",
 					"Long file downloads completed.",
 					"Failed to wait for all pending long file downloads.",
-					BatchOptimization);
+					KeepJobAlive);
 			}
 			finally
 			{

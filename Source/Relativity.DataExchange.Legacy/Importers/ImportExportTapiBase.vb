@@ -360,22 +360,22 @@ Namespace kCura.WinEDDS
 
 		Protected Sub CompletePendingPhysicalFileTransfers(waitMessage As String, completedMessage As String, errorMessage As String)
 			' TODO: Invert this flag after RDC Export hardening is completed.
-			Const BatchOptimization As Boolean = False
+			Const KeepJobAlive As Boolean = False
 			Me.FileTapiBridge.WaitForTransfers(
 				waitMessage,
 				completedMessage,
 				errorMessage,
-				BatchOptimization)
+				KeepJobAlive)
 		End Sub
 
 		Protected Sub CompletePendingBulkLoadFileTransfers()
 			' TODO: Invert this flag after RDC Export hardening is completed.
-			Const BatchOptimization As Boolean = False
+			Const KeepJobAlive As Boolean = False
 			Me.BulkLoadTapiBridge.WaitForTransfers(
 				"Waiting for all metadata files to upload...",
 				"Metadata file uploads completed.",
 				"Failed to complete all pending metadata file uploads.",
-				BatchOptimization)
+				KeepJobAlive)
 		End Sub
 
 

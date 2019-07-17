@@ -42,12 +42,12 @@
 				return;
 			}
 
-			const bool BatchOptimization = true;
+			const bool KeepJobAlive = true;
 			this.TapiBridge.WaitForTransfers(
 				"Waiting for all native files to download...",
 				"Native file downloads completed.",
 				"Failed to wait for all pending native file downloads.",
-				BatchOptimization);
+				KeepJobAlive);
 		}
 
 		public override void Dispose()

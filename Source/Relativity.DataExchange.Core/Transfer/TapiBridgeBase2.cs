@@ -513,7 +513,7 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public TapiTotals WaitForTransfers(string waitMessage, string successMessage, string errorMessage, bool batchOptimization)
+		public TapiTotals WaitForTransfers(string waitMessage, string successMessage, string errorMessage, bool keepJobAlive)
 		{
 			this.CheckDispose();
 			if (this.TransferJob == null)
@@ -524,7 +524,7 @@ namespace Relativity.DataExchange.Transfer
 			this.PublishStatusMessage(waitMessage, TapiConstants.NoLineNumber);
 			try
 			{
-				TapiTotals result = batchOptimization ? this.WaitForCompletedTransfers() : this.WaitForCompletedTransferJob();
+				TapiTotals result = keepJobAlive ? this.WaitForCompletedTransfers() : this.WaitForCompletedTransferJob();
 				this.PublishStatusMessage(successMessage, TapiConstants.NoLineNumber);
 				return result;
 			}
