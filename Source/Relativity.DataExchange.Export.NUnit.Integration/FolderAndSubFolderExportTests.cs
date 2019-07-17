@@ -9,7 +9,6 @@
 
 namespace Relativity.DataExchange.Export.NUnit.Integration
 {
-	using System;
 	using System.Text;
 	using System.Threading.Tasks;
 
@@ -48,6 +47,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
 			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
 			this.ThenTheTransferModeShouldEqualDirectOrWebMode();
+			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
 		[IdentifiedTest("F8F28759-EC5A-4C03-95A3-70ACB005BCCE")]
@@ -62,6 +62,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
 			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
 			this.ThenTheTransferModeShouldEqualDirectOrWebMode();
+			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
 		[IdentifiedTest("77A786A1-58E5-45E3-B0BF-CB70D3FFCE62")]
@@ -75,6 +76,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
 			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
 			this.ThenTheTransferModeShouldEqualDirectOrWebMode();
+			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
 		[IdentifiedTest("8DFA89C0-EB36-446B-92BC-2A0D8314ECD8")]
@@ -87,6 +89,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.GivenTheMockedFileStorageSearchThrows(Fatal);
 			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
 			this.ThenTheExportJobIsFatal();
+			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
 		[IdentifiedTest("14A8EB3C-5662-428C-B1E6-FA95E8C79259")]
@@ -99,6 +102,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
 			this.ThenTheTransferModeShouldEqualDirectOrWebMode();
 			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
+			this.ThenTheMockFileShareSettingsServiceIsVerified();
 		}
 
 		private async Task ExecuteFolderAndSubfoldersAndVerifyAsync()

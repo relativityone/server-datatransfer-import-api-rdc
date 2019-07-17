@@ -18,6 +18,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using System.Threading;
 	using System.Threading.Tasks;
 
+	using Castle.MicroKernel.Registration;
+	using Castle.Windsor;
+
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
@@ -121,6 +124,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		private readonly List<string> alertWarningSkippables = new List<string>();
 		private readonly List<string> statusMessages = new List<string>();
 		private readonly List<string> fatalErrors = new List<string>();
+		private IWindsorContainer testContainer;
 		private CookieContainer cookieContainer;
 		private NetworkCredential credentials;
 		private TempDirectory2 tempDirectory;
@@ -234,18 +238,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		/// <summary>
-		/// Gets the object that defines all mocked services used by the export integration tests.
-		/// </summary>
-		/// <value>
-		/// The <see cref="TestMockServiceRegistration"/> value.
-		/// </value>
-		protected TestMockServiceRegistration MockServiceRegistration
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Gets the total number of documents that were actually exported.
 		/// </summary>
 		/// <value>
@@ -296,8 +288,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
-			this.MockServiceRegistration = new TestMockServiceRegistration();
-			this.testContainerFactory = new TestContainerFactory(this.MockServiceRegistration);
+			this.testContainer = new WindsorContainer();
+			this.testContainerFactory = new TestContainerFactory(this.testContainer);
 			this.AssignTestSettings();
 			Assert.That(
 				this.TestParameters.WorkspaceId,
@@ -322,7 +314,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.MockProcessErrorWriter = MockObjectFactory.CreateMockProcessErrorWriter();
 			this.MockTapiObjectService = MockObjectFactory.CreateMockTapiObjectService();
 			this.searchResult = false;
-			this.tempDirectory = new TempDirectory2 { ClearReadOnlyAttributes = true };
+			this.tempDirectory = new TempDirectory2();
+			this.tempDirectory.ClearReadOnlyAttributes = true;
 			this.tempDirectory.Create();
 			this.TotalDocumentsExported = 0;
 			this.TotalDocuments = 0;
@@ -362,17 +355,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[TearDown]
 		public void Teardown()
 		{
-			if (this.tempDirectory != null)
-			{
-				this.tempDirectory?.Dispose();
-				this.tempDirectory = null;
-			}
-
-			if (this.testContainerFactory != null)
-			{
-				this.testContainerFactory?.Dispose();
-				this.testContainerFactory = null;
-			}
+			this.tempDirectory?.Dispose();
+			this.tempDirectory = null;
+			this.testContainer?.Dispose();
+			this.testContainer = null;
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -549,12 +535,16 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected void GivenTheMockTapiObjectServiceIsRegistered()
 		{
-			this.MockServiceRegistration.MockTapiObjectService = this.MockTapiObjectService.Object;
+			this.testContainer.Register(
+				Component.For<ITapiObjectService>().UsingFactoryMethod(k => this.MockTapiObjectService.Object)
+					.IsDefault());
 		}
 
 		protected void GivenTheMockFileShareSettingsServiceIsRegistered()
 		{
-			this.MockServiceRegistration.MockFileShareSettingsService = this.MockFileShareSettingsService.Object;
+			this.testContainer.Register(
+				Component.For<IFileShareSettingsService>()
+					.UsingFactoryMethod(k => this.MockFileShareSettingsService.Object).IsDefault());
 		}
 
 		protected void GivenTheMockedSearchResultsAreEmpty(bool cloudInstance)
@@ -885,6 +875,21 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		protected void ThenTheTransferModeShouldEqualDirectOrWebMode()
 		{
 			Assert.That(this.TransferMode, Is.AnyOf(TapiClient.Direct, TapiClient.Web));
+		}
+
+		protected void ThenTheMockSearchFileStorageAsyncIsVerified()
+		{
+			this.MockTapiObjectService.Verify(
+				x => x.SearchFileStorageAsync(
+					It.IsAny<TapiBridgeParameters2>(),
+					It.IsAny<Relativity.Logging.ILog>(),
+					It.IsAny<CancellationToken>()));
+		}
+
+		protected void ThenTheMockFileShareSettingsServiceIsVerified()
+		{
+			this.MockFileShareSettingsService.Verify(
+				x => x.GetSettingsForFileShare(It.IsAny<int>(), It.IsAny<string>()));
 		}
 
 		/// <summary>

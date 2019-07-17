@@ -61,15 +61,6 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This operation cannot be performed because the export container instance has already been disposed..
-        /// </summary>
-        internal static string ExportContainerDisposedExceptionMessage {
-            get {
-                return ResourceManager.GetString("ExportContainerDisposedExceptionMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The export configuration settings must supply a valid credential..
         /// </summary>
         internal static string ExportSettingsNullCredentialExceptionMessage {
