@@ -67,7 +67,7 @@ Namespace kCura.WinEDDS
 		Private _lastRunMetadataImport As Int64 = 0
 		Private _timekeeper As ITimeKeeperManager
 		Private _filePath As String
-		Private _batchCounter As Int32 = 0
+		Protected _batchCounter As Int32 = 0
 		Private _jobCompleteNativeCount As Int32 = 0
 		Private _jobCompleteMetadataCount As Int32 = 0
 		Private _errorMessageFileLocation As String = String.Empty
@@ -1320,7 +1320,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
+		protected Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
 			If _lastRunMetadataImport > 0 Then
 				Me.Statistics.MetadataWaitTime += System.DateTime.Now.Ticks - _lastRunMetadataImport
 			End If

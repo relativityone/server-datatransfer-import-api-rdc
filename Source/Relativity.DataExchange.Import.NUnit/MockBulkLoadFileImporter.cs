@@ -8,14 +8,9 @@ namespace Relativity.DataExchange.Import.NUnit
 {
 	using System;
 	using System.Net;
-	using System.Reflection;
 	using System.Threading;
-
 	using kCura.EDDS.WebAPI.BulkImportManagerBase;
 	using kCura.WinEDDS;
-
-	using Moq;
-
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Process;
 	using Relativity.DataExchange.Transfer;
@@ -103,7 +98,7 @@ namespace Relativity.DataExchange.Import.NUnit
 			return CleanDestinationFolderPath(path);
 		}
 
-		public kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior ConvertOverlayBehavior(LoadFile.FieldOverlayBehavior? behavior)
+		public OverlayBehavior ConvertOverlayBehavior(LoadFile.FieldOverlayBehavior? behavior)
 		{
 			return this.GetMassImportOverlayBehavior(behavior);
 		}
@@ -130,15 +125,12 @@ namespace Relativity.DataExchange.Import.NUnit
 
 		public void SetBatchCounter(int numberToSet)
 		{
-			typeof(BulkLoadFileImporter).GetField("_batchCounter", BindingFlags.Instance | BindingFlags.NonPublic)
-				.SetValue(this, numberToSet);
+			this._batchCounter = numberToSet;
 		}
 
-		public void PushNativeBatchReflected(string outputNativePath, bool shouldCompleteJob, bool lastRun)
+		public void PushNativeBatchInvoker(string outputNativePath, bool shouldCompleteJob, bool lastRun)
 		{
-			typeof(BulkLoadFileImporter).GetMethod("PushNativeBatch", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(
-				this,
-				new object[] { outputNativePath, shouldCompleteJob, lastRun });
+			this.PushNativeBatch(outputNativePath, shouldCompleteJob, lastRun);
 		}
 
 		protected override void RaiseWarningAndPause(Exception exception, int timeoutSeconds, int retryCount, int totalRetryCount)

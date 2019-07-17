@@ -9,14 +9,11 @@ namespace Relativity.DataExchange.Import.NUnit
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
-	using System.Linq;
 	using System.Net;
-	using System.Reflection;
 	using global::NUnit.Framework;
 	using kCura.WinEDDS;
 	using Moq;
 	using Relativity.DataExchange.Service;
-	using Relativity.DataExchange.Transfer;
 
 	/// <summary>
 	/// Represents <see cref="BulkLoadFileImporter"/> tests.
@@ -51,7 +48,7 @@ namespace Relativity.DataExchange.Import.NUnit
 		[TestCase("", false, false)]
 		public void MetadataFileCountShouldBe0IfBatchCounterIs0(string outputNativePath, bool shouldCompleteJob, bool lastRun)
 		{
-			this.importer.PushNativeBatchReflected(outputNativePath, shouldCompleteJob, lastRun);
+			this.importer.PushNativeBatchInvoker(outputNativePath, shouldCompleteJob, lastRun);
 			Assert.AreEqual(0, this.importer.GetMetadataFilesCount);
 		}
 
@@ -65,13 +62,10 @@ namespace Relativity.DataExchange.Import.NUnit
 			this.Setup();
 			AppSettings.Instance.IoErrorNumberOfRetries = 1;
 			AppSettings.Instance.IoErrorWaitTimeInSeconds = 1;
-
-			// this.MockAppSettings.Behavio
 			this.importer.SetTapiBridges();
 			this.importer.SetBatchCounter(20);
-			var exception = Assert.Throws<System.Reflection.TargetInvocationException>(() =>
-			this.importer.PushNativeBatchReflected(outputNativePath, shouldCompleteJob, lastRun));
-			Assert.IsTrue(exception.InnerException is WebException);
+			Assert.Throws<WebException>(() =>
+			this.importer.PushNativeBatchInvoker(outputNativePath, shouldCompleteJob, lastRun));
 			Assert.AreEqual(0, this.importer.GetMetadataFilesCount);
 		}
 
