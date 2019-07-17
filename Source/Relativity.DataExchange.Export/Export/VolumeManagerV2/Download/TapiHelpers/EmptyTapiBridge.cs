@@ -71,9 +71,9 @@
 			return _tapiBridge.AddPath(transferPath);
 		}
 
-		public TapiTotals WaitForTransfers(string waitMessage, string successMessage, string errorMessage, bool batchOptimization)
+		public TapiTotals WaitForTransfers(string waitMessage, string successMessage, string errorMessage, bool keepJobAlive)
 		{
-			return _tapiBridge.WaitForTransfers(waitMessage, successMessage, errorMessage, batchOptimization);
+			return _tapiBridge.WaitForTransfers(waitMessage, successMessage, errorMessage, keepJobAlive);
 		}
 
 		public void Disconnect()

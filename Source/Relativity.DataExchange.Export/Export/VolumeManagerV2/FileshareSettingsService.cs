@@ -24,13 +24,9 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 
 		public FileShareSettingsService(ILog logger, ExportFile exportSettings)
 		{
-			if (exportSettings == null)
-			{
-				throw new ArgumentNullException(nameof(exportSettings));
-			}
-
-			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _webServiceUrl = AppSettings.Instance.WebApiServiceUrl;
+			_logger = logger.ThrowIfNull(nameof(logger));
+			exportSettings.ThrowIfNull(nameof(exportSettings));
+			_webServiceUrl = AppSettings.Instance.WebApiServiceUrl;
 			_workspaceId = exportSettings.CaseInfo.ArtifactID;
 			_currentUserCredential = exportSettings.Credential;
 			_cookieContainer = exportSettings.CookieContainer;

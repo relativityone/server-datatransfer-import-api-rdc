@@ -536,12 +536,12 @@ namespace Relativity.DataExchange.NUnit
 			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
 			this.TapiBridgeInstance.AddPath(TestTransferPath);
 
-			const bool BatchOptimization = true;
+			const bool KeepJobAlive = true;
 			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
 				TestWaitMessage,
 				TestSuccessMessage,
 				TestErrorMessage,
-				BatchOptimization);
+				KeepJobAlive);
 			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(0));
 			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
 			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(0));
@@ -585,12 +585,12 @@ namespace Relativity.DataExchange.NUnit
 						});
 			}
 
-			const bool BatchOptimization = true;
+			const bool KeepJobAlive = true;
 			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
 				TestWaitMessage,
 				TestSuccessMessage,
 				TestErrorMessage,
-				BatchOptimization);
+				KeepJobAlive);
 			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(totalPaths));
 			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(totalPaths));
 			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(totalPaths));
@@ -656,13 +656,13 @@ namespace Relativity.DataExchange.NUnit
 						Status = TransferPathStatus.Failed
 					});
 
-			const bool BatchOptimization = true;
+			const bool KeepJobAlive = true;
 			TransferException exception = Assert.Throws<TransferException>(
 				() => this.TapiBridgeInstance.WaitForTransfers(
 					TestWaitMessage,
 					TestSuccessMessage,
 					TestErrorMessage,
-					BatchOptimization));
+					KeepJobAlive));
 			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
 			Assert.That(exception.Fatal, Is.True);
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Once);

@@ -118,8 +118,8 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="errorMessage">
 		/// The message that's published when the pending transfers fail.
 		/// </param>
-		/// <param name="batchOptimization">
-		/// <see langword="true" /> to enable a transfer optimization designed for scenarios where transfers are continually done in batches; otherwise, <see langword="false" /> to use the standard job-based design where the job is destroyed once all transfers have completed.
+		/// <param name="keepJobAlive">
+		/// <see langword="true" /> to enable an optimization that keeps the transfer job alive once all file transfers have completed; otherwise, <see langword="false" /> to destroy the job once all file transfers have completed.
 		/// </param>
 		/// <returns>
 		/// The <see cref="TapiTotals"/> instance.
@@ -133,7 +133,7 @@ namespace Relativity.DataExchange.Transfer
 		/// <exception cref="TransferException">
 		/// Thrown when a fatal transfer exception occurs.
 		/// </exception>
-		TapiTotals WaitForTransfers(string waitMessage, string successMessage, string errorMessage, bool batchOptimization);
+		TapiTotals WaitForTransfers(string waitMessage, string successMessage, string errorMessage, bool keepJobAlive);
 
 		/// <summary>
 		/// Cleanup all transfer jobs.

@@ -94,8 +94,8 @@ namespace Relativity.DataExchange.NUnit.Integration
 				this.tapiBridge.AddPath(sourcePath, null, order++);
 			}
 
-			const bool BatchOptimization = false;
-			this.TapiBridge.WaitForTransfers("Waiting...", "Success", "Error", BatchOptimization);
+			const bool KeepJobAlive = false;
+			this.TapiBridge.WaitForTransfers("Waiting...", "Success", "Error", KeepJobAlive);
 		}
 	}
 }

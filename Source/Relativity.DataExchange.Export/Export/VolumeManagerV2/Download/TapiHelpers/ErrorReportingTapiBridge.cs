@@ -55,7 +55,7 @@
 		{
 		}
 
-		public TapiTotals WaitForTransfers(string startMessage, string successMessage, string errorMessage, bool optimized)
+		public TapiTotals WaitForTransfers(string startMessage, string successMessage, string errorMessage, bool keepJobAlive)
 		{
 			return this.tapiTotals;
 		}
