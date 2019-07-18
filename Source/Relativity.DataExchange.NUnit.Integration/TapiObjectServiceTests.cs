@@ -91,7 +91,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		[Category(TestCategories.Integration)]
 		public async Task ShouldGetTheWorkspaceClientAsync()
 		{
-			Guid clientId = await this.service.GetWorkspaceClientIdAsync(this.parameters);
+			Guid clientId = await this.service.GetWorkspaceClientIdAsync(this.parameters).ConfigureAwait(false);
 			Assert.That(clientId, Is.Not.EqualTo(Guid.Empty));
 		}
 
@@ -99,7 +99,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		[Category(TestCategories.Integration)]
 		public async Task ShouldGetTheWorkspaceClientDisplayNameAsync()
 		{
-			string name = await this.service.GetWorkspaceClientDisplayNameAsync(this.parameters);
+			string name = await this.service.GetWorkspaceClientDisplayNameAsync(this.parameters).ConfigureAwait(false);
 			Assert.That(name, Is.Not.Null.Or.Empty);
 		}
 
@@ -110,7 +110,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 			RelativityFileShare defaultFileShare = await this.service.GetWorkspaceDefaultFileShareAsync(
 				                                       this.parameters,
 				                                       this.logger.Object,
-				                                       CancellationToken.None);
+				                                       CancellationToken.None).ConfigureAwait(false);
 			Assert.That(defaultFileShare, Is.Not.Null);
 			Assert.That(defaultFileShare.ArtifactId, Is.GreaterThan(0));
 			Assert.That(defaultFileShare.Name, Is.Not.Null.Or.Empty);
@@ -125,7 +125,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 			ITapiFileStorageSearchResults results = await this.service.SearchFileStorageAsync(
 				                                        this.parameters,
 				                                        this.logger.Object,
-				                                        CancellationToken.None);
+				                                        CancellationToken.None).ConfigureAwait(false);
 			Assert.That(results, Is.Not.Null);
 			Assert.That(results.FileShares, Is.Not.Null);
 			Assert.That(results.InvalidFileShares, Is.Not.Null);
