@@ -86,12 +86,6 @@ namespace Relativity.DataExchange
 				return null;
 			}
 
-			// Do NOT optimize this with Resharper!
-			if (!sequence.Any())
-			{
-				return string.Empty;
-			}
-
 			return string.Join(delimiter, sequence.Select(itemStringifier));
 		}
 
