@@ -10,10 +10,10 @@
 	{
 		private readonly List<IDownloadTapiBridge> _longTextTapiBridges;
 
-		private readonly ILongTextTapiBridgeFactory _factory;
+		private readonly ILongTextDownloadTapiBridgeFactory _factory;
 		private readonly ILog _logger;
 
-		public LongTextTapiBridgePool(ILongTextTapiBridgeFactory factory, ILog logger)
+		public LongTextTapiBridgePool(ILongTextDownloadTapiBridgeFactory factory, ILog logger)
 		{
 			_factory = factory;
 			_logger = logger;

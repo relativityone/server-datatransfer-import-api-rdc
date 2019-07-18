@@ -88,14 +88,14 @@ namespace Relativity.DataExchange.Export.NUnit
 			await this._downloader.DownloadFilesAsync(requests, CancellationToken.None).ConfigureAwait(false);
 
 			this.VerifyBridges(m => m.Verify(b => b.QueueDownload(It.IsAny<TransferPath>()), Times.Exactly(_DEFAULT_FILES_PER_FILESHARE)));
-			this.VerifyBridges(m => m.Verify(b => b.WaitForTransferJob(), Times.Once));
+			this.VerifyBridges(m => m.Verify(b => b.WaitForTransfers(), Times.Once));
 		}
 
 		[Test]
 		public void ItShouldThrowTaskCanceledExceptionWhenDownloaderThrowsOne()
 		{
 			var mockTapiBridge = new Mock<IDownloadTapiBridge>();
-			mockTapiBridge.Setup(b => b.WaitForTransferJob()).Throws<TaskCanceledException>();
+			mockTapiBridge.Setup(b => b.WaitForTransfers()).Throws<TaskCanceledException>();
 			this._fileTapiBridgePool
 				.Setup(pool => pool.Request(It.IsAny<IRelativityFileShareSettings>(), It.IsAny<CancellationToken>()))
 				.Returns(mockTapiBridge.Object);

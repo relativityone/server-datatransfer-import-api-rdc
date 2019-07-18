@@ -147,8 +147,17 @@
   <data name="WorkspaceExceptionMessage" xml:space="preserve">
     <value>The workspace artifact must be specified.</value>
   </data>
-  <data name="HttpFallbackExceptionMessage" xml:space="preserve">
-    <value>A serious error has occurred attempting to transfer files over HTTP.</value>
+  <data name="WebModeFallbackPermissionsFatalExceptionMessage" xml:space="preserve">
+    <value>A fatal file transfer error occurred due to insufficient permissions and cannot be resolved by switching to web mode. Error: {0}</value>
+  </data>
+  <data name="WebModeFallbackAlreadyWebModeFatalExceptionMessage" xml:space="preserve">
+    <value>A fatal file transfer error occurred and an attempt has already been made to resolve the issue by switching to web mode. Check the logs for more details or contact your system administrator for assistance if this problem persists.</value>
+  </data>
+  <data name="WebModeFallbackNoErrorWarningMessage" xml:space="preserve">
+    <value>Switching to web mode due to a serious error within the '{0}' transfer job.</value>
+  </data>
+  <data name="WebModeFallbackWarningMessage" xml:space="preserve">
+    <value>Switching to web mode due to a serious error within the '{0}' transfer job. Error: {1}</value>
   </data>
   <data name="ClientInitializing" xml:space="preserve">
     <value>Initializing</value>
@@ -188,9 +197,6 @@
   </data>
   <data name="TransferJobUploadWarningMessage" xml:space="preserve">
     <value>{0} upload job issue: {1} - Retrying in {2} seconds - {3} tries left.</value>
-  </data>
-  <data name="HttpFallbackWarningMessage" xml:space="preserve">
-    <value>Switching to the HTTP client due to a serious error within the '{0}' transfer client. Error: {1}</value>
   </data>
   <data name="IoReporterWarningMessageWithException" xml:space="preserve">
     <value>Import error - Retrying in {0} seconds. Error: {1}</value>

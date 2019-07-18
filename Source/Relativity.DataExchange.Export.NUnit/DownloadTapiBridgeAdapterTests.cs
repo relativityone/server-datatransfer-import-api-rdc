@@ -12,6 +12,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Transfer;
 	using Relativity.Transfer;
 
 	using ITransferStatistics = Relativity.DataExchange.Export.VolumeManagerV2.Statistics.ITransferStatistics;
@@ -60,20 +61,20 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			// ACT
 			this.Instance.QueueDownload(new TransferPath());
-			this.Instance.WaitForTransferJob();
+			this.Instance.WaitForTransfers();
 
 			// ASSERT
-			this.TapiBridge.Verify(x => x.WaitForTransferJob(), Times.Once);
+			this.TapiBridge.Verify(x => x.WaitForTransfers(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldNotWaitForTransferJobWhenNothingHasBeenAddedToQueue()
 		{
 			// ACT
-			this.Instance.WaitForTransferJob();
+			this.Instance.WaitForTransfers();
 
 			// ASSERT
-			this.TapiBridge.Verify(x => x.WaitForTransferJob(), Times.Never);
+			this.TapiBridge.Verify(x => x.WaitForTransfers(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
 		}
 
 		[Test]

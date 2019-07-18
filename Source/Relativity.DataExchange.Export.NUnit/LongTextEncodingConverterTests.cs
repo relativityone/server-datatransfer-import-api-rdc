@@ -54,7 +54,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.StartListening(this._tapiBridge.Object);
 			this._instance.StopListening(this._tapiBridge.Object);
 
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
 			this._instance.WaitForConversionCompletion();
 
@@ -73,7 +73,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT
 			this._instance.StartListening(this._tapiBridge.Object);
 
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
 			this._instance.StopListening(this._tapiBridge.Object);
 
@@ -94,7 +94,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT
 			this._instance.StartListening(this._tapiBridge.Object);
 
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
 			this._instance.StopListening(this._tapiBridge.Object);
 
@@ -124,7 +124,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT
 			this._instance.StartListening(this._tapiBridge.Object);
 
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
 			this._instance.StopListening(this._tapiBridge.Object);
 

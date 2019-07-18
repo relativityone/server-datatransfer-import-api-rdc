@@ -70,10 +70,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </returns>
 		public static string NextBinaryFile(long minLength, long maxLength, string directory, string fileName)
 		{
-			if (!Directory.Exists(directory))
-			{
-				Directory.CreateDirectory(directory);
-			}
+			Directory.CreateDirectory(directory);
 
 			var file = Path.Combine(directory, fileName);
 			using (var fileStream = new FileStream(file, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -152,7 +149,7 @@ namespace Relativity.DataExchange.TestFramework
 		public static void NextTextFile(int minValue, int maxValue, string file)
 		{
 			string directory = System.IO.Path.GetDirectoryName(file);
-			if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+			if (!string.IsNullOrEmpty(directory))
 			{
 				Directory.CreateDirectory(directory);
 			}
@@ -215,10 +212,7 @@ namespace Relativity.DataExchange.TestFramework
 		{
 			checked
 			{
-				if (!Directory.Exists(directory))
-				{
-					Directory.CreateDirectory(directory);
-				}
+				Directory.CreateDirectory(directory);
 
 				if (string.IsNullOrEmpty(Path.GetExtension(fileName)))
 				{

@@ -176,7 +176,7 @@ namespace Relativity.DataExchange.Process
 					this.ProcessId);
 				this.OnExecute();
 				this.Logger.LogInformation(
-					"The runnable process {ProcessType}-{ProcessId} successfully started.",
+					"The runnable process {ProcessType}-{ProcessId} successfully completed.",
 					this.GetType(),
 					this.ProcessId);
 			}

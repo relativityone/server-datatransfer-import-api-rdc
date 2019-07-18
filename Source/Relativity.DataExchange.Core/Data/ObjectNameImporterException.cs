@@ -84,12 +84,6 @@ namespace Relativity.DataExchange.Data
 		{
 		}
 
-		/// <inheritdoc />
-		public override void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			base.GetObjectData(info, context);
-		}
-
 		/// <summary>
 		/// Gets the error message.
 		/// </summary>

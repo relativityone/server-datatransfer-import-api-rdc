@@ -11,7 +11,7 @@
             {
             }
 
-            public FileShareSettingsServiceException(): base()
+            public FileShareSettingsServiceException()
             {
             }
 

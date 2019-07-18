@@ -1,6 +1,6 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Statistics
 {
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.DataExchange.Transfer;
 
 	public interface ITransferStatistics
 	{

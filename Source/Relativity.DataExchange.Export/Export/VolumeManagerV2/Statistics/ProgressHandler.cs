@@ -28,8 +28,8 @@
 
 		private void OnFileProgress(object sender, TapiProgressEventArgs e)
 		{
-            _logger.LogVerbose("Tapi progress event for {FileName} with status {DidTransferSucceed} ({LineNumber}).", e.FileName, e.DidTransferSucceed, e.LineNumber);
-            if (e.DidTransferSucceed)
+            _logger.LogVerbose("Tapi progress event for {FileName} with status {Successful} ({LineNumber}).", e.FileName, e.Successful, e.LineNumber);
+            if (e.Successful)
 			{
 				try
 				{
@@ -37,7 +37,7 @@
 				}
 				catch (Exception ex)
 				{
-					_logger.LogError(ex, "Error while handling Tapi progress event for {FileName} with status {DidTransferSucceed} ({LineNumber})", e.FileName, e.DidTransferSucceed, e.LineNumber);
+					_logger.LogError(ex, "Error while handling Tapi progress event for {FileName} with status {Successful} ({LineNumber})", e.FileName, e.Successful, e.LineNumber);
 				}
 			}
 		}

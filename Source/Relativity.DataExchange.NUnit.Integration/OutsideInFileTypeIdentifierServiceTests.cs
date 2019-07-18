@@ -51,11 +51,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 				System.IO.Directory.Delete(rootDirectory, Recursive);
 			}
 #endif
-
-			if (!System.IO.Directory.Exists(rootDirectory))
-			{
-				System.IO.Directory.CreateDirectory(rootDirectory);
-			}
+			Directory.CreateDirectory(rootDirectory);
 
 			this.rootDatasetDocumentsDirectory = Path.Combine(rootDirectory, "Test-FileTypeId-List");
 			if (!System.IO.Directory.Exists(this.rootDatasetDocumentsDirectory))

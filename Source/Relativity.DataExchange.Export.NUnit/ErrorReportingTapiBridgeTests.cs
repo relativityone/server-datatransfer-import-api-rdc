@@ -18,20 +18,20 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldRaiseUnsuccessfulTapiProgressEvent()
 		{
 			string actualFileName = null;
-			bool actualDidTransferSucceed = true;
+			bool actualSuccessful = true;
 
 			var uut = new ErrorReportingTapiBridge();
 			uut.TapiProgress += (s, e) =>
 			{
 				actualFileName = e.FileName;
-				actualDidTransferSucceed = e.DidTransferSucceed;
+				actualSuccessful = e.Successful;
 			};
 
 			TransferPath path = new TransferPath { SourcePath = @"\\test\path\source.txt" };
 			uut.AddPath(path);
 
 			Assert.IsNotNull(actualFileName);
-			Assert.IsFalse(actualDidTransferSucceed);
+			Assert.IsFalse(actualSuccessful);
 		}
 
 		[TestCase(@"\\share\location\test.html", "test_out.html", "test_out.html")]

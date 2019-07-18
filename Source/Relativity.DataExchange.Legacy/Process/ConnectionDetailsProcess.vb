@@ -96,9 +96,7 @@ Namespace kCura.WinEDDS
 				Return
 			End Try
 			Try
-				If Not System.IO.Directory.Exists(bcpPath) Then
-					System.IO.Directory.CreateDirectory(bcpPath)
-				End If
+				System.IO.Directory.CreateDirectory(bcpPath)
 				Dim path As String = bcpPath.TrimEnd("\"c) & "\"
 				System.IO.File.Create(path & "123").Close()
 				System.IO.File.Delete(path & "123")
