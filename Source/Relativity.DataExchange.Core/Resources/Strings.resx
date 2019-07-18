@@ -379,4 +379,7 @@ Detail: {4}</value>
   <data name="ImportExportWebApiVersionInvalidNoAppNameExceptionMessage" xml:space="preserve">
     <value>This application can’t be used with this Relativity instance because the import/export web-services version is invalid. Contact your system administrator for assistance if this problem persists.</value>
   </data>
+  <data name="WorkspaceNullExceptionMessage" xml:space="preserve">
+    <value>This operation cannot be performed because the workspace '{0}' doesn't exist. Retry or contact your system administrator for assistance if this problem persists.</value>
+  </data>
 </root>

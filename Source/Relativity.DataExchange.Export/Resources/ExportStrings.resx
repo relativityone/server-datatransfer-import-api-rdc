@@ -120,9 +120,6 @@
   <data name="WorkspaceDefaultFileshareNullExceptionMessage" xml:space="preserve">
     <value>This operation cannot be performed because the workspace '{0}' default file share isn't defined. Retry or contact your system administrator for assistance if this problem persists.</value>
   </data>
-  <data name="WorkspaceNullExceptionMessage" xml:space="preserve">
-    <value>This operation cannot be performed because the workspace '{0}' doesn't exist. Retry or contact your system administrator for assistance if this problem persists.</value>
-  </data>
   <data name="ExportSettingsNullWorkspaceExceptionMessage" xml:space="preserve">
     <value>The export configuration settings must supply a valid workspace.</value>
   </data>

@@ -114,7 +114,7 @@ namespace Relativity.DataExchange.Transfer
 		string GetUnmappedFileRepositoryClients();
 
 		/// <summary>
-		/// Asynchronously gets the workspace.
+		/// Asynchronously gets the workspace default file share.
 		/// </summary>
 		/// <param name="parameters">
 		/// The bridge connection parameters.
@@ -126,9 +126,12 @@ namespace Relativity.DataExchange.Transfer
 		/// The cancellation token.
 		/// </param>
 		/// <returns>
-		/// The <see cref="Workspace"/> instance.
+		/// The <see cref="RelativityFileShare"/> instance.
 		/// </returns>
-		Task<Workspace> GetWorkspaceAsync(TapiBridgeParameters2 parameters, ILog logger, CancellationToken token);
+		/// <exception cref="TransferException">
+		/// Thrown when the workspace doesn't exist.
+		/// </exception>
+		Task<RelativityFileShare> GetWorkspaceDefaultFileShareAsync(TapiBridgeParameters2 parameters, ILog logger, CancellationToken token);
 
 		/// <summary>
 		/// Asynchronously gets the Transfer API client display name that will be used for the given workspace.

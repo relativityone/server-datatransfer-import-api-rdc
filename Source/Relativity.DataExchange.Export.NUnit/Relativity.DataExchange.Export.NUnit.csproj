@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExportRequestBuilderTests.cs" />
+    <Compile Include="FileShareSettingsServiceTests.cs" />
     <Compile Include="ProductionExportFileNameProviderTests.cs" />
     <Compile Include="RelativeFilePathProviderTests.cs" />
     <Compile Include="RetryableStreamWriterTests.cs" />

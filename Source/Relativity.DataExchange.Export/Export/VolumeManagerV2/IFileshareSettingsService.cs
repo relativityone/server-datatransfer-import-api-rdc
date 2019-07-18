@@ -7,7 +7,7 @@
 	public interface IFileShareSettingsService
 	{
 		/// <summary>
-		/// Asynchronously reads all available file shares associated with the workspace and returns
+		/// Asynchronously reads all available file shares associated with the workspace.
 		/// </summary>
 		/// <param name="token">The token.</param>
 		/// <returns>

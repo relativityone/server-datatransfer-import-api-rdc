@@ -60,41 +60,45 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 
 			try
 			{
-				Workspace workspace = await _tapiObjectService.GetWorkspaceAsync(_parameters, _logger, token);
-				if (workspace == null)
-				{
-					string message = string.Format(
-						CultureInfo.CurrentCulture,
-						ExportStrings.WorkspaceNullExceptionMessage,
-						_parameters.WorkspaceId);
-					throw new InvalidOperationException(message);
-				}
-
-				// Sanity check. This should never happen - but just in case.
-				if (workspace.DefaultFileShare == null)
+				RelativityFileShare defaultFileShare = await _tapiObjectService
+					                                       .GetWorkspaceDefaultFileShareAsync(
+						                                       _parameters,
+						                                       _logger,
+						                                       token).ConfigureAwait(false);
+				if (defaultFileShare == null)
 				{
 					string message = string.Format(
 						CultureInfo.CurrentCulture,
 						ExportStrings.WorkspaceDefaultFileshareNullExceptionMessage,
 						_parameters.WorkspaceId);
-					throw new InvalidOperationException(message);
+					throw new TransferException(message);
 				}
 
-				_defaultFileShareSettings = new RelativityFileShareSettings(workspace.DefaultFileShare);
+				_defaultFileShareSettings = new RelativityFileShareSettings(defaultFileShare);
 				ITapiFileStorageSearchResults results =
 					await _tapiObjectService.SearchFileStorageAsync(_parameters, _logger, token);
 				_logger.LogInformation(
-						"File storage search API discovered {TotalValidFileShares} file shares associated with workspace {WorkspaceId}.",
-						results.FileShares.Count,
-						_parameters.WorkspaceId);
+					"File storage search API discovered {TotalValidFileShares} valid file shares and {TotalInvalidFileShares} invalid files shares associated with workspace {WorkspaceId}.",
+					results.FileShares.Count,
+					results.InvalidFileShares.Count,
+					_parameters.WorkspaceId);
 				_cloudInstance = results.CloudInstance;
 				List<RelativityFileShareSettings> validFileShares = new List<RelativityFileShareSettings>();
-				foreach (RelativityFileShare fileShare in results.FileShares)
+				if (results.FileShares.Count > 0)
 				{
-					validFileShares.Add(new RelativityFileShareSettings(fileShare));
-					_logger.LogInformation(
-						"File share {FileShareArtifactId} associated with workspace {WorkspaceId} is added to the valid file share list.",
-						fileShare.ArtifactId,
+					foreach (RelativityFileShare fileShare in results.FileShares)
+					{
+						validFileShares.Add(new RelativityFileShareSettings(fileShare));
+						_logger.LogInformation(
+							"File storage search API discovered valid file share {FileShareArtifactId} associated with workspace {WorkspaceId} and is added to the valid file share list.",
+							fileShare.ArtifactId,
+							_parameters.WorkspaceId);
+					}
+				}
+				else
+				{
+					_logger.LogWarning(
+						"File storage search API discovered zero valid file shares associated with workspace {WorkspaceId}. This doesn't prevent export from working but performance could be degraded.",
 						_parameters.WorkspaceId);
 				}
 
@@ -103,10 +107,9 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 					foreach (RelativityFileShare invalidFileShare in results.InvalidFileShares)
 					{
 						_logger.LogWarning(
-							"The Relativity instance '{Url}' defines workspace '{WorkspaceId}' that references invalid file share {FileShareArtifactId} with configuration error '{Error}'.",
-							_parameters.WebServiceUrl,
-							_parameters.WorkspaceId,
+							"File storage search API discovered invalid file share {FileShareArtifactId} associated with workspace {WorkspaceId}. Error: '{FileShareError}'.",
 							invalidFileShare.ArtifactId,
+							_parameters.WorkspaceId,
 							invalidFileShare.Error);
 					}
 				}

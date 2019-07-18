@@ -86,14 +86,5 @@ namespace Relativity.DataExchange.Resources {
                 return ResourceManager.GetString("WorkspaceDefaultFileshareNullExceptionMessage", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This operation cannot be performed because the workspace &apos;{0}&apos; doesn&apos;t exist. Retry or contact your system administrator for assistance if this problem persists..
-        /// </summary>
-        internal static string WorkspaceNullExceptionMessage {
-            get {
-                return ResourceManager.GetString("WorkspaceNullExceptionMessage", resourceCulture);
-            }
-        }
     }
 }

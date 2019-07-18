@@ -10,6 +10,7 @@
 namespace Relativity.DataExchange.Transfer
 {
 	using System;
+	using System.Globalization;
 	using System.Linq;
 	using System.Text;
 	using System.Threading;
@@ -210,7 +211,7 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public virtual Task<Workspace> GetWorkspaceAsync(TapiBridgeParameters2 parameters, ILog logger, CancellationToken token)
+		public virtual async Task<RelativityFileShare> GetWorkspaceDefaultFileShareAsync(TapiBridgeParameters2 parameters, ILog logger, CancellationToken token)
 		{
 			if (parameters == null)
 			{
@@ -221,7 +222,18 @@ namespace Relativity.DataExchange.Transfer
 			using (ITransferLog transferLog = new RelativityTransferLog(logger, false))
 			using (IRelativityTransferHost transferHost = new RelativityTransferHost(connectionInfo, transferLog))
 			{
-				return transferHost.GetWorkspaceAsync(parameters.WorkspaceId, token);
+				Workspace workspace = await transferHost.GetWorkspaceAsync(parameters.WorkspaceId, token)
+					                      .ConfigureAwait(false);
+				if (workspace == null)
+				{
+					string message = string.Format(
+						CultureInfo.CurrentCulture,
+						Strings.WorkspaceNullExceptionMessage,
+						parameters.WorkspaceId);
+					throw new TransferException(message);
+				}
+
+				return workspace.DefaultFileShare;
 			}
 		}
 
