@@ -12,8 +12,8 @@ namespace Relativity.DataExchange.Io
 	/// </summary>
 	public class ErrorDuringMassImportArgs : IErrorArguments
 	{
-		private readonly string _lineNumber;
-		private readonly string _message;
+		private readonly string lineNumber;
+		private readonly string message;
 		private readonly string identifier;
 		private readonly string type;
 
@@ -26,8 +26,8 @@ namespace Relativity.DataExchange.Io
 		/// <param name="type">Type of the error.</param>
 		public ErrorDuringMassImportArgs(string lineNumber, string message, string identifier, string type)
 		{
-			this._lineNumber = lineNumber;
-			this._message = message;
+			this.lineNumber = lineNumber;
+			this.message = message;
 			this.identifier = identifier;
 			this.type = type;
 		}
@@ -35,8 +35,8 @@ namespace Relativity.DataExchange.Io
 		/// <inheritdoc />
 		public IEnumerable<string> ValuesForErrorFile()
 		{
-			yield return this._lineNumber;
-			yield return this._message;
+			yield return this.lineNumber;
+			yield return this.message;
 			yield return this.identifier;
 			yield return this.type;
 		}

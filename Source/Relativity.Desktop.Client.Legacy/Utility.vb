@@ -64,7 +64,12 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Public Shared Function ExtractFieldNames(ByVal list As List(Of Object)) As String()
-			Return list.Cast(Of string).ToArray()
+			Dim i As Int32
+			Dim names(list.Count - 1) As String
+			For i = 0 To list.Count - 1
+				names(i) = CType(list(i), String)
+			Next
+			Return names
 		End Function
 
 		Public Shared Sub ThrowExceptionToGUI(ByVal ex As System.Exception)
