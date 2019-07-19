@@ -67,12 +67,13 @@ Namespace kCura.WinEDDS
 		Private _batchCounter As Int32 = 0
 		Private _jobCompleteNativeCount As Int32 = 0
 		Private _jobCompleteMetadataCount As Int32 = 0
-		Private _errorMessageFileLocation As String = String.Empty
 		Private _errorLinesFileLocation As String = String.Empty
 
 		Public MaxNumberOfErrorsInGrid As Int32 = AppSettings.Instance.DefaultMaxErrorCount
 		Private _errorCount As Int32 = 0
-		Private _prePushErrorLineNumbersFileName As String = String.Empty
+		private prePushErrorWriter as ErrorMessageWriter(Of ErrorBeforeMassImportArgs) = New ErrorMessageWriter(Of ErrorBeforeMassImportArgs)("")
+		private errorMessageFileWriter as ErrorMessageWriter(Of ErrorDuringMassImportArgs) = New ErrorMessageWriter(Of ErrorDuringMassImportArgs)("")
+
 		Private _processId As Guid
 		Private _parentArtifactTypeId As Int32?
 		Private _unmappedRelationalFields As System.Collections.ArrayList
@@ -1992,18 +1993,15 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub WriteError(ByVal currentLineNumber As Int32, ByVal line As String)
-			If _prePushErrorLineNumbersFileName = "" Then
-				_prePushErrorLineNumbersFileName = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
-			End If
+			Dim errorRecord As ErrorBeforeMassImportArgs = New ErrorBeforeMassImportArgs(currentLineNumber)
+			prePushErrorWriter.WriteErrorMessage(errorRecord)
 
-			Dim sw As New System.IO.StreamWriter(_prePushErrorLineNumbersFileName, True, System.Text.Encoding.Default)
-			sw.WriteLine(currentLineNumber)
-			sw.Flush()
-			sw.Close()
-			Dim ht As New System.Collections.Hashtable
-			ht.Add("Message", line)
-			ht.Add("Line Number", currentLineNumber)
-			ht.Add("Identifier", _artifactReader.SourceIdentifierValue)
+			Dim ht As New Hashtable From {
+				{"Message", line},
+				{"Line Number", currentLineNumber},
+				{"Identifier", _artifactReader.SourceIdentifierValue}
+			}
+
 			RaiseReportError(ht, _artifactReader.SourceIdentifierValue, "client")
 			WriteStatusLine(EventType2.Error, line)
 		End Sub
@@ -2017,8 +2015,8 @@ Namespace kCura.WinEDDS
 				moreToBeFoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
 				OnReportErrorEvent(moretobefoundMessage)
 			End If
-			Dim errorMessageFileWriter as ErrorMessageWriter = New ErrorMessageWriter(_errorMessageFileLocation)
-			errorMessageFileWriter.WriteErrorMessage(row("Line Number").ToString, row("Message").ToString, identifier, type)
+			Dim errorRecord As ErrorDuringMassImportArgs = New ErrorDuringMassImportArgs(row("Line Number").ToString, row("Message").ToString, identifier, type)
+			errorMessageFileWriter.WriteErrorMessage(errorRecord)
 		End Sub
 
 		Protected Sub WriteWarning(ByVal line As String)
@@ -2089,7 +2087,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub _processContext_ExportServerErrors(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportServerErrors
-			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(_errorMessageFileLocation, _prePushErrorLineNumbersFileName)
+			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.ErrorMessageFileLocation, prePushErrorWriter.ErrorMessageFileLocation)
 			Dim rootFileName As String = _filePath
 			Dim defaultExtension As String
 			If Not rootFileName.IndexOf(".") = -1 Then
@@ -2110,13 +2108,13 @@ Namespace kCura.WinEDDS
 			If Not _errorLinesFileLocation Is Nothing AndAlso Not _errorLinesFileLocation = String.Empty AndAlso Me.GetFileExists(_errorLinesFileLocation, retry) Then
 				Me.CopyFile(_errorLinesFileLocation, errorFilePath, retry)
 			End If
-
-			Me.CopyFile(_errorMessageFileLocation, errorReportPath, retry)
-			_errorMessageFileLocation = ""
+			Dim errorMessageLocation As String = errorMessageFileWriter.ErrorMessageFileLocation
+			errorMessageFileWriter.Dispose()
+			Me.CopyFile(errorMessageLocation, errorReportPath, retry)
 		End Sub
 
 		Private Sub _processContext_ExportErrorReportEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportErrorReport
-			If String.IsNullOrEmpty(_errorMessageFileLocation) Then
+			If String.IsNullOrEmpty(errorMessageFileWriter.ErrorMessageFileLocation) Then
 				' write out a blank file if there is no error message file
 				Dim fileWriter As System.IO.StreamWriter = System.IO.File.CreateText(e.Path)
 				fileWriter.Close()
@@ -2125,14 +2123,14 @@ Namespace kCura.WinEDDS
 			End If
 
 			Const retry As Boolean = True
-			Me.CopyFile(_errorMessageFileLocation, e.Path, True, retry)
+			Me.CopyFile(errorMessageFileWriter.ErrorMessageFileLocation, e.Path, True, retry)
 		End Sub
 
 		Private Sub _processContext_ExportErrorFileEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportErrorFile
 			Const retry As Boolean = True
-			If _errorMessageFileLocation Is Nothing OrElse _errorMessageFileLocation = "" Then Exit Sub
+			If string.IsNullOrEmpty(errorMessageFileWriter.ErrorMessageFileLocation) Then Exit Sub
 			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not Me.GetFileExists(_errorLinesFileLocation, retry) Then
-				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(_errorMessageFileLocation, _prePushErrorLineNumbersFileName)
+				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.ErrorMessageFileLocation, prePushErrorWriter.ErrorMessageFileLocation)
 			End If
 			If _errorLinesFileLocation Is Nothing Then
 				Exit Sub

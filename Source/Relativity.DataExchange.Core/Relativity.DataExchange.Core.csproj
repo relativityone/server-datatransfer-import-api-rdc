@@ -111,6 +111,8 @@
     <Compile Include="Data\StringImporterException.cs" />
     <Compile Include="Data\TrimOption.cs" />
     <Compile Include="ExceptionHelper.cs" />
+    <Compile Include="Io\ErrorBeforeMassImportArgs.cs" />
+    <Compile Include="Io\ErrorDuringMassImportArgs.cs" />
     <Compile Include="Io\ErrorMessageWriter.cs" />
     <Compile Include="Io\FileTypeIdentifierService.cs" />
     <Compile Include="IAppSettingsInternal.cs" />
@@ -119,6 +121,7 @@
     <Compile Include="Io\FileTypeIdentifyError.cs" />
     <Compile Include="Io\FileTypeIdentifyException.cs" />
     <Compile Include="Io\FileTypeInfo.cs" />
+    <Compile Include="Io\IErrorArguments.cs" />
     <Compile Include="Io\IFileTypeConfiguration.cs" />
     <Compile Include="Io\IFileTypeIdentifier.cs" />
     <Compile Include="Io\IFileTypeInfo.cs" />

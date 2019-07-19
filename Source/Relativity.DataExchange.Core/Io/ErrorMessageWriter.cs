@@ -1,53 +1,78 @@
 ﻿// <copyright file="ErrorMessageWriter.cs" company="Relativity ODA LLC">
 // © Relativity All Rights Reserved.
 // </copyright>
-
 namespace Relativity.DataExchange.Io
 {
+	using System;
 	using System.IO;
-
 	using Microsoft.VisualBasic;
 
 	/// <summary>
 	/// Class that is specialized in writing error messages to the error message file.
 	/// </summary>
-	public class ErrorMessageWriter
+	/// <typeparam name="T">The type to write.</typeparam>
+	public class ErrorMessageWriter<T> : IDisposable
+		where T : IErrorArguments
 	{
-		private static readonly object Lock = new object();
-		private string _errorMessageFileLocation;
+		/// <summary>
+		/// This lock is per generic argument.
+		/// </summary>
+		private static readonly object TLock = new object();
+		private static StreamWriter streamForThisType;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ErrorMessageWriter"/> class.
+		/// Initializes a new instance of the <see cref="ErrorMessageWriter{T}"/> class.
 		/// </summary>
 		/// <param name="errorMessageFileLocation">File location for the error messages.</param>
 		public ErrorMessageWriter(string errorMessageFileLocation)
 		{
-			this._errorMessageFileLocation = errorMessageFileLocation;
+			lock (TLock)
+			{
+				if (string.IsNullOrEmpty(errorMessageFileLocation))
+				{
+					errorMessageFileLocation =
+						TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix);
+				}
+
+				this.ErrorMessageFileLocation = errorMessageFileLocation;
+
+				streamForThisType = new StreamWriter(
+					errorMessageFileLocation,
+					true,
+					System.Text.Encoding.Default);
+			}
+		}
+
+		/// <summary>
+		/// Finalizes an instance of the <see cref="ErrorMessageWriter{T}"/> class.
+		/// </summary>
+		~ErrorMessageWriter()
+		{
+			this.ReleaseUnmanagedResources();
+		}
+
+		/// <summary>
+		/// Gets the location this writer is writing to.
+		/// </summary>
+		public string ErrorMessageFileLocation { get; }
+
+		/// <inheritdoc/>
+		public void Dispose()
+		{
+			this.ReleaseUnmanagedResources();
+			GC.SuppressFinalize(this);
 		}
 
 		/// <summary>
 		/// Writes an error message to the error file.
 		/// </summary>
-		/// <param name="lineNumber">The line number to write.</param>
-		/// <param name="message">The message to write.</param>
-		/// <param name="identifier">the identifier for this error.</param>
-		/// <param name="type">The type of the error.</param>
-		public void WriteErrorMessage(string lineNumber, string message, string identifier, string type)
+		/// <param name="toWrite">The line to write.</param>
+		public void WriteErrorMessage(T toWrite)
 		{
-			lock (Lock)
+			lock (TLock)
 			{
-				if (string.IsNullOrEmpty(this._errorMessageFileLocation))
-				{
-					this._errorMessageFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix);
-				}
-
-				using (var errorMessageFileWriter = new StreamWriter(
-					this._errorMessageFileLocation,
-					true,
-					System.Text.Encoding.Default))
-				{
-					errorMessageFileWriter.WriteLine($"{CSVFormat(lineNumber)},{CSVFormat(message)},{CSVFormat(identifier)},{CSVFormat(type)}");
-				}
+				var lineForFile = toWrite.ValuesForErrorFile().ToCsv(CSVFormat);
+				streamForThisType.WriteLine(lineForFile);
 			}
 		}
 
@@ -65,6 +90,14 @@ namespace Relativity.DataExchange.Io
 			var doubleQuote = quote + quote;
 			var escapedField = fieldValue.Replace(quote, doubleQuote);
 			return $"{quote}{escapedField}{quote}";
+		}
+
+		private void ReleaseUnmanagedResources()
+		{
+			lock (TLock)
+			{
+				streamForThisType?.Dispose();
+			}
 		}
 	}
 }
