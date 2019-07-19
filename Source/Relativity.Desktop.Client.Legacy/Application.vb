@@ -348,7 +348,7 @@ Namespace Relativity.Desktop.Client
 					Exit For
 				End If
 			Next
-			Return idField Is Nothing AndAlso idField.FieldID <> keyFieldID
+			Return (idField IsNot Nothing) AndAlso idField.FieldID <> keyFieldID
 		End Function
 
 		Friend Async Function ReadyToLoad(ByVal imageArgs As kCura.WinEDDS.ImageLoadFile, ByVal forPreview As Boolean) As Task(Of Boolean)
