@@ -64,6 +64,13 @@ namespace Relativity.DataExchange.Io
 		/// </summary>
 		public string FilePath { get; }
 
+		/// <summary>
+		/// Gets a value indicating whether this class created a file. There are 2 possibilities:
+		/// - There is no file
+		/// - There is a file, and there is something in it.
+		/// </summary>
+		public bool FileCreated => streamForThisType.IsValueCreated;
+
 		/// <inheritdoc/>
 		public void Dispose()
 		{
