@@ -15,7 +15,8 @@ namespace Relativity.DataExchange.Io
 		where T : IErrorArguments
 	{
 		private readonly object lockObject = new object();
-		private readonly Lazy<StreamWriter> streamForThisType;
+		private readonly Lazy<StreamWriter> stream;
+		private bool disposed;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ErrorMessageWriter{T}"/> class.
@@ -33,7 +34,7 @@ namespace Relativity.DataExchange.Io
 
 				this.FilePath = filePath;
 
-				this.streamForThisType = new Lazy<StreamWriter>(() => new StreamWriter(
+				this.stream = new Lazy<StreamWriter>(() => new StreamWriter(
 					filePath,
 					true,
 					System.Text.Encoding.Default));
@@ -58,16 +59,22 @@ namespace Relativity.DataExchange.Io
 		/// - There is no file
 		/// - There is a file, and there is something in it.
 		/// </summary>
-		public bool FileCreated => this.streamForThisType.IsValueCreated;
+		public bool FileCreated => this.stream.IsValueCreated;
 
 		/// <inheritdoc/>
 		public void Dispose()
 		{
 			lock (this.lockObject)
 			{
-				if (this.streamForThisType.IsValueCreated)
+				if (this.disposed)
 				{
-					this.streamForThisType.Value?.Dispose();
+					return;
+				}
+
+				if (this.stream.IsValueCreated)
+				{
+					this.stream.Value?.Dispose();
+					this.disposed = true;
 				}
 			}
 		}
@@ -81,7 +88,7 @@ namespace Relativity.DataExchange.Io
 			lock (this.lockObject)
 			{
 				var lineForFile = toWrite.ValuesForErrorFile().ToCsv(CSVFormat);
-				this.streamForThisType.Value.WriteLine(lineForFile);
+				this.stream.Value.WriteLine(lineForFile);
 			}
 		}
 
