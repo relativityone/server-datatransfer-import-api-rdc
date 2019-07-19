@@ -14,11 +14,8 @@ namespace Relativity.DataExchange.Io
 	public sealed class ErrorMessageWriter<T> : IDisposable
 		where T : IErrorArguments
 	{
-		/// <summary>
-		/// This lock is per generic argument.
-		/// </summary>
-		private static readonly object TLock = new object();
-		private static Lazy<StreamWriter> streamForThisType;
+		private readonly object lockObject = new object();
+		private readonly Lazy<StreamWriter> streamForThisType;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ErrorMessageWriter{T}"/> class.
@@ -26,7 +23,7 @@ namespace Relativity.DataExchange.Io
 		/// <param name="filePath">File location for the error messages.</param>
 		public ErrorMessageWriter(string filePath)
 		{
-			lock (TLock)
+			lock (this.lockObject)
 			{
 				if (string.IsNullOrEmpty(filePath))
 				{
@@ -36,7 +33,7 @@ namespace Relativity.DataExchange.Io
 
 				this.FilePath = filePath;
 
-				streamForThisType = new Lazy<StreamWriter>(() => new StreamWriter(
+				this.streamForThisType = new Lazy<StreamWriter>(() => new StreamWriter(
 					filePath,
 					true,
 					System.Text.Encoding.Default));
@@ -52,14 +49,6 @@ namespace Relativity.DataExchange.Io
 		}
 
 		/// <summary>
-		/// Finalizes an instance of the <see cref="ErrorMessageWriter{T}"/> class.
-		/// </summary>
-		~ErrorMessageWriter()
-		{
-			ReleaseUnmanagedResources();
-		}
-
-		/// <summary>
 		/// Gets the location this writer is writing to.
 		/// </summary>
 		public string FilePath { get; }
@@ -69,13 +58,18 @@ namespace Relativity.DataExchange.Io
 		/// - There is no file
 		/// - There is a file, and there is something in it.
 		/// </summary>
-		public bool FileCreated => streamForThisType.IsValueCreated;
+		public bool FileCreated => this.streamForThisType.IsValueCreated;
 
 		/// <inheritdoc/>
 		public void Dispose()
 		{
-			ReleaseUnmanagedResources();
-			GC.SuppressFinalize(this);
+			lock (this.lockObject)
+			{
+				if (this.streamForThisType.IsValueCreated)
+				{
+					this.streamForThisType.Value?.Dispose();
+				}
+			}
 		}
 
 		/// <summary>
@@ -84,10 +78,10 @@ namespace Relativity.DataExchange.Io
 		/// <param name="toWrite">The line to write.</param>
 		public void WriteErrorMessage(T toWrite)
 		{
-			lock (TLock)
+			lock (this.lockObject)
 			{
 				var lineForFile = toWrite.ValuesForErrorFile().ToCsv(CSVFormat);
-				streamForThisType.Value.WriteLine(lineForFile);
+				this.streamForThisType.Value.WriteLine(lineForFile);
 			}
 		}
 
@@ -105,17 +99,6 @@ namespace Relativity.DataExchange.Io
 			var doubleQuote = quote + quote;
 			var escapedField = fieldValue.Replace(quote, doubleQuote);
 			return $"{quote}{escapedField}{quote}";
-		}
-
-		private static void ReleaseUnmanagedResources()
-		{
-			lock (TLock)
-			{
-				if (streamForThisType.IsValueCreated)
-				{
-					streamForThisType.Value?.Dispose();
-				}
-			}
 		}
 	}
 }
