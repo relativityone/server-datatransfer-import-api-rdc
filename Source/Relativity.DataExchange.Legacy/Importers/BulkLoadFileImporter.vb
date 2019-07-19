@@ -2087,7 +2087,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub _processContext_ExportServerErrors(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportServerErrors
-			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.ErrorMessageFileLocation, prePushErrorWriter.ErrorMessageFileLocation)
+			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.FilePath, prePushErrorWriter.FilePath)
 			Dim rootFileName As String = _filePath
 			Dim defaultExtension As String
 			If Not rootFileName.IndexOf(".") = -1 Then
@@ -2108,13 +2108,14 @@ Namespace kCura.WinEDDS
 			If Not _errorLinesFileLocation Is Nothing AndAlso Not _errorLinesFileLocation = String.Empty AndAlso Me.GetFileExists(_errorLinesFileLocation, retry) Then
 				Me.CopyFile(_errorLinesFileLocation, errorFilePath, retry)
 			End If
-			Dim errorMessageLocation As String = errorMessageFileWriter.ErrorMessageFileLocation
+			Dim errorMessageLocation As String = errorMessageFileWriter.FilePath
 			errorMessageFileWriter.Dispose()
+			errorMessageFileWriter = New ErrorMessageWriter(Of ErrorDuringMassImportArgs)("")
 			Me.CopyFile(errorMessageLocation, errorReportPath, retry)
 		End Sub
 
 		Private Sub _processContext_ExportErrorReportEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportErrorReport
-			If String.IsNullOrEmpty(errorMessageFileWriter.ErrorMessageFileLocation) Then
+			If String.IsNullOrEmpty(errorMessageFileWriter.FilePath) Then
 				' write out a blank file if there is no error message file
 				Dim fileWriter As System.IO.StreamWriter = System.IO.File.CreateText(e.Path)
 				fileWriter.Close()
@@ -2123,14 +2124,14 @@ Namespace kCura.WinEDDS
 			End If
 
 			Const retry As Boolean = True
-			Me.CopyFile(errorMessageFileWriter.ErrorMessageFileLocation, e.Path, True, retry)
+			Me.CopyFile(errorMessageFileWriter.FilePath, e.Path, True, retry)
 		End Sub
 
 		Private Sub _processContext_ExportErrorFileEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportErrorFile
 			Const retry As Boolean = True
-			If string.IsNullOrEmpty(errorMessageFileWriter.ErrorMessageFileLocation) Then Exit Sub
+			If string.IsNullOrEmpty(errorMessageFileWriter.FilePath) Then Exit Sub
 			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not Me.GetFileExists(_errorLinesFileLocation, retry) Then
-				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.ErrorMessageFileLocation, prePushErrorWriter.ErrorMessageFileLocation)
+				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.FilePath, prePushErrorWriter.FilePath)
 			End If
 			If _errorLinesFileLocation Is Nothing Then
 				Exit Sub

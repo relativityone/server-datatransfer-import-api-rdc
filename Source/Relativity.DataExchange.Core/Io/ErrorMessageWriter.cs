@@ -18,29 +18,37 @@ namespace Relativity.DataExchange.Io
 		/// This lock is per generic argument.
 		/// </summary>
 		private static readonly object TLock = new object();
-		private static StreamWriter streamForThisType;
+		private static Lazy<StreamWriter> streamForThisType;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ErrorMessageWriter{T}"/> class.
 		/// </summary>
-		/// <param name="errorMessageFileLocation">File location for the error messages.</param>
-		public ErrorMessageWriter(string errorMessageFileLocation)
+		/// <param name="filePath">File location for the error messages.</param>
+		public ErrorMessageWriter(string filePath)
 		{
 			lock (TLock)
 			{
-				if (string.IsNullOrEmpty(errorMessageFileLocation))
+				if (string.IsNullOrEmpty(filePath))
 				{
-					errorMessageFileLocation =
+					filePath =
 						TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix);
 				}
 
-				this.ErrorMessageFileLocation = errorMessageFileLocation;
+				this.FilePath = filePath;
 
-				streamForThisType = new StreamWriter(
-					errorMessageFileLocation,
+				streamForThisType = new Lazy<StreamWriter>(() => new StreamWriter(
+					filePath,
 					true,
-					System.Text.Encoding.Default);
+					System.Text.Encoding.Default));
 			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ErrorMessageWriter{T}"/> class.
+		/// </summary>
+		public ErrorMessageWriter()
+            : this(string.Empty)
+		{
 		}
 
 		/// <summary>
@@ -54,7 +62,7 @@ namespace Relativity.DataExchange.Io
 		/// <summary>
 		/// Gets the location this writer is writing to.
 		/// </summary>
-		public string ErrorMessageFileLocation { get; }
+		public string FilePath { get; }
 
 		/// <inheritdoc/>
 		public void Dispose()
@@ -72,7 +80,7 @@ namespace Relativity.DataExchange.Io
 			lock (TLock)
 			{
 				var lineForFile = toWrite.ValuesForErrorFile().ToCsv(CSVFormat);
-				streamForThisType.WriteLine(lineForFile);
+				streamForThisType.Value.WriteLine(lineForFile);
 			}
 		}
 
@@ -96,7 +104,10 @@ namespace Relativity.DataExchange.Io
 		{
 			lock (TLock)
 			{
-				streamForThisType?.Dispose();
+				if (streamForThisType.IsValueCreated)
+				{
+					streamForThisType.Value?.Dispose();
+				}
 			}
 		}
 	}
