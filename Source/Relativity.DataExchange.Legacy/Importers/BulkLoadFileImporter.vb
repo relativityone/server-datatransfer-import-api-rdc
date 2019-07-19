@@ -71,8 +71,8 @@ Namespace kCura.WinEDDS
 
 		Public MaxNumberOfErrorsInGrid As Int32 = AppSettings.Instance.DefaultMaxErrorCount
 		Private _errorCount As Int32 = 0
-		private prePushErrorWriter as ErrorMessageWriter(Of ErrorBeforeMassImportArgs) = New ErrorMessageWriter(Of ErrorBeforeMassImportArgs)("")
-		private errorMessageFileWriter as ErrorMessageWriter(Of ErrorDuringMassImportArgs) = New ErrorMessageWriter(Of ErrorDuringMassImportArgs)("")
+		private prePushErrorWriter as ErrorMessageWriter(Of ErrorBeforeMassImportArgs) = New ErrorMessageWriter(Of ErrorBeforeMassImportArgs)()
+		private errorMessageFileWriter as ErrorMessageWriter(Of ErrorDuringMassImportArgs) = New ErrorMessageWriter(Of ErrorDuringMassImportArgs)()
 
 		Private _processId As Guid
 		Private _parentArtifactTypeId As Int32?
@@ -2110,7 +2110,7 @@ Namespace kCura.WinEDDS
 			End If
 			Dim errorMessageLocation As String = errorMessageFileWriter.FilePath
 			errorMessageFileWriter.Dispose()
-			errorMessageFileWriter = New ErrorMessageWriter(Of ErrorDuringMassImportArgs)("")
+			errorMessageFileWriter = New ErrorMessageWriter(Of ErrorDuringMassImportArgs)()
 			Me.CopyFile(errorMessageLocation, errorReportPath, retry)
 		End Sub
 

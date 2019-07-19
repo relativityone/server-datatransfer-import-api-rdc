@@ -11,7 +11,7 @@ namespace Relativity.DataExchange.Io
 	/// Class that is specialized in writing error messages to the error message file.
 	/// </summary>
 	/// <typeparam name="T">The type to write.</typeparam>
-	public class ErrorMessageWriter<T> : IDisposable
+	public sealed class ErrorMessageWriter<T> : IDisposable
 		where T : IErrorArguments
 	{
 		/// <summary>
@@ -56,7 +56,7 @@ namespace Relativity.DataExchange.Io
 		/// </summary>
 		~ErrorMessageWriter()
 		{
-			this.ReleaseUnmanagedResources();
+			ReleaseUnmanagedResources();
 		}
 
 		/// <summary>
@@ -67,7 +67,7 @@ namespace Relativity.DataExchange.Io
 		/// <inheritdoc/>
 		public void Dispose()
 		{
-			this.ReleaseUnmanagedResources();
+			ReleaseUnmanagedResources();
 			GC.SuppressFinalize(this);
 		}
 
@@ -100,7 +100,7 @@ namespace Relativity.DataExchange.Io
 			return $"{quote}{escapedField}{quote}";
 		}
 
-		private void ReleaseUnmanagedResources()
+		private static void ReleaseUnmanagedResources()
 		{
 			lock (TLock)
 			{
