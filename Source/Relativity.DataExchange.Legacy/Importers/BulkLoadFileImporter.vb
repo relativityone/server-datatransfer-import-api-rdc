@@ -2115,7 +2115,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _processContext_ExportErrorReportEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportErrorReport
-			If String.IsNullOrEmpty(errorMessageFileWriter.FilePath) Then
+			If Not errorMessageFileWriter.FileCreated Then
 				' write out a blank file if there is no error message file
 				Dim fileWriter As System.IO.StreamWriter = System.IO.File.CreateText(e.Path)
 				fileWriter.Close()
