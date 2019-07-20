@@ -93,10 +93,14 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		[IdentifiedTest("14A8EB3C-5662-428C-B1E6-FA95E8C79259")]
+		[TestCase(false)]
+		[TestCase(true)]
 		[Category(TestCategories.Export)]
 		[Category(TestCategories.Integration)]
-		public async Task ShouldExportWhenTheSettingsForFileShareIsNullAsync()
+		public async Task ShouldExportWhenTheSettingsForFileShareIsNullAsync(bool forceAsperaClient)
 		{
+			// Export relies on the global parameters.
+			this.GivenTheTapiForceAsperaClientAppSetting(forceAsperaClient);
 			this.GivenTheMockFileShareSettingsServiceIsRegistered();
 			this.GivenTheMockedSettingsForFileShareIsNull();
 			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);

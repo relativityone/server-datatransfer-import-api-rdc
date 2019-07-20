@@ -429,8 +429,8 @@ namespace Relativity.DataExchange.Transfer
 									"Failed to add a path to the transfer job.");
 							}
 
-							// This will automatically add paths.
-							this.SwitchToWebMode(exception, path);
+							// Note: if the switch is successful, the path will get added below.
+							this.SwitchToWebMode(exception);
 						}).Execute(
 						() =>
 						{
@@ -438,8 +438,7 @@ namespace Relativity.DataExchange.Transfer
 							if (transferException == null || !this.GetIsTransferPathInJobQueue(path))
 							{
 								this.TransferJob.AddPath(path, this.cancellationToken);
-								this.batchTotals.IncrementTotalFileTransferRequests();
-								this.jobTotals.IncrementTotalFileTransferRequests();
+								this.IncrementTotalFileTransferRequests();
 							}
 
 							return !string.IsNullOrEmpty(path.TargetFileName)
@@ -970,7 +969,7 @@ namespace Relativity.DataExchange.Transfer
 					throw;
 				}
 
-				this.SwitchToWebMode(e, null);
+				this.SwitchToWebMode(e);
 			}
 		}
 
@@ -1147,13 +1146,10 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="exception">
 		/// The optional exception that forced the switch.
 		/// </param>
-		/// <param name="addedPath">
-		/// The optional path to add to the new job. This can be null if the failure occurred outside of adding the path to a job.
-		/// </param>
 		/// <exception cref="TransferException">
 		/// Thrown when the existing job failed due to permissions or switching itself failed.
 		/// </exception>
-		private void SwitchToWebMode(Exception exception, TransferPath addedPath)
+		private void SwitchToWebMode(Exception exception)
 		{
 			// Note: permission issues are fatal and cannot be "fixed" by switching to web mode.
 			//       this check will prevent unnecessary spinning and force an immediate job failure.
@@ -1197,22 +1193,18 @@ namespace Relativity.DataExchange.Transfer
 				this.TransferLog.LogInformation("The current transfer job is switching to web mode and no retryable paths exist.");
 			}
 
-			if (addedPath != null && !retryablePaths.Any(x => x.Equals(addedPath)))
-			{
-				// Do NOT call AddPath as this could introduce infinite recursion.
-				retryablePaths.Add(addedPath);
-			}
-
 			this.DestroyTransferJob();
 			this.DestroyTransferClient();
 			this.CreateHttpClient();
 			this.PublishClientChanged(ClientChangeReason.HttpFallback);
 			this.CreateTransferJob(true);
-
-			// Restore the original path before adding to the HTTP-based job.
-			foreach (var path in retryablePaths)
+			foreach (TransferPath path in retryablePaths)
 			{
+				// Restore the original path before adding to the web mode job.
 				path.RevertPaths();
+
+				// Do NOT call AddPath since this would introduce infinite recursion.
+				// Do NOT call IncrementTotalFileTransferRequests since these have already been counted!
 				this.TransferJob.AddPath(path, this.cancellationToken);
 			}
 
@@ -1236,7 +1228,8 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			var queuedTransferPaths = this.TransferJob.JobService.GetJobTransferPaths().Select(jobPath => jobPath.Path);
-			return queuedTransferPaths.Any(x => x.Equals(path));
+			bool result = queuedTransferPaths.Any(x => x.Equals(path));
+			return result;
 		}
 
 		/// <summary>
@@ -1262,6 +1255,15 @@ namespace Relativity.DataExchange.Transfer
 			this.TransferLog.LogInformation("Total number of retryable paths: {TotalRetryablePaths:n0}", paths.Count);
 			this.TransferLog.LogInformation("Total number of retryable bytes: {TotalRetryableBytes:n0}", paths.Sum(x => x.Bytes));
 			return paths;
+		}
+
+		/// <summary>
+		/// Increment the transfer request total.
+		/// </summary>
+		private void IncrementTotalFileTransferRequests()
+		{
+			this.batchTotals.IncrementTotalFileTransferRequests();
+			this.jobTotals.IncrementTotalFileTransferRequests();
 		}
 
 		/// <summary>
@@ -1293,6 +1295,13 @@ namespace Relativity.DataExchange.Transfer
 				totals.TotalSuccessfulFileTransfers,
 				totals.TotalFileTransferRequests,
 				totalFailedFileTransfers);
+			if (totals.TotalFileTransferRequests == 0)
+			{
+				this.TransferLog.LogWarning(
+					batched
+						? "Although the batch completed, the total number of batched file requests is zero and may suggest a logic issue or unexpected result."
+						: "Although the job completed, the total number of job file requests is zero and may suggest a logic issue or unexpected result.");
+			}
 		}
 
 		/// <summary>
@@ -1519,7 +1528,7 @@ namespace Relativity.DataExchange.Transfer
 							{
 								if (!this.CheckValidTransferJobStatus())
 								{
-									this.SwitchToWebMode(null, null);
+									this.SwitchToWebMode(null);
 								}
 
 								this.cancellationToken.ThrowIfCancellationRequested();
@@ -1545,7 +1554,7 @@ namespace Relativity.DataExchange.Transfer
 								this.TransferLog.LogError(
 									e,
 									"An exception was thrown waiting for the transfers to complete.");
-								this.SwitchToWebMode(e, null);
+								this.SwitchToWebMode(e);
 								return true;
 							}
 						});
@@ -1597,7 +1606,7 @@ namespace Relativity.DataExchange.Transfer
 							exception,
 							this.jobRequest,
 							Strings.CompleteJobExceptionMessage);
-						this.SwitchToWebMode(exception, null);
+						this.SwitchToWebMode(exception);
 					}).Execute(
 					() =>
 					{

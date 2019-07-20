@@ -58,7 +58,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		protected const string SampleDocWordFileName = "EDRM-Sample2.doc";
 
 		/// <summary>
-		/// The sample Excel file name that's available for testing within the output directory.
+		/// The sample Excel file name that's available for testingS within the output directory.
 		/// </summary>
 		protected const string SampleDocExcelFileName = "EDRM-Sample3.xlsx";
 
@@ -345,6 +345,13 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				this.MockAppSettings.Object,
 				this.MockLogger.Object);
 
+			// Sanity check since these are global settings.
+			AppSettings.Instance.TapiForceAsperaClient = AppSettingsConstants.TapiForceAsperaClientDefaultValue;
+			AppSettings.Instance.TapiForceBcpHttpClient = AppSettingsConstants.TapiForceBcpHttpClientDefaultValue;
+			AppSettings.Instance.TapiForceClientCandidates = AppSettingsConstants.TapiForceClientCandidatesDefaultValue;
+			AppSettings.Instance.TapiForceFileShareClient = AppSettingsConstants.TapiForceFileShareClientDefaultValue;
+			AppSettings.Instance.TapiForceHttpClient = AppSettingsConstants.TapiForceHttpClientDefaultValue;
+
 			// This registers all components.
 			ContainerFactoryProvider.ContainerFactory = this.testContainerFactory;
 		}
@@ -585,6 +592,13 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				.Returns((IRelativityFileShareSettings)null);
 			this.MockFileShareSettingsService.Setup(x => x.ReadFileSharesAsync(It.IsAny<CancellationToken>()))
 				.Returns(Task.CompletedTask);
+		}
+
+		protected void GivenTheTapiForceAsperaClientAppSetting(bool forceAsperaClient)
+		{
+			// Export relies on the global parameters.
+			AppSettings.Instance.TapiForceAsperaClient = forceAsperaClient;
+			this.MockAppSettings.SetupGet(x => x.TapiForceAsperaClient).Returns(forceAsperaClient);
 		}
 
 		/// <summary>

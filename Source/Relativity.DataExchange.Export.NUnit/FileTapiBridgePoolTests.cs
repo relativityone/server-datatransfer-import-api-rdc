@@ -131,14 +131,15 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldAssignTheUnmappedFileRepositoryClientsOnBridgeWhenTheSettingsIsNull()
+		public void ItShouldReconfigureTheBridgeParametersWhenTheFileShareSettingsIsNull()
 		{
-			this._tapiObjectService.Setup(x => x.GetUnmappedFileRepositoryClients()).Returns("Whatever");
+			this._tapiObjectService
+				.Setup(x => x.ApplyUnmappedFileRepositoryParameters(It.IsAny<TapiBridgeParameters2>())).Callback(
+					(TapiBridgeParameters2 parameters) => parameters.ForceClientCandidates = "Whatever");
 			IDownloadTapiBridge bridge = this._uut.Request(null, CancellationToken.None);
 			Assert.IsNotNull(bridge);
-
-			// This represents the key parameter that's assigned to exclude Aspera mode.
 			Assert.That(bridge.Parameters.ForceClientCandidates, Is.EqualTo("Whatever"));
+			Assert.That(bridge.Parameters.ForceAsperaClient, Is.False);
 		}
 
 		[Test]

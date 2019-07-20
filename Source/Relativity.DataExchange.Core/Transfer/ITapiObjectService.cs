@@ -22,6 +22,14 @@ namespace Relativity.DataExchange.Transfer
 	public interface ITapiObjectService
 	{
 		/// <summary>
+		/// Applies the appropriate parameter changes to create a transfer bridge that doesn't require files to be mapped to a specific file repository.
+		/// </summary>
+		/// <param name="parameters">
+		/// The Transfer API bridge parameters to be modified.
+		/// </param>
+		void ApplyUnmappedFileRepositoryParameters(TapiBridgeParameters2 parameters);
+
+		/// <summary>
 		/// Dynamically builds the file transfer mode documentation text.
 		/// </summary>
 		/// <param name="includeBulk">
@@ -100,18 +108,6 @@ namespace Relativity.DataExchange.Transfer
 		/// The <see cref="TapiClient"/> value.
 		/// </returns>
 		TapiClient GetTapiClient(Guid clientId);
-
-		/// <summary>
-		/// Gets a semi-colon delimited list of Transfer API clients that don't require files to be mapped to a specific file repository.
-		/// </summary>
-		/// <returns>
-		/// The client candidates.
-		/// </returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage(
-			"Microsoft.Design",
-			"CA1024:UsePropertiesWhereAppropriate",
-			Justification = "A method is more appropriate than a property.")]
-		string GetUnmappedFileRepositoryClients();
 
 		/// <summary>
 		/// Asynchronously gets the workspace default file share.

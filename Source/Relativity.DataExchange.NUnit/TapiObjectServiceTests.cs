@@ -93,11 +93,21 @@ namespace Relativity.DataExchange.NUnit
 
 		[Test]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldGetTheUnmappedFileRepositoryClients()
+		public void ShouldApplyTheUnmappedFileRepositoryParameters()
 		{
-			string clients = this.service.GetUnmappedFileRepositoryClients();
-			Assert.That(clients, Is.Not.Null.Or.Empty);
-			string[] clientList = clients.Split(';');
+			TapiBridgeParameters2 parameters = new TapiBridgeParameters2
+				                                   {
+					                                   ForceAsperaClient = true,
+					                                   ForceFileShareClient = true,
+					                                   ForceHttpClient = true,
+					                                   ForceClientCandidates = "xyz"
+				                                   };
+			this.service.ApplyUnmappedFileRepositoryParameters(parameters);
+			Assert.That(parameters.ForceAsperaClient, Is.False);
+			Assert.That(parameters.ForceFileShareClient, Is.True);
+			Assert.That(parameters.ForceHttpClient, Is.True);
+			Assert.That(parameters.ForceClientCandidates, Is.Not.Null.Or.Empty);
+			string[] clientList = parameters.ForceClientCandidates.Split(';');
 			Assert.That(clientList.Length, Is.EqualTo(2));
 			Assert.That(
 				clientList,

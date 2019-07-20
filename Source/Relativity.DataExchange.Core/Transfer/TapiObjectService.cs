@@ -38,6 +38,25 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
+		public virtual void ApplyUnmappedFileRepositoryParameters(TapiBridgeParameters2 parameters)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			// Note: only direct/web modes support transfer jobs that can access files from
+			//       any given file repository without any additional configuration.
+			parameters.ForceClientCandidates = string.Join(
+				";",
+				Relativity.Transfer.WellKnownTransferClient.FileShare.ToString(),
+				Relativity.Transfer.WellKnownTransferClient.Http.ToString());
+
+			// Allow other clients to be forced - just clear Aspera.
+			parameters.ForceAsperaClient = false;
+		}
+
+		/// <inheritdoc />
 		public virtual string BuildFileTransferModeDocText(bool includeBulk)
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
@@ -177,18 +196,6 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			return clientId;
-		}
-
-		/// <inheritdoc />
-		public virtual string GetUnmappedFileRepositoryClients()
-		{
-			// Note: only direct/web modes support transfer jobs that can access files from
-			//       any given file repository without any additional configuration.
-			string candidates = string.Join(
-				";",
-				Relativity.Transfer.WellKnownTransferClient.FileShare.ToString(),
-				Relativity.Transfer.WellKnownTransferClient.Http.ToString());
-			return candidates;
 		}
 
 		/// <inheritdoc />

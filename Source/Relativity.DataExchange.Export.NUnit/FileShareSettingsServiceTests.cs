@@ -86,6 +86,39 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
+		[TestCase(false)]
+		[TestCase(true)]
+		public async Task ItShouldReturnNullWhenTheDefaultRepositoryIsInvalidAsync(bool cloudInstance)
+		{
+			// ARRANGE
+			RelativityFileShare defaultFileShare = CreateRelativityFileShare(cloudInstance, 1000);
+			this._tapiObjectService.Setup(
+				x => x.GetWorkspaceDefaultFileShareAsync(
+					It.IsAny<TapiBridgeParameters2>(),
+					It.IsAny<ILog>(),
+					It.IsAny<CancellationToken>())).Returns(Task.FromResult(defaultFileShare));
+			this._tapiObjectService
+				.Setup(
+					x => x.SearchFileStorageAsync(
+						It.IsAny<TapiBridgeParameters2>(),
+						It.IsAny<ILog>(),
+						It.IsAny<CancellationToken>())).Returns(
+					Task.FromResult(
+						CreateMockTapiFileStorageSearchResults(
+							cloudInstance,
+							new RelativityFileShare[] { },
+							new[] { defaultFileShare })));
+
+			// ACT
+			await this._instance.ReadFileSharesAsync(CancellationToken.None).ConfigureAwait(false);
+			IRelativityFileShareSettings settings = this._instance.GetSettingsForFileShare(1, @"\\files");
+
+			// ASSERT. Being overly anal to check all boundaries and catch the slightest code deviations.
+			Assert.That(settings, Is.Null);
+			this._logger.Verify(x => x.LogWarning(It.IsAny<string>(), It.IsAny<object[]>()), Times.Exactly(3));
+		}
+
+		[Test]
 		[TestCase(false, 0, 0, 1, 1)]
 		[TestCase(true, 0, 0, 1, 1)]
 		[TestCase(false, 0, 1, 1, 2)]

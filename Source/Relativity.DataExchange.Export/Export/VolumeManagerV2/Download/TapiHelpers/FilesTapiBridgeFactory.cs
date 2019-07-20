@@ -1,6 +1,5 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 {
-	using System.Linq;
 	using System.Threading;
 
 	using Relativity.DataExchange.Transfer;
@@ -34,11 +33,13 @@
 			TapiBridgeParameters2 parameters = _tapiBridgeParametersFactory.CreateTapiBridgeParametersFromConfiguration();
 			if (_fileshareSettings == null)
 			{
-				string candidates = _tapiObjectService.GetUnmappedFileRepositoryClients();
+				_tapiObjectService.ApplyUnmappedFileRepositoryParameters(parameters);
 				_logger.LogWarning(
-					"Forcing the client candidates using {ForceClientCandidates} because the file share settings couldn't be determined.",
-					candidates);
-				parameters.ForceClientCandidates = candidates;
+					"Applying Transfer API bridge parameter changes because the file share settings are unmapped. ForceClientCandidates={ForceClientCandidates}, ForceAsperaClient={ForceAsperaClient}, ForceFileShareClient={ForceFileShareClient}, ForceHttpClient={ForceHttpClient}",
+					parameters.ForceClientCandidates,
+					parameters.ForceAsperaClient,
+					parameters.ForceFileShareClient,
+					parameters.ForceHttpClient);
 			}
 			else
 			{

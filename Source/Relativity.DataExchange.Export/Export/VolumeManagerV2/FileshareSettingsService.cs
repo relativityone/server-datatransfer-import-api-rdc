@@ -24,6 +24,7 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 		private readonly List<RelativityFileShareSettings> _nonDefaultFileShareSettings = new List<RelativityFileShareSettings>();
 		private readonly TapiBridgeParameters2 _parameters;
 		private RelativityFileShareSettings _defaultFileShareSettings;
+		private bool _readFileShares;
 		private bool _cloudInstance;
 
 		public FileShareSettingsService(ITapiObjectService tapiObjectService, ILog logger, ExportFile settings)
@@ -52,14 +53,15 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 
 		public async Task ReadFileSharesAsync(CancellationToken token)
 		{
-			// The code below can completely fail but still allow export to function.
-			if (_defaultFileShareSettings != null)
+			// This can be expensive and only need to read 1 time.
+			if (_readFileShares)
 			{
 				return;
 			}
 
 			try
 			{
+				// The code below can completely fail but still allow export to function.
 				RelativityFileShare defaultFileShare = await _tapiObjectService
 					                                       .GetWorkspaceDefaultFileShareAsync(
 						                                       _parameters,
@@ -74,7 +76,6 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 					throw new TransferException(message);
 				}
 
-				_defaultFileShareSettings = new RelativityFileShareSettings(defaultFileShare);
 				ITapiFileStorageSearchResults results =
 					await _tapiObjectService.SearchFileStorageAsync(_parameters, _logger, token);
 				_logger.LogInformation(
@@ -83,14 +84,25 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 					results.InvalidFileShares.Count,
 					_parameters.WorkspaceId);
 				_cloudInstance = results.CloudInstance;
-				List<RelativityFileShareSettings> validFileShares = new List<RelativityFileShareSettings>();
+				_defaultFileShareSettings = null;
+				_nonDefaultFileShareSettings.Clear();
 				if (results.FileShares.Count > 0)
 				{
-					foreach (RelativityFileShare fileShare in results.FileShares)
+					foreach (RelativityFileShare fileShare in results.FileShares.OrderByDescending(x => x.ArtifactId))
 					{
-						validFileShares.Add(new RelativityFileShareSettings(fileShare));
+						if (fileShare.ArtifactId == defaultFileShare.ArtifactId)
+						{
+							_defaultFileShareSettings = new RelativityFileShareSettings(fileShare);
+						}
+						else
+						{
+							_nonDefaultFileShareSettings.Add(new RelativityFileShareSettings(fileShare));
+						}
+
 						_logger.LogInformation(
-							"File storage search API discovered valid file share {FileShareArtifactId} associated with workspace {WorkspaceId} and is added to the valid file share list.",
+							fileShare.ArtifactId == defaultFileShare.ArtifactId
+								? "File storage search API discovered valid default file share {FileShareArtifactId} associated with workspace {WorkspaceId} and is added to the valid file share list."
+								: "File storage search API discovered valid non-default file share {FileShareArtifactId} associated with workspace {WorkspaceId} and is added to the valid file share list.",
 							fileShare.ArtifactId,
 							_parameters.WorkspaceId);
 					}
@@ -106,24 +118,17 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 				{
 					foreach (RelativityFileShare invalidFileShare in results.InvalidFileShares)
 					{
-						_logger.LogWarning(
-							"File storage search API discovered invalid file share {FileShareArtifactId} associated with workspace {WorkspaceId}. Error: '{FileShareError}'.",
+						this._logger.LogWarning(
+							invalidFileShare.ArtifactId == defaultFileShare.ArtifactId
+								? "File storage search API discovered invalid default file share {FileShareArtifactId} associated with workspace {WorkspaceId}. Error: '{FileShareError}'."
+								: "File storage search API discovered invalid non-default file share {FileShareArtifactId} associated with workspace {WorkspaceId}. Error: '{FileShareError}'.",
 							invalidFileShare.ArtifactId,
-							_parameters.WorkspaceId,
+							this._parameters.WorkspaceId,
 							invalidFileShare.Error);
 					}
 				}
 
-				// Maintain a separate list for all other non-default file shares that are available.
-				// Sorting in descending order to ensure the more recent file shares are accessed first.
-				_nonDefaultFileShareSettings.Clear();
-				foreach (RelativityFileShareSettings settings in validFileShares.OrderByDescending(x => x.ArtifactId))
-				{
-					if (!settings.Equals(_defaultFileShareSettings))
-					{
-						_nonDefaultFileShareSettings.Add(settings);
-					}
-				}
+				_readFileShares = true;
 			}
 			catch (Exception e)
 			{
