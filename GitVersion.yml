@@ -35,7 +35,7 @@ branches:
     track-merge-target: false
     is-release-branch: false
   release:
-    regex: (origin/)?release.*$
+    regex: (origin/)?relativity-.*$
     tag: rc
     increment: None
     prevent-increment-of-merged-branch-version: true
