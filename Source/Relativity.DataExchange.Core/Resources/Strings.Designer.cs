@@ -658,6 +658,15 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} download failed: {1} - This job is configured to skip this file-level issue..
+        /// </summary>
+        internal static string TransferFileDownloadWarningNoRetryMessage {
+            get {
+                return ResourceManager.GetString("TransferFileDownloadWarningNoRetryMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error uploading file: {0}.
         /// </summary>
         internal static string TransferFileUploadFatalMessage {
@@ -676,6 +685,15 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} upload failed: {1} - This job is configured to skip this file-level issue..
+        /// </summary>
+        internal static string TransferFileUploadWarningNoRetryMessage {
+            get {
+                return ResourceManager.GetString("TransferFileUploadWarningNoRetryMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File transfer job was canceled..
         /// </summary>
         internal static string TransferJobCanceledMessage {
@@ -690,6 +708,15 @@ namespace Relativity.DataExchange.Resources {
         internal static string TransferJobDownloadWarningMessage {
             get {
                 return ResourceManager.GetString("TransferJobDownloadWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} download job issue: {1} - This job-level issue cannot be retried..
+        /// </summary>
+        internal static string TransferJobDownloadWarningNoRetryMessage {
+            get {
+                return ResourceManager.GetString("TransferJobDownloadWarningNoRetryMessage", resourceCulture);
             }
         }
         
@@ -744,6 +771,15 @@ namespace Relativity.DataExchange.Resources {
         internal static string TransferJobUploadWarningMessage {
             get {
                 return ResourceManager.GetString("TransferJobUploadWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} upload job issue: {1} - This job-level issue cannot be retried..
+        /// </summary>
+        internal static string TransferJobUploadWarningNoRetryMessage {
+            get {
+                return ResourceManager.GetString("TransferJobUploadWarningNoRetryMessage", resourceCulture);
             }
         }
         

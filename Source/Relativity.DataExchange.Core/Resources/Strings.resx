@@ -120,6 +120,12 @@
   <data name="RetryJobMessage" xml:space="preserve">
     <value>Retrying transfer job - attempt {0} of {1}.</value>
   </data>
+  <data name="TransferFileDownloadWarningNoRetryMessage" xml:space="preserve">
+    <value>{0} download failed: {1} - This job is configured to skip this file-level issue.</value>
+  </data>
+  <data name="TransferFileUploadWarningNoRetryMessage" xml:space="preserve">
+    <value>{0} upload failed: {1} - This job is configured to skip this file-level issue.</value>
+  </data>
   <data name="TransferFileDownloadWarningMessage" xml:space="preserve">
     <value>{0} download failed: {1} - Retrying in {2} seconds. {3} tries left.</value>
   </data>
@@ -197,6 +203,12 @@
   </data>
   <data name="TransferJobUploadWarningMessage" xml:space="preserve">
     <value>{0} upload job issue: {1} - Retrying in {2} seconds - {3} tries left.</value>
+  </data>
+  <data name="TransferJobDownloadWarningNoRetryMessage" xml:space="preserve">
+    <value>{0} download job issue: {1} - This job-level issue cannot be retried.</value>
+  </data>
+  <data name="TransferJobUploadWarningNoRetryMessage" xml:space="preserve">
+    <value>{0} upload job issue: {1} - This job-level issue cannot be retried.</value>
   </data>
   <data name="IoReporterWarningMessageWithException" xml:space="preserve">
     <value>Import error - Retrying in {0} seconds. Error: {1}</value>

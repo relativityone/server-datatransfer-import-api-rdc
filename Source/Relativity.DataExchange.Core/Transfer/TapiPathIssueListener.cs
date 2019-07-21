@@ -48,23 +48,39 @@ namespace Relativity.DataExchange.Transfer
 				throw new ArgumentNullException(nameof(e));
 			}
 
-			var triesLeft = e.Issue.MaxRetryAttempts - e.Issue.RetryAttempt - 1;
-			var retryCalculation = e.Request.RetryStrategy.Calculation;
-			var retryTimeSpan = retryCalculation(e.Issue.RetryAttempt);
+			int triesLeft = e.Issue.MaxRetryAttempts - e.Issue.RetryAttempt - 1;
+			Func<int, TimeSpan> retryCalculation = e.Request.RetryStrategy.Calculation;
+			TimeSpan retryTimeSpan = retryCalculation(e.Issue.RetryAttempt);
 
-			// Note: this issue is indicative of a job-level issue - especially with Aspera.
+			// Note: this issue may be indicative of a job-level issue.
 			if (e.Issue.Path == null)
 			{
-				var formattedMessage = this.transferDirection == TransferDirection.Download
-					? Strings.TransferJobDownloadWarningMessage
-					: Strings.TransferJobUploadWarningMessage;
-				var message = string.Format(
-					CultureInfo.CurrentCulture,
-					formattedMessage,
-					this.ClientDisplayName,
-					e.Issue.Message,
-					retryTimeSpan.TotalSeconds,
-					triesLeft);
+				string message;
+				if (e.IsRetryable)
+				{
+					string formattedMessage = this.transferDirection == TransferDirection.Download
+						                          ? Strings.TransferJobDownloadWarningMessage
+						                          : Strings.TransferJobUploadWarningMessage;
+					message = string.Format(
+						CultureInfo.CurrentCulture,
+						formattedMessage,
+						this.ClientDisplayName,
+						e.Issue.Message,
+						retryTimeSpan.TotalSeconds,
+						triesLeft);
+				}
+				else
+				{
+					string formattedMessage = this.transferDirection == TransferDirection.Download
+						                          ? Strings.TransferJobDownloadWarningNoRetryMessage
+						                          : Strings.TransferJobUploadWarningNoRetryMessage;
+					message = string.Format(
+						CultureInfo.CurrentCulture,
+						formattedMessage,
+						this.ClientDisplayName,
+						e.Issue.Message);
+				}
+
 				this.PublishWarningMessage(message, TapiConstants.NoLineNumber);
 				this.TransferLog.LogWarning(
 					"A transfer warning has occurred. LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
@@ -74,7 +90,7 @@ namespace Relativity.DataExchange.Transfer
 				return;
 			}
 
-			var lineNumber = e.Issue.Path.Order;
+			int lineNumber = e.Issue.Path.Order;
 			if (e.Issue.Attributes.HasFlag(IssueAttributes.Error))
 			{
 				// Note: paths containing fatal errors force the transfer to terminate
@@ -88,16 +104,32 @@ namespace Relativity.DataExchange.Transfer
 			}
 			else if (triesLeft > 0)
 			{
-				var formattedMessage = this.transferDirection == TransferDirection.Download
-					? Strings.TransferFileDownloadWarningMessage
-					: Strings.TransferFileUploadWarningMessage;
-				var message = string.Format(
-					CultureInfo.CurrentCulture,
-					formattedMessage,
-					this.ClientDisplayName,
-					e.Issue.Message,
-					retryTimeSpan.TotalSeconds,
-					triesLeft);
+				string message;
+				if (e.IsRetryable)
+				{
+					string formattedMessage = this.transferDirection == TransferDirection.Download
+						                          ? Strings.TransferFileDownloadWarningMessage
+						                          : Strings.TransferFileUploadWarningMessage;
+					message = string.Format(
+						CultureInfo.CurrentCulture,
+						formattedMessage,
+						this.ClientDisplayName,
+						e.Issue.Message,
+						retryTimeSpan.TotalSeconds,
+						triesLeft);
+				}
+				else
+				{
+					string formattedMessage = this.transferDirection == TransferDirection.Download
+						                          ? Strings.TransferFileDownloadWarningNoRetryMessage
+						                          : Strings.TransferFileUploadWarningNoRetryMessage;
+					message = string.Format(
+						CultureInfo.CurrentCulture,
+						formattedMessage,
+						this.ClientDisplayName,
+						e.Issue.Message);
+				}
+
 				this.PublishWarningMessage(message, e.Issue.Path.Order);
 				this.TransferLog.LogWarning(
 					"A transfer warning has occurred. Message={Message}, LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
