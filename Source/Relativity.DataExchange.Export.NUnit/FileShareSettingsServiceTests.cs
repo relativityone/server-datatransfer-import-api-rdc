@@ -20,6 +20,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2;
+	using Relativity.DataExchange.Process;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
@@ -31,6 +32,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	{
 		private Mock<ILog> _logger;
 		private Mock<ITapiObjectService> _tapiObjectService;
+		private Mock<IStatus> _status;
 		private IFileShareSettingsService _instance;
 		private ExportFile _exportFile;
 
@@ -42,8 +44,10 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._exportFile.CaseInfo.ArtifactID = RandomHelper.NextInt(1000, 100000);
 			this._exportFile.Credential = new NetworkCredential();
 			this._logger = new Mock<ILog>();
+			this._status = new Mock<IStatus>();
 			this._tapiObjectService = new Mock<ITapiObjectService>();
 			this._instance = new FileShareSettingsService(
+				this._status.Object,
 				this._tapiObjectService.Object,
 				this._logger.Object,
 				this._exportFile);
@@ -149,6 +153,7 @@ namespace Relativity.DataExchange.Export.NUnit
 						It.IsAny<ILog>(),
 						It.IsAny<CancellationToken>())).Returns(
 					Task.FromResult(CreateMockTapiFileStorageSearchResults(cloudInstance, totalValid, totalInvalid)));
+			this._status.Setup(x => x.WriteStatusLineWithoutDocCount(It.IsAny<EventType2>(), It.IsAny<string>(), It.IsAny<bool>()));
 
 			// ACT
 			await this._instance.ReadFileSharesAsync(CancellationToken.None).ConfigureAwait(false);
@@ -160,6 +165,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._logger.Verify(
 				x => x.LogWarning(It.IsAny<string>(), It.IsAny<object[]>()),
 				Times.Exactly(expectedWarningLogs));
+			this._status.Verify(x => x.WriteWarningWithoutDocCount(It.IsAny<string>()), Times.Exactly(expectedWarningLogs));
+			this._status.Verify(x => x.WriteStatusLineWithoutDocCount(EventType2.Status, It.IsAny<string>(), true), Times.Exactly(2));
 		}
 
 		[Test]

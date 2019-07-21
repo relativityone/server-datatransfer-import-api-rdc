@@ -1161,7 +1161,7 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(e, line, isEssential, True)
 		End Sub
 
-		Friend Sub WriteStatusLineWithoutDocCount(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean)
+		Friend Sub WriteStatusLineWithoutDocCount(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean) Implements IStatus.WriteStatusLineWithoutDocCount
 			Dim now As Long = System.DateTime.Now.Ticks
 
 			SyncLock _syncLock
@@ -1202,6 +1202,11 @@ Namespace kCura.WinEDDS
 		Friend Sub WriteWarning(ByVal line As String) Implements IStatus.WriteWarning
 			Interlocked.Increment(_warningCount)
 			WriteStatusLine(EventType2.Warning, line, True)
+		End Sub
+
+		Friend Sub WriteWarningWithoutDocCount(ByVal line As String) Implements IStatus.WriteWarningWithoutDocCount
+			Interlocked.Increment(_warningCount)
+			WriteStatusLineWithoutDocCount(EventType2.Warning, line, True)
 		End Sub
 
 		Friend Sub WriteUpdate(ByVal line As String, Optional ByVal isEssential As Boolean = True) Implements IStatus.WriteUpdate

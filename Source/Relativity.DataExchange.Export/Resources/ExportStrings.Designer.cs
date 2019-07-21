@@ -79,6 +79,60 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Retrieved workspace file share details..
+        /// </summary>
+        internal static string FileStorageCompletedStatusMessage {
+            get {
+                return ResourceManager.GetString("FileStorageCompletedStatusMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A non-fatal error occurred attempting to retrieve file share details associated with workspace {0}. All exported artifacts can only be transferred by direct or web mode. Error: {1}.
+        /// </summary>
+        internal static string FileStorageExceptionWarningMessage {
+            get {
+                return ResourceManager.GetString("FileStorageExceptionWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default file share {0} for workspace {1} contains invalid cloud transfer configuration info. Exported artifacts from this file share can only be transferred by direct or web mode. Error: &apos;{2}&apos;.
+        /// </summary>
+        internal static string FileStorageInvalidDefaultFileShareWarningMessage {
+            get {
+                return ResourceManager.GetString("FileStorageInvalidDefaultFileShareWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The non-default file share {0} associated with workspace {1} contains invalid cloud transfer configuration info. Exported artifacts from this file share can only be transferred by direct or web mode. Error: &apos;{2}&apos;.
+        /// </summary>
+        internal static string FileStorageInvalidNonDefaultFileShareWarningMessage {
+            get {
+                return ResourceManager.GetString("FileStorageInvalidNonDefaultFileShareWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Retrieving workspace file share details....
+        /// </summary>
+        internal static string FileStorageStartedStatusMessage {
+            get {
+                return ResourceManager.GetString("FileStorageStartedStatusMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All of the file shares associated with workspace {0} contain invalid cloud transfer configuration info. All exported artifacts can only be transferred by direct or web mode..
+        /// </summary>
+        internal static string FileStorageZeroValidFileSharesWarningMessage {
+            get {
+                return ResourceManager.GetString("FileStorageZeroValidFileSharesWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This operation cannot be performed because the workspace &apos;{0}&apos; default file share isn&apos;t defined. Retry or contact your system administrator for assistance if this problem persists..
         /// </summary>
         internal static string WorkspaceDefaultFileshareNullExceptionMessage {

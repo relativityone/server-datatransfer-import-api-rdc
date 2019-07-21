@@ -13,11 +13,13 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 	using kCura.WinEDDS;
 
 	using Relativity.DataExchange;
+	using Relativity.DataExchange.Process;
 	using Relativity.DataExchange.Resources;
 	using Relativity.DataExchange.Transfer;
 
 	public class FileShareSettingsService : IFileShareSettingsService
 	{
+		private readonly IStatus _status;
 		private readonly ITapiObjectService _tapiObjectService;
 		private readonly ILog _logger;
 		private readonly ExportFile _settings;
@@ -27,19 +29,28 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 		private bool _readFileShares;
 		private bool _cloudInstance;
 
-		public FileShareSettingsService(ITapiObjectService tapiObjectService, ILog logger, ExportFile settings)
+		public FileShareSettingsService(
+			IStatus status,
+			ITapiObjectService tapiObjectService,
+			ILog logger,
+			ExportFile settings)
 		{
+			_status = status.ThrowIfNull(nameof(status));
 			_tapiObjectService = tapiObjectService.ThrowIfNull(nameof(tapiObjectService));
 			_logger = logger.ThrowIfNull(nameof(logger));
 			_settings = settings.ThrowIfNull(nameof(settings));
 			if (settings.CaseInfo == null)
 			{
-				throw new ArgumentException(ExportStrings.ExportSettingsNullWorkspaceExceptionMessage, nameof(settings));
+				throw new ArgumentException(
+					ExportStrings.ExportSettingsNullWorkspaceExceptionMessage,
+					nameof(settings));
 			}
 
 			if (settings.Credential == null)
 			{
-				throw new ArgumentException(ExportStrings.ExportSettingsNullCredentialExceptionMessage, nameof(settings));
+				throw new ArgumentException(
+					ExportStrings.ExportSettingsNullCredentialExceptionMessage,
+					nameof(settings));
 			}
 
 			_parameters = new TapiBridgeParameters2
@@ -61,6 +72,8 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 
 			try
 			{
+				_status.WriteStatusLineWithoutDocCount(EventType2.Status, ExportStrings.FileStorageStartedStatusMessage, true);
+
 				// The code below can completely fail but still allow export to function.
 				RelativityFileShare defaultFileShare = await _tapiObjectService
 					                                       .GetWorkspaceDefaultFileShareAsync(
@@ -112,22 +125,51 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 					_logger.LogWarning(
 						"File storage search API discovered zero valid file shares associated with workspace {WorkspaceId}. This doesn't prevent export from working but performance could be degraded.",
 						_parameters.WorkspaceId);
+					string warningMessage = string.Format(
+						CultureInfo.CurrentCulture,
+						ExportStrings.FileStorageZeroValidFileSharesWarningMessage,
+						_parameters.WorkspaceId);
+					_status.WriteWarningWithoutDocCount(warningMessage);
 				}
 
 				if (results.InvalidFileShares.Count > 0)
 				{
 					foreach (RelativityFileShare invalidFileShare in results.InvalidFileShares)
 					{
-						this._logger.LogWarning(
-							invalidFileShare.ArtifactId == defaultFileShare.ArtifactId
-								? "File storage search API discovered invalid default file share {FileShareArtifactId} associated with workspace {WorkspaceId}. Error: '{FileShareError}'."
-								: "File storage search API discovered invalid non-default file share {FileShareArtifactId} associated with workspace {WorkspaceId}. Error: '{FileShareError}'.",
-							invalidFileShare.ArtifactId,
-							this._parameters.WorkspaceId,
-							invalidFileShare.Error);
+						if (invalidFileShare.ArtifactId == defaultFileShare.ArtifactId)
+						{
+							_logger.LogWarning(
+								"File storage search API discovered invalid default file share {FileShareArtifactId} associated with workspace {WorkspaceId}. Error: '{FileShareError}'.",
+								invalidFileShare.ArtifactId,
+								_parameters.WorkspaceId,
+								invalidFileShare.Error);
+							string warningMessage = string.Format(
+								CultureInfo.CurrentCulture,
+								ExportStrings.FileStorageInvalidDefaultFileShareWarningMessage,
+								invalidFileShare.ArtifactId,
+								_parameters.WorkspaceId,
+								invalidFileShare.Error);
+							_status.WriteWarningWithoutDocCount(warningMessage);
+						}
+						else
+						{
+							_logger.LogWarning(
+								"File storage search API discovered invalid non-default file share {FileShareArtifactId} associated with workspace {WorkspaceId}. Error: '{FileShareError}'.",
+								invalidFileShare.ArtifactId,
+								_parameters.WorkspaceId,
+								invalidFileShare.Error);
+							string warningMessage = string.Format(
+								CultureInfo.CurrentCulture,
+								ExportStrings.FileStorageInvalidNonDefaultFileShareWarningMessage,
+								invalidFileShare.ArtifactId,
+								_parameters.WorkspaceId,
+								invalidFileShare.Error);
+							_status.WriteWarningWithoutDocCount(warningMessage);
+						}
 					}
 				}
 
+				_status.WriteStatusLineWithoutDocCount(EventType2.Status, ExportStrings.FileStorageCompletedStatusMessage, true);
 				_readFileShares = true;
 			}
 			catch (Exception e)
@@ -142,6 +184,12 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 					e,
 					"Failed to retrieve the file shares associated with workspace {WorkspaceId}. This doesn't prevent export from working but performance could be degraded.",
 					_parameters.WorkspaceId);
+				string warningMessage = string.Format(
+					CultureInfo.CurrentCulture,
+					ExportStrings.FileStorageExceptionWarningMessage,
+					_parameters.WorkspaceId,
+					e.Message);
+				_status.WriteWarningWithoutDocCount(warningMessage);
 			}
 		}
 
