@@ -18,14 +18,10 @@
 			IMessagesHandler messageHandler,
 			ITransferStatistics transferStatistics)
 		{
-			bridge.ThrowIfNull(nameof(bridge));
-			progressHandler.ThrowIfNull(nameof(progressHandler));
-			messageHandler.ThrowIfNull(nameof(messageHandler));
-			transferStatistics.ThrowIfNull(nameof(transferStatistics));
-			this.TapiBridge = bridge;
-			_progressHandler = progressHandler;
-			_messageHandler = messageHandler;
-			_transferStatistics = transferStatistics;
+			this.TapiBridge = bridge.ThrowIfNull(nameof(bridge));
+			_progressHandler = progressHandler.ThrowIfNull(nameof(progressHandler));
+			_messageHandler = messageHandler.ThrowIfNull(nameof(messageHandler));
+			_transferStatistics = transferStatistics.ThrowIfNull(nameof(transferStatistics));
 
 			_messageHandler.Attach(this.TapiBridge);
 			_progressHandler.Attach(this.TapiBridge);
@@ -39,7 +35,7 @@
 		public virtual void Dispose()
 		{
 			_progressHandler.Detach();
-			_messageHandler.Detach();
+			_messageHandler.Detach(this.TapiBridge);
 			_transferStatistics.Detach();
 			this.TapiBridge.Dispose();
 		}

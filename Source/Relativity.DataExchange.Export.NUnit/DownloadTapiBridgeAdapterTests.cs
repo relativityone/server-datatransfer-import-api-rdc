@@ -48,7 +48,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.ProgressHandler.Verify(x => x.Detach(), Times.Once);
 
 			this.MessagesHandler.Verify(x => x.Attach(this.TapiBridge.Object), Times.Once);
-			this.MessagesHandler.Verify(x => x.Detach(), Times.Once);
+			this.MessagesHandler.Verify(x => x.Detach(this.TapiBridge.Object), Times.Once);
 
 			this.TransferStatistics.Verify(x => x.Attach(this.TapiBridge.Object), Times.Once);
 			this.TransferStatistics.Verify(x => x.Detach(), Times.Once);
