@@ -19,8 +19,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Shadows Function Equals(ByVal other As ViewFieldInfo) As Boolean
-			If Me.AvfId = other.AvfId AndAlso Me.AvfColumnName = other.AvfColumnName Then Return True
-			Return False
+			Return Me.AvfId = other.AvfId AndAlso Me.AvfColumnName = other.AvfColumnName
 		End Function
 
 		Public Overrides Function GetHashCode() As Integer
