@@ -9,13 +9,10 @@ namespace Relativity.DataExchange.Import.NUnit
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
-
+	using System.Net;
 	using global::NUnit.Framework;
-
 	using kCura.WinEDDS;
-
 	using Moq;
-
 	using Relativity.DataExchange.Service;
 
 	/// <summary>
@@ -40,6 +37,36 @@ namespace Relativity.DataExchange.Import.NUnit
 				yield return new TestCaseData(LoadFile.FieldOverlayBehavior.MergeAll, kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.MergeAll);
 				yield return new TestCaseData(null, kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.UseRelativityDefaults);
 			}
+		}
+
+		[Test]
+		[TestCase("", true, true)]
+		[TestCase("/some_file.txt", true, true)]
+		[TestCase("com1.txt", true, true)]
+		[TestCase("", false, true)]
+		[TestCase("", true, false)]
+		[TestCase("", false, false)]
+		public void MetadataFileCountShouldBe0IfBatchCounterIs0(string outputNativePath, bool shouldCompleteJob, bool lastRun)
+		{
+			this.importer.PushNativeBatchInvoker(outputNativePath, shouldCompleteJob, lastRun);
+			Assert.AreEqual(0, this.importer.GetMetadataFilesCount);
+		}
+
+		[Test]
+		[TestCase("/some_file.txt", true, true)]
+		[TestCase("/some_file.txt", false, true)]
+		[TestCase("/some_file.txt", true, false)]
+		[TestCase("/some_file.txt", false, false)]
+		public void MetadataFileCountShouldBe0IfBatchCounterIsNot0(string outputNativePath, bool shouldCompleteJob, bool lastRun)
+		{
+			this.Setup();
+			AppSettings.Instance.IoErrorNumberOfRetries = 1;
+			AppSettings.Instance.IoErrorWaitTimeInSeconds = 1;
+			this.importer.SetTapiBridges();
+			this.importer.SetBatchCounter(20);
+			Assert.Throws<WebException>(() =>
+			this.importer.PushNativeBatchInvoker(outputNativePath, shouldCompleteJob, lastRun));
+			Assert.AreEqual(0, this.importer.GetMetadataFilesCount);
 		}
 
 		[Test]
@@ -248,8 +275,7 @@ namespace Relativity.DataExchange.Import.NUnit
 		protected override void OnSetup()
 		{
 			this.args = new LoadFile();
-			this.args.CaseInfo = new Relativity.DataExchange.Service.CaseInfo();
-			this.args.CaseInfo.RootArtifactID = -1;
+			this.args.CaseInfo = new Relativity.DataExchange.Service.CaseInfo { RootArtifactID = -1 };
 			this.importer = new MockBulkLoadFileImporter(
 				this.args,
 				this.Context,
