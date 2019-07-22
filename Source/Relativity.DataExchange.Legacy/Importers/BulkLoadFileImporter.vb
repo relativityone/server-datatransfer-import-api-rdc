@@ -15,6 +15,7 @@ Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
 		Inherits LoadFileBase
 		Implements IImportJob
+		implements IDisposable
 
 #Region "Const Fields"
 
@@ -2361,6 +2362,10 @@ Namespace kCura.WinEDDS
 			RaiseEvent FieldMapped(sourceField, workspaceField)
 		End Sub
 
+		Public Sub Dispose() Implements IDisposable.Dispose
+			Me.errorMessageFileWriter?.Dispose()
+			Me.prePushErrorWriter?.Dispose()
+		End Sub
 	End Class
 
 	Public Class WebServiceFieldInfoNameComparer
