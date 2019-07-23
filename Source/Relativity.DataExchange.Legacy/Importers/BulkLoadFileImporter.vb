@@ -2130,7 +2130,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub _processContext_ExportErrorFileEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportErrorFile
 			Const retry As Boolean = True
-			If not errorMessageFileWriter.FileCreated Then Exit Sub
+			If Not errorMessageFileWriter.FileCreated Then Exit Sub
 			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not Me.GetFileExists(_errorLinesFileLocation, retry) Then
 				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.FilePath, prePushErrorWriter.FilePath)
 			End If
