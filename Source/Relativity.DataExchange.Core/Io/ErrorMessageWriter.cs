@@ -45,7 +45,7 @@ namespace Relativity.DataExchange.Io
 		/// Initializes a new instance of the <see cref="ErrorMessageWriter{T}"/> class.
 		/// </summary>
 		public ErrorMessageWriter()
-            : this(string.Empty)
+			: this(string.Empty)
 		{
 		}
 
@@ -89,6 +89,9 @@ namespace Relativity.DataExchange.Io
 			{
 				var lineForFile = toWrite.ValuesForErrorFile().ToCsv(CSVFormat);
 				this.stream.Value.WriteLine(lineForFile);
+
+				// We flush so we can never have half written lines in our file, for safety and convenience.
+				this.stream.Value.Flush();
 			}
 		}
 
