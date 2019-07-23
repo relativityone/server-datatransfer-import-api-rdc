@@ -119,13 +119,37 @@ namespace Relativity.DataExchange.NUnit
 			Assert.Throws<ArgumentNullException>(() => this.TapiBridgeInstance.AddPath(null));
 		}
 
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldModifyTheBridgeParameters()
+		{
+			TapiBridgeParameters2 parameters = this.CreateTapiBridgeParameters(WellKnownTransferClient.FileShare);
+			parameters.FileNotFoundErrorsDisabled = false;
+			parameters.FileNotFoundErrorsRetry = true;
+			parameters.PermissionErrorsRetry = true;
+			this.CreateTapiBridge(WellKnownTransferClient.FileShare, parameters);
+			Assert.That(this.TapiBridgeInstance.Parameters.FileNotFoundErrorsDisabled, Is.False);
+			Assert.That(this.TapiBridgeInstance.Parameters.FileNotFoundErrorsRetry, Is.True);
+			Assert.That(this.TapiBridgeInstance.Parameters.PermissionErrorsRetry, Is.True);
+			this.TapiBridgeInstance.AddPath(TestTransferPath);
+
+			// All expected values were inverted above to ensure that all expected behavior is honored.
+			Assert.That(this.TapiBridgeInstance.Parameters.FileNotFoundErrorsDisabled, Is.True);
+			Assert.That(this.TapiBridgeInstance.Parameters.FileNotFoundErrorsRetry, Is.False);
+			Assert.That(this.TapiBridgeInstance.Parameters.PermissionErrorsRetry, Is.False);
+		}
+
+		protected override void CreateTapiBridge(WellKnownTransferClient client)
+		{
+			this.CreateTapiBridge(client, this.CreateTapiBridgeParameters(client));
+		}
+
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
 			"Microsoft.Reliability",
 			"CA2000:Dispose objects before losing scope",
 			Justification = "The test teardown disposes the test object.")]
-		protected override void CreateTapiBridge(WellKnownTransferClient client)
+		private void CreateTapiBridge(WellKnownTransferClient client, TapiBridgeParameters2 parameters)
 		{
-			TapiBridgeParameters2 parameters = this.CreateTapiBridgeParameters(client);
 			this.TestClientConfiguration.Client = client;
 			this.TapiBridgeInstance = new DownloadTapiBridge2(
 				this.MockTapiObjectService.Object,

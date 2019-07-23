@@ -805,6 +805,12 @@ namespace Relativity.DataExchange.Transfer
 				return;
 			}
 
+			// TODO: eliminate this method and related code after Patch 1 to address cache coherency issues.
+			ClientConfiguration configuration = this.CreateClientConfiguration();
+			this.parameters.FileNotFoundErrorsDisabled = configuration.FileNotFoundErrorsDisabled;
+			this.parameters.FileNotFoundErrorsRetry = configuration.FileNotFoundErrorsRetry;
+			this.parameters.PermissionErrorsRetry = configuration.PermissionErrorsRetry;
+
 			// Note: allow zero for improved testability.
 			this.maxInactivitySeconds = this.parameters.MaxInactivitySeconds;
 			if (this.maxInactivitySeconds < 0)
@@ -812,8 +818,6 @@ namespace Relativity.DataExchange.Transfer
 				this.maxInactivitySeconds = 1.25 * (this.parameters.WaitTimeBetweenRetryAttempts
 				                                    * (this.parameters.MaxJobRetryAttempts + 1));
 			}
-
-			var configuration = this.CreateClientConfiguration();
 
 			try
 			{
