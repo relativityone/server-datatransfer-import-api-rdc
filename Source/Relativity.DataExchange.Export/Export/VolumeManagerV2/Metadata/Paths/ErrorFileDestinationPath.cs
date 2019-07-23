@@ -24,7 +24,7 @@
 			{
 				if (string.IsNullOrEmpty(_errorFilePath))
 				{
-					_errorFilePath = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix);
+					_errorFilePath = TempFileBuilder.CreateZeroByte(TempFileConstants.ErrorsFileNameSuffix);
 					_logger.LogVerbose("Creating new path {path} for error file.", _errorFilePath);
 				}
 

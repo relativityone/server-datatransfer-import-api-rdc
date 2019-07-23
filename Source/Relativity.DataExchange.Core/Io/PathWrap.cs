@@ -206,9 +206,9 @@ namespace Relativity.DataExchange.Io
 		}
 
 		/// <inheritdoc />
-		public string GetTempFileName()
+		public string CreateZeroByte()
 		{
-			return this.GetTempFileName(null);
+			return this.CreateZeroByte(null);
 		}
 
 		/// <inheritdoc />
@@ -216,22 +216,9 @@ namespace Relativity.DataExchange.Io
 			"Microsoft.Design",
 			"CA1031:DoNotCatchGeneralExceptionTypes",
 			Justification = "Maintaining backwards compatibility.")]
-		public string GetTempFileName(string fileNameSuffix)
+		public string CreateZeroByte(string fileNameSuffix)
 		{
-			const string FileNameSeparator = "-";
-			if (string.IsNullOrEmpty(fileNameSuffix))
-			{
-				fileNameSuffix = "rel-default";
-			}
-
-			string tempDirectory = this.GetTempPath();
-			string fileName = string.Join(
-				FileNameSeparator,
-				DateTime.Now.ToString("yyyyMMddHHmmss", System.Globalization.CultureInfo.InvariantCulture),
-				Guid.NewGuid().ToString("D").ToUpperInvariant(),
-				fileNameSuffix);
-			string file = this.Combine(tempDirectory, System.IO.Path.ChangeExtension(fileName, "tmp"));
-
+			var file = this.TemporaryFileName(fileNameSuffix);
 			try
 			{
 				using (System.IO.File.Create(file))
@@ -246,6 +233,24 @@ namespace Relativity.DataExchange.Io
 			}
 
 			return file;
+		}
+
+		/// <inheritdoc />
+		public string TemporaryFileName(string fileNameSuffix)
+		{
+			const string FileNameSeparator = "-";
+			if (string.IsNullOrEmpty(fileNameSuffix))
+			{
+				fileNameSuffix = "rel-default";
+			}
+
+			string tempDirectory = this.GetTempPath();
+			string fileName = string.Join(
+				FileNameSeparator,
+				DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture),
+				Guid.NewGuid().ToString("D").ToUpperInvariant(),
+				fileNameSuffix);
+			return this.Combine(tempDirectory, System.IO.Path.ChangeExtension(fileName, "tmp"));
 		}
 
 		/// <inheritdoc />

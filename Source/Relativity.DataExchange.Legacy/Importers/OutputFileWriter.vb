@@ -30,10 +30,10 @@ Namespace kCura.WinEDDS
 
 			Me._disposed = False
 			Me._fileSystem = fileSystem
-			Me.OutputNativeFilePath = fileSystem.Path.GetTempFileName(TempFileConstants.NativeLoadFileNameSuffix)
-			Me.OutputDataGridFilePath = fileSystem.Path.GetTempFileName(TempFileConstants.DataGridLoadFileNameSuffix)
-			Me.OutputCodeFilePath = fileSystem.Path.GetTempFileName(TempFileConstants.CodeLoadFileNameSuffix)
-			Me.OutputObjectFilePath = fileSystem.Path.GetTempFileName(TempFileConstants.ObjectLoadFileNameSuffix)
+			Me.OutputNativeFilePath = fileSystem.Path.CreateZeroByte(TempFileConstants.NativeLoadFileNameSuffix)
+			Me.OutputDataGridFilePath = fileSystem.Path.CreateZeroByte(TempFileConstants.DataGridLoadFileNameSuffix)
+			Me.OutputCodeFilePath = fileSystem.Path.CreateZeroByte(TempFileConstants.CodeLoadFileNameSuffix)
+			Me.OutputObjectFilePath = fileSystem.Path.CreateZeroByte(TempFileConstants.ObjectLoadFileNameSuffix)
 		End Sub
 
 		''' <summary>

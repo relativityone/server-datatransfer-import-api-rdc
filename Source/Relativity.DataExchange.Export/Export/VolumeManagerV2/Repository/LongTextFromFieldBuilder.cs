@@ -60,7 +60,7 @@
 		private void HandleTooLongTextWithoutPrecedence(ObjectExportInfo artifact, ViewFieldInfo field, IList<LongText> longTexts)
 		{
 			_logger.LogVerbose("Creating LongText with missing value.");
-			string tempLocation = TempFileBuilder.GetTempFileName(TempFileConstants.LongTextFileNameSuffix);
+			string tempLocation = TempFileBuilder.CreateZeroByte(TempFileConstants.LongTextFileNameSuffix);
             LongTextExportRequest exportRequest = LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, tempLocation);
 			Encoding sourceEncoding = _longTextHelper.GetLongTextFieldFileEncoding(field);
 			LongText longText = LongText.CreateFromMissingValue(artifact.ArtifactID, field.FieldArtifactId, exportRequest, sourceEncoding);

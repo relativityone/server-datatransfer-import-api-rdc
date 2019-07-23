@@ -37,9 +37,9 @@ namespace Relativity.DataExchange.Io
 		/// <returns>
 		/// The full path of the temporary file.
 		/// </returns>
-		public static string GetTempFileName()
+		public static string CreateZeroByte()
 		{
-			return GetTempFileName(null);
+			return CreateZeroByte(null);
 		}
 
 		/// <summary>
@@ -51,10 +51,25 @@ namespace Relativity.DataExchange.Io
 		/// <returns>
 		/// The full path of the temporary file.
 		/// </returns>
-		public static string GetTempFileName(string fileNameSuffix)
+		public static string CreateZeroByte(string fileNameSuffix)
 		{
 			// The implementation has been relocated to the IPath object.
-			return FileSystem.Path.GetTempFileName(fileNameSuffix);
+			return FileSystem.Path.CreateZeroByte(fileNameSuffix);
+		}
+
+		/// <summary>
+		/// Gets a uniquely named with a user-defined suffix, zero-byte temporary file on disk and returns the full path of that file.
+		/// </summary>
+		/// <param name="fileNameSuffix">
+		/// Specify the suffix applied to the unique file name.
+		/// </param>
+		/// <returns>
+		/// The full path of the temporary file.
+		/// </returns>
+		public static string TemporaryFileName(string fileNameSuffix)
+		{
+			// The implementation has been relocated to the IPath object.
+			return FileSystem.Path.TemporaryFileName(fileNameSuffix);
 		}
 	}
 }

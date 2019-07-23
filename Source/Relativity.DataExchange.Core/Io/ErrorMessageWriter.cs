@@ -29,7 +29,7 @@ namespace Relativity.DataExchange.Io
 				if (string.IsNullOrEmpty(filePath))
 				{
 					filePath =
-						TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix);
+						TempFileBuilder.TemporaryFileName(TempFileConstants.ErrorsFileNameSuffix);
 				}
 
 				this.FilePath = filePath;
