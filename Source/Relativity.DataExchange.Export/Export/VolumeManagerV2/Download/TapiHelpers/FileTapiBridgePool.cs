@@ -6,6 +6,7 @@
 
 	using Relativity.DataExchange.Transfer;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 
 	/// <summary>
@@ -60,7 +61,6 @@
 		public void Dispose()
 		{
 			this.Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 
 		public IDownloadTapiBridge Request(IRelativityFileShareSettings settings, CancellationToken token)
@@ -129,13 +129,31 @@
 					bridges.Add(_nullSettingsTapiBridge);
 				}
 
+				List<Exception> exceptions = new List<Exception>();
 				foreach (IDownloadTapiBridge bridge in bridges)
 				{
-					TryDisposeTapiBridge(bridge);
+					try
+					{
+						bridge?.Dispose();
+					}
+					catch (Exception e)
+					{
+						exceptions.Add(e);
+					}
 				}
 
 				_fileTapiBridges.Clear();
 				_nullSettingsTapiBridge = null;
+				if (exceptions.Count > 0)
+				{
+					AggregateException exception = new AggregateException(
+						ExportStrings.TransferPoolDisposeExceptionMessage,
+						exceptions);
+					_logger.LogError(
+						exception,
+						"The transfer bridge pool failed to dispose one or more transfer bridges.");
+					throw exception;
+				}
 			}
 
 			_disposed = true;
@@ -146,24 +164,6 @@
 			IDownloadTapiBridge bridge =
 				_fileTapiBridges.TryGetValue(settings, out IDownloadTapiBridge entry) ? entry : null;
 			return bridge;
-		}
-
-		private void TryDisposeTapiBridge(IDownloadTapiBridge bridge)
-		{
-			try
-			{
-				bridge?.Dispose();
-			}
-			catch (Exception e)
-			{
-				if (ExceptionHelper.IsFatalException(e))
-				{
-					throw;
-				}
-
-				// We do not want to crash container disposal
-				_logger.LogError(e, "Failed to dispose Tapi Bridge.");
-			}
 		}
 	}
 }

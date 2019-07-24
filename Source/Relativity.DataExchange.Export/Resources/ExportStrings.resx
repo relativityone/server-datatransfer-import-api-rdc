@@ -144,4 +144,7 @@
   <data name="FileStorageCompletedStatusMessage" xml:space="preserve">
     <value>Retrieved workspace file share details.</value>
   </data>
+  <data name="TransferPoolDisposeExceptionMessage" xml:space="preserve">
+    <value>Failed to relase all transfer pool resources.</value>
+  </data>
 </root>

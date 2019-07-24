@@ -133,6 +133,15 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to relase all transfer pool resources..
+        /// </summary>
+        internal static string TransferPoolDisposeExceptionMessage {
+            get {
+                return ResourceManager.GetString("TransferPoolDisposeExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This operation cannot be performed because the workspace &apos;{0}&apos; default file share isn&apos;t defined. Retry or contact your system administrator for assistance if this problem persists..
         /// </summary>
         internal static string WorkspaceDefaultFileshareNullExceptionMessage {
