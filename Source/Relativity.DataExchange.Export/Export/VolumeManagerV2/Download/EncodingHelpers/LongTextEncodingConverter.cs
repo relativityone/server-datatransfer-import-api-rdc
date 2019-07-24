@@ -36,7 +36,7 @@
 		public void StartListening(ITapiBridge tapiBridge)
 		{
 			_logger.LogVerbose("Start long text encoding conversion task.");
-			_conversionTask = Task.Run(this.ConvertLongTextFiles, _cancellationToken);
+			_conversionTask = Task.Run((Action)this.ConvertLongTextFiles, _cancellationToken);
 			tapiBridge.TapiProgress += this.OnTapiProgress;
 		}
 
