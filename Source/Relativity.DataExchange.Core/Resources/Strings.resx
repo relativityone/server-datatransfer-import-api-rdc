@@ -198,17 +198,23 @@
   <data name="CompleteJobExceptionMessage" xml:space="preserve">
     <value>An unexpected error has occurred attempting to wait for the transfer job to complete.</value>
   </data>
-  <data name="TransferJobDownloadWarningMessage" xml:space="preserve">
-    <value>{0} download job issue: {1} - Retrying in {2} seconds - {3} tries left.</value>
+  <data name="TransferIssueRetryingAppendMessage" xml:space="preserve">
+    <value>Retrying in {0} second(s) - {1} retry(s) left</value>
   </data>
-  <data name="TransferJobUploadWarningMessage" xml:space="preserve">
-    <value>{0} upload job issue: {1} - Retrying in {2} seconds - {3} tries left.</value>
+  <data name="TransferIssueRetryingNoAttemptsLeftAppendMessage" xml:space="preserve">
+    <value>No more retry attempts left</value>
   </data>
-  <data name="TransferJobDownloadWarningNoRetryMessage" xml:space="preserve">
-    <value>{0} download job issue: {1} - This job-level issue cannot be retried.</value>
+  <data name="TransferTransferDownloadFileWarningMessage" xml:space="preserve">
+    <value>{0} download file issue: {1}</value>
   </data>
-  <data name="TransferJobUploadWarningNoRetryMessage" xml:space="preserve">
-    <value>{0} upload job issue: {1} - This job-level issue cannot be retried.</value>
+  <data name="TransferTransferDownloadJobWarningMessage" xml:space="preserve">
+    <value>{0} download transfer job issue: {1}</value>
+  </data>
+  <data name="TransferTransferUploadFileWarningMessage" xml:space="preserve">
+    <value>{0} upload file issue: {1}</value>
+  </data>
+  <data name="TransferTransferUploadJobWarningMessage" xml:space="preserve">
+    <value>{0} upload transfer job issue: {1}</value>
   </data>
   <data name="IoReporterWarningMessageWithException" xml:space="preserve">
     <value>Import error - Retrying in {0} seconds. Error: {1}</value>
