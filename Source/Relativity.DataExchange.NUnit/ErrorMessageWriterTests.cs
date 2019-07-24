@@ -44,6 +44,30 @@ namespace Relativity.DataExchange.NUnit
 			File.Delete(path);
 		}
 
+		[Test(Description = "Error message writer should write escaped messages.")]
+		[SuppressMessage("ReSharper", "AccessToDisposedClosure", Justification = "This is a test, and this is not a problem here.")]
+		public static void ErrorMessageWriterShouldWriteEscapedErrorMessages()
+		{
+			// Arrange
+			var path = Path.GetRandomFileName();
+			var errorArguments = GetSomeErrorArguments();
+
+			// Act
+			using (var errorWriter = new ErrorMessageWriter<IErrorArguments>(path))
+			{
+				errorWriter.WriteErrorMessage(errorArguments.Object);
+			}
+
+			var result = File.ReadAllLines(path);
+
+			// Assert
+			Assert.AreEqual(1, result.Length, "If you write 1 line, the number of lines should be 1.");
+			Assert.AreEqual("\"arg1\",\"arg\"\"2\",\"arg\"\"\"\"3\",\"arg4\",\"arg5\"", result.First(), "The escaping of error messages is not going well.");
+
+			// Clean
+			File.Delete(path);
+		}
+
 		[Test(Description = "Error message writer should not create file if created, or disposed.")]
 		public static void ErrorMessageWriterShouldNotCreateFileIfCreated()
 		{

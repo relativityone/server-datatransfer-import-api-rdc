@@ -2014,7 +2014,7 @@ Namespace kCura.WinEDDS
 			ElseIf _errorCount = MaxNumberOfErrorsInGrid Then
 				Dim moreToBeFoundMessage As New Hashtable
 				moreToBeFoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
-				OnReportErrorEvent(moretobefoundMessage)
+				OnReportErrorEvent(moreToBeFoundMessage)
 			End If
 			Dim errorRecord As ErrorDuringMassImportArgs = New ErrorDuringMassImportArgs(row("Line Number").ToString, row("Message").ToString, identifier, type)
 			errorMessageFileWriter.WriteErrorMessage(errorRecord)
