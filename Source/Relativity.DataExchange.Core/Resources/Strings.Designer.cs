@@ -658,6 +658,15 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} download failed: {1} - This job is configured to skip this file-level issue..
+        /// </summary>
+        internal static string TransferFileDownloadWarningNoRetryMessage {
+            get {
+                return ResourceManager.GetString("TransferFileDownloadWarningNoRetryMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error uploading file: {0}.
         /// </summary>
         internal static string TransferFileUploadFatalMessage {
@@ -676,20 +685,38 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} upload failed: {1} - This job is configured to skip this file-level issue..
+        /// </summary>
+        internal static string TransferFileUploadWarningNoRetryMessage {
+            get {
+                return ResourceManager.GetString("TransferFileUploadWarningNoRetryMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Retrying in {0} second(s) - {1} retry(s) left.
+        /// </summary>
+        internal static string TransferIssueRetryingAppendMessage {
+            get {
+                return ResourceManager.GetString("TransferIssueRetryingAppendMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No more retry attempts left.
+        /// </summary>
+        internal static string TransferIssueRetryingNoAttemptsLeftAppendMessage {
+            get {
+                return ResourceManager.GetString("TransferIssueRetryingNoAttemptsLeftAppendMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File transfer job was canceled..
         /// </summary>
         internal static string TransferJobCanceledMessage {
             get {
                 return ResourceManager.GetString("TransferJobCanceledMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} download job issue: {1} - Retrying in {2} seconds - {3} tries left..
-        /// </summary>
-        internal static string TransferJobDownloadWarningMessage {
-            get {
-                return ResourceManager.GetString("TransferJobDownloadWarningMessage", resourceCulture);
             }
         }
         
@@ -739,11 +766,38 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} upload job issue: {1} - Retrying in {2} seconds - {3} tries left..
+        ///   Looks up a localized string similar to {0} download file issue: {1}.
         /// </summary>
-        internal static string TransferJobUploadWarningMessage {
+        internal static string TransferTransferDownloadFileWarningMessage {
             get {
-                return ResourceManager.GetString("TransferJobUploadWarningMessage", resourceCulture);
+                return ResourceManager.GetString("TransferTransferDownloadFileWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} download transfer job issue: {1}.
+        /// </summary>
+        internal static string TransferTransferDownloadJobWarningMessage {
+            get {
+                return ResourceManager.GetString("TransferTransferDownloadJobWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} upload file issue: {1}.
+        /// </summary>
+        internal static string TransferTransferUploadFileWarningMessage {
+            get {
+                return ResourceManager.GetString("TransferTransferUploadFileWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} upload transfer job issue: {1}.
+        /// </summary>
+        internal static string TransferTransferUploadJobWarningMessage {
+            get {
+                return ResourceManager.GetString("TransferTransferUploadJobWarningMessage", resourceCulture);
             }
         }
         
