@@ -9,7 +9,6 @@
 
 namespace Relativity.DataExchange.Export.NUnit.Integration
 {
-	using System.Text;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
@@ -23,9 +22,18 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	/// <summary>
 	/// Represents all folder and sub-folder export integration tests.
 	/// </summary>
+	[TestFixture("utf-8", "utf-8")]
+	[TestFixture("utf-8", "utf-16")]
+	[TestFixture("utf-16", "utf-16")]
+	[TestFixture("utf-16", "utf-8")]
 	[Feature.DataTransfer.RelativityDesktopClient.Export]
 	public class FolderAndSubFolderExportTests : ExporterTestBase
 	{
+		public FolderAndSubFolderExportTests(string loadFileEncoding, string textFileEncoding)
+			: base(loadFileEncoding, textFileEncoding)
+		{
+		}
+
 		[IdentifiedTest("5b20c6f1-1196-41ea-9326-0e875e2cabe9")]
 		[Category(TestCategories.Export)]
 		[Category(TestCategories.Integration)]
@@ -117,7 +125,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			CaseInfo caseInfo = await this.WhenGettingTheWorkspaceInfoAsync().ConfigureAwait(false);
 			this.GivenTheSelectedFolderId(caseInfo.RootFolderID);
 			this.GivenTheIdentifierColumnName(WellKnownFields.ControlNumber);
-			this.GivenTheEncoding(Encoding.Unicode);
 			await this.WhenCreatingTheExportFileAsync(caseInfo).ConfigureAwait(false);
 			this.WhenExportingTheDocs();
 		}

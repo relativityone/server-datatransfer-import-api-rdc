@@ -131,11 +131,27 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		private int selectedFolderId;
 		private ExportFile.ExportType exportType;
 		private string identifierColumnName;
-		private Encoding encoding;
+		private Encoding loadFileEncoding;
+		private Encoding textFileEncoding;
 		private bool searchResult;
 		private ExtendedExportFile exportFile;
 		private ProcessContext processContext;
 		private TestContainerFactory testContainerFactory;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ExporterTestBase"/> class.
+		/// </summary>
+		/// <param name="loadFileEncoding">
+		/// Specify the encoding used by the load file.
+		/// </param>
+		/// <param name="textFileEncoding">
+		/// Specify the encoding used to convert extracted text files.
+		/// </param>
+		protected ExporterTestBase(string loadFileEncoding, string textFileEncoding)
+		{
+			this.GivenTheLoadFileEncoding(Encoding.GetEncoding(loadFileEncoding));
+			this.GivenTheTextFileEncoding(Encoding.GetEncoding(textFileEncoding));
+		}
 
 		internal Mock<TapiObjectService> MockTapiObjectService
 		{
@@ -273,18 +289,18 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			private set;
 		}
 
-		[OneTimeSetUp]
-		public static void OneTime()
-		{
-			ImportedDatasets.Clear();
-		}
-
 		/// <summary>
 		/// The test setup.
 		/// </summary>
 		[SetUp]
 		public void Setup()
 		{
+			foreach (var item in System.Text.Encoding.GetEncodings())
+			{
+				System.Console.WriteLine($"Name={item.Name}, Display={item.DisplayName}, Code Page={item.CodePage}");
+				System.Diagnostics.Debug.WriteLine($"Name={item.Name}, CodePage={item.DisplayName}, CodePage={item.CodePage}");
+			}
+
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
@@ -306,7 +322,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.cookieContainer = new CookieContainer();
 			this.credentials = new NetworkCredential(this.TestParameters.RelativityUserName, this.TestParameters.RelativityPassword);
 			this.identifierColumnName = null;
-			this.encoding = Encoding.Unicode;
+			this.loadFileEncoding = Encoding.Unicode;
+			this.textFileEncoding = Encoding.Unicode;
 			this.MockAppSettings = MockObjectFactory.CreateMockAppSettings();
 			this.MockFileShareSettingsService = MockObjectFactory.CreateMockFileShareSettingsService();
 			this.MockLogger = MockObjectFactory.CreateMockLogger();
@@ -530,14 +547,25 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		/// <summary>
-		/// Given the encoding.
+		/// Given the load file encoding.
 		/// </summary>
-		/// <param name="value">
-		/// The encoding.
+		/// <param name="encoding">
+		/// The encoding used for load files.
 		/// </param>
-		protected void GivenTheEncoding(Encoding value)
+		protected void GivenTheLoadFileEncoding(Encoding encoding)
 		{
-			this.encoding = value;
+			this.loadFileEncoding = encoding;
+		}
+
+		/// <summary>
+		/// Given the encoding used to convert extracted text files.
+		/// </summary>
+		/// <param name="encoding">
+		/// The encoding used to convert extracted text files.
+		/// </param>
+		protected void GivenTheTextFileEncoding(Encoding encoding)
+		{
+			this.textFileEncoding = encoding;
 		}
 
 		protected void GivenTheMockTapiObjectServiceIsRegistered()
@@ -692,12 +720,13 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 					Credential = this.credentials,
 					TypeOfExport = this.exportType,
 					FolderPath = this.tempDirectory.Directory,
+					TextFileEncoding = this.textFileEncoding,
 
 					// settings for exporting natives
 					ExportNative = true,
 					TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Absolute,
 					IdentifierColumnName = this.identifierColumnName,
-					LoadFileEncoding = this.encoding,
+					LoadFileEncoding = this.loadFileEncoding,
 					LoadFilesPrefix = "Documents",
 					LoadFileExtension = "dat",
 					MultiRecordDelimiter = ';',
