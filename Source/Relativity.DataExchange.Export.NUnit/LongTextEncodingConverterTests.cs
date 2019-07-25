@@ -70,6 +70,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		[TestCase(true)]
 		public void ItShouldNotConvertFileWhenTheFileIsNotSuccessfullyTransferred(bool completed)
 		{
+			const bool Successful = false;
 			const string fileName = "fileName";
 
 			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(1, this._longTextRepository, fileName, Encoding.Unicode);
@@ -78,7 +79,6 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT
 			this._instance.StartListening(this._tapiBridge.Object);
 			this._instance.StopListening(this._tapiBridge.Object);
-			const bool Successful = false;
 			this._tapiBridge.Raise(
 				x => x.TapiProgress += null,
 				new TapiProgressEventArgs(fileName, completed, Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
