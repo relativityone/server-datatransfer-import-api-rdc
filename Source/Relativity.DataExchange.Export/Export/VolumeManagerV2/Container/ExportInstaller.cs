@@ -104,9 +104,7 @@
 			container.Register(Component.For<ITapiObjectService>().ImplementedBy<TapiObjectService>());
 
 			container.Register(Component.For<ILabelManagerForArtifact>().UsingFactoryMethod(k =>
-				ExportConfig.ForceParallelismInNewExport
-					? (ILabelManagerForArtifact)k.Resolve<CachedLabelManagerForArtifact>()
-					: k.Resolve<LabelManagerForArtifact>()));
+				 (ILabelManagerForArtifact)k.Resolve<LabelManagerForArtifact>()));
 		}
 
 		private void InstallFieldService(IWindsorContainer container)

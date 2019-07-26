@@ -67,8 +67,6 @@ namespace Relativity.DataExchange
 		public const string FileTypeIdentifyTimeoutSecondsKey = "FileTypeIdentifyTimeoutSeconds";
 		public const int FileTypeIdentifyTimeoutSecondsDefaultValue = Relativity.DataExchange.Io.OutsideInFileTypeIdentifierService.DefaultIdleTimeout;
 		public const bool ForceFolderPreviewDefaultValue = true;
-		public const string ForceParallelismInNewExportKey = "ForceParallelismInNewExport";
-		public const bool ForceParallelismInNewExportDefaultValue = false;
 		public const string ForceWebUploadKey = "ForceWebUpload";
 		public const bool ForceWebUploadDefaultValue = false;
 		public const string HttpTimeoutSecondsKey = "HttpTimeoutSeconds";
@@ -89,8 +87,6 @@ namespace Relativity.DataExchange
 		public const bool LogAllEventsDefaultValue = false;
 		public const string LogConfigXmlFileNameKey = "LogConfigFile";
 		public const string LogConfigXmlFileNameDefaultValue = "LogConfig.xml";
-		public const string MaxNumberOfFileExportTasksKey = "MaxNumberOfFileExportTasks";
-		public const int MaxNumberOfFileExportTasksDefaultValue = 2;
 		public const string MinBatchSizeKey = "MinimumBatchSize";
 		public const int MinBatchSizeDefaultValue = 100;
 		public const string MaximumReloginTriesKey = "MaximumReloginTries";

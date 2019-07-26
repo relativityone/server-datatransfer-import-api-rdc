@@ -115,7 +115,6 @@
     <Compile Include="BatchStateTests.cs" />
     <Compile Include="BatchTests.cs" />
     <Compile Include="BatchValidatorTests.cs" />
-    <Compile Include="CachedLabelManagerForArtifactTests.cs" />
     <Compile Include="ColumnsFactoryTests.cs" />
     <Compile Include="ColumnsOrdinalLookupFactoryTests.cs" />
     <Compile Include="CustomFileNameProviderTest.cs" />
@@ -159,7 +158,6 @@
     <Compile Include="ImageExportableSizeTests.cs" />
     <Compile Include="ImageExportRequestBuilderTests.cs" />
     <Compile Include="ImageFileBatchValidatorTests.cs" />
-    <Compile Include="ImageFileParallelBatchValidatorTests.cs" />
     <Compile Include="ImageFilePathProviderTests.cs" />
     <Compile Include="ImageLoadFileBatchValidatorTests.cs" />
     <Compile Include="ImageLoadFileEntryDataSet.cs" />
@@ -189,7 +187,6 @@
     <Compile Include="LongTextHandlerTests.cs" />
     <Compile Include="LongTextHelperTests.cs" />
     <Compile Include="LongTextIproFullTextBuilderTests.cs" />
-    <Compile Include="LongTextParallelBatchValidatorTests.cs" />
     <Compile Include="LongTextPrecedenceBuilderTests.cs" />
     <Compile Include="LongTextProgressHandlerTests.cs" />
     <Compile Include="LongTextRepositoryBuilderTests.cs" />
@@ -209,13 +206,11 @@
     <Compile Include="NativeFileBatchValidatorTests.cs" />
     <Compile Include="NativeFileExportRequestBuilderTests.cs" />
     <Compile Include="NativeFileNameViewFieldsHelperTests.cs" />
-    <Compile Include="NativeFileParallelBatchValidatorTests.cs" />
     <Compile Include="NativeFilePathProviderTests.cs" />
     <Compile Include="NativeRepositoryBuilderTests.cs" />
     <Compile Include="NativeRepositoryTests.cs" />
     <Compile Include="NotTooLongTextToLoadFileTests.cs" />
     <Compile Include="OpticonLoadFileEntryTests.cs" />
-    <Compile Include="ParallelBatchInitializationTests.cs" />
     <Compile Include="PdfImagesRollupTests.cs" />
     <Compile Include="PhysicalFilesDownloaderTests.cs" />
     <Compile Include="PrefixFilePathTransformerTests.cs" />

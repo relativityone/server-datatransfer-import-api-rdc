@@ -304,19 +304,6 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldGetAndSetTheForceParallelismInNewExportSetting()
-		{
-			Assert.That(
-				this.settings.ForceParallelismInNewExport,
-				Is.EqualTo(DataExchange.AppSettingsConstants.ForceParallelismInNewExportDefaultValue));
-			bool expectedValue = RandomHelper.NextBoolean();
-			this.settings.ForceParallelismInNewExport = expectedValue;
-			Assert.That(this.settings.ForceParallelismInNewExport, Is.EqualTo(expectedValue));
-			this.settings.ForceParallelismInNewExport = !expectedValue;
-			Assert.That(this.settings.ForceParallelismInNewExport, Is.EqualTo(!expectedValue));
-		}
-
-		[Test]
 		public void ShouldGetAndSetTheForceWebUploadSetting()
 		{
 			Assert.That(
@@ -430,17 +417,6 @@ namespace Relativity.DataExchange.NUnit
 			string expectedValue = RandomHelper.NextString(10, 100);
 			this.settings.LogConfigXmlFileName = expectedValue;
 			Assert.That(this.settings.LogConfigXmlFileName, Is.EqualTo(expectedValue));
-		}
-
-		[Test]
-		public void ShouldGetAndSetTheMaxNumberOfFileExportTasksSetting()
-		{
-			Assert.That(
-				this.settings.MaxNumberOfFileExportTasks,
-				Is.EqualTo(DataExchange.AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.MaxNumberOfFileExportTasks = expectedValue;
-			Assert.That(this.settings.MaxNumberOfFileExportTasks, Is.EqualTo(expectedValue));
 		}
 
 		[Test]
@@ -923,7 +899,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.ExportErrorWaitTimeInSeconds, Is.EqualTo(15));
 				Assert.That(this.settings.IoErrorNumberOfRetries, Is.EqualTo(8));
 				Assert.That(this.settings.IoErrorWaitTimeInSeconds, Is.EqualTo(16));
-				Assert.That(this.settings.MaxNumberOfFileExportTasks, Is.EqualTo(4));
 
 				// The kCura.WinEDDS section asserts go here.
 				Assert.That(this.settings.ApplicationName, Is.EqualTo("Custom App"));
@@ -937,7 +912,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.DynamicBatchResizingOn, Is.False);
 				Assert.That(this.settings.ExportBatchSize, Is.EqualTo(255));
 				Assert.That(this.settings.ExportThreadCount, Is.EqualTo(3));
-				Assert.That(this.settings.ForceParallelismInNewExport, Is.False);
 				Assert.That(this.settings.ForceWebUpload, Is.True);
 				Assert.That(this.settings.ImportBatchMaxVolume, Is.EqualTo(12345));
 				Assert.That(this.settings.ImportBatchSize, Is.EqualTo(102));
@@ -989,7 +963,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportErrorWaitTimeInSecondsKey], Is.EqualTo(15));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.IoErrorNumberOfRetriesKey], Is.EqualTo(8));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.IoErrorWaitTimeInSecondsKey], Is.EqualTo(16));
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.MaxNumberOfFileExportTasksKey], Is.EqualTo(4));
 
 				// The kCura.WinEDDS section asserts go here.
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ApplicationNameKey], Is.EqualTo("Custom App"));
@@ -1002,7 +975,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.DynamicBatchResizingOnKey], Is.False);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportBatchSizeKey], Is.EqualTo(255));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportThreadCountKey], Is.EqualTo(3));
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.ForceParallelismInNewExportKey], Is.False);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ForceWebUploadKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ImportBatchMaxVolumeKey], Is.EqualTo(12345));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ImportBatchSizeKey], Is.EqualTo(102));
@@ -1069,8 +1041,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.IoErrorNumberOfRetries, Is.EqualTo(5));
 				dictionary[DataExchange.AppSettingsConstants.IoErrorWaitTimeInSecondsKey] = 6;
 				Assert.That(this.settings.IoErrorWaitTimeInSeconds, Is.EqualTo(6));
-				dictionary[DataExchange.AppSettingsConstants.MaxNumberOfFileExportTasksKey] = 7;
-				Assert.That(this.settings.MaxNumberOfFileExportTasks, Is.EqualTo(7));
 
 				// The kCura.WinEDDS section asserts go here.
 				dictionary[DataExchange.AppSettingsConstants.ApplicationNameKey] = "The App";
@@ -1093,8 +1063,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.ExportBatchSize, Is.EqualTo(9));
 				dictionary[DataExchange.AppSettingsConstants.ExportThreadCountKey] = 10;
 				Assert.That(this.settings.ExportThreadCount, Is.EqualTo(10));
-				dictionary[DataExchange.AppSettingsConstants.ForceParallelismInNewExportKey] = true;
-				Assert.That(this.settings.ForceParallelismInNewExport, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.ForceWebUploadKey] = true;
 				Assert.That(this.settings.ForceWebUpload, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.ImportBatchMaxVolumeKey] = 11;

@@ -23,11 +23,6 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public ReadOnly Property ForceParallelismInNewExport As Boolean Implements IExportConfig.ForceParallelismInNewExport
-			Get
-				Return AppSettings.Instance.ForceParallelismInNewExport
-			End Get
-		End Property
 		
 		Public ReadOnly Property ExportIOErrorWaitTime As Integer Implements IExportConfig.ExportIOErrorWaitTime
 			Get
@@ -51,12 +46,6 @@ Namespace kCura.WinEDDS
 			Get
 				Return AppSettings.Instance.ExportErrorWaitTimeInSeconds
 			End Get
-		End Property
-
-		Public ReadOnly Property MaxNumberOfFileExportTasks As Integer Implements IExportConfig.MaxNumberOfFileExportTasks
-		    Get
-		        Return AppSettings.Instance.MaxNumberOfFileExportTasks
-		    End Get
 		End Property
 
 		Public ReadOnly Property TapiForceHttpClient As Boolean Implements IExportConfig.TapiForceHttpClient

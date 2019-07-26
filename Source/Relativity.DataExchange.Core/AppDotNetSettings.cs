@@ -30,7 +30,6 @@ namespace Relativity.DataExchange
 		private int ioErrorWaitTimeInSeconds;
 		private int httpTimeoutSeconds;
 		private int maximumReloginTries;
-		private int maxNumberOfFileExportTasks;
 		private int tapiMinDataRateMbps;
 		private int tapiMaxInactivitySeconds;
 		private int tapiMaxJobParallelism;
@@ -361,17 +360,6 @@ namespace Relativity.DataExchange
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			AppSettingsConstants.ForceParallelismInNewExportKey,
-			AppSettingsConstants.ForceParallelismInNewExportDefaultValue)]
-		bool IAppSettings.ForceParallelismInNewExport
-		{
-			get;
-			set;
-		}
-
-		/// <inheritdoc />
-		[AppSetting(
-			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.ForceWebUploadKey,
 			AppSettingsConstants.ForceWebUploadDefaultValue)]
 		bool IAppSettings.ForceWebUpload
@@ -535,26 +523,6 @@ namespace Relativity.DataExchange
 			}
 
 			set => this.maximumReloginTries = value;
-		}
-
-		/// <inheritdoc />
-		[AppSetting(
-			AppSettingsConstants.SectionLegacyUtility,
-			AppSettingsConstants.MaxNumberOfFileExportTasksKey,
-			AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue)]
-		int IAppSettings.MaxNumberOfFileExportTasks
-		{
-			get
-			{
-				if (this.maxNumberOfFileExportTasks < 1)
-				{
-					this.maxNumberOfFileExportTasks = AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue;
-				}
-
-				return this.maxNumberOfFileExportTasks;
-			}
-
-			set => this.maxNumberOfFileExportTasks = value;
 		}
 
 		/// <inheritdoc />

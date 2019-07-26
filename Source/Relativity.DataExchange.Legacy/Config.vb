@@ -194,11 +194,6 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property ForceParallelismInNewExport() As Boolean
-			Get
-				Return AppSettings.Instance.ForceParallelismInNewExport
-			End Get
-		End Property
 
 		Public Shared ReadOnly Property DisableImageTypeValidation() As Boolean
 			Get

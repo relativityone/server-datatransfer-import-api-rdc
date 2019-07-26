@@ -273,18 +273,6 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to use parallelism for production exports that use the new implementation. This is <see langword="false" /> by default.
-		/// </summary>
-		/// <value>
-		/// <see langword="true" /> to use parallelism; otherwise, <see langword="false" />.
-		/// </value>
-		bool ForceParallelismInNewExport
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether to force web-mode. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
@@ -414,18 +402,6 @@ namespace Relativity.DataExchange
 		/// TODO: This setting was only used by export and should be removed.
 		/// </remarks>
 		int MaxFilesForTapiBridge
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Gets or sets the maximum number of file export tasks.
-		/// </summary>
-		/// <value>
-		/// The maximum number of tasks.
-		/// </value>
-		int MaxNumberOfFileExportTasks
 		{
 			get;
 			set;

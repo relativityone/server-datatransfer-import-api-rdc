@@ -98,15 +98,11 @@
     <Compile Include="Export\VolumeManagerV2\Batches\IBatchState.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\IBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\ImageFileBatchValidator.cs" />
-    <Compile Include="Export\VolumeManagerV2\Batches\ImageFileParallelBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\ImageLoadFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\IStateful.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\LoadFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\LongTextBatchValidator.cs" />
-    <Compile Include="Export\VolumeManagerV2\Batches\LongTextParallelBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\NativeFileBatchValidator.cs" />
-    <Compile Include="Export\VolumeManagerV2\Batches\NativeFileParallelBatchValidator.cs" />
-    <Compile Include="Export\VolumeManagerV2\Batches\ParallelBatchInitialization.cs" />
     <Compile Include="Export\VolumeManagerV2\Container\ContainerFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Container\ExportInstaller.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\EncodingFileSize.cs" />
@@ -115,7 +111,6 @@
     <Compile Include="Export\VolumeManagerV2\DataSize\ObjectExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\TextExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\AbsoluteFilePathTransformer.cs" />
-    <Compile Include="Export\VolumeManagerV2\Directories\CachedLabelManagerForArtifact.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\DirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\FilePathHelper.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\FilePathProvider.cs" />

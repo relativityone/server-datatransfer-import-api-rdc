@@ -8,8 +8,6 @@ Public Interface IExportConfig
 
 	ReadOnly Property UseOldExport() As Boolean
 
-	ReadOnly Property ForceParallelismInNewExport() As Boolean
-
 	ReadOnly Property ExportIOErrorWaitTime() As Int32
 
 	ReadOnly Property ExportIOErrorNumberOfRetries() As Int32
@@ -17,9 +15,6 @@ Public Interface IExportConfig
 	ReadOnly Property ExportErrorNumberOfRetries() As Int32
 
 	ReadOnly Property ExportErrorWaitTime() As Int32
-
-	ReadOnly Property MaxNumberOfFileExportTasks() As Int32
-
 	ReadOnly Property TapiForceHttpClient As Boolean
 End Interface
 
