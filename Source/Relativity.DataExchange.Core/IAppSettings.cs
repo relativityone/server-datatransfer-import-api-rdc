@@ -398,6 +398,9 @@ namespace Relativity.DataExchange
 		/// <value>
 		/// The maximum number of files.
 		/// </value>
+		/// <remarks>
+		/// TODO: This setting was only used by export and should be removed.
+		/// </remarks>
 		int MaxFilesForTapiBridge
 		{
 			get;
@@ -584,6 +587,9 @@ namespace Relativity.DataExchange
 		/// <value>
 		/// The total number of seconds.
 		/// </value>
+		/// <remarks>
+		/// TODO: This setting was only used by export and should be removed.
+		/// </remarks>
 		int TapiBridgeExportTransferWaitingTimeInSeconds
 		{
 			get;
@@ -681,6 +687,18 @@ namespace Relativity.DataExchange
 		/// <see langword="true" /> to raise progress events; otherwise, <see langword="false" />.
 		/// </value>
 		bool TapiLargeFileProgressEnabled
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum number of seconds in which no data movement occurs before treating the transfer inactive. When this occurs, the import or export job continues but performance may be degraded.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int TapiMaxInactivitySeconds
 		{
 			get;
 			set;

@@ -420,17 +420,6 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldGetAndSetTheMaxFilesForTapiBridgeSetting()
-		{
-			Assert.That(
-				this.settings.MaxFilesForTapiBridge,
-				Is.EqualTo(DataExchange.AppSettingsConstants.MaxFilesForTapiBridgeDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.MaxFilesForTapiBridge = expectedValue;
-			Assert.That(this.settings.MaxFilesForTapiBridge, Is.EqualTo(expectedValue));
-		}
-
-		[Test]
 		public void ShouldGetAndSetTheMaxReloginTriesSetting()
 		{
 			Assert.That(
@@ -551,9 +540,9 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldGetAndSetTheTapiAsperaBcpRootFolderSetting()
 		{
 			Assert.That(this.settings.TapiAsperaBcpRootFolder, Is.Null.Or.Empty);
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.TapiBridgeExportTransferWaitingTimeInSeconds = expectedValue;
-			Assert.That(this.settings.TapiBridgeExportTransferWaitingTimeInSeconds, Is.EqualTo(expectedValue));
+			string expectedValue = RandomHelper.NextString(25, 50);
+			this.settings.TapiAsperaBcpRootFolder = expectedValue;
+			Assert.That(this.settings.TapiAsperaBcpRootFolder, Is.EqualTo(expectedValue));
 		}
 
 		[Test]
@@ -578,17 +567,6 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.TapiBadPathErrorsRetry, Is.EqualTo(expectedValue));
 			this.settings.TapiBadPathErrorsRetry = !expectedValue;
 			Assert.That(this.settings.TapiBadPathErrorsRetry, Is.EqualTo(!expectedValue));
-		}
-
-		[Test]
-		public void ShouldGetAndSetTheTapiBridgeExportTransferWaitingTimeInSecondsSetting()
-		{
-			Assert.That(
-				this.settings.TapiBridgeExportTransferWaitingTimeInSeconds,
-				Is.EqualTo(DataExchange.AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.TapiBridgeExportTransferWaitingTimeInSeconds = expectedValue;
-			Assert.That(this.settings.TapiBridgeExportTransferWaitingTimeInSeconds, Is.EqualTo(expectedValue));
 		}
 
 		[Test]
@@ -689,6 +667,17 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.TapiLargeFileProgressEnabled, Is.EqualTo(expectedValue));
 			this.settings.TapiLargeFileProgressEnabled = !expectedValue;
 			Assert.That(this.settings.TapiLargeFileProgressEnabled, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheTapiMaxInactivitySecondsSetting()
+		{
+			Assert.That(
+				this.settings.TapiMaxInactivitySeconds,
+				Is.EqualTo(DataExchange.AppSettingsConstants.TapiMaxInactivitySecondsDefaultValue));
+			int expectedValue = RandomHelper.NextInt32(1, 1000);
+			this.settings.TapiMaxInactivitySeconds = expectedValue;
+			Assert.That(this.settings.TapiMaxInactivitySeconds, Is.EqualTo(expectedValue));
 		}
 
 		[Test]
@@ -928,7 +917,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.ImportBatchSize, Is.EqualTo(102));
 				Assert.That(this.settings.JobCompleteBatchSize, Is.EqualTo(999));
 				Assert.That(this.settings.LogConfigXmlFileName, Is.EqualTo("CustomLog.xml"));
-				Assert.That(this.settings.MaxFilesForTapiBridge, Is.EqualTo(333));
 				Assert.That(this.settings.MaxReloginTries, Is.EqualTo(42));
 				Assert.That(this.settings.MinBatchSize, Is.EqualTo(29));
 				Assert.That(this.settings.PermissionErrorsRetry, Is.False);
@@ -991,7 +979,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ImportBatchMaxVolumeKey], Is.EqualTo(12345));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ImportBatchSizeKey], Is.EqualTo(102));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.LogConfigXmlFileNameKey], Is.EqualTo("CustomLog.xml"));
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.MaxFilesForTapiBridgeKey], Is.EqualTo(333));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.MaximumReloginTriesKey], Is.EqualTo(42));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.MinBatchSizeKey], Is.EqualTo(29));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.PermissionErrorsRetryKey], Is.False);
@@ -1027,6 +1014,7 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlKey], Is.EqualTo("http://relativity"));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsDisabledKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsRetryKey], Is.True);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiMaxInactivitySecondsKey], Is.EqualTo(99));
 			}
 		}
 
@@ -1083,8 +1071,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.ImportBatchSize, Is.EqualTo(12));
 				dictionary[DataExchange.AppSettingsConstants.LogConfigXmlFileNameKey] = "abc";
 				Assert.That(this.settings.LogConfigXmlFileName, Is.EqualTo("abc"));
-				dictionary[DataExchange.AppSettingsConstants.MaxFilesForTapiBridgeKey] = 13;
-				Assert.That(this.settings.MaxFilesForTapiBridge, Is.EqualTo(13));
 				dictionary[DataExchange.AppSettingsConstants.MaximumReloginTriesKey] = 14;
 				Assert.That(this.settings.MaxReloginTries, Is.EqualTo(14));
 				dictionary[DataExchange.AppSettingsConstants.MinBatchSizeKey] = 15;
@@ -1145,6 +1131,12 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.LogAllEvents, Is.True);
 
 				// The new Relativity.DataExchange section asserts go here.
+				dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsDisabledKey] = true;
+				Assert.That(this.settings.TapiFileNotFoundErrorsDisabled, Is.True);
+				dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsRetryKey] = true;
+				Assert.That(this.settings.TapiFileNotFoundErrorsRetry, Is.True);
+				dictionary[DataExchange.AppSettingsConstants.TapiMaxInactivitySecondsKey] = 999;
+				Assert.That(this.settings.TapiMaxInactivitySeconds, Is.EqualTo(999));
 				dictionary[DataExchange.AppSettingsConstants.EnforceVersionCompatibilityCheckKey] = true;
 				Assert.That(((IAppSettingsInternal)this.settings).EnforceVersionCompatibilityCheck, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.FileTypeIdentifyTimeoutSecondsKey] = 999;

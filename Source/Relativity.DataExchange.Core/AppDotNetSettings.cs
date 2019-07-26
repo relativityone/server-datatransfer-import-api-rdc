@@ -29,10 +29,9 @@ namespace Relativity.DataExchange
 		private int ioErrorNumberOfRetries;
 		private int ioErrorWaitTimeInSeconds;
 		private int httpTimeoutSeconds;
-		private int maximumFilesForTapiBridge;
 		private int maximumReloginTries;
-		private int tapiBridgeExportTransferWaitingTimeInSeconds;
 		private int tapiMinDataRateMbps;
+		private int tapiMaxInactivitySeconds;
 		private int tapiMaxJobParallelism;
 		private int tapiTargetDataRateMbps;
 		private int webBasedFileDownloadChunkSize;
@@ -499,23 +498,11 @@ namespace Relativity.DataExchange
 		}
 
 		/// <inheritdoc />
-		[AppSetting(
-			AppSettingsConstants.SectionLegacyUtility,
-			AppSettingsConstants.MaxFilesForTapiBridgeKey,
-			AppSettingsConstants.MaxFilesForTapiBridgeDefaultValue)]
+		[AppSetting]
 		int IAppSettings.MaxFilesForTapiBridge
 		{
-			get
-			{
-				if (this.maximumFilesForTapiBridge < 1)
-				{
-					this.maximumFilesForTapiBridge = AppSettingsConstants.MaxFilesForTapiBridgeDefaultValue;
-				}
-
-				return this.maximumFilesForTapiBridge;
-			}
-
-			set => this.maximumFilesForTapiBridge = value;
+			get;
+			set;
 		}
 
 		/// <inheritdoc />
@@ -715,23 +702,11 @@ namespace Relativity.DataExchange
 		}
 
 		/// <inheritdoc />
-		[AppSetting(
-			AppSettingsConstants.SectionLegacyUtility,
-			AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsKey,
-			AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue)]
+		[AppSetting]
 		int IAppSettings.TapiBridgeExportTransferWaitingTimeInSeconds
 		{
-			get
-			{
-				if (this.tapiBridgeExportTransferWaitingTimeInSeconds < 1)
-				{
-					this.tapiBridgeExportTransferWaitingTimeInSeconds = AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue;
-				}
-
-				return this.tapiBridgeExportTransferWaitingTimeInSeconds;
-			}
-
-			set => this.tapiBridgeExportTransferWaitingTimeInSeconds = value;
+			get;
+			set;
 		}
 
 		/// <inheritdoc />
@@ -820,6 +795,26 @@ namespace Relativity.DataExchange
 		{
 			get;
 			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.TapiMaxInactivitySecondsKey,
+			AppSettingsConstants.TapiMaxInactivitySecondsDefaultValue)]
+		int IAppSettings.TapiMaxInactivitySeconds
+		{
+			get
+			{
+				if (this.tapiMaxInactivitySeconds < 1)
+				{
+					this.tapiMaxInactivitySeconds = AppSettingsConstants.TapiMaxInactivitySecondsDefaultValue;
+				}
+
+				return this.tapiMaxInactivitySeconds;
+			}
+
+			set => this.tapiMaxInactivitySeconds = value;
 		}
 
 		/// <inheritdoc />

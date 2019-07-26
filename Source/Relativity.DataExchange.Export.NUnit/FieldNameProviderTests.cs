@@ -30,7 +30,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			string expectedText = "ColName";
 			kCura.WinEDDS.ViewFieldInfo fieldInfo = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(new List<Tuple<int, string>>
 			{
-				Tuple.Create<int, string>(1, expectedText)
+				Tuple.Create(1, expectedText)
 			}).FirstOrDefault();
 
 			string retName = this._subjectUnderTest.GetDisplayName(fieldInfo);

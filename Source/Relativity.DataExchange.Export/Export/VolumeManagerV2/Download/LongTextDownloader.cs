@@ -62,7 +62,7 @@
 					}
 				}
 
-				bridge.WaitForTransferJob();
+				bridge.WaitForTransfers();
 			}
 			finally
 			{

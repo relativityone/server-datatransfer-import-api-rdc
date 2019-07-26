@@ -97,7 +97,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			const string message = "message";
 
 			this._instance.Attach(this._tapiBridge.Object);
-			this._instance.Detach();
+			this._instance.Detach(this._tapiBridge.Object);
 
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiErrorMessage += null, new TapiMessageEventArgs(message, 0));

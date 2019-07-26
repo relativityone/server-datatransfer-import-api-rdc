@@ -24,18 +24,9 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 
 		public FileShareSettingsService(ILog logger, ExportFile exportSettings)
 		{
-			if (logger == null)
-			{
-				throw new ArgumentNullException(nameof(logger));
-			}
-
-			if (exportSettings == null)
-			{
-				throw new ArgumentNullException(nameof(exportSettings));
-			}
-
-			_logger = logger;
-            _webServiceUrl = AppSettings.Instance.WebApiServiceUrl;
+			_logger = logger.ThrowIfNull(nameof(logger));
+			exportSettings.ThrowIfNull(nameof(exportSettings));
+			_webServiceUrl = AppSettings.Instance.WebApiServiceUrl;
 			_workspaceId = exportSettings.CaseInfo.ArtifactID;
 			_currentUserCredential = exportSettings.Credential;
 			_cookieContainer = exportSettings.CookieContainer;
@@ -45,7 +36,7 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 		{
 			if (_cachedSettings == null)
 			{
-				GetFileShareSettingsForWorkspace(AppSettings.Instance.WebApiServiceUrl, _workspaceId, _currentUserCredential.UserName, _currentUserCredential.Password);
+				GetFileShareSettingsForWorkspace(_workspaceId);
 			}
 
 			// settings will be null here if the fileUrl belongs to no known file share, e.g. if the path in the database was somehow modified,
@@ -59,7 +50,7 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 			return settings;
 		}
 
-		private void GetFileShareSettingsForWorkspace(string hostUrl, int workspaceId, string userName, string password)
+		private void GetFileShareSettingsForWorkspace(int workspaceId)
 		{
 			try
 			{

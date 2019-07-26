@@ -48,21 +48,9 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public ReadOnly Property TapiBridgeExportTransferWaitingTimeInSeconds As Integer Implements IExportConfig.TapiBridgeExportTransferWaitingTimeInSeconds
-			Get
-				Return AppSettings.Instance.TapiBridgeExportTransferWaitingTimeInSeconds
-			End Get
-		End Property
-
 		Public ReadOnly Property TapiForceHttpClient As Boolean Implements IExportConfig.TapiForceHttpClient
 			Get
 				Return AppSettings.Instance.TapiForceHttpClient
-			End Get
-		End Property
-
-		Public ReadOnly Property MaximumFilesForTapiBridge As Integer Implements IExportConfig.MaximumFilesForTapiBridge
-			Get
-				Return AppSettings.Instance.MaxFilesForTapiBridge
 			End Get
 		End Property
 	End Class

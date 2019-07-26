@@ -51,8 +51,8 @@
 
 		private void OnProgress(object sender, TapiProgressEventArgs e)
 		{
-			_logger.LogVerbose("Progress event for file {FileName} with status {DidTransferSucceed}.", e.FileName, e.DidTransferSucceed);
-			if (e.DidTransferSucceed)
+			_logger.LogVerbose("Progress event for file {FileName} with status {Successful}.", e.FileName, e.Successful);
+			if (e.Successful)
 			{
 				lock (_lock)
 				{

@@ -35,6 +35,7 @@
 				ForceHttpClient = AppSettings.Instance.TapiForceHttpClient,
 				LargeFileProgressEnabled = AppSettings.Instance.TapiLargeFileProgressEnabled,
 				LogConfigFile = AppSettings.Instance.LogConfigXmlFileName,
+				MaxInactivitySeconds = AppSettings.Instance.TapiMaxInactivitySeconds,
 				MaxJobParallelism = AppSettings.Instance.TapiMaxJobParallelism,
 				MaxJobRetryAttempts = _exportConfig.ExportIOErrorNumberOfRetries,
 				MinDataRateMbps = AppSettings.Instance.TapiMinDataRateMbps,

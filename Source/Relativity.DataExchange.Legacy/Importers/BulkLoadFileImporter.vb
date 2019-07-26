@@ -478,6 +478,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.LargeFileProgressEnabled = AppSettings.Instance.TapiLargeFileProgressEnabled
 			nativeParameters.LogConfigFile = AppSettings.Instance.LogConfigXmlFileName
 			nativeParameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
+			nativeParameters.MaxInactivitySeconds = AppSettings.Instance.TapiMaxInactivitySeconds
 			nativeParameters.MaxJobParallelism = AppSettings.Instance.TapiMaxJobParallelism
 			nativeParameters.MaxJobRetryAttempts = Me.NumberOfRetries
 			nativeParameters.MinDataRateMbps = AppSettings.Instance.TapiMinDataRateMbps

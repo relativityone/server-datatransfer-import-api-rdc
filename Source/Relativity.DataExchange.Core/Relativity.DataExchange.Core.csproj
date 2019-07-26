@@ -202,10 +202,13 @@
     <Compile Include="Timekeeper2.cs" />
     <Compile Include="TimekeeperEntry2.cs" />
     <Compile Include="Transfer\DownloadTapiBridge2.cs" />
+    <Compile Include="Transfer\TapiTotals.cs" />
+    <Compile Include="Transfer\ITapiBridge.cs" />
     <Compile Include="Transfer\MetadataTransferException.cs" />
     <Compile Include="Transfer\TapiBridgeBase2.cs" />
     <Compile Include="Transfer\TapiBridgeFactory.cs" />
     <Compile Include="Transfer\TapiBridgeParameters2.cs" />
+    <Compile Include="Transfer\TapiLargeFileProgressEventArgs.cs" />
     <Compile Include="Transfer\UploadTapiBridge2.cs" />
     <Compile Include="Transfer\UploadTapiBridgeParameters2.cs" />
     <Compile Include="VersionConstants.cs" />

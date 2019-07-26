@@ -4,6 +4,7 @@
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 	using Relativity.Transfer;
 
@@ -17,13 +18,17 @@
 
 		private readonly ILog _logger;
 
-		public DownloadTapiBridgeWithEncodingConversion(ITapiBridge downloadTapiBridge, IProgressHandler progressHandler, IMessagesHandler messagesHandler,
-			ITransferStatistics transferStatistics, ILongTextEncodingConverter longTextEncodingConverter, ILog logger) : base(downloadTapiBridge, progressHandler, messagesHandler,
-			transferStatistics)
+		public DownloadTapiBridgeWithEncodingConversion(
+			ITapiBridge downloadTapiBridge,
+			IProgressHandler progressHandler,
+			IMessagesHandler messagesHandler,
+			ITransferStatistics transferStatistics,
+			ILongTextEncodingConverter longTextEncodingConverter,
+			ILog logger)
+			: base(downloadTapiBridge, progressHandler, messagesHandler, transferStatistics)
 		{
 			_longTextEncodingConverter = longTextEncodingConverter;
 			_logger = logger;
-
 			_initialized = false;
 		}
 
@@ -33,13 +38,13 @@
 			{
 				_logger.LogVerbose("Initializing long text encoding converter.");
 				_initialized = true;
-				_longTextEncodingConverter.StartListening(TapiBridge);
+				_longTextEncodingConverter.StartListening(this.TapiBridge);
 			}
 
 			return TapiBridge.AddPath(transferPath);
 		}
 
-		public override void WaitForTransferJob()
+		public override void WaitForTransfers()
 		{
 			if (!_initialized)
 			{
@@ -49,13 +54,18 @@
 
 			try
 			{
-				TapiBridge.WaitForTransferJob();
+				const bool KeepJobAlive = true;
+				this.TapiBridge.WaitForTransfers(
+					"Waiting for all long files to download...",
+					"Long file downloads completed.",
+					"Failed to wait for all pending long file downloads.",
+					KeepJobAlive);
 			}
 			finally
 			{
 				try
 				{
-					_longTextEncodingConverter.StopListening(TapiBridge);
+					_longTextEncodingConverter.StopListening(this.TapiBridge);
 				}
 				catch (Exception e)
 				{
