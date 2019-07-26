@@ -461,6 +461,7 @@ Namespace Relativity.Desktop.Client
 
 			ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
 			_mainWindowHandle = Me.Handle
+			Me.Text = Application.GetProductName()
 			LoadWindowSize()
 			Me.CenterToScreen()
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor

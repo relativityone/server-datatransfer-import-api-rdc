@@ -48,7 +48,6 @@ Namespace Relativity.Desktop.Client
 
 		Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
 		Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
-		Public Const RDC_TITLE As String = "Relativity Desktop Client"
 
 		' TODO: Propagate the cancellation token source throughout.
 		Private ReadOnly _cancellationTokenSource As System.Threading.CancellationTokenSource = New System.Threading.CancellationTokenSource()
@@ -1674,6 +1673,32 @@ Namespace Relativity.Desktop.Client
 				Return version
 			Catch ex As Exception
 				Return Nothing
+			End Try
+		End Function
+
+		Public Shared Function GetProductName() As String
+			Dim sb As New System.Text.StringBuilder("Relativity Desktop Client")
+			If GetIsPreReleaseVersion() Then
+				sb.Append(" - Pre-Release")
+			End If
+
+			Return sb.ToString()
+		End Function
+
+		Public Shared Function GetIsPreReleaseVersion() As Boolean
+			Dim assembly As System.Reflection.Assembly = GetExecutingAssembly()
+
+			Try
+				' The build stamps AssemblyInformationalVersion with pre-release tags.
+				Dim fvi As FileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location)
+				Dim version As Version = Nothing
+
+				' Use TryParse to avoid annoying exceptions being thrown.
+				Dim isPreRelease As Boolean = Not System.Version.TryParse(fvi.ProductVersion, version)
+				Return isPreRelease
+			Catch ex As Exception
+				' Never allow this method to fail
+				Return True
 			End Try
 		End Function
 
