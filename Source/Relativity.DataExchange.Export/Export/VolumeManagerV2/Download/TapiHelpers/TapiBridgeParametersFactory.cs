@@ -5,6 +5,7 @@
 	using kCura.WinEDDS;
 
 	using Relativity.DataExchange;
+	using Relativity.DataExchange.Resources;
 	using Relativity.DataExchange.Transfer;
 
 	public class TapiBridgeParametersFactory
@@ -14,12 +15,17 @@
 
 		public TapiBridgeParametersFactory(ExportFile exportSettings, IExportConfig exportConfig)
 		{
-			_exportSettings = exportSettings;
-			_exportConfig = exportConfig;
+			_exportSettings = exportSettings.ThrowIfNull(nameof(exportSettings));
+			_exportConfig = exportConfig.ThrowIfNull(nameof(exportConfig));
 		}
 
 		public TapiBridgeParameters2 CreateTapiBridgeParametersFromConfiguration()
 		{
+			if (_exportSettings.CaseInfo == null)
+			{
+				throw new InvalidOperationException(ExportStrings.ExportSettingsNullWorkspaceExceptionMessage);
+			}
+
 			TapiBridgeParameters2 parameters = new TapiBridgeParameters2
 			{
 				Application = AppSettings.Instance.ApplicationName,

@@ -17,7 +17,7 @@ namespace Relativity.DataExchange.NUnit
 	using Relativity.Transfer;
 
 	/// <summary>
-	/// //   Represents transfer issue message tests.
+	/// Represents transfer issue message tests.
 	/// </summary>
 	[TestFixture]
 	public class TapiIssueMessageTests

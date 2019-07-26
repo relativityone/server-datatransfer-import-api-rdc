@@ -20,7 +20,12 @@
 		private readonly ILog _logger;
 		private readonly SafeIncrement _safeIncrement;
 
-		public PhysicalFilesDownloader(IFileShareSettingsService settingsService, IFileTapiBridgePool fileTapiBridgePool, IExportConfig exportConfig, SafeIncrement safeIncrement, ILog logger)
+		public PhysicalFilesDownloader(
+			IFileShareSettingsService settingsService,
+			IFileTapiBridgePool fileTapiBridgePool,
+			IExportConfig exportConfig,
+			SafeIncrement safeIncrement,
+			ILog logger)
 		{
 			_settingsService = settingsService;
 			_fileTapiBridgePool = fileTapiBridgePool;
@@ -29,18 +34,22 @@
 			_logger = logger;
 		}
 
-		public async Task DownloadFilesAsync(List<ExportRequest> requests, CancellationToken batchCancellationToken)
+		public async Task DownloadFilesAsync(List<ExportRequest> requests, CancellationToken token)
 		{
-			var taskCancellationTokenSource = new DownloadCancellationTokenSource(batchCancellationToken);
+			var taskCancellationTokenSource = new DownloadCancellationTokenSource(token);
+			await _settingsService.ReadFileSharesAsync(token);
 
-			ConcurrentQueue<ExportRequestsWithFileshareSettings> queue = CreateTransferQueue(requests);
-			_logger.LogVerbose("Adding {filesToExportCount} requests for files through {tapiBridgeCount} TAPI bridges.", requests.Count, queue.Count);
+			ConcurrentQueue<ExportRequestsWithFileshareSettings> queue = this.CreateTransferQueue(requests);
+			_logger.LogVerbose(
+				"Adding {filesToExportCount} requests for files through {tapiBridgeCount} TAPI bridges.",
+				requests.Count,
+				queue.Count);
 
 			var tasks = new List<Task>();
 
 			for (var i = 0; i < _exportConfig.MaxNumberOfFileExportTasks; i++)
 			{
-				tasks.Add(Task.Run(() => CreateJobTask(queue, taskCancellationTokenSource), taskCancellationTokenSource.Token));
+				tasks.Add(Task.Run(() => this.CreateJobTask(queue, taskCancellationTokenSource), taskCancellationTokenSource.Token));
 			}
 
 			await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -48,25 +57,27 @@
 
 		private ConcurrentQueue<ExportRequestsWithFileshareSettings> CreateTransferQueue(List<ExportRequest> requests)
 		{
-			ILookup<IRelativityFileShareSettings, ExportRequest> result = requests.ToLookup(r => _settingsService.GetSettingsForFileshare(r.SourceLocation));
-
-			return new ConcurrentQueue<ExportRequestsWithFileshareSettings>(result.Select(r => new ExportRequestsWithFileshareSettings(r.Key, r)));
+			ILookup<IRelativityFileShareSettings, ExportRequest> result = requests.ToLookup(
+				r => _settingsService.GetSettingsForFileShare(r.ArtifactId, r.SourceLocation));
+			ConcurrentQueue<ExportRequestsWithFileshareSettings> results =
+				new ConcurrentQueue<ExportRequestsWithFileshareSettings>(
+					result.Select(r => new ExportRequestsWithFileshareSettings(r.Key, r)));
+			return results;
 		}
 
-		private void CreateJobTask(ConcurrentQueue<ExportRequestsWithFileshareSettings> queue, DownloadCancellationTokenSource downloadCancellationTokenSourceSource)
+		private void CreateJobTask(
+			ConcurrentQueue<ExportRequestsWithFileshareSettings> queue,
+			DownloadCancellationTokenSource downloadCancellationTokenSourceSource)
 		{
-			ExportRequestsWithFileshareSettings exportRequestWithFileshareSettings;
-
-			while (queue.TryDequeue(out exportRequestWithFileshareSettings))
+			ExportRequestsWithFileshareSettings requests;
+			while (queue.TryDequeue(out requests))
 			{
-				IDownloadTapiBridge bridge = null;
 				try
 				{
-					bridge = _fileTapiBridgePool.Request(exportRequestWithFileshareSettings.FileshareSettings,
+					IDownloadTapiBridge bridge = _fileTapiBridgePool.Request(
+						requests.FileshareSettings,
 						downloadCancellationTokenSourceSource.Token);
-
-					DownloadFiles(bridge, exportRequestWithFileshareSettings.Requests,
-						downloadCancellationTokenSourceSource.Token);
+					this.DownloadFiles(bridge, requests.Requests, downloadCancellationTokenSourceSource.Token);
 					bridge.WaitForTransfers();
 				}
 				catch (TaskCanceledException)
@@ -80,13 +91,6 @@
 				{
 					downloadCancellationTokenSourceSource.Cancel();
 					throw;
-				}
-				finally
-				{
-					if (bridge != null)
-					{
-						_fileTapiBridgePool.Release(bridge);
-					}
 				}
 			}
 		}
