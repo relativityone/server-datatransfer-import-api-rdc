@@ -10,13 +10,25 @@
 namespace Relativity.DataExchange.Transfer
 {
 	using System;
+	using System.Threading;
 	using System.Threading.Tasks;
+
+	using Relativity.Logging;
+	using Relativity.Transfer;
 
 	/// <summary>
 	/// Represents an abstract object to provide Transfer API object services to the transfer bridges.
 	/// </summary>
 	public interface ITapiObjectService
 	{
+		/// <summary>
+		/// Applies the appropriate parameter changes to create a transfer bridge that doesn't require files to be mapped to a specific file repository.
+		/// </summary>
+		/// <param name="parameters">
+		/// The Transfer API bridge parameters to be modified.
+		/// </param>
+		void ApplyUnmappedFileRepositoryParameters(TapiBridgeParameters2 parameters);
+
 		/// <summary>
 		/// Dynamically builds the file transfer mode documentation text.
 		/// </summary>
@@ -98,6 +110,26 @@ namespace Relativity.DataExchange.Transfer
 		TapiClient GetTapiClient(Guid clientId);
 
 		/// <summary>
+		/// Asynchronously gets the workspace default file share.
+		/// </summary>
+		/// <param name="parameters">
+		/// The bridge connection parameters.
+		/// </param>
+		/// <param name="logger">
+		/// The logger.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token.
+		/// </param>
+		/// <returns>
+		/// The <see cref="RelativityFileShare"/> instance.
+		/// </returns>
+		/// <exception cref="TransferException">
+		/// Thrown when the workspace doesn't exist.
+		/// </exception>
+		Task<RelativityFileShare> GetWorkspaceDefaultFileShareAsync(TapiBridgeParameters2 parameters, ILog logger, CancellationToken token);
+
+		/// <summary>
 		/// Asynchronously gets the Transfer API client display name that will be used for the given workspace.
 		/// </summary>
 		/// <param name="parameters">
@@ -118,6 +150,26 @@ namespace Relativity.DataExchange.Transfer
 		/// The <see cref="Guid"/> value.
 		/// </returns>
 		Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters2 parameters);
+
+		/// <summary>
+		/// Asynchronously searches for all available file storage and returns the search result.
+		/// </summary>
+		/// <param name="parameters">
+		/// The bridge connection parameters.
+		/// </param>
+		/// <param name="logger">
+		/// The logger.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token.
+		/// </param>
+		/// <returns>
+		/// The <see cref="FileStorageSearchResults"/> instance.
+		/// </returns>
+		Task<ITapiFileStorageSearchResults> SearchFileStorageAsync(
+			TapiBridgeParameters2 parameters,
+			ILog logger,
+			CancellationToken token);
 
 		/// <summary>
 		/// Sets the appropriate flags on <paramref name="parameters"/> to match the target Transfer API client.

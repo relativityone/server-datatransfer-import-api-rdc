@@ -47,7 +47,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._safeIncrement = new SafeIncrement();
 			this._availableFileShares = new[] { @"\\fileShare.one", @"\\fileShare.two", @"\\fileShare.three" };
 			this._fileshareSettingsService = new Mock<IFileShareSettingsService>();
-			this._fileshareSettingsService.Setup(s => s.GetSettingsForFileshare(It.IsAny<string>())).Returns((string val) => this.ReturnSettingsForFileshare(val));
+			this._fileshareSettingsService.Setup(s => s.GetSettingsForFileShare(It.IsAny<int>(), It.IsAny<string>()))
+				.Returns((int artifactId, string val) => this.ReturnSettingsForFileshare(val));
 			this._mockTapiBridges = new List<Mock<IDownloadTapiBridge>>();
 			this._fileTapiBridgePool = new Mock<IFileTapiBridgePool>();
 			this._fileTapiBridgePool
@@ -71,9 +72,10 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			await this._downloader.DownloadFilesAsync(requests, CancellationToken.None).ConfigureAwait(false);
 
-			this._fileshareSettingsService.Verify(svc => svc.GetSettingsForFileshare(It.IsAny<string>()), Times.Exactly(requests.Count));
+			this._fileshareSettingsService.Verify(
+				svc => svc.GetSettingsForFileShare(It.IsAny<int>(), It.IsAny<string>()),
+				Times.Exactly(requests.Count));
 			this._fileTapiBridgePool.Verify(pool => pool.Request(It.IsAny<IRelativityFileShareSettings>(), It.IsAny<CancellationToken>()), Times.Exactly(this._availableFileShares.Length));
-			this._fileTapiBridgePool.Verify(pool => pool.Release(It.IsAny<IDownloadTapiBridge>()), Times.Exactly(this._availableFileShares.Length));
 		}
 
 		[Test]

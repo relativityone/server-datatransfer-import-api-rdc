@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExportRequestBuilderTests.cs" />
+    <Compile Include="FileShareSettingsServiceTests.cs" />
     <Compile Include="ProductionExportFileNameProviderTests.cs" />
     <Compile Include="RelativeFilePathProviderTests.cs" />
     <Compile Include="RetryableStreamWriterTests.cs" />
@@ -127,7 +128,6 @@
     <Compile Include="DownloadTapiBridgeWithEncodingConversionTests.cs" />
     <Compile Include="ErrorFileDestinationPathTests.cs" />
     <Compile Include="ErrorFileWriterTests.cs" />
-    <Compile Include="ErrorReportingTapiBridgeTests.cs" />
     <Compile Include="ExportFileDownloaderStatusTests.cs" />
     <Compile Include="ExportFileFormatterFactoryTests.cs" />
     <Compile Include="ExportFileFormatterSetUp.cs" />

@@ -44,6 +44,8 @@ namespace Relativity.DataExchange.NUnit
 
 		private readonly List<TapiLargeFileProgressEventArgs> largeFileProgressEvents = new List<TapiLargeFileProgressEventArgs>();
 
+		private readonly List<JobTransferPath> queuedJobTransferPaths = new List<JobTransferPath>();
+
 		protected static TransferPath TestTransferPath =>
 			new TransferPath(
 				"C:\\out.txt",
@@ -105,12 +107,10 @@ namespace Relativity.DataExchange.NUnit
 			this.TestWorkspaceId = RandomHelper.NextInt32(1111111, 9999999);
 			this.TestMaxInactivitySeconds = 10;
 			this.MockTransferJobService = new Mock<ITransferJobService>();
-			this.MockTransferJobService.Setup(x => x.GetJobTransferPaths()).Returns(
-				new List<JobTransferPath>
-					{
-						new JobTransferPath { Path = TestTransferPath, Status = TransferPathStatus.Started }
-					});
-			this.MockTransferJobService.Setup(x => x.Issues).Returns(new List<ITransferIssue>());
+			this.queuedJobTransferPaths.Clear();
+			this.queuedJobTransferPaths.Add(new JobTransferPath { Path = TestTransferPath, Status = TransferPathStatus.Started });
+			this.MockTransferJobService.Setup(x => x.GetJobTransferPaths()).Returns(this.queuedJobTransferPaths);
+				this.MockTransferJobService.Setup(x => x.Issues).Returns(new List<ITransferIssue>());
 			this.MockTransferJobService.Setup(x => x.GetRetryableRequestTransferPaths())
 				.Returns(new List<TransferPath>());
 			this.MockTransferJob = new Mock<ITransferJob>();
@@ -303,7 +303,7 @@ namespace Relativity.DataExchange.NUnit
 		[TestCase(true)]
 		[TestCase(false)]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldThrowWhenWaitingForEmptyBatchedTransfers(bool batchedOptimization)
+		public void ShouldThrowWhenWaitingForEmptyBatchedTransfers(bool keepJobAlive)
 		{
 			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
 			Assert.Throws<InvalidOperationException>(
@@ -311,7 +311,7 @@ namespace Relativity.DataExchange.NUnit
 					TestWaitMessage,
 					TestSuccessMessage,
 					TestErrorMessage,
-					batchedOptimization));
+					keepJobAlive));
 		}
 
 		[Test]
@@ -329,12 +329,12 @@ namespace Relativity.DataExchange.NUnit
 						Status = TransferPathStatus.Successful
 					});
 
-			const bool BatchedOptimization = true;
+			const bool KeepJobAlive = true;
 			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
 				TestWaitMessage,
 				TestSuccessMessage,
 				TestErrorMessage,
-				BatchedOptimization);
+				KeepJobAlive);
 			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
 			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
 			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
@@ -367,12 +367,12 @@ namespace Relativity.DataExchange.NUnit
 						});
 			}
 
-			const bool BatchedOptimization = true;
+			const bool KeepJobAlive = true;
 			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
 				TestWaitMessage,
 				TestSuccessMessage,
 				TestErrorMessage,
-				BatchedOptimization);
+				KeepJobAlive);
 			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(TotalFiles));
 			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(TotalFiles));
 			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(TotalFiles));
@@ -406,13 +406,13 @@ namespace Relativity.DataExchange.NUnit
 						Status = TransferPathStatus.Failed
 					});
 
-			const bool BatchedOptimization = true;
+			const bool KeepJobAlive = true;
 			Assert.Throws<OutOfMemoryException>(
 				() => this.TapiBridgeInstance.WaitForTransfers(
 					TestWaitMessage,
 					TestSuccessMessage,
 					TestErrorMessage,
-					BatchedOptimization));
+					KeepJobAlive));
 			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Direct));
 			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Direct));
 			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(0));
@@ -428,14 +428,14 @@ namespace Relativity.DataExchange.NUnit
 			this.TapiBridgeInstance.AddPath(TestTransferPath);
 			this.CancellationTokenSource.Cancel();
 
-			const bool BatchedOptimization = true;
+			const bool KeepJobAlive = true;
 			Assert.Throws<OperationCanceledException>(
 				() => this.TapiBridgeInstance.WaitForTransfers(
 					TestWaitMessage,
 					TestSuccessMessage,
 					TestErrorMessage,
-					BatchedOptimization));
-			this.MockTransferJob.Verify(x => x.Dispose());
+					KeepJobAlive));
+			this.MockTransferJob.Verify(x => x.Dispose(), Times.Once());
 		}
 
 		[Test]
@@ -446,14 +446,14 @@ namespace Relativity.DataExchange.NUnit
 			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
 			this.TapiBridgeInstance.AddPath(TestTransferPath);
 
-			const bool BatchedOptimization = true;
+			const bool KeepJobAlive = true;
 			Assert.Throws<OperationCanceledException>(
 				() => this.TapiBridgeInstance.WaitForTransfers(
 					TestWaitMessage,
 					TestSuccessMessage,
 					TestErrorMessage,
-					BatchedOptimization));
-			this.MockTransferJob.Verify(x => x.Dispose());
+					KeepJobAlive));
+			this.MockTransferJob.Verify(x => x.Dispose(), Times.Once());
 		}
 
 		[Test]
@@ -471,12 +471,12 @@ namespace Relativity.DataExchange.NUnit
 						Completed = true, Path = TestTransferPath, Status = TransferPathStatus.Successful
 					});
 
-			const bool BatchedOptimization = false;
+			const bool KeepJobAlive = false;
 			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
 				TestWaitMessage,
 				TestSuccessMessage,
 				TestErrorMessage,
-				BatchedOptimization);
+				KeepJobAlive);
 			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
 			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
 			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
@@ -484,7 +484,7 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
 			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
 			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
-			this.MockTransferJob.Verify(x => x.Dispose());
+			this.MockTransferJob.Verify(x => x.Dispose(), Times.Once());
 		}
 
 		[Test]
@@ -506,12 +506,12 @@ namespace Relativity.DataExchange.NUnit
 						Status = TransferPathStatus.Successful
 					});
 
-			const bool BatchedOptimization = false;
+			const bool KeepJobAlive = false;
 			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
 				TestWaitMessage,
 				TestSuccessMessage,
 				TestErrorMessage,
-				BatchedOptimization);
+				KeepJobAlive);
 
 			// Retrying the job forces a switch to web mode.
 			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
@@ -522,7 +522,7 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
 			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
 			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
-			this.MockTransferJob.Verify(x => x.Dispose());
+			this.MockTransferJob.Verify(x => x.Dispose(), Times.Exactly(2));
 		}
 
 		[Test]
@@ -553,6 +553,53 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
+		[TestCase(false)]
+		[TestCase(true)]
+		public void ShouldAddPathsAndHandleNonFatalExceptions(bool keepJobAlive)
+		{
+			// Note: recent Moq releases allow sequencing void methods; however, it requires Castle v4 and is incompatible with our legacy version of Castle :(
+			bool firstTime = true;
+			this.queuedJobTransferPaths.Clear();
+			this.MockTransferJob.Setup(x => x.AddPath(It.IsAny<TransferPath>(), It.IsAny<CancellationToken>()))
+				.Callback(
+					(TransferPath path, CancellationToken token) =>
+						{
+							if (firstTime)
+							{
+								firstTime = false;
+								throw new TransferException("Simulated 1st time transfer exception");
+							}
+
+							this.queuedJobTransferPaths.Add(
+								new JobTransferPath { Path = path, Status = TransferPathStatus.Started });
+						});
+			this.MockTransferJob.Setup(x => x.CompleteAsync(It.IsAny<CancellationToken>())).Returns(
+				Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
+			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+			this.TapiBridgeInstance.AddPath(TestTransferPath);
+			this.TestTransferContext.PublishTransferPathProgress(
+				new TransferRequest(),
+				new TransferPathResult
+					{
+						Completed = true, Path = TestTransferPath, Status = TransferPathStatus.Successful
+					});
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
+				TestWaitMessage,
+				TestSuccessMessage,
+				TestErrorMessage,
+				keepJobAlive);
+			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
+			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Web));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			this.MockTransferJob.Verify(x => x.Dispose(), keepJobAlive ? Times.Once() : Times.Exactly(2));
+		}
+
+		[Test]
 		[TestCase(1, 0)]
 		[TestCase(2, 1)]
 		[TestCase(3, 2)]
@@ -574,6 +621,7 @@ namespace Relativity.DataExchange.NUnit
 			this.MockTransferJob.SetupSequence(x => x.Status).Returns(TransferJobStatus.Fatal)
 				.Returns(TransferJobStatus.Running);
 			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+			this.queuedJobTransferPaths.Clear();
 			foreach (TransferPath retryablePath in paths)
 			{
 				this.TapiBridgeInstance.AddPath(retryablePath);
@@ -581,8 +629,12 @@ namespace Relativity.DataExchange.NUnit
 					new TransferRequest(),
 					new TransferPathResult
 						{
-							Completed = true, Path = this.CreateTransferPath(1), Status = TransferPathStatus.Successful
+							Completed = true,
+							Path = retryablePath,
+							Status = TransferPathStatus.Successful
 						});
+
+				this.queuedJobTransferPaths.Add(new JobTransferPath { Path = retryablePath });
 			}
 
 			const bool KeepJobAlive = true;
@@ -606,7 +658,7 @@ namespace Relativity.DataExchange.NUnit
 		[TestCase(false)]
 		[TestCase(true)]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldThrowWhenSwitchingToWebModeWhenTheJobContainsPermissionIssues(bool batchedOptimization)
+		public void ShouldThrowWhenSwitchingToWebModeWhenTheJobContainsPermissionIssues(bool keepJobAlive)
 		{
 			this.MockTransferJob.Setup(x => x.CompleteAsync(It.IsAny<CancellationToken>())).Returns(
 				Task.FromResult(new TransferResult { Status = TransferStatus.Fatal } as ITransferResult));
@@ -634,7 +686,7 @@ namespace Relativity.DataExchange.NUnit
 					TestWaitMessage,
 					TestSuccessMessage,
 					TestErrorMessage,
-					batchedOptimization));
+					keepJobAlive));
 			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Direct));
 			Assert.That(exception.Fatal, Is.True);
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Once);

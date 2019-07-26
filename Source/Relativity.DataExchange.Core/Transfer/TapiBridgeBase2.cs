@@ -268,6 +268,9 @@ namespace Relativity.DataExchange.Transfer
 		/// <inheritdoc />
 		public TapiTotals JobTotals => this.jobTotals;
 
+		/// <inheritdoc />
+		public TapiBridgeParameters2 Parameters => this.parameters;
+
 		/// <summary>
 		/// Gets or sets the target path.
 		/// </summary>
@@ -426,17 +429,29 @@ namespace Relativity.DataExchange.Transfer
 									"Failed to add a path to the transfer job.");
 							}
 
-							// This will automatically add paths.
-							this.SwitchToWebMode(exception, path);
+							// Note: if the switch is successful, the path will get added below.
+							this.SwitchToWebMode(exception);
 						}).Execute(
 						() =>
 						{
 							// Fallback automatically attempts to add paths. Make sure the path isn't added twice.
 							if (transferException == null || !this.GetIsTransferPathInJobQueue(path))
 							{
-								this.TransferJob.AddPath(path, this.cancellationToken);
-								this.batchTotals.IncrementTotalFileTransferRequests();
-								this.jobTotals.IncrementTotalFileTransferRequests();
+								try
+								{
+									this.TransferJob.AddPath(path, this.cancellationToken);
+									this.IncrementTotalFileTransferRequests();
+								}
+								catch
+								{
+									// This handles the edge case where an exception may be thrown but the object was actually added to the queue.
+									if (this.GetIsTransferPathInJobQueue(path))
+									{
+										this.IncrementTotalFileTransferRequests();
+									}
+
+									throw;
+								}
 							}
 
 							return !string.IsNullOrEmpty(path.TargetFileName)
@@ -469,12 +484,6 @@ namespace Relativity.DataExchange.Transfer
 					       ? path.TargetFileName
 					       : Relativity.DataExchange.Io.FileSystem.Instance.Path.GetFileName(path.SourcePath);
 			}
-		}
-
-		/// <inheritdoc />
-		public void Disconnect()
-		{
-			// Do nothing - for now.
 		}
 
 		/// <inheritdoc />
@@ -531,11 +540,11 @@ namespace Relativity.DataExchange.Transfer
 				this.PublishStatusMessage(successMessage, TapiConstants.NoLineNumber);
 				return result;
 			}
-			catch
+			catch (Exception e)
 			{
 				// Note: for backwards compatibility purposes, don't publish an error message.
 				this.PublishWarningMessage(errorMessage, TapiConstants.NoLineNumber);
-				this.TransferLog.LogError(errorMessage);
+				this.TransferLog.LogError(e, errorMessage);
 				throw;
 			}
 		}
@@ -583,10 +592,7 @@ namespace Relativity.DataExchange.Transfer
 					                    BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
 					                    BcpRootFolder = this.parameters.AsperaBcpRootFolder,
 					                    CookieContainer = this.parameters.WebCookieContainer,
-					                    Credential =
-						                    this.parameters.FileshareCredentials != null
-							                    ? this.parameters.FileshareCredentials.CreateCredential()
-							                    : null,
+					                    Credential = this.parameters.TransferCredential,
 					                    FileTransferHint = FileTransferHint.Natives,
 					                    FileNotFoundErrorsDisabled = this.parameters.FileNotFoundErrorsDisabled,
 					                    FileNotFoundErrorsRetry = this.parameters.FileNotFoundErrorsRetry,
@@ -700,7 +706,13 @@ namespace Relativity.DataExchange.Transfer
 		/// </returns>
 		private bool CheckCompletedTransfers()
 		{
-			return this.batchTotals.TotalFileTransferRequests == this.batchTotals.TotalCompletedFileTransfers;
+			bool completed = this.batchTotals.TotalFileTransferRequests == this.batchTotals.TotalCompletedFileTransfers;
+			if (completed)
+			{
+				this.TransferLog.LogInformation2(this.jobRequest, "Successfully waited for all transfers to complete.");
+			}
+
+			return completed;
 		}
 
 		/// <summary>
@@ -793,6 +805,12 @@ namespace Relativity.DataExchange.Transfer
 				return;
 			}
 
+			// TODO: eliminate this method and related code after Patch 1 to address cache coherency issues.
+			ClientConfiguration configuration = this.CreateClientConfiguration();
+			this.parameters.FileNotFoundErrorsDisabled = configuration.FileNotFoundErrorsDisabled;
+			this.parameters.FileNotFoundErrorsRetry = configuration.FileNotFoundErrorsRetry;
+			this.parameters.PermissionErrorsRetry = configuration.PermissionErrorsRetry;
+
 			// Note: allow zero for improved testability.
 			this.maxInactivitySeconds = this.parameters.MaxInactivitySeconds;
 			if (this.maxInactivitySeconds < 0)
@@ -800,8 +818,6 @@ namespace Relativity.DataExchange.Transfer
 				this.maxInactivitySeconds = 1.25 * (this.parameters.WaitTimeBetweenRetryAttempts
 				                                    * (this.parameters.MaxJobRetryAttempts + 1));
 			}
-
-			var configuration = this.CreateClientConfiguration();
 
 			try
 			{
@@ -976,7 +992,7 @@ namespace Relativity.DataExchange.Transfer
 					throw;
 				}
 
-				this.SwitchToWebMode(e, null);
+				this.SwitchToWebMode(e);
 			}
 		}
 
@@ -1153,13 +1169,10 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="exception">
 		/// The optional exception that forced the switch.
 		/// </param>
-		/// <param name="addedPath">
-		/// The optional path to add to the new job. This can be null if the failure occurred outside of adding the path to a job.
-		/// </param>
 		/// <exception cref="TransferException">
 		/// Thrown when the existing job failed due to permissions or switching itself failed.
 		/// </exception>
-		private void SwitchToWebMode(Exception exception, TransferPath addedPath)
+		private void SwitchToWebMode(Exception exception)
 		{
 			// Note: permission issues are fatal and cannot be "fixed" by switching to web mode.
 			//       this check will prevent unnecessary spinning and force an immediate job failure.
@@ -1203,22 +1216,18 @@ namespace Relativity.DataExchange.Transfer
 				this.TransferLog.LogInformation("The current transfer job is switching to web mode and no retryable paths exist.");
 			}
 
-			if (addedPath != null && !retryablePaths.Any(x => x.Equals(addedPath)))
-			{
-				// Do NOT call AddPath as this could introduce infinite recursion.
-				retryablePaths.Add(addedPath);
-			}
-
 			this.DestroyTransferJob();
 			this.DestroyTransferClient();
 			this.CreateHttpClient();
 			this.PublishClientChanged(ClientChangeReason.HttpFallback);
 			this.CreateTransferJob(true);
-
-			// Restore the original path before adding to the HTTP-based job.
-			foreach (var path in retryablePaths)
+			foreach (TransferPath path in retryablePaths)
 			{
+				// Restore the original path before adding to the web mode job.
 				path.RevertPaths();
+
+				// Do NOT call AddPath since this would introduce infinite recursion.
+				// Do NOT call IncrementTotalFileTransferRequests since these have already been counted!
 				this.TransferJob.AddPath(path, this.cancellationToken);
 			}
 
@@ -1241,8 +1250,9 @@ namespace Relativity.DataExchange.Transfer
 				return false;
 			}
 
-			var queuedTransferPaths = this.TransferJob.JobService.GetJobTransferPaths().Select(jobPath => jobPath.Path);
-			return queuedTransferPaths.Any(x => x.Equals(path));
+			// Note: this is the most efficient way to determine whether this object has been added to the queue!
+			bool exists = this.TransferJob.JobService.GetJobTransferPath(path) != null;
+			return exists;
 		}
 
 		/// <summary>
@@ -1271,6 +1281,15 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
+		/// Increment the transfer request total.
+		/// </summary>
+		private void IncrementTotalFileTransferRequests()
+		{
+			this.batchTotals.IncrementTotalFileTransferRequests();
+			this.jobTotals.IncrementTotalFileTransferRequests();
+		}
+
+		/// <summary>
 		/// Logs a cancellation request.
 		/// </summary>
 		private void LogCancelRequest()
@@ -1293,12 +1312,19 @@ namespace Relativity.DataExchange.Transfer
 			long totalFailedFileTransfers = totals.TotalFileTransferRequests - totals.TotalSuccessfulFileTransfers;
 			this.TransferLog.LogInformation(
 				batched
-					? "{Name} batched total transferred files: {TotalSuccessfulFileTransfers} of {TotalFileTransferRequests}, total transfer failures: {TotalFailedFileTransfers}"
-					: "{Name} job total transferred files: {TotalSuccessfulFileTransfers} of {TotalFileTransferRequests}, total transfer failures: {TotalFailedFileTransfers}",
+					? "Dumping current {Name} batched transferred file totals: {TotalSuccessfulFileTransfers} of {TotalFileTransferRequests}, total transfer failures: {TotalFailedFileTransfers}"
+					: "Dumping current {Name} job transferred file totals: {TotalSuccessfulFileTransfers} of {TotalFileTransferRequests}, total transfer failures: {TotalFailedFileTransfers}",
 				this.ClientDisplayName,
 				totals.TotalSuccessfulFileTransfers,
 				totals.TotalFileTransferRequests,
 				totalFailedFileTransfers);
+			if (totals.TotalFileTransferRequests == 0)
+			{
+				this.TransferLog.LogWarning(
+					batched
+						? "Although the batch completed, the total number of batched file requests is zero and may suggest a logic issue or unexpected result."
+						: "Although the job completed, the total number of job file requests is zero and may suggest a logic issue or unexpected result.");
+			}
 		}
 
 		/// <summary>
@@ -1504,6 +1530,10 @@ namespace Relativity.DataExchange.Transfer
 		/// </returns>
 		private TapiTotals WaitForCompletedTransfers()
 		{
+			const bool BatchedTotals = true;
+			this.TransferLog.LogInformation("Preparing to wait for the batched transfers to complete...");
+			this.LogTransferTotals(BatchedTotals);
+
 			try
 			{
 				// 1. Stop as soon as all file transfers are completed.
@@ -1525,7 +1555,7 @@ namespace Relativity.DataExchange.Transfer
 							{
 								if (!this.CheckValidTransferJobStatus())
 								{
-									this.SwitchToWebMode(null, null);
+									this.SwitchToWebMode(null);
 								}
 
 								this.cancellationToken.ThrowIfCancellationRequested();
@@ -1551,7 +1581,7 @@ namespace Relativity.DataExchange.Transfer
 								this.TransferLog.LogError(
 									e,
 									"An exception was thrown waiting for the transfers to complete.");
-								this.SwitchToWebMode(e, null);
+								this.SwitchToWebMode(e);
 								return true;
 							}
 						});
@@ -1560,14 +1590,13 @@ namespace Relativity.DataExchange.Transfer
 				if (!this.CheckCompletedTransfers())
 				{
 					this.TransferLog.LogWarning(
-						"The max data inactivity {MaxInactivitySeconds} seconds has been exceeded. Now waiting for the transfer job to complete.",
-						this.maxInactivitySeconds);
+						"WaitForCompletedTransfers has exited, not all transfers have completed, and now going to wait for the transfer job to complete.");
+					this.LogTransferTotals(BatchedTotals);
 
 					// Do NOT return WaitForCompletedTransferJob because it returns the job totals.
 					this.WaitForCompletedTransferJob();
 				}
 
-				const bool BatchedTotals = true;
 				this.LogTransferTotals(BatchedTotals);
 				return this.batchTotals.DeepCopy();
 			}
@@ -1590,6 +1619,10 @@ namespace Relativity.DataExchange.Transfer
 				throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
 			}
 
+			const bool BatchedTotals = false;
+			this.TransferLog.LogInformation("Preparing to wait for the transfer job to complete...");
+			this.LogTransferTotals(BatchedTotals);
+
 			try
 			{
 				const int RetryAttempts = 2;
@@ -1597,46 +1630,44 @@ namespace Relativity.DataExchange.Transfer
 				Policy.Handle<TransferException>().Retry(
 					RetryAttempts,
 					(exception, count) =>
-					{
-						handledException = exception;
-						this.TransferLog.LogWarning2(
-							exception,
-							this.jobRequest,
-							Strings.CompleteJobExceptionMessage);
-						this.SwitchToWebMode(exception, null);
-					}).Execute(
-					() =>
-					{
-						var taskResult = this.TransferJob.CompleteAsync(this.cancellationToken);
-						var transferResult = taskResult.GetAwaiter().GetResult();
-						this.TransferLog.LogInformation(
-							"{Name} transfer status: {Status}, elapsed time: {Elapsed}, data rate: {TransferRate:0.00} Mbps",
-							this.ClientDisplayName,
-							transferResult.Status,
-							transferResult.Elapsed,
-							transferResult.TransferRateMbps);
-
-						const bool BatchedTotals = false;
-						this.LogTransferTotals(BatchedTotals);
-						switch (transferResult.Status)
 						{
-							case TransferStatus.Failed:
-							case TransferStatus.Fatal:
-								string errorMessage = GetTransferErrorMessage(transferResult);
-								this.PublishStatusMessage(errorMessage, TapiConstants.NoLineNumber);
+							handledException = exception;
+							this.TransferLog.LogWarning2(
+								exception,
+								this.jobRequest,
+								Strings.CompleteJobExceptionMessage);
+							this.SwitchToWebMode(exception);
+						}).Execute(
+					() =>
+						{
+							var taskResult = this.TransferJob.CompleteAsync(this.cancellationToken);
+							var transferResult = taskResult.GetAwaiter().GetResult();
+							this.TransferLog.LogInformation("Transfer job completed.");
+							this.TransferLog.LogInformation(
+								"{Name} transfer status: {Status}, elapsed time: {Elapsed}, data rate: {TransferRate:0.00} Mbps",
+								this.ClientDisplayName,
+								transferResult.Status,
+								transferResult.Elapsed,
+								transferResult.TransferRateMbps);
+							this.LogTransferTotals(BatchedTotals);
+							switch (transferResult.Status)
+							{
+								case TransferStatus.Failed:
+								case TransferStatus.Fatal:
+									string errorMessage = GetTransferErrorMessage(transferResult);
+									this.PublishStatusMessage(errorMessage, TapiConstants.NoLineNumber);
 
-								// Force web mode when job-based fatal errors or file-based errors occur.
-								if (handledException == null)
-								{
-									throw new TransferException(errorMessage);
-								}
+									// Force web mode when job-based fatal errors or file-based errors occur.
+									if (handledException == null)
+									{
+										throw new TransferException(errorMessage);
+									}
 
-								// Gracefully terminate.
-								this.PublishFatalError(errorMessage, TapiConstants.NoLineNumber);
-								break;
-						}
-					});
-
+									// Gracefully terminate.
+									this.PublishFatalError(errorMessage, TapiConstants.NoLineNumber);
+									break;
+							}
+						});
 				return this.jobTotals.DeepCopy();
 			}
 			catch (OperationCanceledException)

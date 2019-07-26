@@ -29,6 +29,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("Relativity.DataExchange.Legacy")]
 [assembly: InternalsVisibleTo("Relativity.DataExchange.Export")]
 [assembly: InternalsVisibleTo("Relativity.DataExchange.Export.NUnit")]
+[assembly: InternalsVisibleTo("Relativity.DataExchange.Export.NUnit.Integration")]
 [assembly: InternalsVisibleTo("Relativity.Desktop.Client")]
 [assembly: InternalsVisibleTo("Relativity.Desktop.Client.Legacy.NUnit")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
