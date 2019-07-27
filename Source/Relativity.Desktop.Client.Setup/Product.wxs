@@ -71,6 +71,12 @@
     <Property Id="AppProcessName"
               Value="$(var.ProcessName)"/>
 
+    <!-- Perform the proper upgrade checks -->
+    <Property Id="NEWERPRODUCTFOUND" Secure="yes" />
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion Minimum="$(var.ProductVersion)" IncludeMinimum="yes" OnlyDetect="yes" Language="1033" Property="NEWERPRODUCTFOUND" />
+    </Upgrade>
+
     <!-- This represents whether the RDC is used for RelativityOne environments. -->
     <Property Id="RELATIVITYONE_ENV"
               Value="1" />
