@@ -48,7 +48,6 @@ Namespace Relativity.Desktop.Client
 
 		Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
 		Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
-		Public Const RDC_TITLE As String = "Relativity Desktop Client"
 
 		' TODO: Propagate the cancellation token source throughout.
 		Private ReadOnly _cancellationTokenSource As System.Threading.CancellationTokenSource = New System.Threading.CancellationTokenSource()
@@ -1677,6 +1676,33 @@ Namespace Relativity.Desktop.Client
 			End Try
 		End Function
 
+		Public Shared Function GetProductName() As String
+			Dim sb As New System.Text.StringBuilder("Relativity Desktop Client")
+			If GetIsPreReleaseVersion() Then
+				sb.Append(" - Pre-Release")
+			End If
+
+			Return sb.ToString()
+		End Function
+
+		Public Shared Function GetIsPreReleaseVersion() As Boolean
+			Dim assembly As System.Reflection.Assembly = GetExecutingAssembly()
+
+			Try
+				' The build stamps AssemblyInformationalVersion with pre-release tags.
+				Dim fvi As FileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location)
+				Dim version As Version = Nothing
+
+				' Use TryParse to avoid annoying exceptions being thrown.
+				Dim isPreRelease As Boolean = Not System.Version.TryParse(fvi.ProductVersion, version)
+				Return isPreRelease
+			Catch ex As Exception
+				' Never allow this method to fail
+				TryLogWarning(ex, "Failed to retrieve the pre-release version.")
+				Return True
+			End Try
+		End Function
+
 		Public Shared Function GetAssemblyVersion() As System.Version
 			Dim assembly As System.Reflection.Assembly = GetExecutingAssembly()
 			Return assembly.GetName().Version
@@ -1697,6 +1723,15 @@ Namespace Relativity.Desktop.Client
 				Return Nothing
 			End Try
 		End Function
+
+		Private Shared Sub TryLogWarning(ByVal exception As Exception, ByVal message As String, ParamArray propertyValues As Object())
+			Try
+				Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog()
+				logger.LogWarning(exception, message, propertyValues)
+			Catch ex As Exception
+				' By design, this can never fail
+			End Try
+		End Sub
 #End Region
 
 		Public Overridable Async Function GetProductionPrecendenceList(ByVal caseInfo As CaseInfo) As Task(Of System.Data.DataTable)
