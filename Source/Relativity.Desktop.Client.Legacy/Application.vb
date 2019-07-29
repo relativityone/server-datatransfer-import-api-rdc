@@ -1698,6 +1698,7 @@ Namespace Relativity.Desktop.Client
 				Return isPreRelease
 			Catch ex As Exception
 				' Never allow this method to fail
+				TryLogWarning(ex, "Failed to retrieve the pre-release version.")
 				Return True
 			End Try
 		End Function
@@ -1722,6 +1723,15 @@ Namespace Relativity.Desktop.Client
 				Return Nothing
 			End Try
 		End Function
+
+		Private Shared Sub TryLogWarning(ByVal exception As Exception, ByVal message As String, ParamArray propertyValues As Object())
+			Try
+				Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog()
+				logger.LogWarning(exception, message, propertyValues)
+			Catch ex As Exception
+				' By design, this can never fail
+			End Try
+		End Sub
 #End Region
 
 		Public Overridable Async Function GetProductionPrecendenceList(ByVal caseInfo As CaseInfo) As Task(Of System.Data.DataTable)
