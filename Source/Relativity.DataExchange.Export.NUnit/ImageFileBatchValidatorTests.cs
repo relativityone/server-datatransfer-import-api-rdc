@@ -44,7 +44,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		protected virtual IBatchValidator CreateSut()
 		{
-			return new ImageFileBatchValidator(this.ErrorFileWriter.Object, this.FileHelper.Object, this._status.Object, new NullLogger());
+			return new ImageFileBatchValidator(this.ErrorFileWriter.Object, this.FileHelper.Object, new NullLogger());
 		}
 
 		[Test]

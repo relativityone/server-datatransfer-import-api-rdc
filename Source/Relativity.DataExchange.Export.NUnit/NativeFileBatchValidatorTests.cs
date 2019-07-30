@@ -39,13 +39,12 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.ErrorFileWriter = new Mock<IErrorFileWriter>();
 			this.FileHelper = new Mock<IFile>();
 			this.Status = new Mock<IStatus>();
-
 			this.Instance = this.CreateValidator();
 		}
 
 		protected virtual IBatchValidator CreateValidator()
 		{
-			return new NativeFileBatchValidator(this.ErrorFileWriter.Object, this.FileHelper.Object, this.Status.Object, new NullLogger());
+			return new NativeFileBatchValidator(this.ErrorFileWriter.Object, this.FileHelper.Object, new NullLogger());
 		}
 
 		[Test]
