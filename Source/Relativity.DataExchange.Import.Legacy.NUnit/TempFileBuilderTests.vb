@@ -53,11 +53,11 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		Private Sub WhenGettingTheTempFileWithoutTheSuffix()
-			_tempFile = TempFileBuilder.CreateZeroByte()
+			_tempFile = TempFileBuilder.CreateEmptyFile()
 		End Sub
 
 		Private Sub WhenGettingTheTempFile(suffix As String)
-			_tempFile = TempFileBuilder.CreateZeroByte(suffix)
+			_tempFile = TempFileBuilder.CreateEmptyFile(suffix)
 		End Sub
 
 		Private Sub ThenTheTempFileExists()

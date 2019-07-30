@@ -206,9 +206,9 @@ namespace Relativity.DataExchange.Io
 		}
 
 		/// <inheritdoc />
-		public string CreateZeroByte()
+		public string CreateEmptyFile()
 		{
-			return this.CreateZeroByte(null);
+			return this.CreateEmptyFile(null);
 		}
 
 		/// <inheritdoc />
@@ -216,7 +216,7 @@ namespace Relativity.DataExchange.Io
 			"Microsoft.Design",
 			"CA1031:DoNotCatchGeneralExceptionTypes",
 			Justification = "Maintaining backwards compatibility.")]
-		public string CreateZeroByte(string fileNameSuffix)
+		public string CreateEmptyFile(string fileNameSuffix)
 		{
 			var file = this.TemporaryFileName(fileNameSuffix);
 			try

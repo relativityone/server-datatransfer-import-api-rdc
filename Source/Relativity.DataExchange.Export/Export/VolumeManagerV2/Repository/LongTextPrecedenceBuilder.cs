@@ -170,7 +170,7 @@
 				return _filePathProvider.GetPathForFile(fileName, artifact.ArtifactID);
 			}
 
-			return TempFileBuilder.CreateZeroByte(TempFileConstants.LongTextFileNameSuffix);
+			return TempFileBuilder.CreateEmptyFile(TempFileConstants.LongTextFileNameSuffix);
         }
 
 		private bool CanExport(string destinationLocation)

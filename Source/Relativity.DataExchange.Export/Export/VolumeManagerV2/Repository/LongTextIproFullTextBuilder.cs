@@ -41,7 +41,7 @@
 		private LongText CreateTooLongTextForIpro(ObjectExportInfo artifact)
 		{
 			_logger.LogVerbose("Creating LongText for IPRO Full text with missing value.");
-			string tempLocation = TempFileBuilder.CreateZeroByte(TempFileConstants.LongTextFileNameSuffix);
+			string tempLocation = TempFileBuilder.CreateEmptyFile(TempFileConstants.LongTextFileNameSuffix);
             int extractedTextFieldId = _longTextHelper.GetFieldArtifactId(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME);
 			LongTextExportRequest longTextExportRequest = LongTextExportRequest.CreateRequestForFullText(artifact, extractedTextFieldId, tempLocation);
 			//Encoding won't be used in this case. StreamReader will be created with auto detecting file encoding

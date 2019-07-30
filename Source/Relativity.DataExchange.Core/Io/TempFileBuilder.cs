@@ -37,9 +37,9 @@ namespace Relativity.DataExchange.Io
 		/// <returns>
 		/// The full path of the temporary file.
 		/// </returns>
-		public static string CreateZeroByte()
+		public static string CreateEmptyFile()
 		{
-			return CreateZeroByte(null);
+			return CreateEmptyFile(null);
 		}
 
 		/// <summary>
@@ -51,10 +51,10 @@ namespace Relativity.DataExchange.Io
 		/// <returns>
 		/// The full path of the temporary file.
 		/// </returns>
-		public static string CreateZeroByte(string fileNameSuffix)
+		public static string CreateEmptyFile(string fileNameSuffix)
 		{
 			// The implementation has been relocated to the IPath object.
-			return FileSystem.Path.CreateZeroByte(fileNameSuffix);
+			return FileSystem.Path.CreateEmptyFile(fileNameSuffix);
 		}
 
 		/// <summary>
