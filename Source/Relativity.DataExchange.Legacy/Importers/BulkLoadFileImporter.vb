@@ -1,4 +1,6 @@
 Imports System.Collections.Generic
+Imports System.IO
+Imports System.Net
 Imports System.Threading
 Imports System.Threading.Tasks
 
@@ -10,6 +12,7 @@ Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
+Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
@@ -65,7 +68,7 @@ Namespace kCura.WinEDDS
 		Private _lastRunMetadataImport As Int64 = 0
 		Private _timekeeper As ITimeKeeperManager
 		Private _filePath As String
-		Private _batchCounter As Int32 = 0
+		Protected _batchCounter As Int32 = 0
 		Private _jobCompleteNativeCount As Int32 = 0
 		Private _jobCompleteMetadataCount As Int32 = 0
 		Private _errorLinesFileLocation As String = String.Empty
@@ -582,6 +585,8 @@ Namespace kCura.WinEDDS
 				OnUploadModeChangeEvent(uploadStatus, True)
 			End If
 		End Sub
+
+
 
 		''' <summary>
 		''' Loads all the documents in a load file
@@ -1281,7 +1286,7 @@ Namespace kCura.WinEDDS
 						End If
 						sw.Write(c)
 						charactersProcessed += 1
-						hasReachedEof = (sr.Peek = -1)
+						hasReachedEof = (sr.Peek = -1) 
 					End While
 					sw.Flush()
 				End Using
@@ -1317,7 +1322,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
+		protected Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
 			If _lastRunMetadataImport > 0 Then
 				Me.Statistics.MetadataWaitTime += System.DateTime.Now.Ticks - _lastRunMetadataImport
 			End If
@@ -1338,32 +1343,20 @@ Namespace kCura.WinEDDS
 
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
 			settings.UseBulkDataImport = True
-			Dim nativeFileUploadKey As String
-			Dim codeFileUploadKey As String
-			Dim objectFileUploadKey As String
-			Dim dataGridFileUploadKey As String
+			Dim nativeFileUploadKey As String = BulkLoadTapiBridge.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
+			Dim codeFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
+			Dim objectFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
+			Dim dataGridFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
 
-			Try
-				nativeFileUploadKey = BulkLoadTapiBridge.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
-				codeFileUploadKey = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
-				objectFileUploadKey = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
-				dataGridFileUploadKey = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
+			' keep track of the total count of added files
+			MetadataFilesCount += 4
+			_jobCompleteMetadataCount += 4
 
-				' keep track of the total count of added files
-				MetadataFilesCount += 4
-				_jobCompleteMetadataCount += 4
-
-				If lastRun Then
-					CompletePendingBulkLoadFileTransfers()
-				Else
-					WaitForPendingMetadataUploads()
-				End If
-			Catch ex As MetadataTransferException
-				Throw
-			Catch ex As Exception
-				' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
-				Throw New kCura.WinEDDS.LoadFilebase.BcpPathAccessException(My.Resources.Strings.BcpAccessExceptionMessage, ex)
-			End Try
+			If lastRun Then
+				CompletePendingBulkLoadFileTransfers()
+			Else
+				WaitForPendingMetadataUploads()
+			End If
 
 			_lastRunMetadataImport = System.DateTime.Now.Ticks
 
@@ -1854,11 +1847,7 @@ Namespace kCura.WinEDDS
 
 		Private Function IsSupportedRelativityFileType(ByVal fileTypeInfo As IFileTypeInfo) As Boolean
 			If fileTypeInfo Is Nothing Then
-				If Me.DisableNativeValidation Then
-					Return True
-				Else
-					Return False
-				End If
+				Return Me.DisableNativeValidation
 			End If
 			If _oixFileLookup Is Nothing Then
 				_oixFileLookup = New System.Collections.Specialized.HybridDictionary
