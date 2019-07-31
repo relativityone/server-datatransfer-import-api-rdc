@@ -8,7 +8,6 @@ namespace Relativity.DataExchange.Process
 {
 	using System;
 	using System.Xml.Serialization;
-
 	using Relativity.DataExchange.Io;
 
 	/// <summary>
@@ -17,7 +16,7 @@ namespace Relativity.DataExchange.Process
 	internal sealed class ProcessEventWriter : IProcessEventWriter
 	{
 		private readonly IFileSystem fileSystem;
-		private readonly System.Xml.Serialization.XmlSerializer serializer;
+		private readonly XmlSerializer serializer;
 		private IStreamWriter streamWriter;
 		private bool disposed;
 
@@ -62,7 +61,6 @@ namespace Relativity.DataExchange.Process
 		public void Dispose()
 		{
 			this.Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 
 		/// <inheritdoc />
