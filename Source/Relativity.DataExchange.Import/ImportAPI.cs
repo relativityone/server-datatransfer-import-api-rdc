@@ -308,19 +308,19 @@ namespace kCura.Relativity.ImportAPI
 			// See kCura.WinEDDS.Service.FieldQuery.RetrieveAllAsArray -Phil S. 10/19/2011
 			var fields = fm.Query.RetrieveAllAsDocumentFieldCollection(workspaceArtifactID, artifactTypeID);
 
-			return (from DocumentField docfield in fields
+			return (from DocumentField docField in fields
 					select new Field
 					{
-						ArtifactID = docfield.FieldID,
-						ArtifactTypeId = docfield.FieldTypeID,
-						Name = docfield.FieldName,
-						FieldLength = docfield.FieldLength,
-						FieldTypeID = (FieldTypeEnum)Enum.ToObject(typeof(FieldTypeEnum), docfield.FieldTypeID),
-						AssociatedObjectTypeID = docfield.AssociatedObjectTypeID,
-						UseUnicode = docfield.UseUnicode,
-						FieldCategory = (FieldCategoryEnum)Enum.ToObject(typeof(FieldCategoryEnum), docfield.FieldCategoryID),
-						Guids = docfield.Guids,
-						EnableDataGrid = docfield.EnableDataGrid
+						ArtifactID = docField.FieldID,
+						ArtifactTypeId = docField.FieldTypeID,
+						Name = docField.FieldName,
+						FieldLength = docField.FieldLength,
+						FieldTypeID = (FieldTypeEnum)Enum.ToObject(typeof(FieldTypeEnum), docField.FieldTypeID),
+						AssociatedObjectTypeID = docField.AssociatedObjectTypeID,
+						UseUnicode = docField.UseUnicode,
+						FieldCategory = (FieldCategoryEnum)Enum.ToObject(typeof(FieldCategoryEnum), docField.FieldCategoryID),
+						Guids = docField.Guids,
+						EnableDataGrid = docField.EnableDataGrid
 					}).ToList();
 		}
 
@@ -435,12 +435,12 @@ namespace kCura.Relativity.ImportAPI
 
 		private void PerformLogin(string userName, string password, string webServiceURL)
 		{
-			ImportCredentialManager.SessionCredentials creds;
+			ImportCredentialManager.SessionCredentials credentials;
 
 			try
 			{
 				ImportCredentialManager.WebServiceURL = webServiceURL;
-				creds = ImportCredentialManager.GetCredentials(userName, password);
+				credentials = ImportCredentialManager.GetCredentials(userName, password);
 			}
 			catch (kCura.WinEDDS.Exceptions.CredentialsNotSupportedException)
 			{
@@ -459,9 +459,9 @@ namespace kCura.Relativity.ImportAPI
 				throw new kCura.WinEDDS.Exceptions.InvalidLoginException("Login failed.", e);
 			}
 
-			_credentials = creds.Credentials;
-			_tapiCredentials = creds.TapiCredential;
-			_cookieMonster = creds.CookieMonster;
+			_credentials = credentials.Credentials;
+			_tapiCredentials = credentials.TapiCredential;
+			_cookieMonster = credentials.CookieMonster;
 			if (_credentials == null)
 			{
 				throw new kCura.WinEDDS.Exceptions.InvalidLoginException("Login failed.");
