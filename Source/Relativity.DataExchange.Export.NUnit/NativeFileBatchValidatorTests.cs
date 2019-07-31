@@ -61,7 +61,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 
 			// ACT
-			this.Instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
+			this.Instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
 			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Never);
@@ -80,18 +80,11 @@ namespace Relativity.DataExchange.Export.NUnit
 				artifact
 			};
 
-			var prediction = new VolumePredictions
-			{
-				NativeFilesSize = _FILE_SIZE
-			};
-
-			VolumePredictions[] predictions = { prediction };
-
 			this.FileHelper.Setup(x => x.Exists(artifact.NativeTempLocation)).Returns(true);
 			this.FileHelper.Setup(x => x.GetFileSize(artifact.NativeTempLocation)).Returns(_FILE_SIZE);
 
 			// ACT
-			this.Instance.ValidateExportedBatch(artifacts, predictions, CancellationToken.None);
+			this.Instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
 			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Never);
@@ -110,18 +103,11 @@ namespace Relativity.DataExchange.Export.NUnit
 				artifact
 			};
 
-			var prediction = new VolumePredictions
-			{
-				NativeFilesSize = _FILE_SIZE
-			};
-
-			VolumePredictions[] predictions = { prediction };
-
 			this.FileHelper.Setup(x => x.Exists(artifact.NativeTempLocation)).Returns(true);
 			this.FileHelper.Setup(x => x.GetFileSize(artifact.NativeTempLocation)).Returns(_FILE_SIZE - 1);
 
 			// ACT
-			this.Instance.ValidateExportedBatch(artifacts, predictions, CancellationToken.None);
+			this.Instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
 			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Never);
@@ -146,7 +132,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.FileHelper.Setup(x => x.GetFileSize(artifact.NativeTempLocation)).Returns(size);
 
 			// ACT
-			this.Instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
+			this.Instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
 			this.ErrorFileWriter.Verify(x => x.Write(Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Native, artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Once);

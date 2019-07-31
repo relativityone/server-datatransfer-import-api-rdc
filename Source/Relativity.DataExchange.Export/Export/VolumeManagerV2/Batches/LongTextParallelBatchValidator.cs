@@ -28,7 +28,7 @@
 			_logger = logger;
 		}
 
-		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
+		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 			ParallelQuery<Action> validationResults =
 				_longTextRepository.GetLongTexts().AsParallel().AsOrdered()

@@ -21,7 +21,7 @@
 			_logger = logger;
 		}
 
-		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
+		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 			ParallelQuery<Action> validationResults =
 				Enumerable.Range(0, artifacts.Length).AsParallel().AsOrdered()

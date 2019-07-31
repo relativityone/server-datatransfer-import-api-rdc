@@ -42,28 +42,26 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldRunAllValidators()
 		{
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
-			VolumePredictions[] predictions = new VolumePredictions[1];
 
 			// ACT
-			this._instance.ValidateExportedBatch(artifacts, predictions, CancellationToken.None);
+			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this._validatorMocks.ForEach(x => x.Verify(v => v.ValidateExportedBatch(artifacts, predictions, CancellationToken.None)));
+			this._validatorMocks.ForEach(x => x.Verify(v => v.ValidateExportedBatch(artifacts, CancellationToken.None)));
 		}
 
 		[Test]
 		public void ItShouldNotFailSilentlyWhenValidating()
 		{
 			ObjectExportInfo[] artifacts = null;
-			VolumePredictions[] predictions = null;
 
-			this._validatorMocks[1].Setup(x => x.ValidateExportedBatch(artifacts, predictions, CancellationToken.None)).Throws<Exception>();
+			this._validatorMocks[1].Setup(x => x.ValidateExportedBatch(artifacts, CancellationToken.None)).Throws<Exception>();
 
 			// ACT & ASSERT
-			Assert.Throws<Exception>(() => this._instance.ValidateExportedBatch(artifacts, predictions, CancellationToken.None));
+			Assert.Throws<Exception>(() => this._instance.ValidateExportedBatch(artifacts, CancellationToken.None));
 
 			// ASSERT
-			this._validatorMocks[2].Verify(x => x.ValidateExportedBatch(artifacts, predictions, CancellationToken.None), Times.Never);
+			this._validatorMocks[2].Verify(x => x.ValidateExportedBatch(artifacts, CancellationToken.None), Times.Never);
 		}
 	}
 }
