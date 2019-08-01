@@ -4,13 +4,10 @@
 
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.Logging;
 
 	public class MetadataStatistics : ITransferStatistics, IMetadataProcessingStatistics
 	{
-		private ITapiBridge _tapiBridge;
-
 		private double _savedThroughput;
 		private long _savedMetadataBytes;
 		private long _savedMetadataTime;
@@ -29,16 +26,17 @@
 			_filesSize = new Dictionary<string, long>();
 			_savedFilesSize = new Dictionary<string, long>();
 
-			_statistics = statistics;
-			_fileWrapper = fileWrapper;
-			_logger = logger;
+			_statistics = statistics.ThrowIfNull(nameof(statistics));
+			_fileWrapper = fileWrapper.ThrowIfNull(nameof(fileWrapper));
+			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
 		public void Attach(ITapiBridge tapiBridge)
 		{
-			_tapiBridge = tapiBridge;
-			_tapiBridge.TapiProgress += OnProgress;
-			_tapiBridge.TapiStatistics += TapiBridgeOnTapiStatistics;
+			tapiBridge.ThrowIfNull(nameof(tapiBridge));
+			_logger.LogVerbose("Attached tapi bridge {TapiBridgeInstanceId} to metadata statistics.", tapiBridge.InstanceId);
+			tapiBridge.TapiProgress += this.OnProgress;
+			tapiBridge.TapiStatistics += this.TapiBridgeOnTapiStatistics;
 		}
 
 		private void TapiBridgeOnTapiStatistics(object sender, TapiStatisticsEventArgs e)
@@ -62,10 +60,12 @@
 			}
 		}
 
-		public void Detach()
+		public void Detach(ITapiBridge tapiBridge)
 		{
-			_tapiBridge.TapiProgress -= OnProgress;
-			_tapiBridge.TapiStatistics -= TapiBridgeOnTapiStatistics;
+			tapiBridge.ThrowIfNull(nameof(tapiBridge));
+			_logger.LogVerbose("Detached tapi bridge {TapiBridgeInstanceId} from metadata statistics.", tapiBridge.InstanceId);
+			tapiBridge.TapiProgress -= this.OnProgress;
+			tapiBridge.TapiStatistics -= this.TapiBridgeOnTapiStatistics;
 		}
 
 		public void UpdateStatisticsForFile(string path)

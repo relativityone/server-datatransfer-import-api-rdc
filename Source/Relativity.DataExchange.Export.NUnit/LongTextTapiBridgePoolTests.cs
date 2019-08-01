@@ -45,6 +45,22 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
+		public void ItShouldNotThrowWhenTheBridgeIsNotRegistered()
+		{
+			// ARRANGE
+			Mock<IDownloadTapiBridge> otherBridge = new Mock<IDownloadTapiBridge>();
+
+			// ACT
+			this._instance.Request(CancellationToken.None);
+			this._instance.Release(otherBridge.Object);
+			this._instance.Release(this._bridge.Object);
+
+			// ASSERT
+			this._bridge.Verify(x => x.Dispose(), Times.Once);
+			otherBridge.Verify(x => x.Dispose(), Times.Once);
+		}
+
+		[Test]
 		public void ItShouldCreateBridgeForEveryRequest()
 		{
 			// ACT

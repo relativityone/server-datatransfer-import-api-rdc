@@ -5,6 +5,6 @@
 	public interface ITransferStatistics
 	{
 		void Attach(ITapiBridge tapiBridge);
-		void Detach();
+		void Detach(ITapiBridge tapiBridge);
 	}
 }

@@ -36,9 +36,9 @@
 
 		public virtual void Dispose()
 		{
-			_progressHandler.Detach();
+			_progressHandler.Detach(this.TapiBridge);
 			_messageHandler.Detach(this.TapiBridge);
-			_transferStatistics.Detach();
+			_transferStatistics.Detach(this.TapiBridge);
 			this.TapiBridge.Dispose();
 		}
 

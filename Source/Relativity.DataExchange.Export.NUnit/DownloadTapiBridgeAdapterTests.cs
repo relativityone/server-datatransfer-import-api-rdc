@@ -45,13 +45,13 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			// ASSERT
 			this.ProgressHandler.Verify(x => x.Attach(this.TapiBridge.Object), Times.Once);
-			this.ProgressHandler.Verify(x => x.Detach(), Times.Once);
+			this.ProgressHandler.Verify(x => x.Detach(this.TapiBridge.Object), Times.Once);
 
 			this.MessagesHandler.Verify(x => x.Attach(this.TapiBridge.Object), Times.Once);
 			this.MessagesHandler.Verify(x => x.Detach(this.TapiBridge.Object), Times.Once);
 
 			this.TransferStatistics.Verify(x => x.Attach(this.TapiBridge.Object), Times.Once);
-			this.TransferStatistics.Verify(x => x.Detach(), Times.Once);
+			this.TransferStatistics.Verify(x => x.Detach(this.TapiBridge.Object), Times.Once);
 
 			this.TapiBridge.Verify(x => x.Dispose(), Times.Once);
 		}

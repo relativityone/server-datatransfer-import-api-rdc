@@ -12,11 +12,10 @@
 
 	public class DownloadTapiBridgeWithEncodingConversion : DownloadTapiBridgeAdapter
 	{
-		private bool _initialized;
-
+		private readonly object _syncRoot = new object();
 		private readonly ILongTextEncodingConverter _longTextEncodingConverter;
-
 		private readonly ILog _logger;
+		private bool _initialized;
 
 		public DownloadTapiBridgeWithEncodingConversion(
 			ITapiBridge downloadTapiBridge,
@@ -34,27 +33,37 @@
 
 		public override string QueueDownload(TransferPath transferPath)
 		{
-			if (!_initialized)
+			lock (_syncRoot)
 			{
-				_logger.LogVerbose("Initializing long text encoding converter.");
-				_initialized = true;
-				_longTextEncodingConverter.StartListening(this.TapiBridge);
+				if (!_initialized)
+				{
+					_logger.LogVerbose("Initializing long text encoding converter...");
+					_longTextEncodingConverter.StartListening(this.TapiBridge);
+					_logger.LogVerbose("Initialized long text encoding converter.");
+					_initialized = true;
+				}
 			}
 
-			return TapiBridge.AddPath(transferPath);
+			return this.TapiBridge.AddPath(transferPath);
 		}
 
 		public override void WaitForTransfers()
 		{
-			if (!_initialized)
+			lock (_syncRoot)
 			{
-				_logger.LogVerbose("Long text encoding conversion bridge hasn't been initialized, so skipping waiting.");
-				return;
+				if (!_initialized)
+				{
+					_logger.LogVerbose(
+						"Long text encoding conversion bridge hasn't been initialized, so skipping waiting.");
+					return;
+				}
 			}
 
 			try
 			{
-				const bool KeepJobAlive = true;
+				// REL-344406: The LongTextEncodingConverter implementation is entirely dependent on awaiting completion of the transfer job.
+				// TODO: Decouple encoding conversion entirely from the batch and into an independent queue.
+				const bool KeepJobAlive = false;
 				this.TapiBridge.WaitForTransfers(
 					"Waiting for all long files to download...",
 					"Long file downloads completed.",

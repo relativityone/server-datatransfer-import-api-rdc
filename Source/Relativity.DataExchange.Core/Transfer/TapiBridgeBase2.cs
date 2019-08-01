@@ -218,6 +218,7 @@ namespace Relativity.DataExchange.Transfer
 				context = CreateDefaultTransferContext(parameters);
 			}
 
+			this.InstanceId = Guid.NewGuid();
 			this.tapiObjectService = service;
 			this.currentDirection = direction;
 			this.parameters = parameters;
@@ -264,6 +265,12 @@ namespace Relativity.DataExchange.Transfer
 		/// The <see cref="Guid"/> value.
 		/// </value>
 		public Guid ClientId => this.transferClient?.Id ?? Guid.Empty;
+
+		/// <inheritdoc />
+		public Guid InstanceId
+		{
+			get;
+		}
 
 		/// <inheritdoc />
 		public TapiTotals JobTotals => this.jobTotals;

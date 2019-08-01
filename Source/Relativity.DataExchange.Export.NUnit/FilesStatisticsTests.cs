@@ -99,7 +99,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, size1, start, end));
 
-			this._instance.Detach();
+			this._instance.Detach(this._tapiBridge.Object);
 
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, size2, start, end));
 
