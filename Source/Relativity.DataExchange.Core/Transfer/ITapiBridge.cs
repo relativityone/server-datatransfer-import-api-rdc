@@ -73,6 +73,17 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
+		/// Gets the transfer bridge instance unique identifier. This value is assigned for the lifecycle of each instance, regardless of whether jobs are batched or in web fallback mode. It's recommended to include this value with verbose logs where per-instance details may provide added insight.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Guid"/> value.
+		/// </value>
+		Guid InstanceId
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Gets the transfer totals for the current job.
 		/// </summary>
 		/// <value>

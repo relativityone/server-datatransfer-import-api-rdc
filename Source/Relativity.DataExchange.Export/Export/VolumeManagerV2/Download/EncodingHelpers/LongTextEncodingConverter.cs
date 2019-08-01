@@ -35,14 +35,20 @@
 
 		public void StartListening(ITapiBridge tapiBridge)
 		{
-			_logger.LogVerbose("Start long text encoding conversion task.");
+			tapiBridge.ThrowIfNull(nameof(tapiBridge));
+			_logger.LogVerbose(
+				"Attached tapi bridge {TapiBridgeInstanceId} to the long text encoding converter.",
+				tapiBridge.InstanceId);
 			_conversionTask = Task.Run(() => this.ConvertLongTextFiles(), _cancellationToken);
 			tapiBridge.TapiProgress += this.OnTapiProgress;
 		}
 
 		public void StopListening(ITapiBridge tapiBridge)
 		{
-			_logger.LogVerbose("Stop listening for new long text encoding files to convert.");
+			tapiBridge.ThrowIfNull(nameof(tapiBridge));
+			_logger.LogVerbose(
+				"Detached tapi bridge {TapiBridgeInstanceId} from the long text encoding converter.",
+				tapiBridge.InstanceId);
 			tapiBridge.TapiProgress -= this.OnTapiProgress;
 			_longTextFilesToConvert.CompleteAdding();
 		}

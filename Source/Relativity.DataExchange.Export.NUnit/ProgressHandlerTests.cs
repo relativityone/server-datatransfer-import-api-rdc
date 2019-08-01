@@ -70,7 +70,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.Attach(this._tapiBridge.Object);
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id1, true, true, 1, 1, DateTime.Now, DateTime.Now));
 
-			this._instance.Detach();
+			this._instance.Detach(this._tapiBridge.Object);
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id2, true, true, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT
