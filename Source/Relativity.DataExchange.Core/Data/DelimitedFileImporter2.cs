@@ -677,19 +677,19 @@ namespace Relativity.DataExchange.Data
 		/// </returns>
 		protected string[] GetLine(int maximumFieldLength)
 		{
-			string[] retval = null;
+			string[] returnValue = null;
 			switch (this.Mode)
 			{
 				case DelimitedMode.Bounded:
-					retval = this.GetLineBounded(true, maximumFieldLength, MaxColumnCountForLine);
+					returnValue = this.GetLineBounded(true, maximumFieldLength, MaxColumnCountForLine);
 					break;
 
 				case DelimitedMode.Simple:
-					retval = this.GetLineSimple(true);
+					returnValue = this.GetLineSimple(true);
 					break;
 			}
 
-			return retval;
+			return returnValue;
 		}
 
 		/// <summary>

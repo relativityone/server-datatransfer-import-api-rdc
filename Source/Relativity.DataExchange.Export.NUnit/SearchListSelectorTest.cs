@@ -58,7 +58,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldReturnMoreIfPatternMachesMoreThanOne()
+		public void ItShouldReturnMoreIfPatternMatchesMoreThanOne()
 		{
 			const int amount = 4;
 			this.AddRowsToDataTable(amount, "test");
