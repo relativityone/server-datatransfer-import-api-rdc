@@ -1,16 +1,12 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	using System.Threading;
-
-	using kCura.WinEDDS;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
-
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.Logging;
 
 	public class LongTextTapiBridgeFactory : ILongTextTapiBridgeFactory
 	{
-		private readonly IExportConfig _exportConfig;
 		private readonly TapiBridgeParametersFactory _tapiBridgeParametersFactory;
 		private readonly LongTextEncodingConverterFactory _converterFactory;
 		private readonly DownloadProgressManager _downloadProgressManager;
@@ -18,10 +14,9 @@
 		private readonly MetadataStatistics _metadataStatistics;
 		private readonly ILog _logger;
 
-		public LongTextTapiBridgeFactory(IExportConfig exportConfig, TapiBridgeParametersFactory tapiBridgeParametersFactory, LongTextEncodingConverterFactory converterFactory,
+		public LongTextTapiBridgeFactory(TapiBridgeParametersFactory tapiBridgeParametersFactory, LongTextEncodingConverterFactory converterFactory,
 			DownloadProgressManager downloadProgressManager, IMessagesHandler messageHandler, MetadataStatistics metadataStatistics, ILog logger)
 		{
-			_exportConfig = exportConfig;
 			_tapiBridgeParametersFactory = tapiBridgeParametersFactory;
 			_converterFactory = converterFactory;
 			_downloadProgressManager = downloadProgressManager;
