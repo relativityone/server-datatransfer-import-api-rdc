@@ -1,39 +1,61 @@
-﻿Imports System.Threading.Tasks
+﻿Imports System.Threading
+Imports System.Threading.Tasks
 Imports kCura.WinEDDS.Monitoring
 
 Namespace Relativity.Desktop.Client
 
 	Public Class MetricsSinkConfigProvider
+	    Implements IMetricsSinkConfig
 		Private Shared ReadOnly _CONFIG_REFRESH_TIME As TimeSpan = TimeSpan.FromMinutes(1)
 		Private _lastRefresh As DateTime = DateTime.MinValue
-		Private _currentConfig As IMetricsSinkConfig
 		Private _configRefreshTask As Task
 
-		Public ReadOnly Property CurrentConfig As IMetricsSinkConfig
-			Get
-				If DateTime.Now - _lastRefresh > _CONFIG_REFRESH_TIME Then
-					ToggleRefresh()
-					_lastRefresh = DateTime.Now
-				End If
-				Return _currentConfig
-			End Get
-		End Property
+        Private _throttleTimeout As TimeSpan = New TimeSpan()
+        Private _sendLiveApmMetrics As Boolean = New Boolean()
+        Private _sendSumMetrics As Boolean = new Boolean()
+        Private _sendSummaryApmMetrics As Boolean = New Boolean()
 
-		Private Sub ToggleRefresh()
-			If _configRefreshTask Is Nothing OrElse _configRefreshTask.IsCanceled OrElse _configRefreshTask.IsCompleted OrElse _configRefreshTask.IsFaulted Then
-				_configRefreshTask = Task.Run(New Action(AddressOf RefreshConfiguration))
-			End If
-		End Sub
+        Public ReadOnly Property ThrottleTimeout As TimeSpan Implements IMetricsSinkConfig.ThrottleTimeout
+        Get
+            ToggleRefresh()
+            Return Thread.VolatileRead(_throttleTimeout)
+        End Get
+        End Property
+
+        Public ReadOnly Property SendLiveApmMetrics As Boolean Implements IMetricsSinkConfig.SendLiveApmMetrics
+        Get
+            ToggleRefresh()
+            Return Thread.VolatileRead(_sendLiveApmMetrics)
+        End Get
+        End Property
+        Public ReadOnly Property SendSumMetrics As Boolean Implements IMetricsSinkConfig.SendSumMetrics
+        Get
+            ToggleRefresh()
+            Return Thread.VolatileRead(_sendSumMetrics)
+        End Get
+        End Property
+        Public ReadOnly Property SendSummaryApmMetrics As Boolean Implements IMetricsSinkConfig.SendSummaryApmMetrics
+        Get
+            ToggleRefresh()
+            Return Thread.VolatileRead(_sendSummaryApmMetrics)
+        End Get
+        End Property
 
 		Private Sub RefreshConfiguration()
-			Dim config = New MetricsSinkConfig With {
-				.ThrottleTimeout = TimeSpan.FromSeconds(Relativity.Desktop.Client.Config.RdcMetricsThrottlingSeconds),
-				.SendLiveAPMMetrics = Relativity.Desktop.Client.Config.SendLiveApmMetrics,
-				.SendSumMetrics = Relativity.Desktop.Client.Config.SendSumMetrics,
-				.SendSummaryApmMetrics = Relativity.Desktop.Client.Config.SendSummaryApmMetrics
-			}
-			_currentConfig = config
+                Thread.VolatileWrite(_throttleTimeout, TimeSpan.FromSeconds(Relativity.Desktop.Client.Config.RdcMetricsThrottlingSeconds))
+                Thread.VolatileWrite(_sendLiveApmMetrics, Relativity.Desktop.Client.Config.SendLiveApmMetrics)
+		        Thread.VolatileWrite(_sendSumMetrics, Relativity.Desktop.Client.Config.SendSumMetrics)
+                Thread.VolatileWrite(_sendSummaryApmMetrics, Relativity.Desktop.Client.Config.SendSummaryApmMetrics)
 		End Sub
+
+        Private Sub ToggleRefresh()
+            If DateTime.Now - _lastRefresh > _CONFIG_REFRESH_TIME Then
+                If _configRefreshTask Is Nothing OrElse _configRefreshTask.IsCanceled OrElse _configRefreshTask.IsCompleted OrElse _configRefreshTask.IsFaulted Then
+                    _configRefreshTask = Task.Run(New Action(AddressOf RefreshConfiguration))
+                End If
+                _lastRefresh = DateTime.Now
+            End If
+        End Sub
 
 		Public Sub Initialize()
 			ToggleRefresh()
