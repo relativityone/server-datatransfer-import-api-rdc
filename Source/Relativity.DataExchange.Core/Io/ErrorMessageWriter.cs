@@ -99,6 +99,7 @@ namespace Relativity.DataExchange.Io
 		{
 			this.Dispose();
 			this.SetStreamToInitialValue(this.FilePath);
+			this.disposed = false;
 		}
 
 		/// <summary>
