@@ -56,7 +56,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ASSERT
 			this._batchInitialization.Verify(x => x.PrepareBatch(artifacts, volumePredictions, CancellationToken.None), Times.Once);
 			this._batchExporter.Verify(x => x.Export(artifacts, CancellationToken.None), Times.Once);
-			this._batchValidator.Verify(x => x.ValidateExportedBatch(artifacts, volumePredictions, CancellationToken.None), Times.Once);
+			this._batchValidator.Verify(x => x.ValidateExportedBatch(artifacts, CancellationToken.None), Times.Once);
 			this._batchState.Verify(x => x.SaveState(), Times.Once);
 			this._batchCleanUp.Verify(x => x.CleanUp(), Times.Once);
 

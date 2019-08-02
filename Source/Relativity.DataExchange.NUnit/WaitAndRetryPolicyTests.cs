@@ -94,7 +94,7 @@ namespace Relativity.DataExchange.NUnit
 				throw new InvalidOperationException();
 			});
 
-			this.WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParamsThenThwowsException(maxRetryCount);
+			this.WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParamsThenThrowsException(maxRetryCount);
 
 			this.ThenTheActualRetryCallCountShouldEqual();
 			this.ThenTheActualExecFuncCallCountShouldEqual();
@@ -126,17 +126,17 @@ namespace Relativity.DataExchange.NUnit
 		[TestCase(2, 1)]
 		[TestCase(3, 2)]
 		[TestCase(10, 5)]
-		public void ItShouldWaitAndRetryWithMethodParamsNotAllFails(int maxRetryCount, int succesAfterRetryNum)
+		public void ItShouldWaitAndRetryWithMethodParamsNotAllFails(int maxRetryCount, int successAfterRetryNum)
 		{
-			this.GivenTheExpectedRetryCallCount(succesAfterRetryNum);
-			this.GivenTheExpectedExecFuncCallCount(succesAfterRetryNum + 1);
+			this.GivenTheExpectedRetryCallCount(successAfterRetryNum);
+			this.GivenTheExpectedExecFuncCallCount(successAfterRetryNum + 1);
 
 			this.GivenTheRetryDuration();
 			this.GivenTheRetryAction();
 			this.GivenTheExecFunc((token) =>
 			{
 				this.actualExecFuncCallCount++;
-				if (this.actualExecFuncCallCount <= succesAfterRetryNum)
+				if (this.actualExecFuncCallCount <= successAfterRetryNum)
 				{
 					throw new InvalidOperationException();
 				}
@@ -151,17 +151,17 @@ namespace Relativity.DataExchange.NUnit
 		[TestCase(2, 1)]
 		[TestCase(3, 2)]
 		[TestCase(10, 5)]
-		public void ItShouldWaitAndRetryWithConstructorParamsNotAllFails(int maxRetryCount, int succesAfterRetryNum)
+		public void ItShouldWaitAndRetryWithConstructorParamsNotAllFails(int maxRetryCount, int successAfterRetryNum)
 		{
-			this.GivenTheExpectedRetryCallCount(succesAfterRetryNum);
-			this.GivenTheExpectedExecFuncCallCount(succesAfterRetryNum + 1);
+			this.GivenTheExpectedRetryCallCount(successAfterRetryNum);
+			this.GivenTheExpectedExecFuncCallCount(successAfterRetryNum + 1);
 
 			this.GivenTheRetryDuration();
 			this.GivenTheRetryAction();
 			this.GivenTheExecFunc((token) =>
 			{
 				this.actualExecFuncCallCount++;
-				if (this.actualExecFuncCallCount <= succesAfterRetryNum)
+				if (this.actualExecFuncCallCount <= successAfterRetryNum)
 				{
 					throw new InvalidOperationException();
 				}
@@ -242,7 +242,7 @@ namespace Relativity.DataExchange.NUnit
 				CancellationToken.None);
 		}
 
-		private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParamsThenThwowsException(int maxRetryCount)
+		private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParamsThenThrowsException(int maxRetryCount)
 		{
 			var waitAndRetryPolicy = new WaitAndRetryPolicy();
 			Assert.That(

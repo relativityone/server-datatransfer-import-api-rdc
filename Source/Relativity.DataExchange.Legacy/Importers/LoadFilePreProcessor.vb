@@ -155,7 +155,6 @@ Namespace kCura.WinEDDS
 			Dim fileSize As Int64 = Me.Reader.BaseStream.Length
 			Dim stepSize As Int64 = GetStepSize(fileSize)
 			Dim folderColumnIndex As Int32 = Me.GetColumnIndexFromString(_settings.FolderStructureContainedInColumn)
-			Dim choiceColumnIndexList As New System.Collections.Generic.List(Of Int32)
 			Dim currentRun As Int64 = System.DateTime.Now.Ticks
 			Dim lastRun As Int64 = currentRun
 			Dim showedPopup As Boolean = False

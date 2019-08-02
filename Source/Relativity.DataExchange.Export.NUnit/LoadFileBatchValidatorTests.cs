@@ -45,7 +45,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileHelper.Setup(x => x.Exists(this._destinationPath.Object.Path)).Returns(false);
 
 			// ACT
-			this._instance.ValidateExportedBatch(null, null, CancellationToken.None);
+			this._instance.ValidateExportedBatch(null, CancellationToken.None);
 
 			// ASSERT
 			this._status.Verify(x => x.WriteError(It.IsAny<string>()));
@@ -58,7 +58,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileHelper.Setup(x => x.GetFileSize(this._destinationPath.Object.Path)).Returns(1);
 
 			// ACT
-			this._instance.ValidateExportedBatch(null, null, CancellationToken.None);
+			this._instance.ValidateExportedBatch(null, CancellationToken.None);
 
 			// ASSERT
 			this._status.Verify(x => x.WriteError(It.IsAny<string>()), Times.Never);
@@ -71,7 +71,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileHelper.Setup(x => x.GetFileSize(this._destinationPath.Object.Path)).Returns(0);
 
 			// ACT
-			this._instance.ValidateExportedBatch(null, null, CancellationToken.None);
+			this._instance.ValidateExportedBatch(null, CancellationToken.None);
 
 			// ASSERT
 			this._status.Verify(x => x.WriteError(It.IsAny<string>()));
