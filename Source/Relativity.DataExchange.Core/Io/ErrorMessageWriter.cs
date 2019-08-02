@@ -15,7 +15,7 @@ namespace Relativity.DataExchange.Io
 		where T : IErrorArguments
 	{
 		private readonly object lockObject = new object();
-		private readonly Lazy<StreamWriter> stream;
+		private Lazy<StreamWriter> stream;
 		private bool disposed;
 
 		/// <summary>
@@ -34,10 +34,7 @@ namespace Relativity.DataExchange.Io
 
 				this.FilePath = filePath;
 
-				this.stream = new Lazy<StreamWriter>(() => new StreamWriter(
-					filePath,
-					true,
-					System.Text.Encoding.Default));
+				this.SetStreamToInitialValue(filePath);
 			}
 		}
 
@@ -96,6 +93,15 @@ namespace Relativity.DataExchange.Io
 		}
 
 		/// <summary>
+		/// Releases the (file) hold of the document until a message is written.
+		/// </summary>
+		internal void ReleaseHold()
+		{
+			this.Dispose();
+			this.SetStreamToInitialValue(this.FilePath);
+		}
+
+		/// <summary>
 		/// CSVFormat will take in a string, replace a double quote characters with a pair of double quote characters, then surround the string with double quote characters
 		/// This preps it for being written as a field in a CSV file.
 		/// </summary>
@@ -109,6 +115,11 @@ namespace Relativity.DataExchange.Io
 			var doubleQuote = quote + quote;
 			var escapedField = fieldValue.Replace(quote, doubleQuote);
 			return $"{quote}{escapedField}{quote}";
+		}
+
+		private void SetStreamToInitialValue(string filePath)
+		{
+			this.stream = new Lazy<StreamWriter>(() => new StreamWriter(filePath, true, System.Text.Encoding.Default));
 		}
 	}
 }
