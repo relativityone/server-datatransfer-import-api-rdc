@@ -86,6 +86,48 @@ namespace Relativity.DataExchange.NUnit
 			Assert.IsFalse(File.Exists(path));
 		}
 
+		[Test(Description = "Error message writer should not create file if hold released.")]
+		public static void ErrorMessageWriterShouldNotCreateFileIfHoldReleased()
+		{
+			// Arrange
+			var path = Path.GetRandomFileName();
+
+			// Act
+			using (var errorWriter = new ErrorMessageWriter<IErrorArguments>(path))
+			{
+				// Assert
+				errorWriter.ReleaseHold();
+				Assert.IsFalse(File.Exists(path));
+				Assert.IsFalse(errorWriter.FileCreated);
+			}
+
+			// Assert
+			Assert.IsFalse(File.Exists(path));
+		}
+
+		[Test(Description = "If hold is released file should not be held by writer.")]
+		public static void IfHoldIsReleasedFileShouldNotBeHeldByWriter()
+		{
+			// Arrange
+			var path = Path.GetRandomFileName();
+			var errorArguments = GetSomeErrorArguments();
+
+			// Act
+			using (var errorWriter = new ErrorMessageWriter<IErrorArguments>(path))
+			{
+				errorWriter.WriteErrorMessage(errorArguments.Object);
+
+				// errorWriter.ReleaseHold();
+				var ex = Assert.Catch<IOException>(() => File.ReadAllLines(path));
+				Assert.That(ex.Message.Contains("because it is being used"));
+				errorWriter.ReleaseHold();
+				Assert.DoesNotThrow(() => File.ReadAllLines(path));
+			}
+
+			// Clean
+			File.Delete(path);
+		}
+
 		[Test(Description = "Error message writer should create file if it has written something to disk.")]
 		public static void ErrorMessageWriterShouldCreateFileIfItHasWrittenSomethingToDisk()
 		{
@@ -96,6 +138,53 @@ namespace Relativity.DataExchange.NUnit
 			using (var errorWriter = new ErrorMessageWriter<IErrorArguments>(path))
 			{
 				// Assert
+				errorWriter.WriteErrorMessage(GetSomeErrorArguments().Object);
+				Assert.IsTrue(File.Exists(path));
+				Assert.IsTrue(errorWriter.FileCreated);
+			}
+
+			// Assert
+			Assert.IsTrue(File.Exists(path));
+
+			// Clean
+			File.Delete(path);
+		}
+
+		[Test(Description = "Error message writer should create file if it has written something to disk, after releasing hold.")]
+		public static void ErrorMessageWriterShouldCreateFileIfItHasWrittenSomethingToDiskAfterReleasingHold()
+		{
+			// Arrange
+			var path = Path.GetRandomFileName();
+
+			// Act
+			using (var errorWriter = new ErrorMessageWriter<IErrorArguments>(path))
+			{
+				// Assert
+				errorWriter.WriteErrorMessage(GetSomeErrorArguments().Object);
+				errorWriter.ReleaseHold();
+				Assert.IsTrue(File.Exists(path));
+				Assert.IsTrue(errorWriter.FileCreated);
+			}
+
+			// Assert
+			Assert.IsTrue(File.Exists(path));
+
+			// Clean
+			File.Delete(path);
+		}
+
+		[Test(Description = "Error message writer should create file if it has written something to disk, after releasing hold v2.")]
+		public static void ErrorMessageWriterShouldCreateFileIfItHasWrittenSomethingToDiskAfterReleasingHoldV2()
+		{
+			// Arrange
+			var path = Path.GetRandomFileName();
+
+			// Act
+			using (var errorWriter = new ErrorMessageWriter<IErrorArguments>(path))
+			{
+				// Assert
+				errorWriter.WriteErrorMessage(GetSomeErrorArguments().Object);
+				errorWriter.ReleaseHold();
 				errorWriter.WriteErrorMessage(GetSomeErrorArguments().Object);
 				Assert.IsTrue(File.Exists(path));
 				Assert.IsTrue(errorWriter.FileCreated);
