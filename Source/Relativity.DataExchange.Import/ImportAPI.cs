@@ -16,6 +16,7 @@ using Relativity.DataExchange.Service;
 namespace kCura.Relativity.ImportAPI
 {
 	using global::Relativity.DataExchange;
+	using global::Relativity.DataTransfer.MessageService;
 
 	/// <summary>
 	/// Provides methods for developing custom import utilities for documents, images, production sets, and Dynamic Objects.
@@ -44,6 +45,11 @@ namespace kCura.Relativity.ImportAPI
 		/// The lazy-loaded production manager instance.
 		/// </summary>
 		private ProductionManager _productionManager;
+
+		/// <summary>
+		/// Sink registration.
+		/// </summary>
+		private IMetricSinkManager _metricSinkManager;
 
 		/// <summary>
 		/// Holds cookies for the current session.
@@ -77,6 +83,7 @@ namespace kCura.Relativity.ImportAPI
 		{
 			this.ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			this.PerformLogin(null, null, webServiceUrl);
+			this._metricSinkManager = new MetricSinkManager(new MetricSinkConfigIAPI(), new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
 		}
 
 		/// <summary>
@@ -106,6 +113,7 @@ namespace kCura.Relativity.ImportAPI
 		{
 			this.ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			PerformLogin(userName, password, string.Empty);
+			this._metricSinkManager = new MetricSinkManager(new MetricSinkConfigIAPI(), new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
 		}
 
 		/// <summary>
@@ -138,6 +146,7 @@ namespace kCura.Relativity.ImportAPI
 		{
 			ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			this.PerformLogin(userName, password, webServiceUrl);
+			this._metricSinkManager = new MetricSinkManager(new MetricSinkConfigIAPI(), new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
 		}
 
 		/// <summary>
@@ -335,7 +344,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
-			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, (int)ExecutionSource);
+			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, this._metricSinkManager.SetupMessageService(), (int)ExecutionSource);
 		}
 
 		/// <summary>
@@ -384,7 +393,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </returns>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId)
 		{
-			var returnJob = new ImportBulkArtifactJob(_credentials, _tapiCredentials, _cookieMonster, (int)ExecutionSource);
+			var returnJob = new ImportBulkArtifactJob(_credentials, _tapiCredentials, _cookieMonster, _metricSinkManager.SetupMessageService(), (int)ExecutionSource);
 			returnJob.Settings.ArtifactTypeId = artifactTypeId;
 			return returnJob;
 		}
