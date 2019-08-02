@@ -217,7 +217,7 @@ namespace Relativity.DataExchange.Io
 		/// <remarks>
 		/// REL-135101: avoid failures when Temp is full.
 		/// </remarks>
-		string CreateEmptyFile();
+		string GetTempFileName();
 
 		/// <summary>
 		/// Gets a uniquely named with a user-defined suffix, zero-byte temporary file on disk and returns the full path of that file.
@@ -234,7 +234,7 @@ namespace Relativity.DataExchange.Io
 		/// <remarks>
 		/// REL-135101: avoid failures when Temp is full.
 		/// </remarks>
-		string CreateEmptyFile(string fileNameSuffix);
+		string GetTempFileName(string fileNameSuffix);
 
 		/// <summary>
 		/// Gets a uniquely named filename with a user-defined suffix and returns the full path of that file.
@@ -251,7 +251,7 @@ namespace Relativity.DataExchange.Io
 		/// <remarks>
 		/// REL-135101: avoid failures when Temp is full.
 		/// </remarks>
-		string TemporaryFileName(string fileNameSuffix);
+		string TemporaryFileNameWithoutCreatingEmptyFile(string fileNameSuffix);
 
 		/// <summary>
 		/// Returns the path of the current user's temporary folder.

@@ -206,9 +206,9 @@ namespace Relativity.DataExchange.Io
 		}
 
 		/// <inheritdoc />
-		public string CreateEmptyFile()
+		public string GetTempFileName()
 		{
-			return this.CreateEmptyFile(null);
+			return this.GetTempFileName(null);
 		}
 
 		/// <inheritdoc />
@@ -216,9 +216,9 @@ namespace Relativity.DataExchange.Io
 			"Microsoft.Design",
 			"CA1031:DoNotCatchGeneralExceptionTypes",
 			Justification = "Maintaining backwards compatibility.")]
-		public string CreateEmptyFile(string fileNameSuffix)
+		public string GetTempFileName(string fileNameSuffix)
 		{
-			var file = this.TemporaryFileName(fileNameSuffix);
+			var file = this.TemporaryFileNameWithoutCreatingEmptyFile(fileNameSuffix);
 			try
 			{
 				using (System.IO.File.Create(file))
@@ -236,7 +236,7 @@ namespace Relativity.DataExchange.Io
 		}
 
 		/// <inheritdoc />
-		public string TemporaryFileName(string fileNameSuffix)
+		public string TemporaryFileNameWithoutCreatingEmptyFile(string fileNameSuffix)
 		{
 			const string FileNameSeparator = "-";
 			if (string.IsNullOrEmpty(fileNameSuffix))

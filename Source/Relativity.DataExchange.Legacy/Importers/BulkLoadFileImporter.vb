@@ -1264,7 +1264,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub LowerBatchSizeAndRetry(ByVal oldNativeFilePath As String, ByVal totalRecords As Int32)
 			'NOTE: we are not cutting a new/smaller data grid bulk file because it will be chunked as it is loaded into the data grid
-			Dim newNativeFilePath As String = TempFileBuilder.CreateEmptyFile(TempFileConstants.NativeLoadFileNameSuffix)
+			Dim newNativeFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.NativeLoadFileNameSuffix)
 			Dim limit As String = BulkLoadFileFieldDelimiter & vbCrLf
 			Dim last As New System.Collections.Generic.Queue(Of Char)
 			Dim recordsProcessed As Int32 = 0
@@ -2226,7 +2226,7 @@ Namespace kCura.WinEDDS
 					Me.WriteStatusLine(EventType2.Status, "Retrieving errors from server")
 					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer)
 					AddHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
-					Dim errorsLocation As String = TempFileBuilder.CreateEmptyFile(TempFileConstants.ErrorsFileNameSuffix)
+					Dim errorsLocation As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 					sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)
 
 					If sr Is Nothing Then

@@ -37,9 +37,9 @@ namespace Relativity.DataExchange.Io
 		/// <returns>
 		/// The full path of the temporary file.
 		/// </returns>
-		public static string CreateEmptyFile()
+		public static string GetTempFileName()
 		{
-			return CreateEmptyFile(null);
+			return GetTempFileName(null);
 		}
 
 		/// <summary>
@@ -51,10 +51,10 @@ namespace Relativity.DataExchange.Io
 		/// <returns>
 		/// The full path of the temporary file.
 		/// </returns>
-		public static string CreateEmptyFile(string fileNameSuffix)
+		public static string GetTempFileName(string fileNameSuffix)
 		{
 			// The implementation has been relocated to the IPath object.
-			return FileSystem.Path.CreateEmptyFile(fileNameSuffix);
+			return FileSystem.Path.GetTempFileName(fileNameSuffix);
 		}
 
 		/// <summary>
@@ -66,10 +66,10 @@ namespace Relativity.DataExchange.Io
 		/// <returns>
 		/// The full path of the temporary file.
 		/// </returns>
-		public static string TemporaryFileName(string fileNameSuffix)
+		public static string TemporaryFileNameWithoutCreatingEmptyFile(string fileNameSuffix)
 		{
 			// The implementation has been relocated to the IPath object.
-			return FileSystem.Path.TemporaryFileName(fileNameSuffix);
+			return FileSystem.Path.TemporaryFileNameWithoutCreatingEmptyFile(fileNameSuffix);
 		}
 	}
 }
