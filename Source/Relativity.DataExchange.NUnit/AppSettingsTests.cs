@@ -328,6 +328,17 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheHttpExtractedTextTimeoutSecondsSetting()
+		{
+			Assert.That(
+				this.settings.HttpExtractedTextTimeoutSeconds,
+				Is.EqualTo(DataExchange.AppSettingsConstants.HttpExtractedTextTimeoutSecondsDefaultValue));
+			int expectedValue = RandomHelper.NextInt32(1, 1000);
+			this.settings.HttpExtractedTextTimeoutSeconds = expectedValue;
+			Assert.That(this.settings.HttpExtractedTextTimeoutSeconds, Is.EqualTo(expectedValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheImportBatchMaxVolumeSetting()
 		{
 			Assert.That(
@@ -913,6 +924,7 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.ExportBatchSize, Is.EqualTo(255));
 				Assert.That(this.settings.ExportThreadCount, Is.EqualTo(3));
 				Assert.That(this.settings.ForceWebUpload, Is.True);
+				Assert.That(this.settings.HttpTimeoutSeconds, Is.EqualTo(23));
 				Assert.That(this.settings.ImportBatchMaxVolume, Is.EqualTo(12345));
 				Assert.That(this.settings.ImportBatchSize, Is.EqualTo(102));
 				Assert.That(this.settings.JobCompleteBatchSize, Is.EqualTo(999));
@@ -943,6 +955,14 @@ namespace Relativity.DataExchange.NUnit
 
 				// The kCura.Windows.Process section asserts go here.
 				Assert.That(this.settings.LogAllEvents, Is.True);
+
+				// The Relativity.DataExchange section asserts go here.
+				Assert.That(this.settings.TapiFileNotFoundErrorsRetry, Is.True);
+				Assert.That(this.settings.TapiFileNotFoundErrorsRetry, Is.True);
+				Assert.That(this.settings.TapiMaxInactivitySeconds, Is.EqualTo(99));
+				Assert.That(this.settings.FileTypeIdentifyTimeoutSeconds, Is.EqualTo(456));
+				Assert.That(this.settings.OAuth2ImplicitCredentialRedirectUrl, Is.EqualTo("http://relativity"));
+				Assert.That(this.settings.HttpExtractedTextTimeoutSeconds, Is.EqualTo(96));
 			}
 		}
 
@@ -976,6 +996,7 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportBatchSizeKey], Is.EqualTo(255));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportThreadCountKey], Is.EqualTo(3));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ForceWebUploadKey], Is.True);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.HttpTimeoutSecondsKey], Is.EqualTo(23));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ImportBatchMaxVolumeKey], Is.EqualTo(12345));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ImportBatchSizeKey], Is.EqualTo(102));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.LogConfigXmlFileNameKey], Is.EqualTo("CustomLog.xml"));
@@ -1011,6 +1032,7 @@ namespace Relativity.DataExchange.NUnit
 				// The new Relativity.DataExchange section asserts go here.
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.EnforceVersionCompatibilityCheckKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.FileTypeIdentifyTimeoutSecondsKey], Is.EqualTo(456));
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.HttpExtractedTextTimeoutSecondsKey], Is.EqualTo(96));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlKey], Is.EqualTo("http://relativity"));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsDisabledKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsRetryKey], Is.True);
@@ -1067,6 +1089,10 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.ForceWebUpload, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.ImportBatchMaxVolumeKey] = 11;
 				Assert.That(this.settings.ImportBatchMaxVolume, Is.EqualTo(11));
+				dictionary[DataExchange.AppSettingsConstants.HttpExtractedTextTimeoutSecondsKey] = 77;
+				Assert.That(this.settings.HttpExtractedTextTimeoutSeconds, Is.EqualTo(77));
+				dictionary[DataExchange.AppSettingsConstants.HttpTimeoutSecondsKey] = 134;
+				Assert.That(this.settings.HttpTimeoutSeconds, Is.EqualTo(134));
 				dictionary[DataExchange.AppSettingsConstants.ImportBatchSizeKey] = 12;
 				Assert.That(this.settings.ImportBatchSize, Is.EqualTo(12));
 				dictionary[DataExchange.AppSettingsConstants.LogConfigXmlFileNameKey] = "abc";

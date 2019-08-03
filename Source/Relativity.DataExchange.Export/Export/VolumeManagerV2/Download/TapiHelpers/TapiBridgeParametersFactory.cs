@@ -12,11 +12,21 @@
 	{
 		private readonly IExportConfig _exportConfig;
 		private readonly ExportFile _exportSettings;
+		private readonly IAppSettings _appSettings;
 
 		public TapiBridgeParametersFactory(ExportFile exportSettings, IExportConfig exportConfig)
+			: this(exportSettings, exportConfig, AppSettings.Instance)
+		{
+		}
+
+		public TapiBridgeParametersFactory(
+			ExportFile exportSettings,
+			IExportConfig exportConfig,
+			IAppSettings appSettings)
 		{
 			_exportSettings = exportSettings.ThrowIfNull(nameof(exportSettings));
 			_exportConfig = exportConfig.ThrowIfNull(nameof(exportConfig));
+			_appSettings = appSettings.ThrowIfNull(nameof(appSettings));
 		}
 
 		public TapiBridgeParameters2 CreateTapiBridgeParametersFromConfiguration()
@@ -28,33 +38,33 @@
 
 			TapiBridgeParameters2 parameters = new TapiBridgeParameters2
 			{
-				Application = AppSettings.Instance.ApplicationName,
-				AsperaBcpRootFolder = AppSettings.Instance.TapiAsperaBcpRootFolder,
-				AsperaDocRootLevels = AppSettings.Instance.TapiAsperaNativeDocRootLevels,
-				BadPathErrorsRetry = AppSettings.Instance.TapiBadPathErrorsRetry,
+				Application = _appSettings.ApplicationName,
+				AsperaBcpRootFolder = _appSettings.TapiAsperaBcpRootFolder,
+				AsperaDocRootLevels = _appSettings.TapiAsperaNativeDocRootLevels,
+				BadPathErrorsRetry = _appSettings.TapiBadPathErrorsRetry,
 				ClientRequestId = Guid.NewGuid(),
 				Credentials = _exportSettings.Credential,
 				FileShare = _exportSettings.CaseInfo.DocumentPath,
-				ForceAsperaClient = AppSettings.Instance.TapiForceAsperaClient,
-				ForceClientCandidates = AppSettings.Instance.TapiForceClientCandidates,
-				ForceFileShareClient = AppSettings.Instance.TapiForceFileShareClient,
-				ForceHttpClient = AppSettings.Instance.TapiForceHttpClient,
-				LargeFileProgressEnabled = AppSettings.Instance.TapiLargeFileProgressEnabled,
-				LogConfigFile = AppSettings.Instance.LogConfigXmlFileName,
-				MaxInactivitySeconds = AppSettings.Instance.TapiMaxInactivitySeconds,
-				MaxJobParallelism = AppSettings.Instance.TapiMaxJobParallelism,
+				ForceAsperaClient = _appSettings.TapiForceAsperaClient,
+				ForceClientCandidates = _appSettings.TapiForceClientCandidates,
+				ForceFileShareClient = _appSettings.TapiForceFileShareClient,
+				ForceHttpClient = _appSettings.TapiForceHttpClient,
+				LargeFileProgressEnabled = _appSettings.TapiLargeFileProgressEnabled,
+				LogConfigFile = _appSettings.LogConfigXmlFileName,
+				MaxInactivitySeconds = _appSettings.TapiMaxInactivitySeconds,
+				MaxJobParallelism = _appSettings.TapiMaxJobParallelism,
 				MaxJobRetryAttempts = _exportConfig.ExportIOErrorNumberOfRetries,
-				MinDataRateMbps = AppSettings.Instance.TapiMinDataRateMbps,
-				PermissionErrorsRetry = AppSettings.Instance.PermissionErrorsRetry,
-				PreserveFileTimestamps = AppSettings.Instance.TapiPreserveFileTimestamps,
-				SubmitApmMetrics = AppSettings.Instance.TapiSubmitApmMetrics,
+				MinDataRateMbps = _appSettings.TapiMinDataRateMbps,
+				PermissionErrorsRetry = _appSettings.PermissionErrorsRetry,
+				PreserveFileTimestamps = _appSettings.TapiPreserveFileTimestamps,
+				SubmitApmMetrics = _appSettings.TapiSubmitApmMetrics,
 				TargetPath = string.Empty,
-				TargetDataRateMbps = AppSettings.Instance.TapiTargetDataRateMbps,
-				TimeoutSeconds = AppSettings.Instance.HttpTimeoutSeconds,
-				TransferLogDirectory = AppSettings.Instance.TapiTransferLogDirectory,
+				TargetDataRateMbps = _appSettings.TapiTargetDataRateMbps,
+				TimeoutSeconds = _appSettings.HttpTimeoutSeconds,
+				TransferLogDirectory = _appSettings.TapiTransferLogDirectory,
 				WaitTimeBetweenRetryAttempts = _exportConfig.ExportIOErrorWaitTime,
 				WebCookieContainer = _exportSettings.CookieContainer,
-				WebServiceUrl = AppSettings.Instance.WebApiServiceUrl,
+				WebServiceUrl = _appSettings.WebApiServiceUrl,
 				WorkspaceId = _exportSettings.CaseInfo.ArtifactID,
 			};
 

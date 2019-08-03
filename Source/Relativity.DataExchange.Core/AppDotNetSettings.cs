@@ -29,6 +29,7 @@ namespace Relativity.DataExchange
 		private int ioErrorNumberOfRetries;
 		private int ioErrorWaitTimeInSeconds;
 		private int httpTimeoutSeconds;
+		private int httpExtractedTextTimeoutSeconds;
 		private int maximumReloginTries;
 		private int tapiMinDataRateMbps;
 		private int tapiMaxInactivitySeconds;
@@ -386,6 +387,26 @@ namespace Relativity.DataExchange
 			}
 
 			set => this.httpTimeoutSeconds = value;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.HttpExtractedTextTimeoutSecondsKey,
+			AppSettingsConstants.HttpExtractedTextTimeoutSecondsDefaultValue)]
+		int IAppSettings.HttpExtractedTextTimeoutSeconds
+		{
+			get
+			{
+				if (this.httpExtractedTextTimeoutSeconds < 1)
+				{
+					this.httpExtractedTextTimeoutSeconds = AppSettingsConstants.HttpExtractedTextTimeoutSecondsDefaultValue;
+				}
+
+				return this.httpExtractedTextTimeoutSeconds;
+			}
+
+			set => this.httpExtractedTextTimeoutSeconds = value;
 		}
 
 		/// <inheritdoc />
