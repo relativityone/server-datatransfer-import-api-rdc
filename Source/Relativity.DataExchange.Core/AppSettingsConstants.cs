@@ -140,6 +140,12 @@ namespace Relativity.DataExchange
 		public const bool TapiPreserveFileTimestampsDefaultValue = false;
 		public const string TapiSubmitApmMetricsKey = "TapiSubmitApmMetrics";
 		public const bool TapiSubmitApmMetricsDefaultValue = true;
+		public const string IapiSubmitApmMetricsKey = "IapiSubmitApmMetrics";
+		public const bool IapiSubmitApmMetricsDefaultValue = true;
+		public const string IapiSubmitSumMetricsKey = "IapiSubmitSumMetrics";
+		public const bool IapiSubmitSumMetricsDefaultValue = true;
+		public const string IapiMetricsThrottlingSecondsKey = "IapiMetricsThrottlingSeconds";
+		public const int IapiMetricsThrottlingSecondsDefaultValue = 30;
 		public const string TapiTargetDataRateMbpsKey = "TapiTargetDataRateMbps";
 		public const string TapiTransferLogDirectoryKey = "TapiTransferLogDirectory";
 		public const string TapiTransferLogDirectoryDefaultValue = "";

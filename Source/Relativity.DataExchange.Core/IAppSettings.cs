@@ -759,6 +759,42 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether Import API should submit APM metrics periodically when executing job and on job completion. This is <see langword="true" /> by default.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to submit APM metrics; otherwise, <see langword="false" />.
+		/// </value>
+		bool IapiSubmitApmMetrics
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether Import API should submit SUM metrics on job start and on job completion. This is <see langword="true" /> by default.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to submit SUM metrics; otherwise, <see langword="false" />.
+		/// </value>
+		bool IapiSubmitSumMetrics
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating how often Import API should submit APM metrics during job execution.
+		/// </summary>
+		/// <value>
+		/// Period in seconds in which we're sending metrics.
+		/// </value>
+		int IapiMetricsThrottlingSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the Transfer API target data rate in megabits per second units.
 		/// </summary>
 		/// <value>
