@@ -16,7 +16,6 @@ namespace Relativity.DataExchange.Io
 	{
 		private readonly object lockObject = new object();
 		private Lazy<StreamWriter> stream;
-		private bool fileCreated;
 		private bool disposed;
 
 		/// <summary>
@@ -57,7 +56,7 @@ namespace Relativity.DataExchange.Io
 		/// - There is no file
 		/// - There is a file, and there is something in it.
 		/// </summary>
-		public bool FileCreated => this.fileCreated;
+		public bool FileCreated { get; private set; }
 
 		/// <inheritdoc/>
 		public void Dispose()
@@ -126,7 +125,7 @@ namespace Relativity.DataExchange.Io
 		{
 			this.stream = new Lazy<StreamWriter>(() =>
 				{
-					this.fileCreated = true;
+					this.FileCreated = true;
 					return new StreamWriter(filePath, true, System.Text.Encoding.Default);
 				});
 		}
