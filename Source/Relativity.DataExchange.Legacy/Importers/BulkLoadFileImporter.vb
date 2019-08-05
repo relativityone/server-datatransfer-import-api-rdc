@@ -996,8 +996,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			End Using
-
-			Dim markPrepareFields As DateTime = DateTime.Now
+			
 			identityValue = PrepareFieldCollectionAndExtractIdentityValue(record)
 			If identityValue = String.Empty Then
 				'lineStatus += ImportStatus.EmptyIdentifier				'

@@ -496,7 +496,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub ExportChunk(documentArtifactIDs As Integer(), records As Object(), objectExportableSize As IObjectExportableSize, batch As IBatch)
-			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim natives As New System.Data.DataView
 			Dim images As New System.Data.DataView

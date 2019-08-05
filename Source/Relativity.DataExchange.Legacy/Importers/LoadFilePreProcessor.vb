@@ -175,7 +175,6 @@ Namespace kCura.WinEDDS
 			Next
 
 			'Parse up to the first X lines in the file and track the folders and choices that will be created
-			Dim warningDialogShown As Boolean = False
 			While Not Me.HasReachedEOF And _continue
 				If Me.RecordCount > AppSettings.Instance.PreviewThreshold Then
 					AdvanceLine()
