@@ -764,6 +764,43 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheIapiSubmitApmMetricsSetting()
+		{
+			Assert.That(
+				this.settings.IapiSubmitApmMetrics,
+				Is.EqualTo(DataExchange.AppSettingsConstants.IapiSubmitApmMetricsDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.IapiSubmitApmMetrics = expectedValue;
+			Assert.That(this.settings.IapiSubmitApmMetrics, Is.EqualTo(expectedValue));
+			this.settings.IapiSubmitApmMetrics = !expectedValue;
+			Assert.That(this.settings.IapiSubmitApmMetrics, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheIapiSubmitSumMetricsSetting()
+		{
+			Assert.That(
+				this.settings.IapiSubmitSumMetrics,
+				Is.EqualTo(DataExchange.AppSettingsConstants.IapiSubmitSumMetricsDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.IapiSubmitSumMetrics = expectedValue;
+			Assert.That(this.settings.IapiSubmitSumMetrics, Is.EqualTo(expectedValue));
+			this.settings.IapiSubmitSumMetrics = !expectedValue;
+			Assert.That(this.settings.IapiSubmitSumMetrics, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheIapiMetricsThrottlingSecondsSetting()
+		{
+			Assert.That(
+				this.settings.IapiMetricsThrottlingSeconds,
+				Is.EqualTo(DataExchange.AppSettingsConstants.IapiMetricsThrottlingSecondsDefaultValue));
+			int expectedValue = RandomHelper.NextInt32(1, 1000);
+			this.settings.IapiMetricsThrottlingSeconds = expectedValue;
+			Assert.That(this.settings.IapiMetricsThrottlingSeconds, Is.EqualTo(expectedValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheTapiTargetDataRateMbpsSetting()
 		{
 			Assert.That(
@@ -1055,6 +1092,9 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlKey], Is.EqualTo("http://relativity"));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsDisabledKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsRetryKey], Is.True);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.IapiSubmitApmMetricsKey], Is.False);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.IapiSubmitSumMetricsKey], Is.False);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.IapiMetricsThrottlingSecondsKey], Is.EqualTo(50));
 			}
 		}
 
@@ -1183,6 +1223,12 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.FileTypeIdentifyTimeoutSeconds, Is.EqualTo(999));
 				dictionary[DataExchange.AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlKey] = "http://dummy";
 				Assert.That(this.settings.OAuth2ImplicitCredentialRedirectUrl, Is.EqualTo("http://dummy"));
+				dictionary[DataExchange.AppSettingsConstants.IapiSubmitApmMetricsKey] = true;
+				Assert.That(this.settings.IapiSubmitApmMetrics, Is.True);
+				dictionary[DataExchange.AppSettingsConstants.IapiSubmitSumMetricsKey] = true;
+				Assert.That(this.settings.IapiSubmitSumMetrics, Is.True);
+				dictionary[DataExchange.AppSettingsConstants.IapiMetricsThrottlingSecondsKey] = 99;
+				Assert.That(this.settings.IapiMetricsThrottlingSeconds, Is.EqualTo(99));
 			}
 		}
 
