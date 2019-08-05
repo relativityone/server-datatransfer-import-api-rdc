@@ -96,7 +96,7 @@ namespace Relativity.DataExchange.Io
 		/// <summary>
 		/// Releases the (file) hold of the document until a message is written.
 		/// </summary>
-		internal void ReleaseHold()
+		internal void ReleaseLock()
 		{
 			lock (this.lockObject)
 			{

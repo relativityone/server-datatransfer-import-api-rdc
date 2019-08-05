@@ -96,7 +96,7 @@ namespace Relativity.DataExchange.NUnit
 			using (var errorWriter = new ErrorMessageWriter<IErrorArguments>(path))
 			{
 				// Assert
-				errorWriter.ReleaseHold();
+				errorWriter.ReleaseLock();
 				Assert.IsFalse(File.Exists(path));
 				Assert.IsFalse(errorWriter.FileCreated);
 			}
@@ -116,11 +116,9 @@ namespace Relativity.DataExchange.NUnit
 			using (var errorWriter = new ErrorMessageWriter<IErrorArguments>(path))
 			{
 				errorWriter.WriteErrorMessage(errorArguments.Object);
-
-				// errorWriter.ReleaseHold();
 				var ex = Assert.Catch<IOException>(() => File.ReadAllLines(path));
 				Assert.That(ex.Message.Contains("because it is being used"));
-				errorWriter.ReleaseHold();
+				errorWriter.ReleaseLock();
 				Assert.DoesNotThrow(() => File.ReadAllLines(path));
 			}
 
@@ -161,7 +159,7 @@ namespace Relativity.DataExchange.NUnit
 			{
 				// Assert
 				errorWriter.WriteErrorMessage(GetSomeErrorArguments().Object);
-				errorWriter.ReleaseHold();
+				errorWriter.ReleaseLock();
 				Assert.IsTrue(File.Exists(path));
 				Assert.IsTrue(errorWriter.FileCreated);
 			}
@@ -184,7 +182,7 @@ namespace Relativity.DataExchange.NUnit
 			{
 				// Assert
 				errorWriter.WriteErrorMessage(GetSomeErrorArguments().Object);
-				errorWriter.ReleaseHold();
+				errorWriter.ReleaseLock();
 				errorWriter.WriteErrorMessage(GetSomeErrorArguments().Object);
 				Assert.IsTrue(File.Exists(path));
 				Assert.IsTrue(errorWriter.FileCreated);

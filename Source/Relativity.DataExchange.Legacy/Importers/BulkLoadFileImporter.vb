@@ -2077,8 +2077,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub _processContext_ExportServerErrors(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportServerErrors
-			errorMessageFileWriter.ReleaseHold()
-			prePushErrorWriter.ReleaseHold()
+			errorMessageFileWriter.ReleaseLock()
+			prePushErrorWriter.ReleaseLock()
 			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.FilePath, prePushErrorWriter.FilePath)
 			Dim rootFileName As String = _filePath
 			Dim defaultExtension As String
@@ -2120,8 +2120,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _processContext_ExportErrorFileEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportErrorFile
-			errorMessageFileWriter.ReleaseHold()
-			prePushErrorWriter.ReleaseHold()
+			errorMessageFileWriter.ReleaseLock()
+			prePushErrorWriter.ReleaseLock()
 			Const retry As Boolean = True
 			If Not errorMessageFileWriter.FileCreated Then Exit Sub
 			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not Me.GetFileExists(_errorLinesFileLocation, retry) Then
