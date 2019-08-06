@@ -1763,8 +1763,6 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Public Async Function SetupMessageService() As Task(Of IMessageService)
-            ' in Application we cannot create MetricSinkManager in constructor because we don't have NetworkCredentials and MetricsSinkConfigProvider there
-            ' so we need to lazy load it
             If _metricSinkManager Is Nothing Then
                 Dim configProvider As MetricsSinkConfigProvider = New MetricsSinkConfigProvider()
 				configProvider.Initialize()

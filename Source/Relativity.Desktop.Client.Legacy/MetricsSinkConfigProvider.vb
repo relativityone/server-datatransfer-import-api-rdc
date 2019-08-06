@@ -14,38 +14,38 @@ Namespace Relativity.Desktop.Client
         Private _sendLiveApmMetrics As Boolean = New Boolean()
         Private _sendSumMetrics As Boolean = new Boolean()
         Private _sendSummaryApmMetrics As Boolean = New Boolean()
-
+        
         Public ReadOnly Property ThrottleTimeout As TimeSpan Implements IMetricsSinkConfig.ThrottleTimeout
         Get
             ToggleRefresh()
-            Return Thread.VolatileRead(_throttleTimeout)
+            Return _throttleTimeout
         End Get
         End Property
 
         Public ReadOnly Property SendLiveApmMetrics As Boolean Implements IMetricsSinkConfig.SendLiveApmMetrics
         Get
             ToggleRefresh()
-            Return Thread.VolatileRead(_sendLiveApmMetrics)
+            Return _sendLiveApmMetrics
         End Get
         End Property
         Public ReadOnly Property SendSumMetrics As Boolean Implements IMetricsSinkConfig.SendSumMetrics
         Get
             ToggleRefresh()
-            Return Thread.VolatileRead(_sendSumMetrics)
+            Return _sendSumMetrics
         End Get
         End Property
         Public ReadOnly Property SendSummaryApmMetrics As Boolean Implements IMetricsSinkConfig.SendSummaryApmMetrics
         Get
             ToggleRefresh()
-            Return Thread.VolatileRead(_sendSummaryApmMetrics)
+            Return _sendSummaryApmMetrics
         End Get
         End Property
 
 		Private Sub RefreshConfiguration()
-                Thread.VolatileWrite(_throttleTimeout, TimeSpan.FromSeconds(Relativity.Desktop.Client.Config.RdcMetricsThrottlingSeconds))
-                Thread.VolatileWrite(_sendLiveApmMetrics, Relativity.Desktop.Client.Config.SendLiveApmMetrics)
-		        Thread.VolatileWrite(_sendSumMetrics, Relativity.Desktop.Client.Config.SendSumMetrics)
-                Thread.VolatileWrite(_sendSummaryApmMetrics, Relativity.Desktop.Client.Config.SendSummaryApmMetrics)
+		    _throttleTimeout = TimeSpan.FromSeconds(Relativity.Desktop.Client.Config.RdcMetricsThrottlingSeconds)
+		    _sendLiveApmMetrics = Relativity.Desktop.Client.Config.SendLiveApmMetrics
+		    _sendSumMetrics = Relativity.Desktop.Client.Config.SendSumMetrics
+		    _sendSummaryApmMetrics = Relativity.Desktop.Client.Config.SendSummaryApmMetrics
 		End Sub
 
         Private Sub ToggleRefresh()
