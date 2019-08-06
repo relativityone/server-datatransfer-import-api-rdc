@@ -8,6 +8,7 @@ Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.IO
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Media
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
@@ -591,7 +592,7 @@ Namespace kCura.WinEDDS
 					tempLocalIproFullTextFilePath = TempFileBuilder.GetTempFileName(TempFileConstants.IProFileNameSuffix)
 					Dim tries As Int32 = 0
 					Dim maxTries As Int32 = NumberOfRetries + 1
-					Dim start As Int64 = System.DateTime.Now.Ticks
+					Dim start As Int64 = DateTime.Now.Ticks
 					'BigData_ET_1037768
 					Dim val As String = artifact.Metadata(Me.OrdinalLookup("ExtractedText")).ToString
 					If val <> ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
