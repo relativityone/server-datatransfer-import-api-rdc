@@ -111,6 +111,9 @@
     <Compile Include="Data\StringImporterException.cs" />
     <Compile Include="Data\TrimOption.cs" />
     <Compile Include="ExceptionHelper.cs" />
+    <Compile Include="Io\ErrorBeforeMassImportArgs.cs" />
+    <Compile Include="Io\ErrorDuringMassImportArgs.cs" />
+    <Compile Include="Io\ErrorMessageWriter.cs" />
     <Compile Include="Io\FileTypeIdentifierService.cs" />
     <Compile Include="IAppSettingsInternal.cs" />
     <Compile Include="IObjectCacheRepository.cs" />
@@ -118,11 +121,14 @@
     <Compile Include="Io\FileTypeIdentifyError.cs" />
     <Compile Include="Io\FileTypeIdentifyException.cs" />
     <Compile Include="Io\FileTypeInfo.cs" />
+    <Compile Include="Io\IErrorArguments.cs" />
     <Compile Include="Io\IFileTypeConfiguration.cs" />
     <Compile Include="Io\IFileTypeIdentifier.cs" />
     <Compile Include="Io\IFileTypeInfo.cs" />
     <Compile Include="Io\OutsideInConstants.cs" />
     <Compile Include="Io\OutsideInFileTypeIdentifierService.cs" />
+    <Compile Include="Io\TempFileBuilder.cs" />
+    <Compile Include="Io\TempFileConstants.cs" />
     <Compile Include="Media\ByteOrdering.cs" />
     <Compile Include="Media\FreeImageService.cs" />
     <Compile Include="Media\IImageConverter.cs" />

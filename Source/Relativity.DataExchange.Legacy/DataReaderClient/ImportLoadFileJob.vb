@@ -113,43 +113,44 @@ Namespace kCura.Relativity.DataReaderClient
 
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
-				process.ExecutionSource = _executionSource
-				_processContext = process.Context
+				Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(SourceData.SourceData) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
+					process.ExecutionSource = _executionSource
+					_processContext = process.Context
 
-				If Settings.DisableNativeValidation.HasValue Then process.DisableNativeValidation = Settings.DisableNativeValidation.Value
-				If Settings.DisableNativeLocationValidation.HasValue Then process.DisableNativeLocationValidation = Settings.DisableNativeLocationValidation.Value
-				process.MaximumErrorCount = Settings.MaximumErrorCount
-				process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
-				process.AuditLevel = Settings.AuditLevel
-				process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
-				process.LoadImportedFullTextFromServer = Settings.LoadImportedFullTextFromServer
-				process.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation
-				process.OIFileIdColumnName = Settings.OIFileIdColumnName
-				If (Not String.IsNullOrEmpty(Settings.BulkLoadFileFieldDelimiter)) Then
-					process.BulkLoadFileFieldDelimiter = Settings.BulkLoadFileFieldDelimiter
-				Else
-					process.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
-				End If
-				process.OIFileIdMapped = Settings.OIFileIdMapped
-				process.OIFileTypeColumnName = Settings.OIFileTypeColumnName
-				process.SupportedByViewerColumn = Settings.SupportedByViewerColumn
-				process.FileSizeMapped = Settings.FileSizeMapped
-				process.FileSizeColumn = Settings.FileSizeColumn
-				process.FileNameColumn = Settings.FileNameColumn
-				process.TimeKeeperManager = Settings.TimeKeeperManager
+					If Settings.DisableNativeValidation.HasValue Then process.DisableNativeValidation = Settings.DisableNativeValidation.Value
+					If Settings.DisableNativeLocationValidation.HasValue Then process.DisableNativeLocationValidation = Settings.DisableNativeLocationValidation.Value
+					process.MaximumErrorCount = Settings.MaximumErrorCount
+					process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
+					process.AuditLevel = Settings.AuditLevel
+					process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
+					process.LoadImportedFullTextFromServer = Settings.LoadImportedFullTextFromServer
+					process.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation
+					process.OIFileIdColumnName = Settings.OIFileIdColumnName
+					If (Not String.IsNullOrEmpty(Settings.BulkLoadFileFieldDelimiter)) Then
+						process.BulkLoadFileFieldDelimiter = Settings.BulkLoadFileFieldDelimiter
+					Else
+						process.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
+					End If
+					process.OIFileIdMapped = Settings.OIFileIdMapped
+					process.OIFileTypeColumnName = Settings.OIFileTypeColumnName
+					process.SupportedByViewerColumn = Settings.SupportedByViewerColumn
+					process.FileSizeMapped = Settings.FileSizeMapped
+					process.FileSizeColumn = Settings.FileSizeColumn
+					process.FileNameColumn = Settings.FileNameColumn
+					process.TimeKeeperManager = Settings.TimeKeeperManager
 
-				RaiseEvent OnMessage(New Status("Updating settings"))
-				process.LoadFile = CreateLoadFile(Settings)
+					RaiseEvent OnMessage(New Status("Updating settings"))
+					process.LoadFile = CreateLoadFile(Settings)
 
-				RaiseEvent OnMessage(New Status("Executing"))
-				Try
-					process.Start()
-				Catch ex As Exception
-					RaiseEvent OnMessage(New Status(String.Format("Exception: {0}", ex.ToString)))
-					_jobReport.FatalException = ex
-					RaiseFatalException()
-				End Try
+					RaiseEvent OnMessage(New Status("Executing"))
+					Try
+						process.Start()
+					Catch ex As Exception
+						RaiseEvent OnMessage(New Status(String.Format("Exception: {0}", ex.ToString)))
+						_jobReport.FatalException = ex
+						RaiseFatalException()
+					End Try
+				End Using
 			Else
 				RaiseEvent OnMessage(New Status("There was an error in your settings.  Import aborted."))
 				' exception was set in the IsSettingsValid function
@@ -488,11 +489,11 @@ Namespace kCura.Relativity.DataReaderClient
 		End Sub
 
 		Private Sub ValidateNativeFileSettings()
-				If Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles Then
-					If Not Settings.NativeFilePathSourceFieldName = String.Empty Then
-						Throw New ImportSettingsConflictException("NativeFileCopyMode", "NativeFilePathSourceFieldName", "If NativeFileCopyMode is set to DoNotImportNativeFiles, then NativeFilePathSourceFieldName cannot be set.")
-					End If
-				Else
+			If Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles Then
+				If Not Settings.NativeFilePathSourceFieldName = String.Empty Then
+					Throw New ImportSettingsConflictException("NativeFileCopyMode", "NativeFilePathSourceFieldName", "If NativeFileCopyMode is set to DoNotImportNativeFiles, then NativeFilePathSourceFieldName cannot be set.")
+				End If
+			Else
 				If Settings.NativeFilePathSourceFieldName = String.Empty Then
 					Throw New ImportSettingsException("NativeFilePathSourceFieldName", "If NativeFileCopyMode is set, then NativeFilePathSourceFieldName must be set.")
 				Else
@@ -566,7 +567,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub _processContext_OnProcessProgressEvent(ByVal sender As Object, ByVal e As ProgressEventArgs) Handles _processContext.Progress
 			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} ]", System.DateTime.Now, e.TotalProcessedRecordsDisplay)))
-			RaiseEvent OnProcessProgress(New FullStatus(e.TotalRecords, e.TotalProcessedRecords, e.TotalProcessedWarningRecords, e.TotalProcessedErrorRecords, e.StartTime, e.Timestamp, e.TotalRecordsDisplay, e.TotalProcessedRecordsDisplay, e.MetadataThroughput, e.NativeFileThroughput, e.ProcessID, e.Metadata))
+			RaiseEvent OnProcessProgress(New FullStatus(e.TotalRecords, e.TotalProcessedRecords, e.TotalProcessedWarningRecords, e.TotalProcessedErrorRecords, e.StartTime, e.Timestamp, e.TotalRecordsDisplay, e.TotalProcessedRecordsDisplay, e.MetadataThroughput, e.NativeFileThroughput, e.ProcessId, e.Metadata))
 		End Sub
 
 		Private Sub _processContext_OnOnProcessEnd(ByVal sender As Object, ByVal e As ProcessEndEventArgs) Handles _processContext.ProcessEnded
@@ -597,7 +598,7 @@ Namespace kCura.Relativity.DataReaderClient
 			End Get
 			Set(ByVal value As String)
 				If String.IsNullOrEmpty(value) Then
-					Throw New ArgumentNullException(NameOf(bulkLoadFileFieldDelimiter))
+					Throw New ArgumentNullException(NameOf(BulkLoadFileFieldDelimiter))
 				End If
 
 				_bulkLoadFileFieldDelimiter = value

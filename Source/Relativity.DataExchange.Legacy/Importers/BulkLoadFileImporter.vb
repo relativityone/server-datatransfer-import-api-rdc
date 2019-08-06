@@ -18,6 +18,7 @@ Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
 		Inherits LoadFileBase
 		Implements IImportJob
+		implements IDisposable
 
 #Region "Const Fields"
 
@@ -70,12 +71,13 @@ Namespace kCura.WinEDDS
 		Protected _batchCounter As Int32 = 0
 		Private _jobCompleteNativeCount As Int32 = 0
 		Private _jobCompleteMetadataCount As Int32 = 0
-		Private _errorMessageFileLocation As String = String.Empty
 		Private _errorLinesFileLocation As String = String.Empty
 
 		Public MaxNumberOfErrorsInGrid As Int32 = AppSettings.Instance.DefaultMaxErrorCount
 		Private _errorCount As Int32 = 0
-		Private _prePushErrorLineNumbersFileName As String = String.Empty
+		private prePushErrorWriter as ErrorMessageWriter(Of ErrorBeforeMassImportArgs) = New ErrorMessageWriter(Of ErrorBeforeMassImportArgs)()
+		private errorMessageFileWriter as ErrorMessageWriter(Of ErrorDuringMassImportArgs) = New ErrorMessageWriter(Of ErrorDuringMassImportArgs)()
+
 		Private _processId As Guid
 		Private _parentArtifactTypeId As Int32?
 		Private _unmappedRelationalFields As System.Collections.ArrayList
@@ -1980,51 +1982,31 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub WriteError(ByVal currentLineNumber As Int32, ByVal line As String)
-			If _prePushErrorLineNumbersFileName = "" Then
-				_prePushErrorLineNumbersFileName = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
-			End If
+			Dim errorRecord As ErrorBeforeMassImportArgs = New ErrorBeforeMassImportArgs(currentLineNumber)
+			prePushErrorWriter.WriteErrorMessage(errorRecord)
 
-			Dim sw As New System.IO.StreamWriter(_prePushErrorLineNumbersFileName, True, System.Text.Encoding.Default)
-			sw.WriteLine(currentLineNumber)
-			sw.Flush()
-			sw.Close()
-			Dim ht As New System.Collections.Hashtable
-			ht.Add("Message", line)
-			ht.Add("Line Number", currentLineNumber)
-			ht.Add("Identifier", _artifactReader.SourceIdentifierValue)
-			RaiseReportError(ht, currentLineNumber, _artifactReader.SourceIdentifierValue, "client")
+			Dim ht As New Hashtable From {
+				{"Message", line},
+				{"Line Number", currentLineNumber},
+				{"Identifier", _artifactReader.SourceIdentifierValue}
+			}
+
+			RaiseReportError(ht, _artifactReader.SourceIdentifierValue, "client")
 			WriteStatusLine(EventType2.Error, line)
 		End Sub
 
-		Private Sub RaiseReportError(ByVal row As System.Collections.Hashtable, ByVal lineNumber As Int32, ByVal identifier As String, ByVal type As String)
+		Private Sub RaiseReportError(ByVal row As Hashtable,ByVal identifier As String, ByVal type As String)
 			_errorCount += 1
-			If String.IsNullOrEmpty(_errorMessageFileLocation) Then
-				_errorMessageFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
-			End If
-
-			Dim errorMessageFileWriter As New System.IO.StreamWriter(_errorMessageFileLocation, True, System.Text.Encoding.Default)
 			If _errorCount < MaxNumberOfErrorsInGrid Then
 				OnReportErrorEvent(row)
 			ElseIf _errorCount = MaxNumberOfErrorsInGrid Then
-				Dim moretobefoundMessage As New System.Collections.Hashtable
-				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
-				OnReportErrorEvent(moretobefoundMessage)
+				Dim moreToBeFoundMessage As New Hashtable
+				moreToBeFoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
+				OnReportErrorEvent(moreToBeFoundMessage)
 			End If
-			errorMessageFileWriter.WriteLine(String.Format("{0},{1},{2},{3}", CSVFormat(row("Line Number").ToString), CSVFormat(row("Message").ToString), CSVFormat(identifier), CSVFormat(type)))
-			errorMessageFileWriter.Close()
+			Dim errorRecord As ErrorDuringMassImportArgs = New ErrorDuringMassImportArgs(row("Line Number").ToString, row("Message").ToString, identifier, type)
+			errorMessageFileWriter.WriteErrorMessage(errorRecord)
 		End Sub
-
-		''' <summary>
-		''' CSVFormat will take in a string, replace a double quote characters with a pair of double quote characters, then surround the string with double quote characters
-		''' This preps it for being written as a field in a CSV file
-		''' </summary>
-		''' <param name="fieldValue">The string to convert to CSV format</param>
-		''' <returns>
-		''' the converted data
-		''' </returns>
-		Private Function CSVFormat(ByVal fieldValue As String) As String
-			Return ControlChars.Quote + fieldValue.Replace(ControlChars.Quote, ControlChars.Quote + ControlChars.Quote) + ControlChars.Quote
-		End Function
 
 		Protected Sub WriteWarning(ByVal line As String)
 			WriteStatusLine(EventType2.Warning, line)
@@ -2094,7 +2076,9 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub _processContext_ExportServerErrors(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportServerErrors
-			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(_errorMessageFileLocation, _prePushErrorLineNumbersFileName)
+			errorMessageFileWriter.ReleaseLock()
+			prePushErrorWriter.ReleaseLock()
+			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.FilePath, prePushErrorWriter.FilePath)
 			Dim rootFileName As String = _filePath
 			Dim defaultExtension As String
 			If Not rootFileName.IndexOf(".") = -1 Then
@@ -2115,13 +2099,14 @@ Namespace kCura.WinEDDS
 			If Not _errorLinesFileLocation Is Nothing AndAlso Not _errorLinesFileLocation = String.Empty AndAlso Me.GetFileExists(_errorLinesFileLocation, retry) Then
 				Me.CopyFile(_errorLinesFileLocation, errorFilePath, retry)
 			End If
-
-			Me.CopyFile(_errorMessageFileLocation, errorReportPath, retry)
-			_errorMessageFileLocation = ""
+			Dim errorMessageLocation As String = errorMessageFileWriter.FilePath
+			errorMessageFileWriter.Dispose()
+			errorMessageFileWriter = New ErrorMessageWriter(Of ErrorDuringMassImportArgs)()
+			Me.CopyFile(errorMessageLocation, errorReportPath, retry)
 		End Sub
 
 		Private Sub _processContext_ExportErrorReportEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportErrorReport
-			If String.IsNullOrEmpty(_errorMessageFileLocation) Then
+			If Not errorMessageFileWriter.FileCreated Then
 				' write out a blank file if there is no error message file
 				Dim fileWriter As System.IO.StreamWriter = System.IO.File.CreateText(e.Path)
 				fileWriter.Close()
@@ -2130,14 +2115,16 @@ Namespace kCura.WinEDDS
 			End If
 
 			Const retry As Boolean = True
-			Me.CopyFile(_errorMessageFileLocation, e.Path, True, retry)
+			Me.CopyFile(errorMessageFileWriter.FilePath, e.Path, True, retry)
 		End Sub
 
 		Private Sub _processContext_ExportErrorFileEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportErrorFile
+			errorMessageFileWriter.ReleaseLock()
+			prePushErrorWriter.ReleaseLock()
 			Const retry As Boolean = True
-			If _errorMessageFileLocation Is Nothing OrElse _errorMessageFileLocation = "" Then Exit Sub
+			If Not errorMessageFileWriter.FileCreated Then Exit Sub
 			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not Me.GetFileExists(_errorLinesFileLocation, retry) Then
-				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(_errorMessageFileLocation, _prePushErrorLineNumbersFileName)
+				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.FilePath, prePushErrorWriter.FilePath)
 			End If
 			If _errorLinesFileLocation Is Nothing Then
 				Exit Sub
@@ -2262,7 +2249,7 @@ Namespace kCura.WinEDDS
 							ht.Add("Message", line(1))
 							ht.Add("Identifier", line(2))
 							ht.Add("Line Number", Int32.Parse(line(0)))
-							RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
+							RaiseReportError(ht, line(2), "server")
 							OnStatusMessage(New StatusEventArgs(EventType2.Error, Int32.Parse(line(0)) - 1, RecordCount, "[Line " & line(0) & "]" & line(1), CurrentStatisticsSnapshot, Statistics))
 							line = sr.ReadLine
 						End While
@@ -2367,6 +2354,10 @@ Namespace kCura.WinEDDS
 			RaiseEvent FieldMapped(sourceField, workspaceField)
 		End Sub
 
+		Public Sub Dispose() Implements IDisposable.Dispose
+			Me.errorMessageFileWriter?.Dispose()
+			Me.prePushErrorWriter?.Dispose()
+		End Sub
 	End Class
 
 	Public Class WebServiceFieldInfoNameComparer
