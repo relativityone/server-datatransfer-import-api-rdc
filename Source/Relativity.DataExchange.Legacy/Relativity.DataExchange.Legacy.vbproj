@@ -412,7 +412,7 @@
     <Compile Include="ImportExtension\ImageImport\ImageDataTableReader.vb" />
     <Compile Include="ImportExtension\NativeFileValidatedArtifactFieldCollection.vb" />
     <Compile Include="Monitoring\Sinks\IMetricSinkManager.vb" />
-    <Compile Include="Monitoring\Sinks\MetricSinkConfigIAPI.vb" />
+    <Compile Include="Monitoring\Sinks\IApiMetricSinkConfig.vb" />
     <Compile Include="Monitoring\Sinks\MetricSinkManager.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Resources\Strings.Designer.vb">

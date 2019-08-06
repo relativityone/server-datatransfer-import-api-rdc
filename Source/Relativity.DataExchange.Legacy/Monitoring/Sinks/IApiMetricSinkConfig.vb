@@ -2,7 +2,7 @@
 Imports kCura.WinEDDS.Monitoring
 Imports Relativity.DataExchange
 
-Public Class MetricSinkConfigIAPI
+Public Class IApiMetricSinkConfig
     Implements IMetricsSinkConfig
 
     Public ReadOnly Property ThrottleTimeout As TimeSpan Implements IMetricsSinkConfig.ThrottleTimeout
