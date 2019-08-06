@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.NUnit
+namespace Relativity.DataExchange.NUnit.Integration
 {
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
