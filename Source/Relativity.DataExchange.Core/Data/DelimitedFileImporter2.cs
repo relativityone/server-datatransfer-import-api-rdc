@@ -704,46 +704,65 @@ namespace Relativity.DataExchange.Data
 		/// </returns>
 		protected int GetChar(bool advance)
 		{
+			// REL-343213: This is performance critical code and no longer using WaitAndRetryPolicy.
+			int tries = this.IoErrorNumberOfRetries;
 			bool reInitReader = false;
-			int result = this.Context.WaitAndRetryPolicy.WaitAndRetry<int, Exception>(
-				this.Context.RetryOptions == RetryOptions.None ? 0 : this.CachedAppSettings.IoErrorNumberOfRetries,
-				i => i == 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(this.CachedAppSettings.IoErrorWaitTimeInSeconds),
-				(exception, span) =>
-					{
-						IoWarningEventArgs args = new IoWarningEventArgs(
-							this.CachedAppSettings.IoErrorWaitTimeInSeconds,
-							exception,
-							this.CurrentLineNumber);
-						this.PublishWarningMessage(args);
-						if (this.Reader.BaseStream is System.IO.FileStream && exception is System.IO.IOException
-						                                                   && exception.ToString().ToLowerInvariant()
-							                                                   .IndexOf(
-								                                                   "network",
-								                                                   StringComparison.OrdinalIgnoreCase)
-						                                                   != -1)
-						{
-							reInitReader = true;
-						}
-					},
-				token =>
-					{
-						if (reInitReader)
-						{
-							this.ReInitializeReader();
-							reInitReader = false;
-						}
+			while (tries > 0)
+			{
+				if (this.CancellationToken.IsCancellationRequested)
+				{
+					break;
+				}
 
-						if (advance)
-						{
-							int nextChar = this.Reader.Read();
-							this.CharacterPosition++;
-							return nextChar;
-						}
+				try
+				{
+					tries--;
+					if (reInitReader)
+					{
+						this.ReInitializeReader();
+						reInitReader = false;
+					}
 
-						return this.Reader.Peek();
-					},
-				this.CancellationToken);
-			return result;
+					if (advance)
+					{
+						int nextChar = this.Reader.Read();
+						this.CharacterPosition++;
+						return nextChar;
+					}
+
+					return this.Reader.Peek();
+				}
+				catch (Exception e)
+				{
+					if (tries == 0 || this.Context.RetryOptions == RetryOptions.None)
+					{
+						throw;
+					}
+
+					int waitTime = 0;
+					if (tries < this.IoErrorNumberOfRetries - 1)
+					{
+						waitTime = this.IoErrorWaitTimeInSeconds;
+					}
+
+					IoWarningEventArgs args = new IoWarningEventArgs(waitTime, e, this.CurrentLineNumber);
+					this.PublishWarningMessage(args);
+					if (this.Reader.BaseStream is System.IO.FileStream && e is System.IO.IOException
+					                                                   && e.ToString().ToLowerInvariant().IndexOf(
+						                                                   "network",
+						                                                   StringComparison.OrdinalIgnoreCase) != -1)
+					{
+						reInitReader = true;
+					}
+
+					if (waitTime > 0)
+					{
+						Thread.CurrentThread.Join(1000 * waitTime);
+					}
+				}
+			}
+
+			return 0;
 		}
 
 		/// <summary>

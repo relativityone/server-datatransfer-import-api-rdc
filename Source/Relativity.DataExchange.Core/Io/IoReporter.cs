@@ -27,6 +27,22 @@ namespace Relativity.DataExchange.Io
 		private const int NoRetryInfo = -1;
 
 		/// <summary>
+		/// The shadow copy for the configurable I/O max retry count.
+		/// </summary>
+		/// <remarks>
+		/// This doubled GetChar performance.
+		/// </remarks>
+		private int? ioErrorNumberOfRetriesShadowCopy;
+
+		/// <summary>
+		/// The shadow copy for the configurable I/O wait time.
+		/// </summary>
+		/// <remarks>
+		/// This doubled GetChar performance.
+		/// </remarks>
+		private int? ioErrorWaitTimeInSecondsShadowCopy;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="IoReporter"/> class.
 		/// </summary>
 		/// <param name="context">
@@ -95,6 +111,56 @@ namespace Relativity.DataExchange.Io
 		protected CancellationToken CancellationToken
 		{
 			get;
+		}
+
+		/// <summary>
+		/// Gets the maximum number of retries. This value is cached for performance critical code.
+		/// </summary>
+		/// <value>
+		/// The retry count.
+		/// </value>
+		protected int IoErrorNumberOfRetries
+		{
+			get
+			{
+				// REL-343213: Caching used for performance critical code.
+				if (this.ioErrorNumberOfRetriesShadowCopy == null)
+				{
+					// Just in case, sanity check the min value.
+					this.ioErrorNumberOfRetriesShadowCopy = this.CachedAppSettings.IoErrorNumberOfRetries;
+					if (this.CachedAppSettings.EnforceMinRetryCount && this.ioErrorNumberOfRetriesShadowCopy < 1)
+					{
+						this.ioErrorNumberOfRetriesShadowCopy = 1;
+					}
+				}
+
+				return this.ioErrorNumberOfRetriesShadowCopy.Value;
+			}
+		}
+
+		/// <summary>
+		/// Gets the wait time in seconds between retry attempts. This value is cached for performance critical code.
+		/// </summary>
+		/// <value>
+		/// The retry count.
+		/// </value>
+		protected int IoErrorWaitTimeInSeconds
+		{
+			get
+			{
+				// REL-343213: Caching used for performance critical code.
+				if (this.ioErrorWaitTimeInSecondsShadowCopy == null)
+				{
+					// Just in case, sanity check the min value.
+					this.ioErrorWaitTimeInSecondsShadowCopy = this.CachedAppSettings.IoErrorWaitTimeInSeconds;
+					if (this.CachedAppSettings.EnforceMinWaitTime && this.ioErrorWaitTimeInSecondsShadowCopy < 1)
+					{
+						this.ioErrorWaitTimeInSecondsShadowCopy = 1;
+					}
+				}
+
+				return this.ioErrorWaitTimeInSecondsShadowCopy.Value;
+			}
 		}
 
 		/// <summary>
@@ -298,15 +364,14 @@ namespace Relativity.DataExchange.Io
 		{
 			try
 			{
-				int maxRetryAttempts = this.CachedAppSettings.IoErrorNumberOfRetries;
+				int maxRetryAttempts = this.IoErrorNumberOfRetries;
 				int currentRetryAttempt = 0;
 				return this.Context.WaitAndRetryPolicy.WaitAndRetry(
 					RetryExceptionHelper.CreateRetryPredicate(this.Context.RetryOptions),
 					retryAttempt =>
 						{
 							currentRetryAttempt = retryAttempt;
-							return TimeSpan.FromSeconds(
-								retryAttempt == 1 ? 0 : this.CachedAppSettings.IoErrorWaitTimeInSeconds);
+							return TimeSpan.FromSeconds(retryAttempt == 1 ? 0 : this.IoErrorWaitTimeInSeconds);
 						},
 					(exception, timeSpan) =>
 						{
