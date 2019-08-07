@@ -285,12 +285,24 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets the HTTP timeout in seconds.
+		/// Gets or sets the HTTP timeout in seconds. This is 300 seconds by default.
 		/// </summary>
 		/// <value>
 		/// The total number of seconds.
 		/// </value>
 		int HttpTimeoutSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the HTTP extracted text timeout in seconds. This is 900 seconds by default.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int HttpExtractedTextTimeoutSeconds
 		{
 			get;
 			set;

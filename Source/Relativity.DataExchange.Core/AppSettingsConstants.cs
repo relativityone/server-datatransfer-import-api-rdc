@@ -71,6 +71,8 @@ namespace Relativity.DataExchange
 		public const bool ForceWebUploadDefaultValue = false;
 		public const string HttpTimeoutSecondsKey = "HttpTimeoutSeconds";
 		public const int HttpTimeoutSecondsDefaultValue = 300;
+		public const string HttpExtractedTextTimeoutSecondsKey = "HttpExtractedTextTimeoutSeconds";
+		public const int HttpExtractedTextTimeoutSecondsDefaultValue = 900;
 		public const string ImportBatchMaxVolumeKey = "ImportBatchMaxVolume";
 		public const int ImportBatchMaxVolumeDefaultValue = 10485760;
 		public const string ImportBatchSizeKey = "ImportBatchSize";
