@@ -85,7 +85,7 @@ namespace kCura.Relativity.ImportAPI
 		{
 			this.ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			this.PerformLogin(null, null, webServiceUrl);
-			this._metricSinkManager = new MetricSinkManager(new IApiMetricSinkConfig(), new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
+			this._metricSinkManager = new MetricSinkManager(new ImportApiMetricSinkConfig(), new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
 		}
 
 		/// <summary>
@@ -115,7 +115,7 @@ namespace kCura.Relativity.ImportAPI
 		{
 			this.ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			PerformLogin(userName, password, string.Empty);
-			this._metricSinkManager = new MetricSinkManager(new IApiMetricSinkConfig(), new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
+			this._metricSinkManager = new MetricSinkManager(new ImportApiMetricSinkConfig(), new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
 		}
 
 		/// <summary>
@@ -148,7 +148,7 @@ namespace kCura.Relativity.ImportAPI
 		{
 			ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			this.PerformLogin(userName, password, webServiceUrl);
-			this._metricSinkManager = new MetricSinkManager(new IApiMetricSinkConfig(), new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
+			this._metricSinkManager = new MetricSinkManager(new ImportApiMetricSinkConfig(), new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
 		}
 
 		/// <summary>
