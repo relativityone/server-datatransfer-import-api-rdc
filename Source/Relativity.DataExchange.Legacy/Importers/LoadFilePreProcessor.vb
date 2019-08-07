@@ -155,7 +155,6 @@ Namespace kCura.WinEDDS
 			Dim fileSize As Int64 = Me.Reader.BaseStream.Length
 			Dim stepSize As Int64 = GetStepSize(fileSize)
 			Dim folderColumnIndex As Int32 = Me.GetColumnIndexFromString(_settings.FolderStructureContainedInColumn)
-			Dim choiceColumnIndexList As New System.Collections.Generic.List(Of Int32)
 			Dim currentRun As Int64 = System.DateTime.Now.Ticks
 			Dim lastRun As Int64 = currentRun
 			Dim showedPopup As Boolean = False
@@ -176,7 +175,6 @@ Namespace kCura.WinEDDS
 			Next
 
 			'Parse up to the first X lines in the file and track the folders and choices that will be created
-			Dim warningDialogShown As Boolean = False
 			While Not Me.HasReachedEOF And _continue
 				If Me.RecordCount > AppSettings.Instance.PreviewThreshold Then
 					AdvanceLine()

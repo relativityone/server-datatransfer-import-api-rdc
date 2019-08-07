@@ -16,7 +16,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	{
 		protected override IBatchValidator CreateValidator()
 		{
-			return new NativeFileParallelBatchValidator(this.ErrorFileWriter.Object, this.FileHelper.Object, this.Status.Object, new NullLogger());
+			return new NativeFileParallelBatchValidator(this.ErrorFileWriter.Object, this.FileHelper.Object, new NullLogger());
 		}
 	}
 }

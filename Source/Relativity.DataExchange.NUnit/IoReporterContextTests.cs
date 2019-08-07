@@ -30,12 +30,12 @@ namespace Relativity.DataExchange.NUnit
 
 		[TestCase("Event message", 10)]
 		[TestCase("Event message from huge load file", 3000000000)]
-		public void ItShouldPublishWarningMessage(string message, long lineNubmer)
+		public void ItShouldPublishWarningMessage(string message, long lineNumber)
 		{
 			this.GivenTheInstanceOfPublisher();
 			this.GivenTheMethodWhichHandlesTheEvent(this.TestEventHandler);
-			this.WhenEventOccursWithMessageAndLineNumber(message, lineNubmer);
-			this.ResultsDictionaryContains(message, lineNubmer);
+			this.WhenEventOccursWithMessageAndLineNumber(message, lineNumber);
+			this.ResultsDictionaryContains(message, lineNumber);
 		}
 
 		private void WhenEventOccursWithMessageAndLineNumber(string message, long lineNumber)
@@ -58,10 +58,10 @@ namespace Relativity.DataExchange.NUnit
 			this.results.Add(eventArgs.CurrentLineNumber, eventArgs.Message);
 		}
 
-		private void ResultsDictionaryContains(string message, long lineNubmer)
+		private void ResultsDictionaryContains(string message, long lineNumber)
 		{
 			Assert.That(this.results.Count == 1);
-			Assert.That(this.results.ContainsKey(lineNubmer));
+			Assert.That(this.results.ContainsKey(lineNumber));
 			Assert.That(this.results.ContainsValue(message));
 		}
 	}

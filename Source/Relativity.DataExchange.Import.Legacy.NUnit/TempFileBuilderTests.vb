@@ -4,9 +4,8 @@
 ' </copyright>
 ' -----------------------------------------------------------------------------------------------------
 
-Imports kCura.WinEDDS
-
 Imports NUnit.Framework
+Imports Relativity.DataExchange.Io
 
 Namespace Relativity.DataExchange.Import.NUnit
 

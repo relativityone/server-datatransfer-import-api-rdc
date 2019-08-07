@@ -327,8 +327,6 @@ Namespace kCura.WinEDDS
 			Else
 				clientErrors = New System.IO.StreamReader(prePushErrorLineNumbersFileName, System.Text.Encoding.Default)
 			End If
-			Dim advanceClient As Boolean = True
-			Dim advanceAll As Boolean = True
 			Dim allErrorsLine As Int32
 			Dim clientErrorsLine As Int32
 			Dim errorLinesFileLocation As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)

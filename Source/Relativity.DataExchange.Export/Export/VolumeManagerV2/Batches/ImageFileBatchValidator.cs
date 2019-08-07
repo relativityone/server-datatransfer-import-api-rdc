@@ -3,10 +3,7 @@
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading;
-
-	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
-
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Logging;
@@ -15,18 +12,16 @@
 	{
 		private readonly IErrorFileWriter _errorFileWriter;
 		private readonly IFile _fileWrapper;
-		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public ImageFileBatchValidator(IErrorFileWriter errorFileWriter, IFile fileWrapper, IStatus status, ILog logger)
+		public ImageFileBatchValidator(IErrorFileWriter errorFileWriter, IFile fileWrapper, ILog logger)
 		{
 			_errorFileWriter = errorFileWriter;
 			_fileWrapper = fileWrapper;
-			_status = status;
 			_logger = logger;
 		}
 
-		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
+		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 			for (int i = 0; i < artifacts.Length; i++)
 			{
