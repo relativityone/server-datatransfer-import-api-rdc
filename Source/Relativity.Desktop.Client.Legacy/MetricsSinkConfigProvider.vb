@@ -16,29 +16,31 @@ Namespace Relativity.Desktop.Client
         Private _sendSummaryApmMetrics As Boolean = New Boolean()
         
         Public ReadOnly Property ThrottleTimeout As TimeSpan Implements IMetricsSinkConfig.ThrottleTimeout
-        Get
-            ToggleRefresh()
-            Return _throttleTimeout
-        End Get
+            Get
+                ToggleRefresh()
+                Return _throttleTimeout
+            End Get
         End Property
 
         Public ReadOnly Property SendLiveApmMetrics As Boolean Implements IMetricsSinkConfig.SendLiveApmMetrics
-        Get
-            ToggleRefresh()
-            Return _sendLiveApmMetrics
-        End Get
+            Get
+                ToggleRefresh()
+                Return _sendLiveApmMetrics
+            End Get
         End Property
+
         Public ReadOnly Property SendSumMetrics As Boolean Implements IMetricsSinkConfig.SendSumMetrics
-        Get
-            ToggleRefresh()
-            Return _sendSumMetrics
-        End Get
+            Get
+                ToggleRefresh()
+                Return _sendSumMetrics
+            End Get
         End Property
+
         Public ReadOnly Property SendSummaryApmMetrics As Boolean Implements IMetricsSinkConfig.SendSummaryApmMetrics
-        Get
-            ToggleRefresh()
-            Return _sendSummaryApmMetrics
-        End Get
+            Get
+                ToggleRefresh()
+                Return _sendSummaryApmMetrics
+            End Get
         End Property
 
 		Private Sub RefreshConfiguration()

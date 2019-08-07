@@ -1,6 +1,7 @@
 ﻿Imports System.Net
 Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Monitoring
+Imports Monitoring.Sinks
 Imports Relativity.DataTransfer.MessageService
 Imports Relativity.DataTransfer.MessageService.Tools
 Imports Relativity.Services.ServiceProxy

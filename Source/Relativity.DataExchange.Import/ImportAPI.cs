@@ -18,6 +18,8 @@ namespace kCura.Relativity.ImportAPI
 	using global::Relativity.DataExchange;
 	using global::Relativity.DataTransfer.MessageService;
 
+	using Monitoring.Sinks;
+
 	/// <summary>
 	/// Provides methods for developing custom import utilities for documents, images, production sets, and Dynamic Objects.
 	/// </summary>

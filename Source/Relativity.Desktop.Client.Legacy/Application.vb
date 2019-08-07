@@ -6,6 +6,7 @@ Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Monitoring
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Export
 Imports Relativity.DataExchange.Process

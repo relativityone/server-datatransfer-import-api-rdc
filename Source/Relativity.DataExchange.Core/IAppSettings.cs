@@ -759,7 +759,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether Import API should submit APM metrics periodically when executing job and on job completion. This is <see langword="true" /> by default.
+		/// Gets or sets a value indicating whether Import API should submit APM metrics periodically when executing a job and on job completion. This is <see langword="true" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to submit APM metrics; otherwise, <see langword="false" />.
