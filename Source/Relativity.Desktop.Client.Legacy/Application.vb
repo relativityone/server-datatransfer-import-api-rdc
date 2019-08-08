@@ -68,6 +68,7 @@ Namespace Relativity.Desktop.Client
 		Private ReadOnly _logger As Relativity.Logging.ILog
 		Private ReadOnly oAuth2ImplicitCredentialsHelper As Lazy(Of OAuth2ImplicitCredentialsHelper) = New Lazy(Of OAuth2ImplicitCredentialsHelper)(AddressOf CreateOAuth2ImplicitCredentialsHelper)
         Private _metricSinkManager As IMetricSinkManager
+        Private _metricsSinkConfig As IMetricsSinkConfig
 #End Region
 
 #Region "Properties"
@@ -1765,11 +1766,12 @@ Namespace Relativity.Desktop.Client
 
 		Public Async Function SetupMessageService() As Task(Of IMessageService)
             If _metricSinkManager Is Nothing Then
-                Dim configProvider As MetricsSinkConfigProvider = New MetricsSinkConfigProvider()
-				configProvider.Initialize()
-                _metricSinkManager = New MetricSinkManager(configProvider, New MetricsManagerFactory(), ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync()))
+                _metricSinkManager = New MetricSinkManager(New MetricsManagerFactory(), ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync()))
             End If
-            Return _metricSinkManager.SetupMessageService()
+            If _metricsSinkConfig Is Nothing Then
+                _metricsSinkConfig = New MetricsSinkConfigProvider()
+            End If
+            Return _metricSinkManager.SetupMessageService(_metricsSinkConfig)
 		End Function
 
 		Private Async Function ValidateVersionCompatibilityAsync(ByVal credential As System.Net.NetworkCredential) As Task
