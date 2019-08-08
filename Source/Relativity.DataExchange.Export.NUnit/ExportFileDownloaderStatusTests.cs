@@ -71,7 +71,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(aspera, TapiClient.Aspera));
 
-			this._instance.Detach();
+			this._instance.Detach(this._tapiBridge.Object);
 
 			this._tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(web, TapiClient.Web));
 
