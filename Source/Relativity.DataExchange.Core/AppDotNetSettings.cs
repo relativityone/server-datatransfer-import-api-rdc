@@ -920,9 +920,9 @@ namespace Relativity.DataExchange
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionDataExchange,
-			AppSettingsConstants.IApiSubmitApmMetricsKey,
-			AppSettingsConstants.IApiSubmitApmMetricsDefaultValue)]
-		bool IAppSettings.IApiSubmitApmMetrics
+			AppSettingsConstants.TelemetrySubmitApmMetricsKey,
+			AppSettingsConstants.TelemetrySubmitApmMetricsDefaultValue)]
+		bool IAppSettings.TelemetrySubmitApmMetrics
 		{
 			get;
 			set;
@@ -931,9 +931,9 @@ namespace Relativity.DataExchange
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionDataExchange,
-			AppSettingsConstants.IApiSubmitSumMetricsKey,
-			AppSettingsConstants.IApiSubmitSumMetricsDefaultValue)]
-		bool IAppSettings.IApiSubmitSumMetrics
+			AppSettingsConstants.TelemetrySubmitSumMetricsKey,
+			AppSettingsConstants.TelemetrySubmitSumMetricsDefaultValue)]
+		bool IAppSettings.TelemetrySubmitSumMetrics
 		{
 			get;
 			set;
@@ -942,15 +942,15 @@ namespace Relativity.DataExchange
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionDataExchange,
-			AppSettingsConstants.IApiMetricsThrottlingSecondsKey,
-			AppSettingsConstants.IApiMetricsThrottlingSecondsDefaultValue)]
-		int IAppSettings.IApiMetricsThrottlingSeconds
+			AppSettingsConstants.TelemetryMetricsThrottlingSecondsKey,
+			AppSettingsConstants.TelemetryMetricsThrottlingSecondsDefaultValue)]
+		int IAppSettings.TelemetryMetricsThrottlingSeconds
 		{
 			get
 			{
 				if (this.iApiMetricsThrottlingSeconds < 1)
 				{
-					this.iApiMetricsThrottlingSeconds = AppSettingsConstants.IApiMetricsThrottlingSecondsDefaultValue;
+					this.iApiMetricsThrottlingSeconds = AppSettingsConstants.TelemetryMetricsThrottlingSecondsDefaultValue;
 				}
 
 				return this.iApiMetricsThrottlingSeconds;

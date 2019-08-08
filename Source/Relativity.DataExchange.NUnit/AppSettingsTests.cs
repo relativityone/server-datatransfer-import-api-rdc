@@ -866,46 +866,46 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldGetAndSetTheIApiSubmitApmMetricsSetting()
+		public void ShouldGetAndSetTheTelemetrySubmitApmMetricsSetting()
 		{
 			Assert.That(
-				this.settings.IApiSubmitApmMetrics,
-				Is.EqualTo(DataExchange.AppSettingsConstants.IApiSubmitApmMetricsDefaultValue));
+				this.settings.TelemetrySubmitApmMetrics,
+				Is.EqualTo(DataExchange.AppSettingsConstants.TelemetrySubmitApmMetricsDefaultValue));
 			bool expectedValue = RandomHelper.NextBoolean();
-			this.settings.IApiSubmitApmMetrics = expectedValue;
-			Assert.That(this.settings.IApiSubmitApmMetrics, Is.EqualTo(expectedValue));
-			this.settings.IApiSubmitApmMetrics = !expectedValue;
-			Assert.That(this.settings.IApiSubmitApmMetrics, Is.EqualTo(!expectedValue));
+			this.settings.TelemetrySubmitApmMetrics = expectedValue;
+			Assert.That(this.settings.TelemetrySubmitApmMetrics, Is.EqualTo(expectedValue));
+			this.settings.TelemetrySubmitApmMetrics = !expectedValue;
+			Assert.That(this.settings.TelemetrySubmitApmMetrics, Is.EqualTo(!expectedValue));
 		}
 
 		[Test]
-		public void ShouldGetAndSetTheIApiSubmitSumMetricsSetting()
+		public void ShouldGetAndSetTheTelemetrySubmitSumMetricsSetting()
 		{
 			Assert.That(
-				this.settings.IApiSubmitSumMetrics,
-				Is.EqualTo(DataExchange.AppSettingsConstants.IApiSubmitSumMetricsDefaultValue));
+				this.settings.TelemetrySubmitSumMetrics,
+				Is.EqualTo(DataExchange.AppSettingsConstants.TelemetrySubmitSumMetricsDefaultValue));
 			bool expectedValue = RandomHelper.NextBoolean();
-			this.settings.IApiSubmitSumMetrics = expectedValue;
-			Assert.That(this.settings.IApiSubmitSumMetrics, Is.EqualTo(expectedValue));
-			this.settings.IApiSubmitSumMetrics = !expectedValue;
-			Assert.That(this.settings.IApiSubmitSumMetrics, Is.EqualTo(!expectedValue));
+			this.settings.TelemetrySubmitSumMetrics = expectedValue;
+			Assert.That(this.settings.TelemetrySubmitSumMetrics, Is.EqualTo(expectedValue));
+			this.settings.TelemetrySubmitSumMetrics = !expectedValue;
+			Assert.That(this.settings.TelemetrySubmitSumMetrics, Is.EqualTo(!expectedValue));
 		}
 
 		[TestCase(1, 1)]
-		[TestCase(0, AppSettingsConstants.IApiMetricsThrottlingSecondsDefaultValue)]
-		[TestCase(-1, AppSettingsConstants.IApiMetricsThrottlingSecondsDefaultValue)]
+		[TestCase(0, AppSettingsConstants.TelemetryMetricsThrottlingSecondsDefaultValue)]
+		[TestCase(-1, AppSettingsConstants.TelemetryMetricsThrottlingSecondsDefaultValue)]
 		[TestCase(2, 2)]
 		[TestCase(5, 5)]
 		[TestCase(100, 100)]
 		[TestCase(int.MaxValue, int.MaxValue)]
-		[TestCase(int.MinValue, AppSettingsConstants.IApiMetricsThrottlingSecondsDefaultValue)]
-		public void ShouldGetAndSetTheIApiMetricsThrottlingSecondsSetting(int input, int expectedValue)
+		[TestCase(int.MinValue, AppSettingsConstants.TelemetryMetricsThrottlingSecondsDefaultValue)]
+		public void ShouldGetAndSetTheTelemetryMetricsThrottlingSecondsSetting(int input, int expectedValue)
 		{
 			Assert.That(
-				this.settings.IApiMetricsThrottlingSeconds,
-				Is.EqualTo(DataExchange.AppSettingsConstants.IApiMetricsThrottlingSecondsDefaultValue));
-			this.settings.IApiMetricsThrottlingSeconds = input;
-			Assert.That(this.settings.IApiMetricsThrottlingSeconds, Is.EqualTo(expectedValue));
+				this.settings.TelemetryMetricsThrottlingSeconds,
+				Is.EqualTo(DataExchange.AppSettingsConstants.TelemetryMetricsThrottlingSecondsDefaultValue));
+			this.settings.TelemetryMetricsThrottlingSeconds = input;
+			Assert.That(this.settings.TelemetryMetricsThrottlingSeconds, Is.EqualTo(expectedValue));
 		}
 
 		[TestCase(1, 1)]
@@ -1206,9 +1206,9 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlKey], Is.EqualTo("http://relativity"));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsDisabledKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsRetryKey], Is.True);
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.IApiSubmitApmMetricsKey], Is.False);
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.IApiSubmitSumMetricsKey], Is.False);
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.IApiMetricsThrottlingSecondsKey], Is.EqualTo(50));
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.TelemetrySubmitApmMetricsKey], Is.False);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.TelemetrySubmitSumMetricsKey], Is.False);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.TelemetryMetricsThrottlingSecondsKey], Is.EqualTo(50));
 			}
 		}
 
@@ -1337,12 +1337,12 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.FileTypeIdentifyTimeoutSeconds, Is.EqualTo(999));
 				dictionary[DataExchange.AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlKey] = "http://dummy";
 				Assert.That(this.settings.OAuth2ImplicitCredentialRedirectUrl, Is.EqualTo("http://dummy"));
-				dictionary[DataExchange.AppSettingsConstants.IApiSubmitApmMetricsKey] = true;
-				Assert.That(this.settings.IApiSubmitApmMetrics, Is.True);
-				dictionary[DataExchange.AppSettingsConstants.IApiSubmitSumMetricsKey] = true;
-				Assert.That(this.settings.IApiSubmitSumMetrics, Is.True);
-				dictionary[DataExchange.AppSettingsConstants.IApiMetricsThrottlingSecondsKey] = 99;
-				Assert.That(this.settings.IApiMetricsThrottlingSeconds, Is.EqualTo(99));
+				dictionary[DataExchange.AppSettingsConstants.TelemetrySubmitApmMetricsKey] = true;
+				Assert.That(this.settings.TelemetrySubmitApmMetrics, Is.True);
+				dictionary[DataExchange.AppSettingsConstants.TelemetrySubmitSumMetricsKey] = true;
+				Assert.That(this.settings.TelemetrySubmitSumMetrics, Is.True);
+				dictionary[DataExchange.AppSettingsConstants.TelemetryMetricsThrottlingSecondsKey] = 99;
+				Assert.That(this.settings.TelemetryMetricsThrottlingSeconds, Is.EqualTo(99));
 			}
 		}
 

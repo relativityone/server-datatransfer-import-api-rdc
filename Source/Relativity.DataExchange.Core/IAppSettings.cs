@@ -764,7 +764,7 @@ namespace Relativity.DataExchange
 		/// <value>
 		/// <see langword="true" /> to submit APM metrics; otherwise, <see langword="false" />.
 		/// </value>
-		bool IApiSubmitApmMetrics
+		bool TelemetrySubmitApmMetrics
 		{
 			get;
 			set;
@@ -776,7 +776,7 @@ namespace Relativity.DataExchange
 		/// <value>
 		/// <see langword="true" /> to submit SUM metrics; otherwise, <see langword="false" />.
 		/// </value>
-		bool IApiSubmitSumMetrics
+		bool TelemetrySubmitSumMetrics
 		{
 			get;
 			set;
@@ -788,7 +788,7 @@ namespace Relativity.DataExchange
 		/// <value>
 		/// Period in seconds in which we're sending metrics.
 		/// </value>
-		int IApiMetricsThrottlingSeconds
+		int TelemetryMetricsThrottlingSeconds
 		{
 			get;
 			set;
