@@ -245,7 +245,6 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.ExportBatchSize, Is.EqualTo(expectedValue));
 		}
 
-		[Theory]
 		[TestCase(true, 0, AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue)]
 		[TestCase(true, -1, AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue)]
 		[TestCase(true, int.MinValue, AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue)]
@@ -272,7 +271,6 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.ExportErrorNumberOfRetries, Is.EqualTo(expectedValue));
 		}
 
-		[Theory]
 		[TestCase(true, 0, AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue)]
 		[TestCase(true, -1, AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue)]
 		[TestCase(true, int.MinValue, AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue)]
@@ -361,7 +359,6 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.ForceWebUpload, Is.EqualTo(!expectedValue));
 		}
 
-		[Theory]
 		[TestCase(1, 1)]
 		[TestCase(0, AppSettingsConstants.HttpTimeoutSecondsDefaultValue)]
 		[TestCase(-1, AppSettingsConstants.HttpTimeoutSecondsDefaultValue)]
@@ -401,7 +398,6 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.ImportBatchSize, Is.EqualTo(expectedValue));
 		}
 
-		[Theory]
 		[TestCase(true, 0, AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue)]
 		[TestCase(true, -1, AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue)]
 		[TestCase(true, int.MinValue, AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue)]
@@ -428,7 +424,6 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.IoErrorNumberOfRetries, Is.EqualTo(expectedValue));
 		}
 
-		[Theory]
 		[TestCase(true, 0, AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue)]
 		[TestCase(true, -1, AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue)]
 		[TestCase(true, int.MinValue, AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue)]
@@ -503,7 +498,6 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.LogConfigXmlFileName, Is.EqualTo(expectedValue));
 		}
 
-		[Theory]
 		[TestCase(1, 1)]
 		[TestCase(0, AppSettingsConstants.MaxFilesForTapiBridgeDefaultValue)]
 		[TestCase(-1, AppSettingsConstants.MaxFilesForTapiBridgeDefaultValue)]
@@ -521,7 +515,6 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.MaxFilesForTapiBridge, Is.EqualTo(expectedValue));
 		}
 
-		[Theory]
 		[TestCase(1, 1)]
 		[TestCase(0, AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue)]
 		[TestCase(-1, AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue)]
@@ -539,7 +532,6 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.MaxNumberOfFileExportTasks, Is.EqualTo(expectedValue));
 		}
 
-		[Theory]
 		[TestCase(1, 1)]
 		[TestCase(0, AppSettingsConstants.MaximumReloginTriesDefaultValue)]
 		[TestCase(-1, AppSettingsConstants.MaximumReloginTriesDefaultValue)]
@@ -663,7 +655,6 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.SuppressServerCertificateValidation, Is.EqualTo(!expectedValue));
 		}
 
-		[Theory]
 		[TestCase(1, 1)]
 		[TestCase(0, AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue)]
 		[TestCase(-1, AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue)]
@@ -814,7 +805,6 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.TapiLargeFileProgressEnabled, Is.EqualTo(!expectedValue));
 		}
 
-		[Theory]
 		[TestCase(1, 1)]
 		[TestCase(0, AppSettingsConstants.TapiMaxJobParallelismDefaultValue)]
 		[TestCase(-1, AppSettingsConstants.TapiMaxJobParallelismDefaultValue)]
@@ -832,7 +822,6 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.TapiMaxJobParallelism, Is.EqualTo(expectedValue));
 		}
 
-		[Theory]
 		[TestCase(1, 1)]
 		[TestCase(0, AppSettingsConstants.TapiMinDataRateMbpsDefaultValue)]
 		[TestCase(-1, AppSettingsConstants.TapiMinDataRateMbpsDefaultValue)]
@@ -902,7 +891,6 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.IApiSubmitSumMetrics, Is.EqualTo(!expectedValue));
 		}
 
-		[Theory]
 		[TestCase(1, 1)]
 		[TestCase(0, AppSettingsConstants.IApiMetricsThrottlingSecondsDefaultValue)]
 		[TestCase(-1, AppSettingsConstants.IApiMetricsThrottlingSecondsDefaultValue)]
@@ -920,7 +908,6 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.IApiMetricsThrottlingSeconds, Is.EqualTo(expectedValue));
 		}
 
-		[Theory]
 		[TestCase(1, 1)]
 		[TestCase(0, AppSettingsConstants.TapiTargetDataRateMbpsDefaultValue)]
 		[TestCase(-1, AppSettingsConstants.TapiTargetDataRateMbpsDefaultValue)]
