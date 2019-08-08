@@ -390,6 +390,16 @@ Namespace kCura.WinEDDS
 		Private Sub _loadFileImporter_EndFileImport(ByVal runID As String) Handles _loadFileImporter.EndFileImport
 			Me.AuditRun(True, runID)
 		End Sub
+
+		Dim isDisposed as Boolean
+		Protected Overrides Sub Dispose(disposing As Boolean)
+			If Not isDisposed
+				_loadFileImporter?.Dispose()
+				isDisposed = True
+			End If
+			MyBase.Dispose(disposing)
+		End Sub
+
 	End Class
 
 End Namespace

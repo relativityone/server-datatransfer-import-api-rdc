@@ -1,11 +1,10 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths
 {
 	using System.Text;
-
 	using Relativity.Logging;
-
 	using kCura.WinEDDS.Exceptions;
 	using kCura.WinEDDS;
+	using Relativity.DataExchange.Io;
 
 	public class ErrorFileDestinationPath : IDestinationPath, IErrorFile
 	{

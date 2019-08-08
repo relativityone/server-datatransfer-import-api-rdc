@@ -148,6 +148,7 @@
     </Compile>
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="ApplicationVersionServiceTests.cs" />
+    <Compile Include="ErrorMessageWriterTests.cs" />
     <Compile Include="ImageConverterServiceTests.cs" />
     <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
     <Compile Include="RestClientTests.cs" />
