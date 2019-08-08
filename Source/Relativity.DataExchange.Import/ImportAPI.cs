@@ -85,7 +85,7 @@ namespace kCura.Relativity.ImportAPI
 		{
 			this.ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			this.PerformLogin(null, null, webServiceUrl);
-			this._metricSinkManager = new MetricSinkManager(new ImportApiMetricSinkConfig(), new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
+			this._metricSinkManager = new MetricSinkManager(new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
 		}
 
 		/// <summary>
@@ -115,7 +115,7 @@ namespace kCura.Relativity.ImportAPI
 		{
 			this.ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			PerformLogin(userName, password, string.Empty);
-			this._metricSinkManager = new MetricSinkManager(new ImportApiMetricSinkConfig(), new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
+			this._metricSinkManager = new MetricSinkManager(new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
 		}
 
 		/// <summary>
@@ -148,7 +148,7 @@ namespace kCura.Relativity.ImportAPI
 		{
 			ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			this.PerformLogin(userName, password, webServiceUrl);
-			this._metricSinkManager = new MetricSinkManager(new ImportApiMetricSinkConfig(), new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
+			this._metricSinkManager = new MetricSinkManager(new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
 		}
 
 		/// <summary>
@@ -346,7 +346,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
-			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, this._metricSinkManager.SetupMessageService(), (int)ExecutionSource);
+			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, _metricSinkManager, (int)ExecutionSource);
 		}
 
 		/// <summary>
@@ -395,7 +395,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </returns>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId)
 		{
-			var returnJob = new ImportBulkArtifactJob(_credentials, _tapiCredentials, _cookieMonster, _metricSinkManager.SetupMessageService(), (int)ExecutionSource);
+			var returnJob = new ImportBulkArtifactJob(_credentials, _tapiCredentials, _cookieMonster, _metricSinkManager, (int)ExecutionSource);
 			returnJob.Settings.ArtifactTypeId = artifactTypeId;
 			return returnJob;
 		}
