@@ -42,7 +42,7 @@ namespace Relativity.DataExchange.NUnit
 		private Mock<ILog> mockLogger;
 		private IoReporterContext context;
 		private long actualFileLength;
-		private Func<int, TimeSpan> actualRetryDurationFunc;
+		private Func<int, TimeSpan> actualRetryDurationFunc = null;
 		private Exception expectedException;
 		private bool actualFileExists;
 		private Exception actualLoggedWarningException;
@@ -489,9 +489,9 @@ namespace Relativity.DataExchange.NUnit
 
 		private void ThenTheActualRetryDurationShouldCalculated(int retryAttempt, int waitTimeBetweenRetryAttempts)
 		{
-			TimeSpan actualRetryDuration = this.actualRetryDurationFunc(retryAttempt);
+			TimeSpan actualRetryDuraction = this.actualRetryDurationFunc(retryAttempt);
 			Assert.That(
-				actualRetryDuration,
+				actualRetryDuraction,
 				retryAttempt == 1 ? Is.EqualTo(TimeSpan.FromSeconds(0)) : Is.EqualTo(TimeSpan.FromSeconds(waitTimeBetweenRetryAttempts)));
 		}
 
