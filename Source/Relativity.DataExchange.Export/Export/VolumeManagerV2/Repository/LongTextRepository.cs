@@ -70,9 +70,16 @@
 
 		public bool AnyRequestForLocation(string destinationLocation)
 		{
+			if (string.IsNullOrWhiteSpace(destinationLocation))
+			{
+				return false;
+			}
+
 			lock (_syncLock)
 			{
-				return GetExportRequests().Any(x => x.DestinationLocation == destinationLocation);
+				return GetExportRequests().Any(
+					x => string.Compare(x.DestinationLocation, destinationLocation, StringComparison.OrdinalIgnoreCase)
+					     == 0);
 			}
 		}
 
