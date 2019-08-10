@@ -147,6 +147,12 @@
   <data name="TransferJobNullExceptionMessage" xml:space="preserve">
     <value>This operation cannot be performed because the file transfer job hasn't been created.</value>
   </data>
+  <data name="TransferPathArgumentDownloadExceptionMessage" xml:space="preserve">
+    <value>The transfer path must define a valid server-side source path and suggests a back-end database issue.</value>
+  </data>
+  <data name="TransferPathArgumentUploadExceptionMessage" xml:space="preserve">
+    <value>The transfer path must define a valid client-side source path and suggests a load file or custom data source issue.</value>
+  </data>
   <data name="TransferJobStartedMessage" xml:space="preserve">
     <value>File transfer job started.</value>
   </data>
