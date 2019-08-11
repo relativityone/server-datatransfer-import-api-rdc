@@ -622,11 +622,39 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				.Returns(Task.CompletedTask);
 		}
 
-		protected void GivenTheTapiForceAsperaClientAppSetting(bool forceAsperaClient)
+		protected void GivenTheTapiForceClientAppSettings(TapiClient client)
 		{
 			// Export relies on the global parameters.
-			AppSettings.Instance.TapiForceAsperaClient = forceAsperaClient;
-			this.MockAppSettings.SetupGet(x => x.TapiForceAsperaClient).Returns(forceAsperaClient);
+			switch (client)
+			{
+				case TapiClient.Aspera:
+					AppSettings.Instance.TapiForceAsperaClient = true;
+					this.MockAppSettings.SetupGet(x => x.TapiForceAsperaClient).Returns(true);
+					break;
+
+				case TapiClient.Direct:
+					AppSettings.Instance.TapiForceFileShareClient = true;
+					this.MockAppSettings.SetupGet(x => x.TapiForceFileShareClient).Returns(true);
+					break;
+
+				case TapiClient.Web:
+					AppSettings.Instance.TapiForceHttpClient = true;
+					this.MockAppSettings.SetupGet(x => x.TapiForceHttpClient).Returns(true);
+					break;
+
+				case TapiClient.None:
+					AppSettings.Instance.TapiForceAsperaClient = false;
+					AppSettings.Instance.TapiForceFileShareClient = false;
+					AppSettings.Instance.TapiForceHttpClient = false;
+					this.MockAppSettings.SetupGet(x => x.TapiForceAsperaClient).Returns(false);
+					this.MockAppSettings.SetupGet(x => x.TapiForceFileShareClient).Returns(false);
+					this.MockAppSettings.SetupGet(x => x.TapiForceHttpClient).Returns(false);
+					break;
+
+				default:
+					Assert.Fail($"The Transfer API client {client} isn't supported by this test.");
+					break;
+			}
 		}
 
 		/// <summary>

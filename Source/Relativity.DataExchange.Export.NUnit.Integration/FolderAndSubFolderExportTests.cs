@@ -17,6 +17,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
 	/// <summary>
@@ -35,10 +36,20 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		[IdentifiedTest("5b20c6f1-1196-41ea-9326-0e875e2cabe9")]
+		[TestCase(TapiClient.Aspera)]
+		[TestCase(TapiClient.Direct)]
+		[TestCase(TapiClient.Web)]
 		[Category(TestCategories.Export)]
 		[Category(TestCategories.Integration)]
-		public async Task ShouldExportAllSampleDocAndImagesAsync()
+		public async Task ShouldExportAllSampleDocAndImagesAsync(TapiClient client)
 		{
+			if ((client == TapiClient.Aspera && this.TestParameters.SkipAsperaModeTests) ||
+			    (client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
+			{
+				Assert.Ignore(TestStrings.SkipTestMessage, $"{client}");
+			}
+
+			this.GivenTheTapiForceClientAppSettings(client);
 			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
 			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
 		}
@@ -107,8 +118,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[Category(TestCategories.Integration)]
 		public async Task ShouldExportWhenTheSettingsForFileShareIsNullAsync(bool forceAsperaClient)
 		{
-			// Export relies on the global parameters.
-			this.GivenTheTapiForceAsperaClientAppSetting(forceAsperaClient);
+			this.GivenTheTapiForceClientAppSettings(forceAsperaClient ? TapiClient.Aspera : TapiClient.None);
 			this.GivenTheMockFileShareSettingsServiceIsRegistered();
 			this.GivenTheMockedSettingsForFileShareIsNull();
 			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
