@@ -768,18 +768,36 @@ namespace Relativity.DataExchange.Resources {
         /// <summary>
         ///   Looks up a localized string similar to The transfer path must define a valid server-side source path and suggests a back-end database issue..
         /// </summary>
-        internal static string TransferPathArgumentDownloadExceptionMessage {
+        internal static string TransferPathArgumentDownloadSourcePathExceptionMessage {
             get {
-                return ResourceManager.GetString("TransferPathArgumentDownloadExceptionMessage", resourceCulture);
+                return ResourceManager.GetString("TransferPathArgumentDownloadSourcePathExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The transfer path must define a valid client-side target path and suggests an export configuration issue..
+        /// </summary>
+        internal static string TransferPathArgumentDownloadTargetPathExceptionMessage {
+            get {
+                return ResourceManager.GetString("TransferPathArgumentDownloadTargetPathExceptionMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The transfer path must define a valid client-side source path and suggests a load file or custom data source issue..
         /// </summary>
-        internal static string TransferPathArgumentUploadExceptionMessage {
+        internal static string TransferPathArgumentUploadSourcePathExceptionMessage {
             get {
-                return ResourceManager.GetString("TransferPathArgumentUploadExceptionMessage", resourceCulture);
+                return ResourceManager.GetString("TransferPathArgumentUploadSourcePathExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The transfer path must define a valid server-side target path and suggests an import configuration issue..
+        /// </summary>
+        internal static string TransferPathArgumentUploadTargetPathExceptionMessage {
+            get {
+                return ResourceManager.GetString("TransferPathArgumentUploadTargetPathExceptionMessage", resourceCulture);
             }
         }
         

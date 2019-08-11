@@ -685,7 +685,7 @@ namespace Relativity.DataExchange.NUnit
 		[TestCase(" ", -1)]
 		[TestCase(null, -1)]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldThrowWhenAddingTheInvalidTransferPath(string sourcePath, long? sourcePathId)
+		public void ShouldThrowWhenAddingTheInvalidTransferPath(string path, long? sourcePathId)
 		{
 			foreach (TransferDirection direction in Enum.GetValues(typeof(TransferDirection)).Cast<TransferDirection>())
 			{
@@ -694,8 +694,24 @@ namespace Relativity.DataExchange.NUnit
 					() => this.TapiBridgeInstance.AddPath(
 						new TransferPath
 							{
-								Direction = direction, SourcePath = sourcePath, SourcePathId = sourcePathId
+								Direction = direction, SourcePath = path, SourcePathId = sourcePathId
 							}));
+				this.TapiBridgeInstance.TargetPath = @"/";
+				Assert.Throws<ArgumentException>(
+					() => this.TapiBridgeInstance.AddPath(
+						new TransferPath
+							{
+								Direction = direction,
+								TargetPath = path
+							}));
+				this.TapiBridgeInstance.TargetPath = path;
+				Assert.Throws<ArgumentException>(
+					() => this.TapiBridgeInstance.AddPath(
+						new TransferPath
+							{
+								Direction = direction,
+								TargetPath = @"/"
+						}));
 			}
 		}
 

@@ -407,16 +407,7 @@ namespace Relativity.DataExchange.Transfer
 				throw new ArgumentNullException(nameof(path));
 			}
 
-			if (string.IsNullOrWhiteSpace(path.SourcePath)
-			    && (!path.SourcePathId.HasValue || path.SourcePathId.Value < 1))
-			{
-				throw new ArgumentException(
-					this.currentDirection == TransferDirection.Download || path.Direction == TransferDirection.Download
-						? Strings.TransferPathArgumentDownloadExceptionMessage
-						: Strings.TransferPathArgumentUploadExceptionMessage,
-					nameof(path));
-			}
-
+			this.ValidateTransferPath(path);
 			this.CheckDispose();
 			this.CreateTransferJob(false);
 			if (this.TransferJob == null)
@@ -1587,6 +1578,28 @@ namespace Relativity.DataExchange.Transfer
 			lock (this.syncRoot)
 			{
 				this.transferActivityTimestamp = DateTime.Now;
+			}
+		}
+
+		private void ValidateTransferPath(TransferPath path)
+		{
+			if (string.IsNullOrWhiteSpace(path.SourcePath)
+			    && (!path.SourcePathId.HasValue || path.SourcePathId.Value < 1))
+			{
+				throw new ArgumentException(
+					this.currentDirection == TransferDirection.Download || path.Direction == TransferDirection.Download
+						? Strings.TransferPathArgumentDownloadSourcePathExceptionMessage
+						: Strings.TransferPathArgumentUploadSourcePathExceptionMessage,
+					nameof(path));
+			}
+
+			if (string.IsNullOrWhiteSpace(path.TargetPath) && string.IsNullOrWhiteSpace(this.TargetPath))
+			{
+				throw new ArgumentException(
+					this.currentDirection == TransferDirection.Download || path.Direction == TransferDirection.Download
+						? Strings.TransferPathArgumentDownloadTargetPathExceptionMessage
+						: Strings.TransferPathArgumentUploadTargetPathExceptionMessage,
+					nameof(path));
 			}
 		}
 
