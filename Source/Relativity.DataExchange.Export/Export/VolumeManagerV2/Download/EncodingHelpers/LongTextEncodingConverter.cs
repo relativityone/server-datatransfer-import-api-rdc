@@ -33,6 +33,8 @@
 			_longTextFilesToConvert = new BlockingCollection<string>();
 		}
 
+		public int Count => _longTextFilesToConvert.Count;
+
 		public void StartListening(ITapiBridge tapiBridge)
 		{
 			tapiBridge.ThrowIfNull(nameof(tapiBridge));
@@ -50,50 +52,78 @@
 				"Detached tapi bridge {TapiBridgeInstanceId} from the long text encoding converter.",
 				tapiBridge.InstanceId);
 			tapiBridge.TapiProgress -= this.OnTapiProgress;
-			_longTextFilesToConvert.CompleteAdding();
+			this.MarkQueueComplete();
 		}
 
 		private void OnTapiProgress(object sender, TapiProgressEventArgs e)
 		{
 			_logger.LogVerbose(
-				"Long text encoding conversion progress event for file {fileName} with status {Successful}.",
+				"Long text encoding conversion progress event for file {FileName} with status {Successful}.",
 				e.FileName,
 				e.Successful);
 			if (e.Successful)
 			{
-				_longTextFilesToConvert.Add(e.FileName, _cancellationToken);
+				try
+				{
+					
+					_logger.LogVerbose("Preparing to add the '{LongTextFileName}' long text file to the queue...", e.FileName);
+					_longTextFilesToConvert.Add(e.FileName, _cancellationToken);
+					_logger.LogVerbose("Successfully added the '{LongTextFileName}' long text file to the queue.", e.FileName);
+				}
+				catch (InvalidOperationException e2)
+				{
+					_logger.LogError(
+						e2,
+						"The long text encoding converter received a transfer successful progress event but the blocking collection has already been marked as completed. This exception suggests either a logic or task switch context issue.");
+					throw;
+				}
 			}
 		}
 
 		public void WaitForConversionCompletion()
 		{
-			_logger.LogVerbose("Waiting for long text encoding conversion to complete.");
+			_logger.LogVerbose("Waiting for the long text encoding conversion to complete.");
 			_conversionTask.ConfigureAwait(false).GetAwaiter().GetResult();
+			_logger.LogVerbose("Successfully awaited the long text encoding conversion to complete.");
 		}
 
 		private void ConvertLongTextFiles()
 		{
 			try
 			{
-				string longTextFile;
-				while (_longTextFilesToConvert.TryTake(out longTextFile, Timeout.Infinite, _cancellationToken))
+				_logger.LogVerbose("Preparing to start the long text file queue...");
+				int totalConvertedTextFiles = 0;
+				string longTextFileName;
+				while (_longTextFilesToConvert.TryTake(out longTextFileName, Timeout.Infinite, _cancellationToken))
 				{
-					_logger.LogVerbose("New item in long text encoding conversion queue {file}. Proceeding.", longTextFile);
-					LongText longText = this.GetLongTextForFile(longTextFile);
+					_logger.LogVerbose(
+						"Preparing to check whether the '{LongTextFileName}' file requires an encoding conversion...",
+						longTextFileName);
+					LongText longText = this.GetLongTextForFile(longTextFileName);
 					if (this.ConversionRequired(longText))
 					{
-						_logger.LogVerbose("Long text encoding conversion required for file {file}.", longTextFile);
+						_logger.LogVerbose(
+							"Long text encoding conversion required for file {LongTextFileName}.",
+							longTextFileName);
 						this.ConvertLongTextFile(longText);
 					}
 					else
 					{
-						_logger.LogVerbose("Long text encoding conversion NOT required for file {file}.", longTextFile);
+						_logger.LogVerbose(
+							"Long text encoding conversion NOT required for file {LongTextFileName}.",
+							longTextFileName);
 					}
+
+					totalConvertedTextFiles++;
 				}
+
+				_logger.LogVerbose(
+					"Successfully awaited the long text file queue. Total conversions = {TotalConvertedLongTextFiles}.",
+					totalConvertedTextFiles);
 			}
 			catch (OperationCanceledException e)
 			{
-				_logger.LogError(e, "LongText encoding conversion canceled.");
+				_logger.LogInformation(e, "LongText encoding conversion canceled.");
 			}
 			catch (ArgumentException)
 			{
@@ -106,19 +136,20 @@
 			}
 		}
 
-		private LongText GetLongTextForFile(string longTextFile)
+		private LongText GetLongTextForFile(string longTextFileName)
 		{
-			foreach (LongText longText in _longTextRepository.GetLongTexts().Where(x => !string.IsNullOrEmpty(x.Location)))
+			foreach (LongText longText in _longTextRepository.GetLongTexts()
+				.Where(x => !string.IsNullOrEmpty(x.Location)))
 			{
 				string fileName = System.IO.Path.GetFileName(longText.Location);
-				if (string.Compare(fileName, longTextFile, StringComparison.OrdinalIgnoreCase) == 0)
+				if (string.Compare(fileName, longTextFileName, StringComparison.OrdinalIgnoreCase) == 0)
 				{
 					return longText;
 				}
 			}
 
-			_logger.LogError("Failed to find the LongText file {file} in the repository.", longTextFile);
-			throw new ArgumentException($"The long text file {longTextFile} cannot be converted because it doesn't exist within the export request.");
+			_logger.LogError("Failed to find the LongText file {LongTextFileName} in the repository.", longTextFileName);
+			throw new ArgumentException($"The long text file {longTextFileName} cannot be converted because it doesn't exist within the export request.");
 		}
 
 		private bool ConversionRequired(LongText longText)
@@ -128,16 +159,35 @@
 
 		private void ConvertLongTextFile(LongText longText)
 		{
-			_logger.LogVerbose("Converting LongText file {file} from {sourceEncoding} to {destinationEncoding}.", longText.Location, longText.SourceEncoding, longText.DestinationEncoding);
-
-			_fileEncodingConverter.Convert(longText.Location, longText.SourceEncoding, longText.DestinationEncoding, _cancellationToken);
-
+			_logger.LogVerbose(
+				"Preparing to convert LongText file {LongTextFile} from {SourceEncoding} to {DestinationEncoding}.",
+				longText.Location,
+				longText.SourceEncoding,
+				longText.DestinationEncoding);
+			_fileEncodingConverter.Convert(
+				longText.Location,
+				longText.SourceEncoding,
+				longText.DestinationEncoding,
+				_cancellationToken);
+			_logger.LogVerbose(
+				"Successfully converted LongText file {LongTextFile} from {SourceEncoding} to {DestinationEncoding}.",
+				longText.Location,
+				longText.SourceEncoding,
+				longText.DestinationEncoding);
 			longText.SourceEncoding = longText.DestinationEncoding;
 		}
 
 		public void Dispose()
 		{
 			_longTextFilesToConvert?.Dispose();
+		}
+
+		internal void MarkQueueComplete()
+		{
+			// Note: this method exists solely for testing.
+			_logger.LogVerbose("Preparing to mark the long text encoding conversion queue complete...");
+			_longTextFilesToConvert.CompleteAdding();
+			_logger.LogVerbose("Successfully marked the long text encoding conversion queue complete.");
 		}
 	}
 }
