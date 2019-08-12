@@ -2,7 +2,7 @@
 {
 	public interface IDownloadProgressManager
 	{
-		void MarkLongTextAsDownloaded(string id, int lineNumber);
-		void MarkFileAsDownloaded(string id, int lineNumber);
+		void MarkLongTextAsCompleted(string id, int lineNumber);
+		void MarkFileAsCompleted(string id, int lineNumber);
 	}
 }

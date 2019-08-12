@@ -10,7 +10,7 @@
 
 		public ExportRequest ExportRequest { get; set; }
 
-		public bool HasBeenDownloaded { get; set; }
+		public bool HasBeenTransferCompleted { get; set; }
 
 		public Image(ImageExportInfo artifact)
 		{

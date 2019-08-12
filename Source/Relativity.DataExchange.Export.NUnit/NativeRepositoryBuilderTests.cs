@@ -72,7 +72,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.AddToRepository(artifact, CancellationToken.None);
 
 			// ASSERT
-			Assert.That(this._nativeRepository.GetNative(artifactId1).HasBeenDownloaded, Is.True);
+			Assert.That(this._nativeRepository.GetNative(artifactId1).HasBeenTransferCompleted, Is.True);
 		}
 
 		[Test]
@@ -93,7 +93,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.AddToRepository(artifact, CancellationToken.None);
 
 			// ASSERT
-			Assert.That(this._nativeRepository.GetNative(artifactId1).HasBeenDownloaded, Is.False);
+			Assert.That(this._nativeRepository.GetNative(artifactId1).HasBeenTransferCompleted, Is.False);
 			CollectionAssert.IsNotEmpty(this._nativeRepository.GetExportRequests());
 			Assert.That(this._nativeRepository.GetExportRequests().ToList()[0].ArtifactId, Is.EqualTo(artifact.ArtifactID));
 		}

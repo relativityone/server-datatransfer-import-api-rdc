@@ -107,7 +107,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			Native native1 = new Native(artifact1)
 			{
-				HasBeenDownloaded = false,
+				HasBeenTransferCompleted = false,
 				ExportRequest = new PhysicalFileExportRequest(artifact1, string.Empty)
 				{
 					FileName = "filename_1",
@@ -121,7 +121,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			Native native2 = new Native(artifact2)
 			{
-				HasBeenDownloaded = true
+				HasBeenTransferCompleted = true
 			};
 
 			ObjectExportInfo artifact3 = new ObjectExportInfo
@@ -130,7 +130,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			Native native3 = new Native(artifact3)
 			{
-				HasBeenDownloaded = false,
+				HasBeenTransferCompleted = false,
 				ExportRequest = new PhysicalFileExportRequest(artifact3, string.Empty)
 				{
 					FileName = "filename_3",

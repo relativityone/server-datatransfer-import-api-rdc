@@ -41,7 +41,7 @@
 			var native = new Native(artifact)
 			{
 				ExportRequest = exportRequests.FirstOrDefault(),
-				HasBeenDownloaded = exportRequests.Count == 0
+				HasBeenTransferCompleted = exportRequests.Count == 0
 			};
 
 			_nativeRepository.Add(native);
