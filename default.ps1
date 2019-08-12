@@ -561,7 +561,8 @@ Function Format-NuGetPackageVersion {
     if ($currentBranchName -eq "master") {
         $formattedVersion = $MajorMinorPatchVersion
     }
-    elseif ($currentBranchName -eq "develop") {
+    elseif ($currentBranchName -eq "develop" -or $currentBranchName -like "relativity-*") {
+        # Develop or release branches should rely on pre-release labels
         if (!$preReleaseLabel -or $preReleaseLabel.Length -eq 0) {
             Throw $preReleaseLabelExceptionMessage
         }
