@@ -89,8 +89,9 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 					throw new TransferException(message);
 				}
 
-				ITapiFileStorageSearchResults results =
-					await _tapiObjectService.SearchFileStorageAsync(_parameters, _logger, token);
+				ITapiFileStorageSearchResults results = await _tapiObjectService
+					                                        .SearchFileStorageAsync(_parameters, _logger, token)
+					                                        .ConfigureAwait(false);
 				_logger.LogInformation(
 					"File storage search API discovered {TotalValidFileShares} valid file shares and {TotalInvalidFileShares} invalid files shares associated with workspace {WorkspaceId}.",
 					results.FileShares.Count,

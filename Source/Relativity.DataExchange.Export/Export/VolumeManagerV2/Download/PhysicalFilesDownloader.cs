@@ -31,7 +31,7 @@
 		public async Task DownloadFilesAsync(List<ExportRequest> requests, CancellationToken token)
 		{
 			var taskCancellationTokenSource = new DownloadCancellationTokenSource(token);
-			await _settingsService.ReadFileSharesAsync(token);
+			await _settingsService.ReadFileSharesAsync(token).ConfigureAwait(false);
 
 			List<ExportRequestsWithFileshareSettings> exportRequestsFileShareSettingsList =
 				this.GetExportRequestFileShareSettings(requests);
