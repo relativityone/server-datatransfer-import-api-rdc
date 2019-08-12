@@ -7,6 +7,7 @@
 
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 
 	public class NativeFileBatchValidator : IBatchValidator
@@ -16,7 +17,11 @@
 		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public NativeFileBatchValidator(IErrorFileWriter errorFileWriter, IFile fileWrapper, IStatus status, ILog logger)
+		public NativeFileBatchValidator(
+			IErrorFileWriter errorFileWriter,
+			IFile fileWrapper,
+			IStatus status,
+			ILog logger)
 		{
 			_errorFileWriter = errorFileWriter;
 			_fileWrapper = fileWrapper;
@@ -44,13 +49,31 @@
 				return;
 			}
 
-			bool nativeFileExists = _fileWrapper.Exists(artifact.NativeTempLocation);
-
-			if (!nativeFileExists || _fileWrapper.GetFileSize(artifact.NativeTempLocation) == 0)
+			bool fileExists = _fileWrapper.Exists(artifact.NativeTempLocation);
+			if (!fileExists || _fileWrapper.GetFileSize(artifact.NativeTempLocation) == 0)
 			{
-				_logger.LogError("Native file {file} missing or empty for artifact {artifactId}.", artifact.NativeTempLocation, artifact.ArtifactID);
-				string errorMessage = nativeFileExists ? "Empty file." : "File missing.";
-				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Native, artifact.IdentifierValue, artifact.NativeTempLocation, errorMessage);
+				string errorMessage = fileExists ? ExportStrings.FileValidationZeroByteFile : ExportStrings.FileValidationFileMissing;
+				if (string.IsNullOrWhiteSpace(artifact.NativeSourceLocation))
+				{
+					errorMessage = ExportStrings.FileValidationEmptyRemoteSourcePath;
+					_logger.LogError(
+						"Native file {File} remote source path is empty for native artifact {ArtifactId} and suggests a back-end database issue.",
+						artifact.NativeTempLocation,
+						artifact.ArtifactID);
+				}
+				else
+				{
+					_logger.LogError(
+						"Native file {File} missing or empty for artifact {ArtifactId}.",
+						artifact.NativeTempLocation,
+						artifact.ArtifactID);
+				}
+
+				_errorFileWriter.Write(
+					ErrorFileWriter.ExportFileType.Native,
+					artifact.IdentifierValue,
+					artifact.NativeTempLocation,
+					errorMessage);
 			}
 		}
 	}

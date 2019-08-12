@@ -7,25 +7,29 @@
 	using System.Threading.Tasks;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 
 	public class PhysicalFilesDownloader : IPhysicalFilesDownloader
 	{
 		private readonly IFileShareSettingsService _settingsService;
 		private readonly IFileTapiBridgePool _fileTapiBridgePool;
+		private readonly IDownloadProgressManager _downloadProgressManager;
 		private readonly ILog _logger;
 		private readonly SafeIncrement _safeIncrement;
 
 		public PhysicalFilesDownloader(
 			IFileShareSettingsService settingsService,
 			IFileTapiBridgePool fileTapiBridgePool,
+			IDownloadProgressManager downloadProgressManager,
 			SafeIncrement safeIncrement,
 			ILog logger)
 		{
-			_settingsService = settingsService;
-			_fileTapiBridgePool = fileTapiBridgePool;
-			_safeIncrement = safeIncrement;
-			_logger = logger;
+			_settingsService = settingsService.ThrowIfNull(nameof(settingsService));
+			_fileTapiBridgePool = fileTapiBridgePool.ThrowIfNull(nameof(fileTapiBridgePool));
+			_downloadProgressManager = downloadProgressManager.ThrowIfNull(nameof(downloadProgressManager));
+			_safeIncrement = safeIncrement.ThrowIfNull(nameof(safeIncrement));
+			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
 		public async Task DownloadFilesAsync(List<ExportRequest> requests, CancellationToken token)
@@ -103,6 +107,14 @@
 						fileExportRequest.DestinationLocation);
 					fileExportRequest.FileName =
 						bridge.QueueDownload(fileExportRequest.CreateTransferPath(_safeIncrement.GetNext()));
+				}
+				catch (ArgumentException ex)
+				{
+					_logger.LogWarning(
+						ex,
+						"There was a problem downloading artifact {ArtifactId}.",
+						fileExportRequest.ArtifactId);
+					_downloadProgressManager.MarkArtifactAsError(fileExportRequest.ArtifactId, ex.Message);
 				}
 				catch (Exception ex)
 				{

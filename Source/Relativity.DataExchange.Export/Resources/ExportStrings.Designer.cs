@@ -133,7 +133,34 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to relase all transfer pool resources..
+        ///   Looks up a localized string similar to Remote source path is empty and indicates a back-end database issue..
+        /// </summary>
+        internal static string FileValidationEmptyRemoteSourcePath {
+            get {
+                return ResourceManager.GetString("FileValidationEmptyRemoteSourcePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File missing..
+        /// </summary>
+        internal static string FileValidationFileMissing {
+            get {
+                return ResourceManager.GetString("FileValidationFileMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zero byte file..
+        /// </summary>
+        internal static string FileValidationZeroByteFile {
+            get {
+                return ResourceManager.GetString("FileValidationZeroByteFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to release all transfer pool resources..
         /// </summary>
         internal static string TransferPoolDisposeExceptionMessage {
             get {

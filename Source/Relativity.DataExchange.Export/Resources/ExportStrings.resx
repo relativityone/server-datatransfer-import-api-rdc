@@ -145,6 +145,15 @@
     <value>Retrieved workspace file share details.</value>
   </data>
   <data name="TransferPoolDisposeExceptionMessage" xml:space="preserve">
-    <value>Failed to relase all transfer pool resources.</value>
+    <value>Failed to release all transfer pool resources.</value>
+  </data>
+  <data name="FileValidationZeroByteFile" xml:space="preserve">
+    <value>Zero byte file.</value>
+  </data>
+  <data name="FileValidationFileMissing" xml:space="preserve">
+    <value>File missing.</value>
+  </data>
+  <data name="FileValidationEmptyRemoteSourcePath" xml:space="preserve">
+    <value>Remote source path is empty and indicates a back-end database issue.</value>
   </data>
 </root>

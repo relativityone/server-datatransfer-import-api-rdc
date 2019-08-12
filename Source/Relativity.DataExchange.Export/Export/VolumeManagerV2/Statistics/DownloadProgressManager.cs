@@ -15,7 +15,7 @@
 	{
 		private int _savedDocumentsDownloadedCount;
 
-		private readonly ThreadSafeAddOnlyHashSet<int> _artifactsDownloaded;
+		private readonly ThreadSafeAddOnlyHashSet<int> _artifactsProcessed;
 
 		private readonly NativeRepository _nativeRepository;
 		private readonly ImageRepository _imageRepository;
@@ -25,8 +25,13 @@
 		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public DownloadProgressManager(NativeRepository nativeRepository, ImageRepository imageRepository,
-			LongTextRepository longTextRepository, IFile fileWrapper, IStatus status, ILog logger)
+		public DownloadProgressManager(
+			NativeRepository nativeRepository,
+			ImageRepository imageRepository,
+			LongTextRepository longTextRepository,
+			IFile fileWrapper,
+			IStatus status,
+			ILog logger)
 		{
 			_nativeRepository = nativeRepository;
 			_imageRepository = imageRepository;
@@ -34,8 +39,21 @@
 			_fileWrapper = fileWrapper;
 			_status = status;
 			_logger = logger;
+			_artifactsProcessed = new ThreadSafeAddOnlyHashSet<int>();
+		}
 
-			_artifactsDownloaded = new ThreadSafeAddOnlyHashSet<int>();
+		public void MarkArtifactAsError(int artifactId, string message)
+		{
+			if (!_artifactsProcessed.Contains(artifactId))
+			{
+				_logger.LogVerbose(
+					"Marking artifact {ArtifactId} as error. Message: {ErrorMessage}",
+					artifactId,
+					message);
+				_artifactsProcessed.Add(artifactId);
+			}
+
+			this.PublishProcessedCount();
 		}
 
 		public void MarkFileAsDownloaded(string fileName, int lineNumber)
@@ -186,16 +204,19 @@
 		{
 			//race condition may occur here, but after batch is downloaded we're refreshing 
 			//the whole list, so final number of documents will be valid
-
 			Native native = _nativeRepository.GetNative(artifactId);
-			int nativeArtifactId = native.Artifact.ArtifactID;
+			if (native == null)
+			{
+				return false;
+			}
 
+			int nativeArtifactId = native.Artifact.ArtifactID;
 			if (!native.HasBeenDownloaded)
 			{
 				return false;
 			}
 
-			if (_artifactsDownloaded.Contains(nativeArtifactId))
+			if (_artifactsProcessed.Contains(nativeArtifactId))
 			{
 				return false;
 			}
@@ -212,25 +233,24 @@
 				return false;
 			}
 
-			_artifactsDownloaded.Add(nativeArtifactId);
-			_status.UpdateDocumentExportedCount(DownloadedDocumentsCount());
+			_artifactsProcessed.Add(nativeArtifactId);
+			this.PublishProcessedCount();
 			return true;
-		}
-
-		private int DownloadedDocumentsCount()
-		{
-			return _artifactsDownloaded.Count;
 		}
 
 		public void SaveState()
 		{
-			_savedDocumentsDownloadedCount = DownloadedDocumentsCount();
+			_savedDocumentsDownloadedCount = _artifactsProcessed.Count;
 		}
 
 		public void RestoreLastState()
 		{
 			_status.UpdateDocumentExportedCount(_savedDocumentsDownloadedCount);
 		}
-	}
 
+		private void PublishProcessedCount()
+		{
+			_status.UpdateDocumentExportedCount(_artifactsProcessed.Count);
+		}
+	}
 }

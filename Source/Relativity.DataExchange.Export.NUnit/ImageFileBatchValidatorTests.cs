@@ -204,6 +204,33 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
+		[Test]
+		[TestCase(null)]
+		[TestCase("")]
+		[TestCase(" ")]
+		public void ItShouldWriteErrorForInvalidNativeSourceLocation(string location)
+		{
+			// ARRANGE
+			ObjectExportInfo artifact = this.CreateSingleWithLocation(location);
+			ObjectExportInfo[] artifacts = { artifact };
+			this.FileHelper.Setup(x => x.Exists(location)).Returns(false);
+			this.FileHelper.Setup(x => x.GetFileSize(location)).Returns(0);
+
+			// ACT
+			this._instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
+
+			// ASSERT
+			this.ErrorFileWriter.Verify(
+				x => x.Write(
+					Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType
+						.Image,
+					artifact.IdentifierValue,
+					location,
+					It.IsAny<string>()),
+				Times.Once);
+			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
+		}
+
 		private ObjectExportInfo CreateTwoImagesWithLocations(string location1, string location2)
 		{
 			ImageExportInfo image1 = new ImageExportInfo

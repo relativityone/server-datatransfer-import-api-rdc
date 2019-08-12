@@ -2,6 +2,7 @@
 {
 	public interface IDownloadProgressManager
 	{
+		void MarkArtifactAsError(int artifactId, string message);
 		void MarkLongTextAsDownloaded(string id, int lineNumber);
 		void MarkFileAsDownloaded(string id, int lineNumber);
 	}
