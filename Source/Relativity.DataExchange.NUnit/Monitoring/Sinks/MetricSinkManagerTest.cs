@@ -7,13 +7,12 @@
 namespace Relativity.DataExchange.NUnit
 {
 	using System;
-	using System.Threading;
+
+	using global::Monitoring.Sinks;
 
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS.Monitoring;
-
-	using Monitoring.Sinks;
 
 	using Moq;
 
