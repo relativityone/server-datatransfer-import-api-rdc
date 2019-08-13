@@ -245,25 +245,55 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.ExportBatchSize, Is.EqualTo(expectedValue));
 		}
 
-		[Test]
-		public void ShouldGetAndSetTheExportErrorNumberOfRetriesSetting()
+		[TestCase(true, 0, AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue)]
+		[TestCase(true, -1, AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue)]
+		[TestCase(true, int.MinValue, AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue)]
+		[TestCase(true, 5, 5)]
+		[TestCase(true, 1, 1)]
+		[TestCase(true, 2, 2)]
+		[TestCase(true, 100, 100)]
+		[TestCase(true, int.MaxValue, int.MaxValue)]
+		[TestCase(false, 0, 0)]
+		[TestCase(false, -1, -1)]
+		[TestCase(false, int.MinValue, int.MinValue)]
+		[TestCase(false, 5, 5)]
+		[TestCase(false, 1, 1)]
+		[TestCase(false, 2, 2)]
+		[TestCase(false, 100, 100)]
+		[TestCase(false, int.MaxValue, int.MaxValue)]
+		public void ShouldGetAndSetTheExportErrorNumberOfRetriesSetting(bool enforceMinRetryCount, int input, int expectedValue)
 		{
 			Assert.That(
 				this.settings.ExportErrorNumberOfRetries,
 				Is.EqualTo(DataExchange.AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.ExportErrorNumberOfRetries = expectedValue;
+			this.settings.EnforceMinRetryCount = enforceMinRetryCount;
+			this.settings.ExportErrorNumberOfRetries = input;
 			Assert.That(this.settings.ExportErrorNumberOfRetries, Is.EqualTo(expectedValue));
 		}
 
-		[Test]
-		public void ShouldGetAndSetTheExportErrorWaitTimeInSecondsSetting()
+		[TestCase(true, 0, AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue)]
+		[TestCase(true, -1, AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue)]
+		[TestCase(true, int.MinValue, AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue)]
+		[TestCase(true, 5, 5)]
+		[TestCase(true, 1, 1)]
+		[TestCase(true, 2, 2)]
+		[TestCase(true, 100, 100)]
+		[TestCase(true, int.MaxValue, int.MaxValue)]
+		[TestCase(false, 0, 0)]
+		[TestCase(false, -1, -1)]
+		[TestCase(false, int.MinValue, int.MinValue)]
+		[TestCase(false, 5, 5)]
+		[TestCase(false, 1, 1)]
+		[TestCase(false, 2, 2)]
+		[TestCase(false, 100, 100)]
+		[TestCase(false, int.MaxValue, int.MaxValue)]
+		public void ShouldGetAndSetTheExportErrorWaitTimeInSecondsSetting(bool enforceMinWaitTime, int input, int expectedValue)
 		{
 			Assert.That(
 				this.settings.ExportErrorWaitTimeInSeconds,
 				Is.EqualTo(DataExchange.AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.ExportErrorWaitTimeInSeconds = expectedValue;
+			this.settings.EnforceMinWaitTime = enforceMinWaitTime;
+			this.settings.ExportErrorWaitTimeInSeconds = input;
 			Assert.That(this.settings.ExportErrorWaitTimeInSeconds, Is.EqualTo(expectedValue));
 		}
 
@@ -329,14 +359,20 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.ForceWebUpload, Is.EqualTo(!expectedValue));
 		}
 
-		[Test]
-		public void ShouldGetAndSetTheHttpTimeoutSecondsSetting()
+		[TestCase(1, 1)]
+		[TestCase(0, AppSettingsConstants.HttpTimeoutSecondsDefaultValue)]
+		[TestCase(-1, AppSettingsConstants.HttpTimeoutSecondsDefaultValue)]
+		[TestCase(2, 2)]
+		[TestCase(5, 5)]
+		[TestCase(100, 100)]
+		[TestCase(int.MaxValue, int.MaxValue)]
+		[TestCase(int.MinValue, AppSettingsConstants.HttpTimeoutSecondsDefaultValue)]
+		public void ShouldGetAndSetTheHttpTimeoutSecondsSetting(int input, int expectedValue)
 		{
 			Assert.That(
 				this.settings.HttpTimeoutSeconds,
 				Is.EqualTo(DataExchange.AppSettingsConstants.HttpTimeoutSecondsDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.HttpTimeoutSeconds = expectedValue;
+			this.settings.HttpTimeoutSeconds = input;
 			Assert.That(this.settings.HttpTimeoutSeconds, Is.EqualTo(expectedValue));
 		}
 
@@ -362,25 +398,55 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.ImportBatchSize, Is.EqualTo(expectedValue));
 		}
 
-		[Test]
-		public void ShouldGetAndSetTheIoErrorNumberOfRetriesSetting()
+		[TestCase(true, 0, AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue)]
+		[TestCase(true, -1, AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue)]
+		[TestCase(true, int.MinValue, AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue)]
+		[TestCase(true, 5, 5)]
+		[TestCase(true, 1, 1)]
+		[TestCase(true, 2, 2)]
+		[TestCase(true, 100, 100)]
+		[TestCase(true, int.MaxValue, int.MaxValue)]
+		[TestCase(false, 0, 0)]
+		[TestCase(false, -1, -1)]
+		[TestCase(false, int.MinValue, int.MinValue)]
+		[TestCase(false, 5, 5)]
+		[TestCase(false, 1, 1)]
+		[TestCase(false, 2, 2)]
+		[TestCase(false, 100, 100)]
+		[TestCase(false, int.MaxValue, int.MaxValue)]
+		public void ShouldGetAndSetTheIoErrorNumberOfRetriesSetting(bool enforceMinRetryCount, int input, int expectedValue)
 		{
 			Assert.That(
 				this.settings.IoErrorNumberOfRetries,
 				Is.EqualTo(DataExchange.AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.IoErrorNumberOfRetries = expectedValue;
+			this.settings.EnforceMinRetryCount = enforceMinRetryCount;
+			this.settings.IoErrorNumberOfRetries = input;
 			Assert.That(this.settings.IoErrorNumberOfRetries, Is.EqualTo(expectedValue));
 		}
 
-		[Test]
-		public void ShouldGetAndSetTheIoErrorWaitTimeInSecondsSetting()
+		[TestCase(true, 0, AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue)]
+		[TestCase(true, -1, AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue)]
+		[TestCase(true, int.MinValue, AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue)]
+		[TestCase(true, 5, 5)]
+		[TestCase(true, 1, 1)]
+		[TestCase(true, 2, 2)]
+		[TestCase(true, 100, 100)]
+		[TestCase(true, int.MaxValue, int.MaxValue)]
+		[TestCase(false, 0, 0)]
+		[TestCase(false, -1, -1)]
+		[TestCase(false, int.MinValue, int.MinValue)]
+		[TestCase(false, 5, 5)]
+		[TestCase(false, 1, 1)]
+		[TestCase(false, 2, 2)]
+		[TestCase(false, 100, 100)]
+		[TestCase(false, int.MaxValue, int.MaxValue)]
+		public void ShouldGetAndSetTheIoErrorWaitTimeInSecondsSetting(bool enforceMinWaitTime, int input, int expectedValue)
 		{
 			Assert.That(
 				this.settings.IoErrorWaitTimeInSeconds,
 				Is.EqualTo(DataExchange.AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.IoErrorWaitTimeInSeconds = expectedValue;
+			this.settings.EnforceMinWaitTime = enforceMinWaitTime;
+			this.settings.IoErrorWaitTimeInSeconds = input;
 			Assert.That(this.settings.IoErrorWaitTimeInSeconds, Is.EqualTo(expectedValue));
 		}
 
@@ -432,36 +498,54 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.LogConfigXmlFileName, Is.EqualTo(expectedValue));
 		}
 
-		[Test]
-		public void ShouldGetAndSetTheMaxFilesForTapiBridgeSetting()
+		[TestCase(1, 1)]
+		[TestCase(0, AppSettingsConstants.MaxFilesForTapiBridgeDefaultValue)]
+		[TestCase(-1, AppSettingsConstants.MaxFilesForTapiBridgeDefaultValue)]
+		[TestCase(2, 2)]
+		[TestCase(5, 5)]
+		[TestCase(100, 100)]
+		[TestCase(int.MaxValue, int.MaxValue)]
+		[TestCase(int.MinValue, AppSettingsConstants.MaxFilesForTapiBridgeDefaultValue)]
+		public void ShouldGetAndSetTheMaxFilesForTapiBridgeSetting(int input, int expectedValue)
 		{
 			Assert.That(
 				this.settings.MaxFilesForTapiBridge,
 				Is.EqualTo(DataExchange.AppSettingsConstants.MaxFilesForTapiBridgeDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.MaxFilesForTapiBridge = expectedValue;
+			this.settings.MaxFilesForTapiBridge = input;
 			Assert.That(this.settings.MaxFilesForTapiBridge, Is.EqualTo(expectedValue));
 		}
 
-		[Test]
-		public void ShouldGetAndSetTheMaxNumberOfFileExportTasksSetting()
+		[TestCase(1, 1)]
+		[TestCase(0, AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue)]
+		[TestCase(-1, AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue)]
+		[TestCase(2, 2)]
+		[TestCase(5, 5)]
+		[TestCase(100, 100)]
+		[TestCase(int.MaxValue, int.MaxValue)]
+		[TestCase(int.MinValue, AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue)]
+		public void ShouldGetAndSetTheMaxNumberOfFileExportTasksSetting(int input, int expectedValue)
 		{
 			Assert.That(
 				this.settings.MaxNumberOfFileExportTasks,
 				Is.EqualTo(DataExchange.AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.MaxNumberOfFileExportTasks = expectedValue;
+			this.settings.MaxNumberOfFileExportTasks = input;
 			Assert.That(this.settings.MaxNumberOfFileExportTasks, Is.EqualTo(expectedValue));
 		}
 
-		[Test]
-		public void ShouldGetAndSetTheMaxReloginTriesSetting()
+		[TestCase(1, 1)]
+		[TestCase(0, AppSettingsConstants.MaximumReloginTriesDefaultValue)]
+		[TestCase(-1, AppSettingsConstants.MaximumReloginTriesDefaultValue)]
+		[TestCase(2, 2)]
+		[TestCase(5, 5)]
+		[TestCase(100, 100)]
+		[TestCase(int.MaxValue, int.MaxValue)]
+		[TestCase(int.MinValue, AppSettingsConstants.MaximumReloginTriesDefaultValue)]
+		public void ShouldGetAndSetTheMaxReloginTriesSetting(int input, int expectedValue)
 		{
 			Assert.That(
 				this.settings.MaxReloginTries,
 				Is.EqualTo(DataExchange.AppSettingsConstants.MaximumReloginTriesDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.MaxReloginTries = expectedValue;
+			this.settings.MaxReloginTries = input;
 			Assert.That(this.settings.MaxReloginTries, Is.EqualTo(expectedValue));
 		}
 
@@ -571,12 +655,18 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.SuppressServerCertificateValidation, Is.EqualTo(!expectedValue));
 		}
 
-		[Test]
-		public void ShouldGetAndSetTheTapiAsperaBcpRootFolderSetting()
+		[TestCase(1, 1)]
+		[TestCase(0, AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue)]
+		[TestCase(-1, AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue)]
+		[TestCase(2, 2)]
+		[TestCase(5, 5)]
+		[TestCase(100, 100)]
+		[TestCase(int.MaxValue, int.MaxValue)]
+		[TestCase(int.MinValue, AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue)]
+		public void ShouldGetAndSetTheTapiAsperaBcpRootFolderSetting(int input, int expectedValue)
 		{
 			Assert.That(this.settings.TapiAsperaBcpRootFolder, Is.Null.Or.Empty);
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.TapiBridgeExportTransferWaitingTimeInSeconds = expectedValue;
+			this.settings.TapiBridgeExportTransferWaitingTimeInSeconds = input;
 			Assert.That(this.settings.TapiBridgeExportTransferWaitingTimeInSeconds, Is.EqualTo(expectedValue));
 		}
 
@@ -715,25 +805,37 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.TapiLargeFileProgressEnabled, Is.EqualTo(!expectedValue));
 		}
 
-		[Test]
-		public void ShouldGetAndSetTheTapiMaxJobParallelismSetting()
+		[TestCase(1, 1)]
+		[TestCase(0, AppSettingsConstants.TapiMaxJobParallelismDefaultValue)]
+		[TestCase(-1, AppSettingsConstants.TapiMaxJobParallelismDefaultValue)]
+		[TestCase(2, 2)]
+		[TestCase(5, 5)]
+		[TestCase(100, 100)]
+		[TestCase(int.MaxValue, int.MaxValue)]
+		[TestCase(int.MinValue, AppSettingsConstants.TapiMaxJobParallelismDefaultValue)]
+		public void ShouldGetAndSetTheTapiMaxJobParallelismSetting(int input, int expectedValue)
 		{
 			Assert.That(
 				this.settings.TapiMaxJobParallelism,
 				Is.EqualTo(DataExchange.AppSettingsConstants.TapiMaxJobParallelismDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 16);
-			this.settings.TapiMaxJobParallelism = expectedValue;
+			this.settings.TapiMaxJobParallelism = input;
 			Assert.That(this.settings.TapiMaxJobParallelism, Is.EqualTo(expectedValue));
 		}
 
-		[Test]
-		public void ShouldGetAndSetTheTapiMinDataRateMbpsSetting()
+		[TestCase(1, 1)]
+		[TestCase(0, AppSettingsConstants.TapiMinDataRateMbpsDefaultValue)]
+		[TestCase(-1, AppSettingsConstants.TapiMinDataRateMbpsDefaultValue)]
+		[TestCase(2, 2)]
+		[TestCase(5, 5)]
+		[TestCase(100, 100)]
+		[TestCase(int.MaxValue, int.MaxValue)]
+		[TestCase(int.MinValue, AppSettingsConstants.TapiMinDataRateMbpsDefaultValue)]
+		public void ShouldGetAndSetTheTapiMinDataRateMbpsSetting(int input, int expectedValue)
 		{
 			Assert.That(
 				this.settings.TapiMinDataRateMbps,
 				Is.EqualTo(DataExchange.AppSettingsConstants.TapiMinDataRateMbpsDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 16);
-			this.settings.TapiMinDataRateMbps = expectedValue;
+			this.settings.TapiMinDataRateMbps = input;
 			Assert.That(this.settings.TapiMinDataRateMbps, Is.EqualTo(expectedValue));
 		}
 
@@ -764,13 +866,62 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldGetAndSetTheTapiTargetDataRateMbpsSetting()
+		public void ShouldGetAndSetTheTelemetrySubmitApmMetricsSetting()
+		{
+			Assert.That(
+				this.settings.TelemetrySubmitApmMetrics,
+				Is.EqualTo(DataExchange.AppSettingsConstants.TelemetrySubmitApmMetricsDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.TelemetrySubmitApmMetrics = expectedValue;
+			Assert.That(this.settings.TelemetrySubmitApmMetrics, Is.EqualTo(expectedValue));
+			this.settings.TelemetrySubmitApmMetrics = !expectedValue;
+			Assert.That(this.settings.TelemetrySubmitApmMetrics, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheTelemetrySubmitSumMetricsSetting()
+		{
+			Assert.That(
+				this.settings.TelemetrySubmitSumMetrics,
+				Is.EqualTo(DataExchange.AppSettingsConstants.TelemetrySubmitSumMetricsDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.TelemetrySubmitSumMetrics = expectedValue;
+			Assert.That(this.settings.TelemetrySubmitSumMetrics, Is.EqualTo(expectedValue));
+			this.settings.TelemetrySubmitSumMetrics = !expectedValue;
+			Assert.That(this.settings.TelemetrySubmitSumMetrics, Is.EqualTo(!expectedValue));
+		}
+
+		[TestCase(1, 1)]
+		[TestCase(0, AppSettingsConstants.TelemetryMetricsThrottlingSecondsDefaultValue)]
+		[TestCase(-1, AppSettingsConstants.TelemetryMetricsThrottlingSecondsDefaultValue)]
+		[TestCase(2, 2)]
+		[TestCase(5, 5)]
+		[TestCase(100, 100)]
+		[TestCase(int.MaxValue, int.MaxValue)]
+		[TestCase(int.MinValue, AppSettingsConstants.TelemetryMetricsThrottlingSecondsDefaultValue)]
+		public void ShouldGetAndSetTheTelemetryMetricsThrottlingSecondsSetting(int input, int expectedValue)
+		{
+			Assert.That(
+				this.settings.TelemetryMetricsThrottlingSeconds,
+				Is.EqualTo(DataExchange.AppSettingsConstants.TelemetryMetricsThrottlingSecondsDefaultValue));
+			this.settings.TelemetryMetricsThrottlingSeconds = input;
+			Assert.That(this.settings.TelemetryMetricsThrottlingSeconds, Is.EqualTo(expectedValue));
+		}
+
+		[TestCase(1, 1)]
+		[TestCase(0, AppSettingsConstants.TapiTargetDataRateMbpsDefaultValue)]
+		[TestCase(-1, AppSettingsConstants.TapiTargetDataRateMbpsDefaultValue)]
+		[TestCase(2, 2)]
+		[TestCase(5, 5)]
+		[TestCase(100, 100)]
+		[TestCase(int.MaxValue, int.MaxValue)]
+		[TestCase(int.MinValue, AppSettingsConstants.TapiTargetDataRateMbpsDefaultValue)]
+		public void ShouldGetAndSetTheTapiTargetDataRateMbpsSetting(int input, int expectedValue)
 		{
 			Assert.That(
 				this.settings.TapiTargetDataRateMbps,
 				Is.EqualTo(DataExchange.AppSettingsConstants.TapiTargetDataRateMbpsDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(10, 600);
-			this.settings.TapiTargetDataRateMbps = expectedValue;
+			this.settings.TapiTargetDataRateMbps = input;
 			Assert.That(this.settings.TapiTargetDataRateMbps, Is.EqualTo(expectedValue));
 		}
 
@@ -1055,6 +1206,9 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlKey], Is.EqualTo("http://relativity"));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsDisabledKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsRetryKey], Is.True);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.TelemetrySubmitApmMetricsKey], Is.False);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.TelemetrySubmitSumMetricsKey], Is.False);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.TelemetryMetricsThrottlingSecondsKey], Is.EqualTo(50));
 			}
 		}
 
@@ -1183,6 +1337,12 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.FileTypeIdentifyTimeoutSeconds, Is.EqualTo(999));
 				dictionary[DataExchange.AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlKey] = "http://dummy";
 				Assert.That(this.settings.OAuth2ImplicitCredentialRedirectUrl, Is.EqualTo("http://dummy"));
+				dictionary[DataExchange.AppSettingsConstants.TelemetrySubmitApmMetricsKey] = true;
+				Assert.That(this.settings.TelemetrySubmitApmMetrics, Is.True);
+				dictionary[DataExchange.AppSettingsConstants.TelemetrySubmitSumMetricsKey] = true;
+				Assert.That(this.settings.TelemetrySubmitSumMetrics, Is.True);
+				dictionary[DataExchange.AppSettingsConstants.TelemetryMetricsThrottlingSecondsKey] = 99;
+				Assert.That(this.settings.TelemetryMetricsThrottlingSeconds, Is.EqualTo(99));
 			}
 		}
 
