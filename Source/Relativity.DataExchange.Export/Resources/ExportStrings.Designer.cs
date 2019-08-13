@@ -79,6 +79,15 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The field file export request cannot be created for artifact {0} because the destination path is null or empty..
+        /// </summary>
+        internal static string FieldFileExportRequestDestinationLocationExceptionMessage {
+            get {
+                return ResourceManager.GetString("FieldFileExportRequestDestinationLocationExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Retrieved workspace file share details..
         /// </summary>
         internal static string FileStorageCompletedStatusMessage {
@@ -156,6 +165,24 @@ namespace Relativity.DataExchange.Resources {
         internal static string FileValidationZeroByteFile {
             get {
                 return ResourceManager.GetString("FileValidationZeroByteFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The long text export request cannot be created for artifact {0} because the destination path is null or empty..
+        /// </summary>
+        internal static string LongTextExportRequestDestinationLocationExceptionMessage {
+            get {
+                return ResourceManager.GetString("LongTextExportRequestDestinationLocationExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The native export request cannot be created for artifact {0} because the destination path is null or empty..
+        /// </summary>
+        internal static string NativeExportRequestDestinationLocationExceptionMessage {
+            get {
+                return ResourceManager.GetString("NativeExportRequestDestinationLocationExceptionMessage", resourceCulture);
             }
         }
         

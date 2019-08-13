@@ -9,12 +9,16 @@
 
 namespace Relativity.DataExchange.Export.NUnit.Integration
 {
+	using System;
+	using System.Collections.Generic;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
 
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
@@ -44,13 +48,18 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		public async Task ShouldExportAllSampleDocAndImagesAsync(TapiClient client)
 		{
 			if ((client == TapiClient.Aspera && this.TestParameters.SkipAsperaModeTests) ||
-			    (client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
+				(client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
 			{
 				Assert.Ignore(TestStrings.SkipTestMessage, $"{client}");
 			}
 
+			// ARRANGE
 			this.GivenTheTapiForceClientAppSettings(client);
+
+			// ACT
 			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+
+			// ASSERT
 			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
 		}
 
@@ -61,9 +70,14 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[Category(TestCategories.Integration)]
 		public async Task ShouldExportWhenTheFileStorageSearchResultsAreEmptyAsync(bool cloudInstance)
 		{
+			// ARRANGE
 			this.GivenTheMockTapiObjectServiceIsRegistered();
 			this.GivenTheMockedSearchResultsAreEmpty(cloudInstance);
+
+			// ACT
 			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+
+			// ASSERT
 			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
 			this.ThenTheTransferModeShouldEqualDirectOrWebMode();
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
@@ -76,9 +90,14 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[Category(TestCategories.Integration)]
 		public async Task ShouldExportWhenTheFileStorageSearchResultsAreInvalidAsync(bool cloudInstance)
 		{
+			// ARRANGE
 			this.GivenTheMockTapiObjectServiceIsRegistered();
 			this.GivenTheMockedSearchResultsAreInvalid(cloudInstance);
+
+			// ACT
 			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+
+			// ASSERT
 			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
 			this.ThenTheTransferModeShouldEqualDirectOrWebMode();
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
@@ -89,10 +108,15 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[Category(TestCategories.Integration)]
 		public async Task ShouldExportWhenTheFileStorageSearchThrowsNonFatalExceptionAsync()
 		{
+			// ARRANGE
 			const bool Fatal = false;
 			this.GivenTheMockTapiObjectServiceIsRegistered();
 			this.GivenTheMockedFileStorageSearchThrows(Fatal);
+
+			// ACT
 			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+
+			// ASSERT
 			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
 			this.ThenTheTransferModeShouldEqualDirectOrWebMode();
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
@@ -103,11 +127,17 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[Category(TestCategories.Integration)]
 		public async Task ShouldNotExportWhenTheFileStorageSearchThrowsFatalExceptionAsync()
 		{
+			// ARRANGE
 			const bool Fatal = true;
 			this.GivenTheMockTapiObjectServiceIsRegistered();
 			this.GivenTheMockedFileStorageSearchThrows(Fatal);
+
+			// ACT
 			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
-			this.ThenTheExportJobIsFatal();
+
+			// ASSERT
+			const bool ExpectedSearchResult = true;
+			this.ThenTheExportJobIsFatal(ExpectedSearchResult);
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
@@ -118,13 +148,93 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[Category(TestCategories.Integration)]
 		public async Task ShouldExportWhenTheSettingsForFileShareIsNullAsync(bool forceAsperaClient)
 		{
+			// ARRANGE
 			this.GivenTheTapiForceClientAppSettings(forceAsperaClient ? TapiClient.Aspera : TapiClient.None);
 			this.GivenTheMockFileShareSettingsServiceIsRegistered();
 			this.GivenTheMockedSettingsForFileShareIsNull();
+
+			// ACT
 			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+
+			// ASSERT
 			this.ThenTheTransferModeShouldEqualDirectOrWebMode();
 			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
 			this.ThenTheMockFileShareSettingsServiceIsVerified();
+		}
+
+		[IdentifiedTest("1AB462A0-AF45-4D4E-99DB-43FF74D44131")]
+		[Category(TestCategories.Export)]
+		[Category(TestCategories.Integration)]
+		public async Task ShouldExportWhenTheNativeSourceLocationIsInvalidAsync()
+		{
+			// ARRANGE
+			const bool ValidNativeGuid = true;
+			const bool ValidNativeSourceLocation = false;
+			const bool ValidDestinationLocation = true;
+			List<ExportRequest> fileExportRequests = new List<ExportRequest>();
+			fileExportRequests.Add(
+				this.CreateTestPhysicalFileExportRequest(
+					1,
+					1,
+					ValidNativeGuid,
+					ValidNativeSourceLocation,
+					ValidDestinationLocation));
+			fileExportRequests.Add(
+				this.CreateTestFieldFileExportRequest(
+					2,
+					2,
+					2,
+					ValidNativeGuid,
+					ValidNativeSourceLocation,
+					ValidDestinationLocation));
+			this.GivenTheMockExportRequestRetrieverIsRegistered();
+			this.GivenTheMockedExportRequestRetrieverReturns(fileExportRequests, new List<LongTextExportRequest>());
+
+			// ACT
+			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+
+			// ASSERT
+			const int ExpectedProcessedCount = 2;
+			this.ThenTheExportJobIsNotSuccessful(ExpectedProcessedCount);
+		}
+
+		[IdentifiedTest("76FB096D-7948-4BFE-8CED-7E509505CA95")]
+		[Category(TestCategories.Export)]
+		[Category(TestCategories.Integration)]
+		public async Task ShouldExportWhenTheDestinationLocationIsInvalidAsync()
+		{
+			// ARRANGE
+			const bool ValidNativeGuid = true;
+			const bool ValidNativeSourceLocation = true;
+			const bool ValidDestinationLocation = false;
+			List<ExportRequest> fileExportRequests = new List<ExportRequest>();
+			fileExportRequests.Add(
+				this.CreateTestPhysicalFileExportRequest(
+					1,
+					1,
+					ValidNativeGuid,
+					ValidNativeSourceLocation,
+					ValidDestinationLocation));
+			fileExportRequests.Add(
+				this.CreateTestFieldFileExportRequest(
+					2,
+					2,
+					2,
+					ValidNativeGuid,
+					ValidNativeSourceLocation,
+					ValidDestinationLocation));
+			List<LongTextExportRequest> longTextExportRequests = new List<LongTextExportRequest>();
+			longTextExportRequests.Add(
+				this.CreateTestLongTextExportRequest(3, 3, 3, ValidNativeSourceLocation, ValidDestinationLocation));
+			this.GivenTheMockExportRequestRetrieverIsRegistered();
+			this.GivenTheMockedExportRequestRetrieverReturns(fileExportRequests, longTextExportRequests);
+
+			// ACT
+			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+
+			// ASSERT
+			const int ExpectedProcessedCount = 3;
+			this.ThenTheExportJobIsNotSuccessful(ExpectedProcessedCount);
 		}
 
 		private async Task ExecuteFolderAndSubfoldersAndVerifyAsync()

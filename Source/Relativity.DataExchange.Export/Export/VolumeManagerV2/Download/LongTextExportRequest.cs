@@ -1,9 +1,11 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download
 {
 	using System;
+	using System.Globalization;
 
 	using kCura.WinEDDS.Exporters;
 
+	using Relativity.DataExchange.Resources;
 	using Relativity.Transfer;
 	using Relativity.Transfer.Http;
 
@@ -51,6 +53,15 @@
 				ExportType = FullText ? ExportType.FullText : ExportType.LongTextFieldArtifact,
 				LongTextFieldArtifactId = FieldArtifactId
 			};
+
+			if (string.IsNullOrWhiteSpace(this.DestinationLocation))
+			{
+				string errorMessage = string.Format(
+					CultureInfo.CurrentCulture,
+					ExportStrings.LongTextExportRequestDestinationLocationExceptionMessage,
+					this.ArtifactId);
+				throw new ArgumentException(errorMessage, nameof(this.DestinationLocation));
+			}
 
 			var fileInfo = new System.IO.FileInfo(DestinationLocation);
 			var transferPath = new TransferPath
