@@ -1,10 +1,7 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Batches
 {
 	using System.Threading;
-
-	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
-
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Logging;
@@ -13,18 +10,16 @@
 	{
 		private readonly IErrorFileWriter _errorFileWriter;
 		private readonly IFile _fileWrapper;
-		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public NativeFileBatchValidator(IErrorFileWriter errorFileWriter, IFile fileWrapper, IStatus status, ILog logger)
+		public NativeFileBatchValidator(IErrorFileWriter errorFileWriter, IFile fileWrapper, ILog logger)
 		{
 			_errorFileWriter = errorFileWriter;
 			_fileWrapper = fileWrapper;
-			_status = status;
 			_logger = logger;
 		}
 
-		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
+		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 			 for (int i = 0; i < artifacts.Length; i++)
 			 {
@@ -33,11 +28,11 @@
 			 		return;
 			 	}
    
-			 	ValidateNativesForArtifact(artifacts[i], predictions[i]);
+			 	ValidateNativesForArtifact(artifacts[i]);
 			 }
 		}
 
-		private void ValidateNativesForArtifact(ObjectExportInfo artifact, VolumePredictions prediction)
+		private void ValidateNativesForArtifact(ObjectExportInfo artifact)
 		{
 			if (string.IsNullOrWhiteSpace(artifact.NativeTempLocation))
 			{

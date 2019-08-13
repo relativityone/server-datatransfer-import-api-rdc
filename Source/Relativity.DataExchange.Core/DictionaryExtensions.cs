@@ -91,8 +91,7 @@ namespace Relativity.DataExchange
 
 			if (ContainsNonNullValue(dictionary, name))
 			{
-				int value;
-				if (int.TryParse(dictionary[name].ToString(), out value))
+				if (int.TryParse(dictionary[name].ToString(), out int value))
 				{
 					if (minValue.HasValue && value < minValue)
 					{
@@ -171,8 +170,7 @@ namespace Relativity.DataExchange
 
 			if (ContainsNonNullValue(dictionary, name))
 			{
-				bool value;
-				if (bool.TryParse(dictionary[name].ToString(), out value))
+				if (bool.TryParse(dictionary[name].ToString(), out bool value))
 				{
 					return value;
 				}
@@ -209,8 +207,7 @@ namespace Relativity.DataExchange
 
 			if (ContainsNonNullValue(dictionary, name))
 			{
-				TEnum value;
-				if (Enum.TryParse(dictionary[name].ToString(), out value))
+				if (Enum.TryParse(dictionary[name].ToString(), out TEnum value))
 				{
 					return value;
 				}

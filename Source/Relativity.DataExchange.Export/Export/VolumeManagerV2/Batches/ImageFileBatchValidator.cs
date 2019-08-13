@@ -3,10 +3,7 @@
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading;
-
-	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
-
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Logging;
@@ -15,18 +12,16 @@
 	{
 		private readonly IErrorFileWriter _errorFileWriter;
 		private readonly IFile _fileWrapper;
-		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public ImageFileBatchValidator(IErrorFileWriter errorFileWriter, IFile fileWrapper, IStatus status, ILog logger)
+		public ImageFileBatchValidator(IErrorFileWriter errorFileWriter, IFile fileWrapper, ILog logger)
 		{
 			_errorFileWriter = errorFileWriter;
 			_fileWrapper = fileWrapper;
-			_status = status;
 			_logger = logger;
 		}
 
-		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
+		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 			for (int i = 0; i < artifacts.Length; i++)
 			{
@@ -35,11 +30,11 @@
 					return;
 				}
 
-				ValidateImagesForArtifact(artifacts[i], predictions[i]);
+				ValidateImagesForArtifact(artifacts[i]);
 			}
 		}
 
-		private void ValidateImagesForArtifact(ObjectExportInfo artifact, VolumePredictions volumePredictions)
+		private void ValidateImagesForArtifact(ObjectExportInfo artifact)
 		{
 			if (artifact.ImageCount == 0)
 			{
@@ -51,16 +46,16 @@
 			if (images[0].SuccessfulRollup)
 			{
 				_logger.LogVerbose("Image {image} successfully rollup, so checking single image.", images[0].BatesNumber);
-				ValidateSingleImage(artifact, images[0], volumePredictions);
+				ValidateSingleImage(artifact, images[0]);
 			}
 			else
 			{
 				_logger.LogVerbose("Image {image} wasn't rollup, so checking multiple images.", images[0].BatesNumber);
-				ValidateAllImages(artifact, images, volumePredictions);
+				ValidateAllImages(artifact, images);
 			}
 		}
 
-		private void ValidateSingleImage(ObjectExportInfo artifact, ImageExportInfo image, VolumePredictions predictions)
+		private void ValidateSingleImage(ObjectExportInfo artifact, ImageExportInfo image)
 		{
 			if (string.IsNullOrWhiteSpace(image.FileGuid))
 			{
@@ -76,7 +71,7 @@
 			}
 		}
 
-		private void ValidateAllImages(ObjectExportInfo artifact, List<ImageExportInfo> images, VolumePredictions predictions)
+		private void ValidateAllImages(ObjectExportInfo artifact, List<ImageExportInfo> images)
 		{
 			for (int i = 0; i < images.Count; i++)
 			{

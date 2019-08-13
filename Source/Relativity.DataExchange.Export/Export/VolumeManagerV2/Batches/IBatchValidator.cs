@@ -6,6 +6,6 @@
 
 	public interface IBatchValidator
 	{
-		void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken);
+		void ValidateExportedBatch(ObjectExportInfo[] artifacts, CancellationToken cancellationToken);
 	}
 }

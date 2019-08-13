@@ -433,7 +433,6 @@ Namespace Relativity.Desktop.Client
 				Me.Cursor = Cursors.Default
 				Return False
 			End If
-			Dim rtr As Boolean = False
 			If doFormValidation Then
 				Dim msg As New System.Text.StringBuilder
 				_imageLoadFile.FileName = _filePath.Text

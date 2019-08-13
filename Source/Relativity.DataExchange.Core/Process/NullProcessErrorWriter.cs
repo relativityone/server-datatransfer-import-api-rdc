@@ -6,7 +6,6 @@
 
 namespace Relativity.DataExchange.Process
 {
-	using System;
 	using System.Threading;
 
 	/// <summary>
@@ -14,16 +13,6 @@ namespace Relativity.DataExchange.Process
 	/// </summary>
 	public sealed class NullProcessErrorWriter : IProcessErrorWriter
 	{
-		private bool disposed;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="NullProcessErrorWriter"/> class.
-		/// </summary>
-		public NullProcessErrorWriter()
-		{
-			this.disposed = false;
-		}
-
 		/// <inheritdoc />
 		public bool HasErrors => false;
 
@@ -41,33 +30,11 @@ namespace Relativity.DataExchange.Process
 		/// <inheritdoc />
 		public void Dispose()
 		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 
 		/// <inheritdoc />
 		public void Write(string key, string description)
 		{
-		}
-
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing">
-		/// <see langword="true" /> to release both managed and unmanaged resources; <see langword="false" /> to release only unmanaged resources.
-		/// </param>
-		private void Dispose(bool disposing)
-		{
-			if (this.disposed)
-			{
-				return;
-			}
-
-			if (disposing)
-			{
-			}
-
-			this.disposed = true;
 		}
 	}
 }

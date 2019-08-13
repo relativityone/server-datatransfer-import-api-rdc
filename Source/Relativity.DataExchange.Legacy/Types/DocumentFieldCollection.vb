@@ -34,7 +34,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Function Names() As String()
-			Dim i As Int32 = 0
 			Dim retval(_nameIndex.Keys.Count - 1) As String
 			_nameIndex.Keys.CopyTo(retval, 0)
 			Array.Sort(retval)

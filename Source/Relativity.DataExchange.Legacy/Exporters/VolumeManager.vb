@@ -8,6 +8,7 @@ Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.IO
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Media
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
@@ -521,7 +522,6 @@ Namespace kCura.WinEDDS
 			Dim totalFileSize As Int64 = 0
 			Dim extractedTextFileSizeForVolume As Int64 = 0
 			Dim image As Exporters.ImageExportInfo = Nothing
-			Dim imageSuccess As Boolean = True
 			If Me.Settings.ExportImages Then
 				For Each image In artifact.Images
 					_timekeeper.MarkStart("VolumeManager_DownloadImage", threadNumber)
@@ -536,7 +536,6 @@ Namespace kCura.WinEDDS
 						Else
 							image.TempLocation = ""
 							Me.LogFileExportError(ExportFileType.Image, artifact.IdentifierValue, image.FileGuid, ex.ToString)
-							imageSuccess = False
 						End If
 					End Try
 					_timekeeper.MarkEnd("VolumeManager_DownloadImage", threadNumber)
@@ -591,7 +590,7 @@ Namespace kCura.WinEDDS
 					tempLocalIproFullTextFilePath = TempFileBuilder.GetTempFileName(TempFileConstants.IProFileNameSuffix)
 					Dim tries As Int32 = 0
 					Dim maxTries As Int32 = NumberOfRetries + 1
-					Dim start As Int64 = System.DateTime.Now.Ticks
+					Dim start As Int64 = DateTime.Now.Ticks
 					'BigData_ET_1037768
 					Dim val As String = artifact.Metadata(Me.OrdinalLookup("ExtractedText")).ToString
 					If val <> ServiceConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
@@ -953,16 +952,9 @@ Namespace kCura.WinEDDS
 					Case LoadFileType.FileFormat.IPRO
 						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile, linesToWriteOpt, currentVolumeNumber)
 					Case LoadFileType.FileFormat.IPRO_FullText
-						Dim currentPageFirstByteNumber As Long
 						If fullTextReader Is Nothing Then
 							If pageNumber = 1 AndAlso expectingTextForPage Then _parent.WriteWarning(String.Format("Could not retrieve full text for document '{0}'", batesNumber))
 						Else
-							If pageNumber = 1 Then
-								currentPageFirstByteNumber = 0
-							Else
-								currentPageFirstByteNumber = fullTextReader.BaseStream.Position
-							End If
-
 							lineToWrite.Append("FT,")
 							lineToWrite.Append(batesNumber)
 							lineToWrite.Append(",1,1,")

@@ -28,7 +28,7 @@
 			_logger = logger;
 		}
 
-		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
+		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 			IEnumerable<LongText> downloadedFiles = _longTextRepository.GetLongTexts().Where(x =>
 				x.ExportRequest != null && !x.RequireDeletion && !string.IsNullOrWhiteSpace(x.Location));
