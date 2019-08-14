@@ -72,7 +72,10 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 
 			try
 			{
-				_status.WriteStatusLineWithoutDocCount(EventType2.Status, ExportStrings.FileStorageStartedStatusMessage, true);
+				_status.WriteStatusLineWithoutDocCount(
+					EventType2.Status,
+					ExportStrings.FileStorageStartedStatusMessage,
+					true);
 
 				// The code below can completely fail but still allow export to function.
 				RelativityFileShare defaultFileShare = await _tapiObjectService
@@ -170,8 +173,15 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 					}
 				}
 
-				_status.WriteStatusLineWithoutDocCount(EventType2.Status, ExportStrings.FileStorageCompletedStatusMessage, true);
+				_status.WriteStatusLineWithoutDocCount(
+					EventType2.Status,
+					ExportStrings.FileStorageCompletedStatusMessage,
+					true);
 				_readFileShares = true;
+			}
+			catch (OperationCanceledException)
+			{
+				throw;
 			}
 			catch (Exception e)
 			{
@@ -198,27 +208,52 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 		{
 			// Note: returning null is valid.
 			IRelativityFileShareSettings settings;
-			if (_defaultFileShareSettings == null)
+			try
 			{
-				// A complete file storage search failure does NOT cause export to fail.
-				settings = null;
-			}
-			else if (!_cloudInstance || (_defaultFileShareSettings != null && _defaultFileShareSettings.IsBaseOf(path)))
-			{
-				// For non-cloud instances, all supported transfer clients work using only the default file share.
-				settings = _defaultFileShareSettings;
-			}
-			else
-			{
-				// Check all other file shares to find a match.
-				settings = _nonDefaultFileShareSettings.FirstOrDefault(n => n.IsBaseOf(path));
-			}
+				if (_defaultFileShareSettings == null)
+				{
+					// A complete file storage search failure does NOT cause export to fail.
+					settings = null;
+				}
+				else if (!_cloudInstance
+				         || (_defaultFileShareSettings != null && _defaultFileShareSettings.IsBaseOf(path)))
+				{
+					// For non-cloud instances, all supported transfer clients work using only the default file share.
+					settings = _defaultFileShareSettings;
+				}
+				else
+				{
+					// Check all other file shares to find a match.
+					settings = _nonDefaultFileShareSettings.FirstOrDefault(n => n.IsBaseOf(path));
+				}
 
-			if (settings == null)
+				if (settings == null)
+				{
+					_logger.LogWarning(
+						"The path '{Path}' for export artifact '{ArtifactId}' does not match the base address on any of the file shares and will be exported by either direct or web mode. This may be caused by an invalid File table or the Resource Pool doesn't include all file shares referenced by this workspace.",
+						path,
+						artifactId);
+				}
+			}
+			catch (OperationCanceledException)
 			{
+				throw;
+			}
+			catch (Exception e)
+			{
+				// Note: this exception is caught to prevent the entire batch or job from aborting due to an invalid artifact.
+				// Note: data validation checks now exist to ensure invalid artifacts are handled properly.
+				if (ExceptionHelper.IsFatalException(e))
+				{
+					throw;
+				}
+
 				_logger.LogWarning(
-					"The export path for export artifact '{ArtifactId}' does not match the base address on any of the file shares and will be exported by either direct or web mode. This may be caused by an invalid File table or the Resource Pool doesn't include all file shares referenced by this workspace.",
+					e,
+					"The path '{Path}' for export artifact '{ArtifactId}' failed trying to match the base address on any of the file shares. This may be caused by an invalid artifact.",
+					path,
 					artifactId);
+				settings = null;
 			}
 
 			return settings;
