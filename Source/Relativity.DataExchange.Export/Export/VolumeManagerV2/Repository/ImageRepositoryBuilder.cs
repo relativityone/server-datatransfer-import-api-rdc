@@ -41,7 +41,7 @@
 				Image image = new Image(imageExportInfo)
 				{
 					ExportRequest = imageExportRequest,
-					HasBeenTransferCompleted = imageExportRequest == null
+					TransferCompleted = imageExportRequest == null
 				};
 
 				images.Add(image);

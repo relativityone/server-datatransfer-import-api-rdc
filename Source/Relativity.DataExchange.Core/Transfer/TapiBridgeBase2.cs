@@ -1052,7 +1052,15 @@ namespace Relativity.DataExchange.Transfer
 					}
 
 					this.UpdateTransferActivityTimestamp();
-					this.TapiProgress?.Invoke(sender, args);
+					try
+					{
+						this.TapiProgress?.Invoke(sender, args);
+					}
+					catch (Exception e)
+					{
+						Console.WriteLine(e);
+						throw;
+					}
 				};
 
 			listener.LargeFileProgressEvent += (sender, args) =>

@@ -65,7 +65,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.AddToRepository(artifact, CancellationToken.None);
 
 			// ASSERT
-			Assert.That(this._imageRepository.GetImage(artifactId1, batesNumber).HasBeenTransferCompleted, Is.True);
+			Assert.That(this._imageRepository.GetImage(artifactId1, batesNumber).TransferCompleted, Is.True);
 		}
 
 		[Test]
@@ -98,7 +98,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.AddToRepository(artifact, CancellationToken.None);
 
 			// ASSERT
-			Assert.That(this._imageRepository.GetImage(artifactId1, batesNumber).HasBeenTransferCompleted, Is.False);
+			Assert.That(this._imageRepository.GetImage(artifactId1, batesNumber).TransferCompleted, Is.False);
 			CollectionAssert.IsNotEmpty(this._imageRepository.GetExportRequests());
 			Assert.That(this._imageRepository.GetExportRequests().ToList()[0].ArtifactId, Is.EqualTo(artifactId1));
 		}

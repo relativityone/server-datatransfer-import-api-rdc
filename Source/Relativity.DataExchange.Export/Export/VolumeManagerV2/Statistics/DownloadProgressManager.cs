@@ -43,7 +43,7 @@
 
 		public void MarkFileAsCompleted(string fileName, int lineNumber)
 		{
-			_logger.LogVerbose("Marking {fileName} file as downloaded.", fileName);
+			_logger.LogVerbose("Marking {fileName} file as completed.", fileName);
 			Native native = _nativeRepository.GetByLineNumber(lineNumber);
 			if (native != null)
 			{
@@ -57,7 +57,7 @@
 
 		public void MarkLongTextAsCompleted(string fileName, int lineNumber)
 		{
-			_logger.LogVerbose("Marking {fileName} long text as downloaded.", fileName);
+			_logger.LogVerbose("Marking {fileName} long text as completed.", fileName);
 			LongText longText = _longTextRepository.GetByLineNumber(lineNumber);
 			if (longText != null)
 			{
@@ -72,7 +72,7 @@
 
 		public void UpdateCompletedCount()
 		{
-			_logger.LogVerbose("Finalizing downloaded document count after batch has been downloaded.");
+			_logger.LogVerbose("Finalizing processed document count after batch has been completed.");
 			foreach (Native native in _nativeRepository.GetNatives())
 			{
 				this.UpdateCompletedCount(native.Artifact.ArtifactID);
@@ -94,13 +94,13 @@
 
 		private void MarkNativeAsCompleted(int lineNumber, Native native)
 		{
-			if (native.HasBeenTransferCompleted)
+			if (native.TransferCompleted)
 			{
 				this.NativeAlreadyProcessed(native);
 			}
 			else
 			{
-				native.HasBeenTransferCompleted = true;
+				native.TransferCompleted = true;
 				this.UpdateCompletedCountAndNotify(native.Artifact.ArtifactID, lineNumber);
 			}
 		}
@@ -110,13 +110,13 @@
 			Image image = this._imageRepository.GetByLineNumber(lineNumber);
 			if (image != null)
 			{
-				if (image.HasBeenTransferCompleted)
+				if (image.TransferCompleted)
 				{
 					this.ImageAlreadyProcessed(image);
 				}
 				else
 				{
-					image.HasBeenTransferCompleted = true;
+					image.TransferCompleted = true;
 					this.UpdateCompletedCountAndNotify(image.Artifact.ArtifactID, lineNumber);
 				}
 			}
@@ -140,13 +140,13 @@
 				.Where(x => x.ExportRequest != null)
 				.Where(x => x.ExportRequest.SourceLocation == native.ExportRequest.SourceLocation)
 				.Where(x => x.ExportRequest.Order != native.ExportRequest.Order)
-				.Where(x => !x.HasBeenTransferCompleted).ToList();
+				.Where(x => !x.TransferCompleted).ToList();
 
 			foreach (Native duplicatedNative in duplicatedNatives)
 			{
 				if (_fileWrapper.Exists(duplicatedNative.ExportRequest.DestinationLocation))
 				{
-					duplicatedNative.HasBeenTransferCompleted = true;
+					duplicatedNative.TransferCompleted = true;
 					this.UpdateCompletedCountAndNotify(duplicatedNative.Artifact.ArtifactID, duplicatedNative.ExportRequest.Order);
 				}
 			}
@@ -166,13 +166,13 @@
 				.Where(x => x.ExportRequest != null)
 				.Where(x => x.ExportRequest.SourceLocation == image.ExportRequest.SourceLocation)
 				.Where(x => x.ExportRequest.Order != image.ExportRequest.Order)
-				.Where(x => !x.HasBeenTransferCompleted).ToList();
+				.Where(x => !x.TransferCompleted).ToList();
 
 			foreach (Image duplicatedImage in duplicatedImages)
 			{
 				if (_fileWrapper.Exists(duplicatedImage.ExportRequest.DestinationLocation))
 				{
-					duplicatedImage.HasBeenTransferCompleted = true;
+					duplicatedImage.TransferCompleted = true;
 					this.UpdateCompletedCountAndNotify(duplicatedImage.Artifact.ArtifactID, duplicatedImage.ExportRequest.Order);
 				}
 			}
@@ -206,12 +206,12 @@
 			Native native = _nativeRepository.GetNative(artifactId);
 			int nativeArtifactId = native.Artifact.ArtifactID;
 
-			if (!native.HasBeenTransferCompleted)
+			if (!native.TransferCompleted)
 			{
 				return false;
 			}
 			IList<Image> images = _imageRepository.GetArtifactImages(nativeArtifactId);
-			if (images.Any(x => !x.HasBeenTransferCompleted))
+			if (images.Any(x => !x.TransferCompleted))
 			{
 				return false;
 			}
