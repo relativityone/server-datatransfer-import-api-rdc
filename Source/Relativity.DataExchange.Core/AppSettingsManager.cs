@@ -448,8 +448,7 @@ namespace Relativity.DataExchange
 			AppSettingAttribute attribute = GetAppSettingAttribute(GetPropertyKey(prop));
 			if (value != null)
 			{
-				bool temp;
-				if (bool.TryParse(value.ToString(), out temp))
+				if (bool.TryParse(value.ToString(), out bool temp))
 				{
 					boolValue = temp;
 				}
@@ -481,7 +480,7 @@ namespace Relativity.DataExchange
 			}
 
 			object defaultValue = null;
-			if (value == null && attribute != null)
+			if (value == null)
 			{
 				if (attribute.DefaultValue != null)
 				{
@@ -508,8 +507,7 @@ namespace Relativity.DataExchange
 			int? intValue = null;
 			if (value != null)
 			{
-				int temp;
-				if (int.TryParse(value.ToString(), out temp))
+				if (int.TryParse(value.ToString(), out int temp))
 				{
 					intValue = temp;
 				}
@@ -541,8 +539,7 @@ namespace Relativity.DataExchange
 			long? longValue = null;
 			if (value != null)
 			{
-				long temp;
-				if (long.TryParse(value.ToString(), out temp))
+				if (long.TryParse(value.ToString(), out long temp))
 				{
 					longValue = temp;
 				}
@@ -637,8 +634,7 @@ namespace Relativity.DataExchange
 					continue;
 				}
 
-				Dictionary<string, object> sectionDictionary;
-				if (!dictionaries.TryGetValue(attribute.Section, out sectionDictionary))
+				if (!dictionaries.TryGetValue(attribute.Section, out Dictionary<string, object> sectionDictionary))
 				{
 					sectionDictionary = new Dictionary<string, object>();
 					dictionaries.Add(attribute.Section, sectionDictionary);

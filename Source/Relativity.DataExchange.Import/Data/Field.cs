@@ -40,7 +40,7 @@ namespace kCura.Relativity.ImportAPI.Data
 		public IEnumerable<Guid> Guids { get; internal set; }
 
 		/// <summary>
-		/// Inidicates if the field should be written to Data Grid
+		/// Indicates if the field should be written to Data Grid
 		/// </summary>
 		public bool EnableDataGrid { get; internal set; }
 	}

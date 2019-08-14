@@ -57,7 +57,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.LongTextRepository.Setup(x => x.GetLongTexts()).Returns(new List<LongText> { longText });
 
 			// ACT
-			this.Instance.ValidateExportedBatch(null, null, CancellationToken.None);
+			this.Instance.ValidateExportedBatch(null, CancellationToken.None);
 
 			// ASSERT
 			this.Status.Verify(x => x.WriteError(It.IsAny<string>()), Times.Never());
@@ -74,7 +74,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.FileHelper.Setup(x => x.GetFileSize(location)).Returns(1);
 
 			// ACT
-			this.Instance.ValidateExportedBatch(null, null, CancellationToken.None);
+			this.Instance.ValidateExportedBatch(null, CancellationToken.None);
 
 			// ASSERT
 			this.Status.Verify(x => x.WriteError(It.IsAny<string>()), Times.Never());
@@ -89,7 +89,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.LongTextRepository.Setup(x => x.GetLongTexts()).Returns(new List<LongText> { longText });
 
 			// ACT
-			this.Instance.ValidateExportedBatch(null, null, CancellationToken.None);
+			this.Instance.ValidateExportedBatch(null, CancellationToken.None);
 
 			// ASSERT
 			this.Status.Verify(x => x.WriteError(It.IsAny<string>()), Times.Never());
@@ -108,7 +108,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.FileHelper.Setup(x => x.Exists(location)).Returns(false);
 
 			// ACT
-			this.Instance.ValidateExportedBatch(null, null, CancellationToken.None);
+			this.Instance.ValidateExportedBatch(null, CancellationToken.None);
 
 			// ASSERT
 			this.Status.Verify(x => x.WriteError(It.IsAny<string>()), Times.Once());
@@ -126,7 +126,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.FileHelper.Setup(x => x.GetFileSize(location)).Returns(0);
 
 			// ACT
-			this.Instance.ValidateExportedBatch(null, null, CancellationToken.None);
+			this.Instance.ValidateExportedBatch(null, CancellationToken.None);
 
 			// ASSERT
 			this.Status.Verify(x => x.WriteError(It.IsAny<string>()), Times.Never());

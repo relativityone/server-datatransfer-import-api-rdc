@@ -74,7 +74,7 @@
 
 				_messenger.ValidatingBatch();
 
-				_batchValidator.ValidateExportedBatch(artifacts, volumePredictions, cancellationToken);
+				_batchValidator.ValidateExportedBatch(artifacts, cancellationToken);
 
 				if (cancellationToken.IsCancellationRequested)
 				{

@@ -1848,7 +1848,11 @@ Namespace Relativity.Desktop.Client
 			ActionMenuEnabled = ReadyToRun
 		End Sub
 
-		Private Sub _characterDropdown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _recordDelimiter.SelectedIndexChanged, _quoteDelimiter.SelectedIndexChanged, _newLineDelimiter.SelectedIndexChanged, _multiRecordDelimiter.SelectedIndexChanged, _hierarchicalValueDelimiter.SelectedIndexChanged
+		Private Sub _characterDropdown_KeyPress(ByVal sender As Object, ByVal e As KeyPressEventArgs) Handles _recordDelimiter.KeyPress, _quoteDelimiter.KeyPress, _newLineDelimiter.KeyPress, _multiRecordDelimiter.KeyPress, _hierarchicalValueDelimiter.KeyPress
+			e.Handled = True
+		End Sub
+
+		Private Sub _characterDropdown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As EventArgs) Handles _recordDelimiter.SelectedIndexChanged, _quoteDelimiter.SelectedIndexChanged, _newLineDelimiter.SelectedIndexChanged, _multiRecordDelimiter.SelectedIndexChanged, _hierarchicalValueDelimiter.SelectedIndexChanged
 			'PopulateLoadFileObject()
 			Dim tag As Object = DirectCast(sender, System.Windows.Forms.ComboBox).Tag
 			If TypeOf tag Is Boolean AndAlso CType(tag, Boolean) = False Then

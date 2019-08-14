@@ -11,6 +11,8 @@ namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
 
 	using global::NUnit.Framework;
 
@@ -56,6 +58,44 @@ namespace Relativity.DataExchange.NUnit
 
 		[Test]
 		[Category(TestCategories.ExtensionMethods)]
+		public static void ToDelimitedStringShouldThrowOnNullForFunction()
+		{
+			IEnumerable<string> sequence = new[] { "a", "b", "c", "d" };
+			Assert.Throws<ArgumentNullException>(
+				() => sequence.ToDelimitedString(";", null));
+		}
+
+		[Test]
+		[Category(TestCategories.ExtensionMethods)]
+		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration", Justification = "We are testing what happens when the sequence is null.")]
+		[SuppressMessage("ReSharper", "ExpressionIsAlwaysNull", Justification = "We are testing what happens when the sequence is null.")]
+		public static void ToDelimitedStringShouldReturnNullForNullSequence()
+		{
+			IEnumerable<string> sequence = null;
+
+			var returned = sequence.ToDelimitedString(";", s => s.ToUpperInvariant());
+			Assert.IsNull(returned);
+
+			returned = sequence.ToDelimitedString(";", s => throw new NotImplementedException());
+			Assert.IsNull(returned);
+		}
+
+		[Test]
+		[Category(TestCategories.ExtensionMethods)]
+		public static void ToDelimitedStringShouldReturnEmptyStringIfCollectionIsEmpty()
+		{
+			IEnumerable<string> sequence = Enumerable.Empty<string>();
+			var returned = sequence.ToDelimitedString(";", s => s.ToUpperInvariant());
+			Assert.AreEqual(string.Empty, returned);
+
+			IEnumerable<string> sequence2 = Enumerable.Empty<string>();
+			var returned2 = sequence2.ToDelimitedString(";", s => throw new NotImplementedException());
+			Assert.AreEqual(string.Empty, returned2);
+		}
+
+		[Test]
+		[Category(TestCategories.ExtensionMethods)]
+		[SuppressMessage("ReSharper", "ExpressionIsAlwaysNull", Justification = "We are testing what happens when the sequence is null.")]
 		public static void ShouldGetTheIsNullOrEmptyValue()
 		{
 			IEnumerable<string> sequence = new[] { "1", "2", "3", "4" };

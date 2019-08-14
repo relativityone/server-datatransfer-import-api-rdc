@@ -240,7 +240,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// Arrange
 			var firstDescriptor = new FieldDescriptorPart(1);
 			string firstPartName = "Control/Number";
-			string validFirstParnName = "Control_Number";
+			string validFirstPathName = "Control_Number";
 			this.InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, this._exportObjectInfoHtmlFile);
 
 			var subjectUnderTest = new CustomFileNameProvider(
@@ -252,7 +252,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			string retFileName = testedFunction(subjectUnderTest, this._exportObjectInfoHtmlFile);
 
 			// Assert
-			Assert.That(retFileName, Is.EqualTo($"{validFirstParnName}{expectedExtension}"));
+			Assert.That(retFileName, Is.EqualTo($"{validFirstPathName}{expectedExtension}"));
 		}
 
 		private void ItShouldReturnOnlyControlAsFileNameNumberWhenOneDescriptorIsUsed(Func<CustomFileNameProvider, ObjectExportInfo, string> testedFunction, string expectedExtension)
@@ -359,15 +359,15 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		private void InitializeFileNamePartProviderContainer(DescriptorPart fieldDescriptor, string partName, ObjectExportInfo objectExportInfo)
 		{
-			var firstfieldProviderMock = new Mock<IFileNamePartProvider>();
+			var firstFieldProviderMock = new Mock<IFileNamePartProvider>();
 
-			firstfieldProviderMock
+			firstFieldProviderMock
 				.Setup(mock => mock.GetPartName(fieldDescriptor, objectExportInfo))
 				.Returns(partName);
 
 			this._fileNamePartProviderContainerMock
 				.Setup(mock => mock.GetProvider(fieldDescriptor))
-				.Returns(firstfieldProviderMock.Object);
+				.Returns(firstFieldProviderMock.Object);
 		}
 	}
 }

@@ -1,4 +1,6 @@
-﻿Namespace kCura.WinEDDS
+﻿Imports Relativity.DataExchange.Io
+
+Namespace kCura.WinEDDS
 	Public Class OutputFileWriter
 		Implements IDisposable
 

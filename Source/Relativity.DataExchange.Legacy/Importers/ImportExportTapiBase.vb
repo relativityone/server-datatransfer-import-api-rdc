@@ -59,7 +59,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			If logger Is Nothing Then
-				Throw New ArgumentNullException("logger")
+				Throw New ArgumentNullException(NameOf(logger))
 			End If
 
 			If cancellationTokenSource Is Nothing Then
@@ -181,19 +181,11 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Shared Function IsBulkImportSqlException(ByVal ex As Exception) As Boolean
-			If ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) Then
-				Return True
-			Else
-				Return False
-			End If
+			Return ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException)
 		End Function
 
 		Protected Shared Function IsInsufficientPermissionsForImportException(ByVal ex As Exception) As Boolean
-			If ex.GetType = GetType(Service.BulkImportManager.InsufficientPermissionsForImportException) Then
-				Return True
-			Else
-				Return False
-			End If
+			Return ex.GetType = GetType(Service.BulkImportManager.InsufficientPermissionsForImportException)
 		End Function
 
 		''' <summary>

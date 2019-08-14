@@ -1,4 +1,6 @@
 Imports System.Collections.Generic
+Imports System.IO
+Imports System.Net
 Imports System.Threading
 Imports System.Threading.Tasks
 
@@ -10,11 +12,13 @@ Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
+Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
 		Inherits LoadFileBase
 		Implements IImportJob
+		implements IDisposable
 
 #Region "Const Fields"
 
@@ -64,15 +68,16 @@ Namespace kCura.WinEDDS
 		Private _lastRunMetadataImport As Int64 = 0
 		Private _timekeeper As ITimeKeeperManager
 		Private _filePath As String
-		Private _batchCounter As Int32 = 0
+		Protected _batchCounter As Int32 = 0
 		Private _jobCompleteNativeCount As Int32 = 0
 		Private _jobCompleteMetadataCount As Int32 = 0
-		Private _errorMessageFileLocation As String = String.Empty
 		Private _errorLinesFileLocation As String = String.Empty
 
 		Public MaxNumberOfErrorsInGrid As Int32 = AppSettings.Instance.DefaultMaxErrorCount
 		Private _errorCount As Int32 = 0
-		Private _prePushErrorLineNumbersFileName As String = String.Empty
+		private prePushErrorWriter as ErrorMessageWriter(Of ErrorBeforeMassImportArgs) = New ErrorMessageWriter(Of ErrorBeforeMassImportArgs)()
+		private errorMessageFileWriter as ErrorMessageWriter(Of ErrorDuringMassImportArgs) = New ErrorMessageWriter(Of ErrorDuringMassImportArgs)()
+
 		Private _processId As Guid
 		Private _parentArtifactTypeId As Int32?
 		Private _unmappedRelationalFields As System.Collections.ArrayList
@@ -449,7 +454,7 @@ Namespace kCura.WinEDDS
 			OverlayArtifactId = args.IdentityFieldId
 
 			If String.IsNullOrEmpty(bulkLoadFileFieldDelimiter) Then
-				Throw New ArgumentNullException("bulkLoadFileFieldDelimiter")
+				Throw New ArgumentNullException(NameOf(bulkLoadFileFieldDelimiter))
 			End If
 
 			Me.BulkLoadFileFieldDelimiter = bulkLoadFileFieldDelimiter
@@ -581,6 +586,8 @@ Namespace kCura.WinEDDS
 				OnUploadModeChangeEvent(uploadStatus, True)
 			End If
 		End Sub
+
+
 
 		''' <summary>
 		''' Loads all the documents in a load file
@@ -992,8 +999,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			End Using
-
-			Dim markPrepareFields As DateTime = DateTime.Now
+			
 			identityValue = PrepareFieldCollectionAndExtractIdentityValue(record)
 			If identityValue = String.Empty Then
 				'lineStatus += ImportStatus.EmptyIdentifier				'
@@ -1280,7 +1286,7 @@ Namespace kCura.WinEDDS
 						End If
 						sw.Write(c)
 						charactersProcessed += 1
-						hasReachedEof = (sr.Peek = -1)
+						hasReachedEof = (sr.Peek = -1) 
 					End While
 					sw.Flush()
 				End Using
@@ -1316,7 +1322,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
+		protected Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
 			If _lastRunMetadataImport > 0 Then
 				Me.Statistics.MetadataWaitTime += System.DateTime.Now.Ticks - _lastRunMetadataImport
 			End If
@@ -1337,32 +1343,20 @@ Namespace kCura.WinEDDS
 
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
 			settings.UseBulkDataImport = True
-			Dim nativeFileUploadKey As String
-			Dim codeFileUploadKey As String
-			Dim objectFileUploadKey As String
-			Dim dataGridFileUploadKey As String
+			Dim nativeFileUploadKey As String = BulkLoadTapiBridge.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
+			Dim codeFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
+			Dim objectFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
+			Dim dataGridFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
 
-			Try
-				nativeFileUploadKey = BulkLoadTapiBridge.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
-				codeFileUploadKey = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
-				objectFileUploadKey = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
-				dataGridFileUploadKey = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
+			' keep track of the total count of added files
+			MetadataFilesCount += 4
+			_jobCompleteMetadataCount += 4
 
-				' keep track of the total count of added files
-				MetadataFilesCount += 4
-				_jobCompleteMetadataCount += 4
-
-				If lastRun Then
-					CompletePendingBulkLoadFileTransfers()
-				Else
-					WaitForPendingMetadataUploads()
-				End If
-			Catch ex As MetadataTransferException
-				Throw
-			Catch ex As Exception
-				' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
-				Throw New kCura.WinEDDS.LoadFilebase.BcpPathAccessException(My.Resources.Strings.BcpAccessExceptionMessage, ex)
-			End Try
+			If lastRun Then
+				CompletePendingBulkLoadFileTransfers()
+			Else
+				WaitForPendingMetadataUploads()
+			End If
 
 			_lastRunMetadataImport = System.DateTime.Now.Ticks
 
@@ -1853,11 +1847,7 @@ Namespace kCura.WinEDDS
 
 		Private Function IsSupportedRelativityFileType(ByVal fileTypeInfo As IFileTypeInfo) As Boolean
 			If fileTypeInfo Is Nothing Then
-				If Me.DisableNativeValidation Then
-					Return True
-				Else
-					Return False
-				End If
+				Return Me.DisableNativeValidation
 			End If
 			If _oixFileLookup Is Nothing Then
 				_oixFileLookup = New System.Collections.Specialized.HybridDictionary
@@ -1993,51 +1983,31 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub WriteError(ByVal currentLineNumber As Int32, ByVal line As String)
-			If _prePushErrorLineNumbersFileName = "" Then
-				_prePushErrorLineNumbersFileName = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
-			End If
+			Dim errorRecord As ErrorBeforeMassImportArgs = New ErrorBeforeMassImportArgs(currentLineNumber)
+			prePushErrorWriter.WriteErrorMessage(errorRecord)
 
-			Dim sw As New System.IO.StreamWriter(_prePushErrorLineNumbersFileName, True, System.Text.Encoding.Default)
-			sw.WriteLine(currentLineNumber)
-			sw.Flush()
-			sw.Close()
-			Dim ht As New System.Collections.Hashtable
-			ht.Add("Message", line)
-			ht.Add("Line Number", currentLineNumber)
-			ht.Add("Identifier", _artifactReader.SourceIdentifierValue)
-			RaiseReportError(ht, currentLineNumber, _artifactReader.SourceIdentifierValue, "client")
+			Dim ht As New Hashtable From {
+				{"Message", line},
+				{"Line Number", currentLineNumber},
+				{"Identifier", _artifactReader.SourceIdentifierValue}
+			}
+
+			RaiseReportError(ht, _artifactReader.SourceIdentifierValue, "client")
 			WriteStatusLine(EventType2.Error, line)
 		End Sub
 
-		Private Sub RaiseReportError(ByVal row As System.Collections.Hashtable, ByVal lineNumber As Int32, ByVal identifier As String, ByVal type As String)
+		Private Sub RaiseReportError(ByVal row As Hashtable,ByVal identifier As String, ByVal type As String)
 			_errorCount += 1
-			If String.IsNullOrEmpty(_errorMessageFileLocation) Then
-				_errorMessageFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
-			End If
-
-			Dim errorMessageFileWriter As New System.IO.StreamWriter(_errorMessageFileLocation, True, System.Text.Encoding.Default)
 			If _errorCount < MaxNumberOfErrorsInGrid Then
 				OnReportErrorEvent(row)
 			ElseIf _errorCount = MaxNumberOfErrorsInGrid Then
-				Dim moretobefoundMessage As New System.Collections.Hashtable
-				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
-				OnReportErrorEvent(moretobefoundMessage)
+				Dim moreToBeFoundMessage As New Hashtable
+				moreToBeFoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
+				OnReportErrorEvent(moreToBeFoundMessage)
 			End If
-			errorMessageFileWriter.WriteLine(String.Format("{0},{1},{2},{3}", CSVFormat(row("Line Number").ToString), CSVFormat(row("Message").ToString), CSVFormat(identifier), CSVFormat(type)))
-			errorMessageFileWriter.Close()
+			Dim errorRecord As ErrorDuringMassImportArgs = New ErrorDuringMassImportArgs(row("Line Number").ToString, row("Message").ToString, identifier, type)
+			errorMessageFileWriter.WriteErrorMessage(errorRecord)
 		End Sub
-
-		''' <summary>
-		''' CSVFormat will take in a string, replace a double quote characters with a pair of double quote characters, then surround the string with double quote characters
-		''' This preps it for being written as a field in a CSV file
-		''' </summary>
-		''' <param name="fieldValue">The string to convert to CSV format</param>
-		''' <returns>
-		''' the converted data
-		''' </returns>
-		Private Function CSVFormat(ByVal fieldValue As String) As String
-			Return ControlChars.Quote + fieldValue.Replace(ControlChars.Quote, ControlChars.Quote + ControlChars.Quote) + ControlChars.Quote
-		End Function
 
 		Protected Sub WriteWarning(ByVal line As String)
 			WriteStatusLine(EventType2.Warning, line)
@@ -2107,7 +2077,9 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub _processContext_ExportServerErrors(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportServerErrors
-			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(_errorMessageFileLocation, _prePushErrorLineNumbersFileName)
+			errorMessageFileWriter.ReleaseLock()
+			prePushErrorWriter.ReleaseLock()
+			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.FilePath, prePushErrorWriter.FilePath)
 			Dim rootFileName As String = _filePath
 			Dim defaultExtension As String
 			If Not rootFileName.IndexOf(".") = -1 Then
@@ -2128,13 +2100,14 @@ Namespace kCura.WinEDDS
 			If Not _errorLinesFileLocation Is Nothing AndAlso Not _errorLinesFileLocation = String.Empty AndAlso Me.GetFileExists(_errorLinesFileLocation, retry) Then
 				Me.CopyFile(_errorLinesFileLocation, errorFilePath, retry)
 			End If
-
-			Me.CopyFile(_errorMessageFileLocation, errorReportPath, retry)
-			_errorMessageFileLocation = ""
+			Dim errorMessageLocation As String = errorMessageFileWriter.FilePath
+			errorMessageFileWriter.Dispose()
+			errorMessageFileWriter = New ErrorMessageWriter(Of ErrorDuringMassImportArgs)()
+			Me.CopyFile(errorMessageLocation, errorReportPath, retry)
 		End Sub
 
 		Private Sub _processContext_ExportErrorReportEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportErrorReport
-			If String.IsNullOrEmpty(_errorMessageFileLocation) Then
+			If Not errorMessageFileWriter.FileCreated Then
 				' write out a blank file if there is no error message file
 				Dim fileWriter As System.IO.StreamWriter = System.IO.File.CreateText(e.Path)
 				fileWriter.Close()
@@ -2143,14 +2116,16 @@ Namespace kCura.WinEDDS
 			End If
 
 			Const retry As Boolean = True
-			Me.CopyFile(_errorMessageFileLocation, e.Path, True, retry)
+			Me.CopyFile(errorMessageFileWriter.FilePath, e.Path, True, retry)
 		End Sub
 
 		Private Sub _processContext_ExportErrorFileEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportErrorFile
+			errorMessageFileWriter.ReleaseLock()
+			prePushErrorWriter.ReleaseLock()
 			Const retry As Boolean = True
-			If _errorMessageFileLocation Is Nothing OrElse _errorMessageFileLocation = "" Then Exit Sub
+			If Not errorMessageFileWriter.FileCreated Then Exit Sub
 			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not Me.GetFileExists(_errorLinesFileLocation, retry) Then
-				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(_errorMessageFileLocation, _prePushErrorLineNumbersFileName)
+				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.FilePath, prePushErrorWriter.FilePath)
 			End If
 			If _errorLinesFileLocation Is Nothing Then
 				Exit Sub
@@ -2275,7 +2250,7 @@ Namespace kCura.WinEDDS
 							ht.Add("Message", line(1))
 							ht.Add("Identifier", line(2))
 							ht.Add("Line Number", Int32.Parse(line(0)))
-							RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
+							RaiseReportError(ht, line(2), "server")
 							OnStatusMessage(New StatusEventArgs(EventType2.Error, Int32.Parse(line(0)) - 1, RecordCount, "[Line " & line(0) & "]" & line(1), CurrentStatisticsSnapshot, Statistics))
 							line = sr.ReadLine
 						End While
@@ -2380,6 +2355,10 @@ Namespace kCura.WinEDDS
 			RaiseEvent FieldMapped(sourceField, workspaceField)
 		End Sub
 
+		Public Sub Dispose() Implements IDisposable.Dispose
+			Me.errorMessageFileWriter?.Dispose()
+			Me.prePushErrorWriter?.Dispose()
+		End Sub
 	End Class
 
 	Public Class WebServiceFieldInfoNameComparer

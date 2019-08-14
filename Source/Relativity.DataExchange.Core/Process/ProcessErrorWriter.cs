@@ -18,7 +18,7 @@ namespace Relativity.DataExchange.Process
 	internal sealed class ProcessErrorWriter : IProcessErrorWriter
 	{
 		private readonly IFileSystem fileSystem;
-		private readonly Relativity.Logging.ILog logger;
+		private readonly Logging.ILog logger;
 		private string errorsFile;
 		private IStreamWriter streamWriter;
 		private bool disposed;
@@ -76,7 +76,6 @@ namespace Relativity.DataExchange.Process
 		public void Dispose()
 		{
 			this.Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 
 		/// <inheritdoc />

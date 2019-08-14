@@ -6,6 +6,8 @@
 
 namespace Relativity.DataExchange.Export.NUnit
 {
+	using System.Diagnostics.CodeAnalysis;
+
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
@@ -39,6 +41,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
+		[SuppressMessage("ReSharper", "UnusedVariable", Justification = "Getting the path has side effects")]
 		public void ItShouldReturnItErrorFileCreated()
 		{
 			// ACT
