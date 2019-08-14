@@ -39,13 +39,12 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.ErrorFileWriter = new Mock<IErrorFileWriter>();
 			this.FileHelper = new Mock<IFile>();
 			this.Status = new Mock<IStatus>();
-
 			this.Instance = this.CreateValidator();
 		}
 
 		protected virtual IBatchValidator CreateValidator()
 		{
-			return new NativeFileBatchValidator(this.ErrorFileWriter.Object, this.FileHelper.Object, this.Status.Object, new NullLogger());
+			return new NativeFileBatchValidator(this.ErrorFileWriter.Object, this.FileHelper.Object, new NullLogger());
 		}
 
 		[Test]
@@ -62,7 +61,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 
 			// ACT
-			this.Instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
+			this.Instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
 			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Never);
@@ -81,18 +80,11 @@ namespace Relativity.DataExchange.Export.NUnit
 				artifact
 			};
 
-			var prediction = new VolumePredictions
-			{
-				NativeFilesSize = _FILE_SIZE
-			};
-
-			VolumePredictions[] predictions = { prediction };
-
 			this.FileHelper.Setup(x => x.Exists(artifact.NativeTempLocation)).Returns(true);
 			this.FileHelper.Setup(x => x.GetFileSize(artifact.NativeTempLocation)).Returns(_FILE_SIZE);
 
 			// ACT
-			this.Instance.ValidateExportedBatch(artifacts, predictions, CancellationToken.None);
+			this.Instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
 			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Never);
@@ -111,18 +103,11 @@ namespace Relativity.DataExchange.Export.NUnit
 				artifact
 			};
 
-			var prediction = new VolumePredictions
-			{
-				NativeFilesSize = _FILE_SIZE
-			};
-
-			VolumePredictions[] predictions = { prediction };
-
 			this.FileHelper.Setup(x => x.Exists(artifact.NativeTempLocation)).Returns(true);
 			this.FileHelper.Setup(x => x.GetFileSize(artifact.NativeTempLocation)).Returns(_FILE_SIZE - 1);
 
 			// ACT
-			this.Instance.ValidateExportedBatch(artifacts, predictions, CancellationToken.None);
+			this.Instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
 			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Never);
@@ -147,7 +132,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.FileHelper.Setup(x => x.GetFileSize(artifact.NativeTempLocation)).Returns(size);
 
 			// ACT
-			this.Instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
+			this.Instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
 			this.ErrorFileWriter.Verify(
@@ -176,7 +161,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.FileHelper.Setup(x => x.GetFileSize(artifact.NativeTempLocation)).Returns(0);
 
 			// ACT
-			this.Instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
+			this.Instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
 			this.ErrorFileWriter.Verify(

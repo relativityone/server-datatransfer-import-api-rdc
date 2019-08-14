@@ -73,7 +73,7 @@
 
 		private string GetImagesHtmlString(ObjectExportInfo artifact)
 		{
-			StringBuilder retval = new StringBuilder();
+			StringBuilder returnValue = new StringBuilder();
 
 			foreach (ImageExportInfo image in artifact.Images)
 			{
@@ -87,14 +87,14 @@
 					location = image.SourceLocation;
 				}
 
-				retval.Append(this.GetLink(location, image.FileName));
+				returnValue.Append(this.GetLink(location, image.FileName));
 				if (this._settings.TypeOfImage == ExportFile.ImageType.MultiPageTiff || this._settings.TypeOfImage == ExportFile.ImageType.Pdf)
 				{
 					break;
 				}
 			}
 
-			return retval.ToString();
+			return returnValue.ToString();
 		}
 
 		private string GetLink(string href, string text)

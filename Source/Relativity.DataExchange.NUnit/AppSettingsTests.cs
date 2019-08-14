@@ -394,7 +394,7 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldGetAndSetTheLoadImportedFullTextFromServeretting()
+		public void ShouldGetAndSetTheLoadImportedFullTextFromServerSetting()
 		{
 			Assert.That(
 				this.settings.LoadImportedFullTextFromServer,

@@ -26,13 +26,8 @@
 			}
 
 			_permissionCheck.CheckPermissions(exportFile.CaseArtifactID);
-			if (!_filesOverwriteValidator.ValidateLoadFilesOverwriting(exportFile.Overwrite, exportFile.ExportImages, new LoadFileDestinationPath(exportFile),
-				new ImageLoadFileDestinationPath(exportFile)))
-			{
-				return false;
-			}
-
-			return true;
+			return _filesOverwriteValidator.ValidateLoadFilesOverwriting(exportFile.Overwrite, exportFile.ExportImages, new LoadFileDestinationPath(exportFile),
+				new ImageLoadFileDestinationPath(exportFile));
 		}
 	}
 }
