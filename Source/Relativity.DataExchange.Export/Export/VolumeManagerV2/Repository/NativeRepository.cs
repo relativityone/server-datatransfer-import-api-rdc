@@ -48,7 +48,7 @@
 			//Only to sync access to natives
 			lock (_syncLock)
 			{
-				return _natives.Where(x => !x.HasBeenDownloaded).Select(x => x.ExportRequest);
+				return _natives.Where(x => !x.TransferCompleted).Select(x => x.ExportRequest);
 			}
 		}
 

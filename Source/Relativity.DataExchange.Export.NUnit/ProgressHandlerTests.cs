@@ -35,26 +35,32 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldMarkFileAsDownloadedWhenFileIsDownloaded()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldMarkFileAsCompleted(bool transferStatus)
 		{
 			const string id = "812216";
+			const bool TransferCompleted = true;
 
 			// ACT
 			this._instance.Attach(this._tapiBridge.Object);
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, true, true, 1, 1, DateTime.Now, DateTime.Now));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, TransferCompleted, transferStatus, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT
 			this.VerifyFileMarkedAsDownloaded(this._downloadProgressManager, id, 1);
 		}
 
 		[Test]
-		public void ItShouldNotMarkFileAsDownloadedWhenFileIsNotDownloaded()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldNotMarkFileAsCompletedWhenWhenTransferNotFinished(bool transferStatus)
 		{
 			const string id = "812216";
+			const bool TransferNotCompleted = false;
 
 			// ACT
 			this._instance.Attach(this._tapiBridge.Object);
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, false, false, 1, 1, DateTime.Now, DateTime.Now));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, TransferNotCompleted, transferStatus, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT
 			this.VerifyFileNotMarkedAsDownloaded(this._downloadProgressManager, id, 1);

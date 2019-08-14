@@ -20,12 +20,12 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		protected override void VerifyFileMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id, int lineNumber)
 		{
-			downloadProgressManager.Verify(x => x.MarkLongTextAsDownloaded(id, lineNumber), Times.Once);
+			downloadProgressManager.Verify(x => x.MarkLongTextAsCompleted(id, lineNumber), Times.Once);
 		}
 
 		protected override void VerifyFileNotMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id, int lineNumber)
 		{
-			downloadProgressManager.Verify(x => x.MarkLongTextAsDownloaded(id, lineNumber), Times.Never);
+			downloadProgressManager.Verify(x => x.MarkLongTextAsCompleted(id, lineNumber), Times.Never);
 		}
 	}
 }

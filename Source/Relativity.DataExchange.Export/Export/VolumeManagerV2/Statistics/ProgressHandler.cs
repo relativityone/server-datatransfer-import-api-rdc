@@ -31,16 +31,16 @@
 			tapiBridge.TapiProgress -= this.OnFileProgress;
 		}
 
-		protected abstract void MarkAsDownloaded(string id, int lineNumber);
+		protected abstract void MarkAsTransferCompleted(string id, int lineNumber);
 
 		private void OnFileProgress(object sender, TapiProgressEventArgs e)
 		{
             _logger.LogVerbose("Tapi progress event for {FileName} with status {Successful} ({LineNumber}).", e.FileName, e.Successful, e.LineNumber);
-            if (e.Successful)
+            if (e.Completed)
 			{
 				try
 				{
-					MarkAsDownloaded(e.FileName, e.LineNumber);
+					this.MarkAsTransferCompleted(e.FileName, e.LineNumber);
 				}
 				catch (Exception ex)
 				{
