@@ -237,6 +237,23 @@ namespace Relativity.DataExchange.Io
 		string GetTempFileName(string fileNameSuffix);
 
 		/// <summary>
+		/// Gets a uniquely named filename with a user-defined suffix and returns the full path of that file.
+		/// </summary>
+		/// <param name="fileNameSuffix">
+		/// The suffix applied to the unique file name.
+		/// </param>
+		/// <returns>
+		/// The full path of the temporary file.
+		/// </returns>
+		/// <exception cref="T:System.IO.IOException">
+		/// An I/O error occurs, such as no unique temporary file name is available.- or -This method was unable to create a temporary file.
+		/// </exception>
+		/// <remarks>
+		/// REL-135101: avoid failures when Temp is full.
+		/// </remarks>
+		string TemporaryFileNameWithoutCreatingEmptyFile(string fileNameSuffix);
+
+		/// <summary>
 		/// Returns the path of the current user's temporary folder.
 		/// </summary>
 		/// <returns>

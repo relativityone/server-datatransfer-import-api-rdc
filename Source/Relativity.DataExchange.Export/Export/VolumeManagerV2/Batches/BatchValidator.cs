@@ -19,7 +19,7 @@
 			_logger = logger;
 		}
 
-		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
+		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 			_logger.LogVerbose("Verifying batch correctness.");
 			try
@@ -31,7 +31,7 @@
 						return;
 					}
 
-					batchValidator.ValidateExportedBatch(artifacts, predictions, cancellationToken);
+					batchValidator.ValidateExportedBatch(artifacts, cancellationToken);
 				}
 			}
 			catch (Exception ex)

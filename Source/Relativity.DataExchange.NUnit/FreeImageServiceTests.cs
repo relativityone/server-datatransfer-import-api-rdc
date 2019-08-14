@@ -142,7 +142,7 @@ namespace Relativity.DataExchange.NUnit
 
 		[Test]
 		[Category(TestCategories.Framework)]
-		public void ShouldThrowWhenTheImageFileIsZeroBytes()
+		public void ShouldThrowWhenTheImageFileIsEmptyFile()
 		{
 			string file = RandomHelper.NextBinaryFile(0, 0, this.tempDirectory.Directory);
 			ImageFormat format = this.service.Identify(file);

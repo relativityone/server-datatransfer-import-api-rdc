@@ -33,7 +33,7 @@ namespace Relativity.DataExchange.Import.NUnit
 
 		protected Mock<IProcessEventWriter> MockProcessEventWriter { get; set; }
 
-		protected Mock<IProcessErrorWriter> MockProcesErrorWriter { get; set; }
+		protected Mock<IProcessErrorWriter> MockProcessErrorWriter { get; set; }
 
 		protected Mock<IAppSettings> MockAppSettings { get; set; }
 
@@ -73,12 +73,12 @@ namespace Relativity.DataExchange.Import.NUnit
 						It.IsAny<bool>())).Returns(new kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults());
 			this.MockAppSettings = new Mock<IAppSettings>();
 			this.MockAppSettings.SetupGet(x => x.IoErrorWaitTimeInSeconds).Returns(0);
-			this.MockProcesErrorWriter = new Mock<IProcessErrorWriter>();
+			this.MockProcessErrorWriter = new Mock<IProcessErrorWriter>();
 			this.MockProcessEventWriter = new Mock<IProcessEventWriter>();
 			this.MockLogger = new Mock<ILog>();
 			this.Context = new ProcessContext(
 				this.MockProcessEventWriter.Object,
-				this.MockProcesErrorWriter.Object,
+				this.MockProcessErrorWriter.Object,
 				this.MockAppSettings.Object,
 				this.MockLogger.Object);
 			this.TokenSource = new CancellationTokenSource();

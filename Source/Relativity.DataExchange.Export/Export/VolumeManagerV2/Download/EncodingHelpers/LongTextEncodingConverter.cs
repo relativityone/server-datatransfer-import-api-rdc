@@ -93,8 +93,7 @@
 			{
 				_logger.LogVerbose("Preparing to start the long text file queue...");
 				int totalConvertedTextFiles = 0;
-				string longTextFileName;
-				while (_longTextFilesToConvert.TryTake(out longTextFileName, Timeout.Infinite, _cancellationToken))
+				while (_longTextFilesToConvert.TryTake(out string longTextFileName, Timeout.Infinite, _cancellationToken))
 				{
 					_logger.LogVerbose(
 						"Preparing to check whether the '{LongTextFileName}' file requires an encoding conversion...",
