@@ -766,7 +766,7 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The transfer path must define a valid server-side source path and suggests a back-end database issue..
+        ///   Looks up a localized string similar to The transfer path must define a valid server-side source path and suggests a problem with the artifact data..
         /// </summary>
         internal static string TransferPathArgumentDownloadSourcePathExceptionMessage {
             get {
@@ -784,7 +784,7 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The transfer path must define a valid client-side source path and suggests a load file or custom data source issue..
+        ///   Looks up a localized string similar to The transfer path must define a valid client-side source path and suggests a problem with the mapped source path..
         /// </summary>
         internal static string TransferPathArgumentUploadSourcePathExceptionMessage {
             get {

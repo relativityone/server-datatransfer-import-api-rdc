@@ -156,13 +156,7 @@
   <data name="FileValidationEmptyRemoteSourcePath" xml:space="preserve">
     <value>Remote source path is empty and indicates a back-end database issue.</value>
   </data>
-  <data name="FieldFileExportRequestDestinationLocationExceptionMessage" xml:space="preserve">
-    <value>The field file export request cannot be created for artifact {0} because the destination path is null or empty.</value>
-  </data>
-  <data name="NativeExportRequestDestinationLocationExceptionMessage" xml:space="preserve">
-    <value>The native export request cannot be created for artifact {0} because the destination path is null or empty.</value>
-  </data>
-  <data name="LongTextExportRequestDestinationLocationExceptionMessage" xml:space="preserve">
-    <value>The long text export request cannot be created for artifact {0} because the destination path is null or empty.</value>
+  <data name="ExportRequestTargetPathExceptionMessage" xml:space="preserve">
+    <value>The export request cannot be created for artifact {0} because the target path is null or empty.</value>
   </data>
 </root>

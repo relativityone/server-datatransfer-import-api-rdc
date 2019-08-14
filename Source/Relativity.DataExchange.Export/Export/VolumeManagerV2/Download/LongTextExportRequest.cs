@@ -1,16 +1,19 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download
 {
 	using System;
-	using System.Globalization;
 
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.DataExchange.Resources;
 	using Relativity.Transfer;
 	using Relativity.Transfer.Http;
 
 	public class LongTextExportRequest : ExportRequest
 	{
+		private LongTextExportRequest(ObjectExportInfo artifact, string destinationLocation)
+			: base(artifact.ArtifactID, Guid.NewGuid().ToString(), destinationLocation)
+		{
+		}
+
 		/// <summary>
 		///     For Web mode
 		/// </summary>
@@ -20,10 +23,6 @@
 		///     For Web mode
 		/// </summary>
 		public int FieldArtifactId { get; private set; }
-
-		private LongTextExportRequest(ObjectExportInfo artifact, string destinationLocation) : base(artifact.ArtifactID, Guid.NewGuid().ToString(), destinationLocation)
-		{
-		}
 
 		public static LongTextExportRequest CreateRequestForFullText(ObjectExportInfo artifact, int fieldArtifactId, string destinationLocation)
 		{
@@ -47,32 +46,23 @@
 
 		protected override TransferPath CreateTransferPath()
 		{
-			var httpTransferPathData = new HttpTransferPathData
-			{
-				ArtifactId = ArtifactId,
-				ExportType = FullText ? ExportType.FullText : ExportType.LongTextFieldArtifact,
-				LongTextFieldArtifactId = FieldArtifactId
-			};
+			HttpTransferPathData httpTransferPathData = new HttpTransferPathData
+				                                            {
+					                                            ArtifactId = this.ArtifactId,
+					                                            ExportType =
+						                                            this.FullText
+							                                            ? ExportType.FullText
+							                                            : ExportType.LongTextFieldArtifact,
+					                                            LongTextFieldArtifactId = this.FieldArtifactId
+				                                            };
 
-			if (string.IsNullOrWhiteSpace(this.DestinationLocation))
-			{
-				string errorMessage = string.Format(
-					CultureInfo.CurrentCulture,
-					ExportStrings.LongTextExportRequestDestinationLocationExceptionMessage,
-					this.ArtifactId);
-				throw new ArgumentException(errorMessage, nameof(this.DestinationLocation));
-			}
-
-			var fileInfo = new System.IO.FileInfo(DestinationLocation);
-			var transferPath = new TransferPath
-			{
-				Order = Order,
-				SourcePath = Guid.NewGuid().ToString(), //<- required by TAPI validators
-				TargetPath = fileInfo.Directory?.FullName,
-				TargetFileName = fileInfo.Name
-			};
-
-			transferPath.AddData(HttpTransferPathData.HttpTransferPathDataKey, httpTransferPathData);
+			// Note: The Guid is supplied to avoid TAPI/export argument checks.
+			TransferPath transferPath = CreateTransferPath(
+				this.ArtifactId,
+				this.Order,
+				Guid.NewGuid().ToString(),
+				this.DestinationLocation,
+				httpTransferPathData);
 			return transferPath;
 		}
 	}

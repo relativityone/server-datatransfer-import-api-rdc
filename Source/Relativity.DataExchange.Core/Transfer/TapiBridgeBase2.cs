@@ -547,7 +547,7 @@ namespace Relativity.DataExchange.Transfer
 			{
 				// Some jobs may be small and contain invalid data that prevent adding to the job - don't throw unnecessarily.
 				TapiTotals totals;
-				this.LogTransferTotals("Pre", false, keepJobAlive, keepJobAlive ? this.batchTotals : this.jobTotals);
+				this.LogTransferTotals("Pre", false);
 				if (this.TransferJob == null || (this.batchTotals.TotalFileTransferRequests == 0
 				                                 && this.jobTotals.TotalFileTransferRequests == 0))
 				{
@@ -558,7 +558,7 @@ namespace Relativity.DataExchange.Transfer
 					totals = keepJobAlive ? this.WaitForCompletedTransfers() : this.WaitForCompletedTransferJob();
 				}
 
-				this.LogTransferTotals("Post", true, keepJobAlive, totals);
+				this.LogTransferTotals("Post", true);
 				this.PublishStatusMessage(successMessage, TapiConstants.NoLineNumber);
 				return totals;
 			}
@@ -1342,46 +1342,31 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="completed">
 		/// <see langword="true" /> when all transfers should be completed; otherwise, <see langword="false" />.
 		/// </param>
-		/// <param name="batched">
-		/// <see langword="true" /> to log batched totals; otherwise, <see langword="false" />.
-		/// </param>
-		/// <param name="totals">
-		/// The totals to log.
-		/// </param>
-		private void LogTransferTotals(string prefix, bool completed, bool batched, TapiTotals totals)
+		private void LogTransferTotals(string prefix, bool completed)
 		{
 			string formattedPrefix = $"WaitForTransfers-{prefix}: ";
 			StringBuilder sb = new StringBuilder(formattedPrefix);
 			if (!completed)
 			{
-				sb.Append(
-					batched
-						? "Awaiting {TotalFileTransferRequests:n0} batched transfer files using {TransferMode} mode."
-						: "Awaiting {TotalFileTransferRequests:n0} job transfer files using {TransferMode} mode.");
+				sb.Append("Awaiting {TotalFileTransferRequests:n0} transfer files using {TransferMode} mode.");
 				this.TransferLog.LogInformation(
 					sb.ToString(),
-					totals.TotalFileTransferRequests,
+					this.jobTotals.TotalFileTransferRequests,
 					this.ClientDisplayName);
 			}
 			else
 			{
 				sb.Append(
-					batched
-						? "Completed {TotalSuccessfulFileTransfers:n0} of {TotalFileTransferRequests:n0} batched transfer files using {TransferMode} mode."
-						: "Completed {TotalSuccessfulFileTransfers:n0} of {TotalFileTransferRequests:n0} job transfer files using {TransferMode} mode.");
+					"Completed {TotalSuccessfulFileTransfers:n0} of {TotalFileTransferRequests:n0} transfer files using {TransferMode} mode.");
 				this.TransferLog.LogInformation(
 					sb.ToString(),
-					totals.TotalSuccessfulFileTransfers,
-					totals.TotalFileTransferRequests,
+					this.jobTotals.TotalSuccessfulFileTransfers,
+					this.jobTotals.TotalFileTransferRequests,
 					this.ClientDisplayName);
-				if (totals.TotalFileTransferRequests == 0)
+				if (this.jobTotals.TotalFileTransferRequests == 0)
 				{
 					this.TransferLog.LogWarning(
-						batched
-							? formattedPrefix
-							  + "Although the batch completed, the total number of batched file requests is zero and may suggest a logic issue or unexpected result."
-							: formattedPrefix
-							  + "Although the job completed, the total number of job file requests is zero and may suggest a logic issue or unexpected result.");
+						"Although the transfer job completed, the total number of file requests is zero and may suggest a logic issue or unexpected result.");
 				}
 			}
 		}
@@ -1611,7 +1596,6 @@ namespace Relativity.DataExchange.Transfer
 		/// </returns>
 		private TapiTotals WaitForCompletedTransfers()
 		{
-			const bool BatchedTotals = true;
 			this.TransferLog.LogInformation("Preparing to wait for the batched transfers to complete...");
 
 			try
@@ -1671,7 +1655,7 @@ namespace Relativity.DataExchange.Transfer
 				{
 					this.TransferLog.LogWarning(
 						"WaitForCompletedTransfers has exited, not all transfers have completed, and now going to wait for the transfer job to complete.");
-					this.LogTransferTotals("Inactivity", false, BatchedTotals, this.batchTotals);
+					this.LogTransferTotals("Inactivity", false);
 
 					// Do NOT return WaitForCompletedTransferJob because it returns the job totals.
 					this.WaitForCompletedTransferJob();
@@ -1698,7 +1682,6 @@ namespace Relativity.DataExchange.Transfer
 				return this.jobTotals.DeepCopy();
 			}
 
-			const bool BatchedTotals = false;
 			this.TransferLog.LogInformation("Preparing to wait for the transfer job to complete...");
 
 			try
@@ -1731,7 +1714,7 @@ namespace Relativity.DataExchange.Transfer
 							{
 								case TransferStatus.Failed:
 								case TransferStatus.Fatal:
-									this.LogTransferTotals("NotSuccessful", true, BatchedTotals, this.jobTotals);
+									this.LogTransferTotals("NotSuccessful", true);
 									string errorMessage = GetTransferErrorMessage(transferResult);
 									this.PublishStatusMessage(errorMessage, TapiConstants.NoLineNumber);
 

@@ -61,6 +61,15 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The export request cannot be created for artifact {0} because the target path is null or empty..
+        /// </summary>
+        internal static string ExportRequestTargetPathExceptionMessage {
+            get {
+                return ResourceManager.GetString("ExportRequestTargetPathExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The export configuration settings must supply a valid credential..
         /// </summary>
         internal static string ExportSettingsNullCredentialExceptionMessage {
@@ -75,15 +84,6 @@ namespace Relativity.DataExchange.Resources {
         internal static string ExportSettingsNullWorkspaceExceptionMessage {
             get {
                 return ResourceManager.GetString("ExportSettingsNullWorkspaceExceptionMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The field file export request cannot be created for artifact {0} because the destination path is null or empty..
-        /// </summary>
-        internal static string FieldFileExportRequestDestinationLocationExceptionMessage {
-            get {
-                return ResourceManager.GetString("FieldFileExportRequestDestinationLocationExceptionMessage", resourceCulture);
             }
         }
         
@@ -165,24 +165,6 @@ namespace Relativity.DataExchange.Resources {
         internal static string FileValidationZeroByteFile {
             get {
                 return ResourceManager.GetString("FileValidationZeroByteFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The long text export request cannot be created for artifact {0} because the destination path is null or empty..
-        /// </summary>
-        internal static string LongTextExportRequestDestinationLocationExceptionMessage {
-            get {
-                return ResourceManager.GetString("LongTextExportRequestDestinationLocationExceptionMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The native export request cannot be created for artifact {0} because the destination path is null or empty..
-        /// </summary>
-        internal static string NativeExportRequestDestinationLocationExceptionMessage {
-            get {
-                return ResourceManager.GetString("NativeExportRequestDestinationLocationExceptionMessage", resourceCulture);
             }
         }
         

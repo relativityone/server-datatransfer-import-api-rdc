@@ -235,10 +235,6 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 						artifactId);
 				}
 			}
-			catch (OperationCanceledException)
-			{
-				throw;
-			}
 			catch (Exception e)
 			{
 				// Note: this exception is caught to prevent the entire batch or job from aborting due to an invalid artifact.
