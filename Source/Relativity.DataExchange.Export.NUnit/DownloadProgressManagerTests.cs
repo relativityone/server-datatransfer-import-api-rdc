@@ -55,11 +55,11 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._status.Setup(x => x.UpdateDocumentExportedCount(It.IsAny<int>())).Callback((int x) => actualDocumentExportedCount = x);
 
 			// ACT
-			this._instance.MarkFileAsDownloaded(native1.ExportRequest.FileName, native1.ExportRequest.Order);
+			this._instance.MarkFileAsCompleted(native1.ExportRequest.FileName, native1.ExportRequest.Order);
 
 			this._instance.SaveState();
 
-			this._instance.MarkFileAsDownloaded(native2.ExportRequest.FileName, native2.ExportRequest.Order);
+			this._instance.MarkFileAsCompleted(native2.ExportRequest.FileName, native2.ExportRequest.Order);
 
 			this._instance.RestoreLastState();
 
@@ -91,36 +91,36 @@ namespace Relativity.DataExchange.Export.NUnit
 				.Callback((EventType2 eventType, string line, bool isEssential) => actualLine = line);
 
 			// ACT
-			this._instance.MarkFileAsDownloaded(image1_B.ExportRequest.FileName, image1_B.ExportRequest.Order);
+			this._instance.MarkFileAsCompleted(image1_B.ExportRequest.FileName, image1_B.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(0));
 			Assert.That(actualLine, Does.Contain(string.Empty));
 
 			// 1 downloaded (A)
-			this._instance.MarkFileAsDownloaded(nativeWithoutImagesOrText_A.ExportRequest.FileName, nativeWithoutImagesOrText_A.ExportRequest.Order);
+			this._instance.MarkFileAsCompleted(nativeWithoutImagesOrText_A.ExportRequest.FileName, nativeWithoutImagesOrText_A.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
 
-			this._instance.MarkFileAsDownloaded(nativeWithText_C.ExportRequest.FileName, nativeWithText_C.ExportRequest.Order);
+			this._instance.MarkFileAsCompleted(nativeWithText_C.ExportRequest.FileName, nativeWithText_C.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
 
 			// 2 downloaded (A, C)
-			this._instance.MarkLongTextAsDownloaded(text_C.ExportRequest.FileName, text_C.ExportRequest.Order);
+			this._instance.MarkLongTextAsCompleted(text_C.ExportRequest.FileName, text_C.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
 
-			this._instance.MarkFileAsDownloaded(nativeWithTwoImages_B.ExportRequest.FileName, nativeWithTwoImages_B.ExportRequest.Order);
+			this._instance.MarkFileAsCompleted(nativeWithTwoImages_B.ExportRequest.FileName, nativeWithTwoImages_B.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
 
 			// 3 downloaded (A, C, B)
-			this._instance.MarkFileAsDownloaded(image2_B.ExportRequest.FileName, image2_B.ExportRequest.Order);
+			this._instance.MarkFileAsCompleted(image2_B.ExportRequest.FileName, image2_B.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
 
-			this._instance.MarkLongTextAsDownloaded(text_D.ExportRequest.FileName, text_D.ExportRequest.Order);
+			this._instance.MarkLongTextAsCompleted(text_D.ExportRequest.FileName, text_D.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
 
-			this._instance.MarkFileAsDownloaded(image_D.ExportRequest.FileName, image_D.ExportRequest.Order);
+			this._instance.MarkFileAsCompleted(image_D.ExportRequest.FileName, image_D.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
 
 			// 4 download (A, C, B, D)
-			this._instance.MarkFileAsDownloaded(nativeWithImageAndText_D.ExportRequest.FileName, nativeWithImageAndText_D.ExportRequest.Order);
+			this._instance.MarkFileAsCompleted(nativeWithImageAndText_D.ExportRequest.FileName, nativeWithImageAndText_D.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
 
 			// None downloaded - just an error.

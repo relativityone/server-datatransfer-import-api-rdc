@@ -57,7 +57,7 @@
 		{
 			lock (_syncLock)
 			{
-				return _images.Where(x => !x.HasBeenDownloaded).Select(x => x.ExportRequest);
+				return _images.Where(x => !x.TransferCompleted).Select(x => x.ExportRequest);
 			}
 		}
 

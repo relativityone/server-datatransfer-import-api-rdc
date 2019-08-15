@@ -1,6 +1,7 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Statistics
 {
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Linq;
 
 	using kCura.WinEDDS;
@@ -15,7 +16,7 @@
 	{
 		private int _savedDocumentsDownloadedCount;
 
-		private readonly ThreadSafeAddOnlyHashSet<int> _artifactsProcessed;
+		private readonly HashSet<int> _artifactsCompleted;
 
 		private readonly NativeRepository _nativeRepository;
 		private readonly ImageRepository _imageRepository;
@@ -24,6 +25,8 @@
 
 		private readonly IStatus _status;
 		private readonly ILog _logger;
+
+		private readonly object _syncObject = new object();
 
 		public DownloadProgressManager(
 			NativeRepository nativeRepository,
@@ -39,63 +42,101 @@
 			_fileWrapper = fileWrapper;
 			_status = status;
 			_logger = logger;
-			_artifactsProcessed = new ThreadSafeAddOnlyHashSet<int>();
+
+			_artifactsCompleted = new HashSet<int>();
 		}
 
 		public void MarkArtifactAsError(int artifactId, string message)
 		{
-			if (!_artifactsProcessed.Contains(artifactId))
+			if (!_artifactsCompleted.Contains(artifactId))
 			{
 				_logger.LogVerbose(
 					"Marking artifact {ArtifactId} as error. Message: {ErrorMessage}",
 					artifactId,
 					message);
-				_artifactsProcessed.Add(artifactId);
+				_artifactsCompleted.Add(artifactId);
 			}
 
 			this.PublishProcessedCount();
 		}
 
-		public void MarkFileAsDownloaded(string fileName, int lineNumber)
+		public void MarkFileAsCompleted(string fileName, int lineNumber)
 		{
-			_logger.LogVerbose("Marking {fileName} file as downloaded.", fileName);
+			_logger.LogVerbose("Marking {fileName} file as completed.", fileName);
 			Native native = _nativeRepository.GetByLineNumber(lineNumber);
 			if (native != null)
 			{
-				MarkNativeAsDownloaded(lineNumber, native);
+				this.MarkNativeAsCompleted(lineNumber, native);
 			}
 			else
 			{
-				MarkImageAsDownloaded(fileName, lineNumber);
+				this.MarkImageAsCompleted(fileName, lineNumber);
 			}
 		}
 
-		private void MarkNativeAsDownloaded(int lineNumber, Native native)
+		public void MarkLongTextAsCompleted(string fileName, int lineNumber)
 		{
-			if (native.HasBeenDownloaded)
+			_logger.LogVerbose("Marking {fileName} long text as completed.", fileName);
+			LongText longText = _longTextRepository.GetByLineNumber(lineNumber);
+			if (longText != null)
 			{
-				NativeAlreadyDownloaded(native);
+				longText.HasBeenDownloaded = true;
+				this.UpdateCompletedCountAndNotify(longText.ArtifactId, lineNumber);
 			}
 			else
 			{
-				native.HasBeenDownloaded = true;
-				UpdateDownloadedCountAndNotify(native.Artifact.ArtifactID, lineNumber);
+				_logger.LogWarning("Long text for {fileName} not found.", fileName);
 			}
 		}
 
-		private void MarkImageAsDownloaded(string fileName, int lineNumber)
+		public void UpdateCompletedCount()
+		{
+			_logger.LogVerbose("Finalizing processed document count after batch has been completed.");
+			foreach (Native native in _nativeRepository.GetNatives())
+			{
+				this.UpdateCompletedCount(native.Artifact.ArtifactID);
+			}
+		}
+
+		public void SaveState()
+		{
+			lock (_syncObject)
+			{
+				_savedDocumentsDownloadedCount = _artifactsCompleted.Count;
+			}
+		}
+
+		public void RestoreLastState()
+		{
+			_status.UpdateDocumentExportedCount(_savedDocumentsDownloadedCount);
+		}
+
+		private void MarkNativeAsCompleted(int lineNumber, Native native)
+		{
+			if (native.TransferCompleted)
+			{
+				this.NativeAlreadyProcessed(native);
+			}
+			else
+			{
+				native.TransferCompleted = true;
+				this.UpdateCompletedCountAndNotify(native.Artifact.ArtifactID, lineNumber);
+			}
+		}
+
+		private void MarkImageAsCompleted(string fileName, int lineNumber)
 		{
 			Image image = _imageRepository.GetByLineNumber(lineNumber);
 			if (image != null)
 			{
-				if (image.HasBeenDownloaded)
+				if (image.TransferCompleted)
 				{
-					ImageAlreadyDownloaded(image);
+					this.ImageAlreadyProcessed(image);
 				}
 				else
 				{
-					image.HasBeenDownloaded = true;
-					UpdateDownloadedCountAndNotify(image.Artifact.ArtifactID, lineNumber);
+					image.TransferCompleted = true;
+					this.UpdateCompletedCountAndNotify(image.Artifact.ArtifactID, lineNumber);
 				}
 			}
 			else
@@ -107,7 +148,7 @@
 		/// <summary>
 		///     TODO remove it after REL-206933 is fixed
 		/// </summary>
-		private void NativeAlreadyDownloaded(Native native)
+		private void NativeAlreadyProcessed(Native native)
 		{
 			if (native.ExportRequest == null)
 			{
@@ -118,14 +159,14 @@
 				.Where(x => x.ExportRequest != null)
 				.Where(x => x.ExportRequest.SourceLocation == native.ExportRequest.SourceLocation)
 				.Where(x => x.ExportRequest.Order != native.ExportRequest.Order)
-				.Where(x => !x.HasBeenDownloaded).ToList();
+				.Where(x => !x.TransferCompleted).ToList();
 
 			foreach (Native duplicatedNative in duplicatedNatives)
 			{
 				if (_fileWrapper.Exists(duplicatedNative.ExportRequest.DestinationLocation))
 				{
-					duplicatedNative.HasBeenDownloaded = true;
-					UpdateDownloadedCountAndNotify(duplicatedNative.Artifact.ArtifactID, duplicatedNative.ExportRequest.Order);
+					duplicatedNative.TransferCompleted = true;
+					this.UpdateCompletedCountAndNotify(duplicatedNative.Artifact.ArtifactID, duplicatedNative.ExportRequest.Order);
 				}
 			}
 		}
@@ -133,7 +174,7 @@
 		/// <summary>
 		///     TODO remove it after REL-206933 is fixed
 		/// </summary>
-		private void ImageAlreadyDownloaded(Image image)
+		private void ImageAlreadyProcessed(Image image)
 		{
 			if (image.ExportRequest == null)
 			{
@@ -144,42 +185,27 @@
 				.Where(x => x.ExportRequest != null)
 				.Where(x => x.ExportRequest.SourceLocation == image.ExportRequest.SourceLocation)
 				.Where(x => x.ExportRequest.Order != image.ExportRequest.Order)
-				.Where(x => !x.HasBeenDownloaded).ToList();
+				.Where(x => !x.TransferCompleted).ToList();
 
 			foreach (Image duplicatedImage in duplicatedImages)
 			{
 				if (_fileWrapper.Exists(duplicatedImage.ExportRequest.DestinationLocation))
 				{
-					duplicatedImage.HasBeenDownloaded = true;
-					UpdateDownloadedCountAndNotify(duplicatedImage.Artifact.ArtifactID, duplicatedImage.ExportRequest.Order);
+					duplicatedImage.TransferCompleted = true;
+					this.UpdateCompletedCountAndNotify(duplicatedImage.Artifact.ArtifactID, duplicatedImage.ExportRequest.Order);
 				}
 			}
 		}
 
-		public void MarkLongTextAsDownloaded(string fileName, int lineNumber)
+		private void UpdateCompletedCountAndNotify(int artifactId, int lineNumber)
 		{
-			_logger.LogVerbose("Marking {fileName} long text as downloaded.", fileName);
-			LongText longText = _longTextRepository.GetByLineNumber(lineNumber);
-			if (longText != null)
-			{
-				longText.HasBeenDownloaded = true;
-				UpdateDownloadedCountAndNotify(longText.ArtifactId, lineNumber);
-			}
-			else
-			{
-				_logger.LogWarning("Long text for {fileName} not found.", fileName);
-			}
-		}
-
-		private void UpdateDownloadedCountAndNotify(int artifactId, int lineNumber)
-		{
-			_logger.LogVerbose("Updating downloaded document count after artifact {artifactId} has been downloaded.",
+			_logger.LogVerbose("Updating completed document count after artifact {artifactId} transfer has been completed.",
 				artifactId);
-			bool documentCountUpdated = UpdateDownloadedCount(artifactId);
+			bool documentCountUpdated = this.UpdateCompletedCount(artifactId);
 			Native native = _nativeRepository.GetNative(artifactId);
 			if (documentCountUpdated && native != null)
 			{
-				_logger.LogVerbose("Document {identifierValue} downloaded.", native.Artifact.IdentifierValue);
+				_logger.LogVerbose("Document {identifierValue} transfer completed.", native.Artifact.IdentifierValue);
 				string suffixMessage = string.Empty;
 				if (lineNumber > 0)
 				{
@@ -187,23 +213,15 @@
 				}
 
 				_status.WriteStatusLine(EventType2.Progress,
-					$"Document {native.Artifact.IdentifierValue} downloaded{suffixMessage}.", false);
+					$"Document {native.Artifact.IdentifierValue} transfer completed {suffixMessage}.", false);
 			}
 		}
 
-		public void UpdateDownloadedCount()
-		{
-			_logger.LogVerbose("Finalizing downloaded document count after batch has been downloaded.");
-			foreach (Native native in _nativeRepository.GetNatives())
-			{
-				UpdateDownloadedCount(native.Artifact.ArtifactID);
-			}
-		}
-
-		private bool UpdateDownloadedCount(int artifactId)
+		private bool UpdateCompletedCount(int artifactId)
 		{
 			//race condition may occur here, but after batch is downloaded we're refreshing 
 			//the whole list, so final number of documents will be valid
+
 			Native native = _nativeRepository.GetNative(artifactId);
 			if (native == null)
 			{
@@ -211,18 +229,13 @@
 			}
 
 			int nativeArtifactId = native.Artifact.ArtifactID;
-			if (!native.HasBeenDownloaded)
+
+			if (!native.TransferCompleted)
 			{
 				return false;
 			}
-
-			if (_artifactsProcessed.Contains(nativeArtifactId))
-			{
-				return false;
-			}
-
 			IList<Image> images = _imageRepository.GetArtifactImages(nativeArtifactId);
-			if (images.Any(x => !x.HasBeenDownloaded))
+			if (images.Any(x => !x.TransferCompleted))
 			{
 				return false;
 			}
@@ -233,24 +246,21 @@
 				return false;
 			}
 
-			_artifactsProcessed.Add(nativeArtifactId);
-			this.PublishProcessedCount();
-			return true;
-		}
-
-		public void SaveState()
-		{
-			_savedDocumentsDownloadedCount = _artifactsProcessed.Count;
-		}
-
-		public void RestoreLastState()
-		{
-			_status.UpdateDocumentExportedCount(_savedDocumentsDownloadedCount);
+			lock (_syncObject)
+			{
+				if (!_artifactsCompleted.Contains(nativeArtifactId))
+				{
+					_artifactsCompleted.Add(nativeArtifactId);
+					this.PublishProcessedCount();
+					return true;
+				}
+				return false;
+			}
 		}
 
 		private void PublishProcessedCount()
 		{
-			_status.UpdateDocumentExportedCount(_artifactsProcessed.Count);
+			_status.UpdateDocumentExportedCount(_artifactsCompleted.Count);
 		}
 	}
 }

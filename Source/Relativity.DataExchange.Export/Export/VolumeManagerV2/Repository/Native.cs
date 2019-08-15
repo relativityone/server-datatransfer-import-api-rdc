@@ -10,7 +10,7 @@
 
 		public ExportRequest ExportRequest { get; set; }
 
-		public bool HasBeenDownloaded { get; set; }
+		public bool TransferCompleted { get; set; }
 
 		public Native(ObjectExportInfo artifact)
 		{

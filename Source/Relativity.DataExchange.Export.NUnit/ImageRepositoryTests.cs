@@ -127,7 +127,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			var image1 = new Image(artifact1)
 			{
-				HasBeenDownloaded = false,
+				TransferCompleted = false,
 				ExportRequest = new PhysicalFileExportRequest(artifact1, "a.txt")
 				{
 					FileName = "filename_1",
@@ -143,7 +143,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			var image2 = new Image(artifact2)
 			{
-				HasBeenDownloaded = true,
+				TransferCompleted = true,
 			};
 
 			var artifact3 = new ImageExportInfo
@@ -153,7 +153,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			var image3 = new Image(artifact3)
 			{
-				HasBeenDownloaded = false,
+				TransferCompleted = false,
 				ExportRequest = new PhysicalFileExportRequest(artifact3, "a.txt")
 				{
 					FileName = "filename_3",
