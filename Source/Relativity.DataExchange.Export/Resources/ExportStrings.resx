@@ -148,15 +148,15 @@
     <value>Failed to release all transfer pool resources.</value>
   </data>
   <data name="FileValidationZeroByteFile" xml:space="preserve">
-    <value>Zero byte file.</value>
+    <value>The export artifact {0} file contains zero bytes.</value>
   </data>
   <data name="FileValidationFileMissing" xml:space="preserve">
-    <value>File missing.</value>
+    <value>The export artifact {0} file is missing.</value>
   </data>
   <data name="FileValidationEmptyRemoteSourcePath" xml:space="preserve">
-    <value>Remote source path is empty and indicates a back-end database issue.</value>
+    <value>The export artifact {0} defines an invalid server-side source path and indicates a problem with the artifact data.</value>
   </data>
   <data name="ExportRequestTargetPathExceptionMessage" xml:space="preserve">
-    <value>The export request cannot be created for artifact {0} because the target path is null or empty.</value>
+    <value>The export request cannot be created for artifact {0} because the target path is null or all whitespace.</value>
   </data>
 </root>

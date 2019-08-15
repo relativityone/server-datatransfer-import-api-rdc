@@ -61,7 +61,7 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The export request cannot be created for artifact {0} because the target path is null or empty..
+        ///   Looks up a localized string similar to The export request cannot be created for artifact {0} because the target path is null or all whitespace..
         /// </summary>
         internal static string ExportRequestTargetPathExceptionMessage {
             get {
@@ -142,7 +142,7 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remote source path is empty and indicates a back-end database issue..
+        ///   Looks up a localized string similar to The export artifact {0} defines an invalid server-side source path and indicates a problem with the artifact data..
         /// </summary>
         internal static string FileValidationEmptyRemoteSourcePath {
             get {
@@ -151,7 +151,7 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File missing..
+        ///   Looks up a localized string similar to The export artifact {0} file is missing..
         /// </summary>
         internal static string FileValidationFileMissing {
             get {
@@ -160,7 +160,7 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Zero byte file..
+        ///   Looks up a localized string similar to The export artifact {0} file contains zero bytes..
         /// </summary>
         internal static string FileValidationZeroByteFile {
             get {

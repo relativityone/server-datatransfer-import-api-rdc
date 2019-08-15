@@ -1,6 +1,7 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Batches
 {
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.Linq;
 	using System.Threading;
 
@@ -71,10 +72,16 @@
 			bool fileExists = _fileWrapper.Exists(image.TempLocation);
 			if (!fileExists || _fileWrapper.GetFileSize(image.TempLocation) == 0)
 			{
-				string errorMessage = fileExists ? ExportStrings.FileValidationZeroByteFile : ExportStrings.FileValidationFileMissing;
+				string errorMessage = string.Format(
+					CultureInfo.CurrentCulture,
+					fileExists ? ExportStrings.FileValidationZeroByteFile : ExportStrings.FileValidationFileMissing,
+					artifact.ArtifactID);
 				if (string.IsNullOrWhiteSpace(artifact.NativeSourceLocation))
 				{
-					errorMessage = ExportStrings.FileValidationEmptyRemoteSourcePath;
+					errorMessage = string.Format(
+						CultureInfo.CurrentCulture,
+						ExportStrings.FileValidationEmptyRemoteSourcePath,
+						artifact.ArtifactID);
 					_logger.LogError(
 						"Image file {File} remote source path is empty for image artifact {ArtifactId} and suggests a back-end database issue.",
 						artifact.NativeTempLocation,
@@ -82,8 +89,10 @@
 				}
 				else
 				{
-					_logger.LogError(
-						"Image file {File} missing or empty for image {BatesNumber} in artifact {ArtifactId}.",
+					this._logger.LogError(
+						fileExists
+							? "Image file {File} contains zero bytes for for image {BatesNumber} in {ArtifactId}."
+							: "Image file {File} is missing for for image {BatesNumber} in {ArtifactId}.",
 						image.TempLocation,
 						image.BatesNumber,
 						artifact.ArtifactID);
