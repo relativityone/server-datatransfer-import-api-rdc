@@ -16,6 +16,9 @@ Namespace kCura.WinEDDS.Monitoring
 		End Sub
 
         Private Function FormatApplicationName(applicationName As String) As String
+            If applicationName Is Nothing Then
+                Return String.Empty
+            End If
             Return applicationName.Replace(" ", "")
         End Function
 

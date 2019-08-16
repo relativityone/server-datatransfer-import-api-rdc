@@ -44,7 +44,7 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		public void ShouldGetAndSetApplicationName()
 		{
-			Assert.That(this.message.ApplicationName, Is.EqualTo(AppSettings.Instance.ApplicationName));
+			Assert.That(this.message.ApplicationName, Is.Null);
 			var expectedValue = RandomHelper.NextString(10, 20);
 			this.message.ApplicationName = expectedValue;
 			Assert.That(this.message.ApplicationName, Is.EqualTo(expectedValue));

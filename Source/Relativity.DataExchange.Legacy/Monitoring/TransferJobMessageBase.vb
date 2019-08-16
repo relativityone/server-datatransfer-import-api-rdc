@@ -14,7 +14,6 @@ Namespace kCura.WinEDDS.Monitoring
 
 		Public Sub New()
 			CustomData = New Dictionary(Of String, Object)
-		    ApplicationName = AppSettings.Instance.ApplicationName
 		End Sub
 
 		Public Property JobType As String
