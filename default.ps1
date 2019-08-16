@@ -198,14 +198,16 @@ task BuildInstallPackages -Description "Builds all install packages" {
     }
 }
 
-task BuildPackages -Depends BuildSdkPackages,BuildRdcPackage -Description "Builds all NuGet packages" {
+task BuildPackages -Depends BuildRdcPackage,BuildSdkPackages -Description "Builds all NuGet packages" {
 }
 
 task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
     Initialize-Folder $LogsDir -Safe
     Initialize-Folder $PackagesArtifactsDir -Safe
-    
-    $majorMinorPatchVersion = & $GitVersionExe /output json /showvariable MajorMinorPatch
+    $majorMinorPatchVersion = exec {
+        & $GitVersionExe /output json /showvariable MajorMinorPatch
+    } -errorMessage "There was an error retrieving MajorMinorPatch using GitVersion."
+
     $packageVersion =  Format-NuGetPackageVersion -MajorMinorPatchVersion $majorMinorPatchVersion
     Write-Host "Package version: $packageVersion"
     Write-Host "Working directory: $PSScriptRoot"
@@ -222,7 +224,7 @@ task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
         Write-Host "Creating package for template '$packageTemplateFile' and outputting to '$PackagesArtifactsDir'."
         exec {
              & $PaketExe pack --template `"$packageTemplateFile`" --version $packageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" 
-        } -errorMessage "There was an error creating the SDK package."
+        } -errorMessage "There was an error creating the SDK NUGet package."
     }
 }
 
@@ -239,29 +241,45 @@ task BuildRdcPackage -Description "Builds the RDC NuGet package" {
     $packageFile = Join-Path $PaketDir "paket.template.relativity.desktop.client"
     exec {
         & $PaketExe pack --template `"$packageFile`" --version $packageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" 
-    } -errorMessage "There was an error creating the RDC package."
+    } -errorMessage "There was an error creating the RDC NuGet package."
 }
 
 task BuildVersion -Description "Retrieves the build version from GitVersion" {
     Assert ($BuildUrl -ne $null -and $BuildUrl -ne "") "BuildUrl must be provided"
     Write-Output "Importing GitVersion properties.."
 
-    $buildVersionMajor = & $GitVersionExe /output json /showvariable Major
-    $buildVersionMinor = & $GitVersionExe /output json /showvariable Minor
-    $buildVersionPatch = & $GitVersionExe /output json /showvariable Patch
-    $buildVersionCommitNumber = & $GitVersionExe /output json /showvariable CommitsSinceVersionSource
+    $buildVersionMajor = exec {
+        & $GitVersionExe /output json /showvariable Major
+    } -errorMessage "There was an error retrieving the major version using GitVersion."
 
+    $buildVersionMinor = exec {
+        & $GitVersionExe /output json /showvariable Minor
+    } -errorMessage "There was an error retrieving the minor version using GitVersion."
+
+    $buildVersionPatch = exec {
+        & $GitVersionExe /output json /showvariable Patch
+    } -errorMessage "There was an error retrieving the patch version using GitVersion."
+
+    $buildVersionCommitNumber = exec {
+        & $GitVersionExe /output json /showvariable CommitsSinceVersionSource
+    } -errorMessage "There was an error retrieving the number of commits using GitVersion."
+                        
     Write-Output "Build Url: $BuildUrl"
     Write-Output "Version major: $buildVersionMajor"
     Write-Output "Version minor: $buildVersionMinor"
     Write-Output "Version patch: $buildVersionPatch"
     Write-Output "Version commits number: $buildVersionCommitNumber"
 
-    $version = "$buildVersionMajor.$buildVersionMinor.$buildVersionPatch.$buildVersionCommitNumber"
-    $global:BuildVersion = $version
+    $maxVersionLength = 50
+    $localBuildVersion = "$buildVersionMajor.$buildVersionMinor.$buildVersionPatch.$buildVersionCommitNumber"
+    if ($localBuildVersion.Length -gt $maxVersionLength) {
+        Throw "The version length exceeds the maximum of $maxVersionLength characters and suggests a serious GIT or GitVersion issue."
+    }
+
+    $global:BuildVersion = $localBuildVersion
 
     # So Jenkins can get the version number
-    Write-Output "buildVersion=$version"
+    Write-Output "buildVersion=$localBuildVersion"
 }
 
 task Clean -Description "Clean solution" {
@@ -362,11 +380,20 @@ task IntegrationTestResults -Description "Retrieve the integration test results 
 }
 
 task PackageVersion -Description "Retrieves the package version from GitVersion" {
-    $version = & $GitVersionExe /output json /showvariable NuGetVersion
-    $global:PackageVersion = $version
+
+    $localPackageVersion = exec { 
+        & $GitVersionExe /output json /showvariable NuGetVersion
+    } -errorMessage "There was an error retrieving the Nuget package version from GitVersion."
+
+    $maxVersionLength = 255
+    if ($localPackageVersion.Length -gt $maxVersionLength) {
+        Throw "The version length exceeds the maximum of $maxVersionLength characters and suggests a serious GIT or GitVersion issue."
+    }
+
+    $global:PackageVersion = $localPackageVersion
 
     # So Jenkins can get the package version number
-    Write-Output "packageVersion=$version"
+    Write-Output "packageVersion=$localPackageVersion"
 }
 
 task PublishBuildArtifacts -Description "Publish build artifacts" {
@@ -544,24 +571,33 @@ Function Format-NuGetPackageVersion {
         Throw "The NuGet package version cannot be formatted because the Major.Minor.Patch value is null or empty."
     }
     
-    $currentBranchName = & $GitVersionExe /output json /showvariable BranchName
+    $currentBranchName = exec {
+        & $GitVersionExe /output json /showvariable BranchName
+    } -errorMessage "There was an error retrieving the branch name using GitVersion."
+
     if (!$currentBranchName -or $currentBranchName.Length -eq 0) {
         Throw "The NuGet package version cannot be formatted because the branch name is null or empty."
     }
 
-    $preReleaseLabel = & $GitVersionExe /output json /showvariable PreReleaseLabel
-    $commitsSinceVersionSourcePadded = & $GitVersionExe /output json /showvariable CommitsSinceVersionSourcePadded
-    $formattedVersion = ""
+    $preReleaseLabel = exec {
+        & $GitVersionExe /output json /showvariable PreReleaseLabel
+    } -errorMessage "There was an error retrieving the pre-release label."
+
+    $commitsSinceVersionSourcePadded = exec {
+        & $GitVersionExe /output json /showvariable CommitsSinceVersionSourcePadded
+    } -errorMessage "There was an error retrieving the number of commits."    
 
     # All validation exception messages go here.
-    $preReleaseLabelExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the pre-release label is null or empty."
+    $preReleaseLabelExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the pre-release label is null or empty. If this branch was just tagged, ensure that at least 1 commit has been made since creating the tag."
     $commitsSinceVersionSourcePaddedExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the total number of commits since the last tag is null or empty."
     $buildNumberExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the build number is null or empty."
-        
+    
+    $formattedVersion = ""
     if ($currentBranchName -eq "master") {
         $formattedVersion = $MajorMinorPatchVersion
     }
-    elseif ($currentBranchName -eq "develop") {
+    elseif ($currentBranchName -eq "develop" -or $currentBranchName -like "relativity-*") {
+        # Develop or release branches should rely on pre-release labels
         if (!$preReleaseLabel -or $preReleaseLabel.Length -eq 0) {
             Throw $preReleaseLabelExceptionMessage
         }
