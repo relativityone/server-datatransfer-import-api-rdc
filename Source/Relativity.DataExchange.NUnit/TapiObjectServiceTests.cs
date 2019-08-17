@@ -37,6 +37,7 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		[TestCase(false)]
 		[TestCase(true)]
+		[Repeat(3)]
 		[Category(TestCategories.TransferApi)]
 		public void ShouldBuildTheFileTransferModeDocText(bool includeBulk)
 		{
@@ -45,18 +46,39 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		[TestCase(TransferClientConstants.AsperaClientId, true)]
-		[TestCase(TransferClientConstants.FileShareClientId, true)]
-		[TestCase(TransferClientConstants.HttpClientId, true)]
-		[TestCase("00000000-0000-0000-0000-000000000000", false)]
-		[TestCase("E153A87D-0C4F-4561-B43A-8576F97C2A01", false)]
+		[TestCase(null, null, "Native: Disabled, Metadata: Disabled")]
+		[TestCase(null, TapiClient.Web, "Native: Disabled, Metadata: Web")]
+		[TestCase(TapiClient.None, TapiClient.None, "Native: Pending, Metadata: Pending")]
+		[TestCase(TapiClient.Aspera, TapiClient.Aspera, "Native: Aspera, Metadata: Aspera")]
+		[TestCase(TapiClient.Aspera | TapiClient.None, TapiClient.Web | TapiClient.None, "Native: Aspera, Metadata: Web")]
+		[TestCase(TapiClient.Aspera | TapiClient.Web, TapiClient.Aspera | TapiClient.Web, "Native: Aspera/Web, Metadata: Aspera/Web")]
+		[TestCase(TapiClient.Direct | TapiClient.Aspera, TapiClient.Aspera | TapiClient.Direct, "Native: Direct/Aspera, Metadata: Direct/Aspera")]
+		[TestCase(TapiClient.Web | TapiClient.Aspera, TapiClient.Aspera, "Native: Aspera/Web, Metadata: Aspera")]
+		[TestCase(TapiClient.Web | TapiClient.Aspera | TapiClient.Direct, TapiClient.Web, "Native: Direct/Aspera/Web, Metadata: Web")]
+		[TestCase(TapiClient.Web | TapiClient.Aspera | TapiClient.Direct, TapiClient.Web | TapiClient.Direct, "Native: Direct/Aspera/Web, Metadata: Direct/Web")]
+		[TestCase(TapiClient.Web | TapiClient.Aspera | TapiClient.Direct, TapiClient.Web | TapiClient.Aspera | TapiClient.Direct, "Native: Direct/Aspera/Web, Metadata: Direct/Aspera/Web")]
+		[Repeat(3)]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldGetTheClientDisplayName(string clientId, bool expected)
+		public void ShouldBuildTheFileTransferModeStatusBarText(TapiClient? native, TapiClient? metadata, string expected)
 		{
-			if (expected)
+			string text = this.service.BuildFileTransferModeStatusBarText(native, metadata);
+			Assert.That(text, Is.EqualTo(expected));
+		}
+
+		[Test]
+		[TestCase(TransferClientConstants.AsperaClientId, "Aspera")]
+		[TestCase(TransferClientConstants.FileShareClientId, "Direct")]
+		[TestCase(TransferClientConstants.HttpClientId, "Web")]
+		[TestCase("00000000-0000-0000-0000-000000000000", null)]
+		[TestCase("E153A87D-0C4F-4561-B43A-8576F97C2A01", null)]
+		[Repeat(3)]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldGetTheClientDisplayName(string clientId, string expected)
+		{
+			if (!string.IsNullOrEmpty(expected))
 			{
 				string name = this.service.GetClientDisplayName(new Guid(clientId));
-				Assert.That(name, Is.Not.Null.Or.Empty);
+				Assert.That(name, Is.EqualTo(expected));
 			}
 			else
 			{
@@ -69,6 +91,7 @@ namespace Relativity.DataExchange.NUnit
 		[TestCase(TransferClientConstants.FileShareClientId, TapiClient.Direct)]
 		[TestCase(TransferClientConstants.HttpClientId, TapiClient.Web)]
 		[TestCase("00000000-0000-0000-0000-000000000000", TapiClient.None)]
+		[Repeat(3)]
 		[Category(TestCategories.TransferApi)]
 		public void ShouldGetTheTapiClient(string clientId, TapiClient expected)
 		{
@@ -77,21 +100,27 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		[TestCase(TapiClient.Aspera)]
-		[TestCase(TapiClient.Direct)]
-		[TestCase(TapiClient.Web)]
-		[TestCase(TapiClient.None)]
+		[TestCase(TapiClient.Aspera, true, false, false)]
+		[TestCase(TapiClient.Direct, false, true, false)]
+		[TestCase(TapiClient.Web, false, false, true)]
+		[TestCase(TapiClient.None, false, false, false)]
+		[Repeat(3)]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldSetTheTapiClient(TapiClient client)
+		public void ShouldSetTheTapiClient(
+			TapiClient client,
+			bool expectedForceAsperaClient,
+			bool expectedForceFileShareClient,
+			bool expectedForceHttpClient)
 		{
 			TapiBridgeParameters2 parameters = new TapiBridgeParameters2();
 			this.service.SetTapiClient(parameters, client);
-			Assert.That(parameters.ForceAsperaClient, Is.EqualTo(client == TapiClient.Aspera));
-			Assert.That(parameters.ForceFileShareClient, Is.EqualTo(client == TapiClient.Direct));
-			Assert.That(parameters.ForceHttpClient, Is.EqualTo(client == TapiClient.Web));
+			Assert.That(parameters.ForceAsperaClient, Is.EqualTo(expectedForceAsperaClient));
+			Assert.That(parameters.ForceFileShareClient, Is.EqualTo(expectedForceFileShareClient));
+			Assert.That(parameters.ForceHttpClient, Is.EqualTo(expectedForceHttpClient));
 		}
 
 		[Test]
+		[Repeat(3)]
 		[Category(TestCategories.TransferApi)]
 		public void ShouldApplyTheUnmappedFileRepositoryParameters()
 		{

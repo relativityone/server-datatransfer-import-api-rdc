@@ -78,6 +78,20 @@ namespace Relativity.DataExchange.Transfer
 			return sb.ToString();
 		}
 
+		/// <inheritdoc />
+		public virtual string BuildFileTransferModeStatusBarText(TapiClient? native, TapiClient? metadata)
+		{
+			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			sb.AppendFormat(
+				Strings.FileTransferModeTextNative,
+				native != null ? this.GetFileTransferModeText(native.Value) : Strings.FileTransferModeDisabled);
+			sb.Append(", ");
+			sb.AppendFormat(
+				Strings.FileTransferModeTextMetadata,
+				metadata != null ? this.GetFileTransferModeText(metadata.Value) : Strings.FileTransferModeDisabled);
+			return sb.ToString();
+		}
+
 		/// <summary>
 		/// Creates a Relativity connection information object.
 		/// </summary>
@@ -337,6 +351,69 @@ namespace Relativity.DataExchange.Transfer
 
 				return sb.ToString();
 			}
+		}
+
+		/// <summary>
+		/// Gets the client identifier for the specified transfer client.
+		/// </summary>
+		/// <param name="client">
+		/// The client.
+		/// </param>
+		/// <returns>
+		/// The unique identifier.
+		/// </returns>
+		private static Guid GetClientId(TapiClient client)
+		{
+			switch (client)
+			{
+				case TapiClient.Aspera:
+					return new Guid(Relativity.Transfer.TransferClientConstants.AsperaClientId);
+
+				case TapiClient.Direct:
+					return new Guid(Relativity.Transfer.TransferClientConstants.FileShareClientId);
+
+				case TapiClient.Web:
+					return new Guid(Relativity.Transfer.TransferClientConstants.HttpClientId);
+
+				default:
+					return Guid.Empty;
+			}
+		}
+
+		/// <summary>
+		/// Gets the file transfer mode text for the specified client.
+		/// </summary>
+		/// <param name="client">
+		/// The client enumeration value.
+		/// </param>
+		/// <returns>
+		/// The text.
+		/// </returns>
+		private string GetFileTransferModeText(TapiClient client)
+		{
+			StringBuilder sb = new StringBuilder();
+			foreach (TapiClient flaggedClient in Enum.GetValues(typeof(TapiClient)).Cast<TapiClient>()
+				.Except(new[] { TapiClient.None }).OrderBy(x => (int)x))
+			{
+				if (!client.HasFlag(flaggedClient))
+				{
+					continue;
+				}
+
+				if (sb.Length > 0)
+				{
+					sb.Append("/");
+				}
+
+				sb.Append(this.GetClientDisplayName(GetClientId(flaggedClient)));
+			}
+
+			if (sb.Length == 0)
+			{
+				sb.Append(Strings.FileTransferModePending);
+			}
+
+			return sb.ToString();
 		}
 
 		/// <summary>

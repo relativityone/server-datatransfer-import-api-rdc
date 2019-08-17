@@ -46,7 +46,7 @@ Namespace kCura.WinEDDS
 		Private _waitAndRetryPolicy As IWaitAndRetryPolicy
 #End Region
 
-		Public Event UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean)
+		Public Event UploadModeChangeEvent(ByVal statusBarText As String)
 
 #Region "Constructor"
 		Public Sub New(ByVal reporter As IIoReporter, ByVal logger As ILog, cancellationTokenSource As CancellationTokenSource)
@@ -619,8 +619,15 @@ Namespace kCura.WinEDDS
 			System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
 		End Sub
 
-		Protected Sub OnUploadModeChangeEvent(statusBarText As String, isBulkEnabled As Boolean)
-			RaiseEvent UploadModeChangeEvent(statusBarText, TapiClientName, isBulkEnabled)
+		Protected Sub PublishUploadModeChangeEvent(ByVal nativeFilesCopied As Boolean)
+			Dim nativeTapiClient As TapiClient? = Nothing
+			If (nativeFilesCopied AndAlso Not Me.FileTapiBridge Is Nothing) Then
+				nativeTapiClient = Me.FileTapiBridge.Client
+			End If
+
+			Dim tapiObjectService As ITapiObjectService = New TapiObjectService
+			Dim statusBarText As String = tapiObjectService.BuildFileTransferModeStatusBarText(nativeTapiClient, Me.BulkLoadTapiBridge?.Client)
+			RaiseEvent UploadModeChangeEvent(statusBarText)
 		End Sub
 
 		Public Sub WaitForPendingMetadataUploads()

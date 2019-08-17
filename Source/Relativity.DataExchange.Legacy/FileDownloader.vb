@@ -57,23 +57,23 @@ Namespace kCura.WinEDDS
 				Dim dummyText As String = System.Guid.NewGuid().ToString().Replace("-", String.Empty).Substring(0, 5)
 				FileHelper.Create(destFolderPath & dummyText).Close()
 				FileHelper.Delete(destFolderPath & dummyText)
-				Me.UploaderType = TapiClient.Direct
+				Me.TransferMode = TapiClient.Direct
 			Catch ex As System.Exception
-				Me.UploaderType = TapiClient.Web
+				Me.TransferMode = TapiClient.Web
 			End Try
-			Return Me.UploaderType
+			Return Me.TransferMode
 		End Function
 
 		Public Property DestinationFolderPath() As String
 
-		Public Property UploaderType() As TapiClient Implements IExportFileDownloader.UploaderType
+		Public Property TransferMode As TapiClient Implements IExportFileDownloaderStatus.TransferMode
 			Get
 				Return If(_tapiClient, SetType(DestinationFolderPath))
 			End Get
 			Set(ByVal value As TapiClient)
 				Dim doevent As Boolean = Not _tapiClient.HasValue OrElse _tapiClient.Value <> value
 				_tapiClient = value
-				If doevent Then RaiseEvent UploadModeChangeEvent(value)
+				If doevent Then RaiseEvent TransferModeChangeEvent(value)
 			End Set
 		End Property
 
@@ -101,12 +101,12 @@ Namespace kCura.WinEDDS
 			If keyExists Then
 				Select tapiClient
 					Case TapiClient.Direct
-						Me.UploaderType = tapiClient
+						Me.TransferMode = tapiClient
 						FileHelper.Copy(remoteLocation, localFilePath, True)
 						Return True
 					Case TapiClient.None
 					Case TapiClient.Web
-						Me.UploaderType = tapiClient
+						Me.TransferMode = tapiClient
 						Return WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, Nothing, False, -1, fileID, fileFieldArtifactID)
 				End Select
 			Else
@@ -130,7 +130,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function DownloadTempFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal appID As String) As Boolean
-			Me.UploaderType = TapiClient.Web
+			Me.TransferMode = TapiClient.Web
 			Return WebDownloadFile(localFilePath, -1, remoteFileGuid, appID, Nothing, False, -1, -1, -1)
 		End Function
 
@@ -275,7 +275,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Event UploadStatusEvent(ByVal message As String)
-		Public Event UploadModeChangeEvent(ByVal tapiClient As TapiClient) Implements IExportFileDownloader.UploadModeChangeEvent
+		Public Event TransferModeChangeEvent(ByVal tapiClient As TapiClient) Implements IExportFileDownloaderStatus.TransferModeChangeEvent
 
 	End Class
 End Namespace

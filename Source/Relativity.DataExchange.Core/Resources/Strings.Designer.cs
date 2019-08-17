@@ -142,6 +142,42 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Disabled.
+        /// </summary>
+        internal static string FileTransferModeDisabled {
+            get {
+                return ResourceManager.GetString("FileTransferModeDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending.
+        /// </summary>
+        internal static string FileTransferModePending {
+            get {
+                return ResourceManager.GetString("FileTransferModePending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Metadata: {0}.
+        /// </summary>
+        internal static string FileTransferModeTextMetadata {
+            get {
+                return ResourceManager.GetString("FileTransferModeTextMetadata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Native: {0}.
+        /// </summary>
+        internal static string FileTransferModeTextNative {
+            get {
+                return ResourceManager.GetString("FileTransferModeTextNative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This error is considered fatal and suggests either an authentication issue or a version incompatibility between the client and server..
         /// </summary>
         internal static string HttpBadRequestFatalMessage {

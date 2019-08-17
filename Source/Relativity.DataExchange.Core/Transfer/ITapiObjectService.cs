@@ -41,6 +41,20 @@ namespace Relativity.DataExchange.Transfer
 		string BuildFileTransferModeDocText(bool includeBulk);
 
 		/// <summary>
+		/// Builds the file transfer mode status bar text.
+		/// </summary>
+		/// <param name="native">
+		/// Specify the optional client used to transfer native files.
+		/// </param>
+		/// <param name="metadata">
+		/// Specify the optional client used to transfer metadata files.
+		/// </param>
+		/// <returns>
+		/// The status bar text.
+		/// </returns>
+		string BuildFileTransferModeStatusBarText(TapiClient? native, TapiClient? metadata);
+
+		/// <summary>
 		/// Creates the file system service.
 		/// </summary>
 		/// <returns>

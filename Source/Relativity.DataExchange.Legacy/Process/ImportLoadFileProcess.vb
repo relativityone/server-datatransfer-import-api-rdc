@@ -336,16 +336,14 @@ Namespace kCura.WinEDDS
 			Me.AuditRun(False, runID)
 		End Sub
 
-		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean) Handles _loadFileImporter.UploadModeChangeEvent
+		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String) Handles _loadFileImporter.UploadModeChangeEvent
 			If _uploadModeText Is Nothing Then
 				Dim tapiObjectService As ITapiObjectService = New TapiObjectService
 				_uploadModeText = tapiObjectService.BuildFileTransferModeDocText(True)
 			End If
-			Dim statusBarMessage As String = $"{statusBarText} - SQL Insert Mode: {If(isBulkEnabled, "Bulk", "Single")}"
 
 			SendTransferJobStartedMessage()
-
-			Me.Context.PublishStatusBarChanged(statusBarMessage, _uploadModeText)
+			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)
 		End Sub
 
 

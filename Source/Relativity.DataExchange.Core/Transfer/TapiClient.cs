@@ -9,32 +9,39 @@
 
 namespace Relativity.DataExchange.Transfer
 {
-    /// <summary>
-    /// Represents the supported Transfer API clients.
-    /// </summary>
-    /// <remarks>
-    /// This is provided purely for backwards compatibility with import/export components.
-    /// </remarks>
-    public enum TapiClient
+	using System;
+
+	/// <summary>
+	/// Represents the supported Transfer API clients. These can be combined to represent multiple transfer clients.
+	/// </summary>
+	/// <remarks>
+	/// This is provided purely for backwards compatibility with import/export components.
+	/// </remarks>
+	[Flags]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage(
+		"Microsoft.Naming",
+		"CA1714:FlagsEnumsShouldHavePluralNames",
+		Justification = "This is only used internally.")]
+	public enum TapiClient
     {
         /// <summary>
         /// The client plugin is not set or is undefined.
         /// </summary>
-        None,
-
-        /// <summary>
-        /// The HTTP or web client.
-        /// </summary>
-        Web,
+        None = 0,
 
         /// <summary>
         /// The File Share or direct client.
         /// </summary>
-        Direct,
+        Direct = 1,
 
         /// <summary>
         /// The Aspera client.
         /// </summary>
-        Aspera,
-    }
+        Aspera = 2,
+
+        /// <summary>
+        /// The HTTP or web client.
+        /// </summary>
+        Web = 4,
+	}
 }

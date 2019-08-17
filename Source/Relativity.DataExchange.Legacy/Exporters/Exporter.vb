@@ -362,7 +362,7 @@ Namespace kCura.WinEDDS
 				Me.WriteUpdate($"Data retrieved. Beginning {typeOfExportDisplayString} export...")
 
 				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType2.ResetStartTime, _lastStatisticsSnapshot, Statistics))
-				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType)
+				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.TransferMode)
 
 				Dim records As Object() = Nothing
 				Dim nextRecordIndex As Int32 = 0
@@ -1234,8 +1234,6 @@ Namespace kCura.WinEDDS
 		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Implements IExporterStatusNotification.FatalErrorEvent
 		Public Event StatusMessage(ByVal exportArgs As ExportEventArgs) Implements IExporterStatusNotification.StatusMessage
 		Public Event FileTransferModeChangeEvent(ByVal mode As TapiClient) Implements IExporterStatusNotification.FileTransferModeChangeEvent
-		Public Event DisableCloseButton()
-		Public Event EnableCloseButton()
 
 #End Region
 
@@ -1255,13 +1253,9 @@ Namespace kCura.WinEDDS
 			FileHelper.Move(sourcePath, destinationPath)
 		End Sub
 
-		Public Event UploadModeChangeEvent(ByVal mode As String)
-
-		Private Sub _downloadModeStatus_UploadModeChangeEvent(ByVal tapiClient As TapiClient) Handles _downloadModeStatus.UploadModeChangeEvent
-			RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType)
+		Private Sub _downloadModeStatus_UploadModeChangeEvent(ByVal mode As TapiClient) Handles _downloadModeStatus.TransferModeChangeEvent
+			RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.TransferMode)
 		End Sub
-
-
 
 		Private Function BuildFileNameProvider() As IFileNameProvider
 			Dim identifierExportFileNameProvider As IFileNameProvider = New IdentifierExportFileNameProvider(Settings)
