@@ -6,6 +6,7 @@
 	using System.Threading.Tasks;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 	using Relativity.Transfer;
 
@@ -14,12 +15,18 @@
 		private readonly SafeIncrement _safeIncrement;
 		private readonly ILongTextTapiBridgePool _longTextTapiBridgePool;
 		private readonly ILog _logger;
+		private readonly IDownloadProgressManager _downloadProgressManager;
 
-		public LongTextDownloader(SafeIncrement safeIncrement, ILongTextTapiBridgePool longTextTapiBridgePool, ILog logger)
+		public LongTextDownloader(
+			SafeIncrement safeIncrement,
+			ILongTextTapiBridgePool longTextTapiBridgePool,
+			IDownloadProgressManager downloadProgressManager,
+			ILog logger)
 		{
-			_safeIncrement = safeIncrement;
-			_longTextTapiBridgePool = longTextTapiBridgePool;
-			_logger = logger;
+			_safeIncrement = safeIncrement.ThrowIfNull(nameof(safeIncrement));
+			_longTextTapiBridgePool = longTextTapiBridgePool.ThrowIfNull(nameof(longTextTapiBridgePool));
+			_downloadProgressManager = downloadProgressManager.ThrowIfNull(nameof(downloadProgressManager));
+			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
 		public async Task DownloadAsync(List<LongTextExportRequest> longTextExportRequests, CancellationToken cancellationToken)
@@ -53,6 +60,14 @@
 							textExportRequest.FieldArtifactId, textExportRequest.DestinationLocation);
 						TransferPath path = textExportRequest.CreateTransferPath(_safeIncrement.GetNext());
 						textExportRequest.FileName = bridge.QueueDownload(path);
+					}
+					catch (ArgumentException ex)
+					{
+						_logger.LogWarning(
+							ex,
+							"There was a problem downloading artifact {ArtifactId}.",
+							textExportRequest.ArtifactId);
+						_downloadProgressManager.MarkArtifactAsError(textExportRequest.ArtifactId, ex.Message);
 					}
 					catch (Exception ex)
 					{

@@ -1,11 +1,15 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Batches
 {
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.Linq;
 	using System.Threading;
+
 	using kCura.WinEDDS.Exporters;
+
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 
 	public class ImageFileBatchValidator : IBatchValidator
@@ -16,9 +20,9 @@
 
 		public ImageFileBatchValidator(IErrorFileWriter errorFileWriter, IFile fileWrapper, ILog logger)
 		{
-			_errorFileWriter = errorFileWriter;
-			_fileWrapper = fileWrapper;
-			_logger = logger;
+			_errorFileWriter = errorFileWriter.ThrowIfNull(nameof(errorFileWriter));
+			_fileWrapper = fileWrapper.ThrowIfNull(nameof(fileWrapper));
+			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
 		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
@@ -51,7 +55,10 @@
 			else
 			{
 				_logger.LogVerbose("Image {image} wasn't rollup, so checking multiple images.", images[0].BatesNumber);
-				ValidateAllImages(artifact, images);
+				foreach (ImageExportInfo image in images)
+				{
+					this.ValidateSingleImage(artifact, image);
+				}
 			}
 		}
 
@@ -65,28 +72,37 @@
 			bool fileExists = _fileWrapper.Exists(image.TempLocation);
 			if (!fileExists || _fileWrapper.GetFileSize(image.TempLocation) == 0)
 			{
-				_logger.LogError("Image file {file} missing or empty for image {image.BatesNumber} in artifact {artifactId}.", image.TempLocation, image.BatesNumber, artifact.ArtifactID);
-				string errorMessage = fileExists ? "File empty." : "File missing.";
-				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Image, artifact.IdentifierValue, image.TempLocation, errorMessage);
-			}
-		}
-
-		private void ValidateAllImages(ObjectExportInfo artifact, List<ImageExportInfo> images)
-		{
-			for (int i = 0; i < images.Count; i++)
-			{
-				if (string.IsNullOrWhiteSpace(images[i].FileGuid))
+				string errorMessage = string.Format(
+					CultureInfo.CurrentCulture,
+					fileExists ? ExportStrings.FileValidationZeroByteFile : ExportStrings.FileValidationFileMissing,
+					artifact.ArtifactID);
+				if (string.IsNullOrWhiteSpace(artifact.NativeSourceLocation))
 				{
-					continue;
+					errorMessage = string.Format(
+						CultureInfo.CurrentCulture,
+						ExportStrings.FileValidationEmptyRemoteSourcePath,
+						artifact.ArtifactID);
+					_logger.LogError(
+						"Image file {File} remote source path is empty for image artifact {ArtifactId} and suggests a back-end database issue.",
+						artifact.NativeTempLocation,
+						artifact.ArtifactID);
+				}
+				else
+				{
+					this._logger.LogError(
+						fileExists
+							? "Image file {File} contains zero bytes for for image {BatesNumber} in {ArtifactId}."
+							: "Image file {File} is missing for for image {BatesNumber} in {ArtifactId}.",
+						image.TempLocation,
+						image.BatesNumber,
+						artifact.ArtifactID);
 				}
 
-				bool fileExists = _fileWrapper.Exists(images[i].TempLocation);
-				if (!fileExists || _fileWrapper.GetFileSize(images[i].TempLocation) == 0)
-				{
-					_logger.LogWarning("Image file {file} missing or empty for image {image.BatesNumber} in artifact {artifactId}.", images[i].TempLocation, images[i].BatesNumber, artifact.ArtifactID);
-					string errorMessage = fileExists ? "File empty." : "File missing.";
-					_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Image, artifact.IdentifierValue, images[i].TempLocation, errorMessage);
-				}
+				_errorFileWriter.Write(
+					ErrorFileWriter.ExportFileType.Image,
+					artifact.IdentifierValue,
+					image.TempLocation,
+					errorMessage);
 			}
 		}
 	}

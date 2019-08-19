@@ -61,6 +61,15 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The export request cannot be created for artifact {0} because the target path is null or all whitespace..
+        /// </summary>
+        internal static string ExportRequestTargetPathExceptionMessage {
+            get {
+                return ResourceManager.GetString("ExportRequestTargetPathExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The export configuration settings must supply a valid credential..
         /// </summary>
         internal static string ExportSettingsNullCredentialExceptionMessage {
@@ -133,7 +142,34 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to relase all transfer pool resources..
+        ///   Looks up a localized string similar to The export artifact {0} defines an invalid server-side source path and indicates a problem with the artifact data..
+        /// </summary>
+        internal static string FileValidationEmptyRemoteSourcePath {
+            get {
+                return ResourceManager.GetString("FileValidationEmptyRemoteSourcePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The export artifact {0} file is missing..
+        /// </summary>
+        internal static string FileValidationFileMissing {
+            get {
+                return ResourceManager.GetString("FileValidationFileMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The export artifact {0} file contains zero bytes..
+        /// </summary>
+        internal static string FileValidationZeroByteFile {
+            get {
+                return ResourceManager.GetString("FileValidationZeroByteFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to release all transfer pool resources..
         /// </summary>
         internal static string TransferPoolDisposeExceptionMessage {
             get {

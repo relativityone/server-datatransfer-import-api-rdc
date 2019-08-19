@@ -38,13 +38,21 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			// ACT
 			Image image1 = this._instance.GetImage(1, "bates_1");
+			Image image1DiffCase = this._instance.GetImage(1, "BATES_1");
 			Image image2 = this._instance.GetImage(1, "bates_2");
+			Image image2DiffCase = this._instance.GetImage(1, "BATES_2");
 			Image image3 = this._instance.GetImage(2, "bates_3");
+			Image image3DiffCase = this._instance.GetImage(2, "BATES_3");
+			Image image4DoesNotExist = this._instance.GetImage(99, "bates_99");
 
 			// ASSERT
 			Assert.That(image1, Is.EqualTo(this._images[0]));
+			Assert.That(image1DiffCase, Is.EqualTo(this._images[0]));
 			Assert.That(image2, Is.EqualTo(this._images[1]));
+			Assert.That(image2DiffCase, Is.EqualTo(this._images[1]));
 			Assert.That(image3, Is.EqualTo(this._images[2]));
+			Assert.That(image3DiffCase, Is.EqualTo(this._images[2]));
+			Assert.That(image4DoesNotExist, Is.Null);
 		}
 
 		[Test]

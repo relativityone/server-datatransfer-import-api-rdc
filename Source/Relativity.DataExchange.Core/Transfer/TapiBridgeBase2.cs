@@ -15,6 +15,7 @@ namespace Relativity.DataExchange.Transfer
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Text;
 	using System.Threading;
 
 	using Polly;
@@ -406,6 +407,7 @@ namespace Relativity.DataExchange.Transfer
 				throw new ArgumentNullException(nameof(path));
 			}
 
+			this.ValidateTransferPath(path);
 			this.CheckDispose();
 			this.CreateTransferJob(false);
 			if (this.TransferJob == null)
@@ -532,20 +534,33 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public TapiTotals WaitForTransfers(string waitMessage, string successMessage, string errorMessage, bool keepJobAlive)
+		public TapiTotals WaitForTransfers(
+			string waitMessage,
+			string successMessage,
+			string errorMessage,
+			bool keepJobAlive)
 		{
 			this.CheckDispose();
-			if (this.TransferJob == null)
-			{
-				throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
-			}
-
 			this.PublishStatusMessage(waitMessage, TapiConstants.NoLineNumber);
+
 			try
 			{
-				TapiTotals result = keepJobAlive ? this.WaitForCompletedTransfers() : this.WaitForCompletedTransferJob();
+				// Some jobs may be small and contain invalid data that prevent adding to the job - don't throw unnecessarily.
+				TapiTotals totals;
+				this.LogTransferTotals("Pre", false);
+				if (this.TransferJob == null || (this.batchTotals.TotalFileTransferRequests == 0
+				                                 && this.jobTotals.TotalFileTransferRequests == 0))
+				{
+					totals = keepJobAlive ? this.batchTotals.DeepCopy() : this.jobTotals.DeepCopy();
+				}
+				else
+				{
+					totals = keepJobAlive ? this.WaitForCompletedTransfers() : this.WaitForCompletedTransferJob();
+				}
+
+				this.LogTransferTotals("Post", true);
 				this.PublishStatusMessage(successMessage, TapiConstants.NoLineNumber);
-				return result;
+				return totals;
 			}
 			catch (Exception e)
 			{
@@ -554,6 +569,18 @@ namespace Relativity.DataExchange.Transfer
 				this.TransferLog.LogError(e, errorMessage);
 				throw;
 			}
+		}
+
+		/// <summary>
+		/// Clears both batch and job totals.
+		/// </summary>
+		/// <remarks>
+		/// This is marked internal for unit tests only.
+		/// </remarks>
+		internal void ClearAllTotals()
+		{
+			this.batchTotals.Clear();
+			this.jobTotals.Clear();
 		}
 
 		/// <summary>
@@ -940,8 +967,7 @@ namespace Relativity.DataExchange.Transfer
 			// Never reset the counts when switching to web mode.
 			if (!webModeSwitch)
 			{
-				this.batchTotals.Clear();
-				this.jobTotals.Clear();
+				this.ClearAllTotals();
 			}
 
 			this.currentJobNumber++;
@@ -1310,27 +1336,38 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Logs the supplied transfer totals.
 		/// </summary>
-		/// <param name="batched">
-		/// <see langword="true" /> to log batched totals; otherwise, <see langword="false" />.
+		/// <param name="prefix">
+		/// The text inserted before the log entry.
 		/// </param>
-		private void LogTransferTotals(bool batched)
+		/// <param name="completed">
+		/// <see langword="true" /> when all transfers should be completed; otherwise, <see langword="false" />.
+		/// </param>
+		private void LogTransferTotals(string prefix, bool completed)
 		{
-			TapiTotals totals = batched ? this.batchTotals : this.jobTotals;
-			long totalFailedFileTransfers = totals.TotalFileTransferRequests - totals.TotalSuccessfulFileTransfers;
-			this.TransferLog.LogInformation(
-				batched
-					? "Dumping current {Name} batched transferred file totals: {TotalSuccessfulFileTransfers} of {TotalFileTransferRequests}, total transfer failures: {TotalFailedFileTransfers}"
-					: "Dumping current {Name} job transferred file totals: {TotalSuccessfulFileTransfers} of {TotalFileTransferRequests}, total transfer failures: {TotalFailedFileTransfers}",
-				this.ClientDisplayName,
-				totals.TotalSuccessfulFileTransfers,
-				totals.TotalFileTransferRequests,
-				totalFailedFileTransfers);
-			if (totals.TotalFileTransferRequests == 0)
+			string formattedPrefix = $"WaitForTransfers-{prefix}: ";
+			StringBuilder sb = new StringBuilder(formattedPrefix);
+			if (!completed)
 			{
-				this.TransferLog.LogWarning(
-					batched
-						? "Although the batch completed, the total number of batched file requests is zero and may suggest a logic issue or unexpected result."
-						: "Although the job completed, the total number of job file requests is zero and may suggest a logic issue or unexpected result.");
+				sb.Append("Awaiting {TotalFileTransferRequests:n0} transfer files using {TransferMode} mode.");
+				this.TransferLog.LogInformation(
+					sb.ToString(),
+					this.jobTotals.TotalFileTransferRequests,
+					this.ClientDisplayName);
+			}
+			else
+			{
+				sb.Append(
+					"Completed {TotalSuccessfulFileTransfers:n0} of {TotalFileTransferRequests:n0} transfer files using {TransferMode} mode.");
+				this.TransferLog.LogInformation(
+					sb.ToString(),
+					this.jobTotals.TotalSuccessfulFileTransfers,
+					this.jobTotals.TotalFileTransferRequests,
+					this.ClientDisplayName);
+				if (this.jobTotals.TotalFileTransferRequests == 0)
+				{
+					this.TransferLog.LogWarning(
+						"Although the transfer job completed, the total number of file requests is zero and may suggest a logic issue or unexpected result.");
+				}
 			}
 		}
 
@@ -1529,6 +1566,28 @@ namespace Relativity.DataExchange.Transfer
 			}
 		}
 
+		private void ValidateTransferPath(TransferPath path)
+		{
+			if (string.IsNullOrWhiteSpace(path.SourcePath)
+			    && (!path.SourcePathId.HasValue || path.SourcePathId.Value < 1))
+			{
+				throw new ArgumentException(
+					this.currentDirection == TransferDirection.Download || path.Direction == TransferDirection.Download
+						? Strings.TransferPathArgumentDownloadSourcePathExceptionMessage
+						: Strings.TransferPathArgumentUploadSourcePathExceptionMessage,
+					nameof(path));
+			}
+
+			if (string.IsNullOrWhiteSpace(path.TargetPath) && string.IsNullOrWhiteSpace(this.TargetPath))
+			{
+				throw new ArgumentException(
+					this.currentDirection == TransferDirection.Download || path.Direction == TransferDirection.Download
+						? Strings.TransferPathArgumentDownloadTargetPathExceptionMessage
+						: Strings.TransferPathArgumentUploadTargetPathExceptionMessage,
+					nameof(path));
+			}
+		}
+
 		/// <summary>
 		/// Waits for all files to transfer without destroying the job.
 		/// </summary>
@@ -1537,9 +1596,7 @@ namespace Relativity.DataExchange.Transfer
 		/// </returns>
 		private TapiTotals WaitForCompletedTransfers()
 		{
-			const bool BatchedTotals = true;
 			this.TransferLog.LogInformation("Preparing to wait for the batched transfers to complete...");
-			this.LogTransferTotals(BatchedTotals);
 
 			try
 			{
@@ -1598,13 +1655,12 @@ namespace Relativity.DataExchange.Transfer
 				{
 					this.TransferLog.LogWarning(
 						"WaitForCompletedTransfers has exited, not all transfers have completed, and now going to wait for the transfer job to complete.");
-					this.LogTransferTotals(BatchedTotals);
+					this.LogTransferTotals("Inactivity", false);
 
 					// Do NOT return WaitForCompletedTransferJob because it returns the job totals.
 					this.WaitForCompletedTransferJob();
 				}
 
-				this.LogTransferTotals(BatchedTotals);
 				return this.batchTotals.DeepCopy();
 			}
 			finally
@@ -1623,12 +1679,10 @@ namespace Relativity.DataExchange.Transfer
 		{
 			if (this.TransferJob == null)
 			{
-				throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
+				return this.jobTotals.DeepCopy();
 			}
 
-			const bool BatchedTotals = false;
 			this.TransferLog.LogInformation("Preparing to wait for the transfer job to complete...");
-			this.LogTransferTotals(BatchedTotals);
 
 			try
 			{
@@ -1656,11 +1710,11 @@ namespace Relativity.DataExchange.Transfer
 								transferResult.Status,
 								transferResult.Elapsed,
 								transferResult.TransferRateMbps);
-							this.LogTransferTotals(BatchedTotals);
 							switch (transferResult.Status)
 							{
 								case TransferStatus.Failed:
 								case TransferStatus.Fatal:
+									this.LogTransferTotals("NotSuccessful", true);
 									string errorMessage = GetTransferErrorMessage(transferResult);
 									this.PublishStatusMessage(errorMessage, TapiConstants.NoLineNumber);
 

@@ -16,6 +16,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Process;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
@@ -34,6 +35,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		public static Mock<IAppSettings> CreateMockAppSettings()
 		{
 			return new Mock<IAppSettings>();
+		}
+
+		public static Mock<IExportRequestRetriever> CreateMockExportRequestRetriever()
+		{
+			return new Mock<IExportRequestRetriever>();
 		}
 
 		public static Mock<IFileShareSettingsService> CreateMockFileShareSettingsService()

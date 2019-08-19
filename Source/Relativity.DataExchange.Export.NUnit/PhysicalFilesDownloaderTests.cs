@@ -14,7 +14,6 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using global::NUnit.Framework;
 
-	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 
 	using Moq;
@@ -22,6 +21,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 	using Relativity.Transfer;
 
@@ -35,6 +35,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		private List<Mock<IDownloadTapiBridge>> _mockTapiBridges;
 		private Mock<IFileShareSettingsService> _fileshareSettingsService;
 		private Mock<IFileTapiBridgePool> _fileTapiBridgePool;
+		private Mock<IDownloadProgressManager> downloadProgressManager;
 		private PhysicalFilesDownloader _downloader;
 		private SafeIncrement _safeIncrement;
 		private string[] _availableFileShares;
@@ -54,7 +55,13 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileTapiBridgePool
 				.Setup(pool => pool.Request(It.IsAny<IRelativityFileShareSettings>(), It.IsAny<CancellationToken>()))
 				.Returns(this.ReturnNewMockTapiBridge);
-			this._downloader = new PhysicalFilesDownloader(this._fileshareSettingsService.Object, this._fileTapiBridgePool.Object, this._safeIncrement, this._logger);
+			this.downloadProgressManager = new Mock<IDownloadProgressManager>();
+			this._downloader = new PhysicalFilesDownloader(
+				this._fileshareSettingsService.Object,
+				this._fileTapiBridgePool.Object,
+				this.downloadProgressManager.Object,
+				this._safeIncrement,
+				this._logger);
 		}
 
 		[Test]
@@ -90,6 +97,27 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
+		public async Task ItShouldRaiseProgressErrorsOnArgumentException()
+		{
+			// ARRANGE
+			Mock<IDownloadTapiBridge> bridge = new Mock<IDownloadTapiBridge>();
+			bridge.Setup(x => x.QueueDownload(It.IsAny<TransferPath>())).Throws<ArgumentException>();
+			this._mockTapiBridges.Add(bridge);
+			this._fileTapiBridgePool
+				.Setup(pool => pool.Request(It.IsAny<IRelativityFileShareSettings>(), It.IsAny<CancellationToken>()))
+				.Returns(bridge.Object);
+			List<ExportRequest> requests = this.CreateThreeExportRequestsPerFileShare(this._availableFileShares).ToList();
+
+			// ACT
+			await this._downloader.DownloadFilesAsync(requests, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			this.downloadProgressManager.Verify(
+				x => x.MarkArtifactAsError(It.IsAny<int>(), It.IsAny<string>()),
+				Times.Exactly(requests.Count));
+		}
+
+		[Test]
 		public void ItShouldThrowTaskCanceledExceptionWhenDownloaderThrowsOne()
 		{
 			var mockTapiBridge = new Mock<IDownloadTapiBridge>();
@@ -99,7 +127,12 @@ namespace Relativity.DataExchange.Export.NUnit
 				.Returns(mockTapiBridge.Object);
 			List<ExportRequest> requests = this.CreateThreeExportRequestsPerFileShare(this._availableFileShares).ToList();
 
-			var downloader = new PhysicalFilesDownloader(this._fileshareSettingsService.Object, this._fileTapiBridgePool.Object, this._safeIncrement, this._logger);
+			var downloader = new PhysicalFilesDownloader(
+				this._fileshareSettingsService.Object,
+				this._fileTapiBridgePool.Object,
+				this.downloadProgressManager.Object,
+				this._safeIncrement,
+				this._logger);
 
 			Assert.ThrowsAsync<TaskCanceledException>(async () => await downloader.DownloadFilesAsync(requests, CancellationToken.None).ConfigureAwait(false));
 		}

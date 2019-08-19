@@ -32,6 +32,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.Export.VolumeManagerV2;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Process;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
@@ -116,6 +117,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		/// The sample production image file name.
 		/// </summary>
 		protected const string SampleProductionImage1FileName = "EDRM-Sample-000001.tif";
+
+		/// <summary>
+		/// The dummy UNC path. This should never be used for positive tests.
+		/// </summary>
+		private const string DummyUncPath = @"\\files\T001\Files\EDDS123456\";
 
 		private static readonly List<int> ImportedDatasets = new List<int>();
 		private readonly object syncRoot = new object();
@@ -211,6 +217,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			private set;
 		}
 
+		protected Mock<IExportRequestRetriever> MockExportRequestRetriever
+		{
+			get;
+			private set;
+		}
+
 		protected Mock<IFileShareSettingsService> MockFileShareSettingsService
 		{
 			get;
@@ -241,6 +253,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			private set;
 		}
 
+		protected string TempDirectory => this.tempDirectory.Directory;
+
 		/// <summary>
 		/// Gets integration test parameters.
 		/// </summary>
@@ -254,12 +268,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		/// <summary>
-		/// Gets the total number of documents that were actually exported.
+		/// Gets the total number of documents that were processed.
 		/// </summary>
 		/// <value>
 		/// The total number of documents.
 		/// </value>
-		protected int TotalDocumentsExported
+		protected int TotalDocumentsProcessed
 		{
 			get;
 			private set;
@@ -325,6 +339,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.loadFileEncoding = Encoding.Unicode;
 			this.textFileEncoding = Encoding.Unicode;
 			this.MockAppSettings = MockObjectFactory.CreateMockAppSettings();
+			this.MockExportRequestRetriever = MockObjectFactory.CreateMockExportRequestRetriever();
 			this.MockFileShareSettingsService = MockObjectFactory.CreateMockFileShareSettingsService();
 			this.MockLogger = MockObjectFactory.CreateMockLogger();
 			this.MockProcessEventWriter = MockObjectFactory.CreateMockProcessEventWriter();
@@ -334,7 +349,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.tempDirectory = new TempDirectory2();
 			this.tempDirectory.ClearReadOnlyAttributes = true;
 			this.tempDirectory.Create();
-			this.TotalDocumentsExported = 0;
+			this.TotalDocumentsProcessed = 0;
 			this.TotalDocuments = 0;
 			this.TransferMode = TapiClient.None;
 			this.MockUserNotification = MockObjectFactory.CreateMockUserNotification();
@@ -392,6 +407,77 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		protected static Exception CreateFatalException()
 		{
 			return new OutOfMemoryException();
+		}
+
+		protected PhysicalFileExportRequest CreateTestPhysicalFileExportRequest(
+			int artifactId,
+			int order,
+			bool validNativeFileGuid,
+			bool validNativeSourceLocation,
+			bool validDestinationLocation)
+		{
+			string fileName = $"{Guid.NewGuid()}.doc";
+			string fileUncPath = $"{DummyUncPath}{fileName}";
+			ObjectExportInfo artifact = new ObjectExportInfo
+				                            {
+					                            ArtifactID = artifactId,
+					                            NativeSourceLocation = validNativeSourceLocation ? fileUncPath : null,
+					                            NativeFileGuid =
+						                            validNativeFileGuid ? System.Guid.NewGuid().ToString() : null,
+				                            };
+			PhysicalFileExportRequest request = new PhysicalFileExportRequest(
+				artifact,
+				validDestinationLocation ? System.IO.Path.Combine(this.TempDirectory, fileName) : null);
+			request.Order = order;
+			return request;
+		}
+
+		protected FieldFileExportRequest CreateTestFieldFileExportRequest(
+			int artifactId,
+			int fileFieldArtifactId,
+			int order,
+			bool validNativeFileGuid,
+			bool validNativeSourceLocation,
+			bool validDestinationLocation)
+		{
+			string fileName = $"{Guid.NewGuid()}.msg";
+			string fileUncPath = $"{DummyUncPath}{fileName}";
+			ObjectExportInfo artifact = new ObjectExportInfo
+				                            {
+					                            ArtifactID = artifactId,
+					                            NativeSourceLocation = validNativeSourceLocation ? fileUncPath : null,
+					                            NativeFileGuid =
+						                            validNativeFileGuid ? System.Guid.NewGuid().ToString() : null,
+				                            };
+			FieldFileExportRequest request = new FieldFileExportRequest(
+				artifact,
+				fileFieldArtifactId,
+				validDestinationLocation ? System.IO.Path.Combine(this.TempDirectory, fileName) : null);
+			request.Order = order;
+			return request;
+		}
+
+		protected LongTextExportRequest CreateTestLongTextExportRequest(
+			int artifactId,
+			int fieldArtifactId,
+			int order,
+			bool validNativeSourceLocation,
+			bool validDestinationLocation)
+		{
+			string fileName = $"{Guid.NewGuid()}.txt";
+			string fileUncPath = $"{DummyUncPath}{fileName}";
+			ObjectExportInfo artifact = new ObjectExportInfo
+				                            {
+					                            ArtifactID = artifactId,
+					                            NativeSourceLocation = validNativeSourceLocation ? fileUncPath : null,
+					                            NativeFileGuid = null,
+				                            };
+			LongTextExportRequest request = LongTextExportRequest.CreateRequestForLongText(
+				artifact,
+				fieldArtifactId,
+				validDestinationLocation ? System.IO.Path.Combine(this.TempDirectory, fileName) : null);
+			request.Order = order;
+			return request;
 		}
 
 		/// <summary>
@@ -582,6 +668,13 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 					.UsingFactoryMethod(k => this.MockFileShareSettingsService.Object).IsDefault());
 		}
 
+		protected void GivenTheMockExportRequestRetrieverIsRegistered()
+		{
+			this.testContainer.Register(
+				Component.For<IExportRequestRetriever>()
+					.UsingFactoryMethod(k => this.MockExportRequestRetriever.Object).IsDefault());
+		}
+
 		protected void GivenTheMockedSearchResultsAreEmpty(bool cloudInstance)
 		{
 			Mock<ITapiFileStorageSearchResults> mockFileStorageSearchResults =
@@ -614,6 +707,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				.Throws(fatal ? CreateFatalException() : new InvalidOperationException());
 		}
 
+		protected void GivenTheMockedExportRequestRetrieverReturns(IEnumerable<ExportRequest> fileExportRequests, IEnumerable<LongTextExportRequest> longTextExportRequests)
+		{
+			this.MockExportRequestRetriever.Setup(x => x.RetrieveFileExportRequests()).Returns(fileExportRequests.ToList());
+			this.MockExportRequestRetriever.Setup(x => x.RetrieveLongTextExportRequests()).Returns(longTextExportRequests.ToList());
+		}
+
 		protected void GivenTheMockedSettingsForFileShareIsNull()
 		{
 			this.MockFileShareSettingsService.Setup(x => x.GetSettingsForFileShare(It.IsAny<int>(), It.IsAny<string>()))
@@ -622,11 +721,39 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				.Returns(Task.CompletedTask);
 		}
 
-		protected void GivenTheTapiForceAsperaClientAppSetting(bool forceAsperaClient)
+		protected void GivenTheTapiForceClientAppSettings(TapiClient client)
 		{
 			// Export relies on the global parameters.
-			AppSettings.Instance.TapiForceAsperaClient = forceAsperaClient;
-			this.MockAppSettings.SetupGet(x => x.TapiForceAsperaClient).Returns(forceAsperaClient);
+			switch (client)
+			{
+				case TapiClient.Aspera:
+					AppSettings.Instance.TapiForceAsperaClient = true;
+					this.MockAppSettings.SetupGet(x => x.TapiForceAsperaClient).Returns(true);
+					break;
+
+				case TapiClient.Direct:
+					AppSettings.Instance.TapiForceFileShareClient = true;
+					this.MockAppSettings.SetupGet(x => x.TapiForceFileShareClient).Returns(true);
+					break;
+
+				case TapiClient.Web:
+					AppSettings.Instance.TapiForceHttpClient = true;
+					this.MockAppSettings.SetupGet(x => x.TapiForceHttpClient).Returns(true);
+					break;
+
+				case TapiClient.None:
+					AppSettings.Instance.TapiForceAsperaClient = false;
+					AppSettings.Instance.TapiForceFileShareClient = false;
+					AppSettings.Instance.TapiForceHttpClient = false;
+					this.MockAppSettings.SetupGet(x => x.TapiForceAsperaClient).Returns(false);
+					this.MockAppSettings.SetupGet(x => x.TapiForceFileShareClient).Returns(false);
+					this.MockAppSettings.SetupGet(x => x.TapiForceHttpClient).Returns(false);
+					break;
+
+				default:
+					Assert.Fail($"The Transfer API client {client} isn't supported by this test.");
+					break;
+			}
 		}
 
 		/// <summary>
@@ -902,14 +1029,25 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		/// <summary>
-		/// Then the total number of documents exported should equal the specified result.
+		/// Then the total number of documents should equal the specified result.
 		/// </summary>
-		/// <param name="expectedDocsExported">
-		/// The expected number of exported documents.
+		/// <param name="expected">
+		/// The expected number of documents.
 		/// </param>
-		protected void ThenTheDocsExportedCountResultShouldEqual(int expectedDocsExported)
+		protected void ThenTheTotalDocumentsShouldEqual(int expected)
 		{
-			Assert.That(this.TotalDocumentsExported, Is.EqualTo(expectedDocsExported));
+			Assert.That(this.TotalDocuments, Is.EqualTo(expected));
+		}
+
+		/// <summary>
+		/// Then the total number of documents processed should equal the specified result.
+		/// </summary>
+		/// <param name="expected">
+		/// The expected number of processed documents.
+		/// </param>
+		protected void ThenTheTotalDocumentsProcessedShouldEqual(int expected)
+		{
+			Assert.That(this.TotalDocumentsProcessed, Is.EqualTo(expected));
 		}
 
 		/// <summary>
@@ -938,21 +1076,38 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		/// <summary>
 		/// Then the overall export experienced a fatal exception.
 		/// </summary>
-		protected void ThenTheExportJobIsFatal()
+		/// <param name="expectedSearchResult">
+		/// The expected search result.
+		/// </param>
+		protected void ThenTheExportJobIsFatal(bool expectedSearchResult)
 		{
 			// Note: at present, the export returns true even when fatal!
-			this.ThenTheSearchResultShouldEqual(true);
+			this.ThenTheSearchResultShouldEqual(expectedSearchResult);
 			this.ThenTheStatusMessagesCountShouldBeNonZero();
 			this.ThenTheFatalErrorsCountShouldEqual(1);
 		}
 
 		/// <summary>
+		/// Then the overall export job is not successful.
+		/// </summary>
+		/// <param name="expectedDocsProcessed">
+		/// The expected number of processed documents.
+		/// </param>
+		protected void ThenTheExportJobIsNotSuccessful(int expectedDocsProcessed)
+		{
+			this.ThenTheSearchResultShouldEqual(false);
+			this.ThenTheFatalErrorsCountShouldEqual(0);
+			this.ThenTheStatusMessagesCountShouldBeNonZero();
+			this.ThenTheTotalDocumentsProcessedShouldEqual(expectedDocsProcessed);
+		}
+
+		/// <summary>
 		/// Then the overall export job is successful.
 		/// </summary>
-		/// <param name="expectedDocsExported">
-		/// The expected number of exported documents.
+		/// <param name="expectedDocsProcessed">
+		/// The expected number of processed documents.
 		/// </param>
-		protected void ThenTheExportJobIsSuccessful(int expectedDocsExported)
+		protected void ThenTheExportJobIsSuccessful(int expectedDocsProcessed)
 		{
 			this.ThenTheSearchResultShouldEqual(true);
 			this.ThenTheAlertCriticalErrorsCountShouldEqual(0);
@@ -960,7 +1115,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ThenTheAlertWarningSkippablesCountShouldEqual(0);
 			this.ThenTheFatalErrorsCountShouldEqual(0);
 			this.ThenTheStatusMessagesCountShouldBeNonZero();
-			this.ThenTheDocsExportedCountResultShouldEqual(expectedDocsExported);
+			this.ThenTheTotalDocumentsProcessedShouldEqual(expectedDocsProcessed);
 		}
 
 		private Task<string> GetObjectTypeNameAsync(int artifactTypeId)
@@ -1048,7 +1203,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			lock (this.syncRoot)
 			{
 				this.TotalDocuments = args.TotalDocuments;
-				this.TotalDocumentsExported = args.DocumentsExported;
+				this.TotalDocumentsProcessed = args.DocumentsExported;
 				if (!string.IsNullOrEmpty(args.Message))
 				{
 					this.statusMessages.Add(args.Message);

@@ -147,6 +147,18 @@
   <data name="TransferJobNullExceptionMessage" xml:space="preserve">
     <value>This operation cannot be performed because the file transfer job hasn't been created.</value>
   </data>
+  <data name="TransferPathArgumentDownloadSourcePathExceptionMessage" xml:space="preserve">
+    <value>The transfer path must define a valid server-side source path and suggests a problem with the artifact data.</value>
+  </data>
+  <data name="TransferPathArgumentDownloadTargetPathExceptionMessage" xml:space="preserve">
+    <value>The transfer path must define a valid client-side target path and suggests an export configuration issue.</value>
+  </data>
+  <data name="TransferPathArgumentUploadSourcePathExceptionMessage" xml:space="preserve">
+    <value>The transfer path must define a valid client-side source path and suggests a problem with the mapped source path.</value>
+  </data>
+  <data name="TransferPathArgumentUploadTargetPathExceptionMessage" xml:space="preserve">
+    <value>The transfer path must define a valid server-side target path and suggests an import configuration issue.</value>
+  </data>
   <data name="TransferJobStartedMessage" xml:space="preserve">
     <value>File transfer job started.</value>
   </data>
