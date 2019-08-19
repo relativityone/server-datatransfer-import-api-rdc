@@ -14,6 +14,12 @@ Namespace kCura.Relativity.DataReaderClient
 
 		End Sub
 
+        ''' <summary>
+        ''' Get class containing telemetry settings
+        ''' </summary>
+        ''' <returns></returns>
+        Public ReadOnly Property Telemetry As IMetricsSinkConfig = New ImportApiMetricSinkConfig()
+
 		''' <summary>
 		''' Indicates the level of auditing for an import job.
 		''' </summary>
@@ -211,10 +217,10 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property Billable() As Boolean = True
 
         ''' <summary>
-        ''' Get class containing telemetry settings
+        ''' Allows clients of Import API to identify themselves
         ''' </summary>
-        ''' <returns></returns>
-        Public ReadOnly Property Telemetry As IMetricsSinkConfig = New ImportApiMetricSinkConfig()
+        ''' <returns>The application name</returns>
+        Public Property ApplicationName As String = Nothing
 
 	End Class
 End Namespace
