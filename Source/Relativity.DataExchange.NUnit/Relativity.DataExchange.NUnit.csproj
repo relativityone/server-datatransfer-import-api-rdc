@@ -159,9 +159,6 @@
     <Compile Include="Monitoring\Sinks\ImportApiMetricSinkConfigTest.cs" />
     <Compile Include="LoadFileDeserializationTests.cs" />
     <Compile Include="Monitoring\Sinks\MetricSinkManagerTest.cs" />
-    <Compile Include="Monitoring\TransferJobMessageBaseTest.cs" />
-    <Compile Include="Monitoring\TransferJobProgressMessageTest.cs" />
-    <Compile Include="Monitoring\TransferJobStatisticsMessageTest.cs" />
     <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
     <Compile Include="SoapExceptionDetailTests.cs" />
     <Compile Include="SerializationTestsBase.cs" />
