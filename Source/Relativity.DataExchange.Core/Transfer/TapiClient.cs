@@ -10,7 +10,7 @@
 namespace Relativity.DataExchange.Transfer
 {
 	/// <summary>
-	/// Represents the supported Transfer API clients. These can be combined to represent multiple transfer clients.
+	/// Represents the supported Transfer API clients.
 	/// </summary>
 	/// <remarks>
 	/// This is provided purely for backwards compatibility with import/export components.
