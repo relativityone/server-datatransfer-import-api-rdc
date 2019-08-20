@@ -338,8 +338,8 @@ Namespace kCura.WinEDDS
 
 		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String) Handles _loadFileImporter.UploadModeChangeEvent
 			If _uploadModeText Is Nothing Then
-				Dim tapiObjectService As ITapiObjectService = New TapiObjectService
-				_uploadModeText = tapiObjectService.BuildFileTransferModeDocText(True)
+				Dim tapiModeService As ITapiModeService = New TapiModeService
+				_uploadModeText = tapiModeService.BuildDocText(True)
 			End If
 
 			SendTransferJobStartedMessage()

@@ -7,8 +7,8 @@
 namespace Relativity.DataExchange.Export.NUnit
 {
 	using System;
-
-	using global::NUnit.Framework;
+    using System.Collections.Generic;
+    using global::NUnit.Framework;
 
 	using Moq;
 
@@ -36,30 +36,34 @@ namespace Relativity.DataExchange.Export.NUnit
 		[TestCase("direct", TapiClient.Direct)]
 		[TestCase("Web", TapiClient.Web)]
 		[TestCase("web", TapiClient.Web)]
-		[TestCase("Aspera/Web", TapiClient.Aspera | TapiClient.Web)]
-		[TestCase("aspera/web", TapiClient.Aspera | TapiClient.Web)]
-		[TestCase("Direct/Web", TapiClient.Direct | TapiClient.Web)]
-		[TestCase("direct/web", TapiClient.Direct | TapiClient.Web)]
-		[TestCase("Direct/Aspera/Web", TapiClient.Direct | TapiClient.Aspera | TapiClient.Web)]
-		[TestCase("direct/aspera/web", TapiClient.Direct | TapiClient.Aspera | TapiClient.Web)]
-		public void ItShouldUpdateTransferMode(string clientName, TapiClient expectedTapiClient)
+		[TestCase("Aspera/Web", TapiClient.Aspera, TapiClient.Web)]
+		[TestCase("aspera/web", TapiClient.Web, TapiClient.Aspera)]
+		[TestCase("Direct/Web", TapiClient.Direct, TapiClient.Web)]
+		[TestCase("direct/web", TapiClient.Web, TapiClient.Direct)]
+		[TestCase("Direct/Aspera/Web", TapiClient.Direct, TapiClient.Aspera, TapiClient.Web)]
+		[TestCase("direct/aspera/web", TapiClient.Direct, TapiClient.Aspera, TapiClient.Web)]
+		public void ItShouldUpdateTransferMode(string clientName, params TapiClient[] expectedTapiClients)
 		{
-			TapiClient currentTapiClient = TapiClient.None;
-
+			List<TapiClient> currentTapiClients = new List<TapiClient>();
 			this._instance.Attach(this._tapiBridge.Object);
-			this._instance.TransferModeChangeEvent += newTapiClient =>
+			this._instance.TransferModesChangeEvent += (sender, args) =>
 				{
-					currentTapiClient = newTapiClient;
+					currentTapiClients.AddRange(args.TransferClients);
 				};
 
 			// ACT
-			this._tapiBridge.Raise(
-				x => x.TapiClientChanged += null,
-				new TapiClientEventArgs(Guid.Empty, clientName, expectedTapiClient));
+			if (expectedTapiClients != null)
+			{
+				foreach (TapiClient client in expectedTapiClients)
+				{
+					this._tapiBridge.Raise(
+						x => x.TapiClientChanged += null,
+						new TapiClientEventArgs(Guid.Empty, clientName, client));
+				}
+			}
 
 			// ASSERT
-			Assert.That(currentTapiClient, Is.EqualTo(expectedTapiClient));
-			Assert.That(this._instance.TransferMode, Is.EqualTo(expectedTapiClient));
+			Assert.That(currentTapiClients, Is.EquivalentTo(expectedTapiClients));
 		}
 
 		[Test]
@@ -67,12 +71,14 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			const string aspera = "Aspera";
 			const string web = "Web";
+			List<TapiClient> currentTapiClients = new List<TapiClient>();
 			TapiClient currentTapiClient = TapiClient.None;
 
 			this._instance.Attach(this._tapiBridge.Object);
-			this._instance.TransferModeChangeEvent += newTapiClient =>
+			this._instance.TransferModesChangeEvent += (sender, args) =>
 				{
-					currentTapiClient = newTapiClient;
+					currentTapiClients.Clear();
+					currentTapiClients.AddRange(args.TransferClients);
 				};
 
 			// ACT - attempting to detach an already detached bridge is safe.
@@ -83,8 +89,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(Guid.Empty, web, TapiClient.Web));
 
 			// ASSERT - detaching effectively clears the mode.
-			Assert.That(currentTapiClient, Is.EqualTo(TapiClient.Aspera));
-			Assert.That(this._instance.TransferMode, Is.EqualTo(TapiClient.None));
+			Assert.That(currentTapiClient, Is.EqualTo(TapiClient.None));
+			Assert.That(this._instance.TransferModes.Count, Is.Zero);
 		}
 	}
 }

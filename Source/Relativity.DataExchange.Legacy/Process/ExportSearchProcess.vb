@@ -96,14 +96,14 @@ Namespace kCura.WinEDDS
 			Return Not _hasFatalErrorOccured
 		End Function
 
-		Private Sub _searchExporter_FileTransferModeChangeEvent(ByVal mode As TapiClient) Handles _searchExporter.FileTransferModeChangeEvent
-			Dim tapiObjectService As ITapiObjectService = New TapiObjectService
+		Private Sub _searchExporter_FileTransferModeChangeEvent(ByVal sender As Object, ByVal args As Global.Relativity.DataExchange.Transfer.TapiMultiClientEventArgs) Handles _searchExporter.FileTransferMultiClientModeChangeEvent
+			Dim tapiModeService As ITapiModeService = New TapiModeService
 			If _uploadModeText Is Nothing Then
-				_uploadModeText = tapiObjectService.BuildFileTransferModeDocText(False)
+				_uploadModeText = tapiModeService.BuildDocText(False)
 			End If
 
-			_tapiClientName = mode.ToString()
-			Dim statusBarText As String = tapiObjectService.BuildFileTransferModeStatusBarText(mode, TapiClient.Web)
+			Dim statusBarText As String = tapiModeService.BuildExportStatusText(args.TransferClients)
+			_tapiClientName = statusBarText
 			SendTransferJobStartedMessage()
 			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)
 		End Sub

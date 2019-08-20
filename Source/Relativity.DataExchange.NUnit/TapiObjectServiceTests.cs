@@ -35,37 +35,6 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		[TestCase(false)]
-		[TestCase(true)]
-		[Repeat(3)]
-		[Category(TestCategories.TransferApi)]
-		public void ShouldBuildTheFileTransferModeDocText(bool includeBulk)
-		{
-			string text = this.service.BuildFileTransferModeDocText(includeBulk);
-			Assert.That(text, Is.Not.Null.Or.Empty);
-		}
-
-		[Test]
-		[TestCase(null, null, "Native: Disabled, Metadata: Disabled")]
-		[TestCase(null, TapiClient.Web, "Native: Disabled, Metadata: Web")]
-		[TestCase(TapiClient.None, TapiClient.None, "Native: Pending, Metadata: Pending")]
-		[TestCase(TapiClient.Aspera, TapiClient.Aspera, "Native: Aspera, Metadata: Aspera")]
-		[TestCase(TapiClient.Aspera | TapiClient.None, TapiClient.Web | TapiClient.None, "Native: Aspera, Metadata: Web")]
-		[TestCase(TapiClient.Aspera | TapiClient.Web, TapiClient.Aspera | TapiClient.Web, "Native: Aspera/Web, Metadata: Aspera/Web")]
-		[TestCase(TapiClient.Direct | TapiClient.Aspera, TapiClient.Aspera | TapiClient.Direct, "Native: Direct/Aspera, Metadata: Direct/Aspera")]
-		[TestCase(TapiClient.Web | TapiClient.Aspera, TapiClient.Aspera, "Native: Aspera/Web, Metadata: Aspera")]
-		[TestCase(TapiClient.Web | TapiClient.Aspera | TapiClient.Direct, TapiClient.Web, "Native: Direct/Aspera/Web, Metadata: Web")]
-		[TestCase(TapiClient.Web | TapiClient.Aspera | TapiClient.Direct, TapiClient.Web | TapiClient.Direct, "Native: Direct/Aspera/Web, Metadata: Direct/Web")]
-		[TestCase(TapiClient.Web | TapiClient.Aspera | TapiClient.Direct, TapiClient.Web | TapiClient.Aspera | TapiClient.Direct, "Native: Direct/Aspera/Web, Metadata: Direct/Aspera/Web")]
-		[Repeat(3)]
-		[Category(TestCategories.TransferApi)]
-		public void ShouldBuildTheFileTransferModeStatusBarText(TapiClient? native, TapiClient? metadata, string expected)
-		{
-			string text = this.service.BuildFileTransferModeStatusBarText(native, metadata);
-			Assert.That(text, Is.EqualTo(expected));
-		}
-
-		[Test]
 		[TestCase(TransferClientConstants.AsperaClientId, "Aspera")]
 		[TestCase(TransferClientConstants.FileShareClientId, "Direct")]
 		[TestCase(TransferClientConstants.HttpClientId, "Web")]

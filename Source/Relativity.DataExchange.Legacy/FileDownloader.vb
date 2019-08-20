@@ -1,4 +1,5 @@
 Imports System.Collections.Concurrent
+Imports System.Collections.Generic
 Imports kCura.WinEDDS.Service.Export
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Service
@@ -52,7 +53,7 @@ Namespace kCura.WinEDDS
 			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New ConcurrentDictionary(Of String, TapiClient)
 		End Sub
 
-		Private Function SetType(ByVal destFolderPath As String) As TapiClient
+		Private Function SetTransferMode(ByVal destFolderPath As String) As TapiClient
 			Try
 				Dim dummyText As String = System.Guid.NewGuid().ToString().Replace("-", String.Empty).Substring(0, 5)
 				FileHelper.Create(destFolderPath & dummyText).Close()
@@ -66,16 +67,31 @@ Namespace kCura.WinEDDS
 
 		Public Property DestinationFolderPath() As String
 
-		Public Property TransferMode As TapiClient Implements IExportFileDownloaderStatus.TransferMode
+		Public Property TransferMode As TapiClient
 			Get
-				Return If(_tapiClient, SetType(DestinationFolderPath))
+				Return If(_tapiClient, SetTransferMode(DestinationFolderPath))
 			End Get
 			Set(ByVal value As TapiClient)
 				Dim doevent As Boolean = Not _tapiClient.HasValue OrElse _tapiClient.Value <> value
 				_tapiClient = value
-				If doevent Then RaiseEvent TransferModeChangeEvent(value)
+				If doevent Then
+					RaiseEvent TransferModesChangeEvent(Me, New TapiMultiClientEventArgs(value))
+				End If
 			End Set
 		End Property
+
+		Public ReadOnly Property TransferModes As IList(Of TapiClient) Implements IExportFileDownloaderStatus.TransferModes
+			Get
+				Dim transferModesList As New List(Of TapiClient)
+				If (_tapiClient.HasValue) Then
+					transferModesList.Add(_tapiClient.Value)
+				End If
+
+				Return transferModesList
+			End Get
+		End Property
+
+
 
 		Public Function DownloadFullTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean Implements IExportFileDownloader.DownloadFullTextFile
 			Return WebDownloadFile(localFilePath, artifactID, "", appID, Nothing, True, -1, -1, -1)
@@ -275,7 +291,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Event UploadStatusEvent(ByVal message As String)
-		Public Event TransferModeChangeEvent(ByVal tapiClient As TapiClient) Implements IExportFileDownloaderStatus.TransferModeChangeEvent
+		Public Event TransferModesChangeEvent(ByVal sender As Object, ByVal args As Global.Relativity.DataExchange.Transfer.TapiMultiClientEventArgs) Implements IExportFileDownloaderStatus.TransferModesChangeEvent
 
 	End Class
 End Namespace

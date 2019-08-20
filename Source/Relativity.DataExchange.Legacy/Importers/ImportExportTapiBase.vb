@@ -620,13 +620,11 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub PublishUploadModeChangeEvent(ByVal nativeFilesCopied As Boolean)
-			Dim nativeTapiClient As TapiClient? = Nothing
-			If (nativeFilesCopied AndAlso Not Me.FileTapiBridge Is Nothing) Then
-				nativeTapiClient = Me.FileTapiBridge.Client
-			End If
-
-			Dim tapiObjectService As ITapiObjectService = New TapiObjectService
-			Dim statusBarText As String = tapiObjectService.BuildFileTransferModeStatusBarText(nativeTapiClient, Me.BulkLoadTapiBridge?.Client)
+			Dim tapiModeService As ITapiModeService = New TapiModeService
+			Dim statusBarText As String = tapiModeService.BuildImportStatusText(
+				nativeFilesCopied,
+				Me.FileTapiBridge?.Client,
+				Me.BulkLoadTapiBridge?.Client)
 			RaiseEvent UploadModeChangeEvent(statusBarText)
 		End Sub
 

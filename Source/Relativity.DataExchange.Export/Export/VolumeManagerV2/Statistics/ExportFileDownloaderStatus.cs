@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 
 	using kCura.WinEDDS.Service.Export;
 
@@ -19,12 +20,17 @@
 			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
-		public event IExportFileDownloaderStatus.TransferModeChangeEventEventHandler TransferModeChangeEvent;
+		public event IExportFileDownloaderStatus.TransferModesChangeEventEventHandler TransferModesChangeEvent;
 
-		public TapiClient TransferMode
+		public IList<TapiClient> TransferModes
 		{
-			get;
-			private set;
+			get
+			{
+				lock (_syncRoot)
+				{
+					return this._attachedBridgeTapiClients.Values.ToList();
+				}
+			}
 		}
 
 		public void Attach(ITapiBridge tapiBridge)
@@ -38,7 +44,7 @@
 					tapiBridge.InstanceId,
 					_attachedBridgeTapiClients.Count);
 				tapiBridge.TapiClientChanged += this.OnTapiClientChanged;
-				this.CalculateTransferMode();
+				this.CalculateTransferModes();
 			}
 		}
 
@@ -53,22 +59,21 @@
 					tapiBridge.InstanceId,
 					_attachedBridgeTapiClients.Count);
 				tapiBridge.TapiClientChanged -= this.OnTapiClientChanged;
-				this.CalculateTransferMode();
+				this.CalculateTransferModes();
 			}
 		}
 
-		private void CalculateTransferMode()
+		private void CalculateTransferModes()
 		{
-			TapiClient newMode = TapiClient.None;
+			List<TapiClient> clients = new List<TapiClient>();
 			foreach (Guid instanceId in _attachedBridgeTapiClients.Keys)
 			{
-				newMode |= _attachedBridgeTapiClients[instanceId];
+				clients.Add(_attachedBridgeTapiClients[instanceId]);
 			}
 
-			this.TransferMode = newMode;
 			_logger.LogInformation(
-				"Calculated new native transfer mode {DownloadMode} from {TotalTapiBridgeCount} transfer bridge(s).",
-				this.TransferMode,
+				"Calculated new native transfer modes {DownloadMode} from {TotalTapiBridgeCount} transfer bridge(s).",
+				string.Join(",", clients),
 				_attachedBridgeTapiClients.Count);
 		}
 
@@ -81,10 +86,10 @@
 			lock (_syncRoot)
 			{
 				_attachedBridgeTapiClients[e.InstanceId] = e.Client;
-				this.CalculateTransferMode();
+				this.CalculateTransferModes();
 			}
 
-			this.TransferModeChangeEvent?.Invoke(this.TransferMode);
+			this.TransferModesChangeEvent?.Invoke(this, new TapiMultiClientEventArgs(this.TransferModes));
 		}
 	}
 }

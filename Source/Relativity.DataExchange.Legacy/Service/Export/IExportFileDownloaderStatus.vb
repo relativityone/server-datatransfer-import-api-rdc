@@ -1,6 +1,8 @@
-﻿Namespace kCura.WinEDDS.Service.Export
+﻿Imports System.Collections.Generic
+
+Namespace kCura.WinEDDS.Service.Export
 	Public Interface IExportFileDownloaderStatus
-		Event TransferModeChangeEvent(tapiClient As Global.Relativity.DataExchange.Transfer.TapiClient)
-		ReadOnly Property TransferMode As Global.Relativity.DataExchange.Transfer.TapiClient
+		Event TransferModesChangeEvent(ByVal sender As Object, ByVal args As Global.Relativity.DataExchange.Transfer.TapiMultiClientEventArgs)
+		ReadOnly Property TransferModes As IList(Of Global.Relativity.DataExchange.Transfer.TapiClient)
 	End Interface
 End Namespace

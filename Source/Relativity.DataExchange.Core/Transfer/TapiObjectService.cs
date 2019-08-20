@@ -11,8 +11,6 @@ namespace Relativity.DataExchange.Transfer
 {
 	using System;
 	using System.Globalization;
-	using System.Linq;
-	using System.Text;
 	using System.Threading;
 	using System.Threading.Tasks;
 
@@ -54,42 +52,6 @@ namespace Relativity.DataExchange.Transfer
 
 			// Allow other clients to be forced - just clear Aspera.
 			parameters.ForceAsperaClient = false;
-		}
-
-		/// <inheritdoc />
-		public virtual string BuildFileTransferModeDocText(bool includeBulk)
-		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			sb.AppendLine("FILE TRANSFER MODES:");
-			sb.Append(BuildDocText());
-			sb.AppendLine();
-			sb.AppendLine();
-			if (includeBulk)
-			{
-				sb.AppendLine("SQL INSERT MODES:");
-				sb.AppendLine(" • Bulk • ");
-				sb.Append("The upload process has access to the SQL share on the appropriate case database.  This ensures the fastest transfer of information between the desktop client and the relativity servers.");
-				sb.AppendLine();
-				sb.AppendLine();
-				sb.AppendLine(" • Single •");
-				sb.Append("The upload process has NO access to the SQL share on the appropriate case database.  This is a slower method of import. If the process is using single mode, contact your Relativity Database Administrator to see if a SQL share can be opened for the desired case.");
-			}
-
-			return sb.ToString();
-		}
-
-		/// <inheritdoc />
-		public virtual string BuildFileTransferModeStatusBarText(TapiClient? native, TapiClient? metadata)
-		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			sb.AppendFormat(
-				Strings.FileTransferModeTextNative,
-				native != null ? this.GetFileTransferModeText(native.Value) : Strings.FileTransferModeDisabled);
-			sb.Append(", ");
-			sb.AppendFormat(
-				Strings.FileTransferModeTextMetadata,
-				metadata != null ? this.GetFileTransferModeText(metadata.Value) : Strings.FileTransferModeDisabled);
-			return sb.ToString();
 		}
 
 		/// <summary>
@@ -322,98 +284,6 @@ namespace Relativity.DataExchange.Transfer
 					parameters.ForceHttpClient = true;
 					break;
 			}
-		}
-
-		/// <summary>
-		/// Searches for all available clients and builds the documentation text from the discovered metadata.
-		/// </summary>
-		/// <returns>
-		/// The documentation text.
-		/// </returns>
-		private static string BuildDocText()
-		{
-			using (var transferLog = new RelativityTransferLog())
-			{
-				var sb = new StringBuilder();
-				foreach (var clientMetadata in Relativity.Transfer.TransferClientHelper.SearchAvailableClients(transferLog)
-					.OrderBy(x => x.DisplayName))
-				{
-					if (sb.Length > 0)
-					{
-						sb.AppendLine();
-						sb.AppendLine();
-					}
-
-					sb.AppendFormat(" • {0} • ", clientMetadata.DisplayName);
-					sb.AppendLine();
-					sb.Append(clientMetadata.Description);
-				}
-
-				return sb.ToString();
-			}
-		}
-
-		/// <summary>
-		/// Gets the client identifier for the specified transfer client.
-		/// </summary>
-		/// <param name="client">
-		/// The client.
-		/// </param>
-		/// <returns>
-		/// The unique identifier.
-		/// </returns>
-		private static Guid GetClientId(TapiClient client)
-		{
-			switch (client)
-			{
-				case TapiClient.Aspera:
-					return new Guid(Relativity.Transfer.TransferClientConstants.AsperaClientId);
-
-				case TapiClient.Direct:
-					return new Guid(Relativity.Transfer.TransferClientConstants.FileShareClientId);
-
-				case TapiClient.Web:
-					return new Guid(Relativity.Transfer.TransferClientConstants.HttpClientId);
-
-				default:
-					return Guid.Empty;
-			}
-		}
-
-		/// <summary>
-		/// Gets the file transfer mode text for the specified client.
-		/// </summary>
-		/// <param name="client">
-		/// The client enumeration value.
-		/// </param>
-		/// <returns>
-		/// The text.
-		/// </returns>
-		private string GetFileTransferModeText(TapiClient client)
-		{
-			StringBuilder sb = new StringBuilder();
-			foreach (TapiClient flaggedClient in Enum.GetValues(typeof(TapiClient)).Cast<TapiClient>()
-				.Except(new[] { TapiClient.None }).OrderBy(x => (int)x))
-			{
-				if (!client.HasFlag(flaggedClient))
-				{
-					continue;
-				}
-
-				if (sb.Length > 0)
-				{
-					sb.Append("/");
-				}
-
-				sb.Append(this.GetClientDisplayName(GetClientId(flaggedClient)));
-			}
-
-			if (sb.Length == 0)
-			{
-				sb.Append(Strings.FileTransferModePending);
-			}
-
-			return sb.ToString();
 		}
 
 		/// <summary>
