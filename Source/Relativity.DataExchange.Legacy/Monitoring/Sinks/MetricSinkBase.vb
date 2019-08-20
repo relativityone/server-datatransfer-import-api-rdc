@@ -16,12 +16,12 @@ Namespace kCura.WinEDDS.Monitoring
 		End Sub
 
         Private Function FormatApplicationName(applicationName As String) As String
-            If String.IsNullOrEmpty(applicationName) Then
+            If String.IsNullOrWhiteSpace(applicationName) Then
                 Return "Unknown"
             End If
-            Return applicationName.Replace(" ", "")
+            Return New String(applicationName.Where(Function(x) Not Char.IsWhiteSpace(x)).ToArray())
         End Function
-
+        
 		Protected Function FormatUsageBucketName(metricName As String, jobType As String, transferMode As String, applicationName As String) As String
 			Return $"{UsagePrefix}.{metricName}.{jobType}.{transferMode}.{FormatApplicationName(applicationName)}"
 		End Function
