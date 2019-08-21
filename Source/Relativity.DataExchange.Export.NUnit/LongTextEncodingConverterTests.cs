@@ -9,6 +9,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using System;
 	using System.Text;
 	using System.Threading;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
@@ -17,7 +18,6 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
-	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 
 	[TestFixture]
@@ -31,8 +31,6 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		private Mock<IFileEncodingConverter> _fileEncodingConverter;
 
-		private Mock<ITapiBridge> _tapiBridge;
-
 		private Mock<ILog> _logger;
 
 		[SetUp]
@@ -42,7 +40,6 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._logger = new Mock<ILog>();
 			this._longTextRepository = new LongTextRepository(null, this._logger.Object);
 			this._fileEncodingConverter = new Mock<IFileEncodingConverter>();
-			this._tapiBridge = new Mock<ITapiBridge>();
 			this._instance = new LongTextEncodingConverter(
 				this._longTextRepository,
 				this._fileEncodingConverter.Object,
@@ -51,7 +48,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldNotConvertFileWhenNotListening()
+		public async Task ItShouldNotConvertFileWhenNotListening()
 		{
 			const string fileName = "fileName";
 
@@ -63,14 +60,10 @@ namespace Relativity.DataExchange.Export.NUnit
 			longText.SourceEncoding = Encoding.ASCII;
 
 			// ACT
-			this._instance.StartListening(this._tapiBridge.Object);
-			this._instance.StopListening(this._tapiBridge.Object);
+			this._instance.NotifyStartConversion();
+			this._instance.NotifyStopConversion();
 
-			this._tapiBridge.Raise(
-				x => x.TapiProgress += null,
-				new TapiProgressEventArgs(fileName, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
-
-			this._instance.WaitForConversionCompletion();
+			await this._instance.WaitForConversionCompletion();
 
 			// ASSERT
 			this._fileEncodingConverter.Verify(
@@ -86,9 +79,8 @@ namespace Relativity.DataExchange.Export.NUnit
 		[Test]
 		[TestCase(false)]
 		[TestCase(true)]
-		public void ItShouldNotConvertFileWhenTheFileIsNotSuccessfullyTransferred(bool completed)
+		public async Task ItShouldNotConvertFileWhenTheFileIsNotSuccessfullyTransferred(bool completed)
 		{
-			const bool Successful = false;
 			const string fileName = "fileName";
 
 			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(
@@ -99,13 +91,10 @@ namespace Relativity.DataExchange.Export.NUnit
 			longText.SourceEncoding = Encoding.ASCII;
 
 			// ACT
-			this._instance.StartListening(this._tapiBridge.Object);
-			this._instance.StopListening(this._tapiBridge.Object);
-			this._tapiBridge.Raise(
-				x => x.TapiProgress += null,
-				new TapiProgressEventArgs(fileName, completed, Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			this._instance.NotifyStartConversion();
+			this._instance.NotifyStopConversion();
 
-			this._instance.WaitForConversionCompletion();
+			await this._instance.WaitForConversionCompletion();
 
 			// ASSERT
 			this._fileEncodingConverter.Verify(
@@ -119,7 +108,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldNotConvertFileWhenConversionIsNotRequired()
+		public async Task ItShouldNotConvertFileWhenConversionIsNotRequired()
 		{
 			const string fileName = "fileName";
 
@@ -131,15 +120,11 @@ namespace Relativity.DataExchange.Export.NUnit
 			longText.SourceEncoding = Encoding.Unicode;
 
 			// ACT
-			this._instance.StartListening(this._tapiBridge.Object);
+			this._instance.NotifyStartConversion();
 
-			this._tapiBridge.Raise(
-				x => x.TapiProgress += null,
-				new TapiProgressEventArgs(fileName, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			this._instance.NotifyStopConversion();
 
-			this._instance.StopListening(this._tapiBridge.Object);
-
-			this._instance.WaitForConversionCompletion();
+			await this._instance.WaitForConversionCompletion();
 
 			// ASSERT
 			this._fileEncodingConverter.Verify(
@@ -153,7 +138,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldConvertFile()
+		public async Task ItShouldConvertFile()
 		{
 			const string fileName = "fileName";
 
@@ -165,15 +150,11 @@ namespace Relativity.DataExchange.Export.NUnit
 			longText.SourceEncoding = Encoding.UTF8;
 
 			// ACT
-			this._instance.StartListening(this._tapiBridge.Object);
+			this._instance.NotifyStartConversion();
+			this._instance.AddForConversion(fileName);
+			this._instance.NotifyStopConversion();
 
-			this._tapiBridge.Raise(
-				x => x.TapiProgress += null,
-				new TapiProgressEventArgs(fileName, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
-
-			this._instance.StopListening(this._tapiBridge.Object);
-
-			this._instance.WaitForConversionCompletion();
+			await this._instance.WaitForConversionCompletion();
 
 			// ASSERT
 			this._fileEncodingConverter.Verify(
@@ -184,40 +165,20 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldThrowWhenProgressIsRaisedAfterTheQueueIsMarkedComplete()
+		public void ItShouldThrowWhenConvertingNewFileAfterMarkingQueueAsCompleted()
 		{
 			// ARRANGE
-			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(
-				1,
-				this._longTextRepository,
-				"fileName",
-				Encoding.Unicode);
-			longText.SourceEncoding = Encoding.UTF8;
+			string fileName = "fileName";
 
 			// ACT - This simulates the scenario where events are raised despite having been unsubscribed.
-			this._instance.StartListening(this._tapiBridge.Object);
-			this._instance.MarkQueueComplete();
+			this._instance.NotifyStartConversion();
+			this._instance.NotifyStopConversion();
 
-			// ASSERT
-			InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
-				() =>
-					{
-						this._tapiBridge.Raise(
-							x => x.TapiProgress += null,
-							new TapiProgressEventArgs(
-								longText.Location,
-								true,
-								true,
-								1,
-								1,
-								DateTime.MinValue,
-								DateTime.MaxValue));
-					});
-			this._logger.Verify(x => x.LogError(exception, It.IsAny<string>(), It.IsAny<object[]>()), Times.Once);
+			Assert.Throws<InvalidOperationException>(() => this._instance.AddForConversion(fileName));
 		}
 
 		[Test]
-		public void ItShouldWaitForConversionToComplete()
+		public async Task ItShouldWaitForConversionToComplete()
 		{
 			const string fileName = "fileName";
 
@@ -231,15 +192,13 @@ namespace Relativity.DataExchange.Export.NUnit
 				x => x.Convert(fileName, Encoding.UTF8, Encoding.Unicode, this._cancellationTokenSource.Token));
 
 			// ACT
-			this._instance.StartListening(this._tapiBridge.Object);
+			this._instance.NotifyStartConversion();
 
-			this._tapiBridge.Raise(
-				x => x.TapiProgress += null,
-				new TapiProgressEventArgs(fileName, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			this._instance.AddForConversion(fileName);
 
-			this._instance.StopListening(this._tapiBridge.Object);
+			this._instance.NotifyStopConversion();
 
-			this._instance.WaitForConversionCompletion();
+			await this._instance.WaitForConversionCompletion();
 
 			// ASSERT
 			this._fileEncodingConverter.Verify(
@@ -249,45 +208,13 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldThrowWhenTheFileDoesNotExistInTheRepository()
-		{
-			// Simulate an inability to find the LongText object within the repository.
-			const string fileName = "fileName";
-			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(
-				1,
-				this._longTextRepository,
-				fileName + "-file-not-found",
-				Encoding.Unicode);
-			longText.SourceEncoding = Encoding.UTF8;
-
-			// ACT
-			this._instance.StartListening(this._tapiBridge.Object);
-			this._tapiBridge.Raise(
-				x => x.TapiProgress += null,
-				new TapiProgressEventArgs(fileName, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
-			this._instance.StopListening(this._tapiBridge.Object);
-
-			// ASSERT
-			Assert.Throws<ArgumentException>(() => this._instance.WaitForConversionCompletion());
-			this._fileEncodingConverter.Verify(
-				x => x.Convert(fileName, Encoding.UTF8, Encoding.Unicode, this._cancellationTokenSource.Token),
-				Times.Never);
-			this._logger.Verify(x => x.LogError(It.IsAny<string>(), It.IsAny<object[]>()), Times.Once);
-		}
-
-		[Test]
 		public void ItShouldDisposeTheBlockingCollection()
 		{
-			// ARRANGE
-			this._tapiBridge.Raise(
-				x => x.TapiProgress += null,
-				new TapiProgressEventArgs("filename1", true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
-
 			// ACT
 			this._instance.Dispose();
 
 			// ASSERT
-			Assert.Throws<ObjectDisposedException>(() => this._instance.MarkQueueComplete());
+			Assert.Throws<ObjectDisposedException>(() => this._instance.NotifyStopConversion());
 		}
 	}
 }

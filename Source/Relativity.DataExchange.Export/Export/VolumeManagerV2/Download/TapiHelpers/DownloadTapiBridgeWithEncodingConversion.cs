@@ -38,7 +38,7 @@
 				if (!_initialized)
 				{
 					_logger.LogVerbose("Initializing long text encoding converter...");
-					_longTextEncodingConverter.StartListening(this.TapiBridge);
+					this.Attach(this.TapiBridge);
 					_logger.LogVerbose("Initialized long text encoding converter.");
 					_initialized = true;
 				}
@@ -61,8 +61,6 @@
 
 			try
 			{
-				// REL-344406: The LongTextEncodingConverter implementation is entirely dependent on awaiting completion of the transfer job.
-				// TODO: Decouple encoding conversion entirely from the batch and into an independent queue.
 				const bool KeepJobAlive = false;
 				this.TapiBridge.WaitForTransfers(
 					"Waiting for all long files to download...",
@@ -74,7 +72,7 @@
 			{
 				try
 				{
-					_longTextEncodingConverter.StopListening(this.TapiBridge);
+					this.Detach(this.TapiBridge);
 				}
 				catch (Exception e)
 				{
@@ -82,7 +80,52 @@
 				}
 			}
 
-			_longTextEncodingConverter.WaitForConversionCompletion();
+			_longTextEncodingConverter.WaitForConversionCompletion().GetAwaiter().GetResult();
+		}
+
+		private void Attach(ITapiBridge tapiBridge)
+		{
+			tapiBridge.ThrowIfNull(nameof(tapiBridge));
+			this._logger.LogVerbose(
+				"Attached tapi bridge {TapiBridgeInstanceId} to the long text encoding converter.",
+				tapiBridge.InstanceId);
+			_longTextEncodingConverter.NotifyStartConversion();
+			tapiBridge.TapiProgress += this.OnTapiProgress;
+		}
+
+		private void Detach(ITapiBridge tapiBridge)
+		{
+			tapiBridge.ThrowIfNull(nameof(tapiBridge));
+			this._logger.LogVerbose(
+				"Detached tapi bridge {TapiBridgeInstanceId} from the long text encoding converter.",
+				tapiBridge.InstanceId);
+			_longTextEncodingConverter.NotifyStopConversion();
+			tapiBridge.TapiProgress -= this.OnTapiProgress;
+		}
+
+		private void OnTapiProgress(object sender, TapiProgressEventArgs e)
+		{
+			_logger.LogVerbose(
+				"Long text encoding conversion progress event for file {FileName} with status {Successful}.",
+				e.FileName,
+				e.Successful);
+			if (e.Successful)
+			{
+				try
+				{
+
+					_logger.LogVerbose("Preparing to add the '{LongTextFileName}' long text file to the queue...", e.FileName);
+					_longTextEncodingConverter.AddForConversion(e.FileName);
+					_logger.LogVerbose("Successfully added the '{LongTextFileName}' long text file to the queue.", e.FileName);
+				}
+				catch (InvalidOperationException e2)
+				{
+					_logger.LogError(
+						e2,
+						"The long text encoding converter received a transfer successful progress event but the blocking collection has already been marked as completed. This exception suggests either a logic or task switch context issue.");
+					throw;
+				}
+			}
 		}
 	}
 }

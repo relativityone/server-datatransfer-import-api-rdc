@@ -6,7 +6,6 @@
 	using System.Threading;
 	using System.Threading.Tasks;
 
-	using Relativity.DataExchange.Transfer;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Logging;
@@ -35,56 +34,31 @@
 
 		public int Count => _longTextFilesToConvert.Count;
 
-		public void StartListening(ITapiBridge tapiBridge)
+
+		public void NotifyStartConversion()
 		{
-			tapiBridge.ThrowIfNull(nameof(tapiBridge));
-			_logger.LogVerbose(
-				"Attached tapi bridge {TapiBridgeInstanceId} to the long text encoding converter.",
-				tapiBridge.InstanceId);
 			_conversionTask = Task.Run(() => this.ConvertLongTextFiles(), _cancellationToken);
-			tapiBridge.TapiProgress += this.OnTapiProgress;
 		}
 
-		public void StopListening(ITapiBridge tapiBridge)
+		public void NotifyStopConversion()
 		{
-			tapiBridge.ThrowIfNull(nameof(tapiBridge));
-			_logger.LogVerbose(
-				"Detached tapi bridge {TapiBridgeInstanceId} from the long text encoding converter.",
-				tapiBridge.InstanceId);
-			tapiBridge.TapiProgress -= this.OnTapiProgress;
-			this.MarkQueueComplete();
+			_logger.LogVerbose("Preparing to mark the long text encoding conversion queue complete...");
+			_longTextFilesToConvert.CompleteAdding();
+			_logger.LogVerbose("Successfully marked the long text encoding conversion queue complete.");
 		}
 
-		private void OnTapiProgress(object sender, TapiProgressEventArgs e)
-		{
-			_logger.LogVerbose(
-				"Long text encoding conversion progress event for file {FileName} with status {Successful}.",
-				e.FileName,
-				e.Successful);
-			if (e.Successful)
-			{
-				try
-				{
-					
-					_logger.LogVerbose("Preparing to add the '{LongTextFileName}' long text file to the queue...", e.FileName);
-					_longTextFilesToConvert.Add(e.FileName, _cancellationToken);
-					_logger.LogVerbose("Successfully added the '{LongTextFileName}' long text file to the queue.", e.FileName);
-				}
-				catch (InvalidOperationException e2)
-				{
-					_logger.LogError(
-						e2,
-						"The long text encoding converter received a transfer successful progress event but the blocking collection has already been marked as completed. This exception suggests either a logic or task switch context issue.");
-					throw;
-				}
-			}
-		}
-
-		public void WaitForConversionCompletion()
+		public async Task WaitForConversionCompletion()
 		{
 			_logger.LogVerbose("Waiting for the long text encoding conversion to complete.");
-			_conversionTask.ConfigureAwait(false).GetAwaiter().GetResult();
+			await this._conversionTask.ConfigureAwait(false);
 			_logger.LogVerbose("Successfully awaited the long text encoding conversion to complete.");
+		}
+
+		public void AddForConversion(string fileName)
+		{
+			_logger.LogVerbose("Preparing to add the '{LongTextFileName}' long text file to the queue...", fileName);
+			_longTextFilesToConvert.Add(fileName, _cancellationToken);
+			_logger.LogVerbose("Successfully added the '{LongTextFileName}' long text file to the queue.", fileName);
 		}
 
 		private void ConvertLongTextFiles()
@@ -179,14 +153,6 @@
 		public void Dispose()
 		{
 			_longTextFilesToConvert?.Dispose();
-		}
-
-		internal void MarkQueueComplete()
-		{
-			// Note: this method exists solely for testing.
-			_logger.LogVerbose("Preparing to mark the long text encoding conversion queue complete...");
-			_longTextFilesToConvert.CompleteAdding();
-			_logger.LogVerbose("Successfully marked the long text encoding conversion queue complete.");
 		}
 	}
 }
