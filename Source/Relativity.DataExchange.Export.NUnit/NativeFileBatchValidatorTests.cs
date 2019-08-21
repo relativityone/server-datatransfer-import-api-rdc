@@ -31,20 +31,30 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		protected Mock<IFile> FileHelper { get; private set; }
 
+		protected Mock<IAppSettings> AppSettings { get; private set; }
+
 		protected Mock<IStatus> Status { get; private set; }
+
+		protected Mock<ILog> Logger { get; private set; }
 
 		[SetUp]
 		public void SetUp()
 		{
+			this.AppSettings = new Mock<IAppSettings>();
 			this.ErrorFileWriter = new Mock<IErrorFileWriter>();
 			this.FileHelper = new Mock<IFile>();
 			this.Status = new Mock<IStatus>();
+			this.Logger = new Mock<ILog>();
 			this.Instance = this.CreateValidator();
 		}
 
 		protected virtual IBatchValidator CreateValidator()
 		{
-			return new NativeFileBatchValidator(this.ErrorFileWriter.Object, this.FileHelper.Object, new NullLogger());
+			return new NativeFileBatchValidator(
+				this.ErrorFileWriter.Object,
+				this.FileHelper.Object,
+				this.AppSettings.Object,
+				this.Logger.Object);
 		}
 
 		[Test]
@@ -115,9 +125,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		[TestCase(true, 0)]
-		[TestCase(false, 1)]
-		public void ItShouldWriteErrorForMissingOrEmptyFile(bool exists, long size)
+		public void ItShouldWriteErrorForMissingFile()
 		{
 			var artifact = new ObjectExportInfo
 			{
@@ -128,8 +136,9 @@ namespace Relativity.DataExchange.Export.NUnit
 				artifact
 			};
 
-			this.FileHelper.Setup(x => x.Exists(artifact.NativeTempLocation)).Returns(exists);
-			this.FileHelper.Setup(x => x.GetFileSize(artifact.NativeTempLocation)).Returns(size);
+			this.AppSettings.SetupGet(x => x.CreateErrorForEmptyNativeFile).Returns(true);
+			this.FileHelper.Setup(x => x.Exists(artifact.NativeTempLocation)).Returns(false);
+			this.FileHelper.Setup(x => x.GetFileSize(artifact.NativeTempLocation)).Returns(1);
 
 			// ACT
 			this.Instance.ValidateExportedBatch(artifacts, CancellationToken.None);
@@ -143,6 +152,39 @@ namespace Relativity.DataExchange.Export.NUnit
 					artifact.NativeTempLocation,
 					It.IsAny<string>()),
 				Times.Once);
+			this.Status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
+		}
+
+		[Test]
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldNotWriteErrorForEmptyFileWhenConfigured(bool createErrorForEmptyNativeFile)
+		{
+			var artifact = new ObjectExportInfo
+				               {
+					               NativeTempLocation = "file_path"
+				               };
+			ObjectExportInfo[] artifacts =
+				{
+					artifact
+				};
+
+			this.AppSettings.SetupGet(x => x.CreateErrorForEmptyNativeFile).Returns(createErrorForEmptyNativeFile);
+			this.FileHelper.Setup(x => x.Exists(artifact.NativeTempLocation)).Returns(true);
+			this.FileHelper.Setup(x => x.GetFileSize(artifact.NativeTempLocation)).Returns(0);
+
+			// ACT
+			this.Instance.ValidateExportedBatch(artifacts, CancellationToken.None);
+
+			// ASSERT
+			this.ErrorFileWriter.Verify(
+				x => x.Write(
+					Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType
+						.Native,
+					artifact.IdentifierValue,
+					artifact.NativeTempLocation,
+					It.IsAny<string>()),
+				createErrorForEmptyNativeFile ? Times.Once() : Times.Never());
 			this.Status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 

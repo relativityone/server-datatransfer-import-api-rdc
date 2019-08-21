@@ -16,12 +16,23 @@
 	{
 		private readonly IErrorFileWriter _errorFileWriter;
 		private readonly IFile _fileWrapper;
+		private readonly IAppSettings _settings;
 		private readonly ILog _logger;
 
 		public ImageFileBatchValidator(IErrorFileWriter errorFileWriter, IFile fileWrapper, ILog logger)
+			: this(errorFileWriter, fileWrapper, AppSettings.Instance, logger)
+		{
+		}
+
+		public ImageFileBatchValidator(
+			IErrorFileWriter errorFileWriter,
+			IFile fileWrapper,
+			IAppSettings settings,
+			ILog logger)
 		{
 			_errorFileWriter = errorFileWriter.ThrowIfNull(nameof(errorFileWriter));
 			_fileWrapper = fileWrapper.ThrowIfNull(nameof(fileWrapper));
+			_settings = settings.ThrowIfNull(nameof(settings));
 			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
@@ -72,11 +83,20 @@
 			bool fileExists = _fileWrapper.Exists(image.TempLocation);
 			if (!fileExists || _fileWrapper.GetFileSize(image.TempLocation) == 0)
 			{
+				if (fileExists && !_settings.CreateErrorForEmptyNativeFile)
+				{
+					this._logger.LogVerbose(
+						"Image file {File} contains zero bytes for artifact {ArtifactId} but the export is configured to skip creating an error.",
+						artifact.NativeTempLocation,
+						artifact.ArtifactID);
+					return;
+				}
+
 				string errorMessage = string.Format(
 					CultureInfo.CurrentCulture,
 					fileExists ? ExportStrings.FileValidationZeroByteFile : ExportStrings.FileValidationFileMissing,
 					artifact.ArtifactID);
-				if (string.IsNullOrWhiteSpace(artifact.NativeSourceLocation))
+				if (string.IsNullOrWhiteSpace(image.SourceLocation))
 				{
 					errorMessage = string.Format(
 						CultureInfo.CurrentCulture,
