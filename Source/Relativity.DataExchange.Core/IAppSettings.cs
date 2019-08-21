@@ -45,7 +45,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to create an error when importing a zero byte file. This is <see langword="false" /> by default.
+		/// Gets or sets a value indicating whether to create an error when importing or exporting a zero byte file. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to create an error; otherwise, <see langword="false" />.
