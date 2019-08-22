@@ -61,7 +61,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			// ACT
 			this._instance.NotifyStartConversion();
-			this._instance.NotifyStopConversion();
+			this._instance.NotifyDownloadFinished();
 
 			await this._instance.WaitForConversionCompletion();
 
@@ -92,7 +92,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			// ACT
 			this._instance.NotifyStartConversion();
-			this._instance.NotifyStopConversion();
+			this._instance.NotifyDownloadFinished();
 
 			await this._instance.WaitForConversionCompletion();
 
@@ -122,7 +122,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT
 			this._instance.NotifyStartConversion();
 
-			this._instance.NotifyStopConversion();
+			this._instance.NotifyDownloadFinished();
 
 			await this._instance.WaitForConversionCompletion();
 
@@ -152,7 +152,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT
 			this._instance.NotifyStartConversion();
 			this._instance.AddForConversion(fileName);
-			this._instance.NotifyStopConversion();
+			this._instance.NotifyDownloadFinished();
 
 			await this._instance.WaitForConversionCompletion();
 
@@ -172,7 +172,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			// ACT - This simulates the scenario where events are raised despite having been unsubscribed.
 			this._instance.NotifyStartConversion();
-			this._instance.NotifyStopConversion();
+			this._instance.NotifyDownloadFinished();
 
 			Assert.Throws<InvalidOperationException>(() => this._instance.AddForConversion(fileName));
 		}
@@ -196,7 +196,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._instance.AddForConversion(fileName);
 
-			this._instance.NotifyStopConversion();
+			this._instance.NotifyDownloadFinished();
 
 			await this._instance.WaitForConversionCompletion();
 
@@ -214,7 +214,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.Dispose();
 
 			// ASSERT
-			Assert.Throws<ObjectDisposedException>(() => this._instance.NotifyStopConversion());
+			Assert.Throws<ObjectDisposedException>(() => this._instance.NotifyDownloadFinished());
 		}
 	}
 }

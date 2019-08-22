@@ -21,7 +21,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	[TestFixture]
 	public class DownloadTapiBridgeWithEncodingConversionTests : DownloadTapiBridgeAdapterTests
 	{
-		private Mock<ILongTextEncodingConverter> _longTextEncodingConverter;
+		private Mock<IFileDownloadSubscriber> _longTextEncodingConverter;
 		private Mock<ILog> _logger;
 
 		[SetUp]
@@ -30,7 +30,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.SetUpMocks();
 
 			this._logger = new Mock<ILog>();
-			this._longTextEncodingConverter = new Mock<ILongTextEncodingConverter>();
+			this._longTextEncodingConverter = new Mock<IFileDownloadSubscriber>();
 
 			this.Instance = new DownloadTapiBridgeWithEncodingConversion(
 				this.TapiBridge.Object,
@@ -69,7 +69,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			Assert.Throws<Exception>(() => this.Instance.WaitForTransfers());
 
 			// ASSERT
-			this._longTextEncodingConverter.Verify(x => x.NotifyStopConversion(), Times.Once);
+			this._longTextEncodingConverter.Verify(x => x.NotifyDownloadFinished(), Times.Once);
 		}
 
 		[Test]

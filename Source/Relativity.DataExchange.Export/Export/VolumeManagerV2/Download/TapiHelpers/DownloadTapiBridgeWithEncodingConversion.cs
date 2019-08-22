@@ -1,6 +1,9 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	using System;
+	using System.Reactive.Concurrency;
+	using System.Reactive.Linq;
+	using System.Reactive.Subjects;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
@@ -10,25 +13,64 @@
 
 	using ITransferStatistics = Relativity.DataExchange.Export.VolumeManagerV2.Statistics.ITransferStatistics;
 
-	public class DownloadTapiBridgeWithEncodingConversion : DownloadTapiBridgeAdapter
+	public interface IFileTransferProducer
+	{
+		IObservable<string> FileDownloaded { get; }
+
+		Subject<int> FileDownloadCompleted { get; }
+	}
+
+	public class DownloadTapiBridgeWithEncodingConversion : DownloadTapiBridgeAdapter, IFileTransferProducer
 	{
 		private readonly object _syncRoot = new object();
-		private readonly ILongTextEncodingConverter _longTextEncodingConverter;
+		private readonly IFileDownloadSubscriber _fileDownloadSubscriber;
 		private readonly ILog _logger;
 		private bool _initialized;
+
+		private int _fileDownloadCount;
 
 		public DownloadTapiBridgeWithEncodingConversion(
 			ITapiBridge downloadTapiBridge,
 			IProgressHandler progressHandler,
 			IMessagesHandler messagesHandler,
 			ITransferStatistics transferStatistics,
-			ILongTextEncodingConverter longTextEncodingConverter,
+			IFileDownloadSubscriber fileDownloadSubscriber,
 			ILog logger)
 			: base(downloadTapiBridge, progressHandler, messagesHandler, transferStatistics)
 		{
-			_longTextEncodingConverter = longTextEncodingConverter;
+			this._fileDownloadSubscriber = fileDownloadSubscriber;
 			_logger = logger;
 			_initialized = false;
+
+			this.FileDownloadCompleted = new Subject<int>();
+		}
+
+		public Subject<int> FileDownloadCompleted { get; private set; }
+
+		public IObservable<string> FileDownloaded
+		{
+			get
+			{
+				return Observable.FromEventPattern<TapiProgressEventArgs>(h =>
+					{
+						this._logger.LogVerbose(
+							"Attached tapi bridge {TapiBridgeInstanceId} to the long text encoding converter.",
+							TapiBridge.InstanceId);
+						this.TapiBridge.TapiProgress += h;
+					},
+		h =>
+					{
+						this._logger.LogVerbose(
+							"Detached tapi bridge {TapiBridgeInstanceId} from the long text encoding converter.",
+							this.TapiBridge.InstanceId);
+						this.TapiBridge.TapiProgress -= h;
+					})
+					// it will run on the Thread Pool 
+					.ObserveOn(Scheduler.Default)
+					.Select(x => x.EventArgs)
+					.Where(this.IsTransferSuccessful)
+					.Select(x => x.FileName);
+			}
 		}
 
 		public override string QueueDownload(TransferPath transferPath)
@@ -38,12 +80,12 @@
 				if (!_initialized)
 				{
 					_logger.LogVerbose("Initializing long text encoding converter...");
-					this.Attach(this.TapiBridge);
+					this._fileDownloadSubscriber.SubscribeForDownloadEvents(this);
+					
 					_logger.LogVerbose("Initialized long text encoding converter.");
 					_initialized = true;
 				}
 			}
-
 			return this.TapiBridge.AddPath(transferPath);
 		}
 
@@ -58,7 +100,6 @@
 					return;
 				}
 			}
-
 			try
 			{
 				const bool KeepJobAlive = false;
@@ -72,7 +113,7 @@
 			{
 				try
 				{
-					this.Detach(this.TapiBridge);
+					this.FileDownloadCompleted.OnNext(this._fileDownloadCount);
 				}
 				catch (Exception e)
 				{
@@ -80,52 +121,16 @@
 				}
 			}
 
-			_longTextEncodingConverter.WaitForConversionCompletion().GetAwaiter().GetResult();
+			this._fileDownloadSubscriber.WaitForConversionCompletion().GetAwaiter().GetResult();
 		}
 
-		private void Attach(ITapiBridge tapiBridge)
-		{
-			tapiBridge.ThrowIfNull(nameof(tapiBridge));
-			this._logger.LogVerbose(
-				"Attached tapi bridge {TapiBridgeInstanceId} to the long text encoding converter.",
-				tapiBridge.InstanceId);
-			_longTextEncodingConverter.NotifyStartConversion();
-			tapiBridge.TapiProgress += this.OnTapiProgress;
-		}
-
-		private void Detach(ITapiBridge tapiBridge)
-		{
-			tapiBridge.ThrowIfNull(nameof(tapiBridge));
-			this._logger.LogVerbose(
-				"Detached tapi bridge {TapiBridgeInstanceId} from the long text encoding converter.",
-				tapiBridge.InstanceId);
-			_longTextEncodingConverter.NotifyStopConversion();
-			tapiBridge.TapiProgress -= this.OnTapiProgress;
-		}
-
-		private void OnTapiProgress(object sender, TapiProgressEventArgs e)
+		private bool IsTransferSuccessful(TapiProgressEventArgs arg)
 		{
 			_logger.LogVerbose(
 				"Long text encoding conversion progress event for file {FileName} with status {Successful}.",
-				e.FileName,
-				e.Successful);
-			if (e.Successful)
-			{
-				try
-				{
-
-					_logger.LogVerbose("Preparing to add the '{LongTextFileName}' long text file to the queue...", e.FileName);
-					_longTextEncodingConverter.AddForConversion(e.FileName);
-					_logger.LogVerbose("Successfully added the '{LongTextFileName}' long text file to the queue.", e.FileName);
-				}
-				catch (InvalidOperationException e2)
-				{
-					_logger.LogError(
-						e2,
-						"The long text encoding converter received a transfer successful progress event but the blocking collection has already been marked as completed. This exception suggests either a logic or task switch context issue.");
-					throw;
-				}
-			}
+				arg.FileName,
+				arg.Successful);
+			return arg.Successful;
 		}
 	}
 }

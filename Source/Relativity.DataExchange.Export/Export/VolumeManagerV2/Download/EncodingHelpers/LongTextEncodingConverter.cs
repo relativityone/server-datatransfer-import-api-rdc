@@ -6,11 +6,12 @@
 	using System.Threading;
 	using System.Threading.Tasks;
 
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Logging;
 
-	public class LongTextEncodingConverter : IDisposable, ILongTextEncodingConverter
+	public class FileDownloadSubscriber : IFileDownloadSubscriber
 	{
 		private readonly BlockingCollection<string> _longTextFilesToConvert;
 		private readonly LongTextRepository _longTextRepository;
@@ -19,7 +20,7 @@
 		private readonly CancellationToken _cancellationToken;
 		private Task _conversionTask;
 
-		public LongTextEncodingConverter(
+		public FileDownloadSubscriber(
 			LongTextRepository longTextRepository,
 			IFileEncodingConverter fileEncodingConverter,
 			ILog logger,
@@ -34,19 +35,6 @@
 
 		public int Count => _longTextFilesToConvert.Count;
 
-
-		public void NotifyStartConversion()
-		{
-			_conversionTask = Task.Run(() => this.ConvertLongTextFiles(), _cancellationToken);
-		}
-
-		public void NotifyStopConversion()
-		{
-			_logger.LogVerbose("Preparing to mark the long text encoding conversion queue complete...");
-			_longTextFilesToConvert.CompleteAdding();
-			_logger.LogVerbose("Successfully marked the long text encoding conversion queue complete.");
-		}
-
 		public async Task WaitForConversionCompletion()
 		{
 			_logger.LogVerbose("Waiting for the long text encoding conversion to complete.");
@@ -54,11 +42,43 @@
 			_logger.LogVerbose("Successfully awaited the long text encoding conversion to complete.");
 		}
 
-		public void AddForConversion(string fileName)
+		public void SubscribeForDownloadEvents(IFileTransferProducer fileTransferProducer)
 		{
-			_logger.LogVerbose("Preparing to add the '{LongTextFileName}' long text file to the queue...", fileName);
-			_longTextFilesToConvert.Add(fileName, _cancellationToken);
-			_logger.LogVerbose("Successfully added the '{LongTextFileName}' long text file to the queue.", fileName);
+			fileTransferProducer.ThrowIfNull(nameof(fileTransferProducer));
+
+			fileTransferProducer.FileDownloaded.Subscribe(this.AddForConversion);
+			fileTransferProducer.FileDownloadCompleted.Subscribe(this.CompleteConversion);
+
+			_conversionTask = Task.Run(() => this.ConvertLongTextFiles(), _cancellationToken);
+		}
+
+		private void CompleteConversion(int filesDownloadedCount)
+		{
+			_logger.LogVerbose("Preparing to mark the long text encoding conversion queue complete...");
+			_logger.LogVerbose("Expected file count to be converted in the batch: {filesDownloadedCount}", filesDownloadedCount);
+			_longTextFilesToConvert.CompleteAdding();
+			_logger.LogVerbose("Successfully marked the long text encoding conversion queue complete.");
+		}
+
+		private void AddForConversion(string fileName)
+		{
+			try
+			{
+				_logger.LogVerbose(
+					"Preparing to add the '{fileName}' long text file to the queue...",
+					fileName);
+				_longTextFilesToConvert.Add(fileName, _cancellationToken);
+				_logger.LogVerbose(
+					"Successfully added the '{fileName}' long text file to the queue.",
+					fileName);
+			}
+			catch (InvalidOperationException e2)
+			{
+				_logger.LogError(
+					e2,
+					"The long text encoding converter received a transfer successful progress event but the blocking collection has already been marked as completed. This exception suggests either a logic or task switch context issue.");
+				throw;
+			}
 		}
 
 		private void ConvertLongTextFiles()
@@ -91,20 +111,16 @@
 				}
 
 				_logger.LogVerbose(
-					"Successfully awaited the long text file queue. Total conversions = {TotalConvertedLongTextFiles}.",
+					"Successfully awaited the long text file queue. Total conversions: {totalConvertedTextFiles}.",
 					totalConvertedTextFiles);
 			}
 			catch (OperationCanceledException e)
 			{
 				_logger.LogInformation(e, "LongText encoding conversion canceled.");
 			}
-			catch (ArgumentException)
+			catch (Exception ex)
 			{
-				throw;
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Failed to convert long text file.");
+				_logger.LogError(ex, "Failed to convert long text file.");
 				throw;
 			}
 		}
@@ -148,11 +164,6 @@
 				longText.SourceEncoding,
 				longText.DestinationEncoding);
 			longText.SourceEncoding = longText.DestinationEncoding;
-		}
-
-		public void Dispose()
-		{
-			_longTextFilesToConvert?.Dispose();
 		}
 	}
 }
