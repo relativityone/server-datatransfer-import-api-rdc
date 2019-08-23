@@ -1,4 +1,5 @@
-﻿Imports Relativity.DataTransfer.MessageService
+﻿Imports Relativity.DataExchange.Service
+Imports Relativity.DataTransfer.MessageService
 Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
 Imports Relativity.Services.ServiceProxy
 
@@ -17,7 +18,7 @@ Namespace kCura.WinEDDS.Monitoring
 
         Private Function FormatApplicationName(applicationName As String) As String
             If String.IsNullOrWhiteSpace(applicationName) Then
-                Return "Unknown"
+                Return ExecutionSource.Unknown.ToString()
             End If
             Return New String(applicationName.Where(Function(x) Not Char.IsWhiteSpace(x)).ToArray())
         End Function
