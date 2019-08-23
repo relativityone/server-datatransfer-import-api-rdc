@@ -604,6 +604,9 @@ Namespace kCura.WinEDDS
 						Statistics.BatchSize = Me.ImportBatchSize
 						JobCounter = 1
 						Me.TotalTransferredFilesCount = 0
+
+						' This will safely force the status bar to update immediately.
+						Me.OnTapiClientChanged()
 						Using fileTypeIdentifier As IFileTypeIdentifier = New OutsideInFileTypeIdentifierService(AppSettings.Instance.FileTypeIdentifyTimeoutSeconds)
 							While ShouldImport AndAlso _artifactReader.HasMoreRecords
 								Try
@@ -2033,7 +2036,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnTapiClientChanged()
 			MyBase.OnTapiClientChanged()
-			Me.PublishUploadModeChangeEvent(_settings.CopyFilesToDocumentRepository AndAlso _settings.NativeFilePathColumn IsNot Nothing)
+			Me.PublishUploadModeChangeEvent(_settings.CopyFilesToDocumentRepository AndAlso _settings.LoadNativeFiles AndAlso _settings.NativeFilePathColumn IsNot Nothing)
 		End Sub
 
 		Protected Overridable Sub _processContext_HaltProcessEvent(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles Context.CancellationRequest

@@ -620,8 +620,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub PublishUploadModeChangeEvent(ByVal nativeFilesCopied As Boolean)
-			Dim tapiModeService As ITapiModeService = New TapiModeService
-			Dim statusBarText As String = tapiModeService.BuildImportStatusText(
+			Dim statusBarText As String = TapiModeHelper.BuildImportStatusText(
 				nativeFilesCopied,
 				Me.FileTapiBridge?.Client,
 				Me.BulkLoadTapiBridge?.Client)

@@ -162,18 +162,18 @@ namespace Relativity.DataExchange.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Metadata: {0}.
         /// </summary>
-        internal static string FileTransferModeTextMetadata {
+        internal static string FileTransferStatusTextMetadataPrefix {
             get {
-                return ResourceManager.GetString("FileTransferModeTextMetadata", resourceCulture);
+                return ResourceManager.GetString("FileTransferStatusTextMetadataPrefix", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Native: {0}.
+        ///   Looks up a localized string similar to File Transfer Mode: {0}.
         /// </summary>
-        internal static string FileTransferModeTextNative {
+        internal static string FileTransferStatusTextModePrefix {
             get {
-                return ResourceManager.GetString("FileTransferModeTextNative", resourceCulture);
+                return ResourceManager.GetString("FileTransferStatusTextModePrefix", resourceCulture);
             }
         }
         

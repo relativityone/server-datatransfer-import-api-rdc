@@ -678,6 +678,8 @@ Namespace kCura.WinEDDS
 
 				_timekeeper.MarkStart("ReadFile_Main")
 				
+				' This will safely force the status bar to update immediately.
+				Me.OnTapiClientChanged()
 				Me.LogInformation("Preparing to import images via WinEDDS.")
 				Me.Statistics.BatchSize = Me.ImportBatchSize
 				If _productionArtifactID <> 0 Then _productionManager.DoPreImportProcessing(_caseInfo.ArtifactID, _productionArtifactID)
