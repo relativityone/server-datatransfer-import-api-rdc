@@ -292,12 +292,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		/// <summary>
-		/// Gets the transfer mode.
+		/// Gets the list of transfer modes.
 		/// </summary>
 		/// <value>
 		/// The <see cref="TapiClient"/> value.
 		/// </value>
-		protected TapiClient TransferMode
+		protected IList<TapiClient> TransferModes
 		{
 			get;
 			private set;
@@ -351,7 +351,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.tempDirectory.Create();
 			this.TotalDocumentsProcessed = 0;
 			this.TotalDocuments = 0;
-			this.TransferMode = TapiClient.None;
+			this.TransferModes = new List<TapiClient>();
 			this.MockUserNotification = MockObjectFactory.CreateMockUserNotification();
 			this.MockUserNotification.Setup(x => x.Alert(It.IsAny<string>())).Callback<string>(msg =>
 			{
@@ -953,14 +953,14 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			try
 			{
 				exporter.StatusMessage += this.ExporterOnStatusMessage;
-				exporter.FileTransferModeChangeEvent += this.ExporterOnFileTransferModeChangeEvent;
+				exporter.FileTransferMultiClientModeChangeEvent += this.ExporterOnFileTransferModeChangeEvent;
 				exporter.FatalErrorEvent += this.ExporterOnFatalErrorEvent;
 				this.searchResult = exporter.ExportSearch();
 			}
 			finally
 			{
 				exporter.StatusMessage -= this.ExporterOnStatusMessage;
-				exporter.FileTransferModeChangeEvent -= this.ExporterOnFileTransferModeChangeEvent;
+				exporter.FileTransferMultiClientModeChangeEvent -= this.ExporterOnFileTransferModeChangeEvent;
 				exporter.FatalErrorEvent -= this.ExporterOnFatalErrorEvent;
 			}
 		}
@@ -1055,7 +1055,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		/// </summary>
 		protected void ThenTheTransferModeShouldEqualDirectOrWebMode()
 		{
-			Assert.That(this.TransferMode, Is.AnyOf(TapiClient.Direct, TapiClient.Web));
+			foreach (TapiClient tapiClient in this.TransferModes)
+			{
+				Assert.That(tapiClient, Is.AnyOf(TapiClient.Direct, TapiClient.Web));
+			}
 		}
 
 		protected void ThenTheMockSearchFileStorageAsyncIsVerified()
@@ -1188,14 +1191,18 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			Console.WriteLine($"Fatal errors: {message}");
 		}
 
-		private void ExporterOnFileTransferModeChangeEvent(TapiClient mode)
+		private void ExporterOnFileTransferModeChangeEvent(object sender, TapiMultiClientEventArgs e)
 		{
 			lock (this.syncRoot)
 			{
-				this.TransferMode = mode;
+				this.TransferModes.Clear();
+				foreach (TapiClient tapiClient in e.TransferClients)
+				{
+					this.TransferModes.Add(tapiClient);
+				}
 			}
 
-			Console.WriteLine($"Transfer mode changed: {mode}");
+			Console.WriteLine("Transfer mode changed: {0}", string.Join(",", this.TransferModes));
 		}
 
 		private void ExporterOnStatusMessage(ExportEventArgs args)

@@ -208,8 +208,10 @@
     <Compile Include="Timekeeper2.cs" />
     <Compile Include="TimekeeperEntry2.cs" />
     <Compile Include="Transfer\DownloadTapiBridge2.cs" />
+    <Compile Include="Transfer\TapiMultiClientEventArgs.cs" />
     <Compile Include="Transfer\TapiFileStorageSearchResults.cs" />
     <Compile Include="Transfer\ITapiObjectService.cs" />
+    <Compile Include="Transfer\TapiModeHelper.cs" />
     <Compile Include="Transfer\TapiTotals.cs" />
     <Compile Include="Transfer\ITapiBridge.cs" />
     <Compile Include="Transfer\MetadataTransferException.cs" />
