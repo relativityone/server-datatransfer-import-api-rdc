@@ -7,6 +7,8 @@ Namespace kCura.WinEDDS.Monitoring
 		Private Const FileThroughputKeyName As String = "FileThroughput"
 		Private Const MetadataThroughputKeyName As String = "MetadataThroughput"
 
+        Public Overrides ReadOnly Property BucketName As String = "RDC.Performance.Progress"
+
 		Public Property FileThroughput As Double
 			Get
 				Return GetValueOrDefault (Of Double)(FileThroughputKeyName)

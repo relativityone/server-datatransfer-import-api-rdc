@@ -8,6 +8,8 @@ Namespace kCura.WinEDDS.Monitoring
 		Private Const MetadataBytesKeyName As String = "MetadataBytes"
 		Private Const FileBytesKeyName As String = "FileBytes"
 
+        Public Overrides ReadOnly Property BucketName As String = "RDC.Performance.JobStatistics"
+        
 		Public Property JobSizeInBytes As Double
 			Get
 				Return GetValueOrDefault (Of Double)(JobSizeInBytesKeyName)
@@ -34,5 +36,6 @@ Namespace kCura.WinEDDS.Monitoring
 				CustomData.Item(FileBytesKeyName) = Value
 			End Set
 		End Property
+
 	End Class
 End Namespace

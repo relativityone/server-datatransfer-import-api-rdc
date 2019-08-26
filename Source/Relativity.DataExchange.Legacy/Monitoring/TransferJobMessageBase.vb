@@ -5,7 +5,7 @@ Imports Relativity.DataTransfer.MessageService
 Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
 
 Namespace kCura.WinEDDS.Monitoring
-	Public class TransferJobMessageBase
+	Public MustInherit class TransferJobMessageBase
 		Implements IMessage, IMetricMetadata
 
 		Private Const JobTypeKeyName As String = "JobType"
@@ -16,6 +16,8 @@ Namespace kCura.WinEDDS.Monitoring
 			CustomData = New Dictionary(Of String, Object)
 		End Sub
 
+        Public MustOverride ReadOnly Property BucketName As String
+        
 		Public Property JobType As String
 			Get
 				Return GetValueOrDefault (Of String)(JobTypeKeyName)
