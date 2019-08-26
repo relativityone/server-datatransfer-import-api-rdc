@@ -53,8 +53,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Components\EventLogEntries.wxs" />
-    <Compile Include="Prerequisites\VCpp.wxs" />
-    <Compile Include="Prerequisites\DotNet.wxs" />
     <Compile Include="CustomActions.wxs" />
     <Compile Include="Dialogs\FirewallDlg.wxs" />
     <Compile Include="Dialogs\WixUI_MondoNoLicense.wxs" />
@@ -111,7 +109,6 @@
     <Folder Include="Components" />
     <Folder Include="Dialogs" />
     <Folder Include="Localization" />
-    <Folder Include="Prerequisites" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Relativity.Desktop.Client.CustomActions\Relativity.Desktop.Client.CustomActions.csproj">
