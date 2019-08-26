@@ -4,8 +4,8 @@
 
 	public interface ILongTextEncodingConverter
 	{
-		void StartListening(ITapiBridge tapiBridge);
-		void StopListening(ITapiBridge tapiBridge);
+		void Subscribe(ITapiBridge tapiBridge);
+		void Unsubscribe(ITapiBridge tapiBridge);
 		void WaitForConversionCompletion();
 	}
 }

@@ -38,7 +38,7 @@
 				if (!_initialized)
 				{
 					_logger.LogVerbose("Initializing long text encoding converter...");
-					_longTextEncodingConverter.StartListening(this.TapiBridge);
+					_longTextEncodingConverter.Subscribe(this.TapiBridge);
 					_logger.LogVerbose("Initialized long text encoding converter.");
 					_initialized = true;
 				}
@@ -74,7 +74,7 @@
 			{
 				try
 				{
-					_longTextEncodingConverter.StopListening(this.TapiBridge);
+					_longTextEncodingConverter.Unsubscribe(this.TapiBridge);
 				}
 				catch (Exception e)
 				{
