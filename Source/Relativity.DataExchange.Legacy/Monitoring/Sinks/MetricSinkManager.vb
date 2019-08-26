@@ -37,26 +37,16 @@ Namespace Monitoring.Sinks
         Private Function RegisterSinks(metricsSinkConfig As IMetricsSinkConfig) As IMessageService
             Dim messageService As IMessageService = New MessageService()
 
-            Dim jobLiveSink As JobLiveMetricSink = New JobLiveMetricSink(_serviceFactory, _metricsManagerFactory)
-            Dim jobLifetimeSink As JobLifetimeSink = New JobLifetimeSink(_serviceFactory, _metricsManagerFactory)
-            Dim jobSumEolSink As JobSumEndOfLifeSink = New JobSumEndOfLifeSink(_serviceFactory, _metricsManagerFactory)
-            Dim jobApmEolSink As JobApmEndOfLifeSink = New JobApmEndOfLifeSink(_serviceFactory, _metricsManagerFactory)
-
-            Dim jobLiveThrottledSink As ThrottledMessageSink(Of TransferJobProgressMessage) = New ThrottledMessageSink(Of TransferJobProgressMessage)(jobLiveSink, Function() metricsSinkConfig.ThrottleTimeout)
-				
-
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobStartedMessage)(jobLifetimeSink, Function() metricsSinkConfig.SendSumMetrics))
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedMessage)(jobLifetimeSink, Function() metricsSinkConfig.SendSumMetrics))
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobFailedMessage)(jobLifetimeSink, Function() metricsSinkConfig.SendSumMetrics))
-
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobThroughputMessage)(jobSumEolSink, Function() metricsSinkConfig.SendSumMetrics))
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobTotalRecordsCountMessage)(jobSumEolSink, Function() metricsSinkConfig.SendSumMetrics))
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedRecordsCountMessage)(jobSumEolSink, Function() metricsSinkConfig.SendSumMetrics))
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobSumEolSink, Function() metricsSinkConfig.SendSumMetrics))
-
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobProgressMessage)(jobLiveThrottledSink, Function() metricsSinkConfig.SendLiveApmMetrics))
-
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobApmEolSink, Function() metricsSinkConfig.SendSummaryApmMetrics))
+            Dim metricSinkApm As MetricSinkApm = New MetricSinkApm(_serviceFactory, _metricsManagerFactory)
+            messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedMessage)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
+            messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedRecordsCountMessage)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
+            messageService.AddSink(New ToggledMessageSink(Of TransferJobFailedMessage)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
+            Dim metricSinkApmThrottled As ThrottledMessageSink(Of TransferJobProgressMessage) = New ThrottledMessageSink(Of TransferJobProgressMessage)(metricSinkApm, Function() metricsSinkConfig.ThrottleTimeout)
+            messageService.AddSink(New ToggledMessageSink(Of TransferJobProgressMessage)(metricSinkApmThrottled, Function() metricsSinkConfig.SendLiveApmMetrics))
+            messageService.AddSink(New ToggledMessageSink(Of TransferJobStartedMessage)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
+            messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
+            messageService.AddSink(New ToggledMessageSink(Of TransferJobThroughputMessage)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
+            messageService.AddSink(New ToggledMessageSink(Of TransferJobTotalRecordsCountMessage)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
 
             Return messageService
         End Function

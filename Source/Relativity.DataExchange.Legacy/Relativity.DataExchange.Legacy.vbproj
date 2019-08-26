@@ -413,6 +413,8 @@
     <Compile Include="ImportExtension\NativeFileValidatedArtifactFieldCollection.vb" />
     <Compile Include="Monitoring\Sinks\IMetricSinkManager.vb" />
     <Compile Include="Monitoring\Sinks\ImportApiMetricSinkConfig.vb" />
+    <Compile Include="Monitoring\Sinks\MetricSinkApm.vb" />
+    <Compile Include="Monitoring\Sinks\MetricSinkBase.vb" />
     <Compile Include="Monitoring\Sinks\MetricSinkManager.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Resources\Strings.Designer.vb">
@@ -429,12 +431,7 @@
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
     <Compile Include="Monitoring\Sinks\IMetricsSinkConfig.vb" />
-    <Compile Include="Monitoring\Sinks\JobApmEndOfLifeSink.vb" />
-    <Compile Include="Monitoring\Sinks\JobSumEndOfLifeSink.vb" />
     <Compile Include="Monitoring\MetricMetadataExtensions.vb" />
-    <Compile Include="Monitoring\Sinks\JobLifetimeSink.vb" />
-    <Compile Include="Monitoring\Sinks\JobLiveMetricSink.vb" />
-    <Compile Include="Monitoring\Sinks\MetricSinkBase.vb" />
     <Compile Include="Monitoring\TransferJobProgressMessage.vb" />
     <Compile Include="Monitoring\TransferJobCompletedRecordsCountMessage.vb" />
     <Compile Include="Monitoring\TransferJobFailedMessage.vb" />

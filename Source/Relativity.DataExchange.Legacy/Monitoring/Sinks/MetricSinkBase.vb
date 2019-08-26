@@ -1,49 +1,50 @@
-﻿Imports Relativity.DataExchange.Service
-Imports Relativity.DataTransfer.MessageService
-Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
-Imports Relativity.Services.ServiceProxy
+﻿Imports System.Runtime.Remoting.Messaging
+Imports kCura.WinEDDS.Monitoring
+Imports Relativity.DataTransfer.MessageService.Tools
 
-Namespace kCura.WinEDDS.Monitoring
-	Public MustInherit Class MetricSinkBase
-		Private ReadOnly _serviceFactory As IServiceFactory
+Namespace Monitoring.Sinks
+    Public MustInherit Class MetricSinkBase
+        Implements IMessageSink(Of TransferJobCompletedMessage)
+        Implements IMessageSink(Of TransferJobCompletedRecordsCountMessage)
+        Implements IMessageSink(Of TransferJobFailedMessage)
+        Implements IMessageSink(Of TransferJobProgressMessage)
+        Implements IMessageSink(Of TransferJobStartedMessage)
+        Implements IMessageSink(Of TransferJobStatisticsMessage)
+        Implements IMessageSink(Of TransferJobThroughputMessage)
+        Implements IMessageSink(Of TransferJobTotalRecordsCountMessage)
 
-		Protected ReadOnly UsagePrefix As String = "RDC.Usage"
-		Protected ReadOnly PerformancePrefix As String = "RDC.Performance"
-		Private ReadOnly _metricsManagerFactory As IMetricsManagerFactory
+        Public Sub OnMessage(message As TransferJobCompletedMessage) Implements IMessageSink(Of TransferJobCompletedMessage).OnMessage
+            Log(message)
+        End Sub
 
-		Protected Sub New(serviceFactory As IServiceFactory, metricsManagerFactory As IMetricsManagerFactory)
-			_serviceFactory = serviceFactory
-			_metricsManagerFactory = metricsManagerFactory
-		End Sub
+        Public Sub OnMessage(message As TransferJobCompletedRecordsCountMessage) Implements IMessageSink(Of TransferJobCompletedRecordsCountMessage).OnMessage
+            Log(message)
+        End Sub
 
-        Private Function FormatApplicationName(applicationName As String) As String
-            If String.IsNullOrWhiteSpace(applicationName) Then
-                Return ExecutionSource.Unknown.ToString()
-            End If
-            Return New String(applicationName.Where(Function(x) Not Char.IsWhiteSpace(x)).ToArray())
-        End Function
-        
-		Protected Function FormatUsageBucketName(metricName As String, jobType As String, transferMode As String, applicationName As String) As String
-			Return $"{UsagePrefix}.{metricName}.{jobType}.{transferMode}.{FormatApplicationName(applicationName)}"
-		End Function
+        Public Sub OnMessage(message As TransferJobFailedMessage) Implements IMessageSink(Of TransferJobFailedMessage).OnMessage
+            Log(message)
+        End Sub
 
-		Protected Function FormatPerformanceBucketName(metricName As String, jobType As String, transferMode As String, applicationName As String) As String
-			Return $"{PerformancePrefix}.{metricName}.{jobType}.{transferMode}.{FormatApplicationName(applicationName)}"
-		End Function
+        Public Sub OnMessage(message As TransferJobProgressMessage) Implements IMessageSink(Of TransferJobProgressMessage).OnMessage
+            Log(message)
+        End Sub
 
-		Public Sub LogCount(bucketName As String, value As Long, metadata As IMetricMetadata)
-			Dim keplerManager As IMetricsManager = _metricsManagerFactory.CreateSUMKeplerManager(_serviceFactory)
-			keplerManager.LogCount(bucketName, value, metadata)
-		End Sub
+        Public Sub OnMessage(message As TransferJobStartedMessage) Implements IMessageSink(Of TransferJobStartedMessage).OnMessage
+            Log(message)
+        End Sub
 
-		Public Sub LogDouble(bucketName As String, value As Double, metadata As IMetricMetadata)
-			Dim keplerManager As IMetricsManager = _metricsManagerFactory.CreateSUMKeplerManager(_serviceFactory)
-			keplerManager.LogDouble(bucketName, value, metadata)
-		End Sub
+        Public Sub OnMessage(message As TransferJobStatisticsMessage) Implements IMessageSink(Of TransferJobStatisticsMessage).OnMessage
+            Log(message)
+        End Sub
 
-		Public Sub LogApmDouble(bucketName As String, value As Double, metadata As IMetricMetadata)
-			Dim keplerManager As IMetricsManager = _metricsManagerFactory.CreateAPMKeplerManager(_serviceFactory)
-			keplerManager.LogDouble(bucketName, value, metadata)
-		End Sub
-	End Class
-End Namespace
+        Public Sub OnMessage(message As TransferJobThroughputMessage) Implements IMessageSink(Of TransferJobThroughputMessage).OnMessage
+            Log(message)
+        End Sub
+
+        Public Sub OnMessage(message As TransferJobTotalRecordsCountMessage) Implements IMessageSink(Of TransferJobTotalRecordsCountMessage).OnMessage
+            Log(message)
+        End Sub
+
+        Protected MustOverride Sub Log(message As TransferJobMessageBase)
+    End Class
+End NameSpace
