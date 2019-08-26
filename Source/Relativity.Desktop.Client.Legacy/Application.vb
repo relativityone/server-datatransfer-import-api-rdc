@@ -6,6 +6,7 @@ Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Monitoring
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Export
 Imports Relativity.DataExchange.Process
@@ -62,11 +63,12 @@ Namespace Relativity.Desktop.Client
 		Private _timeZoneOffset As Int32
 		Private WithEvents _certificatePromptForm As CertificatePromptForm
 		Private WithEvents _optionsForm As OptionsForm
-		Private _messageService As IMessageService
+		''Private _messageService As IMessageService
 		Private _documentRepositoryList As String()
 		Private ReadOnly _logger As Relativity.Logging.ILog
 		Private ReadOnly oAuth2ImplicitCredentialsHelper As Lazy(Of OAuth2ImplicitCredentialsHelper) = New Lazy(Of OAuth2ImplicitCredentialsHelper)(AddressOf CreateOAuth2ImplicitCredentialsHelper)
-
+        Private _metricSinkManager As IMetricSinkManager
+        Private _metricsSinkConfig As IMetricsSinkConfig
 #End Region
 
 #Region "Properties"
@@ -1763,34 +1765,13 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Public Async Function SetupMessageService() As Task(Of IMessageService)
-			If _messageService Is Nothing Then
-				_messageService = New MessageService()
-				Dim metricsManagerFactory As New MetricsManagerFactory()
-				Dim serviceFactory = ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync())
-				Dim configProvider As MetricsSinkConfigProvider = New MetricsSinkConfigProvider()
-				configProvider.Initialize()
-
-				Dim jobLiveSink = New JobLiveMetricSink(serviceFactory, metricsManagerFactory)
-
-				Dim jobLifetimeSink = New JobLifetimeSink(serviceFactory, metricsManagerFactory)
-				Dim jobLiveThrottledSink = New ThrottledMessageSink(Of TransferJobProgressMessage)(jobLiveSink, Function() configProvider.CurrentConfig.ThrottleTimeout)
-				Dim jobSumEolSink = New JobSumEndOfLifeSink(serviceFactory, metricsManagerFactory)
-				Dim jobApmEolSink = New JobApmEndOfLifeSink(serviceFactory, metricsManagerFactory)
-
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStartedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobFailedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
-
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobThroughputMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobTotalRecordsCountMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedRecordsCountMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
-
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobProgressMessage)(jobLiveThrottledSink, Function() configProvider.CurrentConfig.SendLiveApmMetrics))
-
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobApmEolSink, Function() configProvider.CurrentConfig.SendSummaryApmMetrics))
-			End If
-			Return _messageService
+            If _metricSinkManager Is Nothing Then
+                _metricSinkManager = New MetricSinkManager(New MetricsManagerFactory(), ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync()))
+            End If
+            If _metricsSinkConfig Is Nothing Then
+                _metricsSinkConfig = New MetricsSinkConfigProvider()
+            End If
+            Return _metricSinkManager.SetupMessageService(_metricsSinkConfig)
 		End Function
 
 		Private Async Function ValidateVersionCompatibilityAsync(ByVal credential As System.Net.NetworkCredential) As Task

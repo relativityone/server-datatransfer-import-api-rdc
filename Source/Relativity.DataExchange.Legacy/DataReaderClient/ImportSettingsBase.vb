@@ -1,4 +1,6 @@
 ﻿Imports System.Collections.Generic
+Imports kCura.WinEDDS.Monitoring
+Imports Monitoring.Sinks
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -207,6 +209,12 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		''' <returns></returns>
 		Public Property Billable() As Boolean = True
+
+        ''' <summary>
+        ''' Get class containing telemetry settings
+        ''' </summary>
+        ''' <returns></returns>
+        Public ReadOnly Property Telemetry As IMetricsSinkConfig = New ImportApiMetricSinkConfig()
 
 	End Class
 End Namespace

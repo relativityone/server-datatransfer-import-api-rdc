@@ -35,6 +35,7 @@ namespace Relativity.DataExchange
 		private int tapiBridgeExportTransferWaitingTimeInSeconds;
 		private int tapiMinDataRateMbps;
 		private int tapiMaxJobParallelism;
+		private int iApiMetricsThrottlingSeconds;
 		private int tapiTargetDataRateMbps;
 		private int webBasedFileDownloadChunkSize;
 		private string webApiServiceMappedUrl;
@@ -914,6 +915,48 @@ namespace Relativity.DataExchange
 		{
 			get;
 			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.TelemetrySubmitApmMetricsKey,
+			AppSettingsConstants.TelemetrySubmitApmMetricsDefaultValue)]
+		bool IAppSettings.TelemetrySubmitApmMetrics
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.TelemetrySubmitSumMetricsKey,
+			AppSettingsConstants.TelemetrySubmitSumMetricsDefaultValue)]
+		bool IAppSettings.TelemetrySubmitSumMetrics
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.TelemetryMetricsThrottlingSecondsKey,
+			AppSettingsConstants.TelemetryMetricsThrottlingSecondsDefaultValue)]
+		int IAppSettings.TelemetryMetricsThrottlingSeconds
+		{
+			get
+			{
+				if (this.iApiMetricsThrottlingSeconds < 1)
+				{
+					this.iApiMetricsThrottlingSeconds = AppSettingsConstants.TelemetryMetricsThrottlingSecondsDefaultValue;
+				}
+
+				return this.iApiMetricsThrottlingSeconds;
+			}
+
+			set => this.iApiMetricsThrottlingSeconds = value;
 		}
 
 		/// <inheritdoc />

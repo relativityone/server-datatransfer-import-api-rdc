@@ -20,7 +20,7 @@ namespace Relativity.DataExchange.NUnit
 	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
-	/// Represents <see cref="CollectionExtensions"/> tests.
+	/// Represents <see cref="DataExchange.CollectionExtensions"/> tests.
 	/// </summary>
 	[TestFixture]
 	public static class CollectionExtensionsTests
