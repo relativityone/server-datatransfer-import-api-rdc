@@ -63,8 +63,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			longText.SourceEncoding = Encoding.ASCII;
 
 			// ACT
-			this._instance.StartListening(this._tapiBridge.Object);
-			this._instance.StopListening(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
+			this._instance.Unsubscribe(this._tapiBridge.Object);
 
 			this._tapiBridge.Raise(
 				x => x.TapiProgress += null,
@@ -99,8 +99,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			longText.SourceEncoding = Encoding.ASCII;
 
 			// ACT
-			this._instance.StartListening(this._tapiBridge.Object);
-			this._instance.StopListening(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
+			this._instance.Unsubscribe(this._tapiBridge.Object);
 			this._tapiBridge.Raise(
 				x => x.TapiProgress += null,
 				new TapiProgressEventArgs(fileName, completed, Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
@@ -131,13 +131,13 @@ namespace Relativity.DataExchange.Export.NUnit
 			longText.SourceEncoding = Encoding.Unicode;
 
 			// ACT
-			this._instance.StartListening(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 
 			this._tapiBridge.Raise(
 				x => x.TapiProgress += null,
 				new TapiProgressEventArgs(fileName, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
-			this._instance.StopListening(this._tapiBridge.Object);
+			this._instance.Unsubscribe(this._tapiBridge.Object);
 
 			this._instance.WaitForConversionCompletion();
 
@@ -165,13 +165,13 @@ namespace Relativity.DataExchange.Export.NUnit
 			longText.SourceEncoding = Encoding.UTF8;
 
 			// ACT
-			this._instance.StartListening(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 
 			this._tapiBridge.Raise(
 				x => x.TapiProgress += null,
 				new TapiProgressEventArgs(fileName, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
-			this._instance.StopListening(this._tapiBridge.Object);
+			this._instance.Unsubscribe(this._tapiBridge.Object);
 
 			this._instance.WaitForConversionCompletion();
 
@@ -195,7 +195,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			longText.SourceEncoding = Encoding.UTF8;
 
 			// ACT - This simulates the scenario where events are raised despite having been unsubscribed.
-			this._instance.StartListening(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 			this._instance.MarkQueueComplete();
 
 			// ASSERT
@@ -231,13 +231,13 @@ namespace Relativity.DataExchange.Export.NUnit
 				x => x.Convert(fileName, Encoding.UTF8, Encoding.Unicode, this._cancellationTokenSource.Token));
 
 			// ACT
-			this._instance.StartListening(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 
 			this._tapiBridge.Raise(
 				x => x.TapiProgress += null,
 				new TapiProgressEventArgs(fileName, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
-			this._instance.StopListening(this._tapiBridge.Object);
+			this._instance.Unsubscribe(this._tapiBridge.Object);
 
 			this._instance.WaitForConversionCompletion();
 
@@ -261,11 +261,11 @@ namespace Relativity.DataExchange.Export.NUnit
 			longText.SourceEncoding = Encoding.UTF8;
 
 			// ACT
-			this._instance.StartListening(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 			this._tapiBridge.Raise(
 				x => x.TapiProgress += null,
 				new TapiProgressEventArgs(fileName, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
-			this._instance.StopListening(this._tapiBridge.Object);
+			this._instance.Unsubscribe(this._tapiBridge.Object);
 
 			// ASSERT
 			Assert.Throws<ArgumentException>(() => this._instance.WaitForConversionCompletion());

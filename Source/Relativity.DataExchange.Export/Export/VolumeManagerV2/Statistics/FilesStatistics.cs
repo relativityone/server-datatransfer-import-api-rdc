@@ -23,7 +23,7 @@
 			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
-		public void Attach(ITapiBridge tapiBridge)
+		public void Subscribe(ITapiBridge tapiBridge)
 		{
 			tapiBridge.ThrowIfNull(nameof(tapiBridge));
 			_logger.LogVerbose("Attached tapi bridge {TapiBridgeInstanceId} to the file statistics.", tapiBridge.InstanceId);
@@ -52,7 +52,7 @@
 			}
 		}
 
-		public void Detach(ITapiBridge tapiBridge)
+		public void Unsubscribe(ITapiBridge tapiBridge)
 		{
 			tapiBridge.ThrowIfNull(nameof(tapiBridge));
 			_logger.LogVerbose("Detached tapi bridge {TapiBridgeInstanceId} from the file statistics.", tapiBridge.InstanceId);

@@ -47,7 +47,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.Instance.QueueDownload(new TransferPath());
 
 			// ASSERT
-			this._longTextEncodingConverter.Verify(x => x.StartListening(this.TapiBridge.Object), Times.Once);
+			this._longTextEncodingConverter.Verify(x => x.Subscribe(this.TapiBridge.Object), Times.Once);
 		}
 
 		[Test]
@@ -60,7 +60,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			Assert.Throws<Exception>(() => this.Instance.WaitForTransfers());
 
 			// ASSERT
-			this._longTextEncodingConverter.Verify(x => x.StopListening(this.TapiBridge.Object), Times.Once);
+			this._longTextEncodingConverter.Verify(x => x.Unsubscribe(this.TapiBridge.Object), Times.Once);
 		}
 
 		[Test]

@@ -35,7 +35,7 @@
 
 		public int Count => _longTextFilesToConvert.Count;
 
-		public void StartListening(ITapiBridge tapiBridge)
+		public void Subscribe(ITapiBridge tapiBridge)
 		{
 			tapiBridge.ThrowIfNull(nameof(tapiBridge));
 			_logger.LogVerbose(
@@ -45,7 +45,7 @@
 			tapiBridge.TapiProgress += this.OnTapiProgress;
 		}
 
-		public void StopListening(ITapiBridge tapiBridge)
+		public void Unsubscribe(ITapiBridge tapiBridge)
 		{
 			tapiBridge.ThrowIfNull(nameof(tapiBridge));
 			_logger.LogVerbose(

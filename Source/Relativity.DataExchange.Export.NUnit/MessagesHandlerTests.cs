@@ -40,7 +40,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			const string message = "error_message";
 
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiErrorMessage += null, new TapiMessageEventArgs(message, 0));
@@ -54,7 +54,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			const string message = "warning_message";
 
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiWarningMessage += null, new TapiMessageEventArgs(message, 0));
@@ -68,7 +68,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			const string message = "fatal_message";
 
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiFatalError += null, new TapiMessageEventArgs(message, 0));
@@ -82,7 +82,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			const string message = "status_message";
 
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiStatusMessage += null, new TapiMessageEventArgs(message, 0));
@@ -96,8 +96,8 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			const string message = "message";
 
-			this._instance.Attach(this._tapiBridge.Object);
-			this._instance.Detach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
+			this._instance.Unsubscribe(this._tapiBridge.Object);
 
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiErrorMessage += null, new TapiMessageEventArgs(message, 0));

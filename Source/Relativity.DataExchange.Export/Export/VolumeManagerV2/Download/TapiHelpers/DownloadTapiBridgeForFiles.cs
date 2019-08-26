@@ -24,7 +24,7 @@
 		{
 			_transferClientHandler = transferClientHandler.ThrowIfNull(nameof(transferClientHandler));
 			_logger = logger.ThrowIfNull(nameof(logger));
-			_transferClientHandler.Attach(bridge);
+			_transferClientHandler.Subscribe(bridge);
 			_isEmpty = true;
 		}
 
@@ -52,7 +52,7 @@
 
 		public override void Dispose()
 		{
-			_transferClientHandler.Detach(this.TapiBridge);
+			_transferClientHandler.Unsubscribe(this.TapiBridge);
 			base.Dispose();
 		}
 	}

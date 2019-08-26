@@ -17,7 +17,7 @@
 			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
-		public void Attach(ITapiBridge tapiBridge)
+		public void Subscribe(ITapiBridge tapiBridge)
 		{
 			// Note: this is executed from multiple tasks but is thread-safe.
 			tapiBridge.TapiErrorMessage += this.OnErrorMessage;
@@ -26,7 +26,7 @@
 			tapiBridge.TapiFatalError += this.OnFatalError;
 		}
 
-		public void Detach(ITapiBridge tapiBridge)
+		public void Unsubscribe(ITapiBridge tapiBridge)
 		{
 			// Note: this is executed from multiple tasks but is thread-safe.
 			tapiBridge.TapiErrorMessage -= this.OnErrorMessage;

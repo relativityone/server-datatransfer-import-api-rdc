@@ -45,7 +45,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldUpdateTransferMode(string clientName, params TapiClient[] expectedTapiClients)
 		{
 			List<TapiClient> currentTapiClients = new List<TapiClient>();
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 			this._instance.TransferModesChangeEvent += (sender, args) =>
 				{
 					currentTapiClients.AddRange(args.TransferClients);
@@ -74,7 +74,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			List<TapiClient> currentTapiClients = new List<TapiClient>();
 			TapiClient currentTapiClient = TapiClient.None;
 
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 			this._instance.TransferModesChangeEvent += (sender, args) =>
 				{
 					currentTapiClients.Clear();
@@ -83,9 +83,9 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			// ACT - attempting to detach an already detached bridge is safe.
 			this._tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(Guid.Empty, aspera, TapiClient.Aspera));
-			this._instance.Detach(this._tapiBridge.Object);
-			this._instance.Detach(this._tapiBridge.Object);
-			this._instance.Detach(this._tapiBridge.Object);
+			this._instance.Unsubscribe(this._tapiBridge.Object);
+			this._instance.Unsubscribe(this._tapiBridge.Object);
+			this._instance.Unsubscribe(this._tapiBridge.Object);
 			this._tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(Guid.Empty, web, TapiClient.Web));
 
 			// ASSERT - detaching effectively clears the mode.
