@@ -11,16 +11,20 @@
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Logging;
 
-	public class FileDownloadSubscriber : IFileDownloadSubscriber
+	public class LongTextEncodingConverter : IFileDownloadSubscriber
 	{
 		private readonly BlockingCollection<string> _longTextFilesToConvert;
 		private readonly LongTextRepository _longTextRepository;
 		private readonly IFileEncodingConverter _fileEncodingConverter;
 		private readonly ILog _logger;
 		private readonly CancellationToken _cancellationToken;
+
+		private IDisposable _fileDownloadedSubscriber;
+		private IDisposable _fileDownloadCompletedSubscriber;
+
 		private Task _conversionTask;
 
-		public FileDownloadSubscriber(
+		public LongTextEncodingConverter(
 			LongTextRepository longTextRepository,
 			IFileEncodingConverter fileEncodingConverter,
 			ILog logger,
@@ -46,16 +50,16 @@
 		{
 			fileTransferProducer.ThrowIfNull(nameof(fileTransferProducer));
 
-			fileTransferProducer.FileDownloaded.Subscribe(this.AddForConversion);
-			fileTransferProducer.FileDownloadCompleted.Subscribe(this.CompleteConversion);
+			this._fileDownloadedSubscriber = fileTransferProducer.FileDownloaded.Subscribe(this.AddForConversion);
+			this._fileDownloadCompletedSubscriber = fileTransferProducer.FileDownloadCompleted.Subscribe(this.CompleteConversion);
 
-			_conversionTask = Task.Run(() => this.ConvertLongTextFiles(), _cancellationToken);
+			this._conversionTask = Task.Run(() => this.ConvertLongTextFiles(), this._cancellationToken);
 		}
 
-		private void CompleteConversion(int filesDownloadedCount)
+		private void CompleteConversion(bool anyFileToConvert)
 		{
 			_logger.LogVerbose("Preparing to mark the long text encoding conversion queue complete...");
-			_logger.LogVerbose("Expected file count to be converted in the batch: {filesDownloadedCount}", filesDownloadedCount);
+			_logger.LogVerbose("Any files to convert: {anyFileToConvert} ", anyFileToConvert);
 			_longTextFilesToConvert.CompleteAdding();
 			_logger.LogVerbose("Successfully marked the long text encoding conversion queue complete.");
 		}
@@ -67,7 +71,7 @@
 				_logger.LogVerbose(
 					"Preparing to add the '{fileName}' long text file to the queue...",
 					fileName);
-				_longTextFilesToConvert.Add(fileName, _cancellationToken);
+				_longTextFilesToConvert.Add(fileName, this._cancellationToken);
 				_logger.LogVerbose(
 					"Successfully added the '{fileName}' long text file to the queue.",
 					fileName);
@@ -164,6 +168,12 @@
 				longText.SourceEncoding,
 				longText.DestinationEncoding);
 			longText.SourceEncoding = longText.DestinationEncoding;
+		}
+
+		public void Dispose()
+		{
+			this._fileDownloadedSubscriber?.Dispose();
+			this._fileDownloadCompletedSubscriber?.Dispose();
 		}
 	}
 }

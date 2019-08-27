@@ -1,9 +1,9 @@
-﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers
+﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download
 {
+	using System;
 	using System.Threading.Tasks;
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 
-	public interface IFileDownloadSubscriber
+	public interface IFileDownloadSubscriber : IDisposable
 	{
 		void SubscribeForDownloadEvents(IFileTransferProducer fileTransferProducer);
 		Task WaitForConversionCompletion();
