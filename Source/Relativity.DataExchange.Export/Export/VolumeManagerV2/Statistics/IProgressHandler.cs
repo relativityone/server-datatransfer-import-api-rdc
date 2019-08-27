@@ -4,7 +4,7 @@
 
 	public interface IProgressHandler
 	{
-		void Attach(ITapiBridge tapiBridge);
-		void Detach(ITapiBridge tapiBridge);
+		void Subscribe(ITapiBridge tapiBridge);
+		void Unsubscribe(ITapiBridge tapiBridge);
 	}
 }

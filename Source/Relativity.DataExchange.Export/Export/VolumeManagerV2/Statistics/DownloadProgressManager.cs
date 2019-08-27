@@ -28,8 +28,13 @@
 
 		private readonly object _syncObject = new object();
 
-		public DownloadProgressManager(NativeRepository nativeRepository, ImageRepository imageRepository,
-			LongTextRepository longTextRepository, IFile fileWrapper, IStatus status, ILog logger)
+		public DownloadProgressManager(
+			NativeRepository nativeRepository,
+			ImageRepository imageRepository,
+			LongTextRepository longTextRepository,
+			IFile fileWrapper,
+			IStatus status,
+			ILog logger)
 		{
 			_nativeRepository = nativeRepository;
 			_imageRepository = imageRepository;
@@ -38,7 +43,21 @@
 			_status = status;
 			_logger = logger;
 
-			this._artifactsCompleted = new HashSet<int>();
+			_artifactsCompleted = new HashSet<int>();
+		}
+
+		public void MarkArtifactAsError(int artifactId, string message)
+		{
+			if (!_artifactsCompleted.Contains(artifactId))
+			{
+				_logger.LogVerbose(
+					"Marking artifact {ArtifactId} as error. Message: {ErrorMessage}",
+					artifactId,
+					message);
+				_artifactsCompleted.Add(artifactId);
+			}
+
+			this.PublishProcessedCount();
 		}
 
 		public void MarkFileAsCompleted(string fileName, int lineNumber)
@@ -81,15 +100,15 @@
 
 		public void SaveState()
 		{
-			lock (this._syncObject)
+			lock (_syncObject)
 			{
-				this._savedDocumentsDownloadedCount = this._artifactsCompleted.Count;
+				_savedDocumentsDownloadedCount = _artifactsCompleted.Count;
 			}
 		}
 
 		public void RestoreLastState()
 		{
-			this._status.UpdateDocumentExportedCount(this._savedDocumentsDownloadedCount);
+			_status.UpdateDocumentExportedCount(_savedDocumentsDownloadedCount);
 		}
 
 		private void MarkNativeAsCompleted(int lineNumber, Native native)
@@ -107,7 +126,7 @@
 
 		private void MarkImageAsCompleted(string fileName, int lineNumber)
 		{
-			Image image = this._imageRepository.GetByLineNumber(lineNumber);
+			Image image = _imageRepository.GetByLineNumber(lineNumber);
 			if (image != null)
 			{
 				if (image.TransferCompleted)
@@ -122,7 +141,7 @@
 			}
 			else
 			{
-				this._logger.LogWarning("File for image {fileName} and line {lineNumber} not found.", fileName, lineNumber);
+				_logger.LogWarning("File for image {fileName} and line {lineNumber} not found.", fileName, lineNumber);
 			}
 		}
 
@@ -133,7 +152,7 @@
 		{
 			if (native.ExportRequest == null)
 			{
-				this._logger.LogWarning("The export request of native {native} is Empty", native.Artifact?.ArtifactID);
+				_logger.LogWarning("The export request of native {native} is Empty", native.Artifact?.ArtifactID);
 			}
 
 			IList<Native> duplicatedNatives = _nativeRepository.GetNatives()
@@ -159,7 +178,7 @@
 		{
 			if (image.ExportRequest == null)
 			{
-				this._logger.LogWarning("The export request of image {image} is Empty", image.Artifact?.ArtifactID);
+				_logger.LogWarning("The export request of image {image} is Empty", image.Artifact?.ArtifactID);
 			}
 
 			IList<Image> duplicatedImages = _imageRepository.GetImages()
@@ -180,20 +199,20 @@
 
 		private void UpdateCompletedCountAndNotify(int artifactId, int lineNumber)
 		{
-			this._logger.LogVerbose("Updating completed document count after artifact {artifactId} transfer has been completed.",
+			_logger.LogVerbose("Updating completed document count after artifact {artifactId} transfer has been completed.",
 				artifactId);
 			bool documentCountUpdated = this.UpdateCompletedCount(artifactId);
 			Native native = _nativeRepository.GetNative(artifactId);
 			if (documentCountUpdated && native != null)
 			{
-				this._logger.LogVerbose("Document {identifierValue} transfer completed.", native.Artifact.IdentifierValue);
+				_logger.LogVerbose("Document {identifierValue} transfer completed.", native.Artifact.IdentifierValue);
 				string suffixMessage = string.Empty;
 				if (lineNumber > 0)
 				{
 					suffixMessage = $" (line number: {lineNumber})";
 				}
 
-				this._status.WriteStatusLine(EventType2.Progress,
+				_status.WriteStatusLine(EventType2.Progress,
 					$"Document {native.Artifact.IdentifierValue} transfer completed {suffixMessage}.", false);
 			}
 		}
@@ -204,6 +223,11 @@
 			//the whole list, so final number of documents will be valid
 
 			Native native = _nativeRepository.GetNative(artifactId);
+			if (native == null)
+			{
+				return false;
+			}
+
 			int nativeArtifactId = native.Artifact.ArtifactID;
 
 			if (!native.TransferCompleted)
@@ -222,18 +246,21 @@
 				return false;
 			}
 
-			lock (this._syncObject)
+			lock (_syncObject)
 			{
-				if (!this._artifactsCompleted.Contains(nativeArtifactId))
+				if (!_artifactsCompleted.Contains(nativeArtifactId))
 				{
-					this._artifactsCompleted.Add(nativeArtifactId);
-					this._status.UpdateDocumentExportedCount(this._artifactsCompleted.Count);
+					_artifactsCompleted.Add(nativeArtifactId);
+					this.PublishProcessedCount();
 					return true;
 				}
 				return false;
 			}
 		}
 
+		private void PublishProcessedCount()
+		{
+			_status.UpdateDocumentExportedCount(_artifactsCompleted.Count);
+		}
 	}
-
 }

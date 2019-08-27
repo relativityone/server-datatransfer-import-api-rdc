@@ -114,6 +114,9 @@ namespace Relativity.DataExchange.Transfer
 		/// <returns>
 		/// The file name.
 		/// </returns>
+		/// <exception cref="ArgumentException">
+		/// Thrown when <paramref name="path" /> doesn't define all valid parameters.
+		/// </exception>
 		/// <exception cref="ArgumentNullException">
 		/// Thrown when <paramref name="path" /> is <see langword="null" />.
 		/// </exception>
@@ -129,7 +132,7 @@ namespace Relativity.DataExchange.Transfer
 		string AddPath(TransferPath path);
 
 		/// <summary>
-		/// Waits for all pending transfers in the queue to complete and returns the transfer totals.
+		/// Waits for all pending transfers in the queue to complete and returns the transfer totals. This method returns immediately if transfer paths haven't been added to the queue.
 		/// </summary>
 		/// <param name="waitMessage">
 		/// The message that's published when the wait begins.
@@ -146,9 +149,6 @@ namespace Relativity.DataExchange.Transfer
 		/// <returns>
 		/// The <see cref="TapiTotals"/> instance.
 		/// </returns>
-		/// <exception cref="InvalidOperationException">
-		/// Thrown when the transfer job wasn't successfully created.
-		/// </exception>
 		/// <exception cref="OperationCanceledException">
 		/// Thrown when cancellation is requested.
 		/// </exception>

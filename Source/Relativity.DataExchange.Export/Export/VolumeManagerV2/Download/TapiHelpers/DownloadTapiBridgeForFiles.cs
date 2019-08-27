@@ -22,7 +22,7 @@
 			: base(bridge, progressHandler, messagesHandler, transferStatistics, logger)
 		{
 			_transferClientHandler = transferClientHandler.ThrowIfNull(nameof(transferClientHandler));
-			_transferClientHandler.Attach(bridge);
+			_transferClientHandler.Subscribe(bridge);
 			_isEmpty = true;
 		}
 
@@ -50,7 +50,7 @@
 
 		public override void Dispose()
 		{
-			_transferClientHandler.Detach(this.TapiBridge);
+			_transferClientHandler.Unsubscribe(this.TapiBridge);
 			base.Dispose();
 		}
 	}

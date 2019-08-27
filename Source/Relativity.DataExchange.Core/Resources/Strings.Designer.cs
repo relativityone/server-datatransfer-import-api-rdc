@@ -142,6 +142,42 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Disabled.
+        /// </summary>
+        internal static string FileTransferModeDisabled {
+            get {
+                return ResourceManager.GetString("FileTransferModeDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending.
+        /// </summary>
+        internal static string FileTransferModePending {
+            get {
+                return ResourceManager.GetString("FileTransferModePending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Metadata: {0}.
+        /// </summary>
+        internal static string FileTransferStatusTextMetadataPrefix {
+            get {
+                return ResourceManager.GetString("FileTransferStatusTextMetadataPrefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Transfer Mode: {0}.
+        /// </summary>
+        internal static string FileTransferStatusTextModePrefix {
+            get {
+                return ResourceManager.GetString("FileTransferStatusTextModePrefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This error is considered fatal and suggests either an authentication issue or a version incompatibility between the client and server..
         /// </summary>
         internal static string HttpBadRequestFatalMessage {
@@ -762,6 +798,42 @@ namespace Relativity.DataExchange.Resources {
         internal static string TransferJobStartedMessage {
             get {
                 return ResourceManager.GetString("TransferJobStartedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The transfer path must define a valid server-side source path and suggests a problem with the artifact data..
+        /// </summary>
+        internal static string TransferPathArgumentDownloadSourcePathExceptionMessage {
+            get {
+                return ResourceManager.GetString("TransferPathArgumentDownloadSourcePathExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The transfer path must define a valid client-side target path and suggests an export configuration issue..
+        /// </summary>
+        internal static string TransferPathArgumentDownloadTargetPathExceptionMessage {
+            get {
+                return ResourceManager.GetString("TransferPathArgumentDownloadTargetPathExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The transfer path must define a valid client-side source path and suggests a problem with the mapped source path..
+        /// </summary>
+        internal static string TransferPathArgumentUploadSourcePathExceptionMessage {
+            get {
+                return ResourceManager.GetString("TransferPathArgumentUploadSourcePathExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The transfer path must define a valid server-side target path and suggests an import configuration issue..
+        /// </summary>
+        internal static string TransferPathArgumentUploadTargetPathExceptionMessage {
+            get {
+                return ResourceManager.GetString("TransferPathArgumentUploadTargetPathExceptionMessage", resourceCulture);
             }
         }
         

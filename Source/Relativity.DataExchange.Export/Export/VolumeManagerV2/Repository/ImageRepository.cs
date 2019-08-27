@@ -1,5 +1,7 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Repository
 {
+	using System;
+
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 
 	using System.Collections.Generic;
@@ -27,7 +29,11 @@
 		{
 			lock (_syncLock)
 			{
-				return _images.First(x => x.Artifact.ArtifactID == artifactId && x.Artifact.BatesNumber == batesNumber);
+				return _images.FirstOrDefault(
+					x => x.Artifact.ArtifactID == artifactId && string.Compare(
+						     x.Artifact.BatesNumber,
+						     batesNumber,
+						     StringComparison.OrdinalIgnoreCase) == 0);
 			}
 		}
 
@@ -57,9 +63,16 @@
 
 		public bool AnyRequestForLocation(string destinationLocation)
 		{
+			if (string.IsNullOrWhiteSpace(destinationLocation))
+			{
+				return false;
+			}
+
 			lock (_syncLock)
 			{
-				return GetExportRequests().Any(x => x.DestinationLocation == destinationLocation);
+				return GetExportRequests().Any(
+					x => string.Compare(x.DestinationLocation, destinationLocation, StringComparison.OrdinalIgnoreCase)
+					     == 0);
 			}
 		}
 

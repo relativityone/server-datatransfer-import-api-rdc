@@ -43,7 +43,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			const bool TransferCompleted = true;
 
 			// ACT
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, TransferCompleted, transferStatus, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT
@@ -59,7 +59,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			const bool TransferNotCompleted = false;
 
 			// ACT
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, TransferNotCompleted, transferStatus, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT
@@ -73,10 +73,10 @@ namespace Relativity.DataExchange.Export.NUnit
 			const string id2 = "267641";
 
 			// ACT
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id1, true, true, 1, 1, DateTime.Now, DateTime.Now));
 
-			this._instance.Detach(this._tapiBridge.Object);
+			this._instance.Unsubscribe(this._tapiBridge.Object);
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id2, true, true, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT

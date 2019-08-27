@@ -33,9 +33,9 @@
 			this._transferStatistics = transferStatistics.ThrowIfNull(nameof(transferStatistics));
 			this._logger = logger.ThrowIfNull(nameof(logger));
 
-			_messageHandler.Attach(this.TapiBridge);
-			_progressHandler.Attach(this.TapiBridge);
-			_transferStatistics.Attach(this.TapiBridge);
+			_messageHandler.Subscribe(this.TapiBridge);
+			_progressHandler.Subscribe(this.TapiBridge);
+			_transferStatistics.Subscribe(this.TapiBridge);
 
 			this.FileDownloadCompleted = new Subject<bool>();
 		}
@@ -48,9 +48,9 @@
 
 		public virtual void Dispose()
 		{
-			_progressHandler.Detach(this.TapiBridge);
-			_messageHandler.Detach(this.TapiBridge);
-			_transferStatistics.Detach(this.TapiBridge);
+			_progressHandler.Unsubscribe(this.TapiBridge);
+			_messageHandler.Unsubscribe(this.TapiBridge);
+			_transferStatistics.Unsubscribe(this.TapiBridge);
 			this.TapiBridge.Dispose();
 		}
 

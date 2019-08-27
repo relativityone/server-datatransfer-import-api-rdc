@@ -300,18 +300,30 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		[TestCase(true)]
-		[TestCase(false)]
+		[TestCase(false, false)]
+		[TestCase(false, true)]
+		[TestCase(true, false)]
+		[TestCase(true, true)]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldThrowWhenWaitingForEmptyBatchedTransfers(bool keepJobAlive)
+		public void ShouldNotThrowWhenWaitingForEmptyBatchedTransfers(bool keepJobAlive, bool createJob)
 		{
 			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
-			Assert.Throws<InvalidOperationException>(
-				() => this.TapiBridgeInstance.WaitForTransfers(
-					TestWaitMessage,
-					TestSuccessMessage,
-					TestErrorMessage,
-					keepJobAlive));
+			if (createJob)
+			{
+				// Simulate the scenario where a job has been created but no paths were added to the queue.
+				this.TapiBridgeInstance.AddPath(TestTransferPath);
+				this.TapiBridgeInstance.ClearAllTotals();
+			}
+
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
+				TestWaitMessage,
+				TestSuccessMessage,
+				TestErrorMessage,
+				keepJobAlive);
+			Assert.That(totals.TotalFileTransferRequests, Is.Zero);
+			Assert.That(totals.TotalCompletedFileTransfers, Is.Zero);
+			Assert.That(totals.TotalSuccessfulFileTransfers, Is.Zero);
+			this.MockTransferLogger.Verify(x => x.LogWarning(It.IsAny<string>(), It.IsAny<object[]>()));
 		}
 
 		[Test]
@@ -652,6 +664,55 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(totalPaths));
 			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(totalPaths));
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Once);
+		}
+
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldThrowWhenAddingTheNullTransferPath()
+		{
+			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+			Assert.Throws<ArgumentNullException>(() => this.TapiBridgeInstance.AddPath(null));
+		}
+
+		[Test]
+		[TestCase("", null)]
+		[TestCase(" ", null)]
+		[TestCase(null, null)]
+		[TestCase("", 0)]
+		[TestCase(" ", 0)]
+		[TestCase(null, 0)]
+		[TestCase("", -1)]
+		[TestCase(" ", -1)]
+		[TestCase(null, -1)]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldThrowWhenAddingTheInvalidTransferPath(string path, long? sourcePathId)
+		{
+			foreach (TransferDirection direction in Enum.GetValues(typeof(TransferDirection)).Cast<TransferDirection>())
+			{
+				this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+				Assert.Throws<ArgumentException>(
+					() => this.TapiBridgeInstance.AddPath(
+						new TransferPath
+							{
+								Direction = direction, SourcePath = path, SourcePathId = sourcePathId
+							}));
+				this.TapiBridgeInstance.TargetPath = @"/";
+				Assert.Throws<ArgumentException>(
+					() => this.TapiBridgeInstance.AddPath(
+						new TransferPath
+							{
+								Direction = direction,
+								TargetPath = path
+							}));
+				this.TapiBridgeInstance.TargetPath = path;
+				Assert.Throws<ArgumentException>(
+					() => this.TapiBridgeInstance.AddPath(
+						new TransferPath
+							{
+								Direction = direction,
+								TargetPath = @"/"
+						}));
+			}
 		}
 
 		[Test]

@@ -122,6 +122,14 @@ namespace Relativity.DataExchange.Export.NUnit
 			// 4 download (A, C, B, D)
 			this._instance.MarkFileAsCompleted(nativeWithImageAndText_D.ExportRequest.FileName, nativeWithImageAndText_D.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
+
+			// None downloaded - just an error.
+			this._instance.MarkArtifactAsError(999, "error message");
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(5));
+
+			// Handle duplicates
+			this._instance.MarkArtifactAsError(999, "error message");
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(5));
 		}
 	}
 }
