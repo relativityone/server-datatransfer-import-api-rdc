@@ -12,10 +12,10 @@ Imports System.Resources
 <assembly: AssemblyCulture("")>
 
 ' Note: do NOT modify these values! This is automatically updated by the build script.
-<assembly: AssemblyVersion("11.0.0.0")>
-<assembly: AssemblyFileVersion("11.0.0.0")>
+<assembly: AssemblyVersion("10.3.5.0")>
+<assembly: AssemblyFileVersion("10.3.5.0")>
 <assembly: AssemblyConfiguration("Release")>
 
 <assembly: AssemblyCompany("Relativity ODA LLC")>
 <assembly: NeutralResourcesLanguage("en-US")>
-<assembly: AssemblyInformationalVersion("11.0.0")>
+<assembly: AssemblyInformationalVersion("10.3.5")>
