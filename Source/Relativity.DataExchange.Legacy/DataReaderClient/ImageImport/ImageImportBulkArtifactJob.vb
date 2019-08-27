@@ -155,6 +155,7 @@ Namespace kCura.Relativity.DataReaderClient
 				process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()
+                process.CaseInfo = process.ImageLoadFile.CaseInfo
 
 				RaiseEvent OnMessage(New Status("Executing"))
 				Try

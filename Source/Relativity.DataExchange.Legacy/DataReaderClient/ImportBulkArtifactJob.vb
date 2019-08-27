@@ -145,6 +145,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 					RaiseEvent OnMessage(New Status("Updating settings"))
 					process.LoadFile = CreateLoadFile(Settings)
+                    process.CaseInfo = process.LoadFile.CaseInfo
 
 					RaiseEvent OnMessage(New Status("Executing"))
 					Try
