@@ -12,7 +12,6 @@
 
 	public class DownloadTapiBridgeWithEncodingConversion : DownloadTapiBridgeAdapter
 	{
-		private readonly object _syncRoot = new object();
 		private bool _initialized;
 
 		public DownloadTapiBridgeWithEncodingConversion(
@@ -29,25 +28,19 @@
 
 		public override string QueueDownload(TransferPath transferPath)
 		{
-			lock (this._syncRoot)
-			{
-				_initialized = true;
-			}
+			_initialized = true;
 			return this.TapiBridge.AddPath(transferPath);
 		}
 
 		public override void WaitForTransfers()
 		{
-			lock (_syncRoot)
+			if (!_initialized)
 			{
-				if (!_initialized)
-				{
-					_logger.LogVerbose(
-						"Long text encoding conversion bridge hasn't been initialized, so skipping waiting.");
+				_logger.LogVerbose(
+					"Long text transfer bridge hasn't been initialized or there is no request for long text download in the batch, so skipping waiting.");
 
-					this.FileDownloadCompleted.OnNext(true);
-					return;
-				}
+				this.FileDownloadCompleted.OnNext(true);
+				return;
 			}
 			try
 			{
