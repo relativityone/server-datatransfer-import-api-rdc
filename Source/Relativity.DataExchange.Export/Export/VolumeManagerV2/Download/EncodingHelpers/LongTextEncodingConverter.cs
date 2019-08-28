@@ -40,9 +40,16 @@
 
 		public async Task WaitForConversionCompletion()
 		{
-			_logger.LogVerbose("Waiting for the long text encoding conversion to complete.");
-			await this._conversionTask.ConfigureAwait(false);
-			_logger.LogVerbose("Successfully awaited the long text encoding conversion to complete.");
+			this._logger.LogVerbose("Waiting for the long text encoding conversion to complete.");
+			if (this._conversionTask != null)
+			{
+				await this._conversionTask.ConfigureAwait(false);
+			}
+			else
+			{
+				await Task.Yield();
+			}
+			this._logger.LogVerbose("Successfully awaited the long text encoding conversion to complete.");
 		}
 
 		public void SubscribeForDownloadEvents(IFileTransferProducer fileTransferProducer)
@@ -67,9 +74,7 @@
 		{
 			try
 			{
-				_logger.LogVerbose(
-					"Preparing to add the '{fileName}' long text file to the queue...",
-					fileName);
+				_logger.LogVerbose("Preparing to add the '{fileName}' long text file to the queue...", fileName);
 				_longTextFilesToConvert.Add(fileName, this._cancellationToken);
 				_logger.LogVerbose(
 					"Successfully added the '{fileName}' long text file to the queue.",
