@@ -51,7 +51,8 @@ namespace Relativity.DataExchange.Transfer
 			base.OnLargeFileProgress(sender, e);
 			if (e.Progress > 0)
 			{
-				this.PublishStatusMessage($"Large file transfer progress: {e.Progress:00.00}%.", e.Path.Order);
+				string filename = e.Path.Direction == TransferDirection.Upload ? Path.GetFileName(e.Path.SourcePath) : e.Path.TargetFileName;
+				this.PublishStatusMessage($"Large file transfer progress: {filename} {e.Progress:00.00}%.", e.Path.Order);
 				TapiLargeFileProgressEventArgs args = new TapiLargeFileProgressEventArgs(
 					e.Path,
 					e.TotalBytes,
