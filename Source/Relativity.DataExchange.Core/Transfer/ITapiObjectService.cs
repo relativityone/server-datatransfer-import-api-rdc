@@ -30,17 +30,6 @@ namespace Relativity.DataExchange.Transfer
 		void ApplyUnmappedFileRepositoryParameters(TapiBridgeParameters2 parameters);
 
 		/// <summary>
-		/// Dynamically builds the file transfer mode documentation text.
-		/// </summary>
-		/// <param name="includeBulk">
-		/// Specify whether to include bulk load details.
-		/// </param>
-		/// <returns>
-		/// The help text.
-		/// </returns>
-		string BuildFileTransferModeDocText(bool includeBulk);
-
-		/// <summary>
 		/// Creates the file system service.
 		/// </summary>
 		/// <returns>

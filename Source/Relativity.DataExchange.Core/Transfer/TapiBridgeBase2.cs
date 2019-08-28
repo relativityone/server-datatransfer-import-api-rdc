@@ -1457,7 +1457,7 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			this.PublishStatusMessage(message, TapiConstants.NoLineNumber);
-			var eventArgs = new TapiClientEventArgs(this.ClientDisplayName, this.Client);
+			var eventArgs = new TapiClientEventArgs(this.InstanceId, this.ClientDisplayName, this.Client);
 			this.TapiClientChanged?.Invoke(this, eventArgs);
 			this.UpdateAllTransferListenersClientName();
 		}

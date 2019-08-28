@@ -41,7 +41,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.Instance.Dispose();
 
 			// ASSERT
-			this._transferClientHandler.Verify(x => x.Detach(this.TapiBridge.Object));
+			this._transferClientHandler.Verify(x => x.Unsubscribe(this.TapiBridge.Object));
 		}
 	}
 }

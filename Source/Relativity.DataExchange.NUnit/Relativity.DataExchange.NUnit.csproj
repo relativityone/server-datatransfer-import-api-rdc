@@ -154,6 +154,7 @@
     <Compile Include="SerializationTestsBase.cs" />
     <Compile Include="ImportExportCompatibilityCheckTests.cs" />
     <Compile Include="TapiIssueMessageTests.cs" />
+    <Compile Include="TapiModeHelperTests.cs" />
     <Compile Include="TapiObjectServiceTests.cs" />
     <Compile Include="TapiTotalsTests.cs" />
     <Compile Include="ViewFieldInfoTests.cs" />

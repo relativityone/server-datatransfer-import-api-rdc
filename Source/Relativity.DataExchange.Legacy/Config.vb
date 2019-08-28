@@ -38,8 +38,7 @@ Namespace kCura.WinEDDS
 
 		Public Shared ReadOnly Property FileTransferModeExplanationText(ByVal includeBulk As Boolean) As String
 			Get
-				Dim tapiObjectService As ITapiObjectService = New TapiObjectService
-				Return tapiObjectService.BuildFileTransferModeDocText(includeBulk)
+				Return TapiModeHelper.BuildDocText()
 			End Get
 		End Property
 

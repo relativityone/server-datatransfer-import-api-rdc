@@ -362,7 +362,7 @@ Namespace kCura.WinEDDS
 				Me.WriteUpdate($"Data retrieved. Beginning {typeOfExportDisplayString} export...")
 
 				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType2.ResetStartTime, _lastStatisticsSnapshot, Statistics))
-				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType)
+				RaiseEvent FileTransferMultiClientModeChangeEvent(Me, New TapiMultiClientEventArgs(_downloadModeStatus.TransferModes))
 
 				Dim records As Object() = Nothing
 				Dim nextRecordIndex As Int32 = 0
@@ -1233,13 +1233,11 @@ Namespace kCura.WinEDDS
 
 		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Implements IExporterStatusNotification.FatalErrorEvent
 		Public Event StatusMessage(ByVal exportArgs As ExportEventArgs) Implements IExporterStatusNotification.StatusMessage
-		Public Event FileTransferModeChangeEvent(ByVal mode As TapiClient) Implements IExporterStatusNotification.FileTransferModeChangeEvent
-		Public Event DisableCloseButton()
-		Public Event EnableCloseButton()
+		Public Event FileTransferMultiClientModeChangeEvent(ByVal sender As Object, ByVal args As Global.Relativity.DataExchange.Transfer.TapiMultiClientEventArgs) Implements IExporterStatusNotification.FileTransferMultiClientModeChangeEvent
 
 #End Region
 
-		Private Sub _processContext_HaltProcessEvent(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles _processContext.CancellationRequest
+        Private Sub _processContext_HaltProcessEvent(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles _processContext.CancellationRequest
 			_cancellationTokenSource.Cancel()
 			If Not _volumeManager Is Nothing Then _volumeManager.Halt = True
 		End Sub
@@ -1255,13 +1253,9 @@ Namespace kCura.WinEDDS
 			FileHelper.Move(sourcePath, destinationPath)
 		End Sub
 
-		Public Event UploadModeChangeEvent(ByVal mode As String)
-
-		Private Sub _downloadModeStatus_UploadModeChangeEvent(ByVal tapiClient As TapiClient) Handles _downloadModeStatus.UploadModeChangeEvent
-			RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType)
-		End Sub
-
-
+		Private Sub _downloadModeStatus_UploadModeChangeEvent(ByVal sender As Object, ByVal args As TapiMultiClientEventArgs) Handles _downloadModeStatus.TransferModesChangeEvent
+			RaiseEvent FileTransferMultiClientModeChangeEvent(Me, args)
+        End Sub
 
 		Private Function BuildFileNameProvider() As IFileNameProvider
 			Dim identifierExportFileNameProvider As IFileNameProvider = New IdentifierExportFileNameProvider(Settings)
