@@ -1,5 +1,4 @@
-﻿Imports System.Diagnostics
-Imports kCura.WinEDDS.Monitoring
+﻿Imports kCura.WinEDDS.Monitoring
 Imports Relativity.DataExchange
 
 Namespace Monitoring.Sinks
@@ -37,7 +36,7 @@ Namespace Monitoring.Sinks
                 _sendLiveApmMetrics = value
             End Set
         End Property
-        
+
         ''' <inheritdoc/>
         Public Property SendSumMetrics As Boolean Implements IMetricsSinkConfig.SendSumMetrics
             Get

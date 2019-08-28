@@ -7,15 +7,11 @@
 namespace Relativity.DataExchange.NUnit
 {
 	using System;
-
 	using global::Monitoring.Sinks;
-
 	using global::NUnit.Framework;
-
 	using kCura.WinEDDS.Monitoring;
-
+	using Monitoring;
 	using Moq;
-
 	using Relativity.DataTransfer.MessageService;
 	using Relativity.DataTransfer.MessageService.MetricsManager.APM;
 

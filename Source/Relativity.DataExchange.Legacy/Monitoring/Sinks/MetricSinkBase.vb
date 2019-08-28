@@ -1,6 +1,4 @@
-﻿Imports System.Runtime.Remoting.Messaging
-Imports kCura.WinEDDS.Monitoring
-Imports Relativity.DataTransfer.MessageService.Tools
+﻿Imports Relativity.DataTransfer.MessageService.Tools
 
 Namespace Monitoring.Sinks
     Public MustInherit Class MetricSinkBase

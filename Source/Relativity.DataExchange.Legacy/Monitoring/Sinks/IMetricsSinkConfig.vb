@@ -1,6 +1,4 @@
-﻿
-
-Namespace kCura.WinEDDS.Monitoring
+﻿Namespace kCura.WinEDDS.Monitoring
 	Public interface IMetricsSinkConfig
 		Property ThrottleTimeout() As TimeSpan
 		Property SendLiveApmMetrics As Boolean
