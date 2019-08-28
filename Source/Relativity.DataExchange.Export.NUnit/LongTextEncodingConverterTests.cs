@@ -81,7 +81,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT
 			this._fileDownloadCompletedSubject.OnNext(true);
 
-			await this._instance.WaitForConversionCompletion();
+			await this._instance.WaitForConversionCompletion().ConfigureAwait(false);
 
 			// ASSERT
 			this._fileEncodingConverter.Verify(
@@ -111,7 +111,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileDownloadSubject.OnNext(fileName);
 			this._fileDownloadCompletedSubject.OnNext(true);
 
-			await this._instance.WaitForConversionCompletion();
+			await this._instance.WaitForConversionCompletion().ConfigureAwait(false);
 
 			// ASSERT
 			this._fileEncodingConverter.Verify(
@@ -141,7 +141,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileDownloadSubject.OnNext(fileName);
 			this._fileDownloadCompletedSubject.OnNext(true);
 
-			await this._instance.WaitForConversionCompletion();
+			await this._instance.WaitForConversionCompletion().ConfigureAwait(false);
 
 			// ASSERT
 			this._fileEncodingConverter.Verify(
@@ -184,7 +184,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileDownloadSubject.OnNext(fileName);
 
 			this._fileDownloadCompletedSubject.OnNext(true);
-			await this._instance.WaitForConversionCompletion();
+			await this._instance.WaitForConversionCompletion().ConfigureAwait(false);
 
 			// ASSERT
 			this._fileEncodingConverter.Verify(
