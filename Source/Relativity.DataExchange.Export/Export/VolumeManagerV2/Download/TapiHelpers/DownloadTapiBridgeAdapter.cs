@@ -65,17 +65,17 @@
 			{
 				return Observable.FromEventPattern<TapiProgressEventArgs>(h =>
 							{
+								this.TapiBridge.TapiProgress += h;
 								this._logger.LogVerbose(
 									"Attached tapi bridge {TapiBridgeInstanceId} to the events observer.",
 									TapiBridge.InstanceId);
-								this.TapiBridge.TapiProgress += h;
 							},
 						h =>
 							{
+								this.TapiBridge.TapiProgress -= h;
 								this._logger.LogVerbose(
 									"Detached tapi bridge {TapiBridgeInstanceId} from the events observer.",
 									this.TapiBridge.InstanceId);
-								this.TapiBridge.TapiProgress -= h;
 							})
 					// it will run on the Thread Pool 
 					.ObserveOn(Scheduler.Default)

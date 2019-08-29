@@ -32,12 +32,7 @@ NUGET
     StyleCop.Analyzers (1.1.1-rc.114)
       StyleCop.Analyzers.Unstable (>= 1.1.1.114)
     StyleCop.Analyzers.Unstable (1.1.1.114)
-    System.Reactive (4.1.6)
-      System.Threading.Tasks.Extensions (>= 4.5.2)
-      System.ValueTuple (>= 4.5)
-    System.Runtime.CompilerServices.Unsafe (4.5.2)
-    System.Threading.Tasks.Extensions (4.5.3)
-      System.Runtime.CompilerServices.Unsafe (>= 4.5.2)
+    System.Reactive (4.0)
     System.ValueTuple (4.5)
     ZetaLongPaths (1.0.0.16)
   remote: https://proget.kcura.corp/NuGet/NuGet

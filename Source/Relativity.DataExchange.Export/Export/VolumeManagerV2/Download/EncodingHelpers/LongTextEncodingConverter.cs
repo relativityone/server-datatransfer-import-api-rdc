@@ -45,10 +45,6 @@
 			{
 				await this._conversionTask.ConfigureAwait(false);
 			}
-			else
-			{
-				await Task.Yield();
-			}
 			this._logger.LogVerbose("Successfully awaited the long text encoding conversion to complete.");
 		}
 
