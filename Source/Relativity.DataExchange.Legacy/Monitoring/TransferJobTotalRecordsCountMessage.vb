@@ -1,20 +1,15 @@
-﻿Imports Monitoring
-Imports Relativity.DataTransfer.MessageService
-
-Namespace kCura.WinEDDS.Monitoring
+﻿Namespace Monitoring
 	Public Class TransferJobTotalRecordsCountMessage
 		Inherits TransferJobMessageBase
 
-        Private Const TotalRecordsKeyName As String = "TotalRecords"
-
-        Public Overrides ReadOnly Property BucketName As String = "RDC.Usage.TotalRecords"
+        Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.TOTAL_RECORDS
 
 		Public Property TotalRecords As Long
             Get
-                Return GetValueOrDefault (Of Long)(TotalRecordsKeyName)
+                Return GetValueOrDefault (Of Long)(TelemetryConstants.KeyName.TOTAL_RECORDS)
             End Get
-		    Set(value As Long)
-                CustomData.Item(TotalRecordsKeyName) = value
+		    Set
+                CustomData.Item(TelemetryConstants.KeyName.TOTAL_RECORDS) = Value
 		    End Set
 		End Property
 

@@ -1,30 +1,24 @@
-﻿Imports Monitoring
-Imports Relativity.DataTransfer.MessageService
-
-Namespace kCura.WinEDDS.Monitoring
+﻿Namespace Monitoring
 	Public Class TransferJobThroughputMessage
 		Inherits TransferJobMessageBase
 
-        Private Const RecordsPerSecondKeyName As String = "RecordsPerSecond"
-        Private Const BytesPerSecondKeyName As String = "BytesPerSecond"
-
-        Public Overrides ReadOnly Property BucketName As String = "RDC.Performance.Throughput"
+        Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.THROUGHPUT
 
 		Public Property RecordsPerSecond As Double
             Get
-                Return GetValueOrDefault (Of Double)(RecordsPerSecondKeyName)
+                Return GetValueOrDefault (Of Double)(TelemetryConstants.KeyName.RECORDS_PER_SECOND)
             End Get
-		    Set(value As Double)
-                CustomData.Item(RecordsPerSecondKeyName) = value
+		    Set
+                CustomData.Item(TelemetryConstants.KeyName.RECORDS_PER_SECOND) = Value
 		    End Set
 		End Property
 
 		Public Property BytesPerSecond As Double
             Get
-                Return GetValueOrDefault (Of Double)(BytesPerSecondKeyName)
+                Return GetValueOrDefault (Of Double)(TelemetryConstants.KeyName.BYTES_PER_SECOND)
             End Get
 		    Set(value As Double)
-                CustomData.Item(BytesPerSecondKeyName) = value
+                CustomData.Item(TelemetryConstants.KeyName.BYTES_PER_SECOND) = Value
 		    End Set
 		End Property
 

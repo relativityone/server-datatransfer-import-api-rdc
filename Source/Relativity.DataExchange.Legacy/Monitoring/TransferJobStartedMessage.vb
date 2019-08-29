@@ -1,7 +1,6 @@
-﻿Namespace kCura.WinEDDS.Monitoring
+﻿Namespace Monitoring
 	Public Class TransferJobStartedMessage
 		Inherits TransferJobMessageBase
-        Public Overrides ReadOnly Property BucketName As String = "RDC.Performance.JobStartedCount"
+        Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.JOB_STARTED_COUNT
 	End Class
-
 End Namespace

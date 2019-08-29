@@ -1,29 +1,24 @@
-Imports Monitoring
-
-Namespace kCura.WinEDDS.Monitoring
+Namespace Monitoring
 	Public Class TransferJobProgressMessage
 		Inherits TransferJobMessageBase
 
-		Private Const FileThroughputKeyName As String = "FileThroughput"
-		Private Const MetadataThroughputKeyName As String = "MetadataThroughput"
-
-        Public Overrides ReadOnly Property BucketName As String = "RDC.Performance.Progress"
+        Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.PROGRESS
 
 		Public Property FileThroughput As Double
 			Get
-				Return GetValueOrDefault (Of Double)(FileThroughputKeyName)
+				Return GetValueOrDefault (Of Double)(TelemetryConstants.KeyName.FILE_THROUGHPUT)
 			End Get
 			Set
-				CustomData.Item(FileThroughputKeyName) = Value
+				CustomData.Item(TelemetryConstants.KeyName.FILE_THROUGHPUT) = Value
 			End Set
 		End Property
 
 		Public Property MetadataThroughput As Double
 			Get
-				Return GetValueOrDefault (Of Double)(MetadataThroughputKeyName)
+				Return GetValueOrDefault (Of Double)(TelemetryConstants.KeyName.METADATA_THROUGHPUT)
 			End Get
 			Set
-				CustomData.Item(MetadataThroughputKeyName) = Value
+				CustomData.Item(TelemetryConstants.KeyName.METADATA_THROUGHPUT) = Value
 			End Set
 		End Property
 	End Class

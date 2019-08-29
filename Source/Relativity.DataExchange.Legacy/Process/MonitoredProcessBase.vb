@@ -1,5 +1,5 @@
 ﻿Imports kCura.WinEDDS
-Imports kCura.WinEDDS.Monitoring
+Imports Monitoring
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
@@ -150,7 +150,7 @@ Public MustInherit Class MonitoredProcessBase
 		message.JobType = JobType
 		message.TransferMode = TapiClientName
 		message.CorrelationID = JobGuid.ToString()
-		message.CustomData.Add("UseOldExport", Me.AppSettings.UseOldExport)
+		message.CustomData.Add(TelemetryConstants.KeyName.USE_OLD_EXPORT, Me.AppSettings.UseOldExport)
 		message.UnitOfMeasure = "Bytes(s)"
         message.ApplicationName = GetApplicationName()
 		If Not (CaseInfo Is Nothing) Then

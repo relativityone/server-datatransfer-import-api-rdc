@@ -416,6 +416,7 @@
     <Compile Include="Monitoring\Sinks\MetricSinkApm.vb" />
     <Compile Include="Monitoring\Sinks\MetricSinkBase.vb" />
     <Compile Include="Monitoring\Sinks\MetricSinkManager.vb" />
+    <Compile Include="Monitoring\TelemetryConstants.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Resources\Strings.Designer.vb">
       <AutoGen>True</AutoGen>

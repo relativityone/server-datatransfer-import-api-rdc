@@ -1,39 +1,33 @@
-﻿Imports Monitoring
-
-Namespace kCura.WinEDDS.Monitoring
+﻿Namespace Monitoring
 	Public Class TransferJobStatisticsMessage
 		Inherits TransferJobMessageBase
 
-		Private Const JobSizeInBytesKeyName As String = "JobSizeInBytes"
-		Private Const MetadataBytesKeyName As String = "MetadataBytes"
-		Private Const FileBytesKeyName As String = "FileBytes"
-
-        Public Overrides ReadOnly Property BucketName As String = "RDC.Performance.JobStatistics"
+        Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.JOB_STATISTICS
         
 		Public Property JobSizeInBytes As Double
 			Get
-				Return GetValueOrDefault (Of Double)(JobSizeInBytesKeyName)
+				Return GetValueOrDefault (Of Double)(TelemetryConstants.KeyName.JOB_SIZE_IN_BYTES)
 			End Get
 			Set
-				CustomData.Item(JobSizeInBytesKeyName) = Value
+				CustomData.Item(TelemetryConstants.KeyName.JOB_SIZE_IN_BYTES) = Value
 			End Set
 		End Property
 
 		Public Property MetadataBytes As Long
 			Get
-				Return GetValueOrDefault (Of Long)(MetadataBytesKeyName)
+				Return GetValueOrDefault (Of Long)(TelemetryConstants.KeyName.METADATA_BYTES)
 			End Get
 			Set
-				CustomData.Item(MetadataBytesKeyName) = Value
+				CustomData.Item(TelemetryConstants.KeyName.METADATA_BYTES) = Value
 			End Set
 		End Property
 
 		Public Property FileBytes As Long
 			Get
-				Return GetValueOrDefault (Of Long)(FileBytesKeyName)
+				Return GetValueOrDefault (Of Long)(TelemetryConstants.KeyName.FILE_BYTES)
 			End Get
 			Set
-				CustomData.Item(FileBytesKeyName) = Value
+				CustomData.Item(TelemetryConstants.KeyName.FILE_BYTES) = Value
 			End Set
 		End Property
 
