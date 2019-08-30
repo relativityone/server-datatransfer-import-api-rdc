@@ -20,7 +20,7 @@ namespace Relativity.DataExchange
 	public interface IAppSettings
 	{
 		/// <summary>
-		/// Gets or sets the name of the application. This value is encoded within logs and potential transfer monitors.
+		/// Gets or sets the name of the application. This value is encoded within logs, metrics and potential transfer monitors.
 		/// </summary>
 		/// <value>
 		/// The application name.

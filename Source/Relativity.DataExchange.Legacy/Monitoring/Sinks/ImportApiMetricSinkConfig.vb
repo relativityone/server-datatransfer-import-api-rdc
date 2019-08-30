@@ -2,7 +2,6 @@
 Imports Relativity.DataExchange
 
 Namespace Monitoring.Sinks
-
     Public Class ImportApiMetricSinkConfig
         Implements IMetricsSinkConfig
 
@@ -10,7 +9,7 @@ Namespace Monitoring.Sinks
         Private _sendLiveApmMetrics As Nullable(Of Boolean) = Nothing
         Private _sendSumMetrics As Nullable(Of Boolean) = Nothing
         Private _sendSummaryApmMetrics As Nullable(Of Boolean) = Nothing
-'
+
         ''' <inheritdoc/>
         Public Property ThrottleTimeout As TimeSpan Implements IMetricsSinkConfig.ThrottleTimeout
             Get

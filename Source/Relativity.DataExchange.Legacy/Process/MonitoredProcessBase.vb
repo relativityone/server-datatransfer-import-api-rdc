@@ -25,6 +25,10 @@ Public MustInherit Class MonitoredProcessBase
 
     Public Property ExecutionSource As ExecutionSource = ExecutionSource.Unknown
 
+    ''' <summary>
+    ''' Gets or sets name of application executing import/export job. This property is used to support telemetry.
+    ''' </summary>
+    ''' <returns>The application name</returns>
     Public Property ApplicationName As String = Nothing
 
 	Public Sub New(messageService As IMessageService)

@@ -2,8 +2,13 @@ Namespace Monitoring
 	Public Class TransferJobProgressMessage
 		Inherits TransferJobMessageBase
 
+        ''' <inheritdoc/>
         Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.PROGRESS
 
+        ''' <summary>
+        ''' Gets or sets active file transfer rate in bytes per second
+        ''' </summary>
+        ''' <returns>File throughput in bytes per second</returns>
 		Public Property FileThroughput As Double
 			Get
 				Return GetValueOrDefault (Of Double)(TelemetryConstants.KeyName.FILE_THROUGHPUT)
@@ -13,6 +18,10 @@ Namespace Monitoring
 			End Set
 		End Property
 
+        ''' <summary>
+        ''' Gets or sets active metadata transfer rate in bytes per second
+        ''' </summary>
+        ''' <returns>Metadata throughput in bytes per second</returns>
 		Public Property MetadataThroughput As Double
 			Get
 				Return GetValueOrDefault (Of Double)(TelemetryConstants.KeyName.METADATA_THROUGHPUT)

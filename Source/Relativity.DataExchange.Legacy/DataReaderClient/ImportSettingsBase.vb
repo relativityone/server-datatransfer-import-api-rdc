@@ -217,7 +217,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property Billable() As Boolean = True
 
         ''' <summary>
-        ''' Allows clients of Import API to identify themselves
+        ''' Allows clients of Import API to identify themselves. This property is used for telemetry purpose.
         ''' </summary>
         ''' <returns>The application name</returns>
         Public Property ApplicationName As String = Nothing

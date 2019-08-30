@@ -43,6 +43,10 @@ Namespace Monitoring.Sinks
             Log(message)
         End Sub
 
+        ''' <summary>
+        ''' Send a given metric to the sink
+        ''' </summary>
+        ''' <param name="message">Metric to send</param>
         Protected MustOverride Sub Log(message As TransferJobMessageBase)
     End Class
 End NameSpace

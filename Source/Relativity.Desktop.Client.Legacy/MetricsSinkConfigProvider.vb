@@ -14,12 +14,16 @@ Namespace Relativity.Desktop.Client
             SendSummaryApmMetrics = Relativity.Desktop.Client.Config.SendSummaryApmMetrics
         End Sub
         
+        ''' <inheritdoc/>
         Public Property ThrottleTimeout As TimeSpan Implements IMetricsSinkConfig.ThrottleTimeout
 
+        ''' <inheritdoc/>
         Public Property SendLiveApmMetrics As Boolean Implements IMetricsSinkConfig.SendLiveApmMetrics
 
+        ''' <inheritdoc/>
         Public Property SendSumMetrics As Boolean Implements IMetricsSinkConfig.SendSumMetrics
 
+        ''' <inheritdoc/>
         Public Property SendSummaryApmMetrics As Boolean Implements IMetricsSinkConfig.SendSummaryApmMetrics
 	End Class
 End Namespace

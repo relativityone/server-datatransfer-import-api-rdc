@@ -16,12 +16,7 @@ Namespace Monitoring.Sinks
             _serviceFactory = serviceFactory
         End Sub
 
-        ''' <summary>
-        ''' lazy loaded message service
-        ''' </summary>
-        ''' <returns>
-        ''' <see cref="IMessageService"/>
-        ''' </returns>
+        ''' <inheritdoc/>
         Public Function IMetricSinkManager_SetupMessageService(metricsSinkConfig As IMetricsSinkConfig) As IMessageService Implements IMetricSinkManager.SetupMessageService
             If _messageService Is Nothing Then
                 _messageService = RegisterSinks(metricsSinkConfig)
