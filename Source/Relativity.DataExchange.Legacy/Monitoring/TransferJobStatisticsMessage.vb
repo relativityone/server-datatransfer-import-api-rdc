@@ -32,9 +32,9 @@
 		End Property
 
         ''' <summary>
-        ''' Gets or sets files size in bytes.
+        ''' Gets or sets total size of all files in bytes.
         ''' </summary>
-        ''' <returns>Files size in bytes</returns>
+        ''' <returns>Total size of all files in bytes</returns>
 		Public Property FileBytes As Long
 			Get
 				Return GetValueOrDefault (Of Long)(TelemetryConstants.KeyName.FILE_BYTES)

@@ -6,7 +6,7 @@
         Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.COMPLETED_RECORDS
 
         ''' <summary>
-        ''' Gets or sets number of successfully processed records
+        ''' Gets or sets the number of successfully processed records
         ''' </summary>
         ''' <returns>Number of completed records</returns>
 		Public Property CompletedRecords As Long

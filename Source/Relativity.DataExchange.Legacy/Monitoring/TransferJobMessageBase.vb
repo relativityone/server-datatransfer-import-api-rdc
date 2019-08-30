@@ -11,7 +11,7 @@ Namespace Monitoring
         End Sub
 
         ''' <summary>
-        ''' Gets a bucket name of a metric.
+        ''' Gets the bucket name of a metric.
         ''' </summary>
         ''' <returns>Bucket name</returns>
         Public MustOverride ReadOnly Property BucketName As String
