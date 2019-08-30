@@ -2,8 +2,10 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using System.Threading;
 	using System.Threading.Tasks;
+
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
@@ -15,6 +17,7 @@
 		private readonly SafeIncrement _safeIncrement;
 		private readonly ILongTextTapiBridgePool _longTextTapiBridgePool;
 		private readonly ILog _logger;
+		private IFileDownloadSubscriber _fileDownloadSubscriber;
 		private readonly IDownloadProgressManager _downloadProgressManager;
 
 		public LongTextDownloader(
@@ -34,6 +37,13 @@
 			await Task.Run(() => Download(longTextExportRequests, cancellationToken)).ConfigureAwait(false);
 		}
 
+		public void RegisterSubscriber(IFileDownloadSubscriber fileDownloadSubscriber)
+		{
+			fileDownloadSubscriber.ThrowIfNull(nameof(fileDownloadSubscriber));
+
+			this._fileDownloadSubscriber = fileDownloadSubscriber;
+		}
+
 		private void Download(List<LongTextExportRequest> longTextExportRequests, CancellationToken cancellationToken)
 		{
 			if (longTextExportRequests == null)
@@ -45,6 +55,13 @@
 			try
 			{
 				bridge = _longTextTapiBridgePool.Request(cancellationToken);
+
+				_logger.LogDebug("Subscribing '{_fileDownloadSubscriber}' for the download event", this._fileDownloadSubscriber);
+
+				if (longTextExportRequests.Any())
+				{
+					this._fileDownloadSubscriber?.SubscribeForDownloadEvents(bridge);
+				}
 
 				foreach (LongTextExportRequest textExportRequest in longTextExportRequests)
 				{

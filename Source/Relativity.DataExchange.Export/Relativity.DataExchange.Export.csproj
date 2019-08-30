@@ -132,6 +132,8 @@
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\SubdirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\VolumeManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\ILongTextEncodingConverterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\IFileTransferProducer.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadCancellationTokenSource.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\Downloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EmptyExportRequestBuilder.cs" />
@@ -139,7 +141,7 @@
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\FileEncodingRewrite.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\IFileEncodingConverter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\IFileEncodingRewrite.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\ILongTextEncodingConverter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\IFileDownloadSubscriber.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ExportFileValidator.cs" />
@@ -499,6 +501,26 @@
       <ItemGroup>
         <Reference Include="Renci.SshNet">
           <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Windows">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Windows.Forms">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WindowsBase">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Reactive">
+          <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

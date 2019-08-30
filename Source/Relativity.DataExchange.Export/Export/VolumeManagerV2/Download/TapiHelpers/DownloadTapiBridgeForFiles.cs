@@ -10,7 +10,6 @@
 	public class DownloadTapiBridgeForFiles : DownloadTapiBridgeAdapter
 	{
 		private readonly ITransferClientHandler _transferClientHandler;
-		private readonly ILog _logger;
 		private bool _isEmpty;
 
 		public DownloadTapiBridgeForFiles(
@@ -20,10 +19,9 @@
 			ITransferStatistics transferStatistics,
 			ITransferClientHandler transferClientHandler,
 			ILog logger)
-			: base(bridge, progressHandler, messagesHandler, transferStatistics)
+			: base(bridge, progressHandler, messagesHandler, transferStatistics, logger)
 		{
 			_transferClientHandler = transferClientHandler.ThrowIfNull(nameof(transferClientHandler));
-			_logger = logger.ThrowIfNull(nameof(logger));
 			_transferClientHandler.Subscribe(bridge);
 			_isEmpty = true;
 		}

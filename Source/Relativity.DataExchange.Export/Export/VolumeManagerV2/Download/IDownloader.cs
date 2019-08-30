@@ -2,8 +2,11 @@
 {
 	using System.Threading;
 
+
 	public interface IDownloader
 	{
 		void DownloadFilesForArtifacts(CancellationToken cancellationToken);
+
+		void RegisterLongTextFileSubscriber(IFileDownloadSubscriber fileSubscriber);
 	}
 }

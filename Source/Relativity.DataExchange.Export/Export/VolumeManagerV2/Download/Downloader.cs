@@ -7,6 +7,7 @@
 	using System.Threading.Tasks;
 
 	using Relativity.DataExchange;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Logging;
 	using Relativity.Transfer;
@@ -55,6 +56,11 @@
 
 			_logger.LogVerbose("Attempting to download files.");
 			DownloadRequests(cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public void RegisterLongTextFileSubscriber(IFileDownloadSubscriber fileSubscriber)
+		{
+			this._longTextDownloader.RegisterSubscriber(fileSubscriber);
 		}
 
 		private void RetrieveExportRequests()
