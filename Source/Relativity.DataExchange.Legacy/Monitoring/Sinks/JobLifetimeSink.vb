@@ -14,15 +14,15 @@ Namespace kCura.WinEDDS.Monitoring
 		End Sub
 
 		Public Sub OnMessage(message As TransferJobStartedMessage) Implements IMessageSink(Of TransferJobStartedMessage).OnMessage
-			LogCount(FormatPerformanceBucketName("JobStartedCount", message.JobType, message.TransferMode), 1, message)
+			LogCount(FormatPerformanceBucketName("JobStartedCount", message.JobType, message.TransferMode, message.ApplicationName), 1, message)
 		End Sub
 
 		Public Sub OnMessage(message As TransferJobCompletedMessage) Implements IMessageSink(Of TransferJobCompletedMessage).OnMessage
-			LogCount(FormatPerformanceBucketName("JobCompletedCount", message.JobType, message.TransferMode), 1, message)
+			LogCount(FormatPerformanceBucketName("JobCompletedCount", message.JobType, message.TransferMode, message.ApplicationName), 1, message)
 		End Sub
 
 		Public Sub OnMessage(message As TransferJobFailedMessage) Implements IMessageSink(Of TransferJobFailedMessage).OnMessage
-			LogCount(FormatPerformanceBucketName("JobFailedCount", message.JobType, message.TransferMode), 1, message)
+			LogCount(FormatPerformanceBucketName("JobFailedCount", message.JobType, message.TransferMode, message.ApplicationName), 1, message)
 		End Sub
 	End Class
 End Namespace

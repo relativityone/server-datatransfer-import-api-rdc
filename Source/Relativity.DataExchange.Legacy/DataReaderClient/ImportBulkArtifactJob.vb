@@ -118,6 +118,7 @@ Namespace kCura.Relativity.DataReaderClient
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 				Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(SourceData.SourceData, _metricSinkManager.SetupMessageService(_nativeSettings.Telemetry)) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
 					process.ExecutionSource = _executionSource
+                    process.ApplicationName = _nativeSettings.ApplicationName
 					_processContext = process.Context
 
 					If Settings.DisableNativeValidation.HasValue Then process.DisableNativeValidation = Settings.DisableNativeValidation.Value

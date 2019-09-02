@@ -1,4 +1,5 @@
-﻿Imports Relativity.DataTransfer.MessageService
+﻿Imports Relativity.DataExchange.Service
+Imports Relativity.DataTransfer.MessageService
 Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
 Imports Relativity.Services.ServiceProxy
 
@@ -15,13 +16,19 @@ Namespace kCura.WinEDDS.Monitoring
 			_metricsManagerFactory = metricsManagerFactory
 		End Sub
 
-
-		Protected Function FormatUsageBucketName(metricName As String, jobType As String, transferMode As String) As String
-			Return $"{UsagePrefix}.{metricName}.{jobType}.{transferMode}"
+        Private Function FormatApplicationName(applicationName As String) As String
+            If String.IsNullOrWhiteSpace(applicationName) Then
+                Return ExecutionSource.Unknown.ToString()
+            End If
+            Return New String(applicationName.Where(Function(x) Not Char.IsWhiteSpace(x)).ToArray())
+        End Function
+        
+		Protected Function FormatUsageBucketName(metricName As String, jobType As String, transferMode As String, applicationName As String) As String
+			Return $"{UsagePrefix}.{metricName}.{jobType}.{transferMode}.{FormatApplicationName(applicationName)}"
 		End Function
 
-		Protected Function FormatPerformanceBucketName(metricName As String, jobType As String, transferMode As String) As String
-			Return $"{PerformancePrefix}.{metricName}.{jobType}.{transferMode}"
+		Protected Function FormatPerformanceBucketName(metricName As String, jobType As String, transferMode As String, applicationName As String) As String
+			Return $"{PerformancePrefix}.{metricName}.{jobType}.{transferMode}.{FormatApplicationName(applicationName)}"
 		End Function
 
 		Public Sub LogCount(bucketName As String, value As Long, metadata As IMetricMetadata)

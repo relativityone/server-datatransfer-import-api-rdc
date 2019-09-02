@@ -428,7 +428,7 @@
     <Compile Include="Importers\TimeKeeper\ITimeKeeperManager.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
-    <Compile Include="Monitoring\Sinks\IMetricsConfig.vb" />
+    <Compile Include="Monitoring\Sinks\IMetricsSinkConfig.vb" />
     <Compile Include="Monitoring\Sinks\JobApmEndOfLifeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobSumEndOfLifeSink.vb" />
     <Compile Include="Monitoring\MetricMetadataExtensions.vb" />

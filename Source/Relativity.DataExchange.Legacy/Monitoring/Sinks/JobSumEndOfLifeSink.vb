@@ -15,20 +15,20 @@ Namespace kCura.WinEDDS.Monitoring
 		End Sub
 
 		Public Sub OnMessage(message As TransferJobThroughputMessage) Implements IMessageSink(Of TransferJobThroughputMessage).OnMessage
-			LogDouble(FormatPerformanceBucketName("Throughput", message.JobType, message.TransferMode), message.RecordsPerSecond, message)
-			LogDouble(FormatPerformanceBucketName("ThroughputBytes", message.JobType, message.TransferMode), message.BytesPerSecond, message)
+			LogDouble(FormatPerformanceBucketName("Throughput", message.JobType, message.TransferMode, message.ApplicationName), message.RecordsPerSecond, message)
+			LogDouble(FormatPerformanceBucketName("ThroughputBytes", message.JobType, message.TransferMode, message.ApplicationName), message.BytesPerSecond, message)
 		End Sub
 
 		Public Sub OnMessage(message As TransferJobTotalRecordsCountMessage) Implements IMessageSink(Of TransferJobTotalRecordsCountMessage).OnMessage
-			LogDouble(FormatUsageBucketName("TotalRecords", message.JobType, message.TransferMode), message.TotalRecords, message)
+			LogDouble(FormatUsageBucketName("TotalRecords", message.JobType, message.TransferMode, message.ApplicationName), message.TotalRecords, message)
 		End Sub
 
 		Public Sub OnMessage(message As TransferJobCompletedRecordsCountMessage) Implements IMessageSink(Of TransferJobCompletedRecordsCountMessage).OnMessage
-			LogDouble(FormatUsageBucketName("CompletedRecords", message.JobType, message.TransferMode), message.CompletedRecords, message)
+			LogDouble(FormatUsageBucketName("CompletedRecords", message.JobType, message.TransferMode, message.ApplicationName), message.CompletedRecords, message)
 		End Sub
 
 		Public Sub OnMessage(message As TransferJobStatisticsMessage) Implements IMessageSink(Of TransferJobStatisticsMessage).OnMessage
-			LogDouble(FormatPerformanceBucketName("JobSize", message.JobType, message.TransferMode), message.JobSizeInBytes, message)
+			LogDouble(FormatPerformanceBucketName("JobSize", message.JobType, message.TransferMode, message.ApplicationName), message.JobSizeInBytes, message)
 		End Sub
 	End Class
 End Namespace

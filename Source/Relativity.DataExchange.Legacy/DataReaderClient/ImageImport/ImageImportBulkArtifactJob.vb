@@ -144,6 +144,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, _metricSinkManager.SetupMessageService(_settings.Telemetry))
 				process.ExecutionSource = _executionSource
+                process.ApplicationName = _settings.ApplicationName
 				_processContext = process.Context
 
 				If Settings.DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = Settings.DisableImageTypeValidation.Value
