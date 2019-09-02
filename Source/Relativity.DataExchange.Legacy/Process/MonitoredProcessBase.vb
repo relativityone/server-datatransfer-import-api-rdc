@@ -78,87 +78,40 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected MustOverride Function Run() As Boolean
 
-	Protected Sub SendTransferJobStartedMessage()
+	Protected Sub SendMetricJobStarted()
 		If InitialTapiClientName Is Nothing Then
-            Dim message As TransferJobStartedMessage = New TransferJobStartedMessage
-		    BuildApmBaseMessage(message)
+            Dim message As MetricJobStarted = New MetricJobStarted
+		    BuildMetricBase(message)
 		    MessageService.Send(message)
             InitialTapiClientName = TapiClientName
 		End If
 	End Sub
 
-	Protected Sub SendTransferJobFailedMessage()
-	    Dim message As TransferJobFailedMessage = New TransferJobFailedMessage
-	    BuildApmBaseMessage(message)
-	    MessageService.Send(message)
+    Protected Sub SendMetricJobEndReport(jobStatus As String, statistics As Statistics)
+        Dim metric As MetricJobEndReport = New MetricJobEndReport() With {.JobStatus = jobStatus, .TotalSizeBytes = (statistics.MetadataBytes + statistics.FileBytes),
+                .FileSizeBytes = statistics.FileBytes, .MetadataSizeBytes = statistics.MetadataBytes,
+                .TotalRecords = TotalRecords, .CompletedRecords = CompletedRecordsCount,
+                .ThroughputBytesPerSecond = CalculateThroughput(statistics.FileBytes + statistics.MetadataBytes),
+                .ThroughputRecordsPerSecond = CalculateThroughput(CompletedRecordsCount)}
+        BuildMetricBase(metric)
+        MessageService.Send(metric)
     End Sub
 
-	Protected Sub SendTransferJobCompletedMessage()
-	    Dim message As TransferJobCompletedMessage = New TransferJobCompletedMessage
-	    BuildApmBaseMessage(message)
-	    MessageService.Send(message)
-    End Sub
-
-	Protected Sub SendThroughputStatistics(metadataThroughput As Double, fileThroughput As Double)
-		Dim message As TransferJobProgressMessage = New TransferJobProgressMessage With {.MetadataThroughput = metadataThroughput, .FileThroughput = fileThroughput}
-		BuildApmBaseMessage(message)
+	Protected Sub SendMetricJobProgress(metadataThroughput As Double, fileThroughput As Double)
+		Dim message As MetricJobProgress = New MetricJobProgress With {.MetadataThroughput = metadataThroughput, .FileThroughput = fileThroughput}
+		BuildMetricBase(message)
 		MessageService.Send(message)
 	End Sub
 
-	Protected Sub SendJobStatistics(statistics As Statistics)
-		SendJobThroughputMessage(statistics)
-		SendJobTotalRecordsCountMessage()
-		SendJobCompletedRecordsCountMessage()
-		SendJobSize(statistics)
-	End Sub
-
-	Protected Sub SendJobThroughputMessage(statistics As Statistics)
-		If CompletedRecordsCount = 0 Then
-			Return
-		End If
-		Dim duration As System.TimeSpan = EndTime - StartTime
-		Dim recordsPerSecond As Double
-		Dim bytesPerSecond As Double
-		If duration.TotalSeconds = 0 Then
-			recordsPerSecond = 0
-			bytesPerSecond = 0
-		Else
-			recordsPerSecond = CompletedRecordsCount / duration.TotalSeconds
-			bytesPerSecond = (statistics.FileBytes + statistics.MetadataBytes) / duration.TotalSeconds
-		End If
-
-	    Dim message As TransferJobThroughputMessage = New TransferJobThroughputMessage With {.RecordsPerSecond = recordsPerSecond, .BytesPerSecond = bytesPerSecond}
-	    BuildApmBaseMessage(message)
-	    MessageService.Send(message)
-    End Sub
-
-	Protected Sub SendJobTotalRecordsCountMessage()
-        Dim message As TransferJobTotalRecordsCountMessage = New TransferJobTotalRecordsCountMessage With {.TotalRecords = TotalRecords}
-	    BuildApmBaseMessage(message)
-	    MessageService.Send(message)
-    End Sub
-
-	Protected Sub SendJobCompletedRecordsCountMessage()
-        Dim message As TransferJobCompletedRecordsCountMessage = New TransferJobCompletedRecordsCountMessage With {.CompletedRecords = CompletedRecordsCount}
-	    BuildApmBaseMessage(message)
-	    MessageService.Send(message)
-    End Sub
-
-	Private Sub SendJobSize(statistics As Statistics)
-		Dim message As TransferJobStatisticsMessage = New TransferJobStatisticsMessage With {.MetadataBytes = statistics.MetadataBytes, .FileBytes = statistics.FileBytes, .JobSizeInBytes = statistics.MetadataBytes + statistics.FileBytes}
-		BuildApmBaseMessage(message)
-		MessageService.Send(message)
-	End Sub
-
-	Private Sub BuildApmBaseMessage(message As TransferJobMessageBase)
-		message.JobType = JobType
-		message.TransferMode = TapiClientName
-		message.CorrelationID = JobGuid.ToString()
-		message.CustomData.Add(TelemetryConstants.KeyName.USE_OLD_EXPORT, Me.AppSettings.UseOldExport)
-		message.UnitOfMeasure = "Bytes(s)"
-        message.ApplicationName = GetApplicationName()
+	Private Sub BuildMetricBase(metric As MetricBase)
+		metric.JobType = JobType
+		metric.TransferMode = TapiClientName
+		metric.CorrelationID = JobGuid.ToString()
+        metric.UseOldExport = Me.AppSettings.UseOldExport
+		metric.UnitOfMeasure = "Bytes(s)"
+        metric.ApplicationName = GetApplicationName()
 		If Not (CaseInfo Is Nothing) Then
-			message.WorkspaceID = CaseInfo.ArtifactID
+			metric.WorkspaceID = CaseInfo.ArtifactID
 		End If
 	End Sub
 
@@ -176,4 +129,8 @@ Public MustInherit Class MonitoredProcessBase
         End If
     End Function
 
+    Private Function CalculateThroughput(size As Long) As Double
+        Dim duration As System.TimeSpan = EndTime - StartTime
+        Return CDbl(IIf(duration.TotalSeconds.Equals(0.0), 0.0, size/duration.TotalSeconds))
+    End Function
 End Class

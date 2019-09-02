@@ -1,9 +1,9 @@
 Namespace Monitoring
-	Public Class TransferJobProgressMessage
-		Inherits TransferJobMessageBase
+	Public Class MetricJobProgress
+		Inherits MetricBase
 
         ''' <inheritdoc/>
-        Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.PROGRESS
+        Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.METRIC_JOB_PROGRESS
 
         ''' <summary>
         ''' Gets or sets active file transfer rate in bytes per second

@@ -3,7 +3,7 @@ Imports Relativity.DataTransfer.MessageService
 Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
 
 Namespace Monitoring
-    Public MustInherit class TransferJobMessageBase
+    Public MustInherit class MetricBase
         Implements IMessage, IMetricMetadata
 
         Public Sub New()
@@ -56,6 +56,19 @@ Namespace Monitoring
         End Property
 
         ''' <summary>
+        ''' Gets or sets value indicating whether old export was used to perform job
+        ''' </summary>
+        ''' <returns>True if old export was used, False otherwise</returns>
+        Public Property UseOldExport() As Boolean
+            Get
+                Return GetValueOrDefault(Of Boolean)(TelemetryConstants.KeyName.USE_OLD_EXPORT)
+            End Get
+            Set
+                CustomData.Item(TelemetryConstants.KeyName.USE_OLD_EXPORT) = Value
+            End Set
+        End Property
+
+        ''' <summary>
         ''' Gets or sets correlation ID - unique job identifier.
         ''' </summary>
         ''' <returns>Unique ID of a job</returns>
@@ -74,7 +87,7 @@ Namespace Monitoring
         Public Property WorkspaceID As Integer Implements IMetricMetadata.WorkspaceID
 
         ''' <summary>
-        ''' Gets or sets a string value to describe what the metric's Value property is.
+        ''' Gets or sets a string value to describe what the metric's value property is.
         ''' </summary>
         ''' <returns>Unit of measure</returns>
         Public Property UnitOfMeasure As String Implements IMetricMetadata.UnitOfMeasure

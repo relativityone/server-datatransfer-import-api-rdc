@@ -411,6 +411,7 @@
     <Compile Include="ImportExtension\ImageImport\DataSource.vb" />
     <Compile Include="ImportExtension\ImageImport\ImageDataTableReader.vb" />
     <Compile Include="ImportExtension\NativeFileValidatedArtifactFieldCollection.vb" />
+    <Compile Include="Monitoring\MetricJobEndReport.vb" />
     <Compile Include="Monitoring\Sinks\IMetricSinkManager.vb" />
     <Compile Include="Monitoring\Sinks\ImportApiMetricSinkConfig.vb" />
     <Compile Include="Monitoring\Sinks\MetricSinkApm.vb" />
@@ -433,15 +434,9 @@
     <Compile Include="IO\IFileStreamFactory.vb" />
     <Compile Include="Monitoring\Sinks\IMetricsSinkConfig.vb" />
     <Compile Include="Monitoring\MetricMetadataExtensions.vb" />
-    <Compile Include="Monitoring\TransferJobProgressMessage.vb" />
-    <Compile Include="Monitoring\TransferJobCompletedRecordsCountMessage.vb" />
-    <Compile Include="Monitoring\TransferJobFailedMessage.vb" />
-    <Compile Include="Monitoring\TransferJobMessageBase.vb" />
-    <Compile Include="Monitoring\TransferJobCompletedMessage.vb" />
-    <Compile Include="Monitoring\TransferJobStatisticsMessage.vb" />
-    <Compile Include="Monitoring\TransferJobStartedMessage.vb" />
-    <Compile Include="Monitoring\TransferJobThroughputMessage.vb" />
-    <Compile Include="Monitoring\TransferJobTotalRecordsCountMessage.vb" />
+    <Compile Include="Monitoring\MetricJobProgress.vb" />
+    <Compile Include="Monitoring\MetricBase.vb" />
+    <Compile Include="Monitoring\MetricJobStarted.vb" />
     <Compile Include="Process\MonitoredProcessBase.vb" />
     <Compile Include="Process\StatusEventArgs.vb" />
     <Compile Include="My Project\Settings.Designer.vb">

@@ -14,9 +14,9 @@ Namespace Monitoring.Sinks
         End Sub
 
         ''' <inheritdoc/>
-        Protected Overrides Sub Log(message As TransferJobMessageBase)
+        Protected Overrides Sub Log(metric As MetricBase)
             Dim keplerManager As IMetricsManager = _metricsManagerFactory.CreateAPMKeplerManager(_serviceFactory)
-            keplerManager.LogDouble(message.BucketName, 0, message)
+            keplerManager.LogDouble(metric.BucketName, 0, metric)
         End Sub
     End Class
 End NameSpace

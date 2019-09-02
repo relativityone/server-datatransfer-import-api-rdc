@@ -1,6 +1,7 @@
 Imports System.Threading
 Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Service.Export
+Imports Monitoring
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Transfer
 Imports Relativity.DataTransfer.MessageService
@@ -42,19 +43,19 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendTransferJobCompletedMessage()
+            SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
 			Me.Context.PublishStatusEvent("", "Export completed")
 			Me.Context.PublishProcessCompleted()
 		End Sub
 
 		Protected Overrides Sub OnFatalError()
 			MyBase.OnFatalError()
-			SendTransferJobFailedMessage()
+            SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _searchExporter.Statistics)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendTransferJobCompletedMessage()
+            SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
 			Me.Context.PublishProcessCompleted(False, _searchExporter.ErrorLogFileName, True)
 		End Sub
 
@@ -102,22 +103,20 @@ Namespace kCura.WinEDDS
 				_uploadModeText = tapiObjectService.BuildFileTransferModeDocText(False)
 			End If
 			_tapiClientName = mode
-			SendTransferJobStartedMessage()
+			SendMetricJobStarted()
 			Me.Context.PublishStatusBarChanged("File Transfer Mode: " & mode, _uploadModeText)
 		End Sub
 
 		Private Sub _productionExporter_StatusMessage(ByVal e As ExportEventArgs) Handles _searchExporter.StatusMessage
 			Select Case e.EventType
-				Case EventType2.End
-					SendJobStatistics(e.Statistics)
 				Case EventType2.Error
 					Interlocked.Increment(_errorCount)
 					Me.Context.PublishErrorEvent(e.DocumentsExported.ToString, e.Message)
 				Case EventType2.Progress
-					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+					SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
 					Me.Context.PublishStatusEvent("", e.Message)
 				Case EventType2.Statistics
-					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+					SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
 				Case EventType2.Status
 					Me.Context.PublishStatusEvent(e.DocumentsExported.ToString, e.Message)
 				Case EventType2.Warning

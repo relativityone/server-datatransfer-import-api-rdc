@@ -31,15 +31,10 @@ Namespace Monitoring.Sinks
             Dim messageService As IMessageService = New MessageService()
 
             Dim metricSinkApm As MetricSinkApm = New MetricSinkApm(_serviceFactory, _metricsManagerFactory)
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedMessage)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedRecordsCountMessage)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobFailedMessage)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
-            Dim metricSinkApmThrottled As ThrottledMessageSink(Of TransferJobProgressMessage) = New ThrottledMessageSink(Of TransferJobProgressMessage)(metricSinkApm, Function() metricsSinkConfig.ThrottleTimeout)
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobProgressMessage)(metricSinkApmThrottled, Function() metricsSinkConfig.SendLiveApmMetrics))
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobStartedMessage)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobThroughputMessage)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
-            messageService.AddSink(New ToggledMessageSink(Of TransferJobTotalRecordsCountMessage)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
+            messageService.AddSink(New ToggledMessageSink(Of MetricJobStarted)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
+            Dim metricSinkApmThrottled As ThrottledMessageSink(Of MetricJobProgress) = New ThrottledMessageSink(Of MetricJobProgress)(metricSinkApm, Function() metricsSinkConfig.ThrottleTimeout)
+            messageService.AddSink(New ToggledMessageSink(Of MetricJobProgress)(metricSinkApmThrottled, Function() metricsSinkConfig.SendLiveApmMetrics))
+            messageService.AddSink(New ToggledMessageSink(Of MetricJobEndReport)(metricSinkApm, Function() metricsSinkConfig.SendSummaryApmMetrics))
 
             Return messageService
         End Function

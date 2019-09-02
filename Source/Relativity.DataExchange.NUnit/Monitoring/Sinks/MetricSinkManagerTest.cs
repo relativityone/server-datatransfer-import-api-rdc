@@ -50,114 +50,89 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldLogTransferJobStartedMessage()
+		public void ShouldLogMetricJobStarted()
 		{
 			var messageService = this.metricSinkManager.SetupMessageService(this.mockMetricsSinkConfig.Object);
-			messageService.Send(new TransferJobStartedMessage());
+			messageService.Send(new MetricJobStarted());
 
 			Assert.That(() => this.logApmDoubleCalls, Is.EqualTo(1).After(delayInMilliseconds: _MAX_TEST_DELAY, pollingInterval: 100));
 		}
 
 		[Test]
-		public void ShouldLogTransferJobCompletedMessage()
+		public void ShouldLogMetricJobProgress()
 		{
 			var messageService = this.metricSinkManager.SetupMessageService(this.mockMetricsSinkConfig.Object);
-			messageService.Send(new TransferJobCompletedMessage());
+			messageService.Send(new MetricJobProgress());
 
 			Assert.That(() => this.logApmDoubleCalls, Is.EqualTo(1).After(delayInMilliseconds: _MAX_TEST_DELAY, pollingInterval: 100));
 		}
 
 		[Test]
-		public void ShouldLogTransferJobFailedMessage()
+		public void ShouldLogMetricJobEndReport()
 		{
 			var messageService = this.metricSinkManager.SetupMessageService(this.mockMetricsSinkConfig.Object);
-			messageService.Send(new TransferJobFailedMessage());
+			messageService.Send(new MetricJobEndReport());
 
 			Assert.That(() => this.logApmDoubleCalls, Is.EqualTo(1).After(delayInMilliseconds: _MAX_TEST_DELAY, pollingInterval: 100));
 		}
 
 		[Test]
-		public void ShouldLogTransferJobTotalRecordsCountMessage()
-		{
-			var messageService = this.metricSinkManager.SetupMessageService(this.mockMetricsSinkConfig.Object);
-			messageService.Send(new TransferJobTotalRecordsCountMessage());
-
-			Assert.That(() => this.logApmDoubleCalls, Is.EqualTo(1).After(delayInMilliseconds: _MAX_TEST_DELAY, pollingInterval: 100));
-		}
-
-		[Test]
-		public void ShouldLogTransferJobThroughputMessage()
-		{
-			var messageService = this.metricSinkManager.SetupMessageService(this.mockMetricsSinkConfig.Object);
-			messageService.Send(new TransferJobThroughputMessage());
-
-			Assert.That(() => this.logApmDoubleCalls, Is.EqualTo(1).After(delayInMilliseconds: _MAX_TEST_DELAY, pollingInterval: 100));
-		}
-
-		[Test]
-		public void ShouldLogTransferJobCompletedRecordsCountMessage()
-		{
-			var messageService = this.metricSinkManager.SetupMessageService(this.mockMetricsSinkConfig.Object);
-			messageService.Send(new TransferJobCompletedRecordsCountMessage());
-
-			Assert.That(() => this.logApmDoubleCalls, Is.EqualTo(1).After(delayInMilliseconds: _MAX_TEST_DELAY, pollingInterval: 100));
-		}
-
-		[Test]
-		public void ShouldLogTransferJobStatisticsMessage()
-		{
-			var messageService = this.metricSinkManager.SetupMessageService(this.mockMetricsSinkConfig.Object);
-			messageService.Send(new TransferJobStatisticsMessage());
-
-			Assert.That(() => this.logApmDoubleCalls, Is.EqualTo(1).After(delayInMilliseconds: _MAX_TEST_DELAY, pollingInterval: 100));
-		}
-
-		[Test]
-		public void ShouldLogTransferJobProgressMessage()
-		{
-			var messageService = this.metricSinkManager.SetupMessageService(this.mockMetricsSinkConfig.Object);
-			messageService.Send(new TransferJobProgressMessage());
-
-			Assert.That(() => this.logApmDoubleCalls, Is.EqualTo(1).After(delayInMilliseconds: _MAX_TEST_DELAY, pollingInterval: 100));
-		}
-
-		[Test]
-		public void ShouldNotSendSummaryApmMetricsIfTurnedOff()
+		public void ShouldNotSendSummaryApmMetricsIfSummaryTurnedOff()
 		{
 			// turn off sending summary apm metrics
 			this.mockMetricsSinkConfig.SetupGet(foo => foo.SendSummaryApmMetrics).Returns(false);
 
 			var messageService = this.metricSinkManager.SetupMessageService(this.mockMetricsSinkConfig.Object);
-			messageService.Send(new TransferJobCompletedMessage());
-			messageService.Send(new TransferJobCompletedRecordsCountMessage());
-			messageService.Send(new TransferJobFailedMessage());
-			messageService.Send(new TransferJobStartedMessage());
-			messageService.Send(new TransferJobStatisticsMessage());
-			messageService.Send(new TransferJobThroughputMessage());
-			messageService.Send(new TransferJobTotalRecordsCountMessage());
+			messageService.Send(new MetricJobEndReport());
+			messageService.Send(new MetricJobStarted());
 
 			Assert.That(() => this.logApmDoubleCalls, Is.EqualTo(0).After(_MAX_TEST_DELAY));
 		}
 
 		[Test]
-		public void ShouldNotSendLiveApmMetricsIfTurnedOff()
+		public void ShouldSendSummaryApmMetricsIfLiveTurnedOff()
 		{
 			// turn off sending live apm metrics
 			this.mockMetricsSinkConfig.SetupGet(foo => foo.SendLiveApmMetrics).Returns(false);
 
 			var messageService = this.metricSinkManager.SetupMessageService(this.mockMetricsSinkConfig.Object);
-			messageService.Send(new TransferJobProgressMessage());
+			messageService.Send(new MetricJobEndReport());
+			messageService.Send(new MetricJobStarted());
+
+			Assert.That(() => this.logApmDoubleCalls, Is.EqualTo(2).After(_MAX_TEST_DELAY));
+		}
+
+		[Test]
+		public void ShouldSendLiveApmMetricsIfSummaryTurnedOff()
+		{
+			// turn off sending summary apm metrics
+			this.mockMetricsSinkConfig.SetupGet(foo => foo.SendSummaryApmMetrics).Returns(false);
+
+			var messageService = this.metricSinkManager.SetupMessageService(this.mockMetricsSinkConfig.Object);
+			messageService.Send(new MetricJobProgress());
+
+			Assert.That(() => this.logApmDoubleCalls, Is.EqualTo(1).After(_MAX_TEST_DELAY));
+		}
+
+		[Test]
+		public void ShouldNotSendLiveApmMetricsIfLiveTurnedOff()
+		{
+			// turn off sending live apm metrics
+			this.mockMetricsSinkConfig.SetupGet(foo => foo.SendLiveApmMetrics).Returns(false);
+
+			var messageService = this.metricSinkManager.SetupMessageService(this.mockMetricsSinkConfig.Object);
+			messageService.Send(new MetricJobProgress());
 
 			Assert.That(() => this.logApmDoubleCalls, Is.EqualTo(0).After(_MAX_TEST_DELAY));
 		}
 
 		[Test]
-		public void ShouldLogTransferJobProgressMessageOnlyOnceInGivenTimeout()
+		public void ShouldLogMetricJobProgressOnlyOnceInGivenTimeout()
 		{
 			var messageService = this.metricSinkManager.SetupMessageService(this.mockMetricsSinkConfig.Object);
 			for (int i = 0; i < 50; i++)
 			{
-				messageService.Send(new TransferJobProgressMessage());
+				messageService.Send(new MetricJobProgress());
 			}
 
 			Assert.That(() => this.logApmDoubleCalls, Is.EqualTo(1).After(_MAX_TEST_DELAY));

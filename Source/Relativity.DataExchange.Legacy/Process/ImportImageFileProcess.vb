@@ -1,3 +1,4 @@
+Imports Monitoring
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
@@ -82,22 +83,19 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Sub OnFatalError()
-			SendTransferJobFailedMessage()
 			MyBase.OnFatalError()
-			SendJobStatistics(_imageFileImporter.Statistics)
+            SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _imageFileImporter.Statistics)
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendJobStatistics(_imageFileImporter.Statistics)
-			SendTransferJobCompletedMessage()
+            SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _imageFileImporter.Statistics)
 			Me.Context.PublishProcessCompleted(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendJobStatistics(_imageFileImporter.Statistics)
-			SendTransferJobCompletedMessage()
+            SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _imageFileImporter.Statistics)
 			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
@@ -208,7 +206,7 @@ Namespace kCura.WinEDDS
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 						Me.Context.PublishRecordProcessed(e.CurrentRecordIndex)
 					Case EventType2.Statistics
-						SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+						SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
 					Case EventType2.Status
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Warning
@@ -241,7 +239,7 @@ Namespace kCura.WinEDDS
 			End If
 			Dim statusBarMessage As String = $"{statusBarText} - SQL Insert Mode: {If(isBulkEnabled, "Bulk", "Single")}"
 
-			SendTransferJobStartedMessage()
+			SendMetricJobStarted()
 
 			Me.Context.PublishStatusBarChanged(statusBarMessage, _uploadModeText)
 		End Sub

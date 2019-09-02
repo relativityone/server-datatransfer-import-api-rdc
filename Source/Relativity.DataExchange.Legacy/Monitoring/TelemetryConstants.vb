@@ -2,36 +2,40 @@
     Public Class TelemetryConstants
 
         ''' <summary>
-        ''' Contain values for <see cref="TransferJobMessageBase.BucketName"/>
+        ''' Contain values for <see cref="MetricBase.BucketName"/>
         ''' </summary>
         Class BucketName
-            Public Const JOB_STARTED_COUNT As String = "RDC.Performance.JobStartedCount"
-            Public Const JOB_COMPLETED_COUNT As String = "RDC.Performance.JobCompletedCount"
-            Public Const JOB_FAILED_COUNT As String = "RDC.Performance.JobFailedCount"
-            Public Const JOB_STATISTICS As String = "RDC.Performance.JobStatistics"
-            Public Const TOTAL_RECORDS As String = "RDC.Usage.TotalRecords"
-            Public Const COMPLETED_RECORDS As String = "RDC.Usage.CompletedRecords"
-            Public Const THROUGHPUT As String = "RDC.Performance.Throughput"
-            Public Const PROGRESS As String = "RDC.Performance.Progress"
+            Public Const METRIC_JOB_STARTED As String = "RDC.MetricJobStarted"
+            Public Const METRIC_JOB_PROGRESS As String = "RDC.MetricJobProgress"
+            Public Const METRIC_JOB_END_REPORT As String = "RDC.MetricJobEndReport"
         End Class
 
         ''' <summary>
-        ''' Contain values for <see cref="TransferJobMessageBase.CustomData"/> dictionary key names
+        ''' Contain values for <see cref="MetricBase.CustomData"/> dictionary key names
         ''' </summary>
         Class KeyName
             Public Const JOB_TYPE As String = "JobType"
             Public Const TRANSFER_MODE As String = "TransferMode"
             Public Const APPLICATION_NAME As String = "ApplicationName"
+            Public Const USE_OLD_EXPORT As String = "UseOldExport"
+            Public Const FILE_THROUGHPUT As String = "FileThroughputBytesPerSecond"
+            Public Const METADATA_THROUGHPUT As String = "MetadataThroughput"
+            Public Const JOB_STATUS As String = "JobStatus"
+            Public Const TOTAL_SIZE_BYTES As String = "TotalSizeBytes"
+            Public Const FILE_SIZE_BYTES As String = "FileSizeBytes"
+            Public Const METADATA_SIZE_BYTES As String = "MetadataSizeBytes"
             Public Const TOTAL_RECORDS As String = "TotalRecords"
             Public Const COMPLETED_RECORDS As String = "CompletedRecords"
-            Public Const FILE_THROUGHPUT As String = "FileThroughput"
-            Public Const METADATA_THROUGHPUT As String = "MetadataThroughput"
-            Public Const BYTES_PER_SECOND As String = "BytesPerSecond"
-            Public Const RECORDS_PER_SECOND As String = "RecordsPerSecond"
-            Public Const JOB_SIZE_IN_BYTES As String = "JobSizeInBytes"
-            Public Const METADATA_BYTES As String = "MetadataBytes"
-            Public Const FILE_BYTES As String = "FileBytes"
-            Public Const USE_OLD_EXPORT As String = "UseOldExport"
+            Public Const THROUGHPUT_BYTES_PER_SECOND As String = "ThroughputBytesPerSecond"
+            Public Const THROUGHPUT_RECORDS_PER_SECOND As String = "ThroughputRecordsPerSecond"
+        End Class
+
+        ''' <summary>
+        ''' Contain values for <see cref="MetricJobEndReport.JobStatus"/> property
+        ''' </summary>
+        Class JobStatus
+            Public Const COMPLETED As String = "Completed"
+            Public Const FAILED As String = "Failed"
         End Class
     End Class
 End Namespace
