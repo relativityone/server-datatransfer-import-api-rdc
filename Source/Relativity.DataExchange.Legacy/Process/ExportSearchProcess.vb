@@ -2,9 +2,9 @@ Imports System.Threading
 Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Service.Export
 Imports Monitoring
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Transfer
-Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.WinEDDS
 	Public Class ExportSearchProcess
@@ -30,13 +30,13 @@ Namespace kCura.WinEDDS
 		Public Property UserNotificationFactory As Func(Of Exporter, IUserNotification)
 
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
-			MyBase.New(New MessageService())
+			MyBase.New(New MetricService(New ImportApiMetricSinkConfig))
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
 			_exportConfig = exportConfig
 		End Sub
 
-		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, messageService As IMessageService)
-			MyBase.New(messageService)
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService)
+			MyBase.New(metricService)
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
 			_exportConfig = exportConfig
 		End Sub

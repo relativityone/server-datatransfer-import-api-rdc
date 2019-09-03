@@ -15,6 +15,9 @@
         ''' </summary>
         Class KeyName
             Public Const JOB_TYPE As String = "JobType"
+            Public Const WORKSPACE_ID As String = "WorkspaceID"
+            Public Const CORRELATION_ID As String = "CorrelationID"
+            Public Const UNIT_OF_MEASURE As String = "UnitOfMeasure"
             Public Const TRANSFER_MODE As String = "TransferMode"
             Public Const APPLICATION_NAME As String = "ApplicationName"
             Public Const USE_OLD_EXPORT As String = "UseOldExport"

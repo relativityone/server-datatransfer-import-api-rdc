@@ -1,14 +1,16 @@
 ﻿Imports kCura.WinEDDS
 Imports Monitoring
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
-Imports Relativity.DataTransfer.MessageService
 
 Public MustInherit Class MonitoredProcessBase
 	Inherits ProcessBase2
 
-	Private ReadOnly _messageThrottling As TimeSpan
+    Private ReadOnly _lockObject As Object = new Object
+	Private ReadOnly _metricThrottling As TimeSpan
+    Private _lastSendTime As DateTime
 	Protected Property JobGuid As System.Guid = System.Guid.NewGuid()
 	Protected Property StartTime As System.DateTime
 	Protected Property EndTime As System.DateTime
@@ -17,7 +19,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Property InitialTapiClientName As String
 	Protected MustOverride ReadOnly Property JobType As String
 	Protected MustOverride ReadOnly Property TapiClientName As String
-	Protected ReadOnly Property MessageService As IMessageService
+    Protected ReadOnly Property MetricService() As IMetricService
 	Protected _hasFatalErrorOccured As Boolean
 	Protected _tapiClientName As String = TapiClient.None.ToString()
 
@@ -31,8 +33,9 @@ Public MustInherit Class MonitoredProcessBase
     ''' <returns>The application name</returns>
     Public Property ApplicationName As String = Nothing
 
-	Public Sub New(messageService As IMessageService)
-		Me.MessageService = messageService
+	Public Sub New(metricService As IMetricService)
+        Me.MetricService = metricService
+        _metricThrottling = metricService.MetricSinkConfig.ThrottleTimeout
 	End Sub
 
 	Protected Overrides Sub OnExecute()
@@ -82,7 +85,7 @@ Public MustInherit Class MonitoredProcessBase
 		If InitialTapiClientName Is Nothing Then
             Dim message As MetricJobStarted = New MetricJobStarted
 		    BuildMetricBase(message)
-		    MessageService.Send(message)
+		    MetricService.Log(message)
             InitialTapiClientName = TapiClientName
 		End If
 	End Sub
@@ -94,13 +97,18 @@ Public MustInherit Class MonitoredProcessBase
                 .ThroughputBytesPerSecond = CalculateThroughput(statistics.FileBytes + statistics.MetadataBytes),
                 .ThroughputRecordsPerSecond = CalculateThroughput(CompletedRecordsCount)}
         BuildMetricBase(metric)
-        MessageService.Send(metric)
+        MetricService.Log(metric)
     End Sub
 
 	Protected Sub SendMetricJobProgress(metadataThroughput As Double, fileThroughput As Double)
+        Dim currentTime As DateTime = DateTime.Now
+        SyncLock _lockObject
+            If currentTime - _lastSendTime < _metricThrottling Then Return
+            _lastSendTime = currentTime
+        End SyncLock
 		Dim message As MetricJobProgress = New MetricJobProgress With {.MetadataThroughput = metadataThroughput, .FileThroughput = fileThroughput}
 		BuildMetricBase(message)
-		MessageService.Send(message)
+		MetricService.Log(message)
 	End Sub
 
 	Private Sub BuildMetricBase(metric As MetricBase)

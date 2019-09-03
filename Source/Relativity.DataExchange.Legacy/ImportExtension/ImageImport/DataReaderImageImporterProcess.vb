@@ -1,6 +1,6 @@
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
-Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImageImporterProcess
@@ -8,8 +8,8 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Private _sourceData As System.Data.DataTable
 
-		Public Sub New(ByVal sourceData As System.Data.DataTable, ByVal messageService As IMessageService)
-			MyBase.New(messageService)
+		Public Sub New(ByVal sourceData As System.Data.DataTable, ByVal metricService As IMetricService)
+			MyBase.New(metricService)
 			_sourceData = sourceData
 		End Sub
 

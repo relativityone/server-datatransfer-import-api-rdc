@@ -1,10 +1,10 @@
 Imports Monitoring
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
-Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.WinEDDS
 	Public Class ImportImageFileProcess
@@ -23,11 +23,11 @@ Namespace kCura.WinEDDS
 		Private _disableImageLocationValidation As Boolean?
 
 		Public Sub New ()
-			MyBase.New(new MessageService())
+			MyBase.New(new MetricService(New ImportApiMetricSinkConfig))
 		End Sub
 
-		Public Sub New (messageService As IMessageService)
-			MyBase.New(messageService)
+		Public Sub New (metricService As IMetricService)
+			MyBase.New(metricService)
 		End Sub
 
         Public WriteOnly Property DisableImageTypeValidation As Boolean

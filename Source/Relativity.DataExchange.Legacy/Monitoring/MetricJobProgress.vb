@@ -4,7 +4,7 @@ Namespace Monitoring
 
         ''' <inheritdoc/>
         Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.METRIC_JOB_PROGRESS
-
+        
         ''' <summary>
         ''' Gets or sets active file transfer rate in bytes per second
         ''' </summary>

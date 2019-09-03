@@ -412,11 +412,11 @@
     <Compile Include="ImportExtension\ImageImport\ImageDataTableReader.vb" />
     <Compile Include="ImportExtension\NativeFileValidatedArtifactFieldCollection.vb" />
     <Compile Include="Monitoring\MetricJobEndReport.vb" />
-    <Compile Include="Monitoring\Sinks\IMetricSinkManager.vb" />
+    <Compile Include="Monitoring\Sinks\IMetricService.vb" />
     <Compile Include="Monitoring\Sinks\ImportApiMetricSinkConfig.vb" />
     <Compile Include="Monitoring\Sinks\MetricSinkApm.vb" />
-    <Compile Include="Monitoring\Sinks\MetricSinkBase.vb" />
-    <Compile Include="Monitoring\Sinks\MetricSinkManager.vb" />
+    <Compile Include="Monitoring\Sinks\IMetricSink.vb" />
+    <Compile Include="Monitoring\Sinks\MetricService.vb" />
     <Compile Include="Monitoring\TelemetryConstants.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Resources\Strings.Designer.vb">
@@ -433,7 +433,6 @@
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
     <Compile Include="Monitoring\Sinks\IMetricsSinkConfig.vb" />
-    <Compile Include="Monitoring\MetricMetadataExtensions.vb" />
     <Compile Include="Monitoring\MetricJobProgress.vb" />
     <Compile Include="Monitoring\MetricBase.vb" />
     <Compile Include="Monitoring\MetricJobStarted.vb" />

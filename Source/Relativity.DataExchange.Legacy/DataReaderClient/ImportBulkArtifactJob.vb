@@ -3,7 +3,6 @@ Imports kCura.WinEDDS
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
-Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -30,7 +29,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _cookieMonster As Net.CookieContainer
 
 		Private ReadOnly _executionSource As ExecutionSource
-        Private ReadOnly _metricSinkManager As IMetricSinkManager
+        Private ReadOnly _metricService As IMetricService
 
 		Private Const _DOCUMENT_ARTIFACT_TYPE_ID As Int32 = 10 'TODO: make a reference to Relativity so we don't have to do this
 
@@ -48,13 +47,13 @@ Namespace kCura.Relativity.DataReaderClient
 			_bulkLoadFileFieldDelimiter = ServiceConstants.DEFAULT_FIELD_DELIMITER
 		End Sub
 
-		Friend Sub New(ByVal credentials As ICredentials, ByVal tapiCredentials As NetworkCredential, ByVal cookieMonster As Net.CookieContainer, ByVal metricSinkManager As IMetricSinkManager, ByVal Optional executionSource As Integer = 0)
+		Friend Sub New(ByVal credentials As ICredentials, ByVal tapiCredentials As NetworkCredential, ByVal cookieMonster As Net.CookieContainer, ByVal metricService As IMetricService, ByVal Optional executionSource As Integer = 0)
 			Me.New()
 			_executionSource = CType(executionSource, ExecutionSource)
 			_credentials = credentials
 			_tapiCredential = tapiCredentials
 			_cookieMonster = cookieMonster
-            _metricSinkManager = metricSinkManager
+            _metricService = metricService
 		End Sub
 
 #End Region
@@ -116,9 +115,10 @@ Namespace kCura.Relativity.DataReaderClient
 			If IsSettingsValid() Then
 
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
-				Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(SourceData.SourceData, _metricSinkManager.SetupMessageService(_nativeSettings.Telemetry)) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
+			    _metricService.MetricSinkConfig = Settings.Telemetry
+				Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(SourceData.SourceData, _metricService) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
 					process.ExecutionSource = _executionSource
-                    process.ApplicationName = _nativeSettings.ApplicationName
+                    process.ApplicationName = Settings.ApplicationName
 					_processContext = process.Context
 
 					If Settings.DisableNativeValidation.HasValue Then process.DisableNativeValidation = Settings.DisableNativeValidation.Value

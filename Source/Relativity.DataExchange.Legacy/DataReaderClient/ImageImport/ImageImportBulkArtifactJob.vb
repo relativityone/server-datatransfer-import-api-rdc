@@ -2,7 +2,6 @@ Imports System.Net
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
-Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -94,7 +93,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _cookieMonster As Net.CookieContainer
 		Private _jobReport As JobReport
 		Private _executionSource As ExecutionSource
-        Private ReadOnly _metricSinkManager As IMetricSinkManager
+        Private ReadOnly _metricService As IMetricService
 #End Region
 
 #Region " Public Methods "
@@ -114,12 +113,12 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <param name="credentials">The credentials.</param>
 		''' <param name="cookieMonster">The cookie monster.</param>
 		''' <param name="executionSource">Optional parameter that states what process the import is coming from.</param>
-		Friend Sub New(ByVal credentials As ICredentials, ByVal cookieMonster As Net.CookieContainer, ByVal metricSinkManager As IMetricSinkManager, ByVal Optional executionSource As Integer = 0)
+		Friend Sub New(ByVal credentials As ICredentials, ByVal cookieMonster As Net.CookieContainer, metricService As IMetricService, ByVal Optional executionSource As Integer = 0)
 			Me.New()
 			_executionSource = CType(executionSource, ExecutionSource)
 			_credentials = credentials
 			_cookieMonster = cookieMonster
-            _metricSinkManager = metricSinkManager
+            _metricService = metricService
 		End Sub
 
 		''' <summary>
@@ -142,9 +141,10 @@ Namespace kCura.Relativity.DataReaderClient
 
 				MapSuppliedFieldNamesToActual(Settings, SourceData.SourceData)
 
-				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, _metricSinkManager.SetupMessageService(_settings.Telemetry))
+                _metricService.MetricSinkConfig = Settings.Telemetry
+				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, _metricService)
 				process.ExecutionSource = _executionSource
-                process.ApplicationName = _settings.ApplicationName
+                process.ApplicationName = Settings.ApplicationName
 				_processContext = process.Context
 
 				If Settings.DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = Settings.DisableImageTypeValidation.Value

@@ -12,8 +12,6 @@ Imports Relativity.DataExchange.Export
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
-Imports Relativity.DataTransfer.MessageService
-Imports Relativity.DataTransfer.MessageService.Tools
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
@@ -63,12 +61,10 @@ Namespace Relativity.Desktop.Client
 		Private _timeZoneOffset As Int32
 		Private WithEvents _certificatePromptForm As CertificatePromptForm
 		Private WithEvents _optionsForm As OptionsForm
-		''Private _messageService As IMessageService
 		Private _documentRepositoryList As String()
 		Private ReadOnly _logger As Relativity.Logging.ILog
 		Private ReadOnly oAuth2ImplicitCredentialsHelper As Lazy(Of OAuth2ImplicitCredentialsHelper) = New Lazy(Of OAuth2ImplicitCredentialsHelper)(AddressOf CreateOAuth2ImplicitCredentialsHelper)
-        Private _metricSinkManager As IMetricSinkManager
-        Private _metricsSinkConfig As IMetricsSinkConfig
+        Private _metricService As IMetricService
 #End Region
 
 #Region "Properties"
@@ -1114,7 +1110,7 @@ Namespace Relativity.Desktop.Client
 			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
 					Dim frm As ProcessForm = CreateProcessForm()
-					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await SetupMessageService())
+					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await SetupMetricService())
 					importer.CaseInfo = SelectedCaseInfo
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
@@ -1165,7 +1161,7 @@ Namespace Relativity.Desktop.Client
 				Return
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
-			Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await SetupMessageService())
+			Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await SetupMetricService())
 			ImageLoadFile.CookieContainer = Me.CookieContainer
 			importer.CaseInfo = SelectedCaseInfo
 			importer.ImageLoadFile = ImageLoadFile
@@ -1189,7 +1185,7 @@ Namespace Relativity.Desktop.Client
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
 			frm.StatusRefreshRate = 0
-			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMessageService())
+			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMetricService())
 			exporter.UserNotification = New FormsUserNotification()
 			exporter.CaseInfo = SelectedCaseInfo
 			exporter.ExportFile = exportFile
@@ -1764,14 +1760,9 @@ Namespace Relativity.Desktop.Client
 			Return loginResult
 		End Function
 
-		Public Async Function SetupMessageService() As Task(Of IMessageService)
-            If _metricSinkManager Is Nothing Then
-                _metricSinkManager = New MetricSinkManager(New MetricsManagerFactory(), ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync()))
-            End If
-            If _metricsSinkConfig Is Nothing Then
-                _metricsSinkConfig = New MetricsSinkConfigProvider()
-            End If
-            Return _metricSinkManager.SetupMessageService(_metricsSinkConfig)
+		Public Async Function SetupMetricService() As Task(Of IMetricService)
+            If _metricService Is Nothing Then _metricService = New MetricService(New MetricsSinkConfigProvider, ServiceFactoryFactory.Create(Await GetCredentialsAsync()))
+            Return _metricService
 		End Function
 
 		Private Async Function ValidateVersionCompatibilityAsync(ByVal credential As System.Net.NetworkCredential) As Task

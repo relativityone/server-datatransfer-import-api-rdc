@@ -1,10 +1,10 @@
 Imports Monitoring
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
-Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.WinEDDS
 
@@ -26,11 +26,11 @@ Namespace kCura.WinEDDS
 		Private _auditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
 
 		Public Sub New()
-			MyBase.New(New MessageService())
+			MyBase.New(New MetricService(New ImportApiMetricSinkConfig))
 		End Sub
 
-		Public Sub New(messageService As IMessageService)
-			MyBase.New(messageService)
+		Public Sub New(metricService As IMetricService)
+			MyBase.New(metricService)
 		End Sub
 
 		Public WriteOnly Property DisableNativeValidation As Boolean

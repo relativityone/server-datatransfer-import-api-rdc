@@ -3,12 +3,8 @@
         Inherits MetricBase
 
         ''' <inheritdoc/>
-        Public Overrides ReadOnly Property BucketName As String
-            Get
-                Return TelemetryConstants.BucketName.METRIC_JOB_END_REPORT
-            End Get
-        End Property
-
+        Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.METRIC_JOB_END_REPORT
+        
         ''' <summary>
         ''' Gets or sets job status - <see cref="TelemetryConstants.JobStatus"/>
         ''' </summary>
