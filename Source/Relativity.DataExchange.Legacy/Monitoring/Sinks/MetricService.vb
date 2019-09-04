@@ -1,4 +1,4 @@
-﻿Imports kCura.WinEDDS.Monitoring
+﻿
 Imports Relativity.Services.ServiceProxy
 
 Namespace Monitoring.Sinks
@@ -8,13 +8,13 @@ Namespace Monitoring.Sinks
 
         Private ReadOnly _apmSink As MetricSinkApm
 
-        Private _metricSinkConfig As IMetricsSinkConfig
+        Private _metricSinkConfig As IMetricSinkConfig
         
         ''' <summary>
         ''' Create sinks that does not require <see cref="IServiceFactory"/> and setup their configuration.
         ''' </summary>
         ''' <param name="metricSinkConfig">Sinks configuration.</param>
-        Public Sub New(metricSinkConfig As IMetricsSinkConfig)
+        Public Sub New(metricSinkConfig As IMetricSinkConfig)
             _metricSinkConfig = metricSinkConfig
             _apmSink = Nothing
         End Sub
@@ -24,9 +24,9 @@ Namespace Monitoring.Sinks
         ''' </summary>
         ''' <param name="metricSinkConfig">Sinks configuration.</param>
         ''' <param name="serviceFactory">Used to create proxies of Relativity Services.</param>
-        Public Sub New(metricSinkConfig As IMetricsSinkConfig, serviceFactory As IServiceFactory)
+        Public Sub New(metricSinkConfig As IMetricSinkConfig, serviceFactory As IServiceFactory)
             _metricSinkConfig = metricSinkConfig
-            _apmSink = New MetricSinkApm(serviceFactory, _metricSinkConfig.SendSummaryApmMetrics)
+            _apmSink = New MetricSinkApm(serviceFactory, _metricSinkConfig.SendApmMetrics)
         End Sub
 
         ''' <inheritdoc/>
@@ -35,7 +35,7 @@ Namespace Monitoring.Sinks
         End Sub
 
         ''' <inheritdoc/>
-        Public Property MetricSinkConfig As IMetricsSinkConfig Implements IMetricService.MetricSinkConfig
+        Public Property MetricSinkConfig As IMetricSinkConfig Implements IMetricService.MetricSinkConfig
             Get
                 Return _metricSinkConfig
             End Get
@@ -49,7 +49,7 @@ Namespace Monitoring.Sinks
         ''' Update <see cref="IMetricSink.IsEnabled"/> property of every sink
         ''' </summary>
         Private Sub UpdateSinksConfiguration()
-            If Not _apmSink Is Nothing Then _apmSink.IsEnabled = _metricSinkConfig.SendSummaryApmMetrics
+            If Not _apmSink Is Nothing Then _apmSink.IsEnabled = _metricSinkConfig.SendApmMetrics
         End Sub
     End Class
 End NameSpace

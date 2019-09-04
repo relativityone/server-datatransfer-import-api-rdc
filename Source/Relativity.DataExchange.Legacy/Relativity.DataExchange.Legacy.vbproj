@@ -432,7 +432,7 @@
     <Compile Include="Importers\TimeKeeper\ITimeKeeperManager.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
-    <Compile Include="Monitoring\Sinks\IMetricsSinkConfig.vb" />
+    <Compile Include="Monitoring\Sinks\IMetricSinkConfig.vb" />
     <Compile Include="Monitoring\MetricJobProgress.vb" />
     <Compile Include="Monitoring\MetricBase.vb" />
     <Compile Include="Monitoring\MetricJobStarted.vb" />

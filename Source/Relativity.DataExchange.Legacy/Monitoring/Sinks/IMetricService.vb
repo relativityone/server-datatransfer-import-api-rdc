@@ -1,6 +1,4 @@
-﻿Imports kCura.WinEDDS.Monitoring
-
-Namespace Monitoring.Sinks
+﻿Namespace Monitoring.Sinks
     Public Interface IMetricService
         
         ''' <summary>
@@ -13,6 +11,6 @@ Namespace Monitoring.Sinks
         ''' Gets or sets sinks configuration
         ''' </summary>
         ''' <returns>Current sinks configuration</returns>
-        Property MetricSinkConfig As IMetricsSinkConfig
+        Property MetricSinkConfig As IMetricSinkConfig
     End Interface
 End NameSpace

@@ -5,7 +5,6 @@ Imports System.Net.Security
 Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Credentials
-Imports kCura.WinEDDS.Monitoring
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Export
@@ -1761,7 +1760,7 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Public Async Function SetupMetricService() As Task(Of IMetricService)
-            If _metricService Is Nothing Then _metricService = New MetricService(New MetricsSinkConfigProvider, ServiceFactoryFactory.Create(Await GetCredentialsAsync()))
+            If _metricService Is Nothing Then _metricService = New MetricService(New RdcMetricSinkConfig, ServiceFactoryFactory.Create(Await GetCredentialsAsync()))
             Return _metricService
 		End Function
 
