@@ -80,6 +80,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Telemetry.Services.Interface">
       <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
     </Reference>
@@ -159,6 +162,7 @@
     <Compile Include="LoadFileDeserializationTests.cs" />
     <Compile Include="Monitoring\Sinks\MetricServiceTest.cs" />
     <Compile Include="Monitoring\Sinks\MetricSinkApmTest.cs" />
+    <Compile Include="Monitoring\Sinks\MetricSinkSumTest.cs" />
     <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
     <Compile Include="SoapExceptionDetailTests.cs" />
     <Compile Include="SerializationTestsBase.cs" />
