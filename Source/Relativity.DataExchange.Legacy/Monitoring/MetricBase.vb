@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Generic
+Imports Relativity.Telemetry.DataContracts.Shared
 
 Namespace Monitoring
     Public MustInherit class MetricBase
@@ -110,9 +111,19 @@ Namespace Monitoring
             End Set
         End Property
 
+        ''' <summary>
+        ''' Generates list of <see cref="MetricRef"/> to send. This is because SUM metrics can have only one property with the value.
+        ''' </summary>
+        ''' <returns>List of <see cref="MetricRef"/></returns>
+        Public MustOverride Function GenerateSumMetrics() As List(Of MetricRef)
+
         Protected Function GetValueOrDefault(Of T)(ByVal key As String) As T
             Dim value As Object = Nothing
             Return If(Me.CustomData.TryGetValue(key, value), CType(value, T), Nothing)
+        End Function
+
+        Protected Function FormatSumBucketName(prefix As String) As String
+            Return $"{prefix}.{JobType}.{TransferMode}"
         End Function
     end class
 End NameSpace

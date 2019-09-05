@@ -7,6 +7,7 @@ Namespace Monitoring.Sinks
         Implements IMetricService
 
         Private ReadOnly _apmSink As MetricSinkApm
+        Private ReadOnly _sumSink As MetricSinkSum
 
         Private _metricSinkConfig As IMetricSinkConfig
         
@@ -17,6 +18,7 @@ Namespace Monitoring.Sinks
         Public Sub New(metricSinkConfig As IMetricSinkConfig)
             _metricSinkConfig = metricSinkConfig
             _apmSink = Nothing
+            _sumSink = Nothing
         End Sub
 
         ''' <summary>
@@ -27,11 +29,13 @@ Namespace Monitoring.Sinks
         Public Sub New(metricSinkConfig As IMetricSinkConfig, serviceFactory As IServiceFactory)
             _metricSinkConfig = metricSinkConfig
             _apmSink = New MetricSinkApm(serviceFactory, _metricSinkConfig.SendApmMetrics)
+            _sumSink = New MetricSinkSum(serviceFactory, _metricSinkConfig.SendSumMetrics)
         End Sub
 
         ''' <inheritdoc/>
         Public Sub Log(metric As MetricBase) Implements IMetricService.Log
             If Not _apmSink Is Nothing AndAlso _apmSink.IsEnabled Then _apmSink.Log(metric)
+            If Not _sumSink Is Nothing AndAlso _sumSink.IsEnabled Then _sumSink.Log(metric)
         End Sub
 
         ''' <inheritdoc/>
@@ -50,6 +54,7 @@ Namespace Monitoring.Sinks
         ''' </summary>
         Private Sub UpdateSinksConfiguration()
             If Not _apmSink Is Nothing Then _apmSink.IsEnabled = _metricSinkConfig.SendApmMetrics
+            If Not _sumSink Is Nothing Then _sumSink.IsEnabled = _metricSinkConfig.SendSumMetrics
         End Sub
     End Class
 End NameSpace

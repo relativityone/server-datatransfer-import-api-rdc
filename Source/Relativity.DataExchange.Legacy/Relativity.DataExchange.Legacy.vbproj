@@ -417,6 +417,7 @@
     <Compile Include="Monitoring\Sinks\MetricSinkApm.vb" />
     <Compile Include="Monitoring\Sinks\IMetricSink.vb" />
     <Compile Include="Monitoring\Sinks\MetricService.vb" />
+    <Compile Include="Monitoring\Sinks\MetricSinkSum.vb" />
     <Compile Include="Monitoring\TelemetryConstants.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Resources\Strings.Designer.vb">

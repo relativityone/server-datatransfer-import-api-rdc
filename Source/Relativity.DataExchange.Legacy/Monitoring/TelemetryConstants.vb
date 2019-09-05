@@ -10,6 +10,17 @@
             Public Const METRIC_JOB_END_REPORT As String = "RDC.MetricJobEndReport"
         End Class
 
+        class SumBucketPrefix
+            Public Const JOB_STARTED_COUNT As String = "RDC.Performance.JobStartedCount"
+            Public Const TOTAL_RECORDS As String = "RDC.Usage.TotalRecords"
+            Public Const COMPLETED_RECORDS As String = "RDC.Usage.CompletedRecords"
+            Public Const JOB_SIZE As String = "RDC.Usage.JobSize"
+            Public Const JOB_COMPLETED_COUNT As String = "RDC.Performance.JobCompletedCount"
+            Public Const JOB_FAILED_COUNT As String = "RDC.Performance.JobFailedCount"
+            Public Const THROUGHPUT As String = "RDC.Performance.Throughput"
+            Public Const THROUGHPUT_BYTES As String = "RDC.Performance.ThroughputBytes"
+        End Class
+
         ''' <summary>
         ''' Contain values for <see cref="MetricBase.CustomData"/> dictionary key names
         ''' </summary>
