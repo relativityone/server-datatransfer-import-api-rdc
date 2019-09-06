@@ -12,9 +12,9 @@ Namespace Monitoring
         ''' <inheritdoc/>
         Public Overrides Function GenerateSumMetrics() As List(Of MetricRef)
             Return New List(Of MetricRef) From {
-                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.TOTAL_RECORDS), Guid.Empty, CorrelationID, MetricTypes.Counter, TotalRecords),
-                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.COMPLETED_RECORDS), Guid.Empty, CorrelationID, MetricTypes.Counter, CompletedRecords),
-                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.JOB_SIZE), Guid.Empty, CorrelationID, MetricTypes.Counter, TotalSizeBytes),
+                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.TOTAL_RECORDS), Guid.Empty, CorrelationID, MetricTypes.PointInTimeLong, TotalRecords),
+                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.COMPLETED_RECORDS), Guid.Empty, CorrelationID, MetricTypes.PointInTimeLong, CompletedRecords),
+                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.JOB_SIZE), Guid.Empty, CorrelationID, MetricTypes.PointInTimeLong, TotalSizeBytes),
                 New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.THROUGHPUT), Guid.Empty, CorrelationID, MetricTypes.PointInTimeDouble, ThroughputRecordsPerSecond),
                 New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.THROUGHPUT_BYTES), Guid.Empty, CorrelationID, MetricTypes.PointInTimeDouble, ThroughputBytesPerSecond),
                 New MetricRef(FormatSumBucketName(CStr(IIf(JobStatus = TelemetryConstants.JobStatus.COMPLETED, TelemetryConstants.SumBucketPrefix.JOB_COMPLETED_COUNT, TelemetryConstants.SumBucketPrefix.JOB_FAILED_COUNT))), Guid.Empty, CorrelationID, MetricTypes.Counter, 1)

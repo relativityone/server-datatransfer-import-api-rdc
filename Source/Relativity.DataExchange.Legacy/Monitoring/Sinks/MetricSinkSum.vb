@@ -1,4 +1,6 @@
-﻿Imports Relativity.Services.ServiceProxy
+﻿Imports System.Collections.Generic
+Imports Relativity.Services.ServiceProxy
+Imports Relativity.Telemetry.DataContracts.Shared
 Imports Relativity.Telemetry.Services.Metrics
 
 Namespace Monitoring.Sinks
@@ -14,8 +16,10 @@ Namespace Monitoring.Sinks
 
         ''' <inheritdoc/>
         Public Sub Log(metric As MetricBase) Implements IMetricSink.Log
+            Dim metrics As List(Of MetricRef) = metric.GenerateSumMetrics()
+            If metrics Is Nothing OrElse metrics.Count = 0 Then Return
             Using proxy As IMetricsManager = _serviceFactory.CreateProxy(Of IMetricsManager)()
-                proxy.LogMetricsAsync(metric.GenerateSumMetrics()).ConfigureAwait(False).GetAwaiter().GetResult()
+                proxy.LogMetricsAsync(metrics).ConfigureAwait(False).GetAwaiter().GetResult()
             End Using
         End Sub
 
