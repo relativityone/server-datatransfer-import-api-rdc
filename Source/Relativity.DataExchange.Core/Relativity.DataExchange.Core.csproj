@@ -214,6 +214,7 @@
     <Compile Include="Transfer\TapiBridgeParameters2.cs" />
     <Compile Include="Transfer\UploadTapiBridge2.cs" />
     <Compile Include="Transfer\UploadTapiBridgeParameters2.cs" />
+    <Compile Include="ValidatedNotNullAttribute.cs" />
     <Compile Include="VersionConstants.cs" />
     <Compile Include="VisualBasicConstants.cs" />
     <Compile Include="CollectionExtensions.cs" />

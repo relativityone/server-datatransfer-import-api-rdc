@@ -22,7 +22,7 @@ namespace Relativity.DataExchange
 		/// <param name="obj">object to be validated.</param>
 		/// <param name="paramName">name of the parameter passed to the method.</param>
 		/// <returns>obj instance when the reference is not null.</returns>
-		public static TObject ThrowIfNull<TObject>(this TObject obj, string paramName)
+		public static TObject ThrowIfNull<TObject>([ValidatedNotNull]this TObject obj, string paramName)
 			where TObject : class
 		{
 			if (obj == null)
