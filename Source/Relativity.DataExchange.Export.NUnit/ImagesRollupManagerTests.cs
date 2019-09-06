@@ -42,17 +42,21 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldThrowException()
 		{
 			// Arrange
-			var exception = new Exception();
+			Exception exception = new Exception();
 			CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+			ObjectExportInfo objectExportInfo = new ObjectExportInfo();
 
 			this._imagesRollup.Setup(rollup => rollup.RollupImages(It.IsAny<ObjectExportInfo>())).Throws(exception);
 
+			Assert.That(objectExportInfo.DocumentError, Is.False);
+
 			// Act
-			this._subjectUnderTest.RollupImagesForArtifacts(new[] { new ObjectExportInfo() }, cancellationTokenSource.Token);
+			this._subjectUnderTest.RollupImagesForArtifacts(new[] { objectExportInfo }, cancellationTokenSource.Token);
 
 			// Assert
 			this._logger.Verify(log => log.LogError(exception, It.IsAny<string>(), It.IsAny<object[]>()));
 			this._status.Verify(status => status.WriteError(It.IsAny<string>()));
+			Assert.That(objectExportInfo.DocumentError, Is.True);
 		}
 	}
 }

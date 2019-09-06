@@ -39,6 +39,7 @@
 				}
 				catch (Exception ex)
 				{
+					artifact.DocumentError = true;
 					this._logger.LogError(ex, "Unexpected error occurred during image rollup for artifact {artifactId}", artifact.ArtifactID);
 					this._status.WriteError($"Unexpected error occurred during image rollup for artifact {artifact.ArtifactID}");
 				}
