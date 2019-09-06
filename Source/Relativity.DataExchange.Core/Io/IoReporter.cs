@@ -403,7 +403,7 @@ namespace Relativity.DataExchange.Io
 			Func<T> execFunc)
 		{
 			// REL-343213: This is performance critical code and no longer using WaitAndRetryPolicy.
-			T result = default;
+			T result = default(T);
 			int maxRetries = this.IoErrorNumberOfRetries;
 			int numberOfRetries = maxRetries;
 			Func<Exception, bool> retryPredicate = null;
