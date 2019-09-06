@@ -131,18 +131,36 @@ namespace Relativity.DataExchange.Transfer
 				throw new ArgumentNullException(nameof(e));
 			}
 
-			// Note: a null path is indicative of a job-level issue.
-			int triesLeft = e.Issue.MaxRetryAttempts - e.Issue.RetryAttempt - 1;
+			int triesLeft = CalculateTriesLeft(e);
+			TimeSpan retryTimeSpan = CalculateRetryTimeSpan(e);
+
+			this.HandleFileLevelIssue(e.Issue, triesLeft, retryTimeSpan);
+		}
+
+		/// <inheritdoc />
+		protected override void OnTransferJobIssue(object sender, TransferPathIssueEventArgs e)
+		{
+			if (e == null)
+			{
+				throw new ArgumentNullException(nameof(e));
+			}
+
+			int triesLeft = CalculateTriesLeft(e);
+			TimeSpan retryTimeSpan = CalculateRetryTimeSpan(e);
+
+			this.HandleJobLevelIssue(e.Issue, triesLeft, retryTimeSpan);
+		}
+
+		private static int CalculateTriesLeft(TransferPathIssueEventArgs e)
+		{
+			return e.Issue.MaxRetryAttempts - e.Issue.RetryAttempt - 1;
+		}
+
+		private static TimeSpan CalculateRetryTimeSpan(TransferPathIssueEventArgs e)
+		{
 			Func<int, TimeSpan> retryCalculation = e.Request.RetryStrategy.Calculation;
 			TimeSpan retryTimeSpan = retryCalculation(e.Issue.RetryAttempt);
-			if (e.Issue.Path == null)
-			{
-				this.HandleJobLevelIssue(e.Issue, triesLeft, retryTimeSpan);
-			}
-			else
-			{
-				this.HandleFileLevelIssue(e.Issue, triesLeft, retryTimeSpan);
-			}
+			return retryTimeSpan;
 		}
 
 		private void HandleJobLevelIssue(ITransferIssue issue, int triesLeft, TimeSpan retryTimeSpan)

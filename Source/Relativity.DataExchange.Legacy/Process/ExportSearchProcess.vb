@@ -97,12 +97,11 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub _searchExporter_FileTransferModeChangeEvent(ByVal sender As Object, ByVal args As Global.Relativity.DataExchange.Transfer.TapiMultiClientEventArgs) Handles _searchExporter.FileTransferMultiClientModeChangeEvent
-			Dim tapiModeService As ITapiModeService = New TapiModeService
 			If _uploadModeText Is Nothing Then
-				_uploadModeText = tapiModeService.BuildDocText(False)
+				_uploadModeText = TapiModeHelper.BuildDocText()
 			End If
 
-			Dim statusBarText As String = tapiModeService.BuildExportStatusText(args.TransferClients)
+			Dim statusBarText As String = TapiModeHelper.BuildExportStatusText(args.TransferClients)
 			_tapiClientName = statusBarText
 			SendTransferJobStartedMessage()
 			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)

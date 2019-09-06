@@ -412,10 +412,10 @@ Detail: {4}</value>
   <data name="WorkspaceNullExceptionMessage" xml:space="preserve">
     <value>This operation cannot be performed because the workspace '{0}' doesn't exist. Retry or contact your system administrator for assistance if this problem persists.</value>
   </data>
-  <data name="FileTransferModeTextNative" xml:space="preserve">
-    <value>Native: {0}</value>
+  <data name="FileTransferStatusTextModePrefix" xml:space="preserve">
+    <value>File Transfer Mode: {0}</value>
   </data>
-  <data name="FileTransferModeTextMetadata" xml:space="preserve">
+  <data name="FileTransferStatusTextMetadataPrefix" xml:space="preserve">
     <value>Metadata: {0}</value>
   </data>
   <data name="FileTransferModeDisabled" xml:space="preserve">

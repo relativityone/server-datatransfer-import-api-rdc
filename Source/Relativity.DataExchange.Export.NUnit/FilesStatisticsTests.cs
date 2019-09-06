@@ -47,7 +47,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			DateTime start = new DateTime(2017, 10, 10, 10, 10, 10);
 			DateTime end = new DateTime(2017, 10, 10, 10, 10, 11);
 
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, size1, start, end));
@@ -73,7 +73,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			DateTime start = new DateTime(2017, 10, 10, 10, 10, 10);
 			DateTime end = new DateTime(2017, 10, 10, 10, 10, 11);
 
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, sizeDownload1, start, end));
@@ -94,12 +94,12 @@ namespace Relativity.DataExchange.Export.NUnit
 			DateTime start = new DateTime(2017, 10, 10, 10, 10, 10);
 			DateTime end = new DateTime(2017, 10, 10, 10, 10, 11);
 
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, size1, start, end));
 
-			this._instance.Detach(this._tapiBridge.Object);
+			this._instance.Unsubscribe(this._tapiBridge.Object);
 
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, size2, start, end));
 

@@ -33,7 +33,7 @@
 			}
 		}
 
-		public void Attach(ITapiBridge tapiBridge)
+		public void Subscribe(ITapiBridge tapiBridge)
 		{
 			tapiBridge.ThrowIfNull(nameof(tapiBridge));
 			lock (_syncRoot)
@@ -48,7 +48,7 @@
 			}
 		}
 
-		public void Detach(ITapiBridge tapiBridge)
+		public void Unsubscribe(ITapiBridge tapiBridge)
 		{
 			tapiBridge.ThrowIfNull(nameof(tapiBridge));
 			lock (_syncRoot)

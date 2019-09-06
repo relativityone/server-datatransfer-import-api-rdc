@@ -37,13 +37,11 @@
 		{
 			ITapiBridgeFactory tapiBridgeFactory = new LongTextTapiBridgeFactory(_tapiBridgeParametersFactory, _logger, token);
 			ITapiBridge tapiBridge = tapiBridgeFactory.Create();
-			LongTextEncodingConverter longTextEncodingConverter = _converterFactory.Create(token);
 			return new DownloadTapiBridgeWithEncodingConversion(
 				tapiBridge,
 				new LongTextProgressHandler(_downloadProgressManager, _logger),
 				_messageHandler,
 				_metadataStatistics,
-				longTextEncodingConverter,
 				_logger);
 		}
 	}

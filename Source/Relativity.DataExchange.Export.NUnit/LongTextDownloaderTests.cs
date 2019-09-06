@@ -17,7 +17,6 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Moq;
 
-	using Relativity.DataExchange.Export.VolumeManagerV2;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
@@ -31,6 +30,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		private Mock<ILongTextTapiBridgePool> _longTextTapiBridgePool;
 		private Mock<IDownloadTapiBridge> _bridge;
+		private Mock<IFileDownloadSubscriber> _fileDownloadSubscriber;
 		private Mock<IDownloadProgressManager> _downloadProgressManager;
 
 		[SetUp]
@@ -39,7 +39,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._longTextTapiBridgePool = new Mock<ILongTextTapiBridgePool>();
 			this._bridge = new Mock<IDownloadTapiBridge>();
 			this._downloadProgressManager = new Mock<IDownloadProgressManager>();
-
+			this._fileDownloadSubscriber = new Mock<IFileDownloadSubscriber>();
 			this._longTextTapiBridgePool.Setup(x => x.Request(CancellationToken.None)).Returns(this._bridge.Object);
 
 			this._instance = new LongTextDownloader(
@@ -58,6 +58,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ASSERT
 			this._longTextTapiBridgePool.Verify(x => x.Request(CancellationToken.None), Times.Once);
 			this._longTextTapiBridgePool.Verify(x => x.Release(this._bridge.Object), Times.Once);
+			this._fileDownloadSubscriber.Verify(x => x.SubscribeForDownloadEvents(It.IsAny<IFileTransferProducer>()), Times.Never);
 		}
 
 		[Test]
@@ -69,6 +70,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				LongTextExportRequest.CreateRequestForFullText(artifact, 1, "a"),
 				LongTextExportRequest.CreateRequestForFullText(artifact, 2, "b")
 			};
+			this._instance.RegisterSubscriber(this._fileDownloadSubscriber.Object);
 
 			// ACT
 			await this._instance.DownloadAsync(longTextExportRequests, CancellationToken.None).ConfigureAwait(false);
@@ -77,6 +79,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._bridge.Verify(x => x.WaitForTransfers(), Times.Once);
 			this._bridge.Verify(x => x.QueueDownload(It.Is<TransferPath>(t => t.Order == 1)));
 			this._bridge.Verify(x => x.QueueDownload(It.Is<TransferPath>(t => t.Order == 2)));
+			this._fileDownloadSubscriber.Verify(x => x.SubscribeForDownloadEvents(this._bridge.Object));
 		}
 
 		[Test]

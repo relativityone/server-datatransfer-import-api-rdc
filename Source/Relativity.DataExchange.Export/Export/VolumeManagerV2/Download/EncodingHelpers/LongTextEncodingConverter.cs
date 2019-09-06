@@ -6,18 +6,21 @@
 	using System.Threading;
 	using System.Threading.Tasks;
 
-	using Relativity.DataExchange.Transfer;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Logging;
 
-	public class LongTextEncodingConverter : IDisposable, ILongTextEncodingConverter
+	public class LongTextEncodingConverter : IFileDownloadSubscriber
 	{
 		private readonly BlockingCollection<string> _longTextFilesToConvert;
 		private readonly LongTextRepository _longTextRepository;
 		private readonly IFileEncodingConverter _fileEncodingConverter;
 		private readonly ILog _logger;
 		private readonly CancellationToken _cancellationToken;
+
+		private IDisposable _fileDownloadedSubscriber;
+		private IDisposable _fileDownloadCompletedSubscriber;
+
 		private Task _conversionTask;
 
 		public LongTextEncodingConverter(
@@ -35,56 +38,51 @@
 
 		public int Count => _longTextFilesToConvert.Count;
 
-		public void StartListening(ITapiBridge tapiBridge)
+		public async Task WaitForConversionCompletion()
 		{
-			tapiBridge.ThrowIfNull(nameof(tapiBridge));
-			_logger.LogVerbose(
-				"Attached tapi bridge {TapiBridgeInstanceId} to the long text encoding converter.",
-				tapiBridge.InstanceId);
-			_conversionTask = Task.Run(() => this.ConvertLongTextFiles(), _cancellationToken);
-			tapiBridge.TapiProgress += this.OnTapiProgress;
-		}
-
-		public void StopListening(ITapiBridge tapiBridge)
-		{
-			tapiBridge.ThrowIfNull(nameof(tapiBridge));
-			_logger.LogVerbose(
-				"Detached tapi bridge {TapiBridgeInstanceId} from the long text encoding converter.",
-				tapiBridge.InstanceId);
-			tapiBridge.TapiProgress -= this.OnTapiProgress;
-			this.MarkQueueComplete();
-		}
-
-		private void OnTapiProgress(object sender, TapiProgressEventArgs e)
-		{
-			_logger.LogVerbose(
-				"Long text encoding conversion progress event for file {FileName} with status {Successful}.",
-				e.FileName,
-				e.Successful);
-			if (e.Successful)
+			this._logger.LogVerbose("Waiting for the long text encoding conversion to complete.");
+			if (this._conversionTask != null)
 			{
-				try
-				{
-					
-					_logger.LogVerbose("Preparing to add the '{LongTextFileName}' long text file to the queue...", e.FileName);
-					_longTextFilesToConvert.Add(e.FileName, _cancellationToken);
-					_logger.LogVerbose("Successfully added the '{LongTextFileName}' long text file to the queue.", e.FileName);
-				}
-				catch (InvalidOperationException e2)
-				{
-					_logger.LogError(
-						e2,
-						"The long text encoding converter received a transfer successful progress event but the blocking collection has already been marked as completed. This exception suggests either a logic or task switch context issue.");
-					throw;
-				}
+				await this._conversionTask.ConfigureAwait(false);
 			}
+			this._logger.LogVerbose("Successfully awaited the long text encoding conversion to complete.");
 		}
 
-		public void WaitForConversionCompletion()
+		public void SubscribeForDownloadEvents(IFileTransferProducer fileTransferProducer)
 		{
-			_logger.LogVerbose("Waiting for the long text encoding conversion to complete.");
-			_conversionTask.ConfigureAwait(false).GetAwaiter().GetResult();
-			_logger.LogVerbose("Successfully awaited the long text encoding conversion to complete.");
+			fileTransferProducer.ThrowIfNull(nameof(fileTransferProducer));
+
+			this._fileDownloadedSubscriber = fileTransferProducer.FileDownloaded.Subscribe(this.AddForConversion);
+			this._fileDownloadCompletedSubscriber = fileTransferProducer.FileDownloadCompleted.Subscribe(this.CompleteConversion);
+
+			this._conversionTask = Task.Run(() => this.ConvertLongTextFiles(), this._cancellationToken);
+		}
+
+		private void CompleteConversion(bool anyFileToConvert)
+		{
+			_logger.LogVerbose("Preparing to mark the long text encoding conversion queue complete...");
+			_logger.LogVerbose("Any files to convert: {anyFileToConvert} ", anyFileToConvert);
+			_longTextFilesToConvert.CompleteAdding();
+			_logger.LogVerbose("Successfully marked the long text encoding conversion queue complete.");
+		}
+
+		private void AddForConversion(string fileName)
+		{
+			try
+			{
+				_logger.LogVerbose("Preparing to add the '{fileName}' long text file to the queue...", fileName);
+				_longTextFilesToConvert.Add(fileName, this._cancellationToken);
+				_logger.LogVerbose(
+					"Successfully added the '{fileName}' long text file to the queue.",
+					fileName);
+			}
+			catch (InvalidOperationException e2)
+			{
+				_logger.LogError(
+					e2,
+					"The long text encoding converter received a transfer successful progress event but the blocking collection has already been marked as completed. This exception suggests either a logic or task switch context issue.");
+				throw;
+			}
 		}
 
 		private void ConvertLongTextFiles()
@@ -117,20 +115,16 @@
 				}
 
 				_logger.LogVerbose(
-					"Successfully awaited the long text file queue. Total conversions = {TotalConvertedLongTextFiles}.",
+					"Successfully awaited the long text file queue. Total conversions: {totalConvertedTextFiles}.",
 					totalConvertedTextFiles);
 			}
 			catch (OperationCanceledException e)
 			{
 				_logger.LogInformation(e, "LongText encoding conversion canceled.");
 			}
-			catch (ArgumentException)
+			catch (Exception ex)
 			{
-				throw;
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Failed to convert long text file.");
+				_logger.LogError(ex, "Failed to convert long text file.");
 				throw;
 			}
 		}
@@ -178,15 +172,8 @@
 
 		public void Dispose()
 		{
-			_longTextFilesToConvert?.Dispose();
-		}
-
-		internal void MarkQueueComplete()
-		{
-			// Note: this method exists solely for testing.
-			_logger.LogVerbose("Preparing to mark the long text encoding conversion queue complete...");
-			_longTextFilesToConvert.CompleteAdding();
-			_logger.LogVerbose("Successfully marked the long text encoding conversion queue complete.");
+			this._fileDownloadedSubscriber?.Dispose();
+			this._fileDownloadCompletedSubscriber?.Dispose();
 		}
 	}
 }
