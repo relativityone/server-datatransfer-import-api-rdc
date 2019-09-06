@@ -96,7 +96,6 @@ namespace Relativity.DataExchange.Transfer
 				this.totalStatistics[key] = e;
 			}
 
-			const int TicksPerSecond = 10000000;
 			var totalTransferredBytes = this.totalStatistics.Sum(x => x.Value.Statistics.TotalTransferredBytes);
 			var totalTransferredFiles = this.totalStatistics.Sum(x => x.Value.Statistics.TotalTransferredFiles);
 			var totalTransferTicks = TimeSpan
@@ -115,7 +114,7 @@ namespace Relativity.DataExchange.Transfer
 				return;
 			}
 
-			var totalSeconds = totalTransferTicks / TicksPerSecond;
+			var totalSeconds = totalTransferTicks / TimeSpan.TicksPerSecond;
 			if (totalSeconds > 0)
 			{
 				var aggregateDataRate = totalTransferredBytes / totalSeconds;

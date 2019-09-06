@@ -1143,7 +1143,7 @@ Namespace kCura.WinEDDS
 			Dim now As Long = System.DateTime.Now.Ticks
 
 			SyncLock _syncLock
-				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
+				If now - _lastStatusMessageTs > TimeSpan.TicksPerSecond OrElse isEssential Then
 					_lastStatusMessageTs = now
 					Dim appendString As String = ""
 					If showNumberOfExportedDocuments Then
@@ -1164,7 +1164,7 @@ Namespace kCura.WinEDDS
 			Dim now As Long = System.DateTime.Now.Ticks
 
 			SyncLock _syncLock
-				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
+				If now - _lastStatusMessageTs > TimeSpan.TicksPerSecond OrElse isEssential Then
 					_lastStatusMessageTs = now
 					_lastDocumentsExportedCountReported = Me.DocumentsExported
 					RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line, e, _lastStatisticsSnapshot, Statistics))
@@ -1209,7 +1209,7 @@ Namespace kCura.WinEDDS
 
 		Dim _statisticsLastUpdated As Date
 		Protected Sub UpdateStatisticsSnapshot(time As System.DateTime)
-			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > 10000000
+			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > TimeSpan.TicksPerSecond
 			If updateCurrentStats Then
 				_lastStatisticsSnapshot = Statistics.ToDictionary()
 				_statisticsLastUpdated = time
