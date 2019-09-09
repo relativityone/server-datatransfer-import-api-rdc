@@ -24,9 +24,9 @@ namespace Relativity.DataExchange.Io
 		}
 
 		/// <inheritdoc />
-		public string FormattedLineInFile()
+		public IEnumerable<string> ValuesForErrorFile()
 		{
-			return this.currentLineNumber.ToString();
+			yield return this.currentLineNumber.ToString();
 		}
 	}
 }
