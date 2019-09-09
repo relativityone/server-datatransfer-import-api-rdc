@@ -50,20 +50,18 @@
 				_logger.LogVerbose("Processing image {image}.", image.FileName);
 
 				long pageOffset;
+				int currPageNumber = i + 1;
 				if (i == 0 && image.PageOffset == null || i == images.Count - 1)
 				{
 					pageOffset = long.MinValue;
 				}
 				else
 				{
-					ImageExportInfo nextImage = images[i + 1];
+					ImageExportInfo nextImage = images[currPageNumber];
 					pageOffset = nextImage.PageOffset ?? long.MinValue;
 				}
-
-				int currPageNumber = i + 1;
 				_logger.LogVerbose("Attempting to create full text entry for image.");
-				_fullTextLoadFileEntry.WriteFullTextLine(artifact, this.CreateUniqueBates(image.BatesNumber, currPageNumber, autoGeneratePageNumbers), 
-					i, pageOffset, writer, cancellationToken);
+				_fullTextLoadFileEntry.WriteFullTextLine(artifact, image.BatesNumber, i, pageOffset, writer, cancellationToken);
 
 				string localFilePath = GetLocalFilePath(images, i);
 				_logger.LogVerbose("Creating image load file entry using image file path {path}.", localFilePath);
@@ -77,8 +75,8 @@
 
 		private bool AutoGeneratePageNumbers(List<ImageExportInfo> images)
 		{
-			// If Production generates Images without Page Number than we will get the same Bates Number for each image. 
-			// But we still need to provide unique values for each entry in Opticon file
+			// If Production generates Images without Page Number than we will get the same Bates Number for each image from the server.
+			// On the other hand we still need to provide unique values for each entry in Opticon file
 			return images.Count > 1 && images[0].BatesNumber == images[1].BatesNumber;
 		}
 
