@@ -15,6 +15,6 @@ namespace Relativity.DataExchange.Io
 		/// Returns the values for a record/line in an error file one by one.
 		/// </summary>
 		/// <returns>Values for the error file.</returns>
-		IEnumerable<string> ValuesForErrorFile();
+		string FormattedLineInFile();
 	}
 }

@@ -13,6 +13,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	using System.Threading.Tasks;
 	using global::NUnit.Framework;
 	using Moq;
+	using Relativity.DataExchange;
 	using Relativity.DataExchange.Io;
 
 	/// <summary>
@@ -233,8 +234,24 @@ namespace Relativity.DataExchange.NUnit.Integration
 		private static Mock<IErrorArguments> GetSomeErrorArguments()
 		{
 			var errorArguments = new Mock<IErrorArguments>();
-			errorArguments.Setup(x => x.ValuesForErrorFile()).Returns(SomeArguments);
+			errorArguments.Setup(x => x.FormattedLineInFile()).Returns(SomeArguments().ToCsv(CSVFormat));
 			return errorArguments;
+		}
+
+		/// <summary>
+		/// CSVFormat will take in a string, replace a double quote characters with a pair of double quote characters, then surround the string with double quote characters
+		/// This preps it for being written as a field in a CSV file.
+		/// </summary>
+		/// <param name="fieldValue">The string to convert to CSV format.</param>
+		/// <returns>
+		/// The converted data.
+		/// </returns>
+		private static string CSVFormat(string fieldValue)
+		{
+			var quote = @"""";
+			var doubleQuote = quote + quote;
+			var escapedField = fieldValue.Replace(quote, doubleQuote);
+			return $"{quote}{escapedField}{quote}";
 		}
 	}
 }
