@@ -48,11 +48,6 @@ namespace kCura.Relativity.ImportAPI
 		private ProductionManager _productionManager;
 
 		/// <summary>
-		/// Sink registration.
-		/// </summary>
-		private IMetricService _metricService;
-
-		/// <summary>
 		/// Holds cookies for the current session.
 		/// </summary>
 		protected CookieContainer _cookieMonster;
@@ -84,7 +79,6 @@ namespace kCura.Relativity.ImportAPI
 		{
 			this.ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			this.PerformLogin(null, null, webServiceUrl);
-			this._metricService = new MetricService(new ImportApiMetricSinkConfig(), ServiceFactoryFactory.Create(this._tapiCredentials));
 		}
 
 		/// <summary>
@@ -114,7 +108,6 @@ namespace kCura.Relativity.ImportAPI
 		{
 			this.ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			PerformLogin(userName, password, string.Empty);
-			this._metricService = new MetricService(new ImportApiMetricSinkConfig(), ServiceFactoryFactory.Create(this._tapiCredentials));
 		}
 
 		/// <summary>
@@ -147,7 +140,6 @@ namespace kCura.Relativity.ImportAPI
 		{
 			ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			this.PerformLogin(userName, password, webServiceUrl);
-			this._metricService = new MetricService(new ImportApiMetricSinkConfig(), ServiceFactoryFactory.Create(this._tapiCredentials));
 		}
 
 		/// <summary>
@@ -345,7 +337,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
-			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, this._metricService, (int)ExecutionSource);
+			return new ImageImportBulkArtifactJob(_credentials, this._tapiCredentials, _cookieMonster, (int)ExecutionSource);
 		}
 
 		/// <summary>
@@ -394,7 +386,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </returns>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId)
 		{
-			var returnJob = new ImportBulkArtifactJob(_credentials, _tapiCredentials, _cookieMonster, this._metricService, (int)ExecutionSource);
+			var returnJob = new ImportBulkArtifactJob(_credentials, _tapiCredentials, _cookieMonster, (int)ExecutionSource);
 			returnJob.Settings.ArtifactTypeId = artifactTypeId;
 			return returnJob;
 		}
