@@ -93,7 +93,7 @@
 
 				_errorFileWriter.Write(
 					ErrorFileWriter.ExportFileType.Native,
-					artifact.IdentifierValue,
+					artifact,
 					artifact.NativeTempLocation,
 					errorMessage);
 			}

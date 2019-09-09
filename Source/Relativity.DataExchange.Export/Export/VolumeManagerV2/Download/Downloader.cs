@@ -106,7 +106,7 @@
 					return;
 				}
 
-				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Generic, string.Empty, string.Empty,
+				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Generic, null, string.Empty,
 					$"Fatal exception occurred during transfer. Failed to download files for batch {ex.Message}");
 				_logger.LogError(ex,
 					"TransferException occurred during transfer and cancellation has NOT been requested.");

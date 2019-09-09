@@ -120,7 +120,7 @@
 
 				_errorFileWriter.Write(
 					ErrorFileWriter.ExportFileType.Image,
-					artifact.IdentifierValue,
+					artifact,
 					image.TempLocation,
 					errorMessage);
 			}

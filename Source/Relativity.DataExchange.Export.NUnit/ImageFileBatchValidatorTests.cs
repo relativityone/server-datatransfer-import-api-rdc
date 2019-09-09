@@ -9,7 +9,6 @@ namespace Relativity.DataExchange.Export.NUnit
 	using System;
 	using System.Collections;
 	using System.Threading;
-	using System.Web.UI;
 
 	using global::NUnit.Framework;
 
@@ -64,7 +63,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<ObjectExportInfo>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -79,7 +78,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<ObjectExportInfo>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -101,7 +100,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				x => x.Write(
 					Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType
 						.Image,
-					It.IsAny<string>(),
+					It.IsAny<ObjectExportInfo>(),
 					It.IsAny<string>(),
 					It.IsAny<string>()),
 				Times.Once());
@@ -124,7 +123,13 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			this.ErrorFileWriter.Verify(
+				x => x.Write(
+					It.IsAny<ErrorFileWriter.ExportFileType>(),
+					It.IsAny<ObjectExportInfo>(),
+					It.IsAny<string>(),
+					It.IsAny<string>()),
+				Times.Never);
 			this._status.Verify(x => x.WriteUpdate(It.IsAny<string>(), true), Times.Never);
 		}
 
@@ -143,7 +148,13 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			this.ErrorFileWriter.Verify(
+				x => x.Write(
+					It.IsAny<ErrorFileWriter.ExportFileType>(),
+					It.IsAny<ObjectExportInfo>(),
+					It.IsAny<string>(),
+					It.IsAny<string>()),
+				Times.Never);
 			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -168,7 +179,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.ErrorFileWriter.Verify(
 				x => x.Write(
 					VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Image,
-					It.IsAny<string>(),
+					It.IsAny<ObjectExportInfo>(),
 					It.IsAny<string>(),
 					It.IsAny<string>()),
 				Times.Once());
@@ -196,7 +207,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				x => x.Write(
 					Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType
 						.Image,
-					It.IsAny<string>(),
+					It.IsAny<ObjectExportInfo>(),
 					It.IsAny<string>(),
 					It.IsAny<string>()),
 				createErrorForEmptyNativeFile ? Times.Once() : Times.Never());
@@ -224,7 +235,13 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			this.ErrorFileWriter.Verify(
+				x => x.Write(
+					It.IsAny<ErrorFileWriter.ExportFileType>(),
+					It.IsAny<ObjectExportInfo>(),
+					It.IsAny<string>(),
+					It.IsAny<string>()),
+				Times.Never);
 			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -248,7 +265,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				x => x.Write(
 					Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType
 						.Image,
-					artifact.IdentifierValue,
+					artifact,
 					location,
 					It.IsAny<string>()),
 				Times.Once);
