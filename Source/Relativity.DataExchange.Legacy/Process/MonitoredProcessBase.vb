@@ -116,7 +116,7 @@ Public MustInherit Class MonitoredProcessBase
 		metric.TransferMode = TapiClientName
 		metric.CorrelationID = JobGuid.ToString()
         metric.UseOldExport = Me.AppSettings.UseOldExport
-		metric.UnitOfMeasure = "Bytes(s)"
+		metric.UnitOfMeasure = TelemetryConstants.Values.NOT_APPLICABLE
         metric.ApplicationName = GetApplicationName()
 		If Not (CaseInfo Is Nothing) Then
 			metric.WorkspaceID = CaseInfo.ArtifactID

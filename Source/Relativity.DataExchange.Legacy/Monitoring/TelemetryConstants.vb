@@ -2,7 +2,7 @@
     Public Class TelemetryConstants
 
         ''' <summary>
-        ''' Contain values for <see cref="MetricBase.BucketName"/>
+        ''' Contain values for <see cref="MetricBase.BucketName"/>.
         ''' </summary>
         Class BucketName
             Public Const METRIC_JOB_STARTED As String = "RDC.MetricJobStarted"
@@ -22,7 +22,7 @@
         End Class
 
         ''' <summary>
-        ''' Contain values for <see cref="MetricBase.CustomData"/> dictionary key names
+        ''' Contain key names for <see cref="MetricBase.CustomData"/> dictionary pairs.
         ''' </summary>
         Class KeyName
             Public Const JOB_TYPE As String = "JobType"
@@ -45,7 +45,14 @@
         End Class
 
         ''' <summary>
-        ''' Contain values for <see cref="MetricJobEndReport.JobStatus"/> property
+        ''' Contain values for <see cref="MetricBase.CustomData"/> dictionary pairs.
+        ''' </summary>
+        Class Values
+            Public Const NOT_APPLICABLE As String = "N/A"
+        End Class
+
+        ''' <summary>
+        ''' Contain values for <see cref="MetricJobEndReport.JobStatus"/> property.
         ''' </summary>
         Class JobStatus
             Public Const COMPLETED As String = "Completed"
