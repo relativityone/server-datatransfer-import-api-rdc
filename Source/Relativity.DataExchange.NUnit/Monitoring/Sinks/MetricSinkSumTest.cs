@@ -23,6 +23,7 @@ namespace Relativity.DataExchange.NUnit
 	public class MetricSinkSumTest
 	{
 		private MetricSinkSum sumSink;
+		private Mock<IServiceFactory> mockServiceFactory;
 		private List<MetricRef> loggedMetrics;
 		private bool createdProxy;
 
@@ -38,9 +39,9 @@ namespace Relativity.DataExchange.NUnit
 					foo => foo.LogMetricsAsync(It.IsAny<List<MetricRef>>())).Callback(
 					(List<MetricRef> sumMetrics) => this.loggedMetrics.AddRange(sumMetrics)).Returns(Task.CompletedTask);
 
-			var mockServiceFactory = new Mock<IServiceFactory>();
-			mockServiceFactory.Setup(foo => foo.CreateProxy<IMetricsManager>()).Returns(mockMetricsManager.Object).Callback(() => this.createdProxy = true);
-			this.sumSink = new MetricSinkSum(mockServiceFactory.Object, true);
+			this.mockServiceFactory = new Mock<IServiceFactory>();
+			this.mockServiceFactory.Setup(foo => foo.CreateProxy<IMetricsManager>()).Returns(mockMetricsManager.Object).Callback(() => this.createdProxy = true);
+			this.sumSink = new MetricSinkSum(this.mockServiceFactory.Object, new SumMetricFormatter(), true);
 		}
 
 		[Test]
@@ -48,7 +49,7 @@ namespace Relativity.DataExchange.NUnit
 		{
 			var metric = new MetricJobStarted();
 			this.sumSink.Log(metric);
-			Assert.AreEqual(metric.GenerateSumMetrics().Count, this.loggedMetrics.Count);
+			Assert.AreEqual(1, this.loggedMetrics.Count);
 		}
 
 		[Test]
@@ -56,24 +57,36 @@ namespace Relativity.DataExchange.NUnit
 		{
 			var metric = new MetricJobEndReport();
 			this.sumSink.Log(metric);
-			Assert.AreEqual(metric.GenerateSumMetrics().Count, this.loggedMetrics.Count);
+			Assert.AreEqual(6, this.loggedMetrics.Count);
+		}
+
+		[Test]
+		public void ShouldLogMetricJobProgress()
+		{
+			var metric = new MetricJobProgress();
+			this.sumSink.Log(metric);
+			Assert.AreEqual(0, this.loggedMetrics.Count);
 		}
 
 		[Test]
 		public void ShouldNotCreateProxyIfListIsNull()
 		{
-			var metric = new Mock<MetricBase>();
-			metric.Setup(foo => foo.GenerateSumMetrics()).Returns((List<MetricRef>)null);
-			this.sumSink.Log(metric.Object);
+			var mockSumMetricFormatter = new Mock<ISumMetricFormatter>();
+			mockSumMetricFormatter.Setup(foo => foo.GenerateSumMetrics(It.IsAny<MetricBase>()))
+				.Returns((List<MetricRef>)null);
+			this.sumSink = new MetricSinkSum(this.mockServiceFactory.Object, mockSumMetricFormatter.Object, true);
+			this.sumSink.Log(new MetricJobStarted());
 			Assert.False(this.createdProxy);
 		}
 
 		[Test]
 		public void ShouldNotCreateProxyIfListIsEmpty()
 		{
-			var metric = new Mock<MetricBase>();
-			metric.Setup(foo => foo.GenerateSumMetrics()).Returns(new List<MetricRef>());
-			this.sumSink.Log(metric.Object);
+			var mockSumMetricFormatter = new Mock<ISumMetricFormatter>();
+			mockSumMetricFormatter.Setup(foo => foo.GenerateSumMetrics(It.IsAny<MetricBase>()))
+				.Returns(new List<MetricRef>());
+			this.sumSink = new MetricSinkSum(this.mockServiceFactory.Object, mockSumMetricFormatter.Object, true);
+			this.sumSink.Log(new MetricJobStarted());
 			Assert.False(this.createdProxy);
 		}
 	}

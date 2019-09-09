@@ -1,25 +1,9 @@
-﻿Imports System.Collections.Generic
-Imports Relativity.Services.DataContracts.DTOs.MetricsCollection
-Imports Relativity.Telemetry.DataContracts.Shared
-
-Namespace Monitoring
+﻿Namespace Monitoring
     Public Class MetricJobEndReport
         Inherits MetricBase
 
         ''' <inheritdoc/>
         Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.METRIC_JOB_END_REPORT
-
-        ''' <inheritdoc/>
-        Public Overrides Function GenerateSumMetrics() As List(Of MetricRef)
-            Return New List(Of MetricRef) From {
-                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.TOTAL_RECORDS), Guid.Empty, CorrelationID, MetricTypes.PointInTimeLong, TotalRecords),
-                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.COMPLETED_RECORDS), Guid.Empty, CorrelationID, MetricTypes.PointInTimeLong, CompletedRecords),
-                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.JOB_SIZE), Guid.Empty, CorrelationID, MetricTypes.PointInTimeLong, TotalSizeBytes),
-                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.THROUGHPUT), Guid.Empty, CorrelationID, MetricTypes.PointInTimeDouble, ThroughputRecordsPerSecond),
-                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.THROUGHPUT_BYTES), Guid.Empty, CorrelationID, MetricTypes.PointInTimeDouble, ThroughputBytesPerSecond),
-                New MetricRef(FormatSumBucketName(CStr(IIf(JobStatus = TelemetryConstants.JobStatus.COMPLETED, TelemetryConstants.SumBucketPrefix.JOB_COMPLETED_COUNT, TelemetryConstants.SumBucketPrefix.JOB_FAILED_COUNT))), Guid.Empty, CorrelationID, MetricTypes.Counter, 1)
-                }
-        End Function
 
         ''' <summary>
         ''' Gets or sets job status - <see cref="TelemetryConstants.JobStatus"/>

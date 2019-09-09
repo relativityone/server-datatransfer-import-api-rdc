@@ -8,9 +8,9 @@
         Sub Log(metric As MetricBase)
 
         ''' <summary>
-        ''' Gets or sets sinks configuration
+        ''' Gets sinks configuration
         ''' </summary>
         ''' <returns>Current sinks configuration</returns>
-        Property MetricSinkConfig As IMetricSinkConfig
+        Readonly Property MetricSinkConfig As IMetricSinkConfig
     End Interface
 End NameSpace

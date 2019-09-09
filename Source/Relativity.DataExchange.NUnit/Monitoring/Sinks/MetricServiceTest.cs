@@ -119,25 +119,6 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldUpdateSinksConfiguration()
-		{
-			// Arrange
-			this.metricService = new MetricService(this.mockMetricSinkConfig.Object, this.mockServiceFactory.Object);
-			this.mockMetricSinkConfig.Setup(foo => foo.SendApmMetrics).Returns(false);
-			this.mockMetricSinkConfig.Setup(foo => foo.SendSumMetrics).Returns(false);
-			this.metricService.MetricSinkConfig = this.mockMetricSinkConfig.Object;
-
-			// Act
-			this.metricService.Log(new MetricJobEndReport());
-			this.metricService.Log(new MetricJobStarted());
-			this.metricService.Log(new MetricJobProgress());
-
-			// Assert
-			Assert.AreEqual(0, this.loggedApmMetricsCount);
-			Assert.AreEqual(0, this.loggedSumMetricsCount);
-		}
-
-		[Test]
 		public void ShouldNotFailWhenLogWithoutServiceFactory()
 		{
 			// Arrange
