@@ -82,10 +82,9 @@ namespace Relativity.DataExchange.NUnit
 			// Act
 			this.metricService.Log(new MetricJobEndReport());
 			this.metricService.Log(new MetricJobStarted());
-			this.metricService.Log(new MetricJobProgress());
 
 			// Assert
-			Assert.AreEqual(3, this.loggedSumMetricsCount);
+			Assert.AreEqual(2, this.loggedSumMetricsCount);
 		}
 
 		[Test]
