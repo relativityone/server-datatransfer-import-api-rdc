@@ -816,7 +816,8 @@ namespace Relativity.DataExchange.Transfer
 
 			TransferJobStatus status = this.TransferJob.Status;
 			bool result = status == TransferJobStatus.RetryPending || status == TransferJobStatus.Retrying
-			                                                       || status == TransferJobStatus.Running;
+			                                                       || status == TransferJobStatus.Running
+			                                                       || status == TransferJobStatus.Canceled;
 			if (!result)
 			{
 				this.TransferLog.LogWarning2(

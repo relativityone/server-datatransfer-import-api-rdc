@@ -433,11 +433,18 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
+		[TestCase(true)]
+		[TestCase(false)]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldCancelTheBatchedTransfersWhenRequested()
+		public void ShouldCancelTheBatchedTransfersWhenRequested(bool transferJobStatusIsCanceled)
 		{
 			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
 			this.TapiBridgeInstance.AddPath(TestTransferPath);
+			if (transferJobStatusIsCanceled)
+			{
+				this.MockTransferJob.Setup(x => x.Status).Returns(TransferJobStatus.Canceled);
+			}
+
 			this.CancellationTokenSource.Cancel();
 
 			const bool KeepJobAlive = true;
@@ -448,6 +455,10 @@ namespace Relativity.DataExchange.NUnit
 					TestErrorMessage,
 					KeepJobAlive));
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Once());
+
+			// Ensure the bridge never switches to web mode during cancel request.
+			Assert.That(this.ChangedTapiClient, Is.Not.EqualTo(TapiClient.Web));
+			Assert.That(this.TapiBridgeInstance.Client, Is.Not.EqualTo(TapiClient.Web));
 		}
 
 		[Test]
