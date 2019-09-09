@@ -2056,8 +2056,9 @@ Namespace kCura.WinEDDS
 		Protected Overridable Sub _processContext_ExportServerErrors(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportServerErrors
 			errorMessageFileWriter.ReleaseLock()
 			prePushErrorWriter.ReleaseLock()
-			Dim errorMessageFileWriterFilePath As String =If(errorMessageFileWriter.FileCreated, errorMessageFileWriter.FilePath, "")
-			Dim prePushErrorWriterFilePath As String =If(prePushErrorWriter.FileCreated, prePushErrorWriter.FilePath, "")
+			'' logic downstream is going to expect string.empty if the file is not there physically on disk
+			Dim errorMessageFileWriterFilePath As String =If(errorMessageFileWriter.FileCreated, errorMessageFileWriter.FilePath,  String.Empty)
+			Dim prePushErrorWriterFilePath As String =If(prePushErrorWriter.FileCreated, prePushErrorWriter.FilePath,  String.Empty)
 
 			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriterFilePath, prePushErrorWriterFilePath)
 			Dim rootFileName As String = _filePath
@@ -2104,7 +2105,8 @@ Namespace kCura.WinEDDS
 			prePushErrorWriter.ReleaseLock()
 			Const retry As Boolean = True
 			If Not errorMessageFileWriter.FileCreated Then Exit Sub
-			Dim prePushErrorWriterFilePath As String = If(prePushErrorWriter.FileCreated, prePushErrorWriter.FilePath, "")
+			'' logic downstream is going to expect string.empty if the file is not there physically on disk
+			Dim prePushErrorWriterFilePath As String = If(prePushErrorWriter.FileCreated, prePushErrorWriter.FilePath, String.Empty)
 			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not Me.GetFileExists(_errorLinesFileLocation, retry) Then
 				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.FilePath, prePushErrorWriterFilePath)
 			End If
