@@ -2,8 +2,10 @@
 {
 	using System;
 
+	using kCura.WinEDDS.Exporters;
+
 	public interface IErrorFileWriter : IDisposable
 	{
-		void Write(ErrorFileWriter.ExportFileType type, string recordIdentifier, string fileLocation, string errorText);
+		void Write(ErrorFileWriter.ExportFileType type, ObjectExportInfo documentInfo, string fileLocation, string errorText);
 	}
 }
