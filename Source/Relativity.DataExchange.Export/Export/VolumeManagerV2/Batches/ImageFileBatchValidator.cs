@@ -83,17 +83,15 @@
 						ExportStrings.FileValidationEmptyRemoteSourcePath,
 						artifact.ArtifactID);
 					_logger.LogError(
-						"Image file {File} remote source path is empty for image artifact {ArtifactId} and suggests a back-end database issue.",
-						artifact.NativeTempLocation,
+						"Image file remote source path is empty for image artifact {ArtifactId} and suggests a back-end database issue.",
 						artifact.ArtifactID);
 				}
 				else
 				{
 					this._logger.LogError(
 						fileExists
-							? "Image file {File} contains zero bytes for for image {BatesNumber} in {ArtifactId}."
-							: "Image file {File} is missing for for image {BatesNumber} in {ArtifactId}.",
-						image.TempLocation,
+							? "Image file contains zero bytes for for image {BatesNumber} in {ArtifactId}."
+							: "Image file is missing for for image {BatesNumber} in {ArtifactId}.",
 						image.BatesNumber,
 						artifact.ArtifactID);
 				}
