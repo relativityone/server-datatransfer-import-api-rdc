@@ -1,5 +1,6 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Threading;
 
@@ -77,7 +78,7 @@
 		{
 			// If Production generates Images without Page Number than we will get the same Bates Number for each image from the server.
 			// On the other hand we still need to provide unique values for each entry in Opticon file
-			return images.Count > 1 && images[0].BatesNumber == images[1].BatesNumber;
+			return images.Count > 1 && string.Compare(images[0].BatesNumber, images[1].BatesNumber, StringComparison.InvariantCultureIgnoreCase) == 0;
 		}
 
 		private string GetLocalFilePath(List<ImageExportInfo> images, int i)
@@ -98,7 +99,7 @@
 		{
 			if (autoGenerateNumbers && pageNumber > 1)
 			{
-				return string.Format($"{batesNumber}_{pageNumber}");
+				return $"{batesNumber}_{pageNumber}";
 			}
 			return batesNumber;
 		}
