@@ -519,14 +519,6 @@ namespace Relativity.DataExchange
 		}
 
 		/// <inheritdoc />
-		[AppSetting]
-		int IAppSettings.MaxFilesForTapiBridge
-		{
-			get;
-			set;
-		}
-
-		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.MaximumReloginTriesKey,
@@ -717,14 +709,6 @@ namespace Relativity.DataExchange
 			AppSettingsConstants.TapiBadPathErrorsRetryKey,
 			AppSettingsConstants.TapiBadPathErrorsRetryDefaultValue)]
 		bool IAppSettings.TapiBadPathErrorsRetry
-		{
-			get;
-			set;
-		}
-
-		/// <inheritdoc />
-		[AppSetting]
-		int IAppSettings.TapiBridgeExportTransferWaitingTimeInSeconds
 		{
 			get;
 			set;
