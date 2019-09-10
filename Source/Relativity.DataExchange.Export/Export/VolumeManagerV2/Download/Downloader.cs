@@ -7,6 +7,7 @@
 	using System.Threading.Tasks;
 
 	using Relativity.DataExchange;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Logging;
 	using Relativity.Transfer;
@@ -57,6 +58,11 @@
 			DownloadRequests(cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
+		public void RegisterLongTextFileSubscriber(IFileDownloadSubscriber fileSubscriber)
+		{
+			this._longTextDownloader.RegisterSubscriber(fileSubscriber);
+		}
+
 		private void RetrieveExportRequests()
 		{
 			_fileExportRequests = _exportRequestRetriever.RetrieveFileExportRequests();
@@ -100,7 +106,7 @@
 					return;
 				}
 
-				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Generic, string.Empty, string.Empty,
+				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Generic, null, string.Empty,
 					$"Fatal exception occurred during transfer. Failed to download files for batch {ex.Message}");
 				_logger.LogError(ex,
 					"TransferException occurred during transfer and cancellation has NOT been requested.");

@@ -29,11 +29,10 @@ namespace Relativity.DataExchange
 		private int ioErrorNumberOfRetries;
 		private int ioErrorWaitTimeInSeconds;
 		private int httpTimeoutSeconds;
-		private int maximumFilesForTapiBridge;
+		private int httpExtractedTextTimeoutSeconds;
 		private int maximumReloginTries;
-		private int maxNumberOfFileExportTasks;
-		private int tapiBridgeExportTransferWaitingTimeInSeconds;
 		private int tapiMinDataRateMbps;
+		private int tapiMaxInactivitySeconds;
 		private int tapiMaxJobParallelism;
 		private int tapiTargetDataRateMbps;
 		private int webBasedFileDownloadChunkSize;
@@ -362,17 +361,6 @@ namespace Relativity.DataExchange
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			AppSettingsConstants.ForceParallelismInNewExportKey,
-			AppSettingsConstants.ForceParallelismInNewExportDefaultValue)]
-		bool IAppSettings.ForceParallelismInNewExport
-		{
-			get;
-			set;
-		}
-
-		/// <inheritdoc />
-		[AppSetting(
-			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.ForceWebUploadKey,
 			AppSettingsConstants.ForceWebUploadDefaultValue)]
 		bool IAppSettings.ForceWebUpload
@@ -399,6 +387,26 @@ namespace Relativity.DataExchange
 			}
 
 			set => this.httpTimeoutSeconds = value;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.HttpExtractedTextTimeoutSecondsKey,
+			AppSettingsConstants.HttpExtractedTextTimeoutSecondsDefaultValue)]
+		int IAppSettings.HttpExtractedTextTimeoutSeconds
+		{
+			get
+			{
+				if (this.httpExtractedTextTimeoutSeconds < 1)
+				{
+					this.httpExtractedTextTimeoutSeconds = AppSettingsConstants.HttpExtractedTextTimeoutSecondsDefaultValue;
+				}
+
+				return this.httpExtractedTextTimeoutSeconds;
+			}
+
+			set => this.httpExtractedTextTimeoutSeconds = value;
 		}
 
 		/// <inheritdoc />
@@ -512,26 +520,6 @@ namespace Relativity.DataExchange
 
 		/// <inheritdoc />
 		[AppSetting(
-			AppSettingsConstants.SectionLegacyUtility,
-			AppSettingsConstants.MaxFilesForTapiBridgeKey,
-			AppSettingsConstants.MaxFilesForTapiBridgeDefaultValue)]
-		int IAppSettings.MaxFilesForTapiBridge
-		{
-			get
-			{
-				if (this.maximumFilesForTapiBridge < 1)
-				{
-					this.maximumFilesForTapiBridge = AppSettingsConstants.MaxFilesForTapiBridgeDefaultValue;
-				}
-
-				return this.maximumFilesForTapiBridge;
-			}
-
-			set => this.maximumFilesForTapiBridge = value;
-		}
-
-		/// <inheritdoc />
-		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.MaximumReloginTriesKey,
 			AppSettingsConstants.MaximumReloginTriesDefaultValue)]
@@ -548,26 +536,6 @@ namespace Relativity.DataExchange
 			}
 
 			set => this.maximumReloginTries = value;
-		}
-
-		/// <inheritdoc />
-		[AppSetting(
-			AppSettingsConstants.SectionLegacyUtility,
-			AppSettingsConstants.MaxNumberOfFileExportTasksKey,
-			AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue)]
-		int IAppSettings.MaxNumberOfFileExportTasks
-		{
-			get
-			{
-				if (this.maxNumberOfFileExportTasks < 1)
-				{
-					this.maxNumberOfFileExportTasks = AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue;
-				}
-
-				return this.maxNumberOfFileExportTasks;
-			}
-
-			set => this.maxNumberOfFileExportTasks = value;
 		}
 
 		/// <inheritdoc />
@@ -748,26 +716,6 @@ namespace Relativity.DataExchange
 
 		/// <inheritdoc />
 		[AppSetting(
-			AppSettingsConstants.SectionLegacyUtility,
-			AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsKey,
-			AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue)]
-		int IAppSettings.TapiBridgeExportTransferWaitingTimeInSeconds
-		{
-			get
-			{
-				if (this.tapiBridgeExportTransferWaitingTimeInSeconds < 1)
-				{
-					this.tapiBridgeExportTransferWaitingTimeInSeconds = AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue;
-				}
-
-				return this.tapiBridgeExportTransferWaitingTimeInSeconds;
-			}
-
-			set => this.tapiBridgeExportTransferWaitingTimeInSeconds = value;
-		}
-
-		/// <inheritdoc />
-		[AppSetting(
 			AppSettingsConstants.SectionDataExchange,
 			AppSettingsConstants.TapiFileNotFoundErrorsDisabledKey,
 			AppSettingsConstants.TapiFileNotFoundErrorsDisabledDefaultValue)]
@@ -852,6 +800,26 @@ namespace Relativity.DataExchange
 		{
 			get;
 			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.TapiMaxInactivitySecondsKey,
+			AppSettingsConstants.TapiMaxInactivitySecondsDefaultValue)]
+		int IAppSettings.TapiMaxInactivitySeconds
+		{
+			get
+			{
+				if (this.tapiMaxInactivitySeconds < 1)
+				{
+					this.tapiMaxInactivitySeconds = AppSettingsConstants.TapiMaxInactivitySecondsDefaultValue;
+				}
+
+				return this.tapiMaxInactivitySeconds;
+			}
+
+			set => this.tapiMaxInactivitySeconds = value;
 		}
 
 		/// <inheritdoc />

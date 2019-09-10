@@ -11,7 +11,6 @@ namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.Net;
-	using System.Threading;
 
 	using global::NUnit.Framework;
 
@@ -44,7 +43,7 @@ namespace Relativity.DataExchange.NUnit
 							null,
 							parameters,
 							this.MockTransferLogger.Object,
-							CancellationToken.None))
+							this.CancellationTokenSource.Token))
 						{
 						}
 					});
@@ -56,7 +55,7 @@ namespace Relativity.DataExchange.NUnit
 							this.MockTapiObjectService.Object,
 							null,
 							this.MockTransferLogger.Object,
-							CancellationToken.None))
+							this.CancellationTokenSource.Token))
 						{
 						}
 					});
@@ -68,7 +67,7 @@ namespace Relativity.DataExchange.NUnit
 							this.MockTapiObjectService.Object,
 							parameters,
 							null,
-							CancellationToken.None))
+							this.CancellationTokenSource.Token))
 						{
 						}
 					});
@@ -81,7 +80,7 @@ namespace Relativity.DataExchange.NUnit
 							this.MockTapiObjectService.Object,
 							parameters,
 							this.MockTransferLogger.Object,
-							CancellationToken.None))
+							this.CancellationTokenSource.Token))
 						{
 						}
 					});
@@ -94,7 +93,7 @@ namespace Relativity.DataExchange.NUnit
 							this.MockTapiObjectService.Object,
 							parameters,
 							this.MockTransferLogger.Object,
-							CancellationToken.None))
+							this.CancellationTokenSource.Token))
 						{
 						}
 					});
@@ -102,15 +101,15 @@ namespace Relativity.DataExchange.NUnit
 
 		[Test]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldDumpTheTapiBridgeParameters()
+		public void ShouldLogTheTapiBridgeParameters()
 		{
 			this.CreateTapiBridge(WellKnownTransferClient.Unassigned);
-			this.TapiBridgeInstance.DumpInfo();
+			this.TapiBridgeInstance.LogTransferParameters();
 
 			// Force somebody to review this test should the number of logged entries change.
 			this.MockTransferLogger.Verify(
 				log => log.LogInformation(It.IsAny<string>(), It.IsAny<object[]>()),
-				Times.Exactly(25));
+				Times.Exactly(26));
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -123,8 +122,10 @@ namespace Relativity.DataExchange.NUnit
 			this.TapiBridgeInstance = new UploadTapiBridge2(
 				this.MockTapiObjectService.Object,
 				parameters,
+				this.TestTransferContext,
 				this.MockTransferLogger.Object,
-				CancellationToken.None);
+				this.CancellationTokenSource.Token);
+			this.OnTapiBridgeCreated();
 		}
 
 		private UploadTapiBridgeParameters2 CreateUploadTapiBridgeParameters(WellKnownTransferClient client)
@@ -134,7 +135,9 @@ namespace Relativity.DataExchange.NUnit
 				Credentials = new NetworkCredential(),
 				WebServiceUrl = "https://relativity.one.com",
 				WorkspaceId = this.TestWorkspaceId,
+				MaxInactivitySeconds = this.TestMaxInactivitySeconds,
 			};
+
 			this.ConfigureTapiBridgeParameters(parameters, client);
 			return parameters;
 		}

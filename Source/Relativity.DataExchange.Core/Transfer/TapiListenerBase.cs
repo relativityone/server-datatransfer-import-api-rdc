@@ -52,6 +52,7 @@ namespace Relativity.DataExchange.Transfer
 			this.Context.LargeFileProgress += this.OnLargeFileProgress;
 			this.Context.TransferPathProgress += this.OnTransferPathProgress;
 			this.Context.TransferPathIssue += this.OnTransferPathIssue;
+			this.Context.TransferJobIssue += this.OnTransferJobIssue;
 			this.Context.TransferRequest += this.OnTransferRequestEvent;
 			this.Context.TransferJobRetry += this.OnTransferJobRetryEvent;
 			this.Context.TransferStatistics += this.OnTransferStatisticsEvent;
@@ -200,6 +201,19 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
+		/// Occurs when an issue occurs on a job level.
+		/// </summary>
+		/// <param name="sender">
+		/// The sender.
+		/// </param>
+		/// <param name="e">
+		/// The <see cref="TransferPathIssueEventArgs"/> instance containing the event data.
+		/// </param>
+		protected virtual void OnTransferJobIssue(object sender, TransferPathIssueEventArgs e)
+		{
+		}
+
+		/// <summary>
 		/// Occurs when an issue occurs transferring a file.
 		/// </summary>
 		/// <param name="sender">
@@ -269,6 +283,7 @@ namespace Relativity.DataExchange.Transfer
 				this.Context.LargeFileProgress -= this.OnLargeFileProgress;
 				this.Context.TransferPathProgress -= this.OnTransferPathProgress;
 				this.Context.TransferPathIssue -= this.OnTransferPathIssue;
+				this.Context.TransferJobIssue -= this.OnTransferJobIssue;
 				this.Context.TransferRequest -= this.OnTransferRequestEvent;
 				this.Context.TransferJobRetry -= this.OnTransferJobRetryEvent;
 				this.Context.TransferStatistics -= this.OnTransferStatisticsEvent;

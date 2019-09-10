@@ -1,6 +1,4 @@
 Imports System.Collections.Generic
-Imports System.IO
-Imports System.Net
 Imports System.Threading
 Imports System.Threading.Tasks
 
@@ -12,7 +10,6 @@ Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
-Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
@@ -483,6 +480,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.LargeFileProgressEnabled = AppSettings.Instance.TapiLargeFileProgressEnabled
 			nativeParameters.LogConfigFile = AppSettings.Instance.LogConfigXmlFileName
 			nativeParameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
+			nativeParameters.MaxInactivitySeconds = AppSettings.Instance.TapiMaxInactivitySeconds
 			nativeParameters.MaxJobParallelism = AppSettings.Instance.TapiMaxJobParallelism
 			nativeParameters.MaxJobRetryAttempts = Me.NumberOfRetries
 			nativeParameters.MinDataRateMbps = AppSettings.Instance.TapiMinDataRateMbps
@@ -565,29 +563,6 @@ Namespace kCura.WinEDDS
 
 #Region "Main"
 
-		Private Sub PublishUploadModeEvent()
-			Dim retval As New List(Of String)
-			If Not BulkLoadTapiBridge Is Nothing Then
-				retval.Add("Metadata: " & BulkLoadTapiClientName)
-			End If
-
-			If _settings.CopyFilesToDocumentRepository AndAlso _settings.NativeFilePathColumn IsNot Nothing Then
-				If Not String.IsNullOrEmpty(FileTapiClientName) Then
-					retval.Add("Files: " & FileTapiClientName)
-				End If
-			Else
-				retval.Add("Files: not copied")
-			End If
-			If retval.Any() Then
-				Dim uploadStatus As String = String.Join(" - ", retval.ToArray())
-
-				' Note: single vs. bulk mode is a vestige. Bulk mode is always true.
-				OnUploadModeChangeEvent(uploadStatus, True)
-			End If
-		End Sub
-
-
-
 		''' <summary>
 		''' Loads all the documents in a load file
 		''' </summary>
@@ -629,6 +604,9 @@ Namespace kCura.WinEDDS
 						Statistics.BatchSize = Me.ImportBatchSize
 						JobCounter = 1
 						Me.TotalTransferredFilesCount = 0
+
+						' This will safely force the status bar to update immediately.
+						Me.OnTapiClientChanged()
 						Using fileTypeIdentifier As IFileTypeIdentifier = New OutsideInFileTypeIdentifierService(AppSettings.Instance.FileTypeIdentifyTimeoutSeconds)
 							While ShouldImport AndAlso _artifactReader.HasMoreRecords
 								Try
@@ -2057,8 +2035,8 @@ Namespace kCura.WinEDDS
 #Region "Event Handlers"
 
 		Protected Overrides Sub OnTapiClientChanged()
-			PublishUploadModeEvent()
 			MyBase.OnTapiClientChanged()
+			Me.PublishUploadModeChangeEvent(_settings.CopyFilesToDocumentRepository AndAlso _settings.LoadNativeFiles AndAlso _settings.NativeFilePathColumn IsNot Nothing)
 		End Sub
 
 		Protected Overridable Sub _processContext_HaltProcessEvent(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles Context.CancellationRequest
@@ -2078,7 +2056,11 @@ Namespace kCura.WinEDDS
 		Protected Overridable Sub _processContext_ExportServerErrors(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportServerErrors
 			errorMessageFileWriter.ReleaseLock()
 			prePushErrorWriter.ReleaseLock()
-			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.FilePath, prePushErrorWriter.FilePath)
+			'' logic downstream is going to expect string.empty if the file is not there physically on disk
+			Dim errorMessageFileWriterFilePath As String =If(errorMessageFileWriter.FileCreated, errorMessageFileWriter.FilePath,  String.Empty)
+			Dim prePushErrorWriterFilePath As String =If(prePushErrorWriter.FileCreated, prePushErrorWriter.FilePath,  String.Empty)
+
+			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriterFilePath, prePushErrorWriterFilePath)
 			Dim rootFileName As String = _filePath
 			Dim defaultExtension As String
 			If Not rootFileName.IndexOf(".") = -1 Then
@@ -2123,8 +2105,10 @@ Namespace kCura.WinEDDS
 			prePushErrorWriter.ReleaseLock()
 			Const retry As Boolean = True
 			If Not errorMessageFileWriter.FileCreated Then Exit Sub
+			'' logic downstream is going to expect string.empty if the file is not there physically on disk
+			Dim prePushErrorWriterFilePath As String = If(prePushErrorWriter.FileCreated, prePushErrorWriter.FilePath, String.Empty)
 			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not Me.GetFileExists(_errorLinesFileLocation, retry) Then
-				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.FilePath, prePushErrorWriter.FilePath)
+				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.FilePath, prePushErrorWriterFilePath)
 			End If
 			If _errorLinesFileLocation Is Nothing Then
 				Exit Sub

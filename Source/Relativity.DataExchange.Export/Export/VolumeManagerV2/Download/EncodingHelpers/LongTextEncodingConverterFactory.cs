@@ -6,7 +6,7 @@
 
 	using Relativity.Logging;
 
-	public class LongTextEncodingConverterFactory
+	public class LongTextEncodingConverterFactory : ILongTextEncodingConverterFactory
 	{
 		private readonly LongTextRepository _longTextRepository;
 		private readonly IFileEncodingConverter _fileEncodingConverter;
@@ -19,7 +19,7 @@
 			_logger = logger;
 		}
 
-		public LongTextEncodingConverter Create(CancellationToken cancellationToken)
+		public IFileDownloadSubscriber Create(CancellationToken cancellationToken)
 		{
 			return new LongTextEncodingConverter(_longTextRepository, _fileEncodingConverter, _logger, cancellationToken);
 		}

@@ -1,6 +1,3 @@
-Imports System.Collections.Generic
-Imports System.IO
-Imports System.Net
 Imports System.Threading
 
 Imports kCura.WinEDDS.Service
@@ -13,7 +10,6 @@ Imports Relativity.DataExchange.Media
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
-Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class BulkImageFileImporter
@@ -260,6 +256,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.LargeFileProgressEnabled = AppSettings.Instance.TapiLargeFileProgressEnabled
 			nativeParameters.LogConfigFile = AppSettings.Instance.LogConfigXmlFileName
 			nativeParameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
+			nativeParameters.MaxInactivitySeconds = AppSettings.Instance.TapiMaxInactivitySeconds
 			nativeParameters.MaxJobParallelism = AppSettings.Instance.TapiMaxJobParallelism
 			nativeParameters.MaxJobRetryAttempts = Me.NumberOfRetries
 			nativeParameters.MinDataRateMbps = AppSettings.Instance.TapiMinDataRateMbps
@@ -606,7 +603,6 @@ Namespace kCura.WinEDDS
 				Me.Statistics.ProcessRunResults(runResults)
 				_runId = runResults.RunID
 				Me.Statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
-				PublishUploadModeEvent()
 				ManageErrors()
 
 				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount
@@ -682,6 +678,8 @@ Namespace kCura.WinEDDS
 
 				_timekeeper.MarkStart("ReadFile_Main")
 				
+				' This will safely force the status bar to update immediately.
+				Me.OnTapiClientChanged()
 				Me.LogInformation("Preparing to import images via WinEDDS.")
 				Me.Statistics.BatchSize = Me.ImportBatchSize
 				If _productionArtifactID <> 0 Then _productionManager.DoPreImportProcessing(_caseInfo.ArtifactID, _productionArtifactID)
@@ -1033,27 +1031,6 @@ Namespace kCura.WinEDDS
 		Public Event StatusMessage(ByVal args As StatusEventArgs)
 		Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)
 
-		Private Sub PublishUploadModeEvent()
-			Dim retval As New List(Of String)
-			If Not Me.BulkLoadTapiBridge Is Nothing Then
-				retval.Add("Metadata: " & Me.BulkLoadTapiClientName)
-			End If
-
-			If _settings.CopyFilesToDocumentRepository Then
-				If Not String.IsNullOrEmpty(Me.FileTapiClientName) Then
-					retval.Add("Files: " & Me.FileTapiClientName)
-				End If
-			Else
-				retval.Add("Files: not copied")
-			End If
-			If retval.Any() Then
-				Dim uploadStatus As String = String.Join(" - ", retval.ToArray())
-
-				' Note: single vs. bulk mode is a vestige. Bulk mode is always true.
-				OnUploadModeChangeEvent(uploadStatus, true)
-			End If
-		End Sub
-
 		Private Sub RaiseFatalError(ByVal ex As System.Exception)
 			RaiseEvent FatalErrorEvent($"Error processing line: {CurrentLineNumber}", ex)
 		End Sub
@@ -1080,7 +1057,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overrides Sub OnTapiClientChanged()
-			Me.PublishUploadModeEvent()
+			MyBase.OnTapiClientChanged()
+			MyBase.PublishUploadModeChangeEvent(_settings.CopyFilesToDocumentRepository)
 		End Sub
 
 		Protected Overrides Sub OnWriteStatusMessage(ByVal eventType As EventType2, ByVal message As String)

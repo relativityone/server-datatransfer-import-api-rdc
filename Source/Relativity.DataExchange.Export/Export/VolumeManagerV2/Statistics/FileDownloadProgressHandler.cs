@@ -8,9 +8,9 @@
 		{
 		}
 
-		protected override void MarkAsDownloaded(string id, int lineNumber)
+		protected override void MarkAsTransferCompleted(string id, int lineNumber)
 		{
-			DownloadProgressManager.MarkFileAsDownloaded(id, lineNumber);
+			DownloadProgressManager.MarkFileAsCompleted(id, lineNumber);
 		}
 	}
 }

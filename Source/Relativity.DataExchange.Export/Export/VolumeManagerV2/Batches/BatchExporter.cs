@@ -9,6 +9,8 @@
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using kCura.WinEDDS.Exporters;
 
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
+
 	public class BatchExporter : IBatchExporter
 	{
 		private readonly IDownloader _downloader;
@@ -16,49 +18,64 @@
 		private readonly IMessenger _messenger;
 		private readonly IImageLoadFile _imageLoadFile;
 		private readonly ILoadFile _loadFile;
+		private readonly ILongTextEncodingConverterFactory _longTextEncodingConverterFactory;
 
 		public BatchExporter(IDownloader downloader, IImagesRollupManager imagesRollupManager,
-			IMessenger messenger, IImageLoadFile imageLoadFile, ILoadFile loadFile)
+			IMessenger messenger, IImageLoadFile imageLoadFile, ILoadFile loadFile, ILongTextEncodingConverterFactory longTextEncodingConverterFactory)
 		{
 			_downloader = downloader;
 			_imagesRollupManager = imagesRollupManager;
 			_messenger = messenger;
 			_imageLoadFile = imageLoadFile;
 			_loadFile = loadFile;
+			_longTextEncodingConverterFactory = longTextEncodingConverterFactory;
 		}
 
 		public void Export(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
-			_downloader.DownloadFilesForArtifacts(cancellationToken);
-
-			_messenger.FilesDownloadCompleted();
-
-			if (cancellationToken.IsCancellationRequested)
+			using (var fileDownloadSubscriber = this.RegisterDownloadEventSubscriber(cancellationToken))
 			{
-				return;
+				this._downloader.DownloadFilesForArtifacts(cancellationToken);
+
+				fileDownloadSubscriber?.WaitForConversionCompletion().ConfigureAwait(false).GetAwaiter().GetResult();
+
+				_messenger.FilesDownloadCompleted();
+
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+
+				_messenger.StartingRollupImages();
+
+				_imagesRollupManager.RollupImagesForArtifacts(artifacts, cancellationToken);
+
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+
+				_messenger.CreatingImageLoadFileMetadata();
+
+				_imageLoadFile.Create(artifacts, cancellationToken);
+
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+
+				_messenger.CreatingLoadFileMetadata();
+
+				_loadFile.Create(artifacts, cancellationToken);
 			}
+		}
 
-			_messenger.StartingRollupImages();
+		private IFileDownloadSubscriber RegisterDownloadEventSubscriber(CancellationToken token)
+		{
+			var fileDownloadSubscriber = this._longTextEncodingConverterFactory.Create(token);
 
-			_imagesRollupManager.RollupImagesForArtifacts(artifacts, cancellationToken);
-
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return;
-			}
-
-			_messenger.CreatingImageLoadFileMetadata();
-
-			_imageLoadFile.Create(artifacts, cancellationToken);
-
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return;
-			}
-
-			_messenger.CreatingLoadFileMetadata();
-
-			_loadFile.Create(artifacts, cancellationToken);
+			this._downloader.RegisterLongTextFileSubscriber(fileDownloadSubscriber);
+			return fileDownloadSubscriber;
 		}
 	}
 }

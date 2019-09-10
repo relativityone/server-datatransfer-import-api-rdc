@@ -24,7 +24,7 @@ Public Class AboutForm
 			bitness = "32-bit"
 		End If
 
-		sb.Append(String.Format("Relativity Desktop Client {0} {1}", bitness, nl))
+		sb.Append(String.Join(" ", Relativity.Desktop.Client.Application.GetProductName(), bitness, nl))
 		Dim version As System.Version = Relativity.Desktop.Client.Application.GetProductVersion()
 		If (Not version Is Nothing) Then
 			' Prefer displaying the Relativity version...

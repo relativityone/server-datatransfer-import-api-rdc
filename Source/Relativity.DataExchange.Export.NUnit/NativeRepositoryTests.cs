@@ -41,11 +41,13 @@ namespace Relativity.DataExchange.Export.NUnit
 			Native native1 = this._instance.GetNative(1);
 			Native native2 = this._instance.GetNative(2);
 			Native native3 = this._instance.GetNative(3);
+			Native native4 = this._instance.GetNative(4);
 
 			// ASSERT
 			Assert.That(native1, Is.EqualTo(this._natives[0]));
 			Assert.That(native2, Is.EqualTo(this._natives[1]));
 			Assert.That(native3, Is.EqualTo(this._natives[2]));
+			Assert.That(native4, Is.Null);
 		}
 
 		[Test]
@@ -99,6 +101,28 @@ namespace Relativity.DataExchange.Export.NUnit
 			CollectionAssert.IsEmpty(natives);
 		}
 
+		[Test]
+		public void ItShouldGetAnyRequestForLocation()
+		{
+			// ACT
+			bool result1 = this._instance.AnyRequestForLocation(@"C:\temp\native1.docx");
+			bool result1DiffCase = this._instance.AnyRequestForLocation(@"c:\Temp\NATIVE1.Docx");
+			bool result2 = this._instance.AnyRequestForLocation(@"C:\temp\does-not-exist.docx");
+			bool result3 = this._instance.AnyRequestForLocation(null);
+			bool result4 = this._instance.AnyRequestForLocation(string.Empty);
+			bool result5 = this._instance.AnyRequestForLocation(@"C:\temp\native3.docx");
+			bool result5DiffCase = this._instance.AnyRequestForLocation(@"c:\Temp\NATIVE3.Docx");
+
+			// ASSERT
+			Assert.That(result1, Is.True);
+			Assert.That(result1DiffCase, Is.True);
+			Assert.That(result2, Is.False);
+			Assert.That(result3, Is.False);
+			Assert.That(result4, Is.False);
+			Assert.That(result5, Is.True);
+			Assert.That(result5DiffCase, Is.True);
+		}
+
 		private List<Native> CreateDataSet()
 		{
 			ObjectExportInfo artifact1 = new ObjectExportInfo
@@ -107,8 +131,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			Native native1 = new Native(artifact1)
 			{
-				HasBeenDownloaded = false,
-				ExportRequest = new PhysicalFileExportRequest(artifact1, string.Empty)
+				TransferCompleted = false,
+				ExportRequest = new PhysicalFileExportRequest(artifact1, @"C:\temp\native1.docx")
 				{
 					FileName = "filename_1",
 					Order = 1
@@ -121,7 +145,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			Native native2 = new Native(artifact2)
 			{
-				HasBeenDownloaded = true
+				TransferCompleted = true
 			};
 
 			ObjectExportInfo artifact3 = new ObjectExportInfo
@@ -130,8 +154,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			Native native3 = new Native(artifact3)
 			{
-				HasBeenDownloaded = false,
-				ExportRequest = new PhysicalFileExportRequest(artifact3, string.Empty)
+				TransferCompleted = false,
+				ExportRequest = new PhysicalFileExportRequest(artifact3, @"C:\temp\native3.docx")
 				{
 					FileName = "filename_3",
 					Order = 3

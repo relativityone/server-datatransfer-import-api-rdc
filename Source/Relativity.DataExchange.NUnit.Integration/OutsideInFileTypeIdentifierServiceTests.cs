@@ -44,15 +44,14 @@ namespace Relativity.DataExchange.NUnit.Integration
 			OutsideInFileTypeIdentifierService.Shutdown();
 			this.service = new OutsideInFileTypeIdentifierService(timeoutSeconds);
 			string rootDirectory = Path.Combine(Path.GetTempPath(), "Relativity-Test-Datasets");
-#if RELEASE
+
 			if (System.IO.Directory.Exists(rootDirectory))
 			{
 				const bool Recursive = true;
 				System.IO.Directory.Delete(rootDirectory, Recursive);
 			}
-#endif
-			Directory.CreateDirectory(rootDirectory);
 
+			Directory.CreateDirectory(rootDirectory);
 			this.rootDatasetDocumentsDirectory = Path.Combine(rootDirectory, "Test-FileTypeId-List");
 			if (!System.IO.Directory.Exists(this.rootDatasetDocumentsDirectory))
 			{

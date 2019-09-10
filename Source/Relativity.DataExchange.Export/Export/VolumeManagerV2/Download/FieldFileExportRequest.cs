@@ -7,6 +7,13 @@
 
 	public class FieldFileExportRequest : ExportRequest
 	{
+		public FieldFileExportRequest(ObjectExportInfo artifact, int fileFieldArtifactId, string destinationLocation)
+			: base(artifact.ArtifactID, artifact.NativeSourceLocation, destinationLocation)
+		{
+			this.FileId = artifact.FileID;
+			this.FileFieldArtifactId = fileFieldArtifactId;
+		}
+
 		/// <summary>
 		///     For Web mode
 		/// </summary>
@@ -17,33 +24,21 @@
 		/// </summary>
 		public int FileFieldArtifactId { get; }
 
-		public FieldFileExportRequest(ObjectExportInfo artifact, int fileFieldArtifactId, string destinationLocation)
-			: base(artifact.ArtifactID, artifact.NativeSourceLocation, destinationLocation)
-		{
-			FileId = artifact.FileID;
-			FileFieldArtifactId = fileFieldArtifactId;
-		}
-
 		protected override TransferPath CreateTransferPath()
 		{
-			var httpTransferPathData = new HttpTransferPathData
-			{
-				ArtifactId = ArtifactId,
-				FileId = FileId,
-				FileFieldArtifactId = FileFieldArtifactId,
-				ExportType = ExportType.FileFieldArtifact
-			};
-
-			var fileInfo = new System.IO.FileInfo(DestinationLocation);
-			var transferPath = new TransferPath
-			{
-				Order = Order,
-				SourcePath = SourceLocation,
-				TargetPath = fileInfo.Directory?.FullName,
-				TargetFileName = fileInfo.Name
-			};
-
-			transferPath.AddData(HttpTransferPathData.HttpTransferPathDataKey, httpTransferPathData);
+			HttpTransferPathData httpTransferPathData = new HttpTransferPathData
+				                                            {
+					                                            ArtifactId = this.ArtifactId,
+					                                            FileId = this.FileId,
+					                                            FileFieldArtifactId = this.FileFieldArtifactId,
+					                                            ExportType = ExportType.FileFieldArtifact
+				                                            };
+			TransferPath transferPath = CreateTransferPath(
+				this.ArtifactId,
+				this.Order,
+				this.SourceLocation,
+				this.DestinationLocation,
+				httpTransferPathData);
 			return transferPath;
 		}
 	}

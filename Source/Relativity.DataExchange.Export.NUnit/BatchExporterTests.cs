@@ -6,6 +6,7 @@
 
 namespace Relativity.DataExchange.Export.NUnit
 {
+	using System;
 	using System.Threading;
 
 	using global::NUnit.Framework;
@@ -16,6 +17,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
@@ -30,6 +32,8 @@ namespace Relativity.DataExchange.Export.NUnit
 		private Mock<IImageLoadFile> _imageLoadFile;
 		private Mock<ILoadFile> _loadFile;
 
+		private Mock<ILongTextEncodingConverterFactory> _longTextEncodingConverterFactory;
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -37,14 +41,18 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._imagesRollupManager = new Mock<IImagesRollupManager>();
 			this._imageLoadFile = new Mock<IImageLoadFile>();
 			this._loadFile = new Mock<ILoadFile>();
-
-			this._instance = new BatchExporter(this._downloader.Object, this._imagesRollupManager.Object, new Mock<IMessenger>().Object, this._imageLoadFile.Object, this._loadFile.Object);
+			this._longTextEncodingConverterFactory = new Mock<ILongTextEncodingConverterFactory>();
+			this._instance = new BatchExporter(this._downloader.Object, this._imagesRollupManager.Object, new Mock<IMessenger>().Object, this._imageLoadFile.Object, this._loadFile.Object, this._longTextEncodingConverterFactory.Object);
 		}
 
 		[Test]
 		public void GoldWorkflow()
 		{
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
+
+			Mock<IFileDownloadSubscriber> fileDownloadSubscriber = new Mock<IFileDownloadSubscriber>();
+
+			_longTextEncodingConverterFactory.Setup(item => item.Create(It.IsAny<CancellationToken>())).Returns(fileDownloadSubscriber.Object);
 
 			// ACT
 			this._instance.Export(artifacts, CancellationToken.None);
@@ -54,6 +62,9 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._imagesRollupManager.Verify(x => x.RollupImagesForArtifacts(artifacts, CancellationToken.None), Times.Once);
 			this._imageLoadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
 			this._loadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
+			this._downloader.Verify(x => x.RegisterLongTextFileSubscriber(fileDownloadSubscriber.Object));
+
+			fileDownloadSubscriber.Verify(x => x.WaitForConversionCompletion(), Times.Once);
 		}
 	}
 }
