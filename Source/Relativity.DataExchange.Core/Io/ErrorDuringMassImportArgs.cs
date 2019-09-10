@@ -5,6 +5,7 @@
 namespace Relativity.DataExchange.Io
 {
 	using System.Collections.Generic;
+	using Microsoft.VisualBasic;
 
 	/// <summary>
 	/// Error record before mass import occurs.
@@ -33,7 +34,28 @@ namespace Relativity.DataExchange.Io
 		}
 
 		/// <inheritdoc />
-		public IEnumerable<string> ValuesForErrorFile()
+		public string FormattedLineInFile()
+		{
+			return this.ValuesForErrorFile().ToCsv(CSVFormat);
+		}
+
+		/// <summary>
+		/// CSVFormat will take in a string, replace a double quote characters with a pair of double quote characters, then surround the string with double quote characters
+		/// This preps it for being written as a field in a CSV file.
+		/// </summary>
+		/// <param name="fieldValue">The string to convert to CSV format.</param>
+		/// <returns>
+		/// The converted data.
+		/// </returns>
+		private static string CSVFormat(string fieldValue)
+		{
+			var quote = ControlChars.Quote.ToString();
+			var doubleQuote = quote + quote;
+			var escapedField = fieldValue.Replace(quote, doubleQuote);
+			return $"{quote}{escapedField}{quote}";
+		}
+
+		private IEnumerable<string> ValuesForErrorFile()
 		{
 			yield return this.lineNumber;
 			yield return this.message;
