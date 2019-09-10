@@ -210,15 +210,14 @@ timestamps
                     {
                         stage ('Publish packages to proget')
                         {
-                            if (env.BRANCH_NAME == 'master' || params.forcePublishRdcPackage)
+                            if (params.forcePublishRdcPackage)
                             {
-                                echo "Publishing the SDK and RDC package(s)"
-                                powershell ".\\build.ps1 PublishPackages"
+                                echo "Force publishing the RDC package"
+                                powershell ".\\build.ps1 PublishPackages -ForcePublishRdcPackage"
                             }
                             else
                             {
-                                echo "Publishing only the SDK package(s)"
-                                powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage"
+                                powershell ".\\build.ps1 PublishPackages"
                             }
                         }
                     }
