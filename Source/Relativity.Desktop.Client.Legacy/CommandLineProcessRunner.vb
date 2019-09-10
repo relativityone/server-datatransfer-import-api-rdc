@@ -49,7 +49,7 @@ Namespace Relativity.Desktop.Client
 
 		Private Sub _context_OnProcessProgressEvent(ByVal sender As Object, ByVal e As ProgressEventArgs) Handles _context.Progress
 			Dim now As Long = System.DateTime.Now.Ticks
-			If now - _lastUpdated > 10000000 Then
+			If now - _lastUpdated > TimeSpan.TicksPerSecond Then
 				_lastUpdated = now
 				WriteLine(vbTab & e.TotalProcessedRecordsDisplay + " of " + e.TotalRecordsDisplay + " processed", ParsableLineType.Status)
 			End If

@@ -508,7 +508,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub UpdateStatisticsSnapshot(time As System.DateTime, Optional ByVal force As Boolean = False)
-			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > 10000000
+			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > TimeSpan.TicksPerSecond
 			If updateCurrentStats OrElse force Then
 				CurrentStatisticsSnapshot = Me.Statistics.ToDictionary()
 				_statisticsLastUpdated = time
