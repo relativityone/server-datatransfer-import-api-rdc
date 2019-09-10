@@ -60,17 +60,15 @@
 						ExportStrings.FileValidationEmptyRemoteSourcePath,
 						artifact.ArtifactID);
 					_logger.LogError(
-						"Native file {File} remote source path is null or whitespace for native artifact {ArtifactId} and indicates a problem with the artifact data.",
-						artifact.NativeTempLocation,
+						"Native file remote source path is null or whitespace for native artifact {ArtifactId} and indicates a problem with the artifact data.",
 						artifact.ArtifactID);
 				}
 				else
 				{
 					this._logger.LogError(
 						fileExists
-							? "Native file {File} contains zero bytes for artifact {ArtifactId}."
-							: "Native file {File} is missing for artifact {ArtifactId}.",
-						artifact.NativeTempLocation,
+							? "Native file contains zero bytes for artifact {ArtifactId}."
+							: "Native file is missing for artifact {ArtifactId}.",
 						artifact.ArtifactID);
 				}
 

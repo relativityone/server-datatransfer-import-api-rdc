@@ -405,21 +405,6 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets the maximum number of files for each Transfer API bridge instance.
-		/// </summary>
-		/// <value>
-		/// The maximum number of files.
-		/// </value>
-		/// <remarks>
-		/// TODO: This setting was only used by export and should be removed.
-		/// </remarks>
-		int MaxFilesForTapiBridge
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Gets or sets the maximum number of WebAPI login attempts.
 		/// </summary>
 		/// <value>
@@ -588,21 +573,6 @@ namespace Relativity.DataExchange
 		/// <see langword="true" /> to retry invalid path specific errors; otherwise, <see langword="false" />.
 		/// </value>
 		bool TapiBadPathErrorsRetry
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Gets or sets the time, in seconds, that a Transfer API bridge waits before releasing the wait handle.
-		/// </summary>
-		/// <value>
-		/// The total number of seconds.
-		/// </value>
-		/// <remarks>
-		/// TODO: This setting was only used by export and should be removed.
-		/// </remarks>
-		int TapiBridgeExportTransferWaitingTimeInSeconds
 		{
 			get;
 			set;

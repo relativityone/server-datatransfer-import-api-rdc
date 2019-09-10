@@ -486,8 +486,6 @@ namespace Relativity.DataExchange.Transfer
 			}
 			catch (OperationCanceledException)
 			{
-				// TODO: I believe that NOT throwing the exception was intentional because cancellation support didn't exist in 2017.
-				// TODO: Need to revisit this and see if this can safely rethrow.
 				this.LogCancelRequest();
 				return !string.IsNullOrEmpty(path.TargetFileName)
 					       ? path.TargetFileName
@@ -840,7 +838,6 @@ namespace Relativity.DataExchange.Transfer
 				return;
 			}
 
-			// TODO: eliminate this method and related code after Patch 1 to address cache coherency issues.
 			ClientConfiguration configuration = this.CreateClientConfiguration();
 			this.parameters.FileNotFoundErrorsDisabled = configuration.FileNotFoundErrorsDisabled;
 			this.parameters.FileNotFoundErrorsRetry = configuration.FileNotFoundErrorsRetry;

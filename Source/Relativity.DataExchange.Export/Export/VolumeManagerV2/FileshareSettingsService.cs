@@ -230,8 +230,7 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 				if (settings == null)
 				{
 					_logger.LogWarning(
-						"The path '{Path}' for export artifact '{ArtifactId}' does not match the base address on any of the file shares and will be exported by either direct or web mode. This may be caused by an invalid File table or the Resource Pool doesn't include all file shares referenced by this workspace.",
-						path,
+						"The path for export artifact '{ArtifactId}' does not match the base address on any of the file shares and will be exported by either direct or web mode. This may be caused by an invalid File table or the Resource Pool doesn't include all file shares referenced by this workspace.",
 						artifactId);
 				}
 			}
@@ -246,8 +245,7 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 
 				_logger.LogWarning(
 					e,
-					"The path '{Path}' for export artifact '{ArtifactId}' failed trying to match the base address on any of the file shares. This may be caused by an invalid artifact.",
-					path,
+					"The path for export artifact '{ArtifactId}' failed trying to match the base address on any of the file shares. This may be caused by an invalid artifact.",
 					artifactId);
 				settings = null;
 			}
