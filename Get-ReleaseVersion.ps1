@@ -5,7 +5,7 @@ param(
 
 function gitBranchName {
     $branchName = git rev-parse --abbrev-ref HEAD
-    If($branchName - eq 'HEAD')
+    If($branchName -eq 'HEAD')
     {
         return $branchNameJenkins
     }
