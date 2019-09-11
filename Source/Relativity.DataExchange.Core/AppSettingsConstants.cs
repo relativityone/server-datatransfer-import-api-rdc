@@ -136,6 +136,12 @@ namespace Relativity.DataExchange
 		public const bool TapiPreserveFileTimestampsDefaultValue = false;
 		public const string TapiSubmitApmMetricsKey = "TapiSubmitApmMetrics";
 		public const bool TapiSubmitApmMetricsDefaultValue = true;
+		public const string TelemetrySubmitApmMetricsKey = "TelemetrySubmitApmMetrics";
+		public const bool TelemetrySubmitApmMetricsDefaultValue = true;
+		public const string TelemetrySubmitSumMetricsKey = "TelemetrySubmitSumMetrics";
+		public const bool TelemetrySubmitSumMetricsDefaultValue = true;
+		public const string TelemetryMetricsThrottlingSecondsKey = "TelemetryMetricsThrottlingSeconds";
+		public const int TelemetryMetricsThrottlingSecondsDefaultValue = 30;
 		public const string TapiTargetDataRateMbpsKey = "TapiTargetDataRateMbps";
 		public const string TapiTransferLogDirectoryKey = "TapiTransferLogDirectory";
 		public const string TapiTransferLogDirectoryDefaultValue = "";

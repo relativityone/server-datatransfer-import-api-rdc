@@ -1,4 +1,6 @@
 ﻿Imports System.Collections.Generic
+Imports kCura.WinEDDS.Monitoring
+Imports Monitoring.Sinks
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -11,6 +13,12 @@ Namespace kCura.Relativity.DataReaderClient
 			ExtractedTextFieldContainsFilePath = False
 
 		End Sub
+
+        ''' <summary>
+        ''' Get class containing telemetry settings
+        ''' </summary>
+        ''' <returns></returns>
+        Public ReadOnly Property Telemetry As IMetricsSinkConfig = New ImportApiMetricSinkConfig()
 
 		''' <summary>
 		''' Indicates the level of auditing for an import job.
@@ -207,6 +215,12 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		''' <returns></returns>
 		Public Property Billable() As Boolean = True
+
+        ''' <summary>
+        ''' Allows clients of Import API to identify themselves
+        ''' </summary>
+        ''' <returns>The application name</returns>
+        Public Property ApplicationName As String = Nothing
 
 	End Class
 End Namespace

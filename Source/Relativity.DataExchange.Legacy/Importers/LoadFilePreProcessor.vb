@@ -140,7 +140,7 @@ Namespace kCura.WinEDDS
 
 			While Not Me.HasReachedEOF And _continue
 				currentRun = System.DateTime.Now.Ticks
-				If currentRun - lastRun > 10000000 Then
+				If currentRun - lastRun > TimeSpan.TicksPerSecond Then
 					lastRun = currentRun
 					Me.ProcessProgress(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 				End If
@@ -179,7 +179,7 @@ Namespace kCura.WinEDDS
 				If Me.RecordCount > AppSettings.Instance.PreviewThreshold Then
 					AdvanceLine()
 					currentRun = System.DateTime.Now.Ticks
-					If currentRun - lastRun > 10000000 Then
+					If currentRun - lastRun > TimeSpan.TicksPerSecond Then
 						lastRun = currentRun
 						Me.ProcessProgress(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 					End If
@@ -224,7 +224,7 @@ Namespace kCura.WinEDDS
 
 				'Report progress
 				currentRun = System.DateTime.Now.Ticks
-				If currentRun - lastRun > 10000000 Then
+				If currentRun - lastRun > TimeSpan.TicksPerSecond Then
 					lastRun = currentRun
 					Me.ProcessProgress(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 				End If

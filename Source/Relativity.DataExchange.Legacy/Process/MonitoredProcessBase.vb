@@ -23,6 +23,10 @@ Public MustInherit Class MonitoredProcessBase
 
 	Public Property CaseInfo As CaseInfo
 
+    Public Property ExecutionSource As ExecutionSource = ExecutionSource.Unknown
+
+    Public Property ApplicationName As String = Nothing
+
 	Public Sub New(messageService As IMessageService)
 		Me.MessageService = messageService
 	End Sub
@@ -72,17 +76,17 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected Sub SendTransferJobStartedMessage()
 		If InitialTapiClientName Is Nothing Then
-			MessageService.Send(New TransferJobStartedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
+			MessageService.Send(New TransferJobStartedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString(), .ApplicationName = GetApplicationName})
 			InitialTapiClientName = TapiClientName
 		End If
 	End Sub
 
 	Protected Sub SendTransferJobFailedMessage()
-		MessageService.Send(New TransferJobFailedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
+		MessageService.Send(New TransferJobFailedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString(), .ApplicationName = GetApplicationName})
 	End Sub
 
 	Protected Sub SendTransferJobCompletedMessage()
-		MessageService.Send(New TransferJobCompletedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
+		MessageService.Send(New TransferJobCompletedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString(), .ApplicationName = GetApplicationName})
 	End Sub
 
 	Protected Sub SendThroughputStatistics(metadataThroughput As Double, fileThroughput As Double)
@@ -115,15 +119,15 @@ Public MustInherit Class MonitoredProcessBase
 			bytesPerSecond = (statistics.FileBytes + statistics.MetadataBytes) / duration.TotalSeconds
 		End If
 
-		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond, .BytesPerSecond = bytesPerSecond, .CorrelationID = JobGuid.ToString()})
+		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond, .BytesPerSecond = bytesPerSecond, .CorrelationID = JobGuid.ToString(), .ApplicationName = GetApplicationName()})
 	End Sub
 
 	Protected Sub SendJobTotalRecordsCountMessage()
-		MessageService.Send(New TransferJobTotalRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .TotalRecords = TotalRecords, .CorrelationID = JobGuid.ToString()})
+		MessageService.Send(New TransferJobTotalRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .TotalRecords = TotalRecords, .CorrelationID = JobGuid.ToString(), .ApplicationName = GetApplicationName()})
 	End Sub
 
 	Protected Sub SendJobCompletedRecordsCountMessage()
-		MessageService.Send(New TransferJobCompletedRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CompletedRecords = CompletedRecordsCount, .CorrelationID = JobGuid.ToString()})
+		MessageService.Send(New TransferJobCompletedRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CompletedRecords = CompletedRecordsCount, .CorrelationID = JobGuid.ToString(), .ApplicationName = GetApplicationName()})
 	End Sub
 
 	Private Sub SendJobSize(statistics As Statistics)
@@ -142,9 +146,24 @@ Public MustInherit Class MonitoredProcessBase
 		message.CorrelationID = JobGuid.ToString()
 		message.CustomData.Add("UseOldExport", Me.AppSettings.UseOldExport)
 		message.UnitOfMeasure = "Bytes(s)"
+        message.ApplicationName = GetApplicationName()
 		If Not (CaseInfo Is Nothing) Then
 			message.WorkspaceID = CaseInfo.ArtifactID
 		End If
 	End Sub
+
+    ''' <summary>
+    ''' Provides application name for telemetry purpose
+    ''' </summary>
+    ''' <returns>The application name</returns>
+    Private Function GetApplicationName() As String
+        If Not String.IsNullOrEmpty(ApplicationName) Then
+            Return ApplicationName
+        ElseIf Not String.IsNullOrEmpty(AppSettings.ApplicationName) Then
+            Return AppSettings.ApplicationName
+        Else
+            Return ExecutionSource.ToString()
+        End If
+    End Function
 
 End Class

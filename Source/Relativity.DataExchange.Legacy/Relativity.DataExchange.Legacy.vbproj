@@ -219,7 +219,7 @@
     <Compile Include="DataReaderClient\ImageImport\ImageSourceIDataReader.vb" />
     <Compile Include="DataReaderClient\ImportCredentialException.vb" />
     <Compile Include="DataReaderClient\ImportCredentialManager.vb" />
-    <Compile Include="DataReaderClient\ImportLoadFileJob.vb" />
+    <Compile Include="DataReaderClient\ImportBulkArtifactJob.vb" />
     <Compile Include="DataReaderClient\ImportSettingsBase.vb" />
     <Compile Include="DataReaderClient\ImportSettingsException.vb" />
     <Compile Include="DataReaderClient\JobReport.vb" />
@@ -411,6 +411,9 @@
     <Compile Include="ImportExtension\ImageImport\DataSource.vb" />
     <Compile Include="ImportExtension\ImageImport\ImageDataTableReader.vb" />
     <Compile Include="ImportExtension\NativeFileValidatedArtifactFieldCollection.vb" />
+    <Compile Include="Monitoring\Sinks\IMetricSinkManager.vb" />
+    <Compile Include="Monitoring\Sinks\ImportApiMetricSinkConfig.vb" />
+    <Compile Include="Monitoring\Sinks\MetricSinkManager.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Resources\Strings.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -425,7 +428,7 @@
     <Compile Include="Importers\TimeKeeper\ITimeKeeperManager.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
-    <Compile Include="Monitoring\Sinks\IMetricsConfig.vb" />
+    <Compile Include="Monitoring\Sinks\IMetricsSinkConfig.vb" />
     <Compile Include="Monitoring\Sinks\JobApmEndOfLifeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobSumEndOfLifeSink.vb" />
     <Compile Include="Monitoring\MetricMetadataExtensions.vb" />

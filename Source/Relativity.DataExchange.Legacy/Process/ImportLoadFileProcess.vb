@@ -94,8 +94,6 @@ Namespace kCura.WinEDDS
 
 		Public Property EnforceDocumentLimit() As Boolean
 
-		Public Property ExecutionSource() As ExecutionSource
-
 		Public Property TimeZoneOffset() As Int32
 			Get
 				Return _timeZoneOffset

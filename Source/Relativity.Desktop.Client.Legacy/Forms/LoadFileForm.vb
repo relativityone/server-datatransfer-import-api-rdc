@@ -1849,7 +1849,6 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Sub _characterDropdown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _recordDelimiter.SelectedIndexChanged, _quoteDelimiter.SelectedIndexChanged, _newLineDelimiter.SelectedIndexChanged, _multiRecordDelimiter.SelectedIndexChanged, _hierarchicalValueDelimiter.SelectedIndexChanged
-			'PopulateLoadFileObject()
 			Dim tag As Object = DirectCast(sender, System.Windows.Forms.ComboBox).Tag
 			If TypeOf tag Is Boolean AndAlso CType(tag, Boolean) = False Then
 				'do nothing
