@@ -54,7 +54,7 @@ timestamps
                 {
                     stage('Clean')
                     {
-                        output = powershell ".\\Get-ReleaseVersion.ps1"
+                        output = powershell ".\\build.ps1 Clean -Verbosity '${params.buildVerbosity}'"
                         echo output
                     }
 
@@ -64,7 +64,7 @@ timestamps
 					    if(isNewBuild)
 						{
 							echo "Using new build strategy"
-							def outputString = runCommandWithOutput(".\\Get-ReleaseVersion.ps1")
+							def outputString = runCommandWithOutput(".\\Get-ReleaseVersion.ps1'")
 						}
 						else
 						{
