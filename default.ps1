@@ -205,8 +205,8 @@ task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
     Initialize-Folder $LogsDir -Safe
     Initialize-Folder $PackagesArtifactsDir -Safe
     $majorMinorPatchVersion = exec {
-        & $GitVersionExe /output json /showvariable MajorMinorPatch
-    } -errorMessage "There was an error retrieving MajorMinorPatch using GitVersion."
+        & .\Get-ReleaseVersion.ps1 '$Branch'
+    } -errorMessage "There was an error retrieving MajorMinorPatch using powershell."
 
     $packageVersion =  Format-NuGetPackageVersion -MajorMinorPatchVersion $majorMinorPatchVersion
     Write-Host "Package version: $packageVersion"
@@ -244,42 +244,13 @@ task BuildRdcPackage -Description "Builds the RDC NuGet package" {
     } -errorMessage "There was an error creating the RDC NuGet package."
 }
 
-task BuildVersion -Description "Retrieves the build version from GitVersion" {
-    Assert ($BuildUrl -ne $null -and $BuildUrl -ne "") "BuildUrl must be provided"
-    Write-Output "Importing GitVersion properties.."
+task BuildVersion -Description "Retrieves the build version from powershell" {
 
-    $buildVersionMajor = exec {
-        & $GitVersionExe /output json /showvariable Major
-    } -errorMessage "There was an error retrieving the major version using GitVersion."
+    $buildVersion = exec {
+        & .\Get-ReleaseVersion.ps1 '$Branch'
+    } -errorMessage "There was an error retrieving the major version using powershell."
 
-    $buildVersionMinor = exec {
-        & $GitVersionExe /output json /showvariable Minor
-    } -errorMessage "There was an error retrieving the minor version using GitVersion."
-
-    $buildVersionPatch = exec {
-        & $GitVersionExe /output json /showvariable Patch
-    } -errorMessage "There was an error retrieving the patch version using GitVersion."
-
-    $buildVersionCommitNumber = exec {
-        & $GitVersionExe /output json /showvariable CommitsSinceVersionSource
-    } -errorMessage "There was an error retrieving the number of commits using GitVersion."
-                        
-    Write-Output "Build Url: $BuildUrl"
-    Write-Output "Version major: $buildVersionMajor"
-    Write-Output "Version minor: $buildVersionMinor"
-    Write-Output "Version patch: $buildVersionPatch"
-    Write-Output "Version commits number: $buildVersionCommitNumber"
-
-    $maxVersionLength = 50
-    $localBuildVersion = "$buildVersionMajor.$buildVersionMinor.$buildVersionPatch.$buildVersionCommitNumber"
-    if ($localBuildVersion.Length -gt $maxVersionLength) {
-        Throw "The version length exceeds the maximum of $maxVersionLength characters and suggests a serious GIT or GitVersion issue."
-    }
-
-    $global:BuildVersion = $localBuildVersion
-
-    # So Jenkins can get the version number
-    Write-Output "buildVersion=$localBuildVersion"
+    Write-Output "buildVersion=$buildVersion"
 }
 
 task Clean -Description "Clean solution" {
@@ -379,21 +350,13 @@ task IntegrationTestResults -Description "Retrieve the integration test results 
     Write-TestResultsOutput $IntegrationTestsResultXmlFile
 }
 
-task PackageVersion -Description "Retrieves the package version from GitVersion" {
+task PackageVersion -Description "Retrieves the package version from powershell" {
+    
+	$buildVersion = exec {
+        & .\Get-ReleaseVersion.ps1 '$Branch'
+    } -errorMessage "There was an error retrieving the major version using powershell."
 
-    $localPackageVersion = exec { 
-        & $GitVersionExe /output json /showvariable NuGetVersion
-    } -errorMessage "There was an error retrieving the Nuget package version from GitVersion."
-
-    $maxVersionLength = 255
-    if ($localPackageVersion.Length -gt $maxVersionLength) {
-        Throw "The version length exceeds the maximum of $maxVersionLength characters and suggests a serious GIT or GitVersion issue."
-    }
-
-    $global:PackageVersion = $localPackageVersion
-
-    # So Jenkins can get the package version number
-    Write-Output "packageVersion=$localPackageVersion"
+    Write-Output "buildVersion=$buildVersion"
 }
 
 task PublishBuildArtifacts -Description "Publish build artifacts" {
@@ -532,7 +495,7 @@ task UpdateAssemblyInfo -Depends UpdateSdkAssemblyInfo,UpdateRdcAssemblyInfo -De
 
 task UpdateSdkAssemblyInfo -Description "Update the version contained within the SDK assembly shared info source file" {
     exec { 
-         & $GitVersionExe /updateassemblyinfo .\Version\AssemblySharedInfo.cs .\Version\AssemblySharedInfo.vb 
+         & .\Update-AssemblyInfo.ps1
     } -errorMessage "There was an error updating the assembly info."
 }
 
@@ -571,9 +534,7 @@ Function Format-NuGetPackageVersion {
         Throw "The NuGet package version cannot be formatted because the Major.Minor.Patch value is null or empty."
     }
     
-    $currentBranchName = exec {
-        & $GitVersionExe /output json /showvariable BranchName
-    } -errorMessage "There was an error retrieving the branch name using GitVersion."
+    $currentBranchName = $branch
 
     if (!$currentBranchName -or $currentBranchName.Length -eq 0) {
         Throw "The NuGet package version cannot be formatted because the branch name is null or empty."

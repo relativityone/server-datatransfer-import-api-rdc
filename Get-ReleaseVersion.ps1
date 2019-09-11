@@ -2,7 +2,6 @@ param(
 [string]$branchNameJenkins
 )
 
-
 function gitBranchName {
     $branchName = git rev-parse --abbrev-ref HEAD
     If($branchName -eq 'HEAD')
@@ -14,7 +13,6 @@ function gitBranchName {
         return $branchName
     }
 }
-
 
 
 $gitVersion = git describe --tags --always
@@ -38,16 +36,16 @@ If ($currentBranch.ToString() -eq "develop" )
 {
    $postfix = "-dev"
 }
-# elseif ($currentBranch.ToString().StartsWith("bugfix/")) 
-# {
-   # $currentBranch = $currentBranch.Replace("bugfix/","") 
-   # $postfix = "-bugfix-$currentBranch"
-# }
-# elseif ($currentBranch.ToString().StartsWith("feature/")) 
-# {
-	 # $currentBranch = $currentBranch.Replace("feature/","") 
-    # $postfix = "-feature-$currentBranch"
-# }
+elseif ($currentBranch.ToString().StartsWith("bugfix-")) 
+{
+   $currentBranch = $currentBranch.Replace("bugfix-","") 
+   $postfix = "-bugfix-$currentBranch"
+}
+elseif ($currentBranch.ToString().StartsWith("feature-")) 
+{
+	 $currentBranch = $currentBranch.Replace("feature-","") 
+    $postfix = "-feature-$currentBranch"
+}
 elseif ($currentBranch.ToString().StartsWith("release-")) 
 {
     if(-Not ($currentBranch.Contains($version)))
@@ -56,9 +54,9 @@ elseif ($currentBranch.ToString().StartsWith("release-"))
     }
     $postfix = ""
 }
-else 
+else
 {
-    $postfix = "-$currentBranch"
+	$(Throw New-Object System.ArgumentException "Branch must start with 'feature' or 'bugfix' (case sensitive), or be equal to 'develop', current branch is '$currentBranch'","branch name")
 }
 
 
