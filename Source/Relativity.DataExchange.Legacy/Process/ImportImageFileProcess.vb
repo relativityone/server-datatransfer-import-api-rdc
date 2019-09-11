@@ -82,7 +82,17 @@ Namespace kCura.WinEDDS
 			Return _imageFileImporter.HasErrors
 		End Function
 
-		Protected Overrides Sub OnFatalError()
+        ''' <inheritdoc/>
+        Protected Overrides Function GetTotalRecordsCount() As Long
+            Return _imageFileImporter.TotalRecords
+        End Function
+
+        ''' <inheritdoc/>
+        Protected Overrides Function GetCompletedRecordsCount() As Long
+            Return __imageFileImporter.CompletedRecords
+        End Function
+
+        Protected Overrides Sub OnFatalError()
 			MyBase.OnFatalError()
             SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _imageFileImporter.Statistics)
 		End Sub
@@ -200,8 +210,6 @@ Namespace kCura.WinEDDS
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 						Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Progress
-						TotalRecords = e.TotalRecords
-						CompletedRecordsCount = e.CurrentRecordIndex
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 						Me.Context.PublishRecordProcessed(e.CurrentRecordIndex)

@@ -14,8 +14,6 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Property JobGuid As System.Guid = System.Guid.NewGuid()
 	Protected Property StartTime As System.DateTime
 	Protected Property EndTime As System.DateTime
-	Protected Property TotalRecords As Long
-	Protected Property CompletedRecordsCount As Long
 	Protected Property InitialTapiClientName As String
 	Protected MustOverride ReadOnly Property JobType As String
 	Protected MustOverride ReadOnly Property TapiClientName As String
@@ -91,11 +89,13 @@ Public MustInherit Class MonitoredProcessBase
 	End Sub
 
     Protected Sub SendMetricJobEndReport(jobStatus As String, statistics As Statistics)
+        Dim totalRecordsCount As Long = GetTotalRecordsCount()
+        Dim completedRecordsCount As Long = GetCompletedRecordsCount()
         Dim metric As MetricJobEndReport = New MetricJobEndReport() With {.JobStatus = jobStatus, .TotalSizeBytes = (statistics.MetadataBytes + statistics.FileBytes),
                 .FileSizeBytes = statistics.FileBytes, .MetadataSizeBytes = statistics.MetadataBytes,
-                .TotalRecords = TotalRecords, .CompletedRecords = CompletedRecordsCount,
+                .TotalRecords = totalRecordsCount, .CompletedRecords = completedRecordsCount,
                 .ThroughputBytesPerSecond = CalculateThroughput(statistics.FileBytes + statistics.MetadataBytes),
-                .ThroughputRecordsPerSecond = CalculateThroughput(CompletedRecordsCount)}
+                .ThroughputRecordsPerSecond = CalculateThroughput(completedRecordsCount)}
         BuildMetricBase(metric)
         MetricService.Log(metric)
     End Sub
@@ -110,6 +110,18 @@ Public MustInherit Class MonitoredProcessBase
 		BuildMetricBase(message)
 		MetricService.Log(message)
 	End Sub
+
+    ''' <summary>
+    ''' Returns total number of records to import/export. This value is used by our telemetry system.
+    ''' </summary>
+    ''' <returns>Total number of records.</returns>
+    Protected MustOverride Function GetTotalRecordsCount() As Long
+
+    ''' <summary>
+    ''' Returns number of completed records. This value is used by our telemetry system.
+    ''' </summary>
+    ''' <returns>Number of completed records.</returns>
+    Protected MustOverride Function GetCompletedRecordsCount() As Long
 
 	Private Sub BuildMetricBase(metric As MetricBase)
 		metric.JobType = JobType

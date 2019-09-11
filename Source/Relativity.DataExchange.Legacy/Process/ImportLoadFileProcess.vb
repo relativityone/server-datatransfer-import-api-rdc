@@ -123,7 +123,17 @@ Namespace kCura.WinEDDS
 			Return returnImporter
 		End Function
 
-		Protected Overrides Sub OnFatalError()
+        ''' <inheritdoc/>
+        Protected Overrides Function GetTotalRecordsCount() As Long
+            Return _loadFileImporter.TotalRecords
+        End Function
+
+        ''' <inheritdoc/>
+        Protected Overrides Function GetCompletedRecordsCount() As Long
+            Return _loadFileImporter.CompletedRecords
+        End Function
+
+        Protected Overrides Sub OnFatalError()
 			MyBase.OnFatalError()
             SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _loadFileImporter.Statistics)
 		End Sub
@@ -296,8 +306,6 @@ Namespace kCura.WinEDDS
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Progress
-						TotalRecords = e.TotalRecords
-						CompletedRecordsCount = e.CurrentRecordIndex
 						Me.Context.PublishRecordProcessed(e.CurrentRecordIndex)
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
@@ -305,7 +313,6 @@ Namespace kCura.WinEDDS
 						SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
 					Case EventType2.ResetProgress
 						' Do NOT raise RaiseRecordProcessed for this event. 
-						CompletedRecordsCount = 0
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Status

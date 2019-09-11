@@ -41,7 +41,17 @@ Namespace kCura.WinEDDS
 			_exportConfig = exportConfig
 		End Sub
 
-		Protected Overrides Sub OnSuccess()
+        ''' <inheritdoc/>
+        Protected Overrides Function GetTotalRecordsCount() As Long
+            Return _searchExporter.TotalExportArtifactCount
+        End Function
+
+        ''' <inheritdoc/>
+        Protected Overrides Function GetCompletedRecordsCount() As Long
+            Return _searchExporter.DocumentsExported
+        End Function
+
+        Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
             SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
 			Me.Context.PublishStatusEvent("", "Export completed")
@@ -125,8 +135,6 @@ Namespace kCura.WinEDDS
 				Case EventType2.ResetStartTime
 					SetStartTime()
 			End Select
-			TotalRecords = e.TotalDocuments
-			CompletedRecordsCount = e.DocumentsExported
 			Dim statDict As IDictionary = Nothing
 			If Not e.AdditionalInfo Is Nothing AndAlso TypeOf e.AdditionalInfo Is IDictionary Then
 				statDict = DirectCast(e.AdditionalInfo, IDictionary)

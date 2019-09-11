@@ -101,6 +101,26 @@ Namespace kCura.WinEDDS
 
 #Region "Accessors"
 
+        ''' <summary>
+        ''' Gets total number of records. This property is used in our telemetry system.
+        ''' </summary>
+        ''' <returns>Total number of records.</returns>
+        Public Readonly Property TotalRecords As Long
+            Get
+                Return _artifactReader.CountRecords()
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets number of completed records. This property is used in our telemetry system.
+        ''' </summary>
+        ''' <returns>Number of completed records.</returns>
+        Public ReadOnly Property CompletedRecords As Long
+            Get
+                Return TotalTransferredFilesCount
+            End Get
+        End Property
+
 		Public Property DisableNativeValidation As Boolean = AppSettings.Instance.DisableOutsideInFileIdentification
 		Public Property DisableUserSecurityCheck As Boolean
 		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
