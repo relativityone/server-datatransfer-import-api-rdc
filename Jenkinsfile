@@ -112,15 +112,15 @@ timestamps
                             }
                         }
 
-                        if (params.runIntegrationTests)
-                        {
-                            stage('Run integration tests')
-                            {
-                                echo "Running the integration tests"
-                                output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment"
-                                echo output
-                            }
-                        }
+                        //if (params.runIntegrationTests)
+                       // {
+                        //    stage('Run integration tests')
+                       //     {
+                       //         echo "Running the integration tests"
+                       //         output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment"
+                        //        echo output
+                        //    }
+                       // }
                     }
                     finally
                     {
@@ -145,7 +145,7 @@ timestamps
 
                                 if (params.runIntegrationTests)
                                 {
-                                    taskCandidates.add("IntegrationTestResults")
+                                   // taskCandidates.add("IntegrationTestResults")
                                 }
 
                                 taskCandidates.eachWithIndex { task, index ->
