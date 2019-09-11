@@ -6,6 +6,8 @@ library 'SlackHelpers@3.0.0'
 
 def buildTypeCoicesStr = (env.BRANCH_NAME in ["master"]) ? 'GOLD\nDEV' : 'DEV\nGOLD'
 
+def isNewBuild = (env.BRANCH_NAME.contains('roland_pipeline_test')) 
+
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30']],
     parameters([
@@ -52,21 +54,29 @@ timestamps
                 {
                     stage('Clean')
                     {
-                        output = powershell ".\\build.ps1 Clean -Verbosity '${params.buildVerbosity}'"
+                        output = powershell ".\\Get-ReleaseVersion.ps1"
                         echo output
                     }
 
                     stage('Retrieve semantic versions')
                     { 
-                        echo "Retrieving the semantic versions"
-                        def outputString = runCommandWithOutput(".\\build.ps1 SemanticVersions -BuildUrl ${BUILD_URL} -Verbosity '${params.buildVerbosity}'")
-                        echo "Retrieved the semantic versions"
-                        buildVersion = extractValue("buildVersion", outputString)
-                        packageVersion = extractValue("packageVersion", outputString)
-                        echo "Build URL: ${BUILD_URL}"
-                        echo "Build version: $buildVersion"
-                        echo "Package version: $packageVersion"
-                        currentBuild.displayName = buildVersion
+						echo "Retrieving the semantic versions"
+					    if(isNewBuild)
+						{
+							echo "Using new build strategy"
+							def outputString = runCommandWithOutput(".\\Get-ReleaseVersion.ps1")
+						}
+						else
+						{
+							def outputString = runCommandWithOutput(".\\build.ps1 SemanticVersions -BuildUrl ${BUILD_URL} -Verbosity '${params.buildVerbosity}'")
+							echo "Retrieved the semantic versions"
+							buildVersion = extractValue("buildVersion", outputString)
+							packageVersion = extractValue("packageVersion", outputString)
+							echo "Build URL: ${BUILD_URL}"
+							echo "Build version: $buildVersion"
+							echo "Package version: $packageVersion"
+							currentBuild.displayName = buildVersion
+						}
                     }
 
                     stage('Build binaries')
