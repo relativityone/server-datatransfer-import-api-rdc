@@ -5,8 +5,7 @@ library 'SCVMMHelpers@3.3.0'
 library 'SlackHelpers@3.0.0'
 
 def buildTypeCoicesStr = (env.BRANCH_NAME in ["master"]) ? 'GOLD\nDEV' : 'DEV\nGOLD'
-
-def isNewBuild = (env.BRANCH_NAME.contains('roland_pipeline_test')) 
+def isNewBuild = (env.BRANCH_NAME.contains('roland-pipeline-test')) 
 
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30']],
