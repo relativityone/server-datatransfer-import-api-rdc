@@ -462,19 +462,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		/// <summary>
 		/// Then the import job is successful.
 		/// </summary>
-		private void ThenTheImportJobIsSuccessful()
-		{
-			Assert.That(this.errorRows.Count, Is.EqualTo(0));
-			Assert.That(this.jobFatalExceptions.Count, Is.EqualTo(0));
-			Assert.That(this.completedJobReport, Is.Not.Null);
-			Assert.That(this.completedJobReport.ErrorRows.Count, Is.EqualTo(0));
-			Assert.That(this.completedJobReport.FatalException, Is.Null);
-			Assert.That(this.completedJobReport.TotalRows, Is.EqualTo(this.sourceData.Rows.Count));
-		}
-
-		/// <summary>
-		/// Then the import job is successful.
-		/// </summary>
 		/// <param name="expectedErrorRows">
 		/// The expected number of error rows.
 		/// </param>
@@ -501,14 +488,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(this.completedJobReport, Is.Not.Null);
 			Assert.That(this.completedJobReport.ErrorRows.Count, Is.EqualTo(expectedErrorRows));
 			Assert.That(this.completedJobReport.TotalRows, Is.EqualTo(expectedTotalRows));
-		}
-
-		/// <summary>
-		/// Then the import progress events are raised.
-		/// </summary>
-		private void ThenTheImportProgressEventsAreRaised()
-		{
-			this.ThenTheImportProgressEventsCountShouldEqual(this.sourceData.Rows.Count);
 		}
 
 		/// <summary>
