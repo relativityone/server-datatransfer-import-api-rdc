@@ -209,7 +209,7 @@ timestamps
 
                     if (params.publishPackages)
                     {
-                        stage ('Publish packages to proget')
+                        stage ('Publish packages to proget') 
                         {
                             if ((isReleaseBranch && isGoldBuild) || !isReleaseBranch)  
                             {
