@@ -53,7 +53,7 @@ timestamps
                 {
                     stage('Clean')
                     {
-                        output = powershell ".\\build.ps1 Clean -Verbosity '${params.buildVerbosity}'"
+                        output = powershell ".\\build.ps1 Clean -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
                         echo output
                     }
 
@@ -68,7 +68,7 @@ timestamps
 						}
 						else
 						{
-							def outputString = runCommandWithOutput(".\\build.ps1 SemanticVersions -BuildUrl ${BUILD_URL} -Verbosity '${params.buildVerbosity}'")
+							def outputString = runCommandWithOutput(".\\build.ps1 SemanticVersions -BuildUrl ${BUILD_URL} -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'")
 							echo "Retrieved the semantic versions"
 							buildVersion = extractValue("buildVersion", outputString)
 							packageVersion = extractValue("packageVersion", outputString)
@@ -82,21 +82,21 @@ timestamps
                     stage('Build binaries')
                     {
                         echo "Building the binaries for version $buildVersion"
-                        output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge -Sign"
+                        output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge -Sign -Branch '${env.BRANCH_NAME}'"
                         echo output
                     }
 
                     stage('Build install packages')
                     {
                         echo "Building the installers for version $buildVersion"
-                        output = powershell ".\\build.ps1 BuildInstallPackages -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -Sign"
+                        output = powershell ".\\build.ps1 BuildInstallPackages -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -Sign -Branch '${env.BRANCH_NAME}'"
                         echo output
                     }
 
                     //stage('Extended code analysis')
                     //{
                     //    echo "Extending code analysis"
-                    //    output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}'"
+                    //    output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
                    //     echo output
                    // }
 
@@ -107,7 +107,7 @@ timestamps
                             stage('Run unit tests')
                             {
                                 echo "Running the unit tests"
-                                output = powershell ".\\build.ps1 UnitTests -ILMerge"
+                                output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${env.BRANCH_NAME}'"
                                 echo output
                             }
                         }
@@ -117,7 +117,7 @@ timestamps
                         //    stage('Run integration tests')
                        //     {
                        //         echo "Running the integration tests"
-                       //         output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment"
+                       //         output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment -Branch '${env.BRANCH_NAME}'"
                         //        echo output
                         //    }
                        // }
@@ -129,7 +129,7 @@ timestamps
                             stage('Test results report')
                             {
                                 echo "Generating test report"
-                                powershell ".\\build.ps1 TestReports"
+                                powershell ".\\build.ps1 TestReports -Branch '${env.BRANCH_NAME}'"
                             }
                         }
 
@@ -166,7 +166,7 @@ timestamps
 
                                     // Let the build script retrieve the unit test result values.
                                     echo "Retrieving the $testDescription-test results"
-                                    def testResultOutputString = runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}'")
+                                    def testResultOutputString = runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'")
                                     echo "Retrieved the $testDescription-test results"
 
                                     // Search for specific tokens within the response.
@@ -200,7 +200,7 @@ timestamps
                         stage('Code coverage report')
                         {
                             echo "Creating a code coverage report"
-                            output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment $params.testEnvironment"
+                            output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment $params.testEnvironment -Branch '${env.BRANCH_NAME}'"
                             echo output
                         }
                     }
@@ -213,7 +213,7 @@ timestamps
                     {
                         echo "Build number: ${currentBuild.number}"
                         echo "Building all SDK and RDC packages"
-                        powershell ".\\build.ps1 BuildPackages -Branch '${env.BRANCH_NAME}' -BuildNumber '${currentBuild.number}'"
+                        powershell ".\\build.ps1 BuildPackages -Branch '${env.BRANCH_NAME}' -BuildNumber '${currentBuild.number}' -Branch '${env.BRANCH_NAME}'"
                     }
 
                     if (params.publishPackages)
@@ -223,12 +223,12 @@ timestamps
                             if (env.BRANCH_NAME == 'master' || params.forcePublishRdcPackage)
                             {
                                 echo "Publishing the SDK and RDC package(s)"
-                                powershell ".\\build.ps1 PublishPackages"
+                                powershell ".\\build.ps1 PublishPackages -Branch '${env.BRANCH_NAME}'"
                             }
                             else
                             {
                                 echo "Publishing only the SDK package(s)"
-                                powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage"
+                                powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage -Branch '${env.BRANCH_NAME}'"
                             }
                         }
                     }
