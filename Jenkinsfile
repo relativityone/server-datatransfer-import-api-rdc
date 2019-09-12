@@ -62,12 +62,13 @@ timestamps
 
                     stage('Retrieve semantic versions')
                     { 
+					    echo "Is release branch = $isReleaseBranch"
+					    echo "Is isGoldBuild = $isGoldBuild"
 						echo "Retrieving the semantic versions"
 						echo "Using new build strategy"
 						def outputString = runCommandWithOutput(".\\Get-ReleaseVersion.ps1 '${env.BRANCH_NAME}'")
 						currentBuild.displayName = "$outputString"
 						buildVersion = outputString
-
                     }
 
                     stage('Build binaries') 
