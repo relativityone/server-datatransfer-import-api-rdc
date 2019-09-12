@@ -204,7 +204,7 @@ task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
     Initialize-Folder $LogsDir -Safe
     Initialize-Folder $PackagesArtifactsDir -Safe
     $version = exec {
-        & .\Get-ReleaseVersion.ps1 '$Branch'
+        & .\Get-ReleaseVersion.ps1 "$Branch"
     } -errorMessage "There was an error retrieving MajorMinorPatch using powershell."
 
     Write-Host "Package version: $version"
@@ -232,7 +232,7 @@ task BuildRdcPackage -Description "Builds the RDC NuGet package" {
 
     $majorMinorPatchVersion = Get-RdcWixVersion 
 	$postFix = exec {
-        & .\Get-ReleaseVersion.ps1 '$Branch' -postFixOnly
+        & .\Get-ReleaseVersion.ps1 "$Branch" -postFixOnly
     } -errorMessage "There was an error retrieving MajorMinorPatch using powershell."
     $packageVersion = "$majorMinorPatchVersion$postFix"
     Write-Host "Package version: $packageVersion"
@@ -250,7 +250,7 @@ task BuildVersion -Description "Retrieves the build version from powershell" {
     Write-Output "Importing powershell properties.."
 
     $majorMinorIncrease = exec {
-        & .\Get-ReleaseVersion.ps1 '$Branch' -omitPostFix
+        & .\Get-ReleaseVersion.ps1 "$Branch" -omitPostFix
     } -errorMessage "There was an error retrieving the major version using powershell."
                         
     Write-Output "Build Url: $BuildUrl"
@@ -366,7 +366,7 @@ task IntegrationTestResults -Description "Retrieve the integration test results 
 task PackageVersion -Description "Retrieves the package version from powershell" {
 
     $localPackageVersion = exec {
-        & .\Get-ReleaseVersion.ps1 '$Branch'
+        & .\Get-ReleaseVersion.ps1 "$Branch"
     } -errorMessage "There was an error retrieving MajorMinorPatch using powershell."
 
     $maxVersionLength = 255
@@ -517,7 +517,7 @@ task UpdateAssemblyInfo -Depends UpdateSdkAssemblyInfo,UpdateRdcAssemblyInfo -De
 task UpdateSdkAssemblyInfo -Description "Update the version contained within the SDK assembly shared info source file" {
     
     $version = exec {
-        & .\Get-ReleaseVersion.ps1 '$Branch' -omitPostFix
+        & .\Get-ReleaseVersion.ps1 "$Branch" -omitPostFix
     } -errorMessage "There was an error retrieving MajorMinorPatch using powershell."
 	exec { 
          & .\Update-AssemblyInfo.ps1 "$version.0"
@@ -528,7 +528,7 @@ task UpdateRdcAssemblyInfo -Description "Update the version contained within the
     exec { 
         $majorMinorPatchVersion = Get-RdcWixVersion
 		$postFix = exec {
-			& .\Get-ReleaseVersion.ps1 '$Branch' -postFixOnly
+			& .\Get-ReleaseVersion.ps1 "$Branch" -postFixOnly
 		} -errorMessage "There was an error retrieving MajorMinorPatch using powershell."
         $InformationalVersion = "$majorMinorPatchVersion$postFix"
         $VersionPath = Join-Path $Root "Version"
