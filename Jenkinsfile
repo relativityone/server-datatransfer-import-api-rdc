@@ -4,13 +4,13 @@ library 'PipelineTools@RMT-9.3.2'
 library 'SCVMMHelpers@3.3.0'
 library 'SlackHelpers@3.0.0'
 
-def buildTypeCoicesStr = (env.BRANCH_NAME in ["master"]) ? 'GOLD\nDEV' : 'DEV\nGOLD'
+def buildTypeCoicesStr = 'DEV\nGOLD'
 def isNewBuild = (env.BRANCH_NAME.contains('roland-pipeline-test')) 
 
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30']],
     parameters([
-        choice(choices: buildTypeCoicesStr, description: 'The type of build to execute', name: 'buildType'),
+        choice(defaultValue: 'DEV',choices: buildTypeCoicesStr, description: 'The type of build to execute, you can choose "GOLD" if you intent to push this package for release', name: 'buildType'),
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
@@ -213,7 +213,7 @@ timestamps
                     {
                         echo "Build number: ${currentBuild.number}"
                         echo "Building all SDK and RDC packages"
-                        powershell ".\\build.ps1 BuildPackages -Branch '${env.BRANCH_NAME}' -BuildNumber '${currentBuild.number}' -Branch '${env.BRANCH_NAME}'"
+                        powershell ".\\build.ps1 BuildPackages -Branch '${env.BRANCH_NAME}' -BuildNumber '${currentBuild.number}'"
                     }
 
                     if (params.publishPackages)
