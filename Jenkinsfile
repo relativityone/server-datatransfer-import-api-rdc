@@ -80,7 +80,7 @@ timestamps
 						}
                     }
 
-                    stage('Build binaries')
+                    stage('Build binaries') 
                     {
                         echo "Building the binaries for version $buildVersion"
                         output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge -Sign -Branch '${env.BRANCH_NAME}'"
