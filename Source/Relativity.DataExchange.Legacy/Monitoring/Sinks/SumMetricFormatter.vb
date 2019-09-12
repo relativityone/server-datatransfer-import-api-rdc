@@ -1,5 +1,4 @@
 ﻿Imports System.Collections.Generic
-Imports kCura.EDDS.WebAPI.FileManagerBase
 Imports Relativity.Services.DataContracts.DTOs.MetricsCollection
 Imports Relativity.Telemetry.DataContracts.Shared
 
@@ -21,18 +20,18 @@ Namespace Monitoring.Sinks
 
         Private Function GenerateSumMetricJobStarted(metric As MetricJobStarted) As List(Of MetricRef)
             Return New List(Of MetricRef) From {
-                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.JOB_STARTED_COUNT, metric.JobType, metric.TransferMode), Guid.Empty, metric.CorrelationID, MetricTypes.Counter, 1)
+                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.JOB_STARTED_COUNT, metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.Counter, 1)
                 }
         End Function
 
         Private Function GenerateSumMetricJobEndReport(metric As MetricJobEndReport) As List(Of MetricRef)
             Return New List(Of MetricRef) From {
-                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.TOTAL_RECORDS, metric.JobType, metric.TransferMode), Guid.Empty, metric.CorrelationID, MetricTypes.PointInTimeLong, metric.TotalRecords),
-                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.COMPLETED_RECORDS, metric.JobType, metric.TransferMode), Guid.Empty, metric.CorrelationID, MetricTypes.PointInTimeLong, metric.CompletedRecords),
-                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.JOB_SIZE, metric.JobType, metric.TransferMode), Guid.Empty, metric.CorrelationID, MetricTypes.PointInTimeLong, metric.TotalSizeBytes),
-                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.THROUGHPUT, metric.JobType, metric.TransferMode), Guid.Empty, metric.CorrelationID, MetricTypes.PointInTimeDouble, metric.ThroughputRecordsPerSecond),
-                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.THROUGHPUT_BYTES, metric.JobType, metric.TransferMode), Guid.Empty, metric.CorrelationID, MetricTypes.PointInTimeDouble, metric.ThroughputBytesPerSecond),
-                New MetricRef(FormatSumBucketName(CStr(IIf(metric.JobStatus = TelemetryConstants.JobStatus.COMPLETED, TelemetryConstants.SumBucketPrefix.JOB_COMPLETED_COUNT, TelemetryConstants.SumBucketPrefix.JOB_FAILED_COUNT)), metric.JobType, metric.TransferMode), Guid.Empty, metric.CorrelationID, MetricTypes.Counter, 1)
+                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.TOTAL_RECORDS, metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.PointInTimeLong, metric.TotalRecords),
+                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.COMPLETED_RECORDS, metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.PointInTimeLong, metric.CompletedRecords),
+                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.JOB_SIZE, metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.PointInTimeLong, metric.TotalSizeBytes),
+                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.THROUGHPUT, metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.PointInTimeDouble, metric.ThroughputRecordsPerSecond),
+                New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.THROUGHPUT_BYTES, metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.PointInTimeDouble, metric.ThroughputBytesPerSecond),
+                New MetricRef(FormatSumBucketName(CStr(IIf(metric.JobStatus = TelemetryConstants.JobStatus.COMPLETED, TelemetryConstants.SumBucketPrefix.JOB_COMPLETED_COUNT, TelemetryConstants.SumBucketPrefix.JOB_FAILED_COUNT)), metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.Counter, 1)
                 }
         End Function
 
@@ -45,6 +44,10 @@ Namespace Monitoring.Sinks
         ''' <returns></returns>
         Private Function FormatSumBucketName(prefix As String, jobType As String, transferMode As String) As String
             Return $"{prefix}.{jobType}.{transferMode}"
+        End Function
+
+        Private Function IntegerToGuid(value As Integer) As Guid
+            Return New Guid(CUInt(value).ToString().PadRight(32, "f"c).Substring(0, 32))
         End Function
     End Class
 End NameSpace
