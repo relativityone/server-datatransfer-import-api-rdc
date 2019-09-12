@@ -64,7 +64,8 @@ timestamps
 						{
 							echo "Using new build strategy"
 							def outputString = runCommandWithOutput(".\\Get-ReleaseVersion.ps1 '${env.BRANCH_NAME}'")
-							currentBuild.displayName = "version = $outputString"
+							currentBuild.displayName = $outputString
+							buildVersion = outputString
 						}
 						else
 						{

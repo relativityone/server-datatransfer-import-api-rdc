@@ -3,6 +3,7 @@ param(
 [switch]$postFixOnly = $false,
 [switch]$omitPostFix = $false
 )
+$host.UI.RawUI.WindowTitle = "Getting release version"
 
 function gitBranchName {
     $branchName = git rev-parse --abbrev-ref HEAD
