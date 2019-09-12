@@ -94,12 +94,12 @@ timestamps
                         echo output
                     }
 
-                    //stage('Extended code analysis')
-                    //{
-                    //    echo "Extending code analysis"
-                    //    output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
-                   //     echo output
-                   // }
+                    stage('Extended code analysis')
+                    {
+                        echo "Extending code analysis"
+                        output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
+                        echo output
+                    }
 
                     try
                     {
@@ -113,15 +113,15 @@ timestamps
                             }
                         }
 
-                        //if (params.runIntegrationTests)
-                       // {
-                        //    stage('Run integration tests')
-                       //     {
-                       //         echo "Running the integration tests"
-                       //         output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment -Branch '${env.BRANCH_NAME}'"
-                        //        echo output
-                        //    }
-                       // }
+                        if (params.runIntegrationTests)
+                        {
+                            stage('Run integration tests')
+                            {
+                                echo "Running the integration tests"
+                                output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment -Branch '${env.BRANCH_NAME}'"
+                                echo output
+                            }
+                        }
                     }
                     finally
                     {
