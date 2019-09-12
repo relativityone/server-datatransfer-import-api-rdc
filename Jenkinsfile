@@ -53,8 +53,10 @@ timestamps
                 {
                     stage('Clean')
                     {
-                        output = powershell ".\\build.ps1 Clean -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
-                        echo output
+						steps{
+							output = powershell ".\\build.ps1 Clean -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
+                            echo output
+						}
                     }
 
                     stage('Retrieve semantic versions')
