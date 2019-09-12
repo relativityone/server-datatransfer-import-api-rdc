@@ -5,7 +5,6 @@ library 'SCVMMHelpers@3.3.0'
 library 'SlackHelpers@3.0.0'
 
 def buildTypeCoicesStr = 'DEV\nGOLD'
-def isNewBuild = (env.BRANCH_NAME.contains('roland-pipeline-test')) 
 
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30']],
@@ -33,6 +32,10 @@ def packageVersion = ""
 def int testResultsPassed = 0
 def int testResultsFailed = 0
 def int testResultsSkipped = 0
+
+def bool isReleaseBranch = env.BRANCH_NAME.startsWith('release-')
+def bool isGoldBuild = (buildType == 'GOLD')
+
 build = params.build
 
 timestamps
@@ -60,24 +63,11 @@ timestamps
                     stage('Retrieve semantic versions')
                     { 
 						echo "Retrieving the semantic versions"
-					    if(isNewBuild)
-						{
-							echo "Using new build strategy"
-							def outputString = runCommandWithOutput(".\\Get-ReleaseVersion.ps1 '${env.BRANCH_NAME}'")
-							currentBuild.displayName = "$outputString"
-							buildVersion = outputString
-						}
-						else
-						{
-							def outputString = runCommandWithOutput(".\\build.ps1 SemanticVersions -BuildUrl ${BUILD_URL} -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'")
-							echo "Retrieved the semantic versions"
-							buildVersion = extractValue("buildVersion", outputString)
-							packageVersion = extractValue("packageVersion", outputString)
-							echo "Build URL: ${BUILD_URL}"
-							echo "Build version: $buildVersion"
-							echo "Package version: $packageVersion"
-							currentBuild.displayName = buildVersion
-						}
+						echo "Using new build strategy"
+						def outputString = runCommandWithOutput(".\\Get-ReleaseVersion.ps1 '${env.BRANCH_NAME}'")
+						currentBuild.displayName = "$outputString"
+						buildVersion = outputString
+
                     }
 
                     stage('Build binaries') 
@@ -221,16 +211,15 @@ timestamps
                     {
                         stage ('Publish packages to proget')
                         {
-                            if (env.BRANCH_NAME == 'master' || params.forcePublishRdcPackage)
+                            if ((isReleaseBranch && isGoldBuild) || !isReleaseBranch)  
                             {
                                 echo "Publishing the SDK and RDC package(s)"
                                 powershell ".\\build.ps1 PublishPackages -Branch '${env.BRANCH_NAME}'"
                             }
-                            else
-                            {
-                                echo "Publishing only the SDK package(s)"
-                                powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage -Branch '${env.BRANCH_NAME}'"
-                            }
+							else
+							{
+								echo "publishing packages skipped, as we are on a release branch, and this is not a 'GOLD' build. In order to make this a gold build, kick this off manually"
+							}
                         }
                     }
                     else
