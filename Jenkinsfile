@@ -264,7 +264,7 @@ timestamps
             {
                 echo err.toString()
                 currentBuild.result = 'FAILED' 
-                if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master')
+                if (env.BRANCH_NAME == 'develop' || isReleaseBranch)
                 {
                     sendEmailAboutFailureToTeam()
                 }
