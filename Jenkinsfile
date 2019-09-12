@@ -33,8 +33,8 @@ def int testResultsPassed = 0
 def int testResultsFailed = 0
 def int testResultsSkipped = 0
 
-def bool isReleaseBranch = env.BRANCH_NAME.startsWith('release-')
-def bool isGoldBuild = (buildType == 'GOLD')
+def isReleaseBranch = env.BRANCH_NAME.startsWith('release-')
+def isGoldBuild = (buildType == 'GOLD')
 
 build = params.build
 
