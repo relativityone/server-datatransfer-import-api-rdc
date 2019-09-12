@@ -86,7 +86,9 @@ Namespace kCura.WinEDDS
         ''' <returns>Total number of records.</returns>
         Public ReadOnly Property TotalRecords As Long
             Get
-                Return _imageReader.CountRecords()
+                ' check if _recordCount has already been updated to avoid unnecessary file I/O operation
+                If _recordCount = 0 Then Return _imageReader.CountRecords()
+                Return _recordCount
             End Get
         End Property
 

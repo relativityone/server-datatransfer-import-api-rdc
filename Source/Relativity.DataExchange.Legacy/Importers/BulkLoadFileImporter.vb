@@ -107,7 +107,9 @@ Namespace kCura.WinEDDS
         ''' <returns>Total number of records.</returns>
         Public Readonly Property TotalRecords As Long
             Get
-                Return _artifactReader.CountRecords()
+                ' check if RecordCount has already been updated to avoid unnecessary file I/O operation
+                If RecordCount = -1 OrElse RecordCount = 0 Then Return _artifactReader.CountRecords()
+                Return RecordCount
             End Get
         End Property
 
