@@ -61,6 +61,10 @@ else
 {
 	$(Throw New-Object System.ArgumentException "Branch must start with 'feature' or 'bugfix' (case sensitive), or be equal to 'develop', current branch is '$currentBranch'","branch name")
 }
+#escape as version numbers should not contain anything special, like underscores. Dashes are fine tough
+$pattern = '[^a-zA-Z0-9]'
+$postfix = $postfix -replace $pattern ,"-"
+
 
 If($omitPostFix)
 {
