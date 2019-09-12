@@ -93,12 +93,12 @@ timestamps
                         echo output
                     }
 
-                    stage('Extended code analysis')
-                    {
-                        echo "Extending code analysis"
-                        output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}'"
-                        echo output
-                    }
+                    //stage('Extended code analysis')
+                    //{
+                    //    echo "Extending code analysis"
+                    //    output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}'"
+                   //     echo output
+                   // }
 
                     try
                     {

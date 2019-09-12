@@ -1,5 +1,7 @@
 param(
-[string]$branchNameJenkins
+[string]$branchNameJenkins,
+[switch]$postFixOnly = $false,
+[switch]$omitPostFix = $false
 )
 
 function gitBranchName {
@@ -59,11 +61,24 @@ else
 	$(Throw New-Object System.ArgumentException "Branch must start with 'feature' or 'bugfix' (case sensitive), or be equal to 'develop', current branch is '$currentBranch'","branch name")
 }
 
-
-
-$newVersion = "$major.$minor.$commitsSince$postfix"
-Write-Host "New version should be = $newVersion"
-Write-Output $newVersion	
+If($omitPostFix)
+{
+    $majorMinorCommits = "$major.$minor.$commitsSince"
+    Write-Host "MajorMinorCommitsSince = $majorMinorCommits"
+    Write-Output $majorMinorCommits	
+}
+elseif($postFixOnly)
+{
+	$newVersion = "$postfix"
+	Write-Host "Postfix = $newVersion"
+	Write-Output $newVersion
+}	
+else
+{
+	$newVersion = "$major.$minor.$commitsSince$postfix"
+	Write-Host "New complete version should be = $newVersion"
+	Write-Output $newVersion
+}
 
 
 

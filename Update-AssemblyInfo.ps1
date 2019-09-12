@@ -1,4 +1,6 @@
-$NewVersion = '10.1.2.3'
+param(
+[string]$NewVersion
+)
 cd .\Version
 
 Get-ChildItem -Include AssemblySharedInfo.cs, AssemblySharedInfo.vb -Recurse | 

@@ -67,7 +67,7 @@ An optional build number. This is only used when building feature branch package
 An optional build platform. (e.g. 'Any CPU', 'x86', 'x64')
 
 .PARAMETER BuildUrl
-An optional build URL. This is only required for GitVersion task.
+An optional build URL. This is only required for th versioning task.
 
 .PARAMETER TestTimeoutInMS
 Timeout for NUnit tests (in milliseconds).
