@@ -41,31 +41,31 @@ Namespace kCura.WinEDDS
 			_exportConfig = exportConfig
 		End Sub
 
-        ''' <inheritdoc/>
-        Protected Overrides Function GetTotalRecordsCount() As Long
-            Return _searchExporter.TotalExportArtifactCount
-        End Function
+		''' <inheritdoc/>
+		Protected Overrides Function GetTotalRecordsCount() As Long
+			Return _searchExporter.TotalExportArtifactCount
+		End Function
 
-        ''' <inheritdoc/>
-        Protected Overrides Function GetCompletedRecordsCount() As Long
-            Return _searchExporter.DocumentsExported
-        End Function
+		''' <inheritdoc/>
+		Protected Overrides Function GetCompletedRecordsCount() As Long
+			Return _searchExporter.DocumentsExported
+		End Function
 
-        Protected Overrides Sub OnSuccess()
+		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-            SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
+			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
 			Me.Context.PublishStatusEvent("", "Export completed")
 			Me.Context.PublishProcessCompleted()
 		End Sub
 
 		Protected Overrides Sub OnFatalError()
 			MyBase.OnFatalError()
-            SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _searchExporter.Statistics)
+			SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _searchExporter.Statistics)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-            SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
+			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
 			Me.Context.PublishProcessCompleted(False, _searchExporter.ErrorLogFileName, True)
 		End Sub
 

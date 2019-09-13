@@ -19,6 +19,11 @@ namespace Relativity.DataExchange.Transfer
 	internal sealed class TapiStatisticsListener : TapiListenerBase
 	{
 		/// <summary>
+		/// Number of bytes in a megabit. Used for units conversion.
+		/// </summary>
+		private const double BytesPerMegabit = 125_000.0;
+
+		/// <summary>
 		/// The thread synchronization root backing.
 		/// </summary>
 		private static readonly object SyncRoot = new object();
@@ -100,11 +105,11 @@ namespace Relativity.DataExchange.Transfer
 			var totalTransferredFiles = this.totalStatistics.Sum(x => x.Value.Statistics.TotalTransferredFiles);
 			var totalTransferTicks = TimeSpan
 				.FromSeconds(this.totalStatistics.Sum(x => x.Value.Statistics.TransferTimeSeconds)).Ticks;
-			var transferRateBytes = (e.Statistics.TransferRateMbps * 1000000) / 8.0;
-			var args = new TapiStatisticsEventArgs(totalTransferredBytes, totalTransferredFiles, totalTransferTicks, transferRateBytes);
+			var transferRateBytesPerSecond = e.Statistics.TransferRateMbps * BytesPerMegabit;
+			var args = new TapiStatisticsEventArgs(totalTransferredBytes, totalTransferredFiles, totalTransferTicks, transferRateBytesPerSecond);
 			this.StatisticsEvent?.Invoke(this, args);
 
-			// Be careful with overly agressive statistics logging.
+			// Be careful with overly aggressive statistics logging.
 			const int LogStatisticsRateSeconds = 15;
 			var logTimestampCopy = this.LogTimestamp;
 			var logStatistics = logTimestampCopy == null
@@ -132,7 +137,7 @@ namespace Relativity.DataExchange.Transfer
 				e.Statistics.TotalTransferredFiles,
 				e.Statistics.TotalRequestFiles,
 				e.Statistics.Progress,
-				ToFileSize(transferRateBytes));
+				ToFileSize(transferRateBytesPerSecond));
 			this.TransferLog.LogInformation2(e.Request, jobMessage);
 			this.LogTimestamp = DateTime.Now;
 		}

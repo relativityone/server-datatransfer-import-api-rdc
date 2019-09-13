@@ -82,30 +82,30 @@ Namespace kCura.WinEDDS
 			Return _imageFileImporter.HasErrors
 		End Function
 
-        ''' <inheritdoc/>
-        Protected Overrides Function GetTotalRecordsCount() As Long
-            Return _imageFileImporter.TotalRecords
-        End Function
+		''' <inheritdoc/>
+		Protected Overrides Function GetTotalRecordsCount() As Long
+			Return _imageFileImporter.TotalRecords
+		End Function
 
-        ''' <inheritdoc/>
-        Protected Overrides Function GetCompletedRecordsCount() As Long
-            Return __imageFileImporter.CompletedRecords
-        End Function
+		''' <inheritdoc/>
+		Protected Overrides Function GetCompletedRecordsCount() As Long
+			Return __imageFileImporter.CompletedRecords
+		End Function
 
-        Protected Overrides Sub OnFatalError()
+		Protected Overrides Sub OnFatalError()
 			MyBase.OnFatalError()
-            SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _imageFileImporter.Statistics)
+			SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _imageFileImporter.Statistics)
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-            SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _imageFileImporter.Statistics)
+			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _imageFileImporter.Statistics)
 			Me.Context.PublishProcessCompleted(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-            SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _imageFileImporter.Statistics)
+			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _imageFileImporter.Statistics)
 			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
