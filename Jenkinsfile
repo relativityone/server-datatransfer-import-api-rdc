@@ -93,35 +93,38 @@ timestamps
 
                     try
                     {
-						parallel(
-						    stage('Extended code analysis')
-							{
-								echo "Extending code analysis"
-								output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
-								echo output
-							}
-
-							stage('Run unit tests')
-							{
-								if (params.runUnitTests)
+						stage('Extended code analysis')
+						{
+							parallel(
+								stage('Extended code analysis')
 								{
-									echo "Running the unit tests"
-									output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${env.BRANCH_NAME}'"
+									echo "Extending code analysis"
+									output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
 									echo output
 								}
-							}
 
-							stage('Run integration tests')
-							{
-								if (params.runIntegrationTests)
+								stage('Run unit tests')
 								{
-									echo "Running the integration tests"
-									output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment -Branch '${env.BRANCH_NAME}'"
-									echo output
+									if (params.runUnitTests)
+									{
+										echo "Running the unit tests"
+										output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${env.BRANCH_NAME}'"
+										echo output
+									}
 								}
-							}
-						)
-                    }
+
+								stage('Run integration tests')
+								{
+									if (params.runIntegrationTests)
+									{
+										echo "Running the integration tests"
+										output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment -Branch '${env.BRANCH_NAME}'"
+										echo output
+									}
+								}
+							)
+						}
+					}
                     finally
                     {
                         if (params.runUnitTests || params.runIntegrationTests)
@@ -215,45 +218,47 @@ timestamps
                         echo "Building all SDK and RDC packages"
                         powershell ".\\build.ps1 BuildPackages -Branch '${env.BRANCH_NAME}' -BuildNumber '${currentBuild.number}'"
                     }
-
-					parallel(
-						stage ('Publish packages to proget') 
-						{
-							if (params.publishPackages)
+					stage ('Publish everything') 
+					{
+						parallel(
+							stage ('Publish packages to proget') 
 							{
-								if (publishSdkAndRdc)  
+								if (params.publishPackages)
 								{
-									echo "Publishing the SDK and RDC package(s)"
-									powershell ".\\build.ps1 PublishPackages -Branch '${env.BRANCH_NAME}'"
-								}
-								else 
-								{
-									if(publishSdk)
+									if (publishSdkAndRdc)  
 									{
-										echo "Publishing the SDK only"
-										powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage -Branch '${env.BRANCH_NAME}'"
+										echo "Publishing the SDK and RDC package(s)"
+										powershell ".\\build.ps1 PublishPackages -Branch '${env.BRANCH_NAME}'"
 									}
-									else if(publishRdc)
+									else 
 									{
-										echo "Publishing RDC only"
-										powershell ".\\build.ps1 PublishPackages -SkipPublishSdkPackage -Branch '${env.BRANCH_NAME}'"
-									}
-									else
-									{
-										echo "publishing packages skipped, as we are on a release branch, and this is not a 'GOLD' build. In order to make this a gold build, kick this off manually"
+										if(publishSdk)
+										{
+											echo "Publishing the SDK only"
+											powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage -Branch '${env.BRANCH_NAME}'"
+										}
+										else if(publishRdc)
+										{
+											echo "Publishing RDC only"
+											powershell ".\\build.ps1 PublishPackages -SkipPublishSdkPackage -Branch '${env.BRANCH_NAME}'"
+										}
+										else
+										{
+											echo "publishing packages skipped, as we are on a release branch, and this is not a 'GOLD' build. In order to make this a gold build, kick this off manually"
+										}
 									}
 								}
 							}
-						}
 
-						stage('Publish build artifacts')
-						{
-							echo "Publishing build artifacts"
-							output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${env.BRANCH_NAME}'"
-							echo output
-						}
-					)
-                    currentBuild.result = 'SUCCESS'
+							stage('Publish build artifacts')
+							{
+								echo "Publishing build artifacts"
+								output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${env.BRANCH_NAME}'"
+								echo output
+							}
+						)
+						currentBuild.result = 'SUCCESS'
+					}
                 }
                 finally
                 {
