@@ -121,6 +121,20 @@ timestamps
 										output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment -Branch '${env.BRANCH_NAME}'"
 										echo output
 									}
+								},
+								
+								"Code coverage report":
+								{
+								    if (params.createCodeCoverageReport)
+									{
+										echo "Creating a code coverage report"
+										output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment $params.testEnvironment -Branch '${env.BRANCH_NAME}'"
+										echo output
+									}
+									else
+									{
+										echo "Skip creating code coverage report due to configuration parameter."
+									}
 								}
 							)
 						}
@@ -196,20 +210,6 @@ timestamps
                                 echo "Total skipped: $testResultsSkipped"
                             }
                         }
-                    }
-
-                    if (params.createCodeCoverageReport)
-                    {
-                        stage('Code coverage report')
-                        {
-                            echo "Creating a code coverage report"
-                            output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment $params.testEnvironment -Branch '${env.BRANCH_NAME}'"
-                            echo output
-                        }
-                    }
-                    else
-                    {
-                        echo "Skip creating code coverage report due to configuration parameter."
                     }
 
                     stage ('Create NuGet packages')
