@@ -128,10 +128,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[TearDown]
 		public void TearDown()
 		{
-			if (this.sourceData != null)
-			{
-				this.sourceData.Dispose();
-			}
+			this.sourceData?.Dispose();
 
 			if (this.importJob != null)
 			{
