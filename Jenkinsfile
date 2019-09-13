@@ -100,9 +100,10 @@ timestamps
 								output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
 								echo output
 							}
-							if (params.runUnitTests)
+
+							stage('Run unit tests')
 							{
-								stage('Run unit tests')
+								if (params.runUnitTests)
 								{
 									echo "Running the unit tests"
 									output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${env.BRANCH_NAME}'"
@@ -110,9 +111,9 @@ timestamps
 								}
 							}
 
-							if (params.runIntegrationTests)
+							stage('Run integration tests')
 							{
-								stage('Run integration tests')
+								if (params.runIntegrationTests)
 								{
 									echo "Running the integration tests"
 									output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment -Branch '${env.BRANCH_NAME}'"
