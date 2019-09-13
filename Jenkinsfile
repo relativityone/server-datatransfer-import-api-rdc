@@ -95,7 +95,7 @@ timestamps
                     {
 						stage('Extended code analysis')
 						{
-							parallel{
+							parallel(
 								'Extended code analysis':
 								{
 									echo "Extending code analysis"
@@ -122,7 +122,7 @@ timestamps
 										echo output
 									}
 								}
-							}
+							)
 						}
 					}
                     finally
@@ -221,7 +221,7 @@ timestamps
 					stage ('Publish everything') 
 					{
 						parallel
-						{
+						(
 							'Publish packages to proget':
 							{
 								if (params.publishPackages)
@@ -257,7 +257,7 @@ timestamps
 								output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${env.BRANCH_NAME}'"
 								echo output
 							}
-						}
+						)
 						currentBuild.result = 'SUCCESS'
 					}
                 }
