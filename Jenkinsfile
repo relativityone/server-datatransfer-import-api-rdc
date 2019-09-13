@@ -4,12 +4,16 @@ library 'PipelineTools@RMT-9.3.2'
 library 'SCVMMHelpers@3.3.0'
 library 'SlackHelpers@3.0.0'
 
-def buildTypeCoicesStr = 'DEV\nGOLD'
+def buildTypeCoicesStr = 'DEV\nGOLD - RDC AND SDK\nGOLD - RDC ONLY\nGOLD - SDK ONLY'
 
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30']],
     parameters([
-        choice(defaultValue: 'DEV',choices: buildTypeCoicesStr, description: 'The type of build to execute, you can choose "GOLD" if you intent to push this package for release', name: 'buildType'),
+        choice(defaultValue: 'DEV',choices: buildTypeCoicesStr, description: 'The type of build to execute, you can choose 4 things :
+        DEV : no packages are pushed on release branch(is default)
+        GOLD - RDC AND SDK : Both packages (RDC and SDK) are published
+        GOLD - RDC ONLY : Only RDC is published
+        GOLD - SDK ONLY : Only the SDK is published', name: 'buildType'),
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
@@ -17,8 +21,8 @@ properties([
         booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests'),
         booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport'),
         choice(defaultValue: 'hyperv', choices: ["hyperv"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment'),
-        booleanParam(defaultValue: true, description: "Enable or disable publishing NuGet packages", name: 'publishPackages'),
-        booleanParam(defaultValue: false, description: "Enable or disable force publishing an RDC MSI NuGet package", name: 'forcePublishRdcPackage')
+        booleanParam(defaultValue: true, description: "Enable or disable publishing NuGet packages, default true, but can be blocked by type of build and branch type.
+        This is only for debug purposes.", name: 'publishPackages')
     ])
 ])
 
@@ -34,8 +38,10 @@ def int testResultsFailed = 0
 def int testResultsSkipped = 0
 
 def isReleaseBranch = env.BRANCH_NAME.startsWith('release-')
-def isGoldBuild = (buildType == 'GOLD')
-
+def isGoldBuild = (buildType != 'DEV')
+def publishRdc =(!isReleaseBranch || (isReleaseBranch && buildType == 'GOLD - RDC AND SDK')|| (isReleaseBranch && buildType == 'GOLD - RDC ONLY'))
+def publishSdk =(!isReleaseBranch || (isReleaseBranch && buildType == 'GOLD - RDC AND SDK')|| (isReleaseBranch && buildType == 'GOLD - SDK ONLY'))
+def publishSdkAndRdc = (publishSdk && publishRdc)
 build = params.build
 
 timestamps
@@ -62,13 +68,13 @@ timestamps
 
                     stage('Retrieve semantic versions')
                     { 
-					    echo "Is release branch = $isReleaseBranch"
-					    echo "Is isGoldBuild = $isGoldBuild"
-						echo "Retrieving the semantic versions"
-						echo "Using new build strategy"
-						def outputString = runCommandWithOutput(".\\Get-ReleaseVersion.ps1 '${env.BRANCH_NAME}'")
-						currentBuild.displayName = "$outputString"
-						buildVersion = outputString
+                        echo "Is release branch = $isReleaseBranch"
+                        echo "Is isGoldBuild = $isGoldBuild"
+                        echo "Retrieving the semantic versions"
+                        echo "Using new build strategy"
+                        def outputString = runCommandWithOutput(".\\Get-ReleaseVersion.ps1 '${env.BRANCH_NAME}'")
+                        currentBuild.displayName = "$outputString"
+                        buildVersion = outputString
                     }
 
                     stage('Build binaries') 
@@ -212,15 +218,28 @@ timestamps
                     {
                         stage ('Publish packages to proget') 
                         {
-                            if ((isReleaseBranch && isGoldBuild) || !isReleaseBranch)  
+                            if (publishSdkAndRdc)  
                             {
                                 echo "Publishing the SDK and RDC package(s)"
                                 powershell ".\\build.ps1 PublishPackages -Branch '${env.BRANCH_NAME}'"
                             }
-							else
-							{
-								echo "publishing packages skipped, as we are on a release branch, and this is not a 'GOLD' build. In order to make this a gold build, kick this off manually"
-							}
+                            else 
+                            {
+                                if(publishSdk)
+                                {
+                                    echo "Publishing the SDK only"
+                                    powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage -Branch '${env.BRANCH_NAME}'"
+                                }
+                                else if(publishRdc)
+                                {
+                                    echo "Publishing RDC only"
+                                    powershell ".\\build.ps1 PublishPackages -SkipPublishSdkPackage -Branch '${env.BRANCH_NAME}'"
+                                }
+                                else
+                                {
+                                    echo "publishing packages skipped, as we are on a release branch, and this is not a 'GOLD' build. In order to make this a gold build, kick this off manually"
+                                }
+                            }
                         }
                     }
                     else
