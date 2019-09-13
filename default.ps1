@@ -54,8 +54,7 @@ properties {
     $PackageTemplateRegex = $Null
     $ILMerge = $Null
     $Sign = $Null
-    $SkipPublishRdcPackage = $Null
-    $SkipPublishSdkPackage = $Null
+    $ForcePublishRdcPackage = $Null
     $Simulate = $Null
 }
 
@@ -248,30 +247,18 @@ task BuildVersion -Description "Retrieves the build version from GitVersion" {
     Assert ($BuildUrl -ne $null -and $BuildUrl -ne "") "BuildUrl must be provided"
     Write-Output "Importing GitVersion properties.."
 
-    $buildVersionMajor = exec {
-        & $GitVersionExe /output json /showvariable Major
-    } -errorMessage "There was an error retrieving the major version using GitVersion."
-
-    $buildVersionMinor = exec {
-        & $GitVersionExe /output json /showvariable Minor
-    } -errorMessage "There was an error retrieving the minor version using GitVersion."
-
-    $buildVersionPatch = exec {
-        & $GitVersionExe /output json /showvariable Patch
-    } -errorMessage "There was an error retrieving the patch version using GitVersion."
-
-    $buildVersionCommitNumber = exec {
-        & $GitVersionExe /output json /showvariable CommitsSinceVersionSource
-    } -errorMessage "There was an error retrieving the number of commits using GitVersion."
-                        
+    $buildVersionMajor = Get-BuildVersionMajor
+    $buildVersionMinor = Get-BuildVersionMinor
+    $buildVersionPatch = Get-BuildVersionPatch
+    $commitsSinceVersionSource = Get-CommitsSinceVersionSource
     Write-Output "Build Url: $BuildUrl"
     Write-Output "Version major: $buildVersionMajor"
     Write-Output "Version minor: $buildVersionMinor"
     Write-Output "Version patch: $buildVersionPatch"
-    Write-Output "Version commits number: $buildVersionCommitNumber"
+    Write-Output "Number of commits since version source: $commitsSinceVersionSource"
 
     $maxVersionLength = 50
-    $localBuildVersion = "$buildVersionMajor.$buildVersionMinor.$buildVersionPatch.$buildVersionCommitNumber"
+    $localBuildVersion = "$buildVersionMajor.$buildVersionMinor.$buildVersionPatch.$commitsSinceVersionSource"
     if ($localBuildVersion.Length -gt $maxVersionLength) {
         Throw "The version length exceeds the maximum of $maxVersionLength characters and suggests a serious GIT or GitVersion issue."
     }
@@ -408,23 +395,16 @@ task PublishBuildArtifacts -Description "Publish build artifacts" {
 }
 
 task PublishPackages -Description "Publishes packages to the NuGet feed" {
-    $packageLogFile = Join-Path $LogsDir "package-publish.log"
-    $filter = "*.nupkg"
-    if ($SkipPublishRdcPackage -and $SkipPublishSdkPackage) {
-        Write-Host "Skip publishing the the SDK and REC packages."
-        return
-    }
-    
-    if ($SkipPublishRdcPackage) {
-        $filter = "Relativity.DataExchange.Client.SDK*.nupkg"
-        Write-Host "Pushing just the SDK .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
-    }
-    elseif ($SkipPublishSdkPackage) {
-        $filter = "*Relativity.Desktop.Client*.nupkg"
-        Write-Host "Pushing just the RDC .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
-    }
+    $packageLogFile = Join-Path $LogsDir "package-publish.log"    
+    $commitsSinceVersionSource = Get-CommitsSinceVersionSource
+    $filter = ""
+    if (($commitsSinceVersionSource -eq 0) -or $ForcePublishRdcPackage) {
+        $filter = "*.nupkg"
+        Write-Host "Pushing both SDK and RDC .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
+    }    
     else {
-        Write-Host "Pushing all SDK and RDC .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
+        $filter = "Relativity.DataExchange.Client.SDK*.nupkg"
+        Write-Host "Pushing only the SDK .nupkg file contained within '$PaketDir' to '$ProgetUrl'."
     }
 
     $path = Join-Path $PackagesArtifactsDir "*.*"
@@ -571,33 +551,27 @@ Function Format-NuGetPackageVersion {
         Throw "The NuGet package version cannot be formatted because the Major.Minor.Patch value is null or empty."
     }
     
-    $currentBranchName = exec {
-        & $GitVersionExe /output json /showvariable BranchName
-    } -errorMessage "There was an error retrieving the branch name using GitVersion."
-
+    $currentBranchName = Get-BrancehName
     if (!$currentBranchName -or $currentBranchName.Length -eq 0) {
         Throw "The NuGet package version cannot be formatted because the branch name is null or empty."
     }
 
-    $preReleaseLabel = exec {
-        & $GitVersionExe /output json /showvariable PreReleaseLabel
-    } -errorMessage "There was an error retrieving the pre-release label."
-
-    $commitsSinceVersionSourcePadded = exec {
-        & $GitVersionExe /output json /showvariable CommitsSinceVersionSourcePadded
-    } -errorMessage "There was an error retrieving the number of commits."    
+    $preReleaseLabel = Get-PreReleaseLabel
+    $commitsSinceVersionSource = Get-CommitsSinceVersionSource
+    $commitsSinceVersionSourcePadded = Get-CommitsSinceVersionSourcePadded
 
     # All validation exception messages go here.
     $preReleaseLabelExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the pre-release label is null or empty. If this branch was just tagged, ensure that at least 1 commit has been made since creating the tag."
     $commitsSinceVersionSourcePaddedExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the total number of commits since the last tag is null or empty."
-    $buildNumberExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the build number is null or empty."
-    
+    $buildNumberExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the build number is null or empty."    
     $formattedVersion = ""
-    if ($currentBranchName -eq "master") {
+
+    # Now support publishing official packages from release branches - as long as the last commit was tagged.
+    if (($currentBranchName -eq "master" -or $currentBranchName -like "relativity-*") -and $commitsSinceVersionSource -eq 0) {
         $formattedVersion = $MajorMinorPatchVersion
     }
     elseif ($currentBranchName -eq "develop" -or $currentBranchName -like "relativity-*") {
-        # Develop or release branches should rely on pre-release labels
+        # Develop or release branches that haven't been tagged must rely on pre-release labels
         if (!$preReleaseLabel -or $preReleaseLabel.Length -eq 0) {
             Throw $preReleaseLabelExceptionMessage
         }
@@ -640,6 +614,43 @@ Function Format-NuGetPackageVersion {
     return $formattedVersion
 }
 
+Function Get-BrancehName {
+    exec {
+        & $GitVersionExe /output json /showvariable BranchName
+    } -errorMessage "There was an error retrieving the branch name using GitVersion."
+}
+
+Function Get-BuildVersionMajor
+{
+    exec {
+        & $GitVersionExe /output json /showvariable Major
+    } -errorMessage "There was an error retrieving the major version using GitVersion."
+}
+
+Function Get-BuildVersionMinor {
+    exec {
+        & $GitVersionExe /output json /showvariable Minor
+    } -errorMessage "There was an error retrieving the minor version using GitVersion."
+}
+
+Function Get-BuildVersionPatch {
+    exec {
+        & $GitVersionExe /output json /showvariable Patch
+    } -errorMessage "There was an error retrieving the patch version using GitVersion."
+}
+
+Function Get-CommitsSinceVersionSource {
+    exec {
+        & $GitVersionExe /output json /showvariable CommitsSinceVersionSource
+    } -errorMessage "There was an error retrieving the number of commits since the last commit was tagged."
+}
+
+Function Get-CommitsSinceVersionSourcePadded {
+    exec {
+        & $GitVersionExe /output json /showvariable CommitsSinceVersionSourcePadded
+    } -errorMessage "There was an error retrieving the number of padded commits since the last commit was tagged."
+}
+
 Function Get-JiraTicketNumberFromBranchName {
     # Remove the REL number to reduce the version length.
     $options = [Text.RegularExpressions.RegexOptions]::IgnoreCase
@@ -658,6 +669,12 @@ Function Get-JiraTicketNumberFromBranchName {
     }
 
     return $null
+}
+
+Function Get-PreReleaseLabel {
+    exec {
+        & $GitVersionExe /output json /showvariable PreReleaseLabel
+    } -errorMessage "There was an error retrieving the pre-release label."
 }
 
 Function Get-RdcWixVersion {

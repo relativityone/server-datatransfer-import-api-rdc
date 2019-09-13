@@ -98,15 +98,11 @@
     <Compile Include="Export\VolumeManagerV2\Batches\IBatchState.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\IBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\ImageFileBatchValidator.cs" />
-    <Compile Include="Export\VolumeManagerV2\Batches\ImageFileParallelBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\ImageLoadFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\IStateful.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\LoadFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\LongTextBatchValidator.cs" />
-    <Compile Include="Export\VolumeManagerV2\Batches\LongTextParallelBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\NativeFileBatchValidator.cs" />
-    <Compile Include="Export\VolumeManagerV2\Batches\NativeFileParallelBatchValidator.cs" />
-    <Compile Include="Export\VolumeManagerV2\Batches\ParallelBatchInitialization.cs" />
     <Compile Include="Export\VolumeManagerV2\Container\ContainerFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Container\ExportInstaller.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\EncodingFileSize.cs" />
@@ -115,7 +111,6 @@
     <Compile Include="Export\VolumeManagerV2\DataSize\ObjectExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\TextExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\AbsoluteFilePathTransformer.cs" />
-    <Compile Include="Export\VolumeManagerV2\Directories\CachedLabelManagerForArtifact.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\DirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\FilePathHelper.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\FilePathProvider.cs" />
@@ -137,6 +132,8 @@
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\SubdirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\VolumeManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\ILongTextEncodingConverterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\IFileTransferProducer.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadCancellationTokenSource.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\Downloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EmptyExportRequestBuilder.cs" />
@@ -144,7 +141,7 @@
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\FileEncodingRewrite.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\IFileEncodingConverter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\IFileEncodingRewrite.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\ILongTextEncodingConverter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\IFileDownloadSubscriber.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ExportFileValidator.cs" />
@@ -169,29 +166,21 @@
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeAdapter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeForFiles.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeWithEncodingConversion.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\EmptyTapiBridge.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ErrorReportingTapiBridge.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ExportRequestsWithFileshareSettings.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\FilesTapiBridgeWrapperFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\FilesTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\FileTapiBridgePool.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IDownloadTapiBridge.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IFileTapiBridgePool.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ILongTextTapiBridgeFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ILongTextDownloadTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ILongTextTapiBridgePool.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridge.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridgeWrapper.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridgeWrapperFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridgeFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextDownloadTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgePool.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgeWrapperFactory.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\PoolEntry.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\SafeIncrement.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\SmartTapiBridge.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeParametersFactory.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeWrapper.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\WaitHandleExtensions.cs" />
     <Compile Include="Export\VolumeManagerV2\FileshareSettingsService.cs" />
-    <Compile Include="Export\VolumeManagerV2\FileShareSettingsServiceException.cs" />
     <Compile Include="Export\VolumeManagerV2\IFileshareSettingsService.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\EmptyImagesRollup.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\IImage.cs" />
@@ -353,11 +342,21 @@
       <DependentUpon>LogMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\ExportStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExportStrings.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="LogMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>LogMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ExportStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExportStrings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -502,6 +501,26 @@
       <ItemGroup>
         <Reference Include="Renci.SshNet">
           <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Windows">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Windows.Forms">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WindowsBase">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Reactive">
+          <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

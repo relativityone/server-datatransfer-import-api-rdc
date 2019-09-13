@@ -6,6 +6,7 @@
 
 using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
@@ -19,3 +20,5 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(false)]
+[assembly: InternalsVisibleTo("Relativity.DataExchange.Export.NUnit")]
+[assembly: InternalsVisibleTo("Relativity.DataExchange.Export.NUnit.Integration")]

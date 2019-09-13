@@ -10,18 +10,19 @@
 namespace Relativity.DataExchange.Transfer
 {
 	using System;
-	using System.Linq;
-	using System.Text;
+	using System.Globalization;
+	using System.Threading;
 	using System.Threading.Tasks;
 
 	using Relativity.DataExchange.Resources;
 	using Relativity.DataExchange.Service;
 	using Relativity.Logging;
+	using Relativity.Transfer;
 
 	/// <summary>
 	/// Represents a class object to provide Transfer API object services to the transfer bridges. This class cannot be inherited.
 	/// </summary>
-	internal sealed class TapiObjectService : ITapiObjectService
+	internal class TapiObjectService : ITapiObjectService
 	{
 		/// <summary>
 		/// The singleton instance.
@@ -29,31 +30,28 @@ namespace Relativity.DataExchange.Transfer
 		private static readonly Relativity.Transfer.IFileSystemService Instance = new Relativity.Transfer.FileSystemService();
 
 		/// <inheritdoc />
-		public Relativity.Transfer.IFileSystemService CreateFileSystemService()
+		public virtual Relativity.Transfer.IFileSystemService CreateFileSystemService()
 		{
 			return Instance;
 		}
 
 		/// <inheritdoc />
-		public string BuildFileTransferModeDocText(bool includeBulk)
+		public virtual void ApplyUnmappedFileRepositoryParameters(TapiBridgeParameters2 parameters)
 		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			sb.AppendLine("FILE TRANSFER MODES:");
-			sb.Append(BuildDocText());
-			sb.AppendLine();
-			sb.AppendLine();
-			if (includeBulk)
+			if (parameters == null)
 			{
-				sb.AppendLine("SQL INSERT MODES:");
-				sb.AppendLine(" • Bulk • ");
-				sb.Append("The upload process has access to the SQL share on the appropriate case database.  This ensures the fastest transfer of information between the desktop client and the relativity servers.");
-				sb.AppendLine();
-				sb.AppendLine();
-				sb.AppendLine(" • Single •");
-				sb.Append("The upload process has NO access to the SQL share on the appropriate case database.  This is a slower method of import. If the process is using single mode, contact your Relativity Database Administrator to see if a SQL share can be opened for the desired case.");
+				throw new ArgumentNullException(nameof(parameters));
 			}
 
-			return sb.ToString();
+			// Note: only direct/web modes support transfer jobs that can access files from
+			//       any given file repository without any additional configuration.
+			parameters.ForceClientCandidates = string.Join(
+				";",
+				Relativity.Transfer.WellKnownTransferClient.FileShare.ToString(),
+				Relativity.Transfer.WellKnownTransferClient.Http.ToString());
+
+			// Allow other clients to be forced - just clear Aspera.
+			parameters.ForceAsperaClient = false;
 		}
 
 		/// <summary>
@@ -65,7 +63,7 @@ namespace Relativity.DataExchange.Transfer
 		/// <returns>
 		/// The <see cref="Relativity.Transfer.RelativityConnectionInfo"/> instance.
 		/// </returns>
-		public Relativity.Transfer.RelativityConnectionInfo CreateRelativityConnectionInfo(TapiBridgeParameters2 parameters)
+		public virtual Relativity.Transfer.RelativityConnectionInfo CreateRelativityConnectionInfo(TapiBridgeParameters2 parameters)
 		{
 			if (parameters == null)
 			{
@@ -124,13 +122,13 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public Relativity.Transfer.IRelativityTransferHost CreateRelativityTransferHost(Relativity.Transfer.RelativityConnectionInfo connectionInfo, Relativity.Transfer.ITransferLog log)
+		public virtual Relativity.Transfer.IRelativityTransferHost CreateRelativityTransferHost(Relativity.Transfer.RelativityConnectionInfo connectionInfo, Relativity.Transfer.ITransferLog log)
 		{
 			return new Relativity.Transfer.RelativityTransferHost(connectionInfo, log);
 		}
 
 		/// <inheritdoc />
-		public string GetClientDisplayName(Guid clientId)
+		public virtual string GetClientDisplayName(Guid clientId)
 		{
 			if (clientId == Guid.Empty)
 			{
@@ -152,7 +150,7 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public Guid GetClientId(TapiBridgeParameters2 parameters)
+		public virtual Guid GetClientId(TapiBridgeParameters2 parameters)
 		{
 			if (parameters == null)
 			{
@@ -177,7 +175,7 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public TapiClient GetTapiClient(Guid clientId)
+		public virtual TapiClient GetTapiClient(Guid clientId)
 		{
 			switch (clientId.ToString("D").ToUpperInvariant())
 			{
@@ -196,14 +194,41 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public async Task<string> GetWorkspaceClientDisplayNameAsync(TapiBridgeParameters2 parameters)
+		public virtual async Task<RelativityFileShare> GetWorkspaceDefaultFileShareAsync(TapiBridgeParameters2 parameters, ILog logger, CancellationToken token)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			RelativityConnectionInfo connectionInfo = this.CreateRelativityConnectionInfo(parameters);
+			using (ITransferLog transferLog = new RelativityTransferLog(logger, false))
+			using (IRelativityTransferHost transferHost = new RelativityTransferHost(connectionInfo, transferLog))
+			{
+				Workspace workspace = await transferHost.GetWorkspaceAsync(parameters.WorkspaceId, token)
+					                      .ConfigureAwait(false);
+				if (workspace == null)
+				{
+					string message = string.Format(
+						CultureInfo.CurrentCulture,
+						Strings.WorkspaceNullExceptionMessage,
+						parameters.WorkspaceId);
+					throw new TransferException(message);
+				}
+
+				return workspace.DefaultFileShare;
+			}
+		}
+
+		/// <inheritdoc />
+		public virtual async Task<string> GetWorkspaceClientDisplayNameAsync(TapiBridgeParameters2 parameters)
 		{
 			Relativity.Transfer.ITransferClient transferClient = await this.GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
 			return transferClient.DisplayName;
 		}
 
 		/// <inheritdoc />
-		public async Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters2 parameters)
+		public virtual async Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters2 parameters)
 		{
 			if (parameters == null)
 			{
@@ -215,7 +240,30 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public void SetTapiClient(TapiBridgeParameters2 parameters, TapiClient targetClient)
+		public virtual async Task<ITapiFileStorageSearchResults> SearchFileStorageAsync(
+			TapiBridgeParameters2 parameters,
+			ILog logger,
+			CancellationToken token)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			RelativityConnectionInfo connectionInfo = this.CreateRelativityConnectionInfo(parameters);
+			using (ITransferLog transferLog = new RelativityTransferLog(logger, false))
+			using (IRelativityTransferHost transferHost = new RelativityTransferHost(connectionInfo, transferLog))
+			{
+				IFileStorageSearch service = transferHost.CreateFileStorageSearch();
+				FileStorageSearchContext context =
+					new FileStorageSearchContext { WorkspaceId = parameters.WorkspaceId };
+				FileStorageSearchResults results = await service.SearchAsync(context, token).ConfigureAwait(false);
+				return new TapiFileStorageSearchResults(results);
+			}
+		}
+
+		/// <inheritdoc />
+		public virtual void SetTapiClient(TapiBridgeParameters2 parameters, TapiClient targetClient)
 		{
 			if (parameters == null)
 			{
@@ -235,35 +283,6 @@ namespace Relativity.DataExchange.Transfer
 				case TapiClient.Web:
 					parameters.ForceHttpClient = true;
 					break;
-			}
-		}
-
-		/// <summary>
-		/// Searches for all available clients and builds the documentation text from the discovered metadata.
-		/// </summary>
-		/// <returns>
-		/// The documentation text.
-		/// </returns>
-		private static string BuildDocText()
-		{
-			using (var transferLog = new RelativityTransferLog())
-			{
-				var sb = new StringBuilder();
-				foreach (var clientMetadata in Relativity.Transfer.TransferClientHelper.SearchAvailableClients(transferLog)
-					.OrderBy(x => x.DisplayName))
-				{
-					if (sb.Length > 0)
-					{
-						sb.AppendLine();
-						sb.AppendLine();
-					}
-
-					sb.AppendFormat(" • {0} • ", clientMetadata.DisplayName);
-					sb.AppendLine();
-					sb.Append(clientMetadata.Description);
-				}
-
-				return sb.ToString();
 			}
 		}
 

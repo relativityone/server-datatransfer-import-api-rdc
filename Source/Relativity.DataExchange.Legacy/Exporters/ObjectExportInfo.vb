@@ -27,6 +27,7 @@ Namespace kCura.WinEDDS.Exporters
 		Public Property DestinationVolume() As String = String.Empty
 		Friend Property CoalescedProductionID As Int32? = Nothing
 		Public Property Filename() As String = String.Empty
+		Public Property DocumentError As Boolean = False
 
 #End Region
 

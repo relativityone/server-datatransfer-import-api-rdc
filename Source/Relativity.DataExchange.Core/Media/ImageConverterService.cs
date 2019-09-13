@@ -82,7 +82,6 @@ namespace Relativity.DataExchange.Media
 				throw new ImageConversionException(Strings.ImageConversionTiffCodecNotFoundMessage);
 			}
 
-			outputFile = this.fileSystem.Path.GetFullPath(outputFile);
 			System.Drawing.Imaging.Encoder saveFlag = System.Drawing.Imaging.Encoder.SaveFlag;
 			System.Drawing.Imaging.Encoder compression = System.Drawing.Imaging.Encoder.Compression;
 			System.Drawing.Image multiPageTiff = null;
@@ -91,6 +90,8 @@ namespace Relativity.DataExchange.Media
 
 			try
 			{
+				outputFile = this.fileSystem.Path.GetFullPath(outputFile);
+
 				// Create encoding parameters
 				encoderParams = new System.Drawing.Imaging.EncoderParameters(2);
 				encoderParams.Param[0] = new System.Drawing.Imaging.EncoderParameter(

@@ -16,7 +16,6 @@ Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Transfer
 Imports Relativity.Logging
-Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
 
@@ -47,7 +46,7 @@ Namespace kCura.WinEDDS
 		Private _waitAndRetryPolicy As IWaitAndRetryPolicy
 #End Region
 
-		Public Event UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean)
+		Public Event UploadModeChangeEvent(ByVal statusBarText As String)
 
 #Region "Constructor"
 		Public Sub New(ByVal reporter As IIoReporter, ByVal logger As ILog, cancellationTokenSource As CancellationTokenSource)
@@ -351,26 +350,24 @@ Namespace kCura.WinEDDS
 			_ioReporter.PublishWarningMessage(args)
 		End Sub
 
-		Protected Sub CompletePendingPhysicalFileTransfers(waitingMessage As String, completedMessage As String, errorMessage As String)
-			Try
-				Me.OnWriteStatusMessage(EventType2.Status, waitingMessage, 0, 0)
-				Me.FileTapiBridge.WaitForTransferJob()
-				Me.OnWriteStatusMessage(EventType2.Status, completedMessage, 0, 0)
-			Catch ex As Exception
-				Me.LogError(ex, errorMessage)
-				Throw
-			End Try
+		Protected Sub CompletePendingPhysicalFileTransfers(waitMessage As String, completedMessage As String, errorMessage As String)
+			' TODO: Invert this flag after RDC Export hardening is completed.
+			Const KeepJobAlive As Boolean = False
+			Me.FileTapiBridge.WaitForTransfers(
+				waitMessage,
+				completedMessage,
+				errorMessage,
+				KeepJobAlive)
 		End Sub
 
 		Protected Sub CompletePendingBulkLoadFileTransfers()
-			Try
-				Me.OnWriteStatusMessage(EventType2.Status, "Waiting for the bulk load job to complete...", 0, 0)
-				Me.BulkLoadTapiBridge.WaitForTransferJob()
-				Me.OnWriteStatusMessage(EventType2.Status, "Bulk load file job completed.", 0, 0)
-			Catch ex As Exception
-				Me.LogError(ex, "Failed to complete all pending bulk load file transfers.")
-				Throw
-			End Try
+			' TODO: Invert this flag after RDC Export hardening is completed.
+			Const KeepJobAlive As Boolean = False
+			Me.BulkLoadTapiBridge.WaitForTransfers(
+				"Waiting for all metadata files to upload...",
+				"Metadata file uploads completed.",
+				"Failed to complete all pending metadata file uploads.",
+				KeepJobAlive)
 		End Sub
 
 
@@ -396,10 +393,10 @@ Namespace kCura.WinEDDS
 
 			' Dump native and bcp upload bridge
 			Me.LogInformation("Begin dumping native parameters.")
-			_fileTapiBridge.DumpInfo()
+			_fileTapiBridge.LogTransferParameters()
 
 			Me.LogInformation("Begin dumping bcp parameters.")
-			_bulkLoadTapiBridge.DumpInfo()
+			_bulkLoadTapiBridge.LogTransferParameters()
 		End Sub
 
 		Protected Sub DestroyTapiBridges()
@@ -508,7 +505,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub UpdateStatisticsSnapshot(time As System.DateTime, Optional ByVal force As Boolean = False)
-			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > 10000000
+			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > TimeSpan.TicksPerSecond
 			If updateCurrentStats OrElse force Then
 				CurrentStatisticsSnapshot = Me.Statistics.ToDictionary()
 				_statisticsLastUpdated = time
@@ -538,11 +535,11 @@ Namespace kCura.WinEDDS
 
 		Private Sub FileOnTapiProgress(ByVal sender As Object, ByVal e As TapiProgressEventArgs)
 			SyncLock _syncRoot
-				If DidFileComplete(e.TransferStatus) Then
+				If e.Completed Then
 					_batchFileTapiProgressCount += 1
 				End If
 
-				If ShouldImport AndAlso e.DidTransferSucceed Then
+				If ShouldImport AndAlso e.Successful Then
 					Me.FileTapiProgressCount += 1
 					WriteTapiProgressMessage($"End upload '{e.FileName}' file. ({System.DateTime.op_Subtraction(e.EndTime, e.StartTime).Milliseconds}ms)", e.LineNumber)
 				End If
@@ -551,7 +548,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub BulkLoadOnTapiProgress(ByVal sender As Object, ByVal e As TapiProgressEventArgs)
 			SyncLock _syncRoot
-				If DidFileComplete(e.TransferStatus) Then
+				If e.Completed Then
 					_batchMetadataTapiProgressCount += 1
 				End If
 			End SyncLock
@@ -622,8 +619,12 @@ Namespace kCura.WinEDDS
 			System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
 		End Sub
 
-		Protected Sub OnUploadModeChangeEvent(statusBarText As String, isBulkEnabled As Boolean)
-			RaiseEvent UploadModeChangeEvent(statusBarText, TapiClientName, isBulkEnabled)
+		Protected Sub PublishUploadModeChangeEvent(ByVal nativeFilesCopied As Boolean)
+			Dim statusBarText As String = TapiModeHelper.BuildImportStatusText(
+				nativeFilesCopied,
+				Me.FileTapiBridge?.Client,
+				Me.BulkLoadTapiBridge?.Client)
+			RaiseEvent UploadModeChangeEvent(statusBarText)
 		End Sub
 
 		Public Sub WaitForPendingMetadataUploads()
@@ -698,18 +699,6 @@ Namespace kCura.WinEDDS
 			End If
 
 			Return waitSuccess
-		End Function
-
-		Private Function DidFileComplete(ByVal status As TransferPathStatus) As Boolean
-			If status = TransferPathStatus.Failed Or
-				status = TransferPathStatus.FileNotFound Or
-				status = TransferPathStatus.Skipped Or
-				status = TransferPathStatus.Successful Or
-				status = TransferPathStatus.Failed Then
-				Return True
-			End If
-
-			Return False
 		End Function
 	End Class
 End Namespace

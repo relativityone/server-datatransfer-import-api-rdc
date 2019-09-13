@@ -7,6 +7,7 @@
 
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exceptions;
+	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
@@ -42,12 +43,12 @@
 			_status = status;
 		}
 
-		public void Write(ExportFileType type, string recordIdentifier, string fileLocation, string errorText)
+		public void Write(ExportFileType type, ObjectExportInfo documentInfo, string fileLocation, string errorText)
 		{
+			string recordIdentifier = documentInfo?.IdentifierValue ?? string.Empty;
 			try
 			{
 				InitializeStream();
-
 				WriteLine(type, recordIdentifier, fileLocation, errorText);
 			}
 			catch (IOException ex)
@@ -56,7 +57,23 @@
 				throw new FileWriteException(FileWriteException.DestinationFile.Errors, ex);
 			}
 
-			_status.WriteError($"{type} - Document [{recordIdentifier}] - File [{fileLocation}] - Error: {Environment.NewLine}{errorText}");
+			this.UpdateStatus(documentInfo, type, recordIdentifier, fileLocation, errorText);
+		}
+
+		private void UpdateStatus(ObjectExportInfo documentInfo, ExportFileType type, string recordIdentifier, string fileLocation, string errorText)
+		{
+			string statusMessage =
+				$"{type} - Document [{recordIdentifier}] - File [{fileLocation}] - Error: {Environment.NewLine}{errorText}";
+
+			// Don't sent Error status update on the document if it was already triggered to prevent failed record count duplication issue
+			if (documentInfo == null || !documentInfo.DocumentError)
+			{
+				this._status.WriteError(statusMessage);
+			}
+			else
+			{
+				this._status.WriteWarning(statusMessage);
+			}
 		}
 
 		private void InitializeStream()

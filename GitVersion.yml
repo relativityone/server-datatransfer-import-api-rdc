@@ -43,3 +43,5 @@ branches:
     is-release-branch: false
 ignore:
   commits-before: 2019-03-01
+  sha:
+    - 8a5e10f81142b6772836d39f453bd3d36c531f81

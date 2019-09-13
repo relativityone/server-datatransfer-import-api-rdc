@@ -40,27 +40,6 @@
     <UIRef Id="WixUI_MondoNoLicense" />
     <UIRef Id="WixUI_ErrorProgressText" />
 
-    <!-- Prerequisites -->
-    <PropertyRef Id="DOTNET46_INSTALLED"/>
-
-    <!-- VC++ 2010 x86 is required for both platforms. -->
-    <PropertyRef Id="VCPP2010X86REDIST"/>
-
-    <!-- VC++ 2017 x86 is required for both platforms. -->
-    <PropertyRef Id="VCPP2017X86REDISTMAJOR"/>
-    <PropertyRef Id="VCPP2017X86REDISTMINOR"/>
-    <PropertyRef Id="VCPP2017X86REDISTBLD"/>
-
-    <?if $(var.Platform) = "x64" ?>
-    <!-- VC++ 2010 x64 is required for just the x64 platform. -->
-    <PropertyRef Id="VCPP2010X64REDIST"/>
-
-    <!-- VC++ 2017 x64 is required for just the x64 platform. -->
-    <PropertyRef Id="VCPP2017X64REDISTMAJOR"/>
-    <PropertyRef Id="VCPP2017X64REDISTMINOR"/>
-    <PropertyRef Id="VCPP2017X64REDISTBLD"/>
-    <?endif?>
-
     <!-- Set the icon for the msi and Add/Remove programs -->
     <Icon Id="relativity_1.exe"
           SourceFile="$(var.ProjectDir)..\..\Images\relativity-icon.ICO" />
@@ -70,6 +49,12 @@
               Value="amus"/>
     <Property Id="AppProcessName"
               Value="$(var.ProcessName)"/>
+
+    <!-- Perform the proper upgrade checks -->
+    <Property Id="NEWERPRODUCTFOUND" Secure="yes" />
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion Minimum="$(var.ProductVersion)" IncludeMinimum="yes" OnlyDetect="yes" Language="1033" Property="NEWERPRODUCTFOUND" />
+    </Upgrade>
 
     <!-- This represents whether the RDC is used for RelativityOne environments. -->
     <Property Id="RELATIVITYONE_ENV"

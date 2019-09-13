@@ -32,7 +32,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		/// The main setup method.
 		/// </summary>
 		[OneTimeSetUp]
-		public void Setup()
+		public static void Setup()
 		{
 			TestParameters = IntegrationTestHelper.Create();
 		}
@@ -41,7 +41,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		/// The main teardown method.
 		/// </summary>
 		[OneTimeTearDown]
-		public void TearDown()
+		public static void TearDown()
 		{
 			IntegrationTestHelper.Destroy(TestParameters);
 		}

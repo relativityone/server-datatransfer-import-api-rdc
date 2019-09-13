@@ -362,7 +362,7 @@ Namespace kCura.WinEDDS
 				Me.WriteUpdate($"Data retrieved. Beginning {typeOfExportDisplayString} export...")
 
 				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType2.ResetStartTime, _lastStatisticsSnapshot, Statistics))
-				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
+				RaiseEvent FileTransferMultiClientModeChangeEvent(Me, New TapiMultiClientEventArgs(_downloadModeStatus.TransferModes))
 
 				Dim records As Object() = Nothing
 				Dim nextRecordIndex As Int32 = 0
@@ -1143,7 +1143,7 @@ Namespace kCura.WinEDDS
 			Dim now As Long = System.DateTime.Now.Ticks
 
 			SyncLock _syncLock
-				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
+				If now - _lastStatusMessageTs > TimeSpan.TicksPerSecond OrElse isEssential Then
 					_lastStatusMessageTs = now
 					Dim appendString As String = ""
 					If showNumberOfExportedDocuments Then
@@ -1160,11 +1160,11 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(e, line, isEssential, True)
 		End Sub
 
-		Friend Sub WriteStatusLineWithoutDocCount(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean)
+		Friend Sub WriteStatusLineWithoutDocCount(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean) Implements IStatus.WriteStatusLineWithoutDocCount
 			Dim now As Long = System.DateTime.Now.Ticks
 
 			SyncLock _syncLock
-				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
+				If now - _lastStatusMessageTs > TimeSpan.TicksPerSecond OrElse isEssential Then
 					_lastStatusMessageTs = now
 					_lastDocumentsExportedCountReported = Me.DocumentsExported
 					RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line, e, _lastStatisticsSnapshot, Statistics))
@@ -1203,13 +1203,18 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(EventType2.Warning, line, True)
 		End Sub
 
+		Friend Sub WriteWarningWithoutDocCount(ByVal line As String) Implements IStatus.WriteWarningWithoutDocCount
+			Interlocked.Increment(_warningCount)
+			WriteStatusLineWithoutDocCount(EventType2.Warning, line, True)
+		End Sub
+
 		Friend Sub WriteUpdate(ByVal line As String, Optional ByVal isEssential As Boolean = True) Implements IStatus.WriteUpdate
 			WriteStatusLine(EventType2.Progress, line, isEssential)
 		End Sub
 
 		Dim _statisticsLastUpdated As Date
 		Protected Sub UpdateStatisticsSnapshot(time As System.DateTime)
-			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > 10000000
+			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > TimeSpan.TicksPerSecond
 			If updateCurrentStats Then
 				_lastStatisticsSnapshot = Statistics.ToDictionary()
 				_statisticsLastUpdated = time
@@ -1228,13 +1233,11 @@ Namespace kCura.WinEDDS
 
 		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Implements IExporterStatusNotification.FatalErrorEvent
 		Public Event StatusMessage(ByVal exportArgs As ExportEventArgs) Implements IExporterStatusNotification.StatusMessage
-		Public Event FileTransferModeChangeEvent(ByVal mode As String) Implements IExporterStatusNotification.FileTransferModeChangeEvent
-		Public Event DisableCloseButton()
-		Public Event EnableCloseButton()
+		Public Event FileTransferMultiClientModeChangeEvent(ByVal sender As Object, ByVal args As Global.Relativity.DataExchange.Transfer.TapiMultiClientEventArgs) Implements IExporterStatusNotification.FileTransferMultiClientModeChangeEvent
 
 #End Region
 
-		Private Sub _processContext_HaltProcessEvent(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles _processContext.CancellationRequest
+        Private Sub _processContext_HaltProcessEvent(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles _processContext.CancellationRequest
 			_cancellationTokenSource.Cancel()
 			If Not _volumeManager Is Nothing Then _volumeManager.Halt = True
 		End Sub
@@ -1250,13 +1253,9 @@ Namespace kCura.WinEDDS
 			FileHelper.Move(sourcePath, destinationPath)
 		End Sub
 
-		Public Event UploadModeChangeEvent(ByVal mode As String)
-
-		Private Sub _downloadModeStatus_UploadModeChangeEvent(ByVal tapiClient As TapiClient) Handles _downloadModeStatus.UploadModeChangeEvent
-			RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
-		End Sub
-
-
+		Private Sub _downloadModeStatus_UploadModeChangeEvent(ByVal sender As Object, ByVal args As TapiMultiClientEventArgs) Handles _downloadModeStatus.TransferModesChangeEvent
+			RaiseEvent FileTransferMultiClientModeChangeEvent(Me, args)
+        End Sub
 
 		Private Function BuildFileNameProvider() As IFileNameProvider
 			Dim identifierExportFileNameProvider As IFileNameProvider = New IdentifierExportFileNameProvider(Settings)

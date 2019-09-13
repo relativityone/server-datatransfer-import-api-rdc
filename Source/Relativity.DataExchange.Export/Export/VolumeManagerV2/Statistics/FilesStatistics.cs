@@ -2,13 +2,10 @@
 {
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.Logging;
 
 	public class FilesStatistics : ITransferStatistics, IFileProcessingStatistics
 	{
-		private ITapiBridge _tapiBridge;
-
 		private double _savedThroughput;
 		private long _savedFileBytes;
 		private long _savedFileTime;
@@ -21,16 +18,17 @@
 
 		public FilesStatistics(kCura.WinEDDS.Statistics statistics, IFile fileWrapper, ILog logger)
 		{
-			_statistics = statistics;
-			_fileWrapper = fileWrapper;
-			_logger = logger;
+			_statistics = statistics.ThrowIfNull(nameof(statistics));
+			_fileWrapper = fileWrapper.ThrowIfNull(nameof(fileWrapper));
+			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
-		public void Attach(ITapiBridge tapiBridge)
+		public void Subscribe(ITapiBridge tapiBridge)
 		{
-			_tapiBridge = tapiBridge;
-			_tapiBridge.TapiProgress += OnProgress;
-			_tapiBridge.TapiStatistics += TapiBridgeOnTapiStatistics;
+			tapiBridge.ThrowIfNull(nameof(tapiBridge));
+			_logger.LogVerbose("Attached tapi bridge {TapiBridgeInstanceId} to the file statistics.", tapiBridge.InstanceId);
+			tapiBridge.TapiProgress += this.OnProgress;
+			tapiBridge.TapiStatistics += this.TapiBridgeOnTapiStatistics;
 		}
 
 		private void TapiBridgeOnTapiStatistics(object sender, TapiStatisticsEventArgs e)
@@ -43,8 +41,8 @@
 
 		private void OnProgress(object sender, TapiProgressEventArgs e)
 		{
-			_logger.LogVerbose("Progress event for file {fileName} with status {didTransferSucceed}.", e.FileName, e.DidTransferSucceed);
-			if (e.DidTransferSucceed)
+			_logger.LogVerbose("Progress event for file {fileName} with status {Successful}.", e.FileName, e.Successful);
+			if (e.Successful)
 			{
 				lock (_lock)
 				{
@@ -54,10 +52,12 @@
 			}
 		}
 
-		public void Detach()
+		public void Unsubscribe(ITapiBridge tapiBridge)
 		{
-			_tapiBridge.TapiProgress -= OnProgress;
-			_tapiBridge.TapiStatistics -= TapiBridgeOnTapiStatistics;
+			tapiBridge.ThrowIfNull(nameof(tapiBridge));
+			_logger.LogVerbose("Detached tapi bridge {TapiBridgeInstanceId} from the file statistics.", tapiBridge.InstanceId);
+			tapiBridge.TapiProgress -= this.OnProgress;
+			tapiBridge.TapiStatistics -= this.TapiBridgeOnTapiStatistics;
 		}
 
 		public void UpdateStatisticsForFile(string path)

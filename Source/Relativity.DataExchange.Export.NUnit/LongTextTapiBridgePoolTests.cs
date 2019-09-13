@@ -20,13 +20,13 @@ namespace Relativity.DataExchange.Export.NUnit
 	{
 		private LongTextTapiBridgePool _instance;
 
-		private Mock<ILongTextTapiBridgeFactory> _factory;
+		private Mock<ILongTextDownloadTapiBridgeFactory> _factory;
 		private Mock<IDownloadTapiBridge> _bridge;
 
 		[SetUp]
 		public void SetUp()
 		{
-			this._factory = new Mock<ILongTextTapiBridgeFactory>();
+			this._factory = new Mock<ILongTextDownloadTapiBridgeFactory>();
 			this._bridge = new Mock<IDownloadTapiBridge>();
 
 			this._factory.Setup(x => x.Create(CancellationToken.None)).Returns(this._bridge.Object);
@@ -41,8 +41,23 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.Release(this._bridge.Object);
 
 			// ASSERT
-			this._bridge.Verify(x => x.Disconnect(), Times.Never);
 			this._bridge.Verify(x => x.Dispose(), Times.Once);
+		}
+
+		[Test]
+		public void ItShouldNotThrowWhenTheBridgeIsNotRegistered()
+		{
+			// ARRANGE
+			Mock<IDownloadTapiBridge> otherBridge = new Mock<IDownloadTapiBridge>();
+
+			// ACT
+			this._instance.Request(CancellationToken.None);
+			this._instance.Release(otherBridge.Object);
+			this._instance.Release(this._bridge.Object);
+
+			// ASSERT
+			this._bridge.Verify(x => x.Dispose(), Times.Once);
+			otherBridge.Verify(x => x.Dispose(), Times.Once);
 		}
 
 		[Test]

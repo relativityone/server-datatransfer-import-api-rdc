@@ -218,6 +218,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.RollupImages(artifact);
 
 			// ASSERT
+			Assert.That(artifact.DocumentError, Is.EqualTo(exceptionDuringRollup));
 			return image1.SuccessfulRollup;
 		}
 
