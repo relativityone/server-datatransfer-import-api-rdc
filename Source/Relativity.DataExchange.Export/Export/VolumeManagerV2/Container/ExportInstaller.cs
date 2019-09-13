@@ -29,6 +29,7 @@
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Media;
+	using Relativity.DataExchange.Transfer;
 
 	public class ExportInstaller : IWindsorInstaller
 	{
@@ -48,13 +49,18 @@
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory;
 		}
 
-		public void Install(IWindsorContainer container, IConfigurationStore store)
+		public virtual void Install(IWindsorContainer container, IConfigurationStore store)
 		{
 			InstallFromWinEdds(container);
 			InstallConnectionToWinEdds(container);
 			InstallCustom(container);
 
 			container.Register(Classes.FromThisAssembly().InNamespace("Relativity.DataExchange.Export", true).WithService.DefaultInterfaces().WithService.Self());
+			this.OnInstall(container, store);
+		}
+
+		protected virtual void OnInstall(IWindsorContainer container, IConfigurationStore store)
+		{
 		}
 
 		private void InstallFromWinEdds(IWindsorContainer container)
@@ -95,11 +101,10 @@
 			container.Register(Component.For<IBatchValidator>().UsingFactoryMethod(k => k.Resolve<BatchValidatorFactory>().Create(ExportSettings, ExportConfig, container)));
 			container.Register(Component.For<IBatchInitialization>().UsingFactoryMethod(k => k.Resolve<BatchInitializationFactory>().Create(ExportSettings, ExportConfig, container)));
 			container.Register(Component.For<ILog>().UsingFactoryMethod(k => RelativityLogFactory.CreateLog(_EXPORT_SUB_SYSTEM_NAME)));
+			container.Register(Component.For<ITapiObjectService>().ImplementedBy<TapiObjectService>());
 
 			container.Register(Component.For<ILabelManagerForArtifact>().UsingFactoryMethod(k =>
-				ExportConfig.ForceParallelismInNewExport
-					? (ILabelManagerForArtifact)k.Resolve<CachedLabelManagerForArtifact>()
-					: k.Resolve<LabelManagerForArtifact>()));
+				 (ILabelManagerForArtifact)k.Resolve<LabelManagerForArtifact>()));
 		}
 
 		private void InstallFieldService(IWindsorContainer container)

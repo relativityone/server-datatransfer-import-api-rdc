@@ -5,11 +5,11 @@
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Transfer;
 
-	public interface IDownloadTapiBridge : IDisposable
+	public interface IDownloadTapiBridge : IFileTransferProducer, IDisposable
 	{
-		TapiClient ClientType { get; }
+		TapiClient Client { get; }
+		TapiBridgeParameters2 Parameters { get; }
 		string QueueDownload(TransferPath transferPath);
-		void WaitForTransferJob();
-		void Disconnect();
+		void WaitForTransfers();
 	}
 }

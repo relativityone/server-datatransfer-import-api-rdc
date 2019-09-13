@@ -15,7 +15,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using System.Linq;
 	using System.Net;
 	using System.Text;
+	using System.Threading;
 	using System.Threading.Tasks;
+
+	using Castle.MicroKernel.Registration;
+	using Castle.Windsor;
 
 	using global::NUnit.Framework;
 
@@ -27,11 +31,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Moq;
 
 	using Relativity.DataExchange;
-	using Relativity.DataExchange.Export.VolumeManagerV2.Container;
+	using Relativity.DataExchange.Export.VolumeManagerV2;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Process;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.Logging;
+	using Relativity.DataExchange.Transfer;
 
 	/// <summary>
 	/// Represents a base class for <see cref="Exporter"/> tests.
@@ -43,22 +48,212 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		Justification = "The test class handles the disposal.")]
 	public abstract class ExporterTestBase
 	{
+		/// <summary>
+		/// The sample PDF file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocPdfFileName = "EDRM-Sample1.pdf";
+
+		/// <summary>
+		/// The sample Word doc file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocWordFileName = "EDRM-Sample2.doc";
+
+		/// <summary>
+		/// The sample Excel file name that's available for testingS within the output directory.
+		/// </summary>
+		protected const string SampleDocExcelFileName = "EDRM-Sample3.xlsx";
+
+		/// <summary>
+		/// The sample MSG file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocMsgFileName = "EDRM-Sample4.msg";
+
+		/// <summary>
+		/// The sample HTM file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocHtmFileName = "EDRM-Sample5.htm";
+
+		/// <summary>
+		/// The sample EMF file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocEmfFileName = "EDRM-Sample6.emf";
+
+		/// <summary>
+		/// The sample PPT file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocPptFileName = "EDRM-Sample7.ppt";
+
+		/// <summary>
+		/// The sample PNG file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocPngFileName = "EDRM-Sample8.png";
+
+		/// <summary>
+		/// The sample TXT file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocTxtFileName = "EDRM-Sample9.txt";
+
+		/// <summary>
+		/// The sample WMF file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocWmfFileName = "EDRM-Sample10.wmf";
+
+		/// <summary>
+		/// The sample TIFF file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleImage1FileName = "EDRM-Sample1.tif";
+
+		/// <summary>
+		/// The sample TIFF file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleImage2FileName = "EDRM-Sample2.tif";
+
+		/// <summary>
+		/// The sample TIFF file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleImage3FileName = "EDRM-Sample3.tif";
+
+		/// <summary>
+		/// The sample production image file name.
+		/// </summary>
+		protected const string SampleProductionImage1FileName = "EDRM-Sample-000001.tif";
+
+		/// <summary>
+		/// The dummy UNC path. This should never be used for positive tests.
+		/// </summary>
+		private const string DummyUncPath = @"\\files\T001\Files\EDDS123456\";
+
+		private static readonly List<int> ImportedDatasets = new List<int>();
+		private readonly object syncRoot = new object();
 		private readonly List<string> alerts = new List<string>();
 		private readonly List<string> alertCriticalErrors = new List<string>();
 		private readonly List<string> alertWarningSkippables = new List<string>();
 		private readonly List<string> statusMessages = new List<string>();
 		private readonly List<string> fatalErrors = new List<string>();
+		private IWindsorContainer testContainer;
 		private CookieContainer cookieContainer;
 		private NetworkCredential credentials;
-		private Mock<IUserNotification> userNotification;
 		private TempDirectory2 tempDirectory;
 		private int selectedFolderId;
 		private ExportFile.ExportType exportType;
 		private string identifierColumnName;
-		private Encoding encoding;
+		private Encoding loadFileEncoding;
+		private Encoding textFileEncoding;
 		private bool searchResult;
-		private Mock<Relativity.Logging.ILog> logger;
 		private ExtendedExportFile exportFile;
+		private ProcessContext processContext;
+		private TestContainerFactory testContainerFactory;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ExporterTestBase"/> class.
+		/// </summary>
+		/// <param name="loadFileEncoding">
+		/// Specify the encoding used by the load file.
+		/// </param>
+		/// <param name="textFileEncoding">
+		/// Specify the encoding used to convert extracted text files.
+		/// </param>
+		protected ExporterTestBase(string loadFileEncoding, string textFileEncoding)
+		{
+			this.GivenTheLoadFileEncoding(Encoding.GetEncoding(loadFileEncoding));
+			this.GivenTheTextFileEncoding(Encoding.GetEncoding(textFileEncoding));
+		}
+
+		internal Mock<TapiObjectService> MockTapiObjectService
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Gets the list of all sample document file names available for testing within the output directory.
+		/// </summary>
+		/// <value>
+		/// The file names.
+		/// </value>
+		protected static IReadOnlyList<string> AllSampleDocFileNames =>
+			new List<string>
+				{
+					SampleDocPdfFileName,
+					SampleDocWordFileName,
+					SampleDocExcelFileName,
+					SampleDocMsgFileName,
+					SampleDocHtmFileName,
+					SampleDocEmfFileName,
+					SampleDocPptFileName,
+					SampleDocPngFileName,
+					SampleDocTxtFileName,
+					SampleDocWmfFileName,
+				};
+
+		/// <summary>
+		/// Gets the list of all sample image file names available for testing within the output directory.
+		/// </summary>
+		/// <value>
+		/// The file names.
+		/// </value>
+		protected static IReadOnlyList<string> AllSampleImageFileNames =>
+			new List<string>
+				{
+					SampleImage1FileName,
+					SampleImage2FileName,
+					SampleImage3FileName,
+					SampleProductionImage1FileName,
+				};
+
+		/// <summary>
+		/// Gets the list of full paths for all sample document and image files for testing within the output directory.
+		/// </summary>
+		/// <value>
+		/// The full path.
+		/// </value>
+		protected static IReadOnlyList<string> AllSampleFiles =>
+			AllSampleDocFileNames.Select(ResourceFileHelper.GetDocsResourceFilePath).Concat(
+				AllSampleImageFileNames.Select(ResourceFileHelper.GetImagesResourceFilePath)).ToList();
+
+		protected Mock<IAppSettings> MockAppSettings
+		{
+			get;
+			private set;
+		}
+
+		protected Mock<IExportRequestRetriever> MockExportRequestRetriever
+		{
+			get;
+			private set;
+		}
+
+		protected Mock<IFileShareSettingsService> MockFileShareSettingsService
+		{
+			get;
+			private set;
+		}
+
+		protected Mock<Relativity.Logging.ILog> MockLogger
+		{
+			get;
+			private set;
+		}
+
+		protected Mock<IProcessErrorWriter> MockProcessErrorWriter
+		{
+			get;
+			private set;
+		}
+
+		protected Mock<IProcessEventWriter> MockProcessEventWriter
+		{
+			get;
+			private set;
+		}
+
+		protected Mock<IUserNotification> MockUserNotification
+		{
+			get;
+			private set;
+		}
+
+		protected string TempDirectory => this.tempDirectory.Directory;
 
 		/// <summary>
 		/// Gets integration test parameters.
@@ -73,14 +268,58 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		/// <summary>
+		/// Gets the total number of documents that were processed.
+		/// </summary>
+		/// <value>
+		/// The total number of documents.
+		/// </value>
+		protected int TotalDocumentsProcessed
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Gets the total number of requested documents to export.
+		/// </summary>
+		/// <value>
+		/// The total number of documents.
+		/// </value>
+		protected int TotalDocuments
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Gets the list of transfer modes.
+		/// </summary>
+		/// <value>
+		/// The <see cref="TapiClient"/> value.
+		/// </value>
+		protected IList<TapiClient> TransferModes
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// The test setup.
 		/// </summary>
 		[SetUp]
 		public void Setup()
 		{
+			foreach (var item in System.Text.Encoding.GetEncodings())
+			{
+				System.Console.WriteLine($"Name={item.Name}, Display={item.DisplayName}, Code Page={item.CodePage}");
+				System.Diagnostics.Debug.WriteLine($"Name={item.Name}, CodePage={item.DisplayName}, CodePage={item.CodePage}");
+			}
+
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
+			this.testContainer = new WindsorContainer();
+			this.testContainerFactory = new TestContainerFactory(this.testContainer);
 			this.AssignTestSettings();
 			Assert.That(
 				this.TestParameters.WorkspaceId,
@@ -97,30 +336,56 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.cookieContainer = new CookieContainer();
 			this.credentials = new NetworkCredential(this.TestParameters.RelativityUserName, this.TestParameters.RelativityPassword);
 			this.identifierColumnName = null;
-			this.encoding = Encoding.Unicode;
-			this.logger = new Mock<ILog>();
+			this.loadFileEncoding = Encoding.Unicode;
+			this.textFileEncoding = Encoding.Unicode;
+			this.MockAppSettings = MockObjectFactory.CreateMockAppSettings();
+			this.MockExportRequestRetriever = MockObjectFactory.CreateMockExportRequestRetriever();
+			this.MockFileShareSettingsService = MockObjectFactory.CreateMockFileShareSettingsService();
+			this.MockLogger = MockObjectFactory.CreateMockLogger();
+			this.MockProcessEventWriter = MockObjectFactory.CreateMockProcessEventWriter();
+			this.MockProcessErrorWriter = MockObjectFactory.CreateMockProcessErrorWriter();
+			this.MockTapiObjectService = MockObjectFactory.CreateMockTapiObjectService();
 			this.searchResult = false;
-			this.tempDirectory = new TempDirectory2 { ClearReadOnlyAttributes = true };
+			this.tempDirectory = new TempDirectory2();
+			this.tempDirectory.ClearReadOnlyAttributes = true;
 			this.tempDirectory.Create();
-			this.userNotification = new Mock<IUserNotification>();
-			this.userNotification.Setup(x => x.Alert(It.IsAny<string>())).Callback<string>(msg =>
+			this.TotalDocumentsProcessed = 0;
+			this.TotalDocuments = 0;
+			this.TransferModes = new List<TapiClient>();
+			this.MockUserNotification = MockObjectFactory.CreateMockUserNotification();
+			this.MockUserNotification.Setup(x => x.Alert(It.IsAny<string>())).Callback<string>(msg =>
 			{
 				this.alerts.Add(msg);
 				Console.WriteLine($"Alert: {msg}");
 			});
-			this.userNotification.Setup(x => x.AlertCriticalError(It.IsAny<string>()))
+			this.MockUserNotification.Setup(x => x.AlertCriticalError(It.IsAny<string>()))
 				.Callback<string>(msg =>
 				{
 					this.alertCriticalErrors.Add(msg);
 					Console.WriteLine($"Alert critical error: {msg}");
 				});
-			this.userNotification.Setup(x => x.AlertWarningSkippable(It.IsAny<string>()))
+			this.MockUserNotification.Setup(x => x.AlertWarningSkippable(It.IsAny<string>()))
 				.Callback<string>(msg =>
 				{
 					this.alertWarningSkippables.Add(msg);
 					Console.WriteLine($"Alert warning skipped: {msg}");
 				}).Returns(true);
 			AppSettings.Instance.WebApiServiceUrl = this.TestParameters.RelativityWebApiUrl.ToString();
+			this.processContext = new ProcessContext(
+				this.MockProcessEventWriter.Object,
+				this.MockProcessErrorWriter.Object,
+				this.MockAppSettings.Object,
+				this.MockLogger.Object);
+
+			// Sanity check since these are global settings.
+			AppSettings.Instance.TapiForceAsperaClient = AppSettingsConstants.TapiForceAsperaClientDefaultValue;
+			AppSettings.Instance.TapiForceBcpHttpClient = AppSettingsConstants.TapiForceBcpHttpClientDefaultValue;
+			AppSettings.Instance.TapiForceClientCandidates = AppSettingsConstants.TapiForceClientCandidatesDefaultValue;
+			AppSettings.Instance.TapiForceFileShareClient = AppSettingsConstants.TapiForceFileShareClientDefaultValue;
+			AppSettings.Instance.TapiForceHttpClient = AppSettingsConstants.TapiForceHttpClientDefaultValue;
+
+			// This registers all components.
+			ContainerFactoryProvider.ContainerFactory = this.testContainerFactory;
 		}
 
 		/// <summary>
@@ -129,11 +394,90 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[TearDown]
 		public void Teardown()
 		{
-			if (this.tempDirectory != null)
-			{
-				this.tempDirectory?.Dispose();
-				this.tempDirectory = null;
-			}
+			this.tempDirectory?.Dispose();
+			this.tempDirectory = null;
+			this.testContainer?.Dispose();
+			this.testContainer = null;
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Usage",
+			"CA2201:DoNotRaiseReservedExceptionTypes",
+			Justification = "This is used strictly for testing purposes.")]
+		protected static Exception CreateFatalException()
+		{
+			return new OutOfMemoryException();
+		}
+
+		protected PhysicalFileExportRequest CreateTestPhysicalFileExportRequest(
+			int artifactId,
+			int order,
+			bool validNativeFileGuid,
+			bool validNativeSourceLocation,
+			bool validDestinationLocation)
+		{
+			string fileName = $"{Guid.NewGuid()}.doc";
+			string fileUncPath = $"{DummyUncPath}{fileName}";
+			ObjectExportInfo artifact = new ObjectExportInfo
+				                            {
+					                            ArtifactID = artifactId,
+					                            NativeSourceLocation = validNativeSourceLocation ? fileUncPath : null,
+					                            NativeFileGuid =
+						                            validNativeFileGuid ? System.Guid.NewGuid().ToString() : null,
+				                            };
+			PhysicalFileExportRequest request = new PhysicalFileExportRequest(
+				artifact,
+				validDestinationLocation ? System.IO.Path.Combine(this.TempDirectory, fileName) : null);
+			request.Order = order;
+			return request;
+		}
+
+		protected FieldFileExportRequest CreateTestFieldFileExportRequest(
+			int artifactId,
+			int fileFieldArtifactId,
+			int order,
+			bool validNativeFileGuid,
+			bool validNativeSourceLocation,
+			bool validDestinationLocation)
+		{
+			string fileName = $"{Guid.NewGuid()}.msg";
+			string fileUncPath = $"{DummyUncPath}{fileName}";
+			ObjectExportInfo artifact = new ObjectExportInfo
+				                            {
+					                            ArtifactID = artifactId,
+					                            NativeSourceLocation = validNativeSourceLocation ? fileUncPath : null,
+					                            NativeFileGuid =
+						                            validNativeFileGuid ? System.Guid.NewGuid().ToString() : null,
+				                            };
+			FieldFileExportRequest request = new FieldFileExportRequest(
+				artifact,
+				fileFieldArtifactId,
+				validDestinationLocation ? System.IO.Path.Combine(this.TempDirectory, fileName) : null);
+			request.Order = order;
+			return request;
+		}
+
+		protected LongTextExportRequest CreateTestLongTextExportRequest(
+			int artifactId,
+			int fieldArtifactId,
+			int order,
+			bool validNativeSourceLocation,
+			bool validDestinationLocation)
+		{
+			string fileName = $"{Guid.NewGuid()}.txt";
+			string fileUncPath = $"{DummyUncPath}{fileName}";
+			ObjectExportInfo artifact = new ObjectExportInfo
+				                            {
+					                            ArtifactID = artifactId,
+					                            NativeSourceLocation = validNativeSourceLocation ? fileUncPath : null,
+					                            NativeFileGuid = null,
+				                            };
+			LongTextExportRequest request = LongTextExportRequest.CreateRequestForLongText(
+				artifact,
+				fieldArtifactId,
+				validDestinationLocation ? System.IO.Path.Combine(this.TempDirectory, fileName) : null);
+			request.Order = order;
+			return request;
 		}
 
 		/// <summary>
@@ -156,7 +500,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		/// <exception cref="InvalidOperationException">
 		/// The exception thrown when the import fails.
 		/// </exception>
-		protected void GivenTheFilesAreImported(IEnumerable<string> files)
+		protected void GivenTheFilesAreImported(IReadOnlyList<string> files)
 		{
 			this.GivenTheFilesAreImported(null, files);
 		}
@@ -173,11 +517,23 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		/// <exception cref="InvalidOperationException">
 		/// The exception thrown when the import fails.
 		/// </exception>
-		protected void GivenTheFilesAreImported(string folderPath, IEnumerable<string> files)
+		protected void GivenTheFilesAreImported(string folderPath, IReadOnlyList<string> files)
 		{
 			if (files == null)
 			{
 				throw new ArgumentNullException(nameof(files));
+			}
+
+			int datasetId = 0;
+			foreach (string file in files)
+			{
+				const int HashConstant = 397;
+				datasetId = (datasetId * HashConstant) ^ file.ToUpperInvariant().GetHashCode();
+			}
+
+			if (ImportedDatasets.Contains(datasetId))
+			{
+				return;
 			}
 
 			kCura.Relativity.ImportAPI.ImportAPI importApi =
@@ -245,6 +601,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				};
 
 				job.Execute();
+				ImportedDatasets.Add(datasetId);
 			}
 		}
 
@@ -276,14 +633,152 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		/// <summary>
-		/// Given the encoding.
+		/// Given the load file encoding.
 		/// </summary>
-		/// <param name="value">
-		/// The encoding.
+		/// <param name="encoding">
+		/// The encoding used for load files.
 		/// </param>
-		protected void GivenTheEncoding(Encoding value)
+		protected void GivenTheLoadFileEncoding(Encoding encoding)
 		{
-			this.encoding = value;
+			this.loadFileEncoding = encoding;
+		}
+
+		/// <summary>
+		/// Given the encoding used to convert extracted text files.
+		/// </summary>
+		/// <param name="encoding">
+		/// The encoding used to convert extracted text files.
+		/// </param>
+		protected void GivenTheTextFileEncoding(Encoding encoding)
+		{
+			this.textFileEncoding = encoding;
+		}
+
+		protected void GivenTheMockTapiObjectServiceIsRegistered()
+		{
+			this.testContainer.Register(
+				Component.For<ITapiObjectService>().UsingFactoryMethod(k => this.MockTapiObjectService.Object)
+					.IsDefault());
+		}
+
+		protected void GivenTheMockFileShareSettingsServiceIsRegistered()
+		{
+			this.testContainer.Register(
+				Component.For<IFileShareSettingsService>()
+					.UsingFactoryMethod(k => this.MockFileShareSettingsService.Object).IsDefault());
+		}
+
+		protected void GivenTheMockExportRequestRetrieverIsRegistered()
+		{
+			this.testContainer.Register(
+				Component.For<IExportRequestRetriever>()
+					.UsingFactoryMethod(k => this.MockExportRequestRetriever.Object).IsDefault());
+		}
+
+		protected void GivenTheMockedSearchResultsAreEmpty(bool cloudInstance)
+		{
+			Mock<ITapiFileStorageSearchResults> mockFileStorageSearchResults =
+				MockObjectFactory.CreateMockEmptyTapiFileStorageSearchResults(cloudInstance);
+			this.MockTapiObjectService.Setup(
+				x => x.SearchFileStorageAsync(
+					It.IsAny<TapiBridgeParameters2>(),
+					It.IsAny<Relativity.Logging.ILog>(),
+					It.IsAny<CancellationToken>())).Returns(Task.FromResult(mockFileStorageSearchResults.Object));
+		}
+
+		protected void GivenTheMockedSearchResultsAreInvalid(bool cloudInstance)
+		{
+			Mock<ITapiFileStorageSearchResults> mockFileStorageSearchResults =
+				MockObjectFactory.CreateMockInvalidTapiFileStorageSearchResults(cloudInstance);
+			this.MockTapiObjectService.Setup(
+				x => x.SearchFileStorageAsync(
+					It.IsAny<TapiBridgeParameters2>(),
+					It.IsAny<Relativity.Logging.ILog>(),
+					It.IsAny<CancellationToken>())).Returns(Task.FromResult(mockFileStorageSearchResults.Object));
+		}
+
+		protected void GivenTheMockedFileStorageSearchThrows(bool fatal)
+		{
+			this.MockTapiObjectService.Setup(
+					x => x.SearchFileStorageAsync(
+						It.IsAny<TapiBridgeParameters2>(),
+						It.IsAny<Relativity.Logging.ILog>(),
+						It.IsAny<CancellationToken>()))
+				.Throws(fatal ? CreateFatalException() : new InvalidOperationException());
+		}
+
+		protected void GivenTheMockedExportRequestRetrieverReturns(IEnumerable<ExportRequest> fileExportRequests, IEnumerable<LongTextExportRequest> longTextExportRequests)
+		{
+			this.MockExportRequestRetriever.Setup(x => x.RetrieveFileExportRequests()).Returns(fileExportRequests.ToList());
+			this.MockExportRequestRetriever.Setup(x => x.RetrieveLongTextExportRequests()).Returns(longTextExportRequests.ToList());
+		}
+
+		protected void GivenTheMockedSettingsForFileShareIsNull()
+		{
+			this.MockFileShareSettingsService.Setup(x => x.GetSettingsForFileShare(It.IsAny<int>(), It.IsAny<string>()))
+				.Returns((IRelativityFileShareSettings)null);
+			this.MockFileShareSettingsService.Setup(x => x.ReadFileSharesAsync(It.IsAny<CancellationToken>()))
+				.Returns(Task.CompletedTask);
+		}
+
+		protected void GivenTheTapiForceClientAppSettings(TapiClient client)
+		{
+			// Export relies on the global parameters.
+			switch (client)
+			{
+				case TapiClient.Aspera:
+					AppSettings.Instance.TapiForceAsperaClient = true;
+					this.MockAppSettings.SetupGet(x => x.TapiForceAsperaClient).Returns(true);
+					break;
+
+				case TapiClient.Direct:
+					AppSettings.Instance.TapiForceFileShareClient = true;
+					this.MockAppSettings.SetupGet(x => x.TapiForceFileShareClient).Returns(true);
+					break;
+
+				case TapiClient.Web:
+					AppSettings.Instance.TapiForceHttpClient = true;
+					this.MockAppSettings.SetupGet(x => x.TapiForceHttpClient).Returns(true);
+					break;
+
+				case TapiClient.None:
+					AppSettings.Instance.TapiForceAsperaClient = false;
+					AppSettings.Instance.TapiForceFileShareClient = false;
+					AppSettings.Instance.TapiForceHttpClient = false;
+					this.MockAppSettings.SetupGet(x => x.TapiForceAsperaClient).Returns(false);
+					this.MockAppSettings.SetupGet(x => x.TapiForceFileShareClient).Returns(false);
+					this.MockAppSettings.SetupGet(x => x.TapiForceHttpClient).Returns(false);
+					break;
+
+				default:
+					Assert.Fail($"The Transfer API client {client} isn't supported by this test.");
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Queries for the total number of documents.
+		/// </summary>
+		/// <returns>
+		/// The total number of documents.
+		/// </returns>
+		protected int QueryDocumentCount()
+		{
+			return this.QueryRelativityObjectCount((int)kCura.Relativity.Client.ArtifactType.Document);
+		}
+
+		/// <summary>
+		/// Queries for the total number of objects for the specified RDO type.
+		/// </summary>
+		/// <param name="artifactTypeId">
+		/// The RDO artifact type identifier.
+		/// </param>
+		/// <returns>
+		/// The total number of objects.
+		/// </returns>
+		protected int QueryRelativityObjectCount(int artifactTypeId)
+		{
+			return RdoHelper.QueryRelativityObjectCount(this.TestParameters, artifactTypeId);
 		}
 
 		/// <summary>
@@ -322,7 +817,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			using (var folderManager = new kCura.WinEDDS.Service.FolderManager(this.credentials, this.cookieContainer))
 			{
-				FolderCache folderCache = new FolderCache(this.logger.Object, folderManager, caseInfo.RootFolderID, caseInfo.ArtifactID);
+				FolderCache folderCache = new FolderCache(this.MockLogger.Object, folderManager, caseInfo.RootFolderID, caseInfo.ArtifactID);
 				int folderArtifactId = folderCache.GetFolderId(folderPath);
 				return Task.FromResult(folderArtifactId);
 			}
@@ -352,12 +847,13 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 					Credential = this.credentials,
 					TypeOfExport = this.exportType,
 					FolderPath = this.tempDirectory.Directory,
+					TextFileEncoding = this.textFileEncoding,
 
 					// settings for exporting natives
 					ExportNative = true,
 					TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Absolute,
 					IdentifierColumnName = this.identifierColumnName,
-					LoadFileEncoding = this.encoding,
+					LoadFileEncoding = this.loadFileEncoding,
 					LoadFilesPrefix = "Documents",
 					LoadFileExtension = "dat",
 					MultiRecordDelimiter = ';',
@@ -444,42 +940,29 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		/// <summary>
-		/// When executing the export search.
+		/// When exporting the documents.
 		/// </summary>
-		protected void WhenExecutingTheExportSearch()
+		protected void WhenExportingTheDocs()
 		{
-			ContainerFactoryProvider.ContainerFactory = new ContainerFactory();
-			var mockProcessEventWriter = new Mock<IProcessEventWriter>();
-			var mockProcessErrorWriter = new Mock<IProcessErrorWriter>();
-			var mockAppSettings = new Mock<IAppSettings>();
-			var mockLog = new Mock<ILog>();
-			var processContext = new ProcessContext(
-				mockProcessEventWriter.Object,
-				mockProcessErrorWriter.Object,
-				mockAppSettings.Object,
-				mockLog.Object);
-			var exporter = new Exporter(
+			Exporter exporter = new Exporter(
 				this.exportFile,
-				processContext,
+				this.processContext,
 				new WebApiServiceFactory(this.exportFile),
 				new ExportFileFormatterFactory(),
 				new ExportConfig());
-			exporter.StatusMessage += args =>
+			try
 			{
-				if (!string.IsNullOrEmpty(args.Message))
-				{
-					this.statusMessages.Add(args.Message);
-					Console.WriteLine($"Status: {args.Message}");
-				}
-			};
-
-			exporter.FatalErrorEvent += (message, exception) =>
+				exporter.StatusMessage += this.ExporterOnStatusMessage;
+				exporter.FileTransferMultiClientModeChangeEvent += this.ExporterOnFileTransferModeChangeEvent;
+				exporter.FatalErrorEvent += this.ExporterOnFatalErrorEvent;
+				this.searchResult = exporter.ExportSearch();
+			}
+			finally
 			{
-				this.fatalErrors.Add(message);
-				Console.WriteLine($"Fatal errors: {message}");
-			};
-
-			this.searchResult = exporter.ExportSearch();
+				exporter.StatusMessage -= this.ExporterOnStatusMessage;
+				exporter.FileTransferMultiClientModeChangeEvent -= this.ExporterOnFileTransferModeChangeEvent;
+				exporter.FatalErrorEvent -= this.ExporterOnFatalErrorEvent;
+			}
 		}
 
 		/// <summary>
@@ -545,6 +1028,99 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			Assert.That(this.searchResult, Is.EqualTo(expected));
 		}
 
+		/// <summary>
+		/// Then the total number of documents should equal the specified result.
+		/// </summary>
+		/// <param name="expected">
+		/// The expected number of documents.
+		/// </param>
+		protected void ThenTheTotalDocumentsShouldEqual(int expected)
+		{
+			Assert.That(this.TotalDocuments, Is.EqualTo(expected));
+		}
+
+		/// <summary>
+		/// Then the total number of documents processed should equal the specified result.
+		/// </summary>
+		/// <param name="expected">
+		/// The expected number of processed documents.
+		/// </param>
+		protected void ThenTheTotalDocumentsProcessedShouldEqual(int expected)
+		{
+			Assert.That(this.TotalDocumentsProcessed, Is.EqualTo(expected));
+		}
+
+		/// <summary>
+		/// Then the transfer mode should equal direct or web mode.
+		/// </summary>
+		protected void ThenTheTransferModeShouldEqualDirectOrWebMode()
+		{
+			foreach (TapiClient tapiClient in this.TransferModes)
+			{
+				Assert.That(tapiClient, Is.AnyOf(TapiClient.Direct, TapiClient.Web));
+			}
+		}
+
+		protected void ThenTheMockSearchFileStorageAsyncIsVerified()
+		{
+			this.MockTapiObjectService.Verify(
+				x => x.SearchFileStorageAsync(
+					It.IsAny<TapiBridgeParameters2>(),
+					It.IsAny<Relativity.Logging.ILog>(),
+					It.IsAny<CancellationToken>()));
+		}
+
+		protected void ThenTheMockFileShareSettingsServiceIsVerified()
+		{
+			this.MockFileShareSettingsService.Verify(
+				x => x.GetSettingsForFileShare(It.IsAny<int>(), It.IsAny<string>()));
+		}
+
+		/// <summary>
+		/// Then the overall export experienced a fatal exception.
+		/// </summary>
+		/// <param name="expectedSearchResult">
+		/// The expected search result.
+		/// </param>
+		protected void ThenTheExportJobIsFatal(bool expectedSearchResult)
+		{
+			// Note: at present, the export returns true even when fatal!
+			this.ThenTheSearchResultShouldEqual(expectedSearchResult);
+			this.ThenTheStatusMessagesCountShouldBeNonZero();
+			this.ThenTheFatalErrorsCountShouldEqual(1);
+		}
+
+		/// <summary>
+		/// Then the overall export job is not successful.
+		/// </summary>
+		/// <param name="expectedDocsProcessed">
+		/// The expected number of processed documents.
+		/// </param>
+		protected void ThenTheExportJobIsNotSuccessful(int expectedDocsProcessed)
+		{
+			this.ThenTheSearchResultShouldEqual(false);
+			this.ThenTheFatalErrorsCountShouldEqual(0);
+			this.ThenTheStatusMessagesCountShouldBeNonZero();
+			this.ThenTheTotalDocumentsProcessedShouldEqual(expectedDocsProcessed);
+		}
+
+		/// <summary>
+		/// Then the overall export job is successful.
+		/// </summary>
+		/// <param name="expectedDocsProcessed">
+		/// The expected number of processed documents.
+		/// </param>
+		protected void ThenTheExportJobIsSuccessful(int expectedDocsProcessed)
+		{
+			this.ThenTheSearchResultShouldEqual(true);
+			this.ThenTheAlertCriticalErrorsCountShouldEqual(0);
+			this.ThenTheAlertsCountShouldEqual(0);
+			this.ThenTheAlertWarningSkippablesCountShouldEqual(0);
+			this.ThenTheFatalErrorsCountShouldEqual(0);
+			this.ThenTheStatusMessagesCountShouldBeNonZero();
+			this.ThenTheTotalDocumentsProcessedShouldEqual(expectedDocsProcessed);
+		}
+
 		private Task<string> GetObjectTypeNameAsync(int artifactTypeId)
 		{
 			using (var objectTypeManager =
@@ -603,6 +1179,46 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 				return fields;
 			}
+		}
+
+		private void ExporterOnFatalErrorEvent(string message, Exception ex)
+		{
+			lock (this.syncRoot)
+			{
+				this.fatalErrors.Add(message);
+			}
+
+			Console.WriteLine($"Fatal errors: {message}");
+		}
+
+		private void ExporterOnFileTransferModeChangeEvent(object sender, TapiMultiClientEventArgs e)
+		{
+			lock (this.syncRoot)
+			{
+				this.TransferModes.Clear();
+				foreach (TapiClient tapiClient in e.TransferClients)
+				{
+					this.TransferModes.Add(tapiClient);
+				}
+			}
+
+			Console.WriteLine("Transfer mode changed: {0}", string.Join(",", this.TransferModes));
+		}
+
+		private void ExporterOnStatusMessage(ExportEventArgs args)
+		{
+			lock (this.syncRoot)
+			{
+				this.TotalDocuments = args.TotalDocuments;
+				this.TotalDocumentsProcessed = args.DocumentsExported;
+				if (!string.IsNullOrEmpty(args.Message))
+				{
+					this.statusMessages.Add(args.Message);
+				}
+			}
+
+			Console.WriteLine(
+				$"Status: Message={args.Message}, Total Exported Docs={args.DocumentsExported}, Total Docs={args.TotalDocuments}");
 		}
 	}
 }

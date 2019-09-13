@@ -35,7 +35,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			Native native = new Native(artifact)
 			{
-				HasBeenDownloaded = false,
+				TransferCompleted = false,
 				ExportRequest = exportRequest
 			};
 			nativeRepository.Add(native);
@@ -56,7 +56,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			Image image = new Image(artifact)
 			{
-				HasBeenDownloaded = false,
+				TransferCompleted = false,
 				ExportRequest = exportRequest
 			};
 			imageRepository.Add(image.InList());

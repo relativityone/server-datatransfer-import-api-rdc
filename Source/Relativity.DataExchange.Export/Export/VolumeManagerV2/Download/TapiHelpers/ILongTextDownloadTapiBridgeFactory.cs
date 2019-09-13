@@ -2,7 +2,7 @@
 {
 	using System.Threading;
 
-	public interface ILongTextTapiBridgeFactory
+	public interface ILongTextDownloadTapiBridgeFactory
 	{
 		IDownloadTapiBridge Create(CancellationToken token);
 	}

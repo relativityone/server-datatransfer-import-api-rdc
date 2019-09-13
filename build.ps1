@@ -87,11 +87,8 @@ The optional parameter to apply ILMerge configurations to the build.
 .PARAMETER Sign
 The optional parameter to digitally sign the appropriate artifacts for the associated task. This will not work without a signing certificate installed onto your machine.
 
-.PARAMETER SkipPublishRdcPackage
-The optional parameter that skips publishing the RDC package.
-
-.PARAMETER SkipPublishSdkPackage
-The optional parameter that skips publishing the SDK package.
+.PARAMETER ForcePublishRdcPackage
+The optional parameter that forces publishing the RDC package.
 
 .PARAMETER Simulate
 The optional parameter that simulates executing a command. This is generally reserved for debug purposes.
@@ -136,9 +133,7 @@ param(
     [Parameter()]
     [Switch]$Sign,
     [Parameter()]
-    [Switch]$SkipPublishRdcPackage,
-    [Parameter()]
-    [Switch]$SkipPublishSdkPackage,
+    [Switch]$ForcePublishRdcPackage,    
     [Parameter()]
     [Switch]$Simulate
 )
@@ -211,8 +206,7 @@ $Params = @{
         TestVMName = $TestVMName
         ILMerge = $ILMerge
         Sign = $Sign
-        SkipPublishRdcPackage = $SkipPublishRdcPackage
-        SkipPublishSdkPackage = $SkipPublishSdkPackage
+        ForcePublishRdcPackage = $ForcePublishRdcPackage
         Simulate = $Simulate
     }
 

@@ -100,7 +100,8 @@ namespace Relativity.DataExchange.NUnit.Integration
 				});
 			}
 
-			this.TapiBridge.WaitForTransferJob();
+			const bool KeepJobAlive = true;
+			this.TapiBridge.WaitForTransfers("Waiting...", "Success", "Error", KeepJobAlive);
 		}
 	}
 }

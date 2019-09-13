@@ -65,10 +65,9 @@
 			catch (ImageConversionException ex)
 			{
 				HandleImageRollupException(artifact, ex, rollupTempLocation);
-				destinationImage.SuccessfulRollup = false;
+				artifact.DocumentError = true;
 				return;
 			}
-
 			_logger.LogVerbose("Images rollup finished.");
 			destinationImage.SuccessfulRollup = true;
 		}

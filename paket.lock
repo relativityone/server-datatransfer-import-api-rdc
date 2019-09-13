@@ -32,6 +32,7 @@ NUGET
     StyleCop.Analyzers (1.1.1-rc.114)
       StyleCop.Analyzers.Unstable (>= 1.1.1.114)
     StyleCop.Analyzers.Unstable (1.1.1.114)
+    System.Reactive (4.0)
     System.ValueTuple (4.5)
     ZetaLongPaths (1.0.0.16)
   remote: https://proget.kcura.corp/NuGet/NuGet
@@ -67,7 +68,7 @@ NUGET
     Relativity.Testing.Identification (1.6.0)
       NUnit (>= 3.11)
       NUnitExtras.HierarchicalCategories (>= 1.1)
-    relativity.transfer.client (6.0.19)
+    relativity.transfer.client (6.2.1)
       Newtonsoft.Json (>= 6.0.8)
       Polly (>= 5.3.1)
       relativity.faspmanager (3.7.2)

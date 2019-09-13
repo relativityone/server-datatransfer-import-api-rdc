@@ -35,26 +35,32 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldMarkFileAsDownloadedWhenFileIsDownloaded()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldMarkFileAsCompleted(bool transferStatus)
 		{
 			const string id = "812216";
+			const bool TransferCompleted = true;
 
 			// ACT
-			this._instance.Attach(this._tapiBridge.Object);
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
+			this._instance.Subscribe(this._tapiBridge.Object);
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, TransferCompleted, transferStatus, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT
 			this.VerifyFileMarkedAsDownloaded(this._downloadProgressManager, id, 1);
 		}
 
 		[Test]
-		public void ItShouldNotMarkFileAsDownloadedWhenFileIsNotDownloaded()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldNotMarkFileAsCompletedWhenWhenTransferNotFinished(bool transferStatus)
 		{
 			const string id = "812216";
+			const bool TransferNotCompleted = false;
 
 			// ACT
-			this._instance.Attach(this._tapiBridge.Object);
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, false, TransferPathStatus.Failed, 1, 1, DateTime.Now, DateTime.Now));
+			this._instance.Subscribe(this._tapiBridge.Object);
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, TransferNotCompleted, transferStatus, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT
 			this.VerifyFileNotMarkedAsDownloaded(this._downloadProgressManager, id, 1);
@@ -67,11 +73,11 @@ namespace Relativity.DataExchange.Export.NUnit
 			const string id2 = "267641";
 
 			// ACT
-			this._instance.Attach(this._tapiBridge.Object);
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id1, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
+			this._instance.Subscribe(this._tapiBridge.Object);
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id1, true, true, 1, 1, DateTime.Now, DateTime.Now));
 
-			this._instance.Detach();
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id2, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
+			this._instance.Unsubscribe(this._tapiBridge.Object);
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id2, true, true, 1, 1, DateTime.Now, DateTime.Now));
 
 			// ASSERT
 			this.VerifyFileMarkedAsDownloaded(this._downloadProgressManager, id1, 1);

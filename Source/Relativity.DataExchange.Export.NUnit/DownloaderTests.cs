@@ -11,6 +11,8 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using global::NUnit.Framework;
 
+	using kCura.WinEDDS.Exporters;
+
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
@@ -71,7 +73,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT & ASSERT
 			Assert.Throws<TransferException>(() => this._instance.DownloadFilesForArtifacts(CancellationToken.None));
 
-			this._errorFileWriter.Verify(x => x.Write(ErrorFileWriter.ExportFileType.Generic, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
+			this._errorFileWriter.Verify(x => x.Write(ErrorFileWriter.ExportFileType.Generic, It.IsAny<ObjectExportInfo>(), It.IsAny<string>(), It.IsAny<string>()));
 		}
 	}
 }

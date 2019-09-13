@@ -12,6 +12,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Transfer;
 	using Relativity.Transfer;
 
 	using ITransferStatistics = Relativity.DataExchange.Export.VolumeManagerV2.Statistics.ITransferStatistics;
@@ -43,14 +44,14 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.Instance.Dispose();
 
 			// ASSERT
-			this.ProgressHandler.Verify(x => x.Attach(this.TapiBridge.Object), Times.Once);
-			this.ProgressHandler.Verify(x => x.Detach(), Times.Once);
+			this.ProgressHandler.Verify(x => x.Subscribe(this.TapiBridge.Object), Times.Once);
+			this.ProgressHandler.Verify(x => x.Unsubscribe(this.TapiBridge.Object), Times.Once);
 
-			this.MessagesHandler.Verify(x => x.Attach(this.TapiBridge.Object), Times.Once);
-			this.MessagesHandler.Verify(x => x.Detach(), Times.Once);
+			this.MessagesHandler.Verify(x => x.Subscribe(this.TapiBridge.Object), Times.Once);
+			this.MessagesHandler.Verify(x => x.Unsubscribe(this.TapiBridge.Object), Times.Once);
 
-			this.TransferStatistics.Verify(x => x.Attach(this.TapiBridge.Object), Times.Once);
-			this.TransferStatistics.Verify(x => x.Detach(), Times.Once);
+			this.TransferStatistics.Verify(x => x.Subscribe(this.TapiBridge.Object), Times.Once);
+			this.TransferStatistics.Verify(x => x.Unsubscribe(this.TapiBridge.Object), Times.Once);
 
 			this.TapiBridge.Verify(x => x.Dispose(), Times.Once);
 		}
@@ -60,20 +61,20 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			// ACT
 			this.Instance.QueueDownload(new TransferPath());
-			this.Instance.WaitForTransferJob();
+			this.Instance.WaitForTransfers();
 
 			// ASSERT
-			this.TapiBridge.Verify(x => x.WaitForTransferJob(), Times.Once);
+			this.TapiBridge.Verify(x => x.WaitForTransfers(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldNotWaitForTransferJobWhenNothingHasBeenAddedToQueue()
 		{
 			// ACT
-			this.Instance.WaitForTransferJob();
+			this.Instance.WaitForTransfers();
 
 			// ASSERT
-			this.TapiBridge.Verify(x => x.WaitForTransferJob(), Times.Never);
+			this.TapiBridge.Verify(x => x.WaitForTransfers(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
 		}
 
 		[Test]
@@ -86,16 +87,6 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			// ASSERT
 			this.TapiBridge.Verify(x => x.AddPath(transferPath), Times.Once);
-		}
-
-		[Test]
-		public void ItShouldDisconnect()
-		{
-			// ACT
-			this.Instance.Disconnect();
-
-			// ASSERT
-			this.TapiBridge.Verify(x => x.Disconnect(), Times.Once);
 		}
 	}
 }
