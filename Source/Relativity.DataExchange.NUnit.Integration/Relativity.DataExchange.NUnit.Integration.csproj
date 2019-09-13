@@ -146,6 +146,7 @@
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
+    <Compile Include="TapiObjectServiceTests.cs" />
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="ApplicationVersionServiceTests.cs" />
     <Compile Include="ErrorMessageWriterTests.cs" />

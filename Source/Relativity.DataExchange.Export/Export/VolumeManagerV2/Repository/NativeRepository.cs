@@ -1,5 +1,7 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Repository
 {
+	using System;
+
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 
 	using System.Collections.Generic;
@@ -31,7 +33,9 @@
 		{
 			lock (_syncLock)
 			{
-				return _nativesByArtifactIdDictionary[artifactId];
+				Native native;
+				_nativesByArtifactIdDictionary.TryGetValue(artifactId, out native);
+				return native;
 			}
 		}
 
@@ -48,15 +52,22 @@
 			//Only to sync access to natives
 			lock (_syncLock)
 			{
-				return _natives.Where(x => !x.HasBeenDownloaded).Select(x => x.ExportRequest);
+				return _natives.Where(x => !x.TransferCompleted).Select(x => x.ExportRequest);
 			}
 		}
 
 		public bool AnyRequestForLocation(string destinationLocation)
 		{
+			if (string.IsNullOrWhiteSpace(destinationLocation))
+			{
+				return false;
+			}
+
 			lock (_syncLock)
 			{
-				return GetExportRequests().Any(x => x.DestinationLocation == destinationLocation);
+				return GetExportRequests().Any(
+					x => string.Compare(x.DestinationLocation, destinationLocation, StringComparison.OrdinalIgnoreCase)
+					     == 0);
 			}
 		}
 

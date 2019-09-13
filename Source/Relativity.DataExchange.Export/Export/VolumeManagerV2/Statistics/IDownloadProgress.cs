@@ -4,6 +4,6 @@
 
 	public interface IDownloadProgress : IStateful
 	{
-		void UpdateDownloadedCount();
+		void UpdateCompletedCount();
 	}
 }

@@ -1,95 +1,96 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download
 {
 	using System;
-	using System.Collections.Concurrent;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading;
 	using System.Threading.Tasks;
 
-	using kCura.WinEDDS;
-
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.Logging;
 
 	public class PhysicalFilesDownloader : IPhysicalFilesDownloader
 	{
 		private readonly IFileShareSettingsService _settingsService;
 		private readonly IFileTapiBridgePool _fileTapiBridgePool;
-		private readonly IExportConfig _exportConfig;
+		private readonly IDownloadProgressManager _downloadProgressManager;
 		private readonly ILog _logger;
 		private readonly SafeIncrement _safeIncrement;
 
-		public PhysicalFilesDownloader(IFileShareSettingsService settingsService, IFileTapiBridgePool fileTapiBridgePool, IExportConfig exportConfig, SafeIncrement safeIncrement, ILog logger)
+		public PhysicalFilesDownloader(
+			IFileShareSettingsService settingsService,
+			IFileTapiBridgePool fileTapiBridgePool,
+			IDownloadProgressManager downloadProgressManager,
+			SafeIncrement safeIncrement,
+			ILog logger)
 		{
-			_settingsService = settingsService;
-			_fileTapiBridgePool = fileTapiBridgePool;
-			_exportConfig = exportConfig;
-			_safeIncrement = safeIncrement;
-			_logger = logger;
+			_settingsService = settingsService.ThrowIfNull(nameof(settingsService));
+			_fileTapiBridgePool = fileTapiBridgePool.ThrowIfNull(nameof(fileTapiBridgePool));
+			_downloadProgressManager = downloadProgressManager.ThrowIfNull(nameof(downloadProgressManager));
+			_safeIncrement = safeIncrement.ThrowIfNull(nameof(safeIncrement));
+			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
-		public async Task DownloadFilesAsync(List<ExportRequest> requests, CancellationToken batchCancellationToken)
+		public async Task DownloadFilesAsync(List<ExportRequest> requests, CancellationToken token)
 		{
-			var taskCancellationTokenSource = new DownloadCancellationTokenSource(batchCancellationToken);
+			var taskCancellationTokenSource = new DownloadCancellationTokenSource(token);
+			await _settingsService.ReadFileSharesAsync(token).ConfigureAwait(false);
 
-			ConcurrentQueue<ExportRequestsWithFileshareSettings> queue = CreateTransferQueue(requests);
-			_logger.LogVerbose("Adding {filesToExportCount} requests for files through {tapiBridgeCount} TAPI bridges.", requests.Count, queue.Count);
-
+			List<ExportRequestsWithFileshareSettings> exportRequestsFileShareSettingsList =
+				this.GetExportRequestFileShareSettings(requests);
+			_logger.LogVerbose(
+				"Adding {FilesToExportCount} requests for files through {ExportRequestsWithFileShareSettingsCount} file share setting objects.",
+				requests.Count,
+				exportRequestsFileShareSettingsList.Count);
 			var tasks = new List<Task>();
-
-			for (var i = 0; i < _exportConfig.MaxNumberOfFileExportTasks; i++)
+			foreach (ExportRequestsWithFileshareSettings settings in exportRequestsFileShareSettingsList)
 			{
-				tasks.Add(Task.Run(() => CreateJobTask(queue, taskCancellationTokenSource), taskCancellationTokenSource.Token));
+				tasks.Add(
+					Task.Run(
+						() => this.CreateJobTask(settings, taskCancellationTokenSource),
+						taskCancellationTokenSource.Token));
 			}
 
 			await Task.WhenAll(tasks).ConfigureAwait(false);
 		}
 
-		private ConcurrentQueue<ExportRequestsWithFileshareSettings> CreateTransferQueue(List<ExportRequest> requests)
+		private List<ExportRequestsWithFileshareSettings> GetExportRequestFileShareSettings(List<ExportRequest> requests)
 		{
-			ILookup<IRelativityFileShareSettings, ExportRequest> result = requests.ToLookup(r => _settingsService.GetSettingsForFileshare(r.SourceLocation));
-
-			return new ConcurrentQueue<ExportRequestsWithFileshareSettings>(result.Select(r => new ExportRequestsWithFileshareSettings(r.Key, r)));
+			ILookup<IRelativityFileShareSettings, ExportRequest> result = requests.ToLookup(
+				r => _settingsService.GetSettingsForFileShare(r.ArtifactId, r.SourceLocation));
+			return new List<ExportRequestsWithFileshareSettings>(
+				result.Select(r => new ExportRequestsWithFileshareSettings(r.Key, r)));
 		}
 
-		private void CreateJobTask(ConcurrentQueue<ExportRequestsWithFileshareSettings> queue, DownloadCancellationTokenSource downloadCancellationTokenSourceSource)
+		private void CreateJobTask(
+			ExportRequestsWithFileshareSettings settings,
+			DownloadCancellationTokenSource tokenSource)
 		{
-			while (queue.TryDequeue(out ExportRequestsWithFileshareSettings exportRequestWithFileshareSettings))
+			try
 			{
-				IDownloadTapiBridge bridge = null;
-				try
+				IDownloadTapiBridge bridge = _fileTapiBridgePool.Request(settings.FileshareSettings, tokenSource.Token);
+				this.DownloadFiles(bridge, settings.Requests, tokenSource.Token);
+				bridge.WaitForTransfers();
+			}
+			catch (TaskCanceledException)
+			{
+				if (!tokenSource.IsBatchCancelled())
 				{
-					bridge = _fileTapiBridgePool.Request(exportRequestWithFileshareSettings.FileshareSettings,
-						downloadCancellationTokenSourceSource.Token);
-
-					DownloadFiles(bridge, exportRequestWithFileshareSettings.Requests,
-						downloadCancellationTokenSourceSource.Token);
-					bridge.WaitForTransferJob();
-				}
-				catch (TaskCanceledException)
-				{
-					if (!downloadCancellationTokenSourceSource.IsBatchCancelled())
-					{
-						throw;
-					}
-				}
-				catch (Exception)
-				{
-					downloadCancellationTokenSourceSource.Cancel();
 					throw;
 				}
-				finally
-				{
-					if (bridge != null)
-					{
-						_fileTapiBridgePool.Release(bridge);
-					}
-				}
+			}
+			catch (Exception)
+			{
+				tokenSource.Cancel();
+				throw;
 			}
 		}
 
-		private void DownloadFiles(IDownloadTapiBridge filesDownloader, IEnumerable<ExportRequest> fileExportRequests, CancellationToken cancellationToken)
+		private void DownloadFiles(
+			IDownloadTapiBridge bridge,
+			IEnumerable<ExportRequest> fileExportRequests,
+			CancellationToken cancellationToken)
 		{
 			foreach (ExportRequest fileExportRequest in fileExportRequests)
 			{
@@ -100,9 +101,20 @@
 
 				try
 				{
-					_logger.LogVerbose("Adding export request for downloading file for artifact {artifactId} to {destination}.", fileExportRequest.ArtifactId,
+					_logger.LogVerbose(
+						"Adding export request for downloading file for artifact {artifactId} to {destination}.",
+						fileExportRequest.ArtifactId,
 						fileExportRequest.DestinationLocation);
-					fileExportRequest.FileName = filesDownloader.QueueDownload(fileExportRequest.CreateTransferPath(_safeIncrement.GetNext()));
+					fileExportRequest.FileName =
+						bridge.QueueDownload(fileExportRequest.CreateTransferPath(_safeIncrement.GetNext()));
+				}
+				catch (ArgumentException ex)
+				{
+					_logger.LogWarning(
+						ex,
+						"There was a problem downloading artifact {ArtifactId}.",
+						fileExportRequest.ArtifactId);
+					_downloadProgressManager.MarkArtifactAsError(fileExportRequest.ArtifactId, ex.Message);
 				}
 				catch (Exception ex)
 				{

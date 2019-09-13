@@ -67,12 +67,12 @@ namespace Relativity.DataExchange
 		public const string FileTypeIdentifyTimeoutSecondsKey = "FileTypeIdentifyTimeoutSeconds";
 		public const int FileTypeIdentifyTimeoutSecondsDefaultValue = Relativity.DataExchange.Io.OutsideInFileTypeIdentifierService.DefaultIdleTimeout;
 		public const bool ForceFolderPreviewDefaultValue = true;
-		public const string ForceParallelismInNewExportKey = "ForceParallelismInNewExport";
-		public const bool ForceParallelismInNewExportDefaultValue = false;
 		public const string ForceWebUploadKey = "ForceWebUpload";
 		public const bool ForceWebUploadDefaultValue = false;
 		public const string HttpTimeoutSecondsKey = "HttpTimeoutSeconds";
 		public const int HttpTimeoutSecondsDefaultValue = 300;
+		public const string HttpExtractedTextTimeoutSecondsKey = "HttpExtractedTextTimeoutSeconds";
+		public const int HttpExtractedTextTimeoutSecondsDefaultValue = 900;
 		public const string ImportBatchMaxVolumeKey = "ImportBatchMaxVolume";
 		public const int ImportBatchMaxVolumeDefaultValue = 10485760;
 		public const string ImportBatchSizeKey = "ImportBatchSize";
@@ -89,10 +89,6 @@ namespace Relativity.DataExchange
 		public const bool LogAllEventsDefaultValue = false;
 		public const string LogConfigXmlFileNameKey = "LogConfigFile";
 		public const string LogConfigXmlFileNameDefaultValue = "LogConfig.xml";
-		public const string MaxFilesForTapiBridgeKey = "MaximumFilesForTapiBridge";
-		public const int MaxFilesForTapiBridgeDefaultValue = 10000;
-		public const string MaxNumberOfFileExportTasksKey = "MaxNumberOfFileExportTasks";
-		public const int MaxNumberOfFileExportTasksDefaultValue = 2;
 		public const string MinBatchSizeKey = "MinimumBatchSize";
 		public const int MinBatchSizeDefaultValue = 100;
 		public const string MaximumReloginTriesKey = "MaximumReloginTries";
@@ -114,8 +110,6 @@ namespace Relativity.DataExchange
 		public const int TapiAsperaNativeDocRootLevelsDefaultValue = 1;
 		public const string TapiBadPathErrorsRetryKey = "BadPathErrorsRetry";
 		public const bool TapiBadPathErrorsRetryDefaultValue = false;
-		public const string TapiBridgeExportTransferWaitingTimeInSecondsKey = "TapiBridgeExportTransferWaitingTimeInSeconds";
-		public const int TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue = 600;
 		public const string TapiFileNotFoundErrorsDisabledKey = "TapiFileNotFoundErrorsDisabled";
 		public const bool TapiFileNotFoundErrorsDisabledDefaultValue = false;
 		public const string TapiFileNotFoundErrorsRetryKey = "TapiFileNotFoundErrorsRetry";
@@ -131,7 +125,9 @@ namespace Relativity.DataExchange
 		public const string TapiForceHttpClientKey = "TapiForceHttpClient";
 		public const bool TapiForceHttpClientDefaultValue = false;
 		public const string TapiLargeFileProgressEnabledKey = "TapiLargeFileProgressEnabled";
-		public const bool TapiLargeFileProgressEnabledDefaultValue = false;
+		public const bool TapiLargeFileProgressEnabledDefaultValue = true;
+		public const string TapiMaxInactivitySecondsKey = "TapiMaxInactivitySeconds";
+		public const int TapiMaxInactivitySecondsDefaultValue = 180;
 		public const string TapiMaxJobParallelismKey = "TapiMaxJobParallelism";
 		public const int TapiMaxJobParallelismDefaultValue = 10;
 		public const string TapiMinDataRateMbpsKey = "TapiMinDataRateMbps";

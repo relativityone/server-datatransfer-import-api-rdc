@@ -45,7 +45,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to create an error when importing a zero byte file. This is <see langword="false" /> by default.
+		/// Gets or sets a value indicating whether to create an error when importing or exporting a zero byte file. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to create an error; otherwise, <see langword="false" />.
@@ -273,18 +273,6 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to use parallelism for production exports that use the new implementation. This is <see langword="false" /> by default.
-		/// </summary>
-		/// <value>
-		/// <see langword="true" /> to use parallelism; otherwise, <see langword="false" />.
-		/// </value>
-		bool ForceParallelismInNewExport
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether to force web-mode. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
@@ -297,12 +285,24 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets the HTTP timeout in seconds.
+		/// Gets or sets the HTTP timeout in seconds. This is 300 seconds by default.
 		/// </summary>
 		/// <value>
 		/// The total number of seconds.
 		/// </value>
 		int HttpTimeoutSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the HTTP extracted text timeout in seconds. This is 900 seconds by default.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int HttpExtractedTextTimeoutSeconds
 		{
 			get;
 			set;
@@ -399,30 +399,6 @@ namespace Relativity.DataExchange
 		/// The file name.
 		/// </value>
 		string LogConfigXmlFileName
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Gets or sets the maximum number of files for each Transfer API bridge instance.
-		/// </summary>
-		/// <value>
-		/// The maximum number of files.
-		/// </value>
-		int MaxFilesForTapiBridge
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Gets or sets the maximum number of file export tasks.
-		/// </summary>
-		/// <value>
-		/// The maximum number of tasks.
-		/// </value>
-		int MaxNumberOfFileExportTasks
 		{
 			get;
 			set;
@@ -603,18 +579,6 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets the time, in seconds, that a Transfer API bridge waits before releasing the wait handle.
-		/// </summary>
-		/// <value>
-		/// The total number of seconds.
-		/// </value>
-		int TapiBridgeExportTransferWaitingTimeInSeconds
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether Transfer API should disable treating missing files as errors. This is <see langword="false" /> by default and always <see langword="true" /> for exports.
 		/// </summary>
 		/// <value>
@@ -705,6 +669,18 @@ namespace Relativity.DataExchange
 		/// <see langword="true" /> to raise progress events; otherwise, <see langword="false" />.
 		/// </value>
 		bool TapiLargeFileProgressEnabled
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum number of seconds in which no data movement occurs before treating the transfer inactive. When this occurs, the import or export job continues but performance may be degraded.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int TapiMaxInactivitySeconds
 		{
 			get;
 			set;

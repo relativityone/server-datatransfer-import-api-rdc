@@ -143,5 +143,52 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this.Writer.Verify(x => x.WriteEntry(loadFileEntry, CancellationToken.None), Times.Exactly(numberOfImages));
 		}
+
+		[Test]
+		public void ItShouldHandleImagesWithTheSameNUmber()
+		{
+			const int numberOfImages = 3;
+			const string loadFileEntry = "fileEntry";
+			const string batesNumber = "image1";
+
+			ImageExportInfo image1 = new ImageExportInfo
+			{
+				BatesNumber = batesNumber,
+				TempLocation = "temp_location_1"
+			};
+			ImageExportInfo image2 = new ImageExportInfo
+			{
+				BatesNumber = batesNumber,
+				TempLocation = null
+			};
+			ImageExportInfo image3 = new ImageExportInfo
+			{
+				BatesNumber = batesNumber,
+				TempLocation = "temp_location_3"
+			};
+			ObjectExportInfo artifact = new ObjectExportInfo
+			{
+				Images = new ArrayList
+				{
+					image1,
+					image2,
+					image3
+				},
+				DestinationVolume = "VOL0001"
+			};
+
+			this.FilePathTransformer.Setup(x => x.TransformPath(It.IsAny<string>())).Returns((string s) => $"{s}_transformed");
+			this.ImageLoadFileEntry.Setup(x => x.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())).Returns(loadFileEntry);
+
+			// ACT
+			this.Instance.WriteLoadFileEntry(artifact, this.Writer.Object, CancellationToken.None);
+
+			// ASSERT
+			this.ImageLoadFileEntry.Verify(x => x.Create(image1.BatesNumber, $"{image1.TempLocation}_transformed", artifact.DestinationVolume, 1, numberOfImages), Times.Once);
+
+			this.ImageLoadFileEntry.Verify(x => x.Create($"{image2.BatesNumber}_2", null, artifact.DestinationVolume, 2, numberOfImages), Times.Once);
+
+			this.ImageLoadFileEntry.Verify(x => x.Create($"{image3.BatesNumber}_3", $"{image3.TempLocation}_transformed", artifact.DestinationVolume, 3, numberOfImages), Times.Once);
+		}
 	}
 }

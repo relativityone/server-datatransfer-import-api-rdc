@@ -30,9 +30,6 @@ namespace Relativity.DataExchange
 		/// The <see cref="Version"/> instance.
 		/// </value>
 		/// <remarks>
-		/// TODO: Must validate that the Goatsbeard Import API release can support all versions from Bluestem through Goatsbeard.
-		/// </remarks>
-		/// <remarks>
 		/// The most recent Bluestem OP hotfix release includes the OAuth2 redirect fix and required to authenticate.
 		/// </remarks>
 		public static Version MinRelativityVersion { get; } = new Version(9, 7, 229, 5);

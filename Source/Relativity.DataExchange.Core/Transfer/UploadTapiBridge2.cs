@@ -44,9 +44,6 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="token">
 		/// The cancellation token.
 		/// </param>
-		/// <remarks>
-		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
-		/// </remarks>
 		public UploadTapiBridge2(UploadTapiBridgeParameters2 parameters, ITransferLog log, CancellationToken token)
 			: this(new TapiObjectService(), parameters, log, token)
 		{
@@ -67,16 +64,46 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="token">
 		/// The cancellation token.
 		/// </param>
-		/// <remarks>
-		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
-		/// </remarks>
 		public UploadTapiBridge2(
 			ITapiObjectService factory,
 			UploadTapiBridgeParameters2 parameters,
 			ITransferLog log,
 			CancellationToken token)
-			: base(factory, parameters, TransferDirection.Upload, log, token)
+			: this(factory, parameters, null, log, token)
 		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UploadTapiBridge2"/> class.
+		/// </summary>
+		/// <param name="factory">
+		/// The Transfer API object factory.
+		/// </param>
+		/// <param name="parameters">
+		/// The native file transfer parameters.
+		/// </param>
+		/// <param name="context">
+		/// The transfer context.
+		/// </param>
+		/// <param name="log">
+		/// The transfer log.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token.
+		/// </param>
+		public UploadTapiBridge2(
+			ITapiObjectService factory,
+			UploadTapiBridgeParameters2 parameters,
+			TransferContext context,
+			ITransferLog log,
+			CancellationToken token)
+			: base(factory, parameters, TransferDirection.Upload, context, log, token)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
 			this.parameters = parameters;
 			this.pathManager = new FileSharePathManager(parameters.MaxFilesPerFolder);
 		}
@@ -131,9 +158,9 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Dump the transfer bridge parameter.
 		/// </summary>
-		public override void DumpInfo()
+		public override void LogTransferParameters()
 		{
-			base.DumpInfo();
+			base.LogTransferParameters();
 			this.TransferLog.LogInformation("BCP file transfer: {BcpFileTransfer}", this.parameters.BcpFileTransfer);
 			this.TransferLog.LogInformation("Aspera BCP root folder: {AsperaBcpRootFolder}", this.parameters.AsperaBcpRootFolder);
 			this.TransferLog.LogInformation("Sort into volume: {SortIntoVolumes}", this.parameters.SortIntoVolumes);

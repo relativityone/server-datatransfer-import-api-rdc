@@ -9,3 +9,4 @@ relativity.logging.interfaces
 relativity.transfer.client
 stylecop.analyzers
 zetalongpaths
+System.Reactive

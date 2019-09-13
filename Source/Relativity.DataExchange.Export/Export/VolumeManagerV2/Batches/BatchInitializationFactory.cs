@@ -26,16 +26,11 @@
 			repositoryBuilders.Add(container.Resolve<LongTextRepositoryBuilderFactory>().Create(exportSettings, container));
 			repositoryBuilders.Add(container.Resolve<NativeRepositoryBuilderFactory>().Create(exportSettings, container));
 			repositoryBuilders.Add(container.Resolve<ImageRepositoryBuilderFactory>().Create(exportSettings, container));
+			
+			IDirectoryManager directoryManager = container.Resolve<IDirectoryManager>();
 
-			if (!exportConfig.ForceParallelismInNewExport)
-			{
-				IDirectoryManager directoryManager = container.Resolve<IDirectoryManager>();
-
-				return new BatchInitialization(repositoryBuilders, directoryManager, _logger);
-			}
-
-			ILabelManagerForArtifact labelManagerForArtifact = container.Resolve<ILabelManagerForArtifact>();
-			return new ParallelBatchInitialization(repositoryBuilders, labelManagerForArtifact, _logger);
+			return new BatchInitialization(repositoryBuilders, directoryManager, _logger);
+			
 		}
 	}
 }
