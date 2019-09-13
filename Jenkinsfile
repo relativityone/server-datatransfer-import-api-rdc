@@ -66,7 +66,7 @@ timestamps
                         echo output
                     }
 
-                    stage('Retrieve semantic versions')
+                    stage('Retrieve version')
                     { 
                         echo "Is release branch = $isReleaseBranch"
                         echo "Is isGoldBuild = $isGoldBuild"
@@ -96,14 +96,14 @@ timestamps
 						stage('Extended code analysis')
 						{
 							parallel(
-								ExtendedCodeAnalysis:
+								"Extended code analysis":
 								{
 									echo "Extending code analysis"
 									output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
 									echo output
 								},
 
-								RunUnitTests:
+								"Run unit tests":
 								{
 									if (params.runUnitTests)
 									{
@@ -113,7 +113,7 @@ timestamps
 									}
 								},
 
-								RunIntegrationTests:
+								"Run integration tests":
 								{
 									if (params.runIntegrationTests)
 									{
@@ -152,76 +152,79 @@ timestamps
 
                         if (params.runUnitTests || params.runIntegrationTests)
                         {
-                            stage('Retrieve test results')
-                            {
-                                def taskCandidates = []
-                                if (params.runUnitTests)
-                                {
-                                    taskCandidates.add("UnitTestResults")
-                                }
+							parallel(
+								"Retrieve test results"
+								{
+									def taskCandidates = []
+									if (params.runUnitTests)
+									{
+										taskCandidates.add("UnitTestResults")
+									}
 
-                                if (params.runIntegrationTests)
-                                {
-                                    taskCandidates.add("IntegrationTestResults")
-                                }
+									if (params.runIntegrationTests)
+									{
+										taskCandidates.add("IntegrationTestResults")
+									}
 
-                                taskCandidates.eachWithIndex { task, index ->
-                                    def testDescription = ""
-                                    switch (index)
-                                    {
-                                        case 0:
-                                            testDescription = "unit"
-                                            break
+									taskCandidates.eachWithIndex { task, index ->
+										def testDescription = ""
+										switch (index)
+										{
+											case 0:
+												testDescription = "unit"
+												break
 
-                                        case 1:
-                                            testDescription = "integration"
-                                            break
+											case 1:
+												testDescription = "integration"
+												break
 
-                                        default:
-                                            throw new Exception("The test result type $index is not mapped.")
-                                    }
+											default:
+												throw new Exception("The test result type $index is not mapped.")
+										}
 
-                                    // Let the build script retrieve the unit test result values.
-                                    echo "Retrieving the $testDescription-test results"
-                                    def testResultOutputString = runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'")
-                                    echo "Retrieved the $testDescription-test results"
+										// Let the build script retrieve the unit test result values.
+										echo "Retrieving the $testDescription-test results"
+										def testResultOutputString = runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'")
+										echo "Retrieved the $testDescription-test results"
 
-                                    // Search for specific tokens within the response.
-                                    echo "Extracting the $testDescription-test result parameters"
-                                    def int passed = extractValue("testResultsPassed", testResultOutputString)
-                                    def int failed = extractValue("testResultsFailed", testResultOutputString)
-                                    def int skipped = extractValue("testResultsSkipped", testResultOutputString)
-                                    echo "Extracted the $testDescription-test result parameters"
+										// Search for specific tokens within the response.
+										echo "Extracting the $testDescription-test result parameters"
+										def int passed = extractValue("testResultsPassed", testResultOutputString)
+										def int failed = extractValue("testResultsFailed", testResultOutputString)
+										def int skipped = extractValue("testResultsSkipped", testResultOutputString)
+										echo "Extracted the $testDescription-test result parameters"
 
-                                    // Dump the individual test results
-                                    echo "$testDescription-test passed: $passed"
-                                    echo "$testDescription-test failed: $failed"
-                                    echo "$testDescription-test skipped: $skipped"
-                                    
-                                    // Now add to the final test results
-                                    testResultsPassed += passed
-                                    testResultsFailed += failed
-                                    testResultsSkipped += skipped
-                                }
+										// Dump the individual test results
+										echo "$testDescription-test passed: $passed"
+										echo "$testDescription-test failed: $failed"
+										echo "$testDescription-test skipped: $skipped"
+										
+										// Now add to the final test results
+										testResultsPassed += passed
+										testResultsFailed += failed
+										testResultsSkipped += skipped
+									}
 
-                                // Dump the final test results
-                                echo "Total passed: $testResultsPassed"
-                                echo "Total failed: $testResultsFailed"
-                                echo "Total skipped: $testResultsSkipped"
-                            }
+									// Dump the final test results
+									echo "Total passed: $testResultsPassed"
+									echo "Total failed: $testResultsFailed"
+									echo "Total skipped: $testResultsSkipped"
+								},
+								
+								"Create NuGet packages":
+								{
+									echo "Build number: ${currentBuild.number}"
+									echo "Building all SDK and RDC packages"
+									powershell ".\\build.ps1 BuildPackages -Branch '${env.BRANCH_NAME}' -BuildNumber '${currentBuild.number}'"
+								}
+							)
                         }
                     }
 
-                    stage ('Create NuGet packages')
-                    {
-                        echo "Build number: ${currentBuild.number}"
-                        echo "Building all SDK and RDC packages"
-                        powershell ".\\build.ps1 BuildPackages -Branch '${env.BRANCH_NAME}' -BuildNumber '${currentBuild.number}'"
-                    }
 					stage ('Publish everything') 
 					{
 						parallel(
-							PublishPackagesToProget:
+							"Publish packages to proget":
 							{
 								if (params.publishPackages)
 								{
@@ -250,7 +253,7 @@ timestamps
 								}
 							},
 
-							PublishArtifacts:
+							"Publish artifacts":
 							{
 								echo "Publishing build artifacts"
 								output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${env.BRANCH_NAME}'"
@@ -303,7 +306,7 @@ timestamps
                     stage('Reporting and Cleanup')
                     {
                         parallel(
-                            SlackNotification: 
+                            "Slack Notification": 
                             {
                                 def script = this
                                 def String serverUnderTestName = ""
@@ -337,7 +340,7 @@ timestamps
                             },
 							
                             // StashNotifier second call, passes currentBuild.result to BitBucket as build status 
-                            BitBucketNotification:
+                            "BitBucket notification":
                             { 
                                 notifyBitbucket()
                             }
