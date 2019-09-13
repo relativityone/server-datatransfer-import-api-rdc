@@ -96,14 +96,14 @@ timestamps
 						stage('Extended code analysis')
 						{
 							parallel(
-								'Extended code analysis':
+								ExtendedCodeAnalysis:
 								{
 									echo "Extending code analysis"
 									output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
 									echo output
 								},
 
-								'Run unit tests':
+								RunUnitTests:
 								{
 									if (params.runUnitTests)
 									{
@@ -113,7 +113,7 @@ timestamps
 									}
 								},
 
-								'Run integration tests':
+								RunIntegrationTests:
 								{
 									if (params.runIntegrationTests)
 									{
@@ -220,9 +220,8 @@ timestamps
                     }
 					stage ('Publish everything') 
 					{
-						parallel
-						(
-							'Publish packages to proget':
+						parallel(
+							PublishPackagesToProget:
 							{
 								if (params.publishPackages)
 								{
@@ -249,9 +248,9 @@ timestamps
 										}
 									}
 								}
-							}
+							},
 
-							'Publish build artifacts':
+							PublishArtifacts:
 							{
 								echo "Publishing build artifacts"
 								output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${env.BRANCH_NAME}'"
@@ -336,6 +335,7 @@ timestamps
                                     "\n*************************************************"
                                 sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, numberOfFailedTests, numberOfPassedTests, numberOfSkippedTests, message)
                             },
+							
                             // StashNotifier second call, passes currentBuild.result to BitBucket as build status 
                             BitBucketNotification:
                             { 
