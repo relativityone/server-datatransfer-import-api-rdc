@@ -19,7 +19,7 @@ Namespace Relativity.Desktop.Client
 #Region " Run Import "
 
 		Friend Async Function RunExport(options As ExportFile) As Task
-			Dim exporter As New ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig(), Await _application.SetupMessageService())
+			Dim exporter As New ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig(), Await _application.SetupMetricService())
 			exporter.UserNotificationFactory = Function(e) New EventBackedUserNotification(e)
 			exporter.ExportFile = options
 			Dim executor As New CommandLineProcessRunner(exporter.Context, Nothing, Nothing)
@@ -27,7 +27,7 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Friend Sub RunDynamicObjectImport(ByVal importOptions As ImportOptions)
-			Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(_application.SetupMessageService().GetAwaiter().GetResult())
+			Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(_application.SetupMetricService().GetAwaiter().GetResult())
 			importOptions.SelectedNativeLoadFile.SourceFileEncoding = importOptions.SourceFileEncoding
 			importOptions.SelectedNativeLoadFile.ExtractedTextFileEncoding = importOptions.ExtractedTextFileEncoding
 			importOptions.SelectedNativeLoadFile.SelectedCasePath = importOptions.SelectedCasePath
@@ -49,7 +49,7 @@ Namespace Relativity.Desktop.Client
 			If EnsureEncoding(importOptions) Then
 				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Await _application.GetCredentialsAsync(), _application.CookieContainer)
 				If folderManager.Exists(importOptions.SelectedCaseInfo.ArtifactID, importOptions.SelectedCaseInfo.RootFolderID) Then
-					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await _application.SetupMessageService())
+					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await _application.SetupMetricService())
 					importOptions.SelectedNativeLoadFile.SourceFileEncoding = importOptions.SourceFileEncoding
 					importOptions.SelectedNativeLoadFile.ExtractedTextFileEncoding = importOptions.ExtractedTextFileEncoding
 					importOptions.SelectedNativeLoadFile.SelectedCasePath = importOptions.SelectedCasePath
@@ -74,7 +74,7 @@ Namespace Relativity.Desktop.Client
 
 		Friend Async Function RunImageImport(ByVal importOptions As ImportOptions) As Task
 			If EnsureEncoding(importOptions) Then
-				Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await _application.SetupMessageService())
+				Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await _application.SetupMetricService())
 				importOptions.SelectedImageLoadFile.CookieContainer = _application.CookieContainer
 				importOptions.SelectedImageLoadFile.Credential = Await _application.GetCredentialsAsync()
 				importOptions.SelectedImageLoadFile.SelectedCasePath = importOptions.SelectedCasePath

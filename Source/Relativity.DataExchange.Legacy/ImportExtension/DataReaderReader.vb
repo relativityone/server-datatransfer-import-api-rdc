@@ -85,13 +85,13 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 
 		Public Sub AdvanceRecord() Implements kCura.WinEDDS.Api.IArtifactReader.AdvanceRecord
-			If _reader.Read() Then
-				_currentLineNumber += 1
-			Else
-				_currentLineNumber += 1
-				_reader.Close()
-			End If
-
+            Try
+                If Not _reader.Read() Then
+                    _reader.Close()
+                End If
+            Finally
+                _currentLineNumber += 1
+            End Try
 		End Sub
 
 		Public ReadOnly Property BytesProcessed() As Long Implements kCura.WinEDDS.Api.IArtifactReader.BytesProcessed
@@ -106,9 +106,14 @@ Namespace kCura.WinEDDS.ImportExtension
 			End Get
 		End Property
 
+        ''' <summary>
+        ''' Returns total records count, but only when <see cref="_reader"/> already read all the records, otherwise returns 0.
+        ''' This is because <see cref="_reader"/> is a forward-only record viewer and does not contain information about total number of rows.
+        ''' To calculate total number of records we need to iterate through all the rows and increment <see cref="_currentLineNumber"/>
+        ''' </summary>
+        ''' <returns>Total records count if <see cref="_reader"/> is closed, 0 otherwise</returns>
 		Public Function CountRecords() As Long Implements kCura.WinEDDS.Api.IArtifactReader.CountRecords
-			'Return _reader.Rows.Count
-			Return 1
+		    Return CLng(IIf(_reader.IsClosed, _currentLineNumber, 0))
 		End Function
 
 		Public ReadOnly Property CurrentLineNumber() As Integer Implements kCura.WinEDDS.Api.IArtifactReader.CurrentLineNumber
@@ -601,7 +606,13 @@ Namespace kCura.WinEDDS.ImportExtension
 		Public Sub Halt() Implements kCura.WinEDDS.Api.IArtifactReader.Halt
 		End Sub
 
+        ''' <summary>
+        ''' Reads all remaining rows and then closes <see cref="IDataReader"/>. This is because the only way to get the total number of records is to read all the rows.
+        ''' </summary>
 		Public Sub Close() Implements kCura.WinEDDS.Api.IArtifactReader.Close
+            While Not _reader.IsClosed
+                AdvanceRecord
+            End While
 		End Sub
 
 		Public Function ManageErrorRecords(ByVal errorMessageFileLocation As String, ByVal prePushErrorLineNumbersFileName As String) As String Implements kCura.WinEDDS.Api.IArtifactReader.ManageErrorRecords

@@ -1,8 +1,8 @@
 Imports System.Net
+Imports kCura.WinEDDS
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
-Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -91,10 +91,10 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _settings As ImageSettings
 		Private _sourceData As ImageSourceIDataReader
 		Private _credentials As ICredentials
+        Private _tapiCredential As NetworkCredential
 		Private _cookieMonster As Net.CookieContainer
 		Private _jobReport As JobReport
 		Private _executionSource As ExecutionSource
-        Private ReadOnly _metricSinkManager As IMetricSinkManager
 #End Region
 
 #Region " Public Methods "
@@ -114,12 +114,12 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <param name="credentials">The credentials.</param>
 		''' <param name="cookieMonster">The cookie monster.</param>
 		''' <param name="executionSource">Optional parameter that states what process the import is coming from.</param>
-		Friend Sub New(ByVal credentials As ICredentials, ByVal cookieMonster As Net.CookieContainer, ByVal metricSinkManager As IMetricSinkManager, ByVal Optional executionSource As Integer = 0)
+		Friend Sub New(ByVal credentials As ICredentials, ByVal tapiCredential As NetworkCredential, ByVal cookieMonster As Net.CookieContainer, ByVal Optional executionSource As Integer = 0)
 			Me.New()
 			_executionSource = CType(executionSource, ExecutionSource)
 			_credentials = credentials
 			_cookieMonster = cookieMonster
-            _metricSinkManager = metricSinkManager
+            _tapiCredential = tapiCredential
 		End Sub
 
 		''' <summary>
@@ -135,6 +135,7 @@ Namespace kCura.Relativity.DataReaderClient
 				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
 				_credentials = creds.Credentials
 				_cookieMonster = creds.CookieMonster
+                _tapiCredential = creds.TapiCredential
 			End If
 
 			If IsSettingsValid() Then
@@ -142,9 +143,10 @@ Namespace kCura.Relativity.DataReaderClient
 
 				MapSuppliedFieldNamesToActual(Settings, SourceData.SourceData)
 
-				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, _metricSinkManager.SetupMessageService(_settings.Telemetry))
+			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_tapiCredential))
+				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, metricService)
 				process.ExecutionSource = _executionSource
-                process.ApplicationName = _settings.ApplicationName
+                process.ApplicationName = Settings.ApplicationName
 				_processContext = process.Context
 
 				If Settings.DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = Settings.DisableImageTypeValidation.Value
@@ -155,6 +157,7 @@ Namespace kCura.Relativity.DataReaderClient
 				process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()
+                process.CaseInfo = process.ImageLoadFile.CaseInfo
 
 				RaiseEvent OnMessage(New Status("Executing"))
 				Try

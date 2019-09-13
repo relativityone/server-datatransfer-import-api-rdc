@@ -1,9 +1,10 @@
 Imports System.Threading
 Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Service.Export
+Imports Monitoring
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Transfer
-Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.WinEDDS
 	Public Class ExportSearchProcess
@@ -29,32 +30,42 @@ Namespace kCura.WinEDDS
 		Public Property UserNotificationFactory As Func(Of Exporter, IUserNotification)
 
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
-			MyBase.New(New MessageService())
+			MyBase.New(New MetricService(New ImportApiMetricSinkConfig))
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
 			_exportConfig = exportConfig
 		End Sub
 
-		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, messageService As IMessageService)
-			MyBase.New(messageService)
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService)
+			MyBase.New(metricService)
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
 			_exportConfig = exportConfig
 		End Sub
+
+		''' <inheritdoc/>
+		Protected Overrides Function GetTotalRecordsCount() As Long
+			Return _searchExporter.TotalExportArtifactCount
+		End Function
+
+		''' <inheritdoc/>
+		Protected Overrides Function GetCompletedRecordsCount() As Long
+			Return _searchExporter.DocumentsExported
+		End Function
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendTransferJobCompletedMessage()
+			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
 			Me.Context.PublishStatusEvent("", "Export completed")
 			Me.Context.PublishProcessCompleted()
 		End Sub
 
 		Protected Overrides Sub OnFatalError()
 			MyBase.OnFatalError()
-			SendTransferJobFailedMessage()
+			SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _searchExporter.Statistics)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendTransferJobCompletedMessage()
+			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
 			Me.Context.PublishProcessCompleted(False, _searchExporter.ErrorLogFileName, True)
 		End Sub
 
@@ -103,22 +114,20 @@ Namespace kCura.WinEDDS
 
 			Dim statusBarText As String = TapiModeHelper.BuildExportStatusText(args.TransferClients)
 			_tapiClientName = statusBarText
-			SendTransferJobStartedMessage()
+			SendMetricJobStarted()
 			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)
 		End Sub
 
 		Private Sub _productionExporter_StatusMessage(ByVal e As ExportEventArgs) Handles _searchExporter.StatusMessage
 			Select Case e.EventType
-				Case EventType2.End
-					SendJobStatistics(e.Statistics)
 				Case EventType2.Error
 					Interlocked.Increment(_errorCount)
 					Me.Context.PublishErrorEvent(e.DocumentsExported.ToString, e.Message)
 				Case EventType2.Progress
-					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+					SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
 					Me.Context.PublishStatusEvent("", e.Message)
 				Case EventType2.Statistics
-					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+					SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
 				Case EventType2.Status
 					Me.Context.PublishStatusEvent(e.DocumentsExported.ToString, e.Message)
 				Case EventType2.Warning
@@ -127,8 +136,6 @@ Namespace kCura.WinEDDS
 				Case EventType2.ResetStartTime
 					SetStartTime()
 			End Select
-			TotalRecords = e.TotalDocuments
-			CompletedRecordsCount = e.DocumentsExported
 			Dim statDict As IDictionary = Nothing
 			If Not e.AdditionalInfo Is Nothing AndAlso TypeOf e.AdditionalInfo Is IDictionary Then
 				statDict = DirectCast(e.AdditionalInfo, IDictionary)
