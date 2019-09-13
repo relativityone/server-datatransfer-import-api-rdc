@@ -91,34 +91,35 @@ timestamps
                         echo output
                     }
 
-                    stage('Extended code analysis')
-                    {
-                        echo "Extending code analysis"
-                        output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
-                        echo output
-                    }
-
                     try
                     {
-                        if (params.runUnitTests)
-                        {
-                            stage('Run unit tests')
-                            {
-                                echo "Running the unit tests"
-                                output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${env.BRANCH_NAME}'"
-                                echo output
-                            }
-                        }
+						parallel(
+						    stage('Extended code analysis')
+							{
+								echo "Extending code analysis"
+								output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
+								echo output
+							}
+							if (params.runUnitTests)
+							{
+								stage('Run unit tests')
+								{
+									echo "Running the unit tests"
+									output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${env.BRANCH_NAME}'"
+									echo output
+								}
+							}
 
-                        if (params.runIntegrationTests)
-                        {
-                            stage('Run integration tests')
-                            {
-                                echo "Running the integration tests"
-                                output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment -Branch '${env.BRANCH_NAME}'"
-                                echo output
-                            }
-                        }
+							if (params.runIntegrationTests)
+							{
+								stage('Run integration tests')
+								{
+									echo "Running the integration tests"
+									output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment -Branch '${env.BRANCH_NAME}'"
+									echo output
+								}
+							}
+						)
                     }
                     finally
                     {
@@ -143,7 +144,7 @@ timestamps
 
                                 if (params.runIntegrationTests)
                                 {
-                                   // taskCandidates.add("IntegrationTestResults")
+                                    taskCandidates.add("IntegrationTestResults")
                                 }
 
                                 taskCandidates.eachWithIndex { task, index ->
