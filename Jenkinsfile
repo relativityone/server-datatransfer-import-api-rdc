@@ -96,14 +96,14 @@ timestamps
 						stage('Extended code analysis')
 						{
 							parallel{
-								stage('Extended code analysis')
+								'Extended code analysis':
 								{
 									echo "Extending code analysis"
 									output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
 									echo output
-								}
+								},
 
-								stage('Run unit tests')
+								'Run unit tests':
 								{
 									if (params.runUnitTests)
 									{
@@ -111,9 +111,9 @@ timestamps
 										output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${env.BRANCH_NAME}'"
 										echo output
 									}
-								}
+								},
 
-								stage('Run integration tests')
+								'Run integration tests':
 								{
 									if (params.runIntegrationTests)
 									{
@@ -222,7 +222,7 @@ timestamps
 					{
 						parallel
 						{
-							stage ('Publish packages to proget') 
+							'Publish packages to proget':
 							{
 								if (params.publishPackages)
 								{
@@ -251,7 +251,7 @@ timestamps
 								}
 							}
 
-							stage('Publish build artifacts')
+							'Publish build artifacts':
 							{
 								echo "Publishing build artifacts"
 								output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${env.BRANCH_NAME}'"
