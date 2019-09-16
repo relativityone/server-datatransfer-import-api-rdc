@@ -154,7 +154,7 @@ timestamps
                         if (params.runUnitTests || params.runIntegrationTests)
                         {
 							parallel(
-								"Retrieve test results"
+								"Retrieve test results":
 								{
 									def taskCandidates = []
 									if (params.runUnitTests)
