@@ -72,9 +72,10 @@ timestamps
                         echo "Is isGoldBuild = $isGoldBuild"
                         echo "Retrieving the semantic versions"
                         echo "Using new build strategy"
-                        def outputString = powershell ".\\build.ps1 BuildVersion  -Branch '${env.BRANCH_NAME}'"
-                        currentBuild.displayName = "$outputString"
-                        buildVersion = outputString
+						def outputString runCommandWithOutput(".\\build.ps1 BuildVersion  -Branch '${env.BRANCH_NAME}'")
+						def outputStringParsed = extractValue("testResultsPassed", outputString)
+                        currentBuild.displayName = "$outputStringParsed"
+                        buildVersion = outputStringParsed
                     }
 
                     stage('Build binaries') 

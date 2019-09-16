@@ -243,7 +243,7 @@ task BuildRdcPackage -Description "Builds the RDC NuGet package" {
 
 task BuildVersion -Description "Retrieves the build version from powershell" {
     Assert ($BuildUrl -ne $null -and $BuildUrl -ne "") "BuildUrl must be provided"
-    Write-Output "Importing powershell properties.."
+    Write-Host "Importing powershell properties.."
 
     $majorMinorIncrease = Get-ReleaseVersion "$Branch" -omitPostFix
 	

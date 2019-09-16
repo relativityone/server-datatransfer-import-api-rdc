@@ -233,7 +233,7 @@ Import-Module $PSakePath
 
 Try
 {
-    Invoke-PSake @Params
+    Invoke-PSake @Params 
 }
 Finally
 {
