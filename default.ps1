@@ -369,7 +369,7 @@ task PackageVersion -Description "Retrieves the package version from powershell"
     $global:PackageVersion = $localPackageVersion
 
     # So Jenkins can get the package version number
-    Write-Output "packageVersion=$localPackageVersion"
+    Write-Output "$localPackageVersion"
 }
 
 task PublishBuildArtifacts -Description "Publish build artifacts" {
