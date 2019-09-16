@@ -364,7 +364,7 @@ All `C#` and `VB.NET` projects contained within the master solution link in one 
 * `AssemblySharedInfo.cs`
 * `AssemblySharedInfo.vb`
 
-The main build script supports an optional `UpdateAssemblyInfo` task which, when specified, uses `GitVersion` to automatically apply semantic versioning info to both of these shared source files.
+The main build script supports an optional `UpdateAssemblyInfo` task which, when specified, uses powershell to automatically apply semantic versioning info to both of these shared source files.
 
 ***Note:** Only Jenkins pipeline builds execute this task to avoid modifying source-controlled files during DEV builds.*
 
