@@ -203,9 +203,7 @@ task BuildPackages -Depends BuildRdcPackage,BuildSdkPackages -Description "Build
 task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
     Initialize-Folder $LogsDir -Safe
     Initialize-Folder $PackagesArtifactsDir -Safe
-    $version = exec {
-        & .\Get-ReleaseVersion.ps1 "$Branch"
-    } -errorMessage "There was an error retrieving MajorMinorPatch using powershell."
+    $version = Get-ReleaseVersion "$Branch"
 
     Write-Host "Package version: $version"
     Write-Host "Working directory: $PSScriptRoot"
@@ -231,9 +229,7 @@ task BuildRdcPackage -Description "Builds the RDC NuGet package" {
     Initialize-Folder $PackagesArtifactsDir -Safe
 
     $majorMinorPatchVersion = Get-RdcWixVersion 
-	$postFix = exec {
-        & .\Get-ReleaseVersion.ps1 "$Branch" -postFixOnly
-    } -errorMessage "There was an error retrieving MajorMinorPatch using powershell."
+    $postFix = Get-ReleaseVersion "$Branch" -postFixOnly
     $packageVersion = "$majorMinorPatchVersion$postFix"
     Write-Host "Package version: $packageVersion"
     Write-Host "Working directory: $PSScriptRoot"
@@ -249,10 +245,8 @@ task BuildVersion -Description "Retrieves the build version from powershell" {
     Assert ($BuildUrl -ne $null -and $BuildUrl -ne "") "BuildUrl must be provided"
     Write-Output "Importing powershell properties.."
 
-    $majorMinorIncrease = exec {
-        & .\Get-ReleaseVersion.ps1 "$Branch" -omitPostFix
-    } -errorMessage "There was an error retrieving the major version using powershell."
-                        
+    $majorMinorIncrease = Get-ReleaseVersion "$Branch" -omitPostFix
+	
     Write-Output "Build Url: $BuildUrl"
     $maxVersionLength = 50
     $localBuildVersion = $majorMinorIncrease
@@ -365,9 +359,7 @@ task IntegrationTestResults -Description "Retrieve the integration test results 
 
 task PackageVersion -Description "Retrieves the package version from powershell" {
 
-    $localPackageVersion = exec {
-        & .\Get-ReleaseVersion.ps1 "$Branch"
-    } -errorMessage "There was an error retrieving MajorMinorPatch using powershell."
+    $localPackageVersion = Get-ReleaseVersion "$Branch"
 
     $maxVersionLength = 255
     if ($localPackageVersion.Length -gt $maxVersionLength) {
@@ -515,21 +507,14 @@ task UpdateAssemblyInfo -Depends UpdateSdkAssemblyInfo,UpdateRdcAssemblyInfo -De
 }
 
 task UpdateSdkAssemblyInfo -Description "Update the version contained within the SDK assembly shared info source file" {
-    
-    $version = exec {
-        & .\Get-ReleaseVersion.ps1 "$Branch" -omitPostFix
-    } -errorMessage "There was an error retrieving MajorMinorPatch using powershell."
-	exec { 
-         & .\Update-AssemblyInfo.ps1 "$version.0"
-    } -errorMessage "There was an error updating the assembly info."
+    $version = Get-ReleaseVersion "$Branch" -omitPostFix
+	Update-AssemblyInfo "$version.0"
 }
 
 task UpdateRdcAssemblyInfo -Description "Update the version contained within the RDC assembly shared info source file" {    
     exec { 
         $majorMinorPatchVersion = Get-RdcWixVersion
-		$postFix = exec {
-			& .\Get-ReleaseVersion.ps1 "$Branch" -postFixOnly
-		} -errorMessage "There was an error retrieving MajorMinorPatch using powershell."
+		$postFix = Get-ReleaseVersion "$Branch" -postFixOnly
         $InformationalVersion = "$majorMinorPatchVersion$postFix"
         $VersionPath = Join-Path $Root "Version"
         $ScriptPath = Join-Path $VersionPath "Update-RdcAssemblySharedInfo.ps1"
@@ -761,4 +746,112 @@ Function Write-TestResultsOutput {
     Write-Output "testResultsPassed=$passed"
     Write-Output "testResultsFailed=$failed"
     Write-Output "testResultsSkipped=$skipped"
+}
+
+Function Update-AssemblyInfo {
+	param(
+	[string]$NewVersion
+	)
+	cd .\Version
+
+	Get-ChildItem -Include AssemblySharedInfo.cs, AssemblySharedInfo.vb -Recurse | 
+		ForEach-Object {
+			$_.IsReadOnly = $false
+			(Get-Content -Path $_) -replace '(?<=Assembly(?:(File|Informational))?Version\(")[^"]*(?="\))', $NewVersion |
+				Set-Content -Path $_
+		}
+	cd .. 
+}
+
+Function Get-ReleaseVersion {
+	param(
+		[string]$branchNameJenkins,
+		[switch]$postFixOnly = $false,
+		[switch]$omitPostFix = $false
+	)
+	$host.UI.RawUI.WindowTitle = "Getting release version"
+
+	function gitBranchName {
+		$branchName = git rev-parse --abbrev-ref HEAD
+		If($branchName -eq 'HEAD')
+		{
+		    if ($TestResultsXmlFile -eq 'HEAD') {
+				Throw "The branchname is not given, it is currently HEAD (meaning the code is checked out at a commit, not at a branch)"
+			}
+			return $branchNameJenkins
+		}
+		else
+		{
+			return $branchName
+		}
+	}
+
+	$gitVersion = git describe --tags --always
+	Write-Host $gitVersion
+	$gitVersionSplit = $gitVersion.ToString().Split('-')
+	$version = $gitVersionSplit[0]
+	$commitsSince = $gitVersionSplit[1]
+
+	Write-Host "Version = $version"
+	Write-Host "Commits since version was created = $commitsSince"
+	$major = $version.Split('.')[0]
+	$minor = $version.Split('.')[1]
+	
+	# git describe does not give the commits since tag if the numer of commits since tag is null.
+	if("$commitsSince" -eq "")
+	{
+	   $commitsSince = "0"
+	}
+	$currentBranch = gitBranchName
+	Write-Host "Current branch is $currentBranch"
+	$postfix = ""
+	$jiraVersionNumber = Get-JiraTicketNumberFromBranchName
+	If ($currentBranch.ToString() -eq "develop" ) 
+	{
+	   $postfix = "-dev"
+	}
+	elseif (![string]::IsNullOrEmpty($jiraVersionNumber)) 
+	{
+		if(!$currentBranch.StartsWith($jiraVersionNumber))
+		{
+			throw "Branch should start with the jira version number, detected jira version number = '$jiraVersionNumber', and branch = '$Branch'"
+		}
+		$postfix = "-$currentBranch"
+	}
+	elseif ($currentBranch.ToString().StartsWith("release-")) 
+	{
+		if(-Not ($currentBranch.Contains($version)))
+		{
+			$(Throw New-Object System.ArgumentException "Current branch should contain the latest tag : currentbranch = $currentBranch, last tag = $version ", "tag not found")
+		}
+		$postfix = ""
+	}
+	else
+	{
+		$(Throw New-Object System.ArgumentException "Branch must start with 'feature' or 'bugfix' (case sensitive), or be equal to 'develop', current branch is '$currentBranch'","branch name")
+	}
+	
+	#escape as version numbers should not contain anything special, like underscores. Dashes are fine tough
+	$pattern = '[^a-zA-Z0-9]'
+	$postfix = $postfix -replace $pattern ,"-"
+
+
+	If($omitPostFix)
+	{
+		$majorMinorCommits = "$major.$minor.$commitsSince"
+		Write-Host "MajorMinorCommitsSince = $majorMinorCommits"
+		Write-Output $majorMinorCommits	
+	}
+	elseif($postFixOnly)
+	{
+		$newVersion = "$postfix"
+		Write-Host "Postfix = $newVersion"
+		Write-Output $newVersion
+	}	
+	else
+	{
+		$newVersion = "$major.$minor.$commitsSince$postfix"
+		Write-Host "New complete version should be = $newVersion"
+		Write-Output $newVersion
+	}
 }

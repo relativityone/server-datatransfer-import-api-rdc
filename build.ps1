@@ -10,6 +10,10 @@ This script is responsible for all build processes.
 Build the solution.
 
 .EXAMPLE
+.\\build.ps1 BuildVersion  -Branch '${env.BRANCH_NAME}'
+Does not build, returns version name for the branch name
+
+.EXAMPLE
 .\build.ps1 Build,BuildInstallPackages
 Build the solution and creates the install packages.
 
