@@ -57,7 +57,6 @@ timestamps
                 {
                     stage('Clean')
                     {
-						output $BITBUCKET_BRANCH
 						def json = JsonOutput.toJson(env)
 						echo json
                         output = powershell ".\\build.ps1 Clean -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
@@ -305,39 +304,6 @@ timestamps
                     stage('Reporting and Cleanup')
                     {
                         parallel(
-                            "Slack Notification": 
-                            {
-                                def script = this
-                                def String serverUnderTestName = ""
-                                def String version = buildVersion
-                                def String branch = env.BRANCH_NAME
-                                def String buildType = params.buildType
-                                def String slackChannel = params.slackChannel
-                                def String email = "slack_svc@relativity.com"
-                                def int numberOfFailedTests = testResultsFailed
-                                def int numberOfPassedTests = testResultsPassed
-                                def int numberOfSkippedTests = testResultsSkipped
-                                def String message = env.BUILD_TAG
-                                echo "*************************************************" +
-                                    "\n" +
-                                    "\n" + "sendCDSlackNotification Parameters: " +
-                                    "\n" +
-                                    "\n" + "script: " + script +
-                                    "\n" + "serverUnderTestName: " + serverUnderTestName +
-                                    "\n" + "version: " + version +
-                                    "\n" + "branch: " + branch +
-                                    "\n" + "buildType: " + buildType +
-                                    "\n" + "slackChannel: " + slackChannel +
-                                    "\n" + "email: " + email +
-                                    "\n" + "numberOfFailedTests: " + numberOfFailedTests +
-                                    "\n" + "numberOfPassedTests: " + numberOfPassedTests +
-                                    "\n" + "numberOfSkippedTests: " + numberOfSkippedTests +
-                                    "\n" + "message: " + message +
-                                    "\n" +
-                                    "\n*************************************************"
-                                sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, numberOfFailedTests, numberOfPassedTests, numberOfSkippedTests, message)
-                            },
-							
                             // StashNotifier second call, passes currentBuild.result to BitBucket as build status 
                             "BitBucket notification":
                             { 
