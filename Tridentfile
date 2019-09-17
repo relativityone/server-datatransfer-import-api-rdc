@@ -57,7 +57,7 @@ timestamps
                 {
                     stage('Clean')
                     {
-						groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(env))
+						def json = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(env))
 						echo json
                         output = powershell ".\\build.ps1 Clean -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
                         echo output
