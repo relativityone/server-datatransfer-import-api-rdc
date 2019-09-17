@@ -33,7 +33,7 @@ multibranchPipelineJob('TheGoodTheBadTheUgly/main_pipeline/main_build') {
   displayName('Main build')
   factory {
         workflowBranchProjectFactory {
-            scriptPath('jenkinsfile')
+            scriptPath('Tridentfile')
         }
   }
   branchSources {
