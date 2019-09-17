@@ -57,6 +57,8 @@ timestamps
                 {
                     stage('Clean')
                     {
+						echo "${GIT_BRANCH}"
+						echo "${BITBUCKET_BRANCH}"
                         output = powershell ".\\build.ps1 Clean -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
                         echo output
                     }
