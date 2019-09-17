@@ -2,9 +2,6 @@
 
 library 'PipelineTools@RMT-9.3.2'
 
-node {
-    echo sh(returnStdout: true, script: 'env')
-}
 
 def buildTypeCoicesStr = 'DEV\nGOLD - RDC AND SDK\nGOLD - RDC ONLY\nGOLD - SDK ONLY'
 
@@ -60,6 +57,9 @@ timestamps
                 {
                     stage('Clean')
                     {
+						output $BITBUCKET_BRANCH
+						def json = JsonOutput.toJson(env)
+						echo json
                         output = powershell ".\\build.ps1 Clean -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
                         echo output
                     }
