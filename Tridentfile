@@ -1,7 +1,6 @@
 #!groovy
 
 library 'PipelineTools@RMT-9.3.2'
-library 'SCVMMHelpers@3.3.0'
 library 'SlackHelpers@3.0.0'
 
 def buildTypeCoicesStr = 'DEV\nGOLD - RDC AND SDK\nGOLD - RDC ONLY\nGOLD - SDK ONLY'
