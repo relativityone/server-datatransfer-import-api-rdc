@@ -7,11 +7,7 @@ def buildTypeCoicesStr = 'DEV\nGOLD - RDC AND SDK\nGOLD - RDC ONLY\nGOLD - SDK O
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30']],
     parameters([
-        choice(defaultValue: 'DEV',choices: buildTypeCoicesStr, description: """The type of build to execute, you can choose 4 things :
-        DEV : no packages are pushed on release branch(is default)
-        GOLD - RDC AND SDK : Both packages (RDC and SDK) are published
-        GOLD - RDC ONLY : Only RDC is published
-        GOLD - SDK ONLY : Only the SDK is published""", name: 'buildType'),
+        choice(defaultValue: 'DEV',choices: buildTypeCoicesStr, description: "no-multiline", name: 'buildType'),
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
@@ -46,7 +42,7 @@ timestamps
 {
     timeout(time: 3, unit: 'HOURS')
     {
-        node("PolandBuild")
+        node('role-build-agent||buildAgent')
         {
             try
             {
