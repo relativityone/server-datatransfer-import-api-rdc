@@ -50,6 +50,7 @@ timestamps
                 stage('Checkout')
                 {
                     checkout scm
+					git checkout scm.branches[0]
                     notifyBitbucket()
                 }
 
@@ -57,6 +58,7 @@ timestamps
                 {
                     stage('Clean')
                     {
+					    
 						echo "${scm.branches}"
                         output = powershell ".\\build.ps1 Clean -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
                         echo output
