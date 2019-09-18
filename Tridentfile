@@ -50,7 +50,7 @@ timestamps
                 stage('Checkout')
                 {
                     checkout scm
-					git checkout REL-328498-create-pipeline-trident
+					powershell "git checkout REL-328498-create-pipeline-trident"
                     notifyBitbucket()
                 }
 
