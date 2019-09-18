@@ -50,8 +50,7 @@ timestamps
                 stage('Checkout')
                 {
                     checkout scm
-					powershell "git pull --tags origin REL-328498-create-pipeline-trident"
-					powershell "git checkout REL-328498-create-pipeline-trident"
+					powershell "git pull --tags"
                     notifyBitbucket()
                 }
 
