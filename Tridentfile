@@ -50,7 +50,7 @@ timestamps
                 stage('Checkout')
                 {
                     checkout scm
-					git checkout scm.branches[0]
+					git checkout REL-328498-create-pipeline-trident
                     notifyBitbucket()
                 }
 
