@@ -1,3 +1,4 @@
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
@@ -24,7 +25,7 @@ Namespace kCura.WinEDDS
 			Me.CheckDownloadHandlerURL()
 			Me.WriteStatus("")
 
-			Dim tapiObjectService As ITapiObjectService = New TapiObjectService
+			Dim tapiObjectService As ITapiObjectService = New TapiObjectService(New NullAuthTokenProvider)
 			Dim parameters As TapiBridgeParameters2 = New TapiBridgeParameters2
 			parameters.Credentials = _credential
 			parameters.TimeoutSeconds = Me.AppSettings.HttpTimeoutSeconds

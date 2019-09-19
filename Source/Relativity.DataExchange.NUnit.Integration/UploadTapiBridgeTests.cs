@@ -83,7 +83,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 			};
 
 			this.SetupTapiBridgeParameters(parameters);
-			this.tapiBridge = new UploadTapiBridge2(parameters, this.TransferLog, CancellationToken.None);
+			this.tapiBridge = new UploadTapiBridge2(parameters, this.TransferLog,  new NullAuthTokenProvider(), CancellationToken.None);
 		}
 
 		private void WhenExecutingTheJob()

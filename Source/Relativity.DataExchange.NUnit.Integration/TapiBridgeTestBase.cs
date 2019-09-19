@@ -389,7 +389,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 
 		protected void SetupTapiBridgeParameters(TapiBridgeParameters2 parameters)
 		{
-			ITapiObjectService objectService = new TapiObjectService();
+			ITapiObjectService objectService = new TapiObjectService(new NullAuthTokenProvider());
 			objectService.SetTapiClient(parameters, this.TapiClient);
 		}
 

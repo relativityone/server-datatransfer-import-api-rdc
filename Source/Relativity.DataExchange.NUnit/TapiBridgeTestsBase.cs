@@ -36,7 +36,7 @@ namespace Relativity.DataExchange.NUnit
 		/// <summary>
 		/// The real object service backing.
 		/// </summary>
-		private readonly TapiObjectService realObjectService = new TapiObjectService();
+		private readonly TapiObjectService realObjectService = new TapiObjectService(new NullAuthTokenProvider());
 
 		private readonly object syncRoot = new object();
 

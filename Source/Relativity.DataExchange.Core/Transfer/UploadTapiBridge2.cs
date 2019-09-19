@@ -41,11 +41,12 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="log">
 		/// The transfer log.
 		/// </param>
+		/// <param name="authTokenProvider">Auth token provider.</param>
 		/// <param name="token">
 		/// The cancellation token.
 		/// </param>
-		public UploadTapiBridge2(UploadTapiBridgeParameters2 parameters, ITransferLog log, CancellationToken token)
-			: this(new TapiObjectService(), parameters, log, token)
+		public UploadTapiBridge2(UploadTapiBridgeParameters2 parameters, ITransferLog log, IAuthenticationTokenProvider authTokenProvider, CancellationToken token)
+			: this(new TapiObjectService(authTokenProvider), parameters, log, token)
 		{
 		}
 

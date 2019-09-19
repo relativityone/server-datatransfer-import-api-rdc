@@ -511,14 +511,14 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Public Async Function GetConnectionStatus() As Task(Of String)
-			Dim tapiObjectService As ITapiObjectService = New TapiObjectService()
+			Dim tapiObjectService As ITapiObjectService = New TapiObjectService(New NullAuthTokenProvider)
 			Dim parameters = CreateTapiParametersAsync()
 			Dim clientName = Await tapiObjectService.GetWorkspaceClientDisplayNameAsync(Await parameters)
 			Return clientName
 		End Function
 
 		Public Async Function GetConnectionMode() As Task(Of Guid)
-			Dim tapiObjectService As ITapiObjectService = New TapiObjectService()
+			Dim tapiObjectService As ITapiObjectService = New TapiObjectService(New NullAuthTokenProvider)
 			Dim parameters = CreateTapiParametersAsync()
 			Dim clientName = Await tapiObjectService.GetWorkspaceClientIdAsync(Await parameters)
 			Return clientName

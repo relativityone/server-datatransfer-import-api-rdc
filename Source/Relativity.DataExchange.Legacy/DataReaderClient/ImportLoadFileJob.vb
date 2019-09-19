@@ -1,7 +1,9 @@
 Imports System.Net
 Imports kCura.WinEDDS
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
+Imports Relativity.Transfer
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -24,7 +26,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _nativeSettings As ImportSettingsBase
 
 		Private _credentials As ICredentials
-		Private _tapiCredential As NetworkCredential = Nothing
+		Private _tapiCredentialsProvider As TapiCredentialsProvider
 		Private _cookieMonster As Net.CookieContainer
 
 		Private ReadOnly _executionSource As ExecutionSource
@@ -43,13 +45,16 @@ Namespace kCura.Relativity.DataReaderClient
 			_nativeDataReader = New SourceIDataReader
 
 			_bulkLoadFileFieldDelimiter = ServiceConstants.DEFAULT_FIELD_DELIMITER
+
+			_tapiCredentialsProvider = New TapiCredentialsProvider()
+			_tapiCredentialsProvider.TokenProvider = New NullAuthTokenProvider
 		End Sub
 
-		Friend Sub New(ByVal credentials As ICredentials, ByVal tapiCredentials As NetworkCredential, ByVal cookieMonster As Net.CookieContainer, ByVal Optional executionSource As Integer = 0)
+		Friend Sub New(ByVal credentials As ICredentials, ByVal tapiCredentialsProvider As TapiCredentialsProvider, ByVal cookieMonster As Net.CookieContainer, ByVal Optional executionSource As Integer = 0)
 			Me.New()
 			_executionSource = CType(executionSource, ExecutionSource)
 			_credentials = credentials
-			_tapiCredential = tapiCredentials
+			_tapiCredentialsProvider = tapiCredentialsProvider
 			_cookieMonster = cookieMonster
 		End Sub
 
@@ -105,7 +110,7 @@ Namespace kCura.Relativity.DataReaderClient
 				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
 				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
 				_credentials = creds.Credentials
-				_tapiCredential = creds.TapiCredential
+				_tapiCredentialsProvider.Credential = creds.TapiCredential
 				_cookieMonster = creds.CookieMonster
 			End If
 
@@ -216,7 +221,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.CopyFilesToDocumentRepository = loadFileTemp.CopyFilesToDocumentRepository
 			tempLoadFile.CreateFolderStructure = loadFileTemp.CreateFolderStructure
 			tempLoadFile.Credentials = loadFileTemp.Credentials
-			tempLoadFile.TapiCredentials = loadFileTemp.TapiCredentials
+			tempLoadFile.TapiCredentialsProvider = loadFileTemp.TapiCredentialsProvider
 			tempLoadFile.DestinationFolderID = loadFileTemp.DestinationFolderID
 			tempLoadFile.ExtractedTextFileEncoding = loadFileTemp.ExtractedTextFileEncoding
 			tempLoadFile.ExtractedTextFileEncodingName = loadFileTemp.ExtractedTextFileEncodingName
@@ -378,7 +383,7 @@ Namespace kCura.Relativity.DataReaderClient
 			'If clientSettings.Credential Is Nothing Then
 			'dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
 			'Else
-			dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(_credentials, _tapiCredential, _cookieMonster, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
+			dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(_credentials, _tapiCredentialsProvider, _cookieMonster, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
 			'End If
 			_docIDFieldCollection = dosf_settings.DocumentIdentifierFields
 

@@ -120,7 +120,7 @@ namespace Relativity.DataExchange.Import.NUnit
 					                                         FileShare = "./somepath/",
 					                                         TimeoutSeconds = 0,
 				                                         };
-			this.CreateTapiBridges(parameters, parameters.ShallowCopy());
+			this.CreateTapiBridges(parameters, parameters.ShallowCopy(), new NullAuthTokenProvider());
 		}
 
 		public void SetBatchCounter(int numberToSet)

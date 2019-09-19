@@ -1,4 +1,5 @@
 Imports System.Collections.Generic
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS
@@ -23,18 +24,18 @@ Namespace kCura.WinEDDS
 			Me.InitLoadFile(caseArtifactID, artifactTypeID)
 		End Sub
 
-		Public Sub New(ByVal credential As System.Net.ICredentials, ByVal tapiCredentials As System.Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32)
+		Public Sub New(ByVal credential As System.Net.ICredentials, ByVal tapiCredentialsProvider As TapiCredentialsProvider, ByVal cookieContainer As System.Net.CookieContainer, ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32)
 			MyBase.new(DirectCast(credential, System.Net.NetworkCredential), cookieContainer)
-			Me.InitLoadFile(caseArtifactID, artifactTypeID, tapiCredentials)
+			Me.InitLoadFile(caseArtifactID, artifactTypeID, tapiCredentialsProvider)
 		End Sub
 
 		Public Function ToLoadFile() As kCura.WinEDDS.LoadFile
 			Return _loadFile
 		End Function
 
-		Private Sub InitLoadFile(ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal tapiCredentials As System.Net.NetworkCredential)
+		Private Sub InitLoadFile(ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal tapiCredentialsProvider As TapiCredentialsProvider)
 			InitLoadFile(caseArtifactID, artifactTypeID)
-			_loadFile.TapiCredentials = tapiCredentials
+			_loadFile.TapiCredentialsProvider = tapiCredentialsProvider
 		End Sub
 
 		Private Sub InitLoadFile(ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32)

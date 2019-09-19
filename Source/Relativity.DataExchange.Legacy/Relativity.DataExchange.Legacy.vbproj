@@ -200,6 +200,7 @@
     <Compile Include="API\IImageReader.vb" />
     <Compile Include="API\ImageRecord.vb" />
     <Compile Include="API\LoginHelper.vb" />
+    <Compile Include="BearerTokenAuthenticationProvider.vb" />
     <Compile Include="Config.vb" />
     <Compile Include="Credentials\Constants.vb" />
     <Compile Include="Credentials\CredentialsNotSetException.vb" />

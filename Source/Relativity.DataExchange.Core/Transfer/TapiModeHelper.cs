@@ -82,7 +82,7 @@ namespace Relativity.DataExchange.Transfer
 			TapiClient? native,
 			TapiClient? metadata)
 		{
-			ITapiObjectService tapiObjectService = new TapiObjectService();
+			ITapiObjectService tapiObjectService = new TapiObjectService(new NullAuthTokenProvider());
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
 			string nativeFilesMode = GetFileTransferModeText(
 				tapiObjectService,
@@ -109,7 +109,7 @@ namespace Relativity.DataExchange.Transfer
 		/// </returns>
 		public static string BuildExportStatusText(IEnumerable<TapiClient> natives)
 		{
-			ITapiObjectService tapiObjectService = new TapiObjectService();
+			ITapiObjectService tapiObjectService = new TapiObjectService(new NullAuthTokenProvider());
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
 			sb.AppendFormat(
 				Strings.FileTransferStatusTextModePrefix,

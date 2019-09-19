@@ -50,7 +50,7 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String
 		<NonSerialized()> Public CaseDefaultPath As String = ""
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
-		<NonSerialized()> Public TapiCredentials As Net.NetworkCredential
+		<NonSerialized()> Public TapiCredentialsProvider As TapiCredentialsProvider
 		<NonSerialized()> Public _cookieContainer As System.Net.CookieContainer
 		<NonSerialized()> Public CaseInfo As CaseInfo
 		<NonSerialized()> Public SelectedCasePath As String = ""
