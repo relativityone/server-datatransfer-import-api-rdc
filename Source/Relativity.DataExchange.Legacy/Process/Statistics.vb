@@ -187,7 +187,7 @@ Namespace kCura.WinEDDS
 					fileTime = Me.FileTime
 				End If
 
-				retval.Add("Average file transfer rate", ToFileSizeSpecification(Me.FileBytes / (fileTime / 10000000)) & "/sec")
+				retval.Add("Average file transfer rate", ToFileSizeSpecification(Me.FileBytes / (fileTime / TimeSpan.TicksPerSecond)) & "/sec")
 			End If
 			If Not Me.MetadataTime = 0 Then
 				Dim metadataTime As Int64 = Me.MetadataTime - Me.MetadataWaitTime
@@ -195,9 +195,9 @@ Namespace kCura.WinEDDS
 					metadataTime = Me.MetadataTime
 				End If
 
-				retval.Add("Average metadata transfer rate", ToFileSizeSpecification(Me.MetadataBytes / (metadataTime / 10000000)) & "/sec")
+				retval.Add("Average metadata transfer rate", ToFileSizeSpecification(Me.MetadataBytes / (metadataTime / TimeSpan.TicksPerSecond)) & "/sec")
 			End If
-			If Not Me.SqlTime = 0 Then retval.Add("Average SQL process rate", (Me.DocCount / (Me.SqlTime / 10000000)).ToString("N0") & " Documents/sec")
+			If Not Me.SqlTime = 0 Then retval.Add("Average SQL process rate", (Me.DocCount / (Me.SqlTime / TimeSpan.TicksPerSecond)).ToString("N0") & " Documents/sec")
 			If Not Me.BatchSize = 0 Then retval.Add("Current batch size", (Me.BatchSize).ToString("N0"))
 			Return retval
 		End Function

@@ -1,9 +1,10 @@
+Imports Monitoring
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
-Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.WinEDDS
 	Public Class ImportImageFileProcess
@@ -22,11 +23,11 @@ Namespace kCura.WinEDDS
 		Private _disableImageLocationValidation As Boolean?
 
 		Public Sub New ()
-			MyBase.New(new MessageService())
+			MyBase.New(new MetricService(New ImportApiMetricSinkConfig))
 		End Sub
 
-		Public Sub New (messageService As IMessageService)
-			MyBase.New(messageService)
+		Public Sub New (metricService As IMetricService)
+			MyBase.New(metricService)
 		End Sub
 
         Public WriteOnly Property DisableImageTypeValidation As Boolean
@@ -72,8 +73,6 @@ Namespace kCura.WinEDDS
 
 		Public Property EnforceDocumentLimit As Boolean
 
-		Public Property ExecutionSource As ExecutionSource
-
 		Protected Overrides Function Run() As Boolean
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
 			Return Not _hasFatalErrorOccured
@@ -83,23 +82,30 @@ Namespace kCura.WinEDDS
 			Return _imageFileImporter.HasErrors
 		End Function
 
+		''' <inheritdoc/>
+		Protected Overrides Function GetTotalRecordsCount() As Long
+			Return _imageFileImporter.TotalRecords
+		End Function
+
+		''' <inheritdoc/>
+		Protected Overrides Function GetCompletedRecordsCount() As Long
+			Return __imageFileImporter.CompletedRecords
+		End Function
+
 		Protected Overrides Sub OnFatalError()
-			SendTransferJobFailedMessage()
 			MyBase.OnFatalError()
-			SendJobStatistics(_imageFileImporter.Statistics)
+			SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _imageFileImporter.Statistics)
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendJobStatistics(_imageFileImporter.Statistics)
-			SendTransferJobCompletedMessage()
+			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _imageFileImporter.Statistics)
 			Me.Context.PublishProcessCompleted(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendJobStatistics(_imageFileImporter.Statistics)
-			SendTransferJobCompletedMessage()
+			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _imageFileImporter.Statistics)
 			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
@@ -204,13 +210,11 @@ Namespace kCura.WinEDDS
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 						Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Progress
-						TotalRecords = e.TotalRecords
-						CompletedRecordsCount = e.CurrentRecordIndex
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 						Me.Context.PublishRecordProcessed(e.CurrentRecordIndex)
 					Case EventType2.Statistics
-						SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+						SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
 					Case EventType2.Status
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Warning
@@ -241,7 +245,7 @@ Namespace kCura.WinEDDS
 				_uploadModeText = TapiModeHelper.BuildDocText()
 			End If
 
-			SendTransferJobStartedMessage()
+			SendMetricJobStarted()
 			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)
 		End Sub
 

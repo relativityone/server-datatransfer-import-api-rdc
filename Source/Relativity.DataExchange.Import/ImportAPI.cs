@@ -17,6 +17,8 @@ namespace kCura.Relativity.ImportAPI
 {
 	using global::Relativity.DataExchange;
 
+	using Monitoring.Sinks;
+
 	/// <summary>
 	/// Provides methods for developing custom import utilities for documents, images, production sets, and Dynamic Objects.
 	/// </summary>
@@ -335,7 +337,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
-			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, (int)ExecutionSource);
+			return new ImageImportBulkArtifactJob(_credentials, this._tapiCredentials, _cookieMonster, (int)ExecutionSource);
 		}
 
 		/// <summary>
