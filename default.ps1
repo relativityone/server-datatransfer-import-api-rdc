@@ -809,7 +809,7 @@ Function Get-ReleaseVersion {
 	{
 	    $commitsSince = "0"
 	}
-	if(returnCommitsSinceOnly)
+	if($returnCommitsSinceOnly)
 	{
 		return $commitsSince
 	}
