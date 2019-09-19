@@ -773,7 +773,7 @@ Function Get-ReleaseVersion {
 	param(
 		[string]$branchNameJenkins,
 		[switch]$postFixOnly = $false,
-		[switch]$omitPostFix = $false
+		[switch]$omitPostFix = $false,
 		[switch]$returnCommitsSinceOnly = $false
 	)
 	$host.UI.RawUI.WindowTitle = "Getting release version"
