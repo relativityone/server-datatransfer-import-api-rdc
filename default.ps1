@@ -231,7 +231,7 @@ task BuildRdcPackage -Description "Builds the RDC NuGet package" {
     $majorMinorPatchVersion = Get-RdcWixVersion 
     $postFix = Get-ReleaseVersion "$Branch" -postFixOnly
 	# Means its not a release branch
-	if([string]::IsNullOrEmpty($postFix)
+	if([string]::IsNullOrEmpty($postFix))
 	{
 		$commitsSince = Get-ReleaseVersion "$Branch" -postFixOnly
 		$postFix = ".$commitsSince$postFix"
