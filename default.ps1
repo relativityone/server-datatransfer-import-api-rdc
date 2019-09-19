@@ -230,6 +230,12 @@ task BuildRdcPackage -Description "Builds the RDC NuGet package" {
 
     $majorMinorPatchVersion = Get-RdcWixVersion 
     $postFix = Get-ReleaseVersion "$Branch" -postFixOnly
+	# Means its not a release branch
+	if([string]::IsNullOrEmpty($postFix)
+	{
+		$commitsSince = Get-ReleaseVersion "$Branch" -postFixOnly
+		$postFix = ".$commitsSince$postFix"
+	}
     $packageVersion = "$majorMinorPatchVersion$postFix"
     Write-Host "Package version: $packageVersion"
     Write-Host "Working directory: $PSScriptRoot"
@@ -768,6 +774,7 @@ Function Get-ReleaseVersion {
 		[string]$branchNameJenkins,
 		[switch]$postFixOnly = $false,
 		[switch]$omitPostFix = $false
+		[switch]$returnCommitsSinceOnly = $false
 	)
 	$host.UI.RawUI.WindowTitle = "Getting release version"
 
@@ -800,7 +807,11 @@ Function Get-ReleaseVersion {
 	# git describe does not give the commits since tag if the numer of commits since tag is null.
 	if("$commitsSince" -eq "")
 	{
-	   $commitsSince = "0"
+	    $commitsSince = "0"
+	}
+	if(returnCommitsSinceOnly)
+	{
+		return $commitsSince
 	}
 	$currentBranch = gitBranchName
 	Write-Host "Current branch is $currentBranch"
