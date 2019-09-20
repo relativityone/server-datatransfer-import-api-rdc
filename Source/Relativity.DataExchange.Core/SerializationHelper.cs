@@ -25,7 +25,7 @@ namespace Relativity.DataExchange
 		/// </param>
 		public static void SerializeToSoapFile(object value, string file)
 		{
-			using (FileStream stream = File.OpenWrite(file))
+			using (FileStream stream = new FileStream(file, FileMode.Create, FileAccess.Write, FileShare.None))
 			{
 				var soapFormatter = new SoapFormatter();
 				soapFormatter.Serialize(stream, value);
