@@ -43,7 +43,7 @@ nuget System.Reactive = 4.0.0
 
 # Proget packages are below.
 source https://proget.kcura.corp/NuGet/NuGet
-nuget kcura.outsidein.fi.win32 = 2019.3.0
+nuget kcura.outsidein.fi.win32 = 2019.4.0
 nuget relativity.dataTransfer.messageService = 10.2.0
 nuget relativity.logging = 2018.11.8
 nuget relativity.logging.interfaces = 2018.11.8

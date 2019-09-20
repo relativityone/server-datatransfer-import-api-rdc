@@ -36,7 +36,7 @@ NUGET
     System.ValueTuple (4.5)
     ZetaLongPaths (1.0.0.16)
   remote: https://proget.kcura.corp/NuGet/NuGet
-    kCura.OutsideIn.FI.Win32 (2019.3.0)
+    kCura.OutsideIn.FI.Win32 (2019.4.0)
     kCura.Relativity.Client (10.3.142.22)
     Relativity.DataTransfer.MessageService (10.2.0)
       Relativity.Kepler.Client (>= 1.0.1.445)
