@@ -6,6 +6,7 @@ NUGET
       Castle.Core (>= 3.3)
     CsvHelper (12.1.2)
       System.ValueTuple (>= 4.4)
+    EWSoftware.SHFB (2019.8.24)
     extent (0.0.3)
     FileHelpers (3.4)
     GitVersion.CommandLine (4.0)
