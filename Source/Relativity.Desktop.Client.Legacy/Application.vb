@@ -819,6 +819,12 @@ Namespace Relativity.Desktop.Client
 			loadFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
 			loadFile.CaseInfo = caseInfo
 			loadFile.Credentials = Await Me.GetCredentialsAsync()
+			If loadFile.TapiCredentialsProvider Is Nothing Then
+				loadFile.TapiCredentialsProvider = New TapiCredentialsProvider() With {
+					.TokenProvider = New NullAuthTokenProvider(),
+					.Credential = loadFile.Credentials
+				 }
+			End If
 			loadFile.CookieContainer = Me.CookieContainer
 			loadFile.OverwriteDestination = ImportOverwriteType.Append.ToString
 			loadFile.ArtifactTypeID = Me.ArtifactTypeID
@@ -1283,6 +1289,12 @@ Namespace Relativity.Desktop.Client
 			tempLoadFile.CopyFilesToDocumentRepository = loadFile.CopyFilesToDocumentRepository
 			tempLoadFile.SelectedCasePath = Me.SelectedCaseInfo.DocumentPath
 			tempLoadFile.Credentials = Await Me.GetCredentialsAsync()
+			If tempLoadFile.TapiCredentialsProvider Is Nothing Then
+				tempLoadFile.TapiCredentialsProvider = New TapiCredentialsProvider() With {
+					.TokenProvider = New NullAuthTokenProvider(),
+					.Credential = tempLoadFile.Credentials
+					}
+			End If
 			tempLoadFile.DestinationFolderID = loadFile.DestinationFolderID
 			tempLoadFile.SelectedIdentifierField = (Await Me.CurrentFields(ArtifactTypeID, True)).Item((Await Me.GetCaseIdentifierFields(ArtifactTypeID))(0))
 			Dim x As New System.Windows.Forms.OpenFileDialog
