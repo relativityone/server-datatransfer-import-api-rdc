@@ -55,7 +55,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 					                  WebServiceUrl = testParameters.RelativityWebApiUrl.ToString(),
 					                  WorkspaceId = testParameters.WorkspaceId,
 				                  };
-			this.service = new TapiObjectService(new NullAuthTokenProvider());
+			this.service = new TapiObjectService();
 		}
 
 		[IdentifiedTest("EE06BDD4-4A81-4499-B753-5225F2236793")]
