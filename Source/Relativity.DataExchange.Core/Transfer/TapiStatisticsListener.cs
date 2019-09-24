@@ -127,7 +127,7 @@ namespace Relativity.DataExchange.Transfer
 					CultureInfo.CurrentCulture,
 					"WinEDDS aggregate statistics: {0}/sec",
 					ToFileSize(aggregateDataRate));
-				this.TransferLog.LogInformation2(e.Request, aggregateMessage);
+				this.TransferLog.LogTransferInformation(e.Request, aggregateMessage);
 			}
 
 			var jobMessage = string.Format(
@@ -138,7 +138,7 @@ namespace Relativity.DataExchange.Transfer
 				e.Statistics.TotalRequestFiles,
 				e.Statistics.Progress,
 				ToFileSize(transferRateBytesPerSecond));
-			this.TransferLog.LogInformation2(e.Request, jobMessage);
+			this.TransferLog.LogTransferInformation(e.Request, jobMessage);
 			this.LogTimestamp = DateTime.Now;
 		}
 
