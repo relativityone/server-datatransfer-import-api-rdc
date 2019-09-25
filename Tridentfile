@@ -50,13 +50,17 @@ timestamps
         {
             try
             {
+				stage ('Clean') 
+				{
+					deleteDir()
+				}
                 stage('Checkout')
                 {
                     checkout([
                         $class: 'GitSCM',
                         branches: scm.branches,
                         doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
-                        extensions: [[$class: 'CleanBeforeCheckout']] + [[$class: 'CloneOption', noTags: false, shallow: false, reference: '']] + [[$class: 'CleanCheckout']],
+                        extensions: [[$class: 'CloneOption', noTags: false, shallow: false, reference: '']] + [[$class: 'CleanCheckout']],
                         userRemoteConfigs: scm.userRemoteConfigs,
                      ])
                     notifyBitbucket()
