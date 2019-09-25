@@ -97,6 +97,9 @@ Id,Description,FileName
 1226,Microsoft Project 2007,.\Documents\Natives\Oracle 840 Files\Project 2007.mpp
 1826,7z Archive File,.\Documents\Natives\Oracle 840 Files\7z archive.7z
 1829,Microsoft OneNote File,.\Documents\Natives\Oracle 840 Files\One Note 2007.one
+1834,Generic Password Protected Apple Iwork 2013-2019 Document,.\Documents\Natives\OutsideIn2019.3\encrypted.pages
+1834,Generic Password Protected Apple Iwork 2013-2019 Document,.\Documents\Natives\OutsideIn2019.3\encrypted.numbers
+1834,Generic Password Protected Apple Iwork 2013-2019 Document,.\Documents\Natives\OutsideIn2019.3\encrypted.key
 1820,Microsoft Cabinet File,.\Documents\Natives\Oracle 840 Files\Windows Cabinet File.cab
 1612,AutoCAD 2000/2002 Drawing,.\Documents\Natives\Oracle 840 Files\CAD.dwg
 2233,Scalable Vector Graphics File,.\Documents\Natives\Oracle 840 Files\ScalableVectorGraphic.svg
@@ -111,11 +114,13 @@ Id,Description,FileName
 2501,Microsoft Excel 2016 Macro Enabled Workbook,.\Documents\Natives\Oracle853\Microsoft Excel 2016 Macro Enabled Workbook.xlsm
 2502,Microsoft Excel 2016 Template,.\Documents\Natives\Oracle853\Microsoft Excel 2016 Template.xltx
 2508,Strict Open XML 2016 Spreadsheet,.\Documents\Natives\Oracle853\Strict Open XML 2016 Spreadsheet.xlsx
+2509,Apple iWork 2013-2019 Numbers File,.\Documents\Natives\OutsideIn2019.3\2509_Checklist.numbers
 1384,Microsoft Word 2016,.\Documents\Natives\Oracle853\MSWord2016.docx
 1386,Microsoft Word 2016 Macro Enabled Document,.\Documents\Natives\Oracle853\Microsoft Word 2016 Macro Enabled Document.docm
 1387,Microsoft Word 2016 Macro Enabled Template,.\Documents\Natives\Oracle853\Microsoft Word 2016 Macro Enabled Template.dotm
 1385,Microsoft Word 2016 Template,.\Documents\Natives\Oracle853\Microsoft Word 2016 Template.dotx
 1389,Strict Open XML 2016 Document,.\Documents\Natives\Oracle853\Strict Open XML 2016 Document.docx
+1390,Apple iWork 2013-2019 Pages File,.\Documents\Natives\OutsideIn2019.3\1390_Bold Type Envelope.pages
 2262,Microsoft PowerPoint 2016,.\Documents\Natives\Oracle853\Powerpoint2016.pptx
 2264,Microsoft PowerPoint 2016 Macro Enabled Template,.\Documents\Natives\Oracle853\Powerpoint2016 Macro Enabled template.potm
 2266,Microsoft PowerPoint 2016 Macro Enabled Presentation,.\Documents\Natives\Oracle853\Powerpoiont2016 Macro Enabled presentation.pptm
@@ -160,4 +165,5 @@ Id,Description,FileName
 1724,MPEG-4 file,.\Documents\Natives\AV_files\audio_aac.mp4
 1705,Quicktime Movie,.\Documents\Natives\AV_files\video_h264-aac.mov
 1724,MPEG-4 file,.\Documents\Natives\AV_files\video_h264-aac.mp4
+1729,HEIC Image File,.\Documents\Natives\OutsideIn2019.3\IMG_0011.HEIC
 1394,Relativity Short Message Format,.\Documents\Natives\OutsideIn2018.9\RSMFSampleFile.rsmf

@@ -57,8 +57,8 @@ nuget relativity.telemetry.services.interface = 2019.1.0
 nuget relativity.transfer.client = 6.2.1
 
 # The Relativity packages below are ONLY used for testing!
-nuget kcura.relativity.client = 10.3.142.22
-nuget relativity.productions.services.interfaces = 10.3.37
-nuget relativity.services.datacontracts = 10.3.142.22
-nuget relativity.services.interfaces = 10.3.142.22
+nuget kcura.relativity.client = 11.0.79.97-DEV
+nuget relativity.productions.services.interfaces = 11.0.4
+nuget relativity.services.datacontracts = 11.0.79.97-DEV
+nuget relativity.services.interfaces = 11.0.79.97-DEV
 nuget relativity.testing.identification ~> 1.6.0
