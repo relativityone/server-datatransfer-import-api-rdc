@@ -54,6 +54,7 @@ timestamps
 				{
 					deleteDir()
 				}
+				
                 stage('Checkout')
                 {
                     checkout([
