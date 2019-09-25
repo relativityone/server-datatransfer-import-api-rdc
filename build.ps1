@@ -117,6 +117,8 @@ param(
     [Parameter()]
     [String]$Branch,
     [Parameter()]
+    [String]$ProgetApiKey,
+    [Parameter()]
     [String]$BuildNumber = "1",
     [Parameter()]
     [String]$BuildPlatform = "Any CPU",
@@ -212,6 +214,7 @@ $Params = @{
         Sign = $Sign
         ForcePublishRdcPackage = $ForcePublishRdcPackage
         Simulate = $Simulate
+		ProgetApiKey = $ProgetApiKey
     }
 
     Verbose = $VerbosePreference

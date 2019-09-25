@@ -31,7 +31,6 @@ properties {
     $ReportGeneratorExe = Join-Path $PackagesDir "ReportGenerator\tools\net47\ReportGenerator.exe"
     $PaketExe = Join-Path $PaketDir "paket.exe"
     $ProgetUrl = "https://proget.kcura.corp/nuget/NuGet"
-    $ProgetApiKey = $Null
 
     # Installer paths
     $SignToolPath = "${Env:ProgramFiles(x86)}\Windows Kits\8.1\bin\x86\signtool.exe"
@@ -56,6 +55,7 @@ properties {
     $SkipPublishRdcPackage = $Null
     $SkipPublishSdkPackage = $Null
     $Simulate = $Null
+    $ProgetApiKey = $Null
 }
 enum BranchType 
 {
