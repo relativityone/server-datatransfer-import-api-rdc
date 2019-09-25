@@ -106,6 +106,7 @@ timestamps
                             parallel(
                                 "Extended code analysis":
                                 {
+									powershell "throw 'testexception to see if pipeline pickes up' "
                                     echo "Extending code analysis"
                                     output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'"
                                     echo output
