@@ -69,14 +69,6 @@ timestamps
 
                 try
                 {
-                    stage('Clean')
-                    {
-                        
-                        echo "${scm.branches}"
-                        output = powershell ".\\build.ps1 Clean -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'"
-                        echo output
-                    }
-
                     stage('Retrieve version')
                     { 
                         echo "Is release branch = $isReleaseBranch"
