@@ -56,7 +56,7 @@ timestamps
                         $class: 'GitSCM',
                         branches: scm.branches,
                         doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
-                        extensions: [[$class: 'CloneOption', noTags: false, shallow: false, depth: 999, reference: '']],
+                        extensions: [[$class: 'CloneOption', noTags: false, shallow: false, reference: '']] + [[$class: 'CleanCheckout']],
                         userRemoteConfigs: scm.userRemoteConfigs,
                      ])
                     notifyBitbucket()
@@ -68,7 +68,6 @@ timestamps
                     {
                         
                         echo "${scm.branches}"
-						powershell "git fetch --all"
                         output = powershell ".\\build.ps1 Clean -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'"
                         echo output
                     }
