@@ -175,8 +175,11 @@ namespace kCura.Relativity.ImportAPI
 				throw new InvalidLoginException("The current claims principal does not have a bearer token.");
 			}
 
+
 			ImportAPI importApi = CreateByBearerToken(webServiceUrl, token);
-			importApi._authenticationTokenProvider = new BearerTokenAuthenticationProvider();
+			
+			// Here we override token provider so Tapi can refresh credentials on token expiration event
+			importApi._tapiCredentialsProvider.TokenProvider = new BearerTokenAuthenticationProvider();
 			return importApi;
 		}
 
