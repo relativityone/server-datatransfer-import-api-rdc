@@ -78,8 +78,8 @@ namespace Relativity.DataExchange.NUnit.Integration
 		{
 			// arrange
 			int rowIndex = 0;
-			string testCsvPath = ResourceFileHelper.GetResourceFilePath("OutsideIn", "Test-FileTypeId-List-2018-9.csv");
-			string goldenCsvPath = ResourceFileHelper.GetResourceFilePath("OutsideIn", "Test-FileTypeId-List-Golden-2018-9.csv");
+			string testCsvPath = ResourceFileHelper.GetResourceFilePath("OutsideIn", "Test-FileTypeId-List.csv");
+			string goldenCsvPath = ResourceFileHelper.GetResourceFilePath("OutsideIn", "Test-FileTypeId-List-Golden.csv");
 			using (DataTable goldenCsvImport = CsvEngine.CsvToDataTable(goldenCsvPath, ','))
 			using (DataTable testResults = new DataTable())
 			{

@@ -19,6 +19,11 @@ namespace Relativity.DataExchange.Transfer
 	internal sealed class TapiStatisticsListener : TapiListenerBase
 	{
 		/// <summary>
+		/// Number of bytes in a megabit. Used for units conversion.
+		/// </summary>
+		private const double BytesPerMegabit = 125_000.0;
+
+		/// <summary>
 		/// The thread synchronization root backing.
 		/// </summary>
 		private static readonly object SyncRoot = new object();
@@ -96,16 +101,15 @@ namespace Relativity.DataExchange.Transfer
 				this.totalStatistics[key] = e;
 			}
 
-			const int TicksPerSecond = 10000000;
 			var totalTransferredBytes = this.totalStatistics.Sum(x => x.Value.Statistics.TotalTransferredBytes);
 			var totalTransferredFiles = this.totalStatistics.Sum(x => x.Value.Statistics.TotalTransferredFiles);
 			var totalTransferTicks = TimeSpan
 				.FromSeconds(this.totalStatistics.Sum(x => x.Value.Statistics.TransferTimeSeconds)).Ticks;
-			var transferRateBytes = (e.Statistics.TransferRateMbps * 1000000) / 8.0;
-			var args = new TapiStatisticsEventArgs(totalTransferredBytes, totalTransferredFiles, totalTransferTicks, transferRateBytes);
+			var transferRateBytesPerSecond = e.Statistics.TransferRateMbps * BytesPerMegabit;
+			var args = new TapiStatisticsEventArgs(totalTransferredBytes, totalTransferredFiles, totalTransferTicks, transferRateBytesPerSecond);
 			this.StatisticsEvent?.Invoke(this, args);
 
-			// Be careful with overly agressive statistics logging.
+			// Be careful with overly aggressive statistics logging.
 			const int LogStatisticsRateSeconds = 15;
 			var logTimestampCopy = this.LogTimestamp;
 			var logStatistics = logTimestampCopy == null
@@ -115,7 +119,7 @@ namespace Relativity.DataExchange.Transfer
 				return;
 			}
 
-			var totalSeconds = totalTransferTicks / TicksPerSecond;
+			var totalSeconds = totalTransferTicks / TimeSpan.TicksPerSecond;
 			if (totalSeconds > 0)
 			{
 				var aggregateDataRate = totalTransferredBytes / totalSeconds;
@@ -123,7 +127,7 @@ namespace Relativity.DataExchange.Transfer
 					CultureInfo.CurrentCulture,
 					"WinEDDS aggregate statistics: {0}/sec",
 					ToFileSize(aggregateDataRate));
-				this.TransferLog.LogInformation2(e.Request, aggregateMessage);
+				this.TransferLog.LogTransferInformation(e.Request, aggregateMessage);
 			}
 
 			var jobMessage = string.Format(
@@ -133,8 +137,8 @@ namespace Relativity.DataExchange.Transfer
 				e.Statistics.TotalTransferredFiles,
 				e.Statistics.TotalRequestFiles,
 				e.Statistics.Progress,
-				ToFileSize(transferRateBytes));
-			this.TransferLog.LogInformation2(e.Request, jobMessage);
+				ToFileSize(transferRateBytesPerSecond));
+			this.TransferLog.LogTransferInformation(e.Request, jobMessage);
 			this.LogTimestamp = DateTime.Now;
 		}
 

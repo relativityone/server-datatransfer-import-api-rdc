@@ -18,6 +18,7 @@ namespace kCura.Relativity.ImportAPI
 	using global::Relativity.DataExchange;
 
 	using IAuthenticationTokenProvider = global::Relativity.Transfer.IAuthenticationTokenProvider;
+	using Monitoring.Sinks;
 
 	/// <summary>
 	/// Provides methods for developing custom import utilities for documents, images, production sets, and Dynamic Objects.

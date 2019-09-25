@@ -20,7 +20,7 @@ namespace Relativity.DataExchange
 	public interface IAppSettings
 	{
 		/// <summary>
-		/// Gets or sets the name of the application. This value is encoded within logs and potential transfer monitors.
+		/// Gets or sets the name of the application. This value is encoded within logs, metrics and potential transfer monitors.
 		/// </summary>
 		/// <value>
 		/// The application name.
@@ -729,6 +729,42 @@ namespace Relativity.DataExchange
 		/// <see langword="true" /> to submit APM metrics; otherwise, <see langword="false" />.
 		/// </value>
 		bool TapiSubmitApmMetrics
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether Import API should submit APM metrics periodically when executing a job and on job completion. This is <see langword="true" /> by default.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to submit APM metrics; otherwise, <see langword="false" />.
+		/// </value>
+		bool TelemetrySubmitApmMetrics
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether Import API should submit SUM metrics on job start and on job completion. This is <see langword="true" /> by default.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to submit SUM metrics; otherwise, <see langword="false" />.
+		/// </value>
+		bool TelemetrySubmitSumMetrics
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating how often Import API should submit APM metrics during job execution.
+		/// </summary>
+		/// <value>
+		/// Period in seconds in which we're sending metrics.
+		/// </value>
+		int TelemetryMetricsThrottlingSeconds
 		{
 			get;
 			set;

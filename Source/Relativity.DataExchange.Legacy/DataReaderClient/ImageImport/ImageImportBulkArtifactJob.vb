@@ -1,5 +1,7 @@
 Imports System.Net
 Imports Relativity.DataExchange
+Imports kCura.WinEDDS
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 
@@ -142,8 +144,10 @@ Namespace kCura.Relativity.DataReaderClient
 
 				MapSuppliedFieldNamesToActual(Settings, SourceData.SourceData)
 
-				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData)
+			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_tapiCredentialsProvider.Credential))
+				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, metricService)
 				process.ExecutionSource = _executionSource
+                process.ApplicationName = Settings.ApplicationName
 				_processContext = process.Context
 
 				If Settings.DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = Settings.DisableImageTypeValidation.Value
@@ -154,6 +158,7 @@ Namespace kCura.Relativity.DataReaderClient
 				process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()
+                process.CaseInfo = process.ImageLoadFile.CaseInfo
 
 				RaiseEvent OnMessage(New Status("Executing"))
 				Try

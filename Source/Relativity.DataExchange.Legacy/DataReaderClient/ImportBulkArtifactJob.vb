@@ -1,6 +1,7 @@
 Imports System.Net
 Imports kCura.WinEDDS
 Imports Relativity.DataExchange
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.Transfer
@@ -117,9 +118,10 @@ Namespace kCura.Relativity.DataReaderClient
 			If IsSettingsValid() Then
 
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
-
-				Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(SourceData.SourceData) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
+			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_tapiCredentialsProvider.Credential))
+				Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(SourceData.SourceData, metricService) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
 					process.ExecutionSource = _executionSource
+                    process.ApplicationName = Settings.ApplicationName
 					_processContext = process.Context
 
 					If Settings.DisableNativeValidation.HasValue Then process.DisableNativeValidation = Settings.DisableNativeValidation.Value
@@ -146,6 +148,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 					RaiseEvent OnMessage(New Status("Updating settings"))
 					process.LoadFile = CreateLoadFile(Settings)
+                    process.CaseInfo = process.LoadFile.CaseInfo
 
 					RaiseEvent OnMessage(New Status("Executing"))
 					Try

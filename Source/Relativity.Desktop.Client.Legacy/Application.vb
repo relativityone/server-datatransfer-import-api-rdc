@@ -5,14 +5,12 @@ Imports System.Net.Security
 Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Credentials
-Imports kCura.WinEDDS.Monitoring
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Export
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
-Imports Relativity.DataTransfer.MessageService
-Imports Relativity.DataTransfer.MessageService.Tools
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
@@ -61,11 +59,10 @@ Namespace Relativity.Desktop.Client
 		Private _timeZoneOffset As Int32
 		Private WithEvents _certificatePromptForm As CertificatePromptForm
 		Private WithEvents _optionsForm As OptionsForm
-		Private _messageService As IMessageService
 		Private _documentRepositoryList As String()
 		Private ReadOnly _logger As Relativity.Logging.ILog
 		Private ReadOnly oAuth2ImplicitCredentialsHelper As Lazy(Of OAuth2ImplicitCredentialsHelper) = New Lazy(Of OAuth2ImplicitCredentialsHelper)(AddressOf CreateOAuth2ImplicitCredentialsHelper)
-
+        Private _metricService As IMetricService
 #End Region
 
 #Region "Properties"
@@ -1117,7 +1114,7 @@ Namespace Relativity.Desktop.Client
 			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
 					Dim frm As ProcessForm = CreateProcessForm()
-					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await SetupMessageService())
+					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await SetupMetricService())
 					importer.CaseInfo = SelectedCaseInfo
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
@@ -1168,7 +1165,7 @@ Namespace Relativity.Desktop.Client
 				Return
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
-			Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await SetupMessageService())
+			Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await SetupMetricService())
 			ImageLoadFile.CookieContainer = Me.CookieContainer
 			importer.CaseInfo = SelectedCaseInfo
 			importer.ImageLoadFile = ImageLoadFile
@@ -1192,7 +1189,7 @@ Namespace Relativity.Desktop.Client
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
 			frm.StatusRefreshRate = 0
-			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMessageService())
+			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMetricService())
 			exporter.UserNotification = New FormsUserNotification()
 			exporter.CaseInfo = SelectedCaseInfo
 			exporter.ExportFile = exportFile
@@ -1809,35 +1806,9 @@ Namespace Relativity.Desktop.Client
 			Return loginResult
 		End Function
 
-		Public Async Function SetupMessageService() As Task(Of IMessageService)
-			If _messageService Is Nothing Then
-				_messageService = New MessageService()
-				Dim metricsManagerFactory As New MetricsManagerFactory()
-				Dim serviceFactory = ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync())
-				Dim configProvider As MetricsSinkConfigProvider = New MetricsSinkConfigProvider()
-				configProvider.Initialize()
-
-				Dim jobLiveSink = New JobLiveMetricSink(serviceFactory, metricsManagerFactory)
-
-				Dim jobLifetimeSink = New JobLifetimeSink(serviceFactory, metricsManagerFactory)
-				Dim jobLiveThrottledSink = New ThrottledMessageSink(Of TransferJobProgressMessage)(jobLiveSink, Function() configProvider.CurrentConfig.ThrottleTimeout)
-				Dim jobSumEolSink = New JobSumEndOfLifeSink(serviceFactory, metricsManagerFactory)
-				Dim jobApmEolSink = New JobApmEndOfLifeSink(serviceFactory, metricsManagerFactory)
-
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStartedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobFailedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
-
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobThroughputMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobTotalRecordsCountMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedRecordsCountMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
-
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobProgressMessage)(jobLiveThrottledSink, Function() configProvider.CurrentConfig.SendLiveApmMetrics))
-
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobApmEolSink, Function() configProvider.CurrentConfig.SendSummaryApmMetrics))
-			End If
-			Return _messageService
+		Public Async Function SetupMetricService() As Task(Of IMetricService)
+            If _metricService Is Nothing Then _metricService = New MetricService(New RdcMetricSinkConfig, ServiceFactoryFactory.Create(Await GetCredentialsAsync()))
+            Return _metricService
 		End Function
 
 		Private Async Function ValidateVersionCompatibilityAsync(ByVal credential As System.Net.NetworkCredential) As Task

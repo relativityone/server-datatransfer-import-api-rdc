@@ -75,6 +75,28 @@ Namespace kCura.WinEDDS
 		Public Property OIFileIdColumnName As String
 		Public Property OIFileTypeColumnName As String
 		Public Property FileNameColumn As String
+
+		''' <summary>
+		''' Gets total number of records. This property is used in our telemetry system.
+		''' </summary>
+		''' <returns>Total number of records.</returns>
+		Friend ReadOnly Property TotalRecords As Long
+			Get
+				' check if _recordCount has already been updated to avoid unnecessary file I/O operation
+				If _recordCount = 0 Then Return _imageReader.CountRecords()
+				Return _recordCount
+			End Get
+		End Property
+
+		''' <summary>
+		''' Gets number of completed records. This property is used in our telemetry system.
+		''' </summary>
+		''' <returns>Number of completed records.</returns>
+		Friend ReadOnly Property CompletedRecords As Long
+			Get
+				Return TotalTransferredFilesCount
+			End Get
+		End Property
 #End Region
 
 #Region "Accessors"

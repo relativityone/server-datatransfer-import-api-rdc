@@ -1,3 +1,4 @@
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Service
@@ -8,8 +9,8 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Private _sourceData As System.Data.IDataReader
 
-		Public Sub New(ByVal sourceData As System.Data.IDataReader)
-			MyBase.New()
+		Public Sub New(ByVal sourceData As System.Data.IDataReader, ByVal metricService As IMetricService)
+			MyBase.New(metricService)
 			_sourceData = sourceData
 
 			' Use the default value for the delimiter because as a public class,
