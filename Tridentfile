@@ -225,7 +225,8 @@ timestamps
                                     echo "Build number: ${currentBuild.number}"
                                     echo "Building all SDK and RDC packages"
                                     powershell ".\\build.ps1 BuildPackages -Branch '${branchName}' -BuildNumber '${currentBuild.number}'"
-                                }
+                                },
+                                failFast: true
                             )
                         }
                     }
@@ -237,40 +238,57 @@ timestamps
                             {
                                 if (params.publishPackages)
                                 {
-									withCredentials([string(credentialsId: 'ProgetNugetApiKey', variable: 'key')]) 
+								    try
 									{
-										if (publishSdkAndRdc)  
+										withCredentials([string(credentialsId: 'ProgetNugetApiKey', variable: 'key')]) 
 										{
-											echo "Publishing the SDK and RDC package(s)"
-											powershell ".\\build.ps1 PublishPackages -Branch '${branchName}'  -ProgetApiKey '$key'" 
+											if (publishSdkAndRdc)  
+											{
+												echo "Publishing the SDK and RDC package(s)"
+												powershell ".\\build.ps1 PublishPackages -Branch '${branchName}'  -ProgetApiKey '$key'" 
+											}
+											else 
+											{
+												if(publishSdk)
+												{
+													echo "Publishing the SDK only"
+													powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage -Branch '${branchName}'  -ProgetApiKey '$key'" 
+												}
+												else if(publishRdc)
+												{
+													echo "Publishing RDC only"
+													powershell ".\\build.ps1 PublishPackages -SkipPublishSdkPackage -Branch '${branchName}'  -ProgetApiKey '$key'" 
+												}
+												else
+												{
+													echo "publishing packages skipped, as we are on a release branch, and this is not a 'GOLD' build. In order to make this a gold build, kick this off manually"
+												}
+											}
 										}
-										else 
-										{
-											if(publishSdk)
-											{
-												echo "Publishing the SDK only"
-												powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage -Branch '${branchName}'  -ProgetApiKey '$key'" 
-											}
-											else if(publishRdc)
-											{
-												echo "Publishing RDC only"
-												powershell ".\\build.ps1 PublishPackages -SkipPublishSdkPackage -Branch '${branchName}'  -ProgetApiKey '$key'" 
-											}
-											else
-											{
-												echo "publishing packages skipped, as we are on a release branch, and this is not a 'GOLD' build. In order to make this a gold build, kick this off manually"
-											}
-										}
-                                    }
+									}
+									catch(err)
+									{
+										echo err.toString()
+										Throw "Something went wrong publishing the packages"
+									}
                                 }
                             },
 
                             "Publish artifacts":
                             {
-                                echo "Publishing build artifacts"
-                                output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${branchName}'"
-                                echo output
-                            }
+								try
+								{
+									echo "Publishing build artifacts"
+									output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${branchName}'"
+									echo output
+								}
+								catch(err)
+								{
+									echo err.toString()
+									Throw "Something went wrong publishing the artifact"
+								}
+                            },
+                            failFast: true
                         )
                         currentBuild.result = 'SUCCESS'
                     }
