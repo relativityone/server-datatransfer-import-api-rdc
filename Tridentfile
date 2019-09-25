@@ -269,7 +269,8 @@ timestamps
 									catch(err)
 									{
 										echo err.toString()
-										Throw "Something went wrong publishing the packages"
+										currentBuild.result = 'FAILED' 
+										echo "Something went wrong publishing the packages"
 									}
                                 }
                             },
@@ -285,7 +286,8 @@ timestamps
 								catch(err)
 								{
 									echo err.toString()
-									Throw "Something went wrong publishing the artifact"
+									currentBuild.result = 'FAILED' 
+									echo "Something went wrong publishing the packages"
 								}
                             },
                             failFast: true
