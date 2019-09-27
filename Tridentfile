@@ -110,7 +110,7 @@ timestamps
 
                                 "Run unit tests":
                                 {
-                                    if (params.runUnitTests)
+                                    if (params.runUnitTests && !params.createCodeCoverageReport)
                                     {
                                         echo "Running the unit tests"
                                         output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${branchName}'"
@@ -120,7 +120,7 @@ timestamps
 
                                 "Run integration tests":
                                 {
-                                    if (params.runIntegrationTests)
+                                    if (params.runIntegrationTests && !params.createCodeCoverageReport)
                                     {
                                         echo "Running the integration tests"
                                         output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment -Branch '${branchName}'"
@@ -130,7 +130,7 @@ timestamps
                                 
                                 "Code coverage report":
                                 {
-                                    if (params.createCodeCoverageReport)
+                                    if (params.createCodeCoverageReport && params.runIntegrationTests && params.runUnitTests)
                                     {
                                         echo "Creating a code coverage report"
                                         output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment $params.testEnvironment -Branch '${branchName}'"
@@ -138,7 +138,7 @@ timestamps
                                     }
                                     else
                                     {
-                                        echo "Skip creating code coverage report due to configuration parameter."
+                                        echo "Skip creating code coverage report due to configuration parameter. This only runs if you want to run the integration tests as well"
                                     }
                                 },
                                 failFast: true
