@@ -364,7 +364,14 @@ All `C#` and `VB.NET` projects contained within the master solution link in one 
 * `AssemblySharedInfo.cs`
 * `AssemblySharedInfo.vb`
 
-The main build script supports an optional `UpdateAssemblyInfo` task which, when specified, uses powershell to automatically apply semantic versioning info to both of these shared source files.
+The main build script supports an optional `UpdateAssemblyInfo` task which, when specified, uses powershell to automatically apply versioning info to both of these shared source files.
+The version numbers are as follows:
+* `<Major>.<Minor>.<CommitsSinceTag>`
+* `<Major>.<Minor>` comes from the Git tag, and should be updated accordingly
+On non-release branches, for versioning of the package names, the following is done:
+* `Hotfix branches are postfixed with "-hotfixN" where N is the hotfix number`
+* `The dev branch is postfixed with "-dev"`
+* `Hotfix branches are postfixed with "-<something_that_looks_loke_branch_name>"`
 
 ***Note:** Only Jenkins pipeline builds execute this task to avoid modifying source-controlled files during DEV builds.*
 
