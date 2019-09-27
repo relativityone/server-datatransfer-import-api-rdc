@@ -10,6 +10,10 @@ This script is responsible for all build processes.
 Build the solution.
 
 .EXAMPLE
+.\build.ps1 BuildVersion  -Branch '${env.BRANCH_NAME}'
+Does not build, returns version name for the branch name
+
+.EXAMPLE
 .\build.ps1 Build,BuildInstallPackages
 Build the solution and creates the install packages.
 
@@ -67,7 +71,7 @@ An optional build number. This is only used when building feature branch package
 An optional build platform. (e.g. 'Any CPU', 'x86', 'x64')
 
 .PARAMETER BuildUrl
-An optional build URL. This is only required for GitVersion task.
+An optional build URL. This is only required for the versioning task.
 
 .PARAMETER TestTimeoutInMS
 Timeout for NUnit tests (in milliseconds).
@@ -112,6 +116,8 @@ param(
     [String]$Verbosity = "quiet",
     [Parameter()]
     [String]$Branch,
+    [Parameter()]
+    [String]$ProgetApiKey,
     [Parameter()]
     [String]$BuildNumber = "1",
     [Parameter()]
@@ -208,6 +214,7 @@ $Params = @{
         Sign = $Sign
         ForcePublishRdcPackage = $ForcePublishRdcPackage
         Simulate = $Simulate
+		ProgetApiKey = $ProgetApiKey
     }
 
     Verbose = $VerbosePreference
