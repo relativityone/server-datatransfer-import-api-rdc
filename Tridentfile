@@ -42,6 +42,18 @@ def publishSdk =(!isReleaseBranch || (isReleaseBranch && params.buildType == 'GO
 def publishSdkAndRdc = (publishSdk && publishRdc)
 build = params.build
 
+
+
+// The code coverage report runs the integration tests + unit tests.
+def shouldRuncodeCoverageReport = params.createCodeCoverageReport && params.runIntegrationTests && params.runUnitTests
+
+// Disable running unit tests if we already run the code coverage report (that invokes the unit tests as well)
+def shouldRunUnitTests = params.runUnitTests && !shouldRuncodeCoverageReport
+
+// Disable running integration tests if we already run the code coverage report (that invokes the integration tests as well)
+def shouldRunIntegrationTests = params.runIntegrationTests && !shouldRuncodeCoverageReport
+						
+						
 timestamps
 {
     timeout(time: 3, unit: 'HOURS')
@@ -72,7 +84,7 @@ timestamps
                     stage('Retrieve version')
                     { 
                         echo "Is release branch = $isReleaseBranch"
-                        echo "Run integration tests = ${params.runIntegrationTests}"
+                        echo "Run integration tests = ${shouldRunIntegrationTests}"
                         echo "Is isGoldBuild = $isGoldBuild"
                         echo "Retrieving the semantic versions"
                         echo "Using new build strategy"
@@ -97,7 +109,7 @@ timestamps
                     }
 
                     try
-                    {
+                    {						
                         stage('Tests and Static analysis')
                         {
                             parallel(
@@ -110,7 +122,7 @@ timestamps
 
                                 "Run unit tests":
                                 {
-                                    if (params.runUnitTests && !params.createCodeCoverageReport)
+                                    if (shouldRunUnitTests)
                                     {
                                         echo "Running the unit tests"
                                         output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${branchName}'"
@@ -120,7 +132,7 @@ timestamps
 
                                 "Run integration tests":
                                 {
-                                    if (params.runIntegrationTests && !params.createCodeCoverageReport)
+                                    if (shouldRunIntegrationTests)
                                     {
                                         echo "Running the integration tests"
                                         output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment -Branch '${branchName}'"
@@ -130,7 +142,7 @@ timestamps
                                 
                                 "Code coverage report":
                                 {
-                                    if (params.createCodeCoverageReport && params.runIntegrationTests && params.runUnitTests)
+                                    if (shouldRuncodeCoverageReport)
                                     {
                                         echo "Creating a code coverage report"
                                         output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment $params.testEnvironment -Branch '${branchName}'"
@@ -147,7 +159,7 @@ timestamps
                     }
                     finally
                     {
-                        if (params.runUnitTests || params.runIntegrationTests)
+                        if (shouldRunUnitTests || shouldRunIntegrationTests)
                         {
                             stage('Test results report')
                             {
@@ -156,18 +168,18 @@ timestamps
                             }
                         }
 
-                        if (params.runUnitTests || params.runIntegrationTests)
+                        if (shouldRunUnitTests || shouldRunIntegrationTests)
                         {
                             parallel(
                                 "Retrieve test results":
                                 {
                                     def taskCandidates = []
-                                    if (params.runUnitTests)
+                                    if (shouldRunUnitTests)
                                     {
                                         taskCandidates.add("UnitTestResults")
                                     }
 
-                                    if (params.runIntegrationTests)
+                                    if (shouldRunIntegrationTests)
                                     {
                                         taskCandidates.add("IntegrationTestResults")
                                     }
@@ -296,19 +308,19 @@ timestamps
                 {
                     echo "Publishing the build logs"
                     archiveArtifacts artifacts: 'Logs/**/*.*'
-                    if (params.runUnitTests)
+                    if (shouldRunUnitTests)
                     {
                         echo "Publishing the unit tests report"
                         archiveArtifacts artifacts: 'TestReports/unit-tests/**/*.*'
                     }
 
-                    if (params.runIntegrationTests)
+                    if (shouldRunIntegrationTests)
                     {
                         echo "Publishing the integration tests report"
                         archiveArtifacts artifacts: 'TestReports/integration-tests/**/*.*'
                     }
 
-                    if (params.createCodeCoverageReport)
+                    if (shouldRuncodeCoverageReport)
                     {
                         echo "Publishing the code coverage report"
                         archiveArtifacts artifacts: 'TestReports/code-coverage/**/*.*'
