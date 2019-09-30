@@ -128,10 +128,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[TearDown]
 		public void TearDown()
 		{
-			if (this.sourceData != null)
-			{
-				this.sourceData.Dispose();
-			}
+			this.sourceData?.Dispose();
 
 			if (this.importJob != null)
 			{
@@ -249,7 +246,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					includeReadOnlyFiles && i % 2 == 0);
 			}
 
-			this.GivenTheDatasetPathToImport(this.testDirectory.Directory, "*", SearchOption.AllDirectories);
+			this.GivenTheDatasetPathToImport(this.testDirectory.Directory, "*");
 		}
 
 		/// <summary>
@@ -261,10 +258,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		/// <param name="searchPattern">
 		/// Specify the search pattern.
 		/// </param>
-		/// <param name="searchOption">
-		/// Specify the search option.
-		/// </param>
-		private void GivenTheDatasetPathToImport(string path, string searchPattern, SearchOption searchOption)
+		private void GivenTheDatasetPathToImport(string path, string searchPattern)
 		{
 			var number = 1;
 			foreach (var file in Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories))
