@@ -44,7 +44,7 @@ namespace Relativity.DataExchange.Transfer
 		/// Initializes a new instance of the <see cref="TapiObjectService"/> class.
 		/// TapiObjectService.
 		/// </summary>
-		/// <param name="authenticationTokenProvider">return.</param>
+		/// <param name="authenticationTokenProvider">Authentication token provider.</param>
 		public TapiObjectService(IAuthenticationTokenProvider authenticationTokenProvider)
 		{
 			authenticationTokenProvider.ThrowIfNull(nameof(authenticationTokenProvider));

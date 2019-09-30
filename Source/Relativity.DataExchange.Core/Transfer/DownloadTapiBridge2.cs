@@ -36,7 +36,7 @@ namespace Relativity.DataExchange.Transfer
 		/// The cancellation token.
 		/// </param>
 		public DownloadTapiBridge2(TapiBridgeParameters2 parameters, ITransferLog log, CancellationToken token)
-			: this(new TapiObjectService(new NullAuthTokenProvider()), parameters, log, token)
+			: this(new TapiObjectService(), parameters, log, token)
 		{
 		}
 

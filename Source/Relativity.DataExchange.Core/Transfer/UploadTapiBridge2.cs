@@ -41,7 +41,7 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="log">
 		/// The transfer log.
 		/// </param>
-		/// <param name="authTokenProvider">Auth token provider.</param>
+		/// <param name="authTokenProvider">Authentication token provider.</param>
 		/// <param name="token">
 		/// The cancellation token.
 		/// </param>
