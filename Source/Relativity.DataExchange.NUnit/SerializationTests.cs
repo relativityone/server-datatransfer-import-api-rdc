@@ -98,7 +98,6 @@ namespace Relativity.DataExchange.NUnit
 			exportFile.SelectedTextFields = null;
 			SerializationHelper.SerializeToSoapFile(exportFile, newFileName);
 			Assert.IsTrue(File.ReadAllBytes(newFileNameAdditional).SequenceEqual(File.ReadAllBytes(newFileName)));
-
 		}
 	}
 }
