@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "Relativity.DataExchange.Sandcastle", "Relativity.DataExchange.Sandcastle\Relativity.DataExchange.Sandcastle.shfbproj", "{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug-ILMerge|Any CPU = Debug-ILMerge|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Release-ILMerge|Any CPU = Release-ILMerge|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Debug-ILMerge|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Debug-ILMerge|Any CPU.Build.0 = Debug|Any CPU
+		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Release-ILMerge|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Release-ILMerge|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A3CACB07-42F3-45DD-BB90-6D9CE5F0851F}
+	EndGlobalSection
+EndGlobal
