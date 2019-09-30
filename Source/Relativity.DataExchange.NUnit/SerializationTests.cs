@@ -9,10 +9,7 @@
 
 namespace Relativity.DataExchange.NUnit
 {
-	using System;
 	using System.Collections.Generic;
-	using System.Data;
-	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 
@@ -96,18 +93,12 @@ namespace Relativity.DataExchange.NUnit
 			var newFileNameAdditional = Path.GetRandomFileName();
 			SerializationHelper.SerializeToSoapFile(exportFile, newFileNameAdditional);
 			Assert.IsTrue(File.ReadAllBytes(newFileNameAdditional).SequenceEqual(File.ReadAllBytes(newFileName)));
-			using (DataTable table = new DataTable { Locale = CultureInfo.InvariantCulture })
-			{
-				table.Columns.Add("FieldArtifactID", typeof(int));
-				table.Columns.Add("AvfId", typeof(int));
-				table.Columns.Add("FieldCategoryID", typeof(int));
-				table.Columns.Add("FieldTypeID", typeof(int));
-				exportFile.SelectedTextFields = new[] { new QueryFieldFactory().GetIdentifierQueryField() };
-				SerializationHelper.SerializeToSoapFile(exportFile, newFileName);
-				exportFile.SelectedTextFields = null;
-				SerializationHelper.SerializeToSoapFile(exportFile, newFileName);
-				Assert.IsTrue(File.ReadAllBytes(newFileNameAdditional).SequenceEqual(File.ReadAllBytes(newFileName)));
-			}
+			exportFile.SelectedTextFields = new[] { new QueryFieldFactory().GetIdentifierQueryField() };
+			SerializationHelper.SerializeToSoapFile(exportFile, newFileName);
+			exportFile.SelectedTextFields = null;
+			SerializationHelper.SerializeToSoapFile(exportFile, newFileName);
+			Assert.IsTrue(File.ReadAllBytes(newFileNameAdditional).SequenceEqual(File.ReadAllBytes(newFileName)));
+
 		}
 	}
 }
