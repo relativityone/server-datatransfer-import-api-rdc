@@ -153,7 +153,6 @@
     </Compile>
     <Compile Include="AppSettingsTests.cs" />
     <Compile Include="ChoiceInfoTests.cs" />
-    <Compile Include="ExportFileDeserializationTests.cs" />
     <Compile Include="FreeImageServiceTests.cs" />
     <Compile Include="HttpServiceExceptionTests.cs" />
     <Compile Include="ImageConverterServiceTests.cs" />
@@ -164,6 +163,7 @@
     <Compile Include="Monitoring\Sinks\MetricSinkApmTest.cs" />
     <Compile Include="Monitoring\Sinks\MetricSinkSumTest.cs" />
     <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
+    <Compile Include="SerializationTests.cs" />
     <Compile Include="SoapExceptionDetailTests.cs" />
     <Compile Include="SerializationTestsBase.cs" />
     <Compile Include="ImportExportCompatibilityCheckTests.cs" />
