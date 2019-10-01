@@ -140,7 +140,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property NativeFileCopyMode() As NativeFileCopyModeEnum
 
 		''' <summary>
-		''' Indicates whether records should be appended or overlayed. The default mode is Append.
+		''' Indicates whether records should be appended or overlaid. The default mode is Append.
 		''' </summary>
 		''' <remarks>To set this property, see <see cref="kCura.Relativity.DataReaderClient.OverwriteModeEnum">OverwriteModeEnum</see> for a list of values.</remarks>
 		Public Property OverwriteMode() As OverwriteModeEnum

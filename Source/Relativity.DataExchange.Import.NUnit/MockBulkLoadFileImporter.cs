@@ -8,6 +8,7 @@ namespace Relativity.DataExchange.Import.NUnit
 {
 	using System;
 	using System.Net;
+	using System.Text;
 	using System.Threading;
 	using kCura.EDDS.WebAPI.BulkImportManagerBase;
 	using kCura.WinEDDS;
@@ -19,7 +20,7 @@ namespace Relativity.DataExchange.Import.NUnit
 	/// <summary>
 	/// Represents a mock class object for <see cref="BulkLoadFileImporter"/>.
 	/// </summary>
-	public class MockBulkLoadFileImporter : BulkLoadFileImporter
+	public sealed class MockBulkLoadFileImporter : BulkLoadFileImporter
 	{
 		public MockBulkLoadFileImporter(
 			LoadFile args,
@@ -53,6 +54,8 @@ namespace Relativity.DataExchange.Import.NUnit
 			this._bulkImportManager = manager;
 			this.ImportBatchSize = 500;
 			this.ImportBatchVolume = 1000000;
+			this.OutputFileWriter = new OutputFileWriter();
+			this.OutputFileWriter.Open(true);
 		}
 
 		public int GetMetadataFilesCount => this.MetadataFilesCount;
@@ -112,14 +115,14 @@ namespace Relativity.DataExchange.Import.NUnit
 		public void SetTapiBridges()
 		{
 			UploadTapiBridgeParameters2 parameters = new UploadTapiBridgeParameters2
-				                                         {
-					                                         Credentials = new NetworkCredential(),
-					                                         WebServiceUrl = "https://relativity.one.com",
-					                                         WorkspaceId = 1337,
-					                                         TargetPath = "./",
-					                                         FileShare = "./somepath/",
-					                                         TimeoutSeconds = 0,
-				                                         };
+			{
+				Credentials = new NetworkCredential(),
+				WebServiceUrl = "https://relativity.one.com",
+				WorkspaceId = 1337,
+				TargetPath = "./",
+				FileShare = "./somepath/",
+				TimeoutSeconds = 0,
+			};
 			this.CreateTapiBridges(parameters, parameters.ShallowCopy());
 		}
 
@@ -131,6 +134,12 @@ namespace Relativity.DataExchange.Import.NUnit
 		public void PushNativeBatchInvoker(string outputNativePath, bool shouldCompleteJob, bool lastRun)
 		{
 			this.PushNativeBatch(outputNativePath, shouldCompleteJob, lastRun);
+		}
+
+		public override void Dispose()
+		{
+			this.OutputFileWriter?.Dispose();
+			base.Dispose();
 		}
 
 		protected override void RaiseWarningAndPause(Exception exception, int timeoutSeconds, int retryCount, int totalRetryCount)
