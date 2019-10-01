@@ -6,13 +6,15 @@
 
 namespace Relativity.DataExchange.Io
 {
+	using System;
 	using System.IO;
+	using System.Runtime.Remoting;
 	using System.Text;
 
 	/// <summary>
 	/// Represents a <see cref="T:System.IO.StreamWriter"/> class object wrapper.
 	/// </summary>
-	internal class StreamWriterWrap : TextWriter, IStreamWriter
+	internal class StreamWriterWrap : IStreamWriter
 	{
 		/// <summary>
 		/// The wrapped stream writer instance.
@@ -59,20 +61,6 @@ namespace Relativity.DataExchange.Io
 		}
 
 		/// <inheritdoc />
-		public bool AutoFlush
-		{
-			get
-			{
-				return this.instance.AutoFlush;
-			}
-
-			set
-			{
-				this.instance.AutoFlush = value;
-			}
-		}
-
-		/// <inheritdoc />
 		public Stream BaseStream
 		{
 			get
@@ -81,72 +69,138 @@ namespace Relativity.DataExchange.Io
 			}
 		}
 
-		/// <inheritdoc cref="T:TextWriter.Encoding" />
-		public override Encoding Encoding
-		{
-			get
-			{
-				return this.instance.Encoding;
-			}
-		}
-
-		/// <inheritdoc cref="T:TextWriter.Close" />
-		public override void Close()
+		/// <inheritdoc />
+		public void Close()
 		{
 			this.instance.Close();
 		}
 
-		/// <inheritdoc cref="T:TextWriter.Flush" />
-		public override void Flush()
+		/// <inheritdoc />
+		public void Flush()
 		{
 			this.instance.Flush();
 		}
 
-		/// <inheritdoc cref="T:TextWriter.Write" />
-		public override void Write(char value)
+		/// <inheritdoc />
+		public void Write(char value)
 		{
 			this.instance.Write(value);
 		}
 
-		/// <inheritdoc cref="T:TextWriter.Write" />
-		public override void Write(char[] buffer)
+		/// <inheritdoc />
+		public void Write(char[] buffer)
 		{
 			this.instance.Write(buffer);
 		}
 
-		/// <inheritdoc cref="T:TextWriter.Write" />
-		public override void Write(string value)
+		/// <inheritdoc />
+		public void Write(string value)
 		{
 			this.instance.Write(value);
 		}
 
-		/// <inheritdoc cref="T:TextWriter.Write" />
-		public override void Write(char[] buffer, int index, int count)
+		/// <inheritdoc />
+		public void Write(char[] buffer, int index, int count)
 		{
 			this.instance.Write(buffer, index, count);
 		}
 
-		/// <inheritdoc cref="T:TextWriter.WriteLine" />
-		public override void WriteLine(string format, params object[] arg)
+		/// <inheritdoc />
+		public void WriteLine(string format, params object[] arg)
 		{
 			this.instance.WriteLine(format, arg);
 		}
 
-		/// <inheritdoc cref="T:TextWriter.WriteLine" />
-		public override void WriteLine(string value)
+		/// <inheritdoc />
+		public void WriteLine(string value)
 		{
 			this.instance.WriteLine(value);
 		}
 
-		/// <inheritdoc cref="T:TextWriter.Dispose" />
-		protected override void Dispose(bool disposing)
+		/// <summary>
+		/// Dispose this instance.
+		/// </summary>
+		public void Dispose()
 		{
-			if (disposing)
-			{
-				this.instance.Dispose();
-			}
+			this.instance.Dispose();
+		}
 
-			base.Dispose(disposing);
+		/// <inheritdoc />
+		public void Write(bool value)
+		{
+			this.instance.Write(value);
+		}
+
+		/// <inheritdoc />
+		public void Write(decimal value)
+		{
+			this.instance.Write(value);
+		}
+
+		/// <inheritdoc />
+		public void Write(double value)
+		{
+			this.instance.Write(value);
+		}
+
+		/// <inheritdoc />
+		public void Write(int value)
+		{
+			this.instance.Write(value);
+		}
+
+		/// <inheritdoc />
+		public void Write(long value)
+		{
+			this.instance.Write(value);
+		}
+
+		/// <inheritdoc />
+		public void Write(object value)
+		{
+			this.instance.Write(value);
+		}
+
+		/// <inheritdoc />
+		public void Write(float value)
+		{
+			this.instance.Write(value);
+		}
+
+		/// <inheritdoc />
+		public void Write(uint value)
+		{
+			this.instance.Write(value);
+		}
+
+		/// <inheritdoc />
+		public void Write(ulong value)
+		{
+			this.instance.Write(value);
+		}
+
+		/// <inheritdoc />
+		public void Write(string format, object arg0)
+		{
+			this.instance.Write(format, arg0);
+		}
+
+		/// <inheritdoc />
+		public void Write(string format, object[] arg)
+		{
+			this.instance.Write(format, arg);
+		}
+
+		/// <inheritdoc />
+		public void Write(string format, object arg0, object arg1)
+		{
+			this.instance.Write(format, arg0, arg1);
+		}
+
+		/// <inheritdoc />
+		public void Write(string format, object arg0, object arg1, object arg2)
+		{
+			this.instance.Write(format, arg0, arg1, arg2);
 		}
 	}
 }
