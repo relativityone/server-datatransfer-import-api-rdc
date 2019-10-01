@@ -438,5 +438,22 @@ namespace Relativity.DataExchange.Io
 		/// <paramref name="format" /> is not a valid composite format string.-or- The index of a format item is less than 0 (zero), or greater than or equal to the length of the <paramref name="arg" /> array.
 		/// </exception>
 		void WriteLine(string format, params object[] arg);
+
+		/// <summary>
+		/// Writes out a string and a new line.
+		/// </summary>
+		/// <param name="value">
+		/// A composite format string (see Remarks).
+		/// </param>
+		/// <exception cref="T:System.ArgumentNullException">
+		/// A string or object is passed in as <see langword="null" />.
+		/// </exception>
+		/// <exception cref="T:System.ObjectDisposedException">
+		/// The <see cref="T:System.IO.TextWriter" /> is closed.
+		/// </exception>
+		/// <exception cref="T:System.IO.IOException">
+		/// An I/O error occurs.
+		/// </exception>
+		void WriteLine(string value);
 	}
 }
