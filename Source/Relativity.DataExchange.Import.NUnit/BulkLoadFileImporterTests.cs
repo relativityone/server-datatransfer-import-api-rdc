@@ -75,7 +75,7 @@ namespace Relativity.DataExchange.Import.NUnit
 		[TestCase("[[--", 2223, -100)]
 		[TestCase(" {1:hh}", 123123, 34)]
 		[TestCase("Prime numbers less than 10: {0}, {1}, {2}, {3}", -2113, 112334)]
-		[TestCase("0x{0:omg} {0:1337} {0:N}",  232, -66)]
+		[TestCase("0x{0:omg} {0:1337} {0:N}", 232, -66)]
 		[TestCase("dddd MMMM", 55, 66)]
 		public void WriteCodeLineToTempFileShouldNotDoubleFormat(string documentIdentifier, int codeArtifactID, int codeTypeID)
 		{
