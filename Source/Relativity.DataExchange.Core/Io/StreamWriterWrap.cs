@@ -132,6 +132,12 @@ namespace Relativity.DataExchange.Io
 			this.instance.WriteLine(format, arg);
 		}
 
+		/// <inheritdoc cref="T:TextWriter.WriteLine" />
+		public override void WriteLine(string value)
+		{
+			this.instance.WriteLine(value);
+		}
+
 		/// <inheritdoc cref="T:TextWriter.Dispose" />
 		protected override void Dispose(bool disposing)
 		{
