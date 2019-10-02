@@ -383,7 +383,10 @@ timestamps
                                     "\n" + "message: " + message +
                                     "\n" +
                                     "\n*************************************************"
-                                sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, numberOfFailedTests, numberOfPassedTests, numberOfSkippedTests, message)
+							    withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
+								{	
+									sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, numberOfFailedTests, numberOfPassedTests, numberOfSkippedTests, message, "$token")
+								}
                             }
                         )
                     }
