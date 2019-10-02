@@ -1,6 +1,7 @@
 #!groovy
 
 library 'PipelineTools@RMT-9.3.2'
+library 'SlackHelpers@3.0.0'
 
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30']],
@@ -351,6 +352,38 @@ timestamps
                             "BitBucket notification":
                             { 
                                 notifyBitbucket()
+                            },
+							"Slack Notification": 
+                            {
+                                def script = this
+                                def String serverUnderTestName = ""
+                                def String version = buildVersion
+                                def String branch = env.BRANCH_NAME
+                                def String buildType = params.buildType
+                                def String slackChannel = params.slackChannel
+                                def String email = "slack_svc@relativity.com"
+                                def int numberOfFailedTests = testResultsFailed
+                                def int numberOfPassedTests = testResultsPassed
+                                def int numberOfSkippedTests = testResultsSkipped
+                                def String message = env.BUILD_TAG
+                                echo "*************************************************" +
+                                    "\n" +
+                                    "\n" + "sendCDSlackNotification Parameters: " +
+                                    "\n" +
+                                    "\n" + "script: " + script +
+                                    "\n" + "serverUnderTestName: " + serverUnderTestName +
+                                    "\n" + "version: " + version +
+                                    "\n" + "branch: " + branch +
+                                    "\n" + "buildType: " + buildType +
+                                    "\n" + "slackChannel: " + slackChannel +
+                                    "\n" + "email: " + email +
+                                    "\n" + "numberOfFailedTests: " + numberOfFailedTests +
+                                    "\n" + "numberOfPassedTests: " + numberOfPassedTests +
+                                    "\n" + "numberOfSkippedTests: " + numberOfSkippedTests +
+                                    "\n" + "message: " + message +
+                                    "\n" +
+                                    "\n*************************************************"
+                                sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, numberOfFailedTests, numberOfPassedTests, numberOfSkippedTests, message)
                             }
                         )
                     }
