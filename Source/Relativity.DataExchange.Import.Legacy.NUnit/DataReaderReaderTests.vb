@@ -132,7 +132,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 				rdr.SetFieldValueInvokerForTesting(idx, field, displayName)
 				Assert.Fail("Should not have gotten here: SetFieldValue() should have thrown.")
 			Catch ex As kCura.WinEDDS.Exceptions.FieldValueImportException
-				' note the linenum+1 because the datareaderreader is zero based, but the exceptions should be one based
+				' note the lineNum+1 because the datareaderreader is zero based, but the exceptions should be one based
 				Assert.AreEqual(lineNum + 1, ex.RowNumber)
 				Assert.AreEqual(displayName, ex.FieldName)
 				Assert.AreSame(inner, ex.InnerException)

@@ -129,7 +129,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property ProductionArtifactID() As Int32
 
 		''' <summary>
-		''' Indiciates the Case's File Repository where the Images will be saved.
+		''' Indicates the Case's File Repository where the Images will be saved.
 		''' </summary>
 		''' <returns></returns>
 		Public Property SelectedCasePath() As String
