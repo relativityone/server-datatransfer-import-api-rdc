@@ -49,7 +49,7 @@ namespace kCura.Relativity.ImportAPI
 		private ProductionManager _productionManager;
 
 		/// <summary>
-		/// 
+		/// Authentication token provider
 		/// </summary>
 		private IAuthenticationTokenProvider _authenticationTokenProvider = new NullAuthTokenProvider();
 
@@ -180,7 +180,7 @@ namespace kCura.Relativity.ImportAPI
 			ImportAPI importApi = CreateByBearerToken(webServiceUrl, token);
 			
 			// Here we override token provider so Tapi can refresh credentials on token expiration event
-			importApi._tapiCredentialsProvider.TokenProvider = new BearerTokenAuthenticationProvider();
+			importApi._tapiCredentialsProvider.TokenProvider = new RsaBearerTokenAuthenticationProvider();
 			return importApi;
 		}
 

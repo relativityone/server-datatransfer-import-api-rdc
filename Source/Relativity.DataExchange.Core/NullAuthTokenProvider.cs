@@ -7,14 +7,14 @@ namespace Relativity.DataExchange
 	using Relativity.Transfer;
 
 	/// <summary>
-	/// fwef.
+	/// This class represents the authentication provider for not agent based scenarios.
 	/// </summary>
 	public class NullAuthTokenProvider : IAuthenticationTokenProvider
 	{
 		/// <summary>
-		///  ewq w.
+		///  It returns empty string token.
 		/// </summary>
-		/// <returns>www.</returns>
+		/// <returns>empty string.</returns>
 		public string GenerateToken()
 		{
 			return string.Empty;
