@@ -199,7 +199,7 @@ Namespace kCura.WinEDDS
 						End Select
 
 						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex, identifierField.ValueAsString, codePageId, mapItem.DocumentField.ImportBehavior)
-						'dont add field if object type is not a document and the field is a file field
+						'Don't add field if object type is not a document and the field is a file field
 						retval.Add(field)
 
 					End If
