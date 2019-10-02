@@ -298,7 +298,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		''' <summary>
-		''' Returns maximum snumber of choices that will be created in any column of the import (based on the rows analyzed so far)
+		''' Returns maximum number of choices that will be created in any column of the import (based on the rows analyzed so far)
 		''' </summary>
 		Private Function GetMaxChoiceCount() As Int32
 			Dim maxChoiceCount As Int32 = 0

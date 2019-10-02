@@ -2360,7 +2360,7 @@ Namespace kCura.WinEDDS
 			RaiseEvent FieldMapped(sourceField, workspaceField)
 		End Sub
 
-		Public Sub Dispose() Implements IDisposable.Dispose
+		Public Overridable Sub Dispose() Implements IDisposable.Dispose
 			Me.errorMessageFileWriter?.Dispose()
 			Me.prePushErrorWriter?.Dispose()
 		End Sub
