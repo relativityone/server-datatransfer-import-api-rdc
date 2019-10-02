@@ -34,12 +34,12 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		''' <summary>
-		''' Gets from the given IDictionary the element specificed by the given key, or a default value if the key does not exist. 
+		''' Gets from the given IDictionary the element specified by the given key, or a default value if the key does not exist. 
 		''' </summary>
 		''' <param name="settings">The IDictionary to search.</param>
 		''' <param name="key">The key of the element to get.</param>
 		''' <param name="defaultValue">The value to be returned if the key is not present.</param>
-		''' <returns>The element specificed by the given key, or a default value if it does not exist.</returns>
+		''' <returns>The element specified by the given key, or a default value if it does not exist.</returns>
 		Public Shared Function GetValue(ByVal settings As IDictionary, ByVal key As String, ByVal defaultValue As Object) As Object
 			Dim obj As Object = Nothing
 			If settings Is Nothing Then

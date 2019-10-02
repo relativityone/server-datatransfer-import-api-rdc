@@ -335,7 +335,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		'This is used to disable certificates check of destiantion server on client. It should be enabled only when dealing with invalid certificates on test environments.
+		'This is used to disable certificates check of destination server on client. It should be enabled only when dealing with invalid certificates on test environments.
 		Public Shared ReadOnly Property SuppressCertificateCheckOnClient() As Boolean
 			Get
 				Return AppSettings.Instance.SuppressServerCertificateValidation
