@@ -11,7 +11,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 {
 	using System;
 	using System.IO;
-	using System.Linq;
 	using System.Net;
 
 	using global::NUnit.Framework;
