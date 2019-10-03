@@ -1432,7 +1432,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private _task As System.Threading.Tasks.Task = Nothing
-		Private _isRunOccurring As Boolean = False
 		Protected Function GetMassImportOverlayBehavior(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior?) As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior
 			Select Case inputOverlayType
 				Case LoadFile.FieldOverlayBehavior.MergeAll
@@ -1479,10 +1478,6 @@ Namespace kCura.WinEDDS
 				retval.Add(Me.GetIsSupportedRelativityFileTypeField)
 				retval.Add(Me.GetRelativityFileTypeField)
 				retval.Add(Me.GetHasNativesField)
-			Else
-				'If (_filePathColumnIndex <> -1) AndAlso _uploadFiles Then
-				'	retval.Add(Me.GetObjectFileField())
-				'End If
 			End If
 			Return DirectCast(retval.ToArray(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo)), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo())
 		End Function
@@ -1816,15 +1811,6 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
-		Private Function GetObjectFileField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In AllFields(_artifactTypeID)
-				If field.FieldTypeID = FieldType.File Then
-					Return Me.FieldDtoToFieldInfo(field)
-				End If
-			Next
-			Return Nothing
-		End Function
-
 		Private Function FieldDtoToFieldInfo(ByVal input As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			retval.ArtifactID = input.ArtifactID
@@ -1881,10 +1867,10 @@ Namespace kCura.WinEDDS
 				For Each item In _fieldMap
 					If FirstTimeThrough Then
 						If item.DocumentField Is Nothing Then
-							WriteStatusLine(EventType2.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)
+							WriteStatusLine(EventType2.Warning, $"File column '{(item.NativeFileColumnIndex + 1)}' will be unmapped", 0)
 						End If
 						If item.NativeFileColumnIndex = -1 Then
-							WriteStatusLine(EventType2.Warning, String.Format("Field '{0}' will be unmapped", item.DocumentField.FieldName), 0)
+							WriteStatusLine(EventType2.Warning, $"Field '{item.DocumentField.FieldName}' will be unmapped", 0)
 						End If
 					End If
 					If Not item.DocumentField Is Nothing Then
