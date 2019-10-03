@@ -1,4 +1,4 @@
-﻿// <copyright file="TapiCredentialsProvider.cs" company="Relativity ODA LLC">
+﻿// <copyright file="WebApiCredential.cs" company="Relativity ODA LLC">
 // © Relativity All Rights Reserved.
 // </copyright>
 
@@ -11,7 +11,7 @@ namespace Relativity.DataExchange
 	/// <summary>
 	/// It represents the credential specific data that will be passed to Tapi.
 	/// </summary>
-	public class TapiCredentialsProvider
+	public class WebApiCredential
 	{
 		/// <summary>
 		/// Gets or sets relativity credentials.

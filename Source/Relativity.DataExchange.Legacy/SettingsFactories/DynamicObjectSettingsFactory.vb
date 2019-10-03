@@ -24,18 +24,18 @@ Namespace kCura.WinEDDS
 			Me.InitLoadFile(caseArtifactID, artifactTypeID)
 		End Sub
 
-		Public Sub New(ByVal credential As System.Net.ICredentials, ByVal tapiCredentialsProvider As TapiCredentialsProvider, ByVal cookieContainer As System.Net.CookieContainer, ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32)
+		Public Sub New(ByVal credential As System.Net.ICredentials, ByVal webApiCredential As WebApiCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32)
 			MyBase.new(DirectCast(credential, System.Net.NetworkCredential), cookieContainer)
-			Me.InitLoadFile(caseArtifactID, artifactTypeID, tapiCredentialsProvider)
+			Me.InitLoadFile(caseArtifactID, artifactTypeID, webApiCredential)
 		End Sub
 
 		Public Function ToLoadFile() As kCura.WinEDDS.LoadFile
 			Return _loadFile
 		End Function
 
-		Private Sub InitLoadFile(ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal tapiCredentialsProvider As TapiCredentialsProvider)
+		Private Sub InitLoadFile(ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal webApiCredential As WebApiCredential)
 			InitLoadFile(caseArtifactID, artifactTypeID)
-			_loadFile.TapiCredentialsProvider = tapiCredentialsProvider
+			_loadFile.WebApiCredential = webApiCredential
 		End Sub
 
 		Private Sub InitLoadFile(ByVal caseArtifactID As Int32, ByVal artifactTypeID As Int32)

@@ -95,7 +95,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _cookieMonster As Net.CookieContainer
 		Private _jobReport As JobReport
 		Private _executionSource As ExecutionSource
-		Private _tapiCredentialsProvider As TapiCredentialsProvider
+		Private _webApiCredential As WebApiCredential
 #End Region
 
 #Region " Public Methods "
@@ -115,12 +115,12 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <param name="credentials">The credentials.</param>
 		''' <param name="cookieMonster">The cookie monster.</param>
 		''' <param name="executionSource">Optional parameter that states what process the import is coming from.</param>
-		Friend Sub New(ByVal credentials As ICredentials, ByVal tapiCredentialsProvider As TapiCredentialsProvider,  ByVal cookieMonster As Net.CookieContainer, ByVal Optional executionSource As Integer = 0)
+		Friend Sub New(ByVal credentials As ICredentials, ByVal webApiCredential As WebApiCredential,  ByVal cookieMonster As Net.CookieContainer, ByVal Optional executionSource As Integer = 0)
 			Me.New()
 			_executionSource = CType(executionSource, ExecutionSource)
 			_credentials = credentials
 			_cookieMonster = cookieMonster
-			_tapiCredentialsProvider = tapiCredentialsProvider
+			_webApiCredential = webApiCredential
 		End Sub
 
 		''' <summary>
@@ -135,7 +135,7 @@ Namespace kCura.Relativity.DataReaderClient
 				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
 				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
 				_credentials = creds.Credentials
-				_tapiCredentialsProvider.Credential = creds.TapiCredential
+				_webApiCredential.Credential = creds.TapiCredential
 				_cookieMonster = creds.CookieMonster
 			End If
 
@@ -144,7 +144,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				MapSuppliedFieldNamesToActual(Settings, SourceData.SourceData)
 
-			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_tapiCredentialsProvider.Credential))
+			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_webApiCredential.Credential))
 				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, metricService)
 				process.ExecutionSource = _executionSource
                 process.ApplicationName = Settings.ApplicationName
@@ -242,7 +242,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.CaseInfo = casemanager.Read(Settings.CaseArtifactId)
 			'tempLoadFile.ControlKeyField = "Identifier"
 			tempLoadFile.Credential = credential
-			tempLoadFile.TapiCredentialsProvider = _tapiCredentialsProvider
+			tempLoadFile.WebApiCredential = _webApiCredential
 			tempLoadFile.CookieContainer = _cookieMonster
 			tempLoadFile.CopyFilesToDocumentRepository = Settings.CopyFilesToDocumentRepository
 			If Settings.DestinationFolderArtifactID > 0 Then

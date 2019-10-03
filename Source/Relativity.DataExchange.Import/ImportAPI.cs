@@ -36,7 +36,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <summary>
 		/// The current Transfer API credentials.
 		/// </summary>
-		private TapiCredentialsProvider _tapiCredentialsProvider;
+		private WebApiCredential webApiCredential;
 
 		/// <summary>
 		/// The lazy-loaded object type manager instance.
@@ -180,7 +180,7 @@ namespace kCura.Relativity.ImportAPI
 			ImportAPI importApi = CreateByBearerToken(webServiceUrl, token);
 			
 			// Here we override token provider so Tapi can refresh credentials on token expiration event
-			importApi._tapiCredentialsProvider.TokenProvider = new RsaBearerTokenAuthenticationProvider();
+			importApi.webApiCredential.TokenProvider = new RsaBearerTokenAuthenticationProvider();
 			return importApi;
 		}
 
@@ -348,7 +348,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
-			return new ImageImportBulkArtifactJob(_credentials, this._tapiCredentialsProvider, _cookieMonster, (int)ExecutionSource);
+			return new ImageImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, (int)ExecutionSource);
 		}
 
 		/// <summary>
@@ -397,7 +397,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </returns>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId)
 		{
-			var returnJob = new ImportBulkArtifactJob(_credentials, this._tapiCredentialsProvider, _cookieMonster, (int)ExecutionSource);
+			var returnJob = new ImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, (int)ExecutionSource);
 			returnJob.Settings.ArtifactTypeId = artifactTypeId;
 			return returnJob;
 		}
@@ -473,7 +473,7 @@ namespace kCura.Relativity.ImportAPI
 			}
 
 			_credentials = credentials.Credentials;
-			this._tapiCredentialsProvider = new TapiCredentialsProvider()
+			this.webApiCredential = new WebApiCredential()
 			{
 				Credential = credentials.TapiCredential,
 				TokenProvider = this._authenticationTokenProvider

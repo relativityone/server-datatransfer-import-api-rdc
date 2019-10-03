@@ -27,7 +27,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _nativeSettings As ImportSettingsBase
 
 		Private _credentials As ICredentials
-		Private _tapiCredentialsProvider As TapiCredentialsProvider
+		Private _webApiCredential As WebApiCredential
 		Private _cookieMonster As Net.CookieContainer
 
 		Private ReadOnly _executionSource As ExecutionSource
@@ -47,15 +47,15 @@ Namespace kCura.Relativity.DataReaderClient
 
 			_bulkLoadFileFieldDelimiter = ServiceConstants.DEFAULT_FIELD_DELIMITER
 
-			_tapiCredentialsProvider = New TapiCredentialsProvider()
-			_tapiCredentialsProvider.TokenProvider = New NullAuthTokenProvider
+			_webApiCredential = New WebApiCredential()
+			_webApiCredential.TokenProvider = New NullAuthTokenProvider
 		End Sub
 
-		Friend Sub New(ByVal credentials As ICredentials, ByVal tapiCredentialsProvider As TapiCredentialsProvider, ByVal cookieMonster As Net.CookieContainer, ByVal Optional executionSource As Integer = 0)
+		Friend Sub New(ByVal credentials As ICredentials, ByVal webApiCredential As WebApiCredential, ByVal cookieMonster As Net.CookieContainer, ByVal Optional executionSource As Integer = 0)
 			Me.New()
 			_executionSource = CType(executionSource, ExecutionSource)
 			_credentials = credentials
-			_tapiCredentialsProvider = tapiCredentialsProvider
+			_webApiCredential = webApiCredential
 			_cookieMonster = cookieMonster
 		End Sub
 
@@ -111,14 +111,14 @@ Namespace kCura.Relativity.DataReaderClient
 				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
 				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
 				_credentials = creds.Credentials
-				_tapiCredentialsProvider.Credential = creds.TapiCredential
+				_webApiCredential.Credential = creds.TapiCredential
 				_cookieMonster = creds.CookieMonster
 			End If
 
 			If IsSettingsValid() Then
 
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
-			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_tapiCredentialsProvider.Credential))
+			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_webApiCredential.Credential))
 				Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(SourceData.SourceData, metricService) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
 					process.ExecutionSource = _executionSource
                     process.ApplicationName = Settings.ApplicationName
@@ -224,7 +224,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.CopyFilesToDocumentRepository = loadFileTemp.CopyFilesToDocumentRepository
 			tempLoadFile.CreateFolderStructure = loadFileTemp.CreateFolderStructure
 			tempLoadFile.Credentials = loadFileTemp.Credentials
-			tempLoadFile.TapiCredentialsProvider = loadFileTemp.TapiCredentialsProvider
+			tempLoadFile.WebApiCredential = loadFileTemp.WebApiCredential
 			tempLoadFile.DestinationFolderID = loadFileTemp.DestinationFolderID
 			tempLoadFile.ExtractedTextFileEncoding = loadFileTemp.ExtractedTextFileEncoding
 			tempLoadFile.ExtractedTextFileEncodingName = loadFileTemp.ExtractedTextFileEncodingName
@@ -386,7 +386,7 @@ Namespace kCura.Relativity.DataReaderClient
 			'If clientSettings.Credential Is Nothing Then
 			'dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
 			'Else
-			dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(_credentials, _tapiCredentialsProvider, _cookieMonster, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
+			dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(_credentials, _webApiCredential, _cookieMonster, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
 			'End If
 			_docIDFieldCollection = dosf_settings.DocumentIdentifierFields
 

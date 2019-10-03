@@ -5,7 +5,7 @@ Imports Relativity.Transfer
 ''' This class represents method of refreshing the token credentials on the expiration event
 ''' Instance of this class is injected to Tapi
 ''' </summary>
-Public Class RsaBearerTokenAuthenticationProvider
+Friend Class RsaBearerTokenAuthenticationProvider
 	 Implements IAuthenticationTokenProvider
 
 	Public Function GenerateToken() As String Implements IAuthenticationTokenProvider.GenerateToken

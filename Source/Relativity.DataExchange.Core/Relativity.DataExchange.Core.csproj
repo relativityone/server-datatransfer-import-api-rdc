@@ -205,7 +205,7 @@
     <Compile Include="StringExtensions.cs" />
     <Compile Include="ImportExportCompatibilityCheck.cs" />
     <Compile Include="IApplicationVersionService.cs" />
-    <Compile Include="TapiCredentialsProvider.cs" />
+    <Compile Include="WebApiCredential.cs" />
     <Compile Include="TempDirectory2.cs" />
     <Compile Include="Timekeeper2.cs" />
     <Compile Include="TimekeeperEntry2.cs" />

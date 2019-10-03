@@ -27,7 +27,7 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		<NonSerialized()> Public Credential As Net.NetworkCredential
 		<NonSerialized()> Public CookieContainer As System.Net.CookieContainer
-		<NonSerialized()> Public TapiCredentialsProvider As TapiCredentialsProvider
+		<NonSerialized()> Public WebApiCredential As WebApiCredential
 		'<NonSerialized()> Public Identity As Global.Relativity.Core.EDDSIdentity
 		
 		Public Sub New()

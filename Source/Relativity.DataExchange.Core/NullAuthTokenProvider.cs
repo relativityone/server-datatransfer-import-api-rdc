@@ -9,7 +9,7 @@ namespace Relativity.DataExchange
 	/// <summary>
 	/// This class represents the authentication provider for not agent based scenarios.
 	/// </summary>
-	public class NullAuthTokenProvider : IAuthenticationTokenProvider
+	internal class NullAuthTokenProvider : IAuthenticationTokenProvider
 	{
 		/// <summary>
 		///  It returns empty string token.
