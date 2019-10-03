@@ -115,15 +115,15 @@ namespace Relativity.DataExchange.Import.NUnit
 		public void SetTapiBridges()
 		{
 			UploadTapiBridgeParameters2 parameters = new UploadTapiBridgeParameters2
-			{
-				Credentials = new NetworkCredential(),
-				WebServiceUrl = "https://relativity.one.com",
-				WorkspaceId = 1337,
-				TargetPath = "./",
-				FileShare = "./somepath/",
-				TimeoutSeconds = 0,
-			};
-			this.CreateTapiBridges(parameters, parameters.ShallowCopy());
+				                                         {
+					                                         Credentials = new NetworkCredential(),
+					                                         WebServiceUrl = "https://relativity.one.com",
+					                                         WorkspaceId = 1337,
+					                                         TargetPath = "./",
+					                                         FileShare = "./somepath/",
+					                                         TimeoutSeconds = 0,
+				                                         };
+			this.CreateTapiBridges(parameters, parameters.ShallowCopy(), new NullAuthTokenProvider());
 		}
 
 		public void SetBatchCounter(int numberToSet)
