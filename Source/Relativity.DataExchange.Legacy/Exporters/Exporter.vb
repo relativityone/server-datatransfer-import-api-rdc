@@ -14,6 +14,7 @@ Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
@@ -22,13 +23,14 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
 
-		Private _loadFileFormatterFactory As ILoadFileHeaderFormatterFactory
+		Private ReadOnly _logger As ILog
+		Private ReadOnly _loadFileFormatterFactory As ILoadFileHeaderFormatterFactory
 		Private ReadOnly _exportConfig As IExportConfig
-		Private _fieldProviderCache As IFieldProviderCache
-		Private _searchManager As Service.Export.ISearchManager
-		Private _productionManager As Service.Export.IProductionManager
-		Private _auditManager As Service.Export.IAuditManager
-		Private _fieldManager As Service.Export.IFieldManager
+		Private ReadOnly _fieldProviderCache As IFieldProviderCache
+		Private ReadOnly _searchManager As Service.Export.ISearchManager
+		Private ReadOnly _productionManager As Service.Export.IProductionManager
+		Private ReadOnly _auditManager As Service.Export.IAuditManager
+		Private ReadOnly _fieldManager As Service.Export.IFieldManager
 		Public Property ExportManager As Service.Export.IExportManager
 		Private _exportFile As kCura.WinEDDS.ExportFile
 		Private _columns As System.Collections.ArrayList
@@ -154,17 +156,41 @@ Namespace kCura.WinEDDS
 
 		Public Event ShutdownEvent()
 		Public Sub Shutdown()
+			_logger.LogInformation("Export is shutting down...")
 			RaiseEvent ShutdownEvent()
 		End Sub
 
 #Region "Constructors"
 
-		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal context As ProcessContext, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
-			Me.New(exportFile, context, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig)
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New(exportFile As kCura.WinEDDS.ExportFile, 
+		               context As ProcessContext,
+		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
+			Me.New(exportFile, context, loadFileFormatterFactory, RelativityLogFactory.CreateLog(RelativityLogFactory.ExportSubSystem))
 		End Sub
 
-		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal context As ProcessContext, serviceFactory As Service.Export.IServiceFactory,
-					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
+		Public Sub New(exportFile As kCura.WinEDDS.ExportFile, 
+		               context As ProcessContext,
+		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
+		               logger As ILog)
+			Me.New(exportFile, context, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig, logger)
+		End Sub
+
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New(exportFile As kCura.WinEDDS.ExportFile,
+		               context As ProcessContext,
+		               serviceFactory As Service.Export.IServiceFactory,
+		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
+		               exportConfig As IExportConfig)
+			Me.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, RelativityLogFactory.CreateLog(RelativityLogFactory.ExportSubSystem))
+		End Sub
+
+		Public Sub New(exportFile As kCura.WinEDDS.ExportFile,
+		               context As ProcessContext,
+		               serviceFactory As Service.Export.IServiceFactory,
+		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
+		               exportConfig As IExportConfig,
+		               logger As ILog)
 			_searchManager = serviceFactory.CreateSearchManager()
 			_downloadHandler = serviceFactory.CreateExportFileDownloader()
 			_downloadModeStatus = _downloadHandler
@@ -182,6 +208,7 @@ Namespace kCura.WinEDDS
 			Settings.FolderPath = Me.Settings.FolderPath + "\"
 			ExportNativesToFileNamedFrom = exportFile.ExportNativesToFileNamedFrom
 			_loadFileFormatterFactory = loadFileFormatterFactory
+			_logger = If(logger, new NullLogger())
 			_exportConfig = exportConfig
 		End Sub
 

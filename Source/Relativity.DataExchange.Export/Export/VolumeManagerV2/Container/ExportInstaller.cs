@@ -1,5 +1,7 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Container
 {
+	using System;
+
 	using Castle.MicroKernel.Registration;
 	using Castle.MicroKernel.SubSystems.Configuration;
 	using Castle.Windsor;
@@ -34,20 +36,66 @@
 
 	public class ExportInstaller : IWindsorInstaller
 	{
-		private const string _EXPORT_SUB_SYSTEM_NAME = "Export";
-
 		private readonly Exporter _exporter;
 		private readonly string[] _columnNamesInOrder;
 		private readonly ILoadFileHeaderFormatterFactory _loadFileHeaderFormatterFactory;
+		private readonly ILog _logger;
 
 		protected ExportFile ExportSettings => _exporter.Settings;
 		protected IExportConfig ExportConfig => _exporter.ExportConfig;
 
-		public ExportInstaller(Exporter exporter, string[] columnNamesInOrder, ILoadFileHeaderFormatterFactory loadFileHeaderFormatterFactory)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ExportInstaller"/> class.
+		/// </summary>
+		/// <param name="exporter">
+		/// The exporter instance.
+		/// </param>
+		/// <param name="columnNamesInOrder">
+		/// The ordered column name.
+		/// </param>
+		/// <param name="loadFileHeaderFormatterFactory">
+		/// The factory used to create <see cref="ILoadFileHeaderFormatter"/> instances.
+		/// </param>
+		[Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")]
+		public ExportInstaller(
+			Exporter exporter,
+			string[] columnNamesInOrder,
+			ILoadFileHeaderFormatterFactory loadFileHeaderFormatterFactory)
+			: this(
+				exporter,
+				columnNamesInOrder,
+				loadFileHeaderFormatterFactory,
+				RelativityLogFactory.CreateLog(RelativityLogFactory.ExportSubSystem))
 		{
-			_exporter = exporter;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ExportInstaller"/> class.
+		/// </summary>
+		/// <param name="exporter">
+		/// The exporter instance.
+		/// </param>
+		/// <param name="columnNamesInOrder">
+		/// The ordered column name.
+		/// </param>
+		/// <param name="loadFileHeaderFormatterFactory">
+		/// The factory used to create <see cref="ILoadFileHeaderFormatter"/> instances.
+		/// </param>
+		/// <param name="logger">
+		/// The logger instance.
+		/// </param>
+		public ExportInstaller(
+			Exporter exporter,
+			string[] columnNamesInOrder,
+			ILoadFileHeaderFormatterFactory loadFileHeaderFormatterFactory,
+			ILog logger)
+		{
+			_exporter = exporter.ThrowIfNull(nameof(exporter));
+
+			// This parameter can be null!
 			_columnNamesInOrder = columnNamesInOrder;
-			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory;
+			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory.ThrowIfNull(nameof(loadFileHeaderFormatterFactory));
+			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
 		public virtual void Install(IWindsorContainer container, IConfigurationStore store)
@@ -101,7 +149,7 @@
 			container.Register(Component.For<IFilePathTransformer>().UsingFactoryMethod(k => k.Resolve<FilePathTransformerFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IBatchValidator>().UsingFactoryMethod(k => k.Resolve<BatchValidatorFactory>().Create(ExportSettings, ExportConfig, container)));
 			container.Register(Component.For<IBatchInitialization>().UsingFactoryMethod(k => k.Resolve<BatchInitializationFactory>().Create(ExportSettings, ExportConfig, container)));
-			container.Register(Component.For<ILog>().UsingFactoryMethod(k => RelativityLogFactory.CreateLog(_EXPORT_SUB_SYSTEM_NAME)));
+			container.Register(Component.For<ILog>().UsingFactoryMethod(k => _logger));
 			container.Register(Component.For<ITapiObjectService>().ImplementedBy<TapiObjectService>());
 			container.Register(Component.For<IAuthenticationTokenProvider>().ImplementedBy<NullAuthTokenProvider>());
 

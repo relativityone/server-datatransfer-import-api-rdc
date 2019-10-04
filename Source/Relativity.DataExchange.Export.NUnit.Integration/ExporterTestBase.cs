@@ -318,8 +318,15 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
+			this.MockLogger = MockObjectFactory.CreateMockLogger();
+			this.MockAppSettings = MockObjectFactory.CreateMockAppSettings();
+			this.MockExportRequestRetriever = MockObjectFactory.CreateMockExportRequestRetriever();
+			this.MockFileShareSettingsService = MockObjectFactory.CreateMockFileShareSettingsService();
+			this.MockProcessEventWriter = MockObjectFactory.CreateMockProcessEventWriter();
+			this.MockProcessErrorWriter = MockObjectFactory.CreateMockProcessErrorWriter();
+			this.MockTapiObjectService = MockObjectFactory.CreateMockTapiObjectService();
 			this.testContainer = new WindsorContainer();
-			this.testContainerFactory = new TestContainerFactory(this.testContainer);
+			this.testContainerFactory = new TestContainerFactory(this.testContainer, this.MockLogger.Object);
 			this.AssignTestSettings();
 			Assert.That(
 				this.TestParameters.WorkspaceId,
@@ -338,13 +345,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.identifierColumnName = null;
 			this.loadFileEncoding = Encoding.Unicode;
 			this.textFileEncoding = Encoding.Unicode;
-			this.MockAppSettings = MockObjectFactory.CreateMockAppSettings();
-			this.MockExportRequestRetriever = MockObjectFactory.CreateMockExportRequestRetriever();
-			this.MockFileShareSettingsService = MockObjectFactory.CreateMockFileShareSettingsService();
-			this.MockLogger = MockObjectFactory.CreateMockLogger();
-			this.MockProcessEventWriter = MockObjectFactory.CreateMockProcessEventWriter();
-			this.MockProcessErrorWriter = MockObjectFactory.CreateMockProcessErrorWriter();
-			this.MockTapiObjectService = MockObjectFactory.CreateMockTapiObjectService();
 			this.searchResult = false;
 			this.tempDirectory = new TempDirectory2();
 			this.tempDirectory.ClearReadOnlyAttributes = true;
@@ -949,7 +949,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				this.processContext,
 				new WebApiServiceFactory(this.exportFile),
 				new ExportFileFormatterFactory(),
-				new ExportConfig());
+				new ExportConfig(),
+				this.MockLogger.Object);
 			try
 			{
 				exporter.StatusMessage += this.ExporterOnStatusMessage;

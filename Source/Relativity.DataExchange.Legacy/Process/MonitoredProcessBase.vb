@@ -1,9 +1,11 @@
 ﻿Imports kCura.WinEDDS
 Imports Monitoring
 Imports Monitoring.Sinks
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
+Imports Relativity.Logging
 
 Public MustInherit Class MonitoredProcessBase
 	Inherits ProcessBase2
@@ -32,6 +34,11 @@ Public MustInherit Class MonitoredProcessBase
 	Public Property ApplicationName As String = Nothing
 
 	Public Sub New(metricService As IMetricService)
+		Me.New(metricService, RelativityLogFactory.CreateLog())
+	End Sub
+
+	Public Sub New(metricService As IMetricService, logger As ILog)
+		MyBase.New(logger)
 		Me.MetricService = metricService
 		_metricThrottling = metricService.MetricSinkConfig.ThrottleTimeout
 	End Sub

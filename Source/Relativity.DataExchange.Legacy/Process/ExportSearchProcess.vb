@@ -3,8 +3,10 @@ Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Service.Export
 Imports Monitoring
 Imports Monitoring.Sinks
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Transfer
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public Class ExportSearchProcess
@@ -30,13 +32,21 @@ Namespace kCura.WinEDDS
 		Public Property UserNotificationFactory As Func(Of Exporter, IUserNotification)
 
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
-			MyBase.New(New MetricService(New ImportApiMetricSinkConfig))
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, RelativityLogFactory.CreateLog(RelativityLogFactory.ExportSubSystem))
+		End Sub
+
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog)
+			MyBase.New(New MetricService(New ImportApiMetricSinkConfig), logger)
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
 			_exportConfig = exportConfig
 		End Sub
 
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService)
-			MyBase.New(metricService)
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, metricService, RelativityLogFactory.CreateLog(RelativityLogFactory.ExportSubSystem))
+		End Sub
+
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService, logger As ILog)
+			MyBase.New(metricService, logger)
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
 			_exportConfig = exportConfig
 		End Sub
@@ -78,12 +88,12 @@ Namespace kCura.WinEDDS
 				Return _
 					New ExtendedExporter(TryCast(Me.ExportFile, ExtendedExportFile), Me.Context,
 										 New WebApiServiceFactory(Me.ExportFile),
-										 _loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
+										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger) With {.InteractionManager = UserNotification}
 			Else
 				Return _
 					New Exporter(Me.ExportFile, Me.Context,
 										 New WebApiServiceFactory(Me.ExportFile),
-										 _loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
+										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger) With {.InteractionManager = UserNotification}
 
 			End If
 		End Function

@@ -10,6 +10,7 @@ namespace Relativity.DataExchange.Process
 	using System.Threading;
 
 	using Relativity.DataExchange.Io;
+	using Relativity.Logging;
 
 	/// <summary>
 	/// Defines an abstract object that performs a runnable process.
@@ -40,6 +41,17 @@ namespace Relativity.DataExchange.Process
 				DataExchange.AppSettings.Instance,
 				RelativityLogFactory.CreateLog(),
 				null)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ProcessBase2"/> class.
+		/// </summary>
+		/// <param name="logger">
+		/// The logger instance.
+		/// </param>
+		protected ProcessBase2(ILog logger)
+			: this(Io.FileSystem.Instance, DataExchange.AppSettings.Instance, logger, null)
 		{
 		}
 

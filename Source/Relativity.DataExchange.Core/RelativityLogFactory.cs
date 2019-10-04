@@ -27,6 +27,11 @@ namespace Relativity.DataExchange
 		public const string DefaultSubSystem = "Relativity.DataExchange";
 
 		/// <summary>
+		/// The export specific sub-system.
+		/// </summary>
+		public const string ExportSubSystem = "Export";
+
+		/// <summary>
 		/// Creates a Relativity logging instance.
 		/// </summary>
 		/// <returns>
