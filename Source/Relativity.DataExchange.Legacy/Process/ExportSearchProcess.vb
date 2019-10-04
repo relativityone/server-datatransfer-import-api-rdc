@@ -56,7 +56,7 @@ Namespace kCura.WinEDDS
 			MyBase.OnSuccess()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_searchExporter.Statistics.MetadataThroughput, _searchExporter.Statistics.FileThroughput)
+			SendMetricJobProgress(_searchExporter.Statistics.MetadataThroughput, _searchExporter.Statistics.FileThroughput, forceSend := True)
 			Me.Context.PublishStatusEvent("", "Export completed")
 			Me.Context.PublishProcessCompleted()
 		End Sub
@@ -65,14 +65,14 @@ Namespace kCura.WinEDDS
 			MyBase.OnFatalError()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _searchExporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_searchExporter.Statistics.MetadataThroughput, _searchExporter.Statistics.FileThroughput)
+			SendMetricJobProgress(_searchExporter.Statistics.MetadataThroughput, _searchExporter.Statistics.FileThroughput, forceSend := True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_searchExporter.Statistics.MetadataThroughput, _searchExporter.Statistics.FileThroughput)
+			SendMetricJobProgress(_searchExporter.Statistics.MetadataThroughput, _searchExporter.Statistics.FileThroughput, forceSend := True)
 			Me.Context.PublishProcessCompleted(False, _searchExporter.ErrorLogFileName, True)
 		End Sub
 

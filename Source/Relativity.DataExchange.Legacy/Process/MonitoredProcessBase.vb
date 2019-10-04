@@ -99,10 +99,10 @@ Public MustInherit Class MonitoredProcessBase
 		MetricService.Log(metric)
 	End Sub
 
-	Protected Sub SendMetricJobProgress(metadataThroughput As Double, fileThroughput As Double)
+	Protected Sub SendMetricJobProgress(metadataThroughput As Double, fileThroughput As Double, Optional forceSend As Boolean = False)
 		Dim currentTime As DateTime = DateTime.Now
 		SyncLock _lockObject
-			If currentTime - _lastSendTime < _metricThrottling Then Return
+			If currentTime - _lastSendTime < _metricThrottling And Not forceSend Then Return
 			_lastSendTime = currentTime
 		End SyncLock
 		If Not IsValidTapiClient(CurrentTapiClientName) Then Return
