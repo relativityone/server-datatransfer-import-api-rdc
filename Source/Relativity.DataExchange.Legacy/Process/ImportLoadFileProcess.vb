@@ -47,10 +47,10 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides ReadOnly Property JobType As String = "Import"
 
-		Protected Overrides ReadOnly Property TapiClientName As String
+		Protected Overrides ReadOnly Property CurrentTapiClientName As String
 			Get
 				If _loadFileImporter Is Nothing Then
-					Return _tapiClientName
+					Return TapiClient.None.ToString()
 				Else
 					Return _loadFileImporter.TapiClientName
 				End If
@@ -136,17 +136,23 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub OnFatalError()
 			MyBase.OnFatalError()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _loadFileImporter.Statistics)
+			' This is to ensure we send non-zero JobProgressMessage even with small job
+			SendMetricJobProgress(_loadFileImporter.Statistics.MetadataThroughput, _loadFileImporter.Statistics.FileThroughput)
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _loadFileImporter.Statistics)
+			' This is to ensure we send non-zero JobProgressMessage even with small job
+			SendMetricJobProgress(_loadFileImporter.Statistics.MetadataThroughput, _loadFileImporter.Statistics.FileThroughput)
 			Me.Context.PublishProcessCompleted(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _loadFileImporter.Statistics)
+			' This is to ensure we send non-zero JobProgressMessage even with small job
+			SendMetricJobProgress(_loadFileImporter.Statistics.MetadataThroughput, _loadFileImporter.Statistics.FileThroughput)
 			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 

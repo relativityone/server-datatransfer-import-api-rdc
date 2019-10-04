@@ -18,9 +18,10 @@ Namespace kCura.WinEDDS
 		Private _warningCount As Int32
 		Private _uploadModeText As String = Nothing
 		Private _hasErrors As Boolean
+		Private _tapiClientName As String = TapiClient.None.ToString()
 		Protected Overrides ReadOnly Property JobType As String = "Export"
 
-		Protected Overrides ReadOnly Property TapiClientName As String
+		Protected Overrides ReadOnly Property CurrentTapiClientName As String
 			Get
 				Return _tapiClientName
 			End Get
@@ -54,6 +55,8 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
+			' This is to ensure we send non-zero JobProgressMessage even with small job
+			SendMetricJobProgress(_searchExporter.Statistics.MetadataThroughput, _searchExporter.Statistics.FileThroughput)
 			Me.Context.PublishStatusEvent("", "Export completed")
 			Me.Context.PublishProcessCompleted()
 		End Sub
@@ -61,11 +64,15 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub OnFatalError()
 			MyBase.OnFatalError()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _searchExporter.Statistics)
+			' This is to ensure we send non-zero JobProgressMessage even with small job
+			SendMetricJobProgress(_searchExporter.Statistics.MetadataThroughput, _searchExporter.Statistics.FileThroughput)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
+			' This is to ensure we send non-zero JobProgressMessage even with small job
+			SendMetricJobProgress(_searchExporter.Statistics.MetadataThroughput, _searchExporter.Statistics.FileThroughput)
 			Me.Context.PublishProcessCompleted(False, _searchExporter.ErrorLogFileName, True)
 		End Sub
 
