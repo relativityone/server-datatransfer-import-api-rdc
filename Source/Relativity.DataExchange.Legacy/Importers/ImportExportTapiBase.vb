@@ -434,7 +434,9 @@ Namespace kCura.WinEDDS
 			Me.LogInformation("Document count: {DocCount}", _statistics.DocCount)
 			Me.LogInformation("Documents created: {DocsCreated}", _statistics.DocumentsCreated)
 			Me.LogInformation("Documents updated: {DocsUpdated}", _statistics.DocumentsUpdated)
-			Me.LogInformation("Files processed: {FilesProcessed}", _statistics.FilesProcessed)
+			Me.LogInformation("Mass import files processed: {FilesProcessed}", _statistics.FilesProcessed)
+			Me.LogInformation("Native files transferred: {TotalNativeFilesTransferred}", _statistics.TotalNativeFilesTransferred)
+			Me.LogInformation("Metadata files transferred: {TotalMetadataFilesTransferred}", _statistics.TotalMetadataFilesTransferred)
 
 			Dim pair As DictionaryEntry
 			For Each pair In _statistics.ToDictionary()
@@ -542,6 +544,7 @@ Namespace kCura.WinEDDS
 
 				If ShouldImport AndAlso e.Successful Then
 					Me.FileTapiProgressCount += 1
+					_statistics.TotalNativeFilesTransferred += 1
 					WriteTapiProgressMessage($"End upload '{e.FileName}' file. ({System.DateTime.op_Subtraction(e.EndTime, e.StartTime).Milliseconds}ms)", e.LineNumber)
 				End If
 			End SyncLock
@@ -551,6 +554,10 @@ Namespace kCura.WinEDDS
 			SyncLock _syncRoot
 				If e.Completed Then
 					_batchMetadataTapiProgressCount += 1
+				End If
+
+				If ShouldImport AndAlso e.Successful Then
+					_statistics.TotalMetadataFilesTransferred += 1
 				End If
 			End SyncLock
 		End Sub

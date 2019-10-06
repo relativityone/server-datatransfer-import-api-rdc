@@ -123,6 +123,22 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		''' <summary>
+		''' Gets or sets the total number of native document and image files transferred for both import and export.
+		''' </summary>
+		''' <value>
+		''' The total number of files.
+		''' </value>
+		Public Property TotalNativeFilesTransferred As Int32 = 0
+
+		''' <summary>
+		''' Gets or sets the total number of metadata load and extracted text files transferred for import and export respectively.
+		''' </summary>
+		''' <value>
+		''' The total number of files.
+		''' </value>
+		Public Property TotalMetadataFilesTransferred As Int32 = 0
+
 		Public Function ToFileSizeSpecification(ByVal value As Double) As String
 			Dim prefix As String = Nothing
 			Dim k As Int32

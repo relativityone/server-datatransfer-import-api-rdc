@@ -12,12 +12,10 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Moq;
 
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
-	using Relativity.Transfer;
 
 	[TestFixture]
 	public class FilesStatisticsTests
@@ -83,6 +81,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ASSERT
 			Assert.That(this._statistics.FileBytes, Is.EqualTo(sizeDownload1 + sizeDownload2));
 			Assert.That(this._statistics.FileTime, Is.EqualTo((end.Ticks - start.Ticks) * 2));
+			Assert.That(this._statistics.TotalNativeFilesTransferred, Is.EqualTo(2));
+			Assert.That(this._statistics.TotalMetadataFilesTransferred, Is.EqualTo(0));
 		}
 
 		[Test]
