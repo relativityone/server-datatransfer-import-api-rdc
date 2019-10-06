@@ -427,21 +427,11 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		''' <summary>
-		''' Dump the statistic object.
+		''' Logs the statistics object.
 		''' </summary>
-		Protected Sub DumpStatisticsInfo()
-			Me.LogInformation("Statistics info:")
-			Me.LogInformation("Document count: {DocCount}", _statistics.DocCount)
-			Me.LogInformation("Documents created: {DocsCreated}", _statistics.DocumentsCreated)
-			Me.LogInformation("Documents updated: {DocsUpdated}", _statistics.DocumentsUpdated)
-			Me.LogInformation("Mass import files processed: {FilesProcessed}", _statistics.FilesProcessed)
-			Me.LogInformation("Native files transferred: {TotalNativeFilesTransferred}", _statistics.TotalNativeFilesTransferred)
-			Me.LogInformation("Metadata files transferred: {TotalMetadataFilesTransferred}", _statistics.TotalMetadataFilesTransferred)
-
-			Dim pair As DictionaryEntry
-			For Each pair In _statistics.ToDictionary()
-				Me.LogInformation("{StatsKey}: {StatsValue}", pair.Key, pair.Value)
-			Next
+		Protected Sub LogStatistics()
+			Dim statisticsDict As System.Collections.Generic.IDictionary(Of String, Object) = _statistics.ToDictionaryForLogs()
+			Me.LogInformation("Import statistics: {@Statistics}", statisticsDict)
 		End Sub
 
 		Protected Sub LogInformation(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
@@ -544,7 +534,7 @@ Namespace kCura.WinEDDS
 
 				If ShouldImport AndAlso e.Successful Then
 					Me.FileTapiProgressCount += 1
-					_statistics.TotalNativeFilesTransferred += 1
+					_statistics.NativeFilesTransferredCount += 1
 					WriteTapiProgressMessage($"End upload '{e.FileName}' file. ({System.DateTime.op_Subtraction(e.EndTime, e.StartTime).Milliseconds}ms)", e.LineNumber)
 				End If
 			End SyncLock
@@ -557,7 +547,7 @@ Namespace kCura.WinEDDS
 				End If
 
 				If ShouldImport AndAlso e.Successful Then
-					_statistics.TotalMetadataFilesTransferred += 1
+					_statistics.MetadataFilesTransferredCount += 1
 				End If
 			End SyncLock
 		End Sub

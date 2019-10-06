@@ -60,8 +60,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ASSERT
 			Assert.That(this._statistics.MetadataBytes, Is.EqualTo(size1));
 			Assert.That(this._statistics.MetadataTime, Is.EqualTo(end.Ticks - start.Ticks));
-			Assert.That(this._statistics.TotalMetadataFilesTransferred, Is.EqualTo(2));
-			Assert.That(this._statistics.TotalNativeFilesTransferred, Is.EqualTo(0));
+			Assert.That(this._statistics.MetadataFilesTransferredCount, Is.EqualTo(2));
+			Assert.That(this._statistics.NativeFilesTransferredCount, Is.EqualTo(0));
 		}
 
 		[Test]

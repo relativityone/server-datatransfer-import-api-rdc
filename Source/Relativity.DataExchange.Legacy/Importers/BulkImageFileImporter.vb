@@ -625,6 +625,7 @@ Namespace kCura.WinEDDS
 				Me.Statistics.ProcessRunResults(runResults)
 				_runId = runResults.RunID
 				Me.Statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+				Me.Statistics.BatchCount += 1
 				ManageErrors()
 
 				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount
@@ -733,14 +734,14 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkStart("ReadFile_Cleanup")
 				Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, True, True, False)
 				Me.LogInformation("Successfully imported {ImportCount} images via WinEDDS.", Me.FileTapiProgressCount)
-				Me.DumpStatisticsInfo()
+				Me.LogStatistics()
 				Me.CompleteSuccess()
 				_timekeeper.MarkEnd("ReadFile_Cleanup")
 				_timekeeper.MarkEnd("TOTAL")
 				_timekeeper.GenerateCsvReportItemsAsRows("_winedds_image", "C:\")
 			Catch ex As Exception
 				Me.LogFatal(ex, "A serious unexpected error has occurred importing images.")
-				Me.DumpStatisticsInfo()
+				Me.LogStatistics()
 				Me.CompleteError(ex)
 			Finally
 				_timekeeper.MarkStart("ReadFile_CleanupTempTables")

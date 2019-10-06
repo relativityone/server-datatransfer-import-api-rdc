@@ -56,7 +56,7 @@
 				{
 					_statistics.MetadataBytes += e.FileBytes;
 					_statistics.MetadataTime += e.EndTime.Ticks - e.StartTime.Ticks;
-					_statistics.TotalMetadataFilesTransferred++;
+					_statistics.MetadataFilesTransferredCount++;
 				}
 			}
 		}

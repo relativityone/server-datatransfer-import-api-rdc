@@ -1,5 +1,19 @@
 Namespace kCura.WinEDDS
 	Public Class Statistics
+		Public Const BatchCountKey As String = "Batches"
+		Public Const DocsCreatedKey As String = "DocsCreated"
+		Public Const DocsCountKey As String = "Docs"
+		Public Const DocsUpdatedKey As String = "DocsUpdated"
+		Public Const FilesProcessedKey As String = "MassImportFilesProcessed"
+		Public Const MetadataBytesKey As String = "MetadataBytes"
+		Public Const MetadataFilesTransferredKey As String = "MetadataFilesTransferred"
+		Public Const MetadataThroughputKey As String = "MetadataThroughput"
+		Public Const MetadataTimeKey As String = "MetadataTime"
+		Public Const NativeFileBytesKey As String = "NativeFileBytes"
+		Public Const NativeFileThroughputKey As String = "NativeFileThroughput"
+		Public Const NativeFileTimeKey As String = "NativeFileTime"
+		Public Const NativeFilesTransferredKey As String = "NativeFilesTransferred"
+
 		Private _metadataBytes As Int64 = 0
 		Private _metadataTime As Int64 = 0
 		Private _metadataThroughput As Double = 0
@@ -14,6 +28,14 @@ Namespace kCura.WinEDDS
 		Private _documentsCreated As Int32 = 0
 		Private _documentsUpdated As Int32 = 0
 		Private _filesProcessed As Int32 = 0
+
+		''' <summary>
+		''' Gets or sets the total number of import or export batches.
+		''' </summary>
+		''' <value>
+		''' The total number of batches.
+		''' </value>
+		Public Property BatchCount As Int32 = 0
 
 		Public Property BatchSize As Int32 = 0
 
@@ -87,6 +109,14 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		''' <summary>
+		''' Gets or sets the total number of metadata load and extracted text files transferred for import and export respectively.
+		''' </summary>
+		''' <value>
+		''' The total number of files.
+		''' </value>
+		Public Property MetadataFilesTransferredCount As Int32 = 0
+
 		Public Property MetadataWaitTime() As Int64
 			Get
 				Return _metadataWaitTime
@@ -96,6 +126,14 @@ Namespace kCura.WinEDDS
 				_metadataWaitTime = value
 			End Set
 		End Property
+
+		''' <summary>
+		''' Gets or sets the total number of native files transferred for both import and export.
+		''' </summary>
+		''' <value>
+		''' The total number of files.
+		''' </value>
+		Public Property NativeFilesTransferredCount As Int32 = 0
 
 		Public Property SqlTime() As Int64
 			Get
@@ -122,22 +160,6 @@ Namespace kCura.WinEDDS
 				Return _lastAccessed
 			End Get
 		End Property
-
-		''' <summary>
-		''' Gets or sets the total number of native document and image files transferred for both import and export.
-		''' </summary>
-		''' <value>
-		''' The total number of files.
-		''' </value>
-		Public Property TotalNativeFilesTransferred As Int32 = 0
-
-		''' <summary>
-		''' Gets or sets the total number of metadata load and extracted text files transferred for import and export respectively.
-		''' </summary>
-		''' <value>
-		''' The total number of files.
-		''' </value>
-		Public Property TotalMetadataFilesTransferred As Int32 = 0
 
 		Public Function ToFileSizeSpecification(ByVal value As Double) As String
 			Dim prefix As String = Nothing
@@ -194,7 +216,15 @@ Namespace kCura.WinEDDS
 			_filesProcessed += results.FilesProcessed
 		End Sub
 
-
+		''' <summary>
+		''' Converts this instance into a dictionary containing limited name/value pairs.
+		''' </summary>
+		''' <remarks>
+		''' The NV pairs are displayed in the RDC. Do NOT modify unless you intend to change the RDC display!
+		''' </remarks>
+		''' <returns>
+		''' The <see cref="IDictionary"/> instance.
+		''' </returns>
 		Public Overridable Function ToDictionary() As IDictionary
 			Dim retval As New System.Collections.Specialized.HybridDictionary
 			If Not Me.FileTime = 0 Then
@@ -216,6 +246,39 @@ Namespace kCura.WinEDDS
 			If Not Me.SqlTime = 0 Then retval.Add("Average SQL process rate", (Me.DocCount / (Me.SqlTime / TimeSpan.TicksPerSecond)).ToString("N0") & " Documents/sec")
 			If Not Me.BatchSize = 0 Then retval.Add("Current batch size", (Me.BatchSize).ToString("N0"))
 			Return retval
+		End Function
+
+		''' <summary>
+		''' Converts this instance into a dictionary containing relevant name/value pairs for logging purposes.
+		''' </summary>
+		''' <returns>
+		''' The <see cref="IDictionary"/> instance.
+		''' </returns>
+		Public Overridable Function ToDictionaryForLogs() As System.Collections.Generic.IDictionary(Of String, Object)
+
+			Dim statisticsDict As System.Collections.Generic.Dictionary(Of String, Object) = New System.Collections.Generic.Dictionary(Of String, Object) From
+				    {
+					    {BatchCountKey, Me.BatchCount},
+					    {DocsCountKey, Me.DocCount},
+					    {DocsCreatedKey, Me.DocumentsCreated},
+					    {DocsUpdatedKey, Me.DocumentsUpdated},
+					    {FilesProcessedKey, Me.FilesProcessed},
+					    {MetadataBytesKey, Me.MetadataBytes},
+					    {MetadataFilesTransferredKey, Me.MetadataFilesTransferredCount},
+					    {MetadataThroughputKey, Me.MetadataThroughput},
+					    {MetadataTimeKey, TimeSpan.FromTicks(Me.MetadataTime)},
+					    {NativeFileBytesKey, Me.FileBytes},
+					    {NativeFileThroughputKey, Me.FileThroughput},
+					    {NativeFileTimeKey, TimeSpan.FromTicks(Me.FileTime)},
+					    {NativeFilesTransferredKey, Me.NativeFilesTransferredCount}
+				    }
+
+			Dim pair As DictionaryEntry
+			For Each pair In Me.ToDictionary()
+				statisticsDict.Add(pair.Key.ToString(), pair.Value)
+			Next
+
+			Return statisticsDict
 		End Function
 	End Class
 End Namespace

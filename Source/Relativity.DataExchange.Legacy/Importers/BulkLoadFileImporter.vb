@@ -733,12 +733,12 @@ Namespace kCura.WinEDDS
 				End Using
 				Timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
 				Me.LogInformation("Successfully imported {ImportCount} documents via WinEDDS.", Me.FileTapiProgressCount)
-				Me.DumpStatisticsInfo()
+				Me.LogStatistics()
 				Return True
 			Catch ex As System.Exception
 				Me.WriteFatalError(Me.CurrentLineNumber, ex)
 				Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
-				Me.DumpStatisticsInfo()
+				Me.LogStatistics()
 			Finally
 				Using Timekeeper.CaptureTime("ReadFile_CleanupTempTables")
 					DestroyTapiBridges()
@@ -1404,6 +1404,7 @@ Namespace kCura.WinEDDS
 
 						Statistics.ProcessRunResults(runResults)
 						Statistics.SqlTime += (DateTime.Now.Ticks - start)
+						Statistics.BatchCount += 1
 
 						UpdateStatisticsSnapshot(DateTime.Now)
 						Me.ManageErrors(_artifactTypeID)

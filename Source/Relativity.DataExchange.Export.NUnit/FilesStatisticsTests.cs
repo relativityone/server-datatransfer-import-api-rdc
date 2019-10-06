@@ -81,8 +81,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ASSERT
 			Assert.That(this._statistics.FileBytes, Is.EqualTo(sizeDownload1 + sizeDownload2));
 			Assert.That(this._statistics.FileTime, Is.EqualTo((end.Ticks - start.Ticks) * 2));
-			Assert.That(this._statistics.TotalNativeFilesTransferred, Is.EqualTo(2));
-			Assert.That(this._statistics.TotalMetadataFilesTransferred, Is.EqualTo(0));
+			Assert.That(this._statistics.NativeFilesTransferredCount, Is.EqualTo(2));
+			Assert.That(this._statistics.MetadataFilesTransferredCount, Is.EqualTo(0));
 		}
 
 		[Test]
