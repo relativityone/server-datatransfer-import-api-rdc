@@ -244,7 +244,22 @@ namespace Relativity.DataExchange.Process
 		/// </param>
 		public void PublishCancellationRequest(Guid processId)
 		{
-			CancellationRequestEventArgs args = new CancellationRequestEventArgs(processId);
+			const bool RequestByUser = true;
+			this.PublishCancellationRequest(processId, RequestByUser);
+		}
+
+		/// <summary>
+		/// Halts the runnable process with the specified process unique identifier.
+		/// </summary>
+		/// <param name="processId">
+		/// The process unique identifier.
+		/// </param>
+		/// <param name="requestByUser">
+		/// <see langword="true" /> when cancellation is requested by the user; otherwise, <see langword="false" /> when requested to terminate the process.
+		/// </param>
+		public void PublishCancellationRequest(Guid processId, bool requestByUser)
+		{
+			CancellationRequestEventArgs args = new CancellationRequestEventArgs(processId, requestByUser);
 			this.CancellationRequest?.Invoke(this, args);
 		}
 
