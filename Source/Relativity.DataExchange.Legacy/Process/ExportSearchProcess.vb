@@ -126,6 +126,7 @@ Namespace kCura.WinEDDS
 			_tapiClientName = statusBarText
 			SendMetricJobStarted()
 			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)
+			Me.Logger.LogInformation("Export transfer mode changed: {@TransferClients}", args.TransferClients)
 		End Sub
 
 		Private Sub _productionExporter_StatusMessage(ByVal e As ExportEventArgs) Handles _searchExporter.StatusMessage

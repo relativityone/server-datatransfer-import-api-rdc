@@ -25,6 +25,8 @@
 
 		public void RollupImagesForArtifacts(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
+			DateTime imageRollupStartTime = DateTime.Now;
+			this._logger.LogVerbose("Starting image rollup...");
 			foreach (ObjectExportInfo artifact in artifacts)
 			{
 				try
@@ -34,16 +36,20 @@
 						return;
 					}
 
-					this._logger.LogVerbose("Attempting to rollup images for artifact {artifactId}.", artifact.ArtifactID);
+					this._logger.LogVerbose("Preparing to rollup images for artifact {ArtifactId}.", artifact.ArtifactID);
 					this._imagesRollup.RollupImages(artifact);
+					this._logger.LogVerbose("Successfully rolled up images for artifact {ArtifactId}.", artifact.ArtifactID);
 				}
 				catch (Exception ex)
 				{
+					this._logger.LogError(ex, "Failed to perform image rollup for artifact {ArtifactId}", artifact.ArtifactID);
 					artifact.DocumentError = true;
-					this._logger.LogError(ex, "Unexpected error occurred during image rollup for artifact {artifactId}", artifact.ArtifactID);
 					this._status.WriteError($"Unexpected error occurred during image rollup for artifact {artifact.ArtifactID}");
 				}
 			}
+
+			TimeSpan elapsed = DateTime.Now - imageRollupStartTime;
+			this._logger.LogVerbose("Successfully rolled up images. Elapsed: {ImageRollupElapsedTime}", elapsed);
 		}
 	}
 }
