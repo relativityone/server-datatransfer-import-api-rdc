@@ -1820,28 +1820,28 @@ Namespace Relativity.Desktop.Client
 			End Try
 		End Function
 
-        Private Sub ClearAllCookies()
-            If Not String.IsNullOrEmpty(AppSettings.Instance.WebApiServiceUrl) Then
+		Private Sub ClearAllCookies()
+			If Not String.IsNullOrEmpty(AppSettings.Instance.WebApiServiceUrl) Then
 
-                Try
-                    Dim oldUrl As Uri = New Uri(AppSettings.Instance.WebApiServiceUrl)
-                    For Each cookie As Cookie In _CookieContainer.GetCookies(oldUrl)
-                        If Not cookie Is Nothing Then
-                            cookie.Expired = True
-                        End If
-                    Next
-                Catch ex As Exception
-                    ' Never allow this check to fail.
-                    _logger.LogWarning(ex, "Failed to clear all cookies in the cookie container.")
-                End Try
-            End If
-        End Sub
+				Try
+					Dim oldUrl As Uri = New Uri(AppSettings.Instance.WebApiServiceUrl)
+					For Each cookie As Cookie in _CookieContainer.GetCookies(oldUrl)
+						If Not cookie Is Nothing Then
+							cookie.Expired = true
+						End If
+					Next
+				Catch ex As Exception
+					' Never allow this check to fail.
+					_logger.LogWarning(ex, "Failed to clear all cookies in the cookie container.")
+				End Try
+			End If
+		End Sub
 
-        Public Sub ResetFieldsCache()
-            If (Not _fieldProviderCache Is Nothing) Then
-                _fieldProviderCache.ResetCache()
-            End If
-        End Sub
+		Public Sub ResetFieldsCache()
+			If (Not _fieldProviderCache Is Nothing) Then
+				_fieldProviderCache.ResetCache()
+			End If
+		End Sub
 
-    End Class
+	End Class
 End Namespace
