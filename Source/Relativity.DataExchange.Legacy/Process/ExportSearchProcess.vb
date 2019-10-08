@@ -131,10 +131,10 @@ Namespace kCura.WinEDDS
 					Interlocked.Increment(_errorCount)
 					Me.Context.PublishErrorEvent(e.DocumentsExported.ToString, e.Message)
 				Case EventType2.Progress
-					SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+					SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, forceSend := False)
 					Me.Context.PublishStatusEvent("", e.Message)
 				Case EventType2.Statistics
-					SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+					SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, forceSend := False)
 				Case EventType2.Status
 					Me.Context.PublishStatusEvent(e.DocumentsExported.ToString, e.Message)
 				Case EventType2.Warning

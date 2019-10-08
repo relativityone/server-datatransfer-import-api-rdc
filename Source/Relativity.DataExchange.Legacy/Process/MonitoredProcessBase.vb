@@ -99,7 +99,7 @@ Public MustInherit Class MonitoredProcessBase
 		MetricService.Log(metric)
 	End Sub
 
-	Protected Sub SendMetricJobProgress(metadataThroughput As Double, fileThroughput As Double, Optional forceSend As Boolean = False)
+	Protected Sub SendMetricJobProgress(metadataThroughput As Double, fileThroughput As Double, forceSend As Boolean)
 		Dim currentTime As DateTime = DateTime.Now
 		SyncLock _lockObject
 			If currentTime - _lastSendTime < _metricThrottling And Not forceSend Then Return

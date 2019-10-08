@@ -316,7 +316,7 @@ Namespace kCura.WinEDDS
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Statistics
-						SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+						SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, forceSend := False)
 					Case EventType2.ResetProgress
 						' Do NOT raise RaiseRecordProcessed for this event. 
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
