@@ -160,7 +160,6 @@ Public MustInherit Class MonitoredProcessBase
 	''' <param name="tapiClient"></param>
 	''' <returns>True if tapiClient is Aspera, Web or Direct; false otherwise.</returns>
 	Private Function IsValidTapiClient(tapiClient As String) As Boolean
-		If tapiClient = Relativity.DataExchange.Transfer.TapiClient.Aspera.ToString() Or tapiClient = Relativity.DataExchange.Transfer.TapiClient.Direct.ToString() Or tapiClient = Relativity.DataExchange.Transfer.TapiClient.Web.ToString() Then Return True
-		Return False
+		Return System.Enum.IsDefined(GetType(Relativity.DataExchange.Transfer.TapiClient), tapiClient) And Not tapiClient = Relativity.DataExchange.Transfer.TapiClient.None.ToString()
 	End Function
 End Class
