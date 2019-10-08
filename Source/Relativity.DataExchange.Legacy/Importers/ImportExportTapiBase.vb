@@ -35,6 +35,7 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _statistics As New Statistics
 		Private WithEvents _bulkLoadTapiBridge As UploadTapiBridge2
 		Private WithEvents _fileTapiBridge As UploadTapiBridge2
+		Private _bulkLoadTapiClient As TapiClient = TapiClient.None
 		Private _bulkLoadTapiClientName As String
 		Private _fileTapiClient As TapiClient = TapiClient.None
 		Private _fileTapiClientName As String
@@ -88,6 +89,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected ReadOnly Property BulkLoadTapiClient As TapiClient
+			Get
+				Return _bulkLoadTapiClient
+			End Get
+		End Property
+
 		Protected ReadOnly Property BulkLoadTapiClientName As String
 			Get
 				Return _bulkLoadTapiClientName
@@ -131,6 +138,17 @@ Namespace kCura.WinEDDS
 		Public ReadOnly Property TapiClientName As String
 			Get
 				Return If(If(FileTapiClientName, BulkLoadTapiClientName), TapiClient.None.ToString())
+			End Get
+		End Property
+
+		Public ReadOnly Property TapiClient As TapiClient
+			Get
+				If Not FileTapiClient = TapiClient.None
+					Return FileTapiClient
+				ElseIf Not BulkLoadTapiClient = TapiClient.None
+					Return BulkLoadTapiClient
+				End If
+				Return TapiClient.None
 			End Get
 		End Property
 
@@ -514,6 +532,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub BulkLoadOnTapiClientChanged(ByVal sender As Object, ByVal e As TapiClientEventArgs)
+			Me._bulkLoadTapiClient = e.Client
 			Me._bulkLoadTapiClientName = e.Name
 			Me.OnTapiClientChanged()
 		End Sub

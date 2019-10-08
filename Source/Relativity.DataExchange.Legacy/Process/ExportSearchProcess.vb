@@ -3,6 +3,7 @@ Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Service.Export
 Imports Monitoring
 Imports Monitoring.Sinks
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Transfer
 
@@ -18,12 +19,13 @@ Namespace kCura.WinEDDS
 		Private _warningCount As Int32
 		Private _uploadModeText As String = Nothing
 		Private _hasErrors As Boolean
-		Private _tapiClientName As String = TapiClient.None.ToString()
+		Private _tapiClient As TapiClient = TapiClient.None
+
 		Protected Overrides ReadOnly Property JobType As String = "Export"
 
-		Protected Overrides ReadOnly Property CurrentTapiClientName As String
+		Protected Overrides ReadOnly Property CurrentTapiClient As TapiClient
 			Get
-				Return _tapiClientName
+				Return _tapiClient
 			End Get
 		End Property
 
@@ -120,8 +122,9 @@ Namespace kCura.WinEDDS
 			End If
 
 			Dim statusBarText As String = TapiModeHelper.BuildExportStatusText(args.TransferClients)
+
 			If Not args.TransferClients Is Nothing AndAlso args.TransferClients.Count <> 0 Then
-				_tapiClientName = args.TransferClients.Last().ToString()
+				_tapiClient = args.TransferClients.Last()
 			End If
 			SendMetricJobStarted()
 			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)

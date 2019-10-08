@@ -14,11 +14,11 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Property JobGuid As System.Guid = System.Guid.NewGuid()
 	Protected Property StartTime As System.DateTime
 	Protected Property EndTime As System.DateTime
-	Protected Property InitialTapiClientName As String
 	Protected MustOverride ReadOnly Property JobType As String
-	Protected MustOverride ReadOnly Property CurrentTapiClientName As String
 	Protected ReadOnly Property MetricService() As IMetricService
 	Protected _hasFatalErrorOccured As Boolean
+	Private _initialTapiClient As TapiClient = TapiClient.None
+	Protected MustOverride ReadOnly Property CurrentTapiClient As TapiClient
 
 	Public Property CaseInfo As CaseInfo
 
@@ -79,11 +79,11 @@ Public MustInherit Class MonitoredProcessBase
 	Protected MustOverride Function Run() As Boolean
 
 	Protected Sub SendMetricJobStarted()
-		If InitialTapiClientName Is Nothing And IsValidTapiClient(CurrentTapiClientName) Then
+		If _initialTapiClient = TapiClient.None And CurrentTapiClient <> TapiClient.None Then
 			Dim message As MetricJobStarted = New MetricJobStarted
 			BuildMetricBase(message)
 			MetricService.Log(message)
-			InitialTapiClientName = CurrentTapiClientName
+			_initialTapiClient = CurrentTapiClient
 		End If
 	End Sub
 
@@ -105,7 +105,8 @@ Public MustInherit Class MonitoredProcessBase
 			If currentTime - _lastSendTime < _metricThrottling And Not forceSend Then Return
 			_lastSendTime = currentTime
 		End SyncLock
-		If Not IsValidTapiClient(CurrentTapiClientName) Then Return
+		' Don't send metrics with no transfer mode
+		If CurrentTapiClient = TapiClient.None Then Return
 		Dim message As MetricJobProgress = New MetricJobProgress With {.MetadataThroughput = metadataThroughput, .FileThroughput = fileThroughput}
 		BuildMetricBase(message)
 		MetricService.Log(message)
@@ -125,7 +126,7 @@ Public MustInherit Class MonitoredProcessBase
 
 	Private Sub BuildMetricBase(metric As MetricBase)
 		metric.JobType = JobType
-		metric.TransferMode = CurrentTapiClientName
+		metric.TransferMode = CurrentTapiClient
 		metric.CorrelationID = JobGuid.ToString()
 		metric.UseOldExport = Me.AppSettings.UseOldExport
 		metric.UnitOfMeasure = TelemetryConstants.Values.NOT_APPLICABLE
@@ -152,14 +153,5 @@ Public MustInherit Class MonitoredProcessBase
 	Private Function CalculateThroughput(size As Long) As Double
 		Dim duration As System.TimeSpan = EndTime - StartTime
 		Return CDbl(IIf(duration.TotalSeconds.Equals(0.0), 0.0, size/duration.TotalSeconds))
-	End Function
-
-	''' <summary>
-	''' Checks if tapi client name is either Aspera, Web or Direct.
-	''' </summary>
-	''' <param name="tapiClient"></param>
-	''' <returns>True if tapiClient is Aspera, Web or Direct; false otherwise.</returns>
-	Private Function IsValidTapiClient(tapiClient As String) As Boolean
-		Return System.Enum.IsDefined(GetType(Relativity.DataExchange.Transfer.TapiClient), tapiClient) And Not tapiClient = Relativity.DataExchange.Transfer.TapiClient.None.ToString()
 	End Function
 End Class

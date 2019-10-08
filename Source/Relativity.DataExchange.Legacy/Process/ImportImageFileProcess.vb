@@ -55,12 +55,13 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Protected Overrides ReadOnly Property JobType As String = "Import"
-		Protected Overrides ReadOnly Property CurrentTapiClientName As String
+
+		Protected Overrides ReadOnly Property CurrentTapiClient As TapiClient
 			Get
 				If _imageFileImporter Is Nothing Then
-					Return TapiClient.None.ToString()
+					Return TapiClient.None
 				Else
-					Return _imageFileImporter.TapiClientName
+					Return _imageFileImporter.TapiClient
 				End If
 			End Get
 		End Property
