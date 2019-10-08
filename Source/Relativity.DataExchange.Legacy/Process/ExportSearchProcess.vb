@@ -120,7 +120,9 @@ Namespace kCura.WinEDDS
 			End If
 
 			Dim statusBarText As String = TapiModeHelper.BuildExportStatusText(args.TransferClients)
-			_tapiClientName = statusBarText
+			If Not args.TransferClients Is Nothing AndAlso args.TransferClients.Count <> 0 Then
+				_tapiClientName = args.TransferClients.Last().ToString()
+			End If
 			SendMetricJobStarted()
 			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)
 		End Sub
