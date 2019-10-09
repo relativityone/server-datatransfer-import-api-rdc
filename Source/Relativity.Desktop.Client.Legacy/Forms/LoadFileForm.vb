@@ -1946,6 +1946,7 @@ Namespace Relativity.Desktop.Client
 
 		Private Async Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
 			_multiObjectMultiChoiceCache = Nothing
+			_application.ResetFieldsCache()
 			Dim caseFieldsCollection As DocumentFieldCollection = Await _application.CurrentNonFileFields(Me.LoadFile.ArtifactTypeID, refresh:=True)
 			Dim caseFields As String() = caseFieldsCollection.Names()
 			If caseFields Is Nothing Then Exit Sub
