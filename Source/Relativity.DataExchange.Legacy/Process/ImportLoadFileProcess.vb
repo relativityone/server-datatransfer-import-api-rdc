@@ -47,7 +47,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides ReadOnly Property JobType As String = "Import"
 
-		Protected Overrides ReadOnly Property CurrentTapiClient As TapiClient
+		Protected Overrides ReadOnly Property TapiClient As TapiClient
 			Get
 				If _loadFileImporter Is Nothing Then
 					Return TapiClient.None
@@ -137,14 +137,14 @@ Namespace kCura.WinEDDS
 			MyBase.OnFatalError()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _loadFileImporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_loadFileImporter.Statistics.MetadataThroughput, _loadFileImporter.Statistics.FileThroughput, forceSend := True)
+			SendMetricJobProgress(_loadFileImporter.Statistics.MetadataThroughput, _loadFileImporter.Statistics.FileThroughput, checkThrottling := False)
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _loadFileImporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_loadFileImporter.Statistics.MetadataThroughput, _loadFileImporter.Statistics.FileThroughput, forceSend := True)
+			SendMetricJobProgress(_loadFileImporter.Statistics.MetadataThroughput, _loadFileImporter.Statistics.FileThroughput, checkThrottling := False)
 			Me.Context.PublishProcessCompleted(False, "", True)
 		End Sub
 
@@ -152,7 +152,7 @@ Namespace kCura.WinEDDS
 			MyBase.OnHasErrors()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _loadFileImporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_loadFileImporter.Statistics.MetadataThroughput, _loadFileImporter.Statistics.FileThroughput, forceSend := True)
+			SendMetricJobProgress(_loadFileImporter.Statistics.MetadataThroughput, _loadFileImporter.Statistics.FileThroughput, checkThrottling := False)
 			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
@@ -316,7 +316,7 @@ Namespace kCura.WinEDDS
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Statistics
-						SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, forceSend := False)
+						SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, checkThrottling := True)
 					Case EventType2.ResetProgress
 						' Do NOT raise RaiseRecordProcessed for this event. 
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)

@@ -17,8 +17,8 @@ Public MustInherit Class MonitoredProcessBase
 	Protected MustOverride ReadOnly Property JobType As String
 	Protected ReadOnly Property MetricService() As IMetricService
 	Protected _hasFatalErrorOccured As Boolean
-	Private _initialTapiClient As TapiClient = TapiClient.None
-	Protected MustOverride ReadOnly Property CurrentTapiClient As TapiClient
+	Private _jobStartedMetricSent As Boolean = False
+	Protected MustOverride ReadOnly Property TapiClient As TapiClient
 
 	Public Property CaseInfo As CaseInfo
 
@@ -79,11 +79,11 @@ Public MustInherit Class MonitoredProcessBase
 	Protected MustOverride Function Run() As Boolean
 
 	Protected Sub SendMetricJobStarted()
-		If _initialTapiClient = TapiClient.None And CurrentTapiClient <> TapiClient.None Then
+		If Not _jobStartedMetricSent And TapiClient <> TapiClient.None Then
 			Dim message As MetricJobStarted = New MetricJobStarted
 			BuildMetricBase(message)
 			MetricService.Log(message)
-			_initialTapiClient = CurrentTapiClient
+			_jobStartedMetricSent = True
 		End If
 	End Sub
 
@@ -99,14 +99,14 @@ Public MustInherit Class MonitoredProcessBase
 		MetricService.Log(metric)
 	End Sub
 
-	Protected Sub SendMetricJobProgress(metadataThroughput As Double, fileThroughput As Double, forceSend As Boolean)
+	Protected Sub SendMetricJobProgress(metadataThroughput As Double, fileThroughput As Double, checkThrottling As Boolean)
+		' Don't send metrics with no transfer mode
+		If TapiClient = TapiClient.None Then Return
 		Dim currentTime As DateTime = DateTime.Now
 		SyncLock _lockObject
-			If currentTime - _lastSendTime < _metricThrottling And Not forceSend Then Return
+			If currentTime - _lastSendTime < _metricThrottling And checkThrottling Then Return
 			_lastSendTime = currentTime
 		End SyncLock
-		' Don't send metrics with no transfer mode
-		If CurrentTapiClient = TapiClient.None Then Return
 		Dim message As MetricJobProgress = New MetricJobProgress With {.MetadataThroughput = metadataThroughput, .FileThroughput = fileThroughput}
 		BuildMetricBase(message)
 		MetricService.Log(message)
@@ -126,7 +126,7 @@ Public MustInherit Class MonitoredProcessBase
 
 	Private Sub BuildMetricBase(metric As MetricBase)
 		metric.JobType = JobType
-		metric.TransferMode = CurrentTapiClient
+		metric.TransferMode = TapiClient
 		metric.CorrelationID = JobGuid.ToString()
 		metric.UseOldExport = Me.AppSettings.UseOldExport
 		metric.UnitOfMeasure = TelemetryConstants.Values.NOT_APPLICABLE
