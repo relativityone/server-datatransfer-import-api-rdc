@@ -80,7 +80,7 @@
 					throw;
 				}
 			}
-			catch (Exception)
+			catch (Exception ex) when (!(ex is OperationCanceledException))
 			{
 				tokenSource.Cancel();
 				throw;
