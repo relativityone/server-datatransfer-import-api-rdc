@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Generic
+Imports Relativity.DataExchange.Transfer
 Imports Relativity.Services.DataContracts.DTOs.MetricsCollection
 Imports Relativity.Telemetry.DataContracts.Shared
 
@@ -40,9 +41,9 @@ Namespace Monitoring.Sinks
         ''' </summary>
         ''' <param name="prefix">Bucket name prefix. This values are stored in <see cref="TelemetryConstants.SumBucketPrefix"/>.</param>
         ''' <param name="jobType">Job type - Import or Export</param>
-        ''' <param name="transferMode">Transfer mode - Direct, Aspera or Web</param>
+        ''' <param name="transferMode">Transfer mode - <see cref="TapiClient"/></param>
         ''' <returns></returns>
-        Private Function FormatSumBucketName(prefix As String, jobType As String, transferMode As String) As String
+        Private Function FormatSumBucketName(prefix As String, jobType As String, transferMode As TapiClient) As String
             Return $"{prefix}.{jobType}.{transferMode}"
         End Function
 

@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Generic
+Imports Relativity.DataExchange.Transfer
 
 Namespace Monitoring
     Public MustInherit class MetricBase
@@ -33,12 +34,12 @@ Namespace Monitoring
         End Property
 
         ''' <summary>
-        ''' Gets or sets transfer mode - Aspera, Web or Direct.
+        ''' Gets or sets transfer mode - <see cref="TapiClient"/>
         ''' </summary>
         ''' <returns>Transfer mode</returns>
-        Public Property TransferMode As String
+        Public Property TransferMode As TapiClient
             Get
-                Return GetValueOrDefault(Of String)(TelemetryConstants.KeyName.TRANSFER_MODE)
+                Return GetValueOrDefault(Of TapiClient)(TelemetryConstants.KeyName.TRANSFER_MODE)
             End Get
             Set
                 CustomData.Item(TelemetryConstants.KeyName.TRANSFER_MODE) = Value
