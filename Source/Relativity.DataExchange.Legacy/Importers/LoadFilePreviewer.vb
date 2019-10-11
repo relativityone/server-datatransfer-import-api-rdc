@@ -210,7 +210,7 @@ Namespace kCura.WinEDDS
 				If _processedIdentifiers(identifierField.Value.ToString) Is Nothing Then
 					_processedIdentifiers(identifierField.Value.ToString) = Me.CurrentLineNumber.ToString
 				Else
-					identifierField.Value = New Exceptions.ErrorMessage(String.Format("Error: The identifier '{0}' has been previously proccessed on line {1}.", identifierField.Value.ToString, _processedIdentifiers(identifierField.Value.ToString)))
+					identifierField.Value = New Exceptions.ErrorMessage(String.Format("Error: The identifier '{0}' has been previously processed on line {1}.", identifierField.Value.ToString, _processedIdentifiers(identifierField.Value.ToString)))
 					lineContainsErrors = True
 				End If
 			End If
