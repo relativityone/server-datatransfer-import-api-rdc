@@ -118,7 +118,7 @@ namespace Relativity.DataExchange.Data
 			IoReporterContext context,
 			ILog logger,
 			CancellationToken token)
-			: base(",", "\"", Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(10)), context, logger, token)
+			: base(',', '"', Microsoft.VisualBasic.Strings.ChrW(10), context, logger, token)
 		{
 			this.Reader = new StreamReader(file, encoding);
 		}
