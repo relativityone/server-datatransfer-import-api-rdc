@@ -75,5 +75,19 @@ namespace Relativity.DataExchange.NUnit
 			string text = TapiModeHelper.BuildExportStatusText(natives);
 			Assert.That(text, Is.EqualTo(expected));
 		}
+
+		[Test]
+		[TestCase(TapiClient.None)]
+		[TestCase(TapiClient.Direct, TapiClient.None, TapiClient.Direct, TapiClient.None)]
+		[TestCase(TapiClient.Aspera, TapiClient.Direct, TapiClient.Aspera, TapiClient.Direct)]
+		[TestCase(TapiClient.Web, TapiClient.Web, TapiClient.None, TapiClient.Aspera)]
+		[TestCase(TapiClient.Aspera, TapiClient.Aspera)]
+		[Repeat(3)]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldGetCorrectTapiClient(TapiClient expected, params TapiClient[] clients)
+		{
+			var actual = TapiModeHelper.GetTapiClient(clients);
+			Assert.That(actual, Is.EqualTo(expected));
+		}
 	}
 }

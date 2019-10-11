@@ -99,7 +99,7 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
-		/// Builds the import file transfer mode status text from th list of native transfer clients.
+		/// Builds the export file transfer mode status text from the list of native transfer clients.
 		/// </summary>
 		/// <param name="natives">
 		/// The list of native transfer clients.
@@ -115,6 +115,17 @@ namespace Relativity.DataExchange.Transfer
 				Strings.FileTransferStatusTextModePrefix,
 				GetFileTransferModeText(tapiObjectService, natives));
 			return sb.ToString();
+		}
+
+		/// <summary>
+		/// Retrieves single <see cref="TapiClient"/> from the list of transfer clients.
+		/// </summary>
+		/// <param name="clients">The list of clients.</param>
+		/// <returns>Single <see cref="TapiClient"/> from the list or <see cref="TapiClient.None"/> if list is empty.</returns>
+		public static TapiClient GetTapiClient(IEnumerable<TapiClient> clients)
+		{
+			var ordered = clients.Distinct().Except(new[] { TapiClient.None }).OrderBy(x => TapiClientOrderMap[x]).ToList();
+			return ordered.Any() ? ordered.Last() : TapiClient.None;
 		}
 
 		/// <summary>
