@@ -237,7 +237,7 @@ namespace Relativity.DataExchange.Process
 		}
 
 		/// <summary>
-		/// Halts the runnable process with the specified process unique identifier.
+		/// Halts the runnable process with the specified process unique identifier. This assumes cancellation is requested by the user.
 		/// </summary>
 		/// <param name="processId">
 		/// The process unique identifier.

@@ -31,18 +31,18 @@ Namespace kCura.WinEDDS
 		Public Property UserNotification As Exporters.IUserNotification
 		Public Property UserNotificationFactory As Func(Of Exporter, IUserNotification)
 
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
-			Me.New(loadFileHeaderFormatterFactory, exportConfig, RelativityLogFactory.CreateLog(RelativityLogFactory.ExportSubSystem))
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, RelativityLogFactory.CreateLog())
 		End Sub
 
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog)
-			MyBase.New(New MetricService(New ImportApiMetricSinkConfig), logger)
-			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
-			_exportConfig = exportConfig
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, New MetricService(New ImportApiMetricSinkConfig), logger)
 		End Sub
 
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService)
-			Me.New(loadFileHeaderFormatterFactory, exportConfig, metricService, RelativityLogFactory.CreateLog(RelativityLogFactory.ExportSubSystem))
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, metricService, RelativityLogFactory.CreateLog())
 		End Sub
 
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService, logger As ILog)
@@ -88,12 +88,12 @@ Namespace kCura.WinEDDS
 				Return _
 					New ExtendedExporter(TryCast(Me.ExportFile, ExtendedExportFile), Me.Context,
 										 New WebApiServiceFactory(Me.ExportFile),
-										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger) With {.InteractionManager = UserNotification}
+										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger, Me.CancellationTokenSource) With {.InteractionManager = UserNotification}
 			Else
 				Return _
 					New Exporter(Me.ExportFile, Me.Context,
 										 New WebApiServiceFactory(Me.ExportFile),
-										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger) With {.InteractionManager = UserNotification}
+										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger, Me.CancellationTokenSource) With {.InteractionManager = UserNotification}
 
 			End If
 		End Function

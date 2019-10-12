@@ -25,7 +25,7 @@
 
 		public void RollupImagesForArtifacts(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
-			DateTime imageRollupStartTime = DateTime.Now;
+			System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
 			this._logger.LogVerbose("Starting image rollup...");
 			foreach (ObjectExportInfo artifact in artifacts)
 			{
@@ -48,8 +48,8 @@
 				}
 			}
 
-			TimeSpan elapsed = DateTime.Now - imageRollupStartTime;
-			this._logger.LogVerbose("Successfully rolled up images. Elapsed: {ImageRollupElapsedTime}", elapsed);
+			sw.Stop();
+			this._logger.LogVerbose("Successfully rolled up images. Elapsed: {ImageRollupElapsedTime}", sw.Elapsed);
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿Imports kCura.WinEDDS
+﻿Imports System.Threading
+Imports kCura.WinEDDS
 Imports Monitoring
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange
@@ -38,7 +39,11 @@ Public MustInherit Class MonitoredProcessBase
 	End Sub
 
 	Public Sub New(metricService As IMetricService, logger As ILog)
-		MyBase.New(logger)
+		Me.New(metricService, logger, New CancellationTokenSource())
+	End Sub
+
+	Public Sub New(metricService As IMetricService, logger As ILog, tokenSource As CancellationTokenSource)
+		MyBase.New(logger, tokenSource)
 		Me.MetricService = metricService
 		_metricThrottling = metricService.MetricSinkConfig.ThrottleTimeout
 	End Sub

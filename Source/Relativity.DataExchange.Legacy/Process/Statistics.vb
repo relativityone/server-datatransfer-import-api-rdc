@@ -23,7 +23,7 @@ Namespace kCura.WinEDDS
 		Private _fileWaitTime As Int64 = 0
 		Private _metadataWaitTime As Int64 = 0
 		Private _sqlTime As Int64 = 0
-		Private _docCount As Int64 = 0
+		Private _docCount As Int32 = 0
 		Private _lastAccessed As System.DateTime
 		Private _documentsCreated As Int32 = 0
 		Private _documentsUpdated As Int32 = 0
@@ -145,11 +145,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property DocCount() As Int64
+		Public Property DocCount() As Int32
 			Get
 				Return _docCount
 			End Get
-			Set(ByVal value As Int64)
+			Set(ByVal value As Int32)
 				_lastAccessed = System.DateTime.Now
 				_docCount = value
 			End Set

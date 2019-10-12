@@ -143,6 +143,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		private ExtendedExportFile exportFile;
 		private ProcessContext processContext;
 		private TestContainerFactory testContainerFactory;
+		private CancellationTokenSource cancellationTokenSource;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ExporterTestBase"/> class.
@@ -309,6 +310,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[SetUp]
 		public void Setup()
 		{
+			this.cancellationTokenSource = new CancellationTokenSource();
 			foreach (var item in System.Text.Encoding.GetEncodings())
 			{
 				System.Console.WriteLine($"Name={item.Name}, Display={item.DisplayName}, Code Page={item.CodePage}");
@@ -398,6 +400,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.tempDirectory = null;
 			this.testContainer?.Dispose();
 			this.testContainer = null;
+			this.cancellationTokenSource?.Dispose();
+			this.cancellationTokenSource = null;
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -950,7 +954,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				new WebApiServiceFactory(this.exportFile),
 				new ExportFileFormatterFactory(),
 				new ExportConfig(),
-				this.MockLogger.Object);
+				this.MockLogger.Object,
+				this.cancellationTokenSource);
 			try
 			{
 				exporter.StatusMessage += this.ExporterOnStatusMessage;

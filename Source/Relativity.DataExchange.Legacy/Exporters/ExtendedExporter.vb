@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Generic
+Imports System.Threading
 Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.FileNaming.CustomFileNaming
 Imports kCura.WinEDDS.Service.Export
@@ -22,8 +23,8 @@ Namespace kCura.WinEDDS
 			MyBase.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig)
 		End Sub
 
-		Public Sub New(exportFile As ExtendedExportFile, context As ProcessContext, serviceFactory As IServiceFactory, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog)
-			MyBase.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, logger)
+		Public Sub New(exportFile As ExtendedExportFile, context As ProcessContext, serviceFactory As IServiceFactory, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog, cancellationTokenSource As CancellationTokenSource)
+			MyBase.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, logger, cancellationTokenSource)
 		End Sub
 
 		Protected Overrides Function CreateObjectExportInfo() As ObjectExportInfo

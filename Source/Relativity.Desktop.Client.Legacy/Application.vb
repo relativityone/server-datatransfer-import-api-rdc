@@ -26,7 +26,7 @@ Namespace Relativity.Desktop.Client
 			_processPool = New ProcessPool2
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_CookieContainer = New System.Net.CookieContainer
-			_logger = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
+			_logger = RelativityLogFactory.CreateLog()
 		End Sub
 
 		Public Shared ReadOnly Property Instance() As Application

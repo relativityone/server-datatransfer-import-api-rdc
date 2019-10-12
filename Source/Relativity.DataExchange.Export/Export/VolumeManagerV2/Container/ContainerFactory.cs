@@ -25,7 +25,7 @@
 		/// </summary>
 		[Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")]
 		public ContainerFactory()
-			: this(RelativityLogFactory.CreateLog(RelativityLogFactory.ExportSubSystem))
+			: this(RelativityLogFactory.CreateLog())
 		{
 		}
 

@@ -1,6 +1,7 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.Collections.Generic
 Imports System.IO
+Imports System.Reflection
 Imports System.Threading
 Imports System.Threading.Tasks
 Imports Castle.Windsor
@@ -47,7 +48,7 @@ Namespace kCura.WinEDDS
 		Private _lastDocumentsExportedCountReported As Int32 = 0
 		Public Property Statistics As New kCura.WinEDDS.ExportStatistics
 		Private _lastStatisticsSnapshot As IDictionary
-		Private _start As System.DateTime
+		Private _stopwatch As System.Diagnostics.Stopwatch = New System.Diagnostics.Stopwatch()
 		Private _warningCount As Int32 = 0
 		Private _errorCount As Int32 = 0
 		Private _fileCount As Int64 = 0
@@ -166,14 +167,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(exportFile As kCura.WinEDDS.ExportFile, 
 		               context As ProcessContext,
 		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
-			Me.New(exportFile, context, loadFileFormatterFactory, RelativityLogFactory.CreateLog(RelativityLogFactory.ExportSubSystem))
-		End Sub
-
-		Public Sub New(exportFile As kCura.WinEDDS.ExportFile, 
-		               context As ProcessContext,
-		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
-		               logger As ILog)
-			Me.New(exportFile, context, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig, logger)
+			Me.New(exportFile, context, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig, RelativityLogFactory.CreateLog(), New CancellationTokenSource())
 		End Sub
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
@@ -182,7 +176,7 @@ Namespace kCura.WinEDDS
 		               serviceFactory As Service.Export.IServiceFactory,
 		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
 		               exportConfig As IExportConfig)
-			Me.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, RelativityLogFactory.CreateLog(RelativityLogFactory.ExportSubSystem))
+			Me.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, RelativityLogFactory.CreateLog(), New CancellationTokenSource())
 		End Sub
 
 		Public Sub New(exportFile As kCura.WinEDDS.ExportFile,
@@ -190,7 +184,8 @@ Namespace kCura.WinEDDS
 		               serviceFactory As Service.Export.IServiceFactory,
 		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
 		               exportConfig As IExportConfig,
-		               logger As ILog)
+		               logger As ILog,
+		               cancellationTokenSource As CancellationTokenSource)
 			_searchManager = serviceFactory.CreateSearchManager()
 			_downloadHandler = serviceFactory.CreateExportFileDownloader()
 			_downloadModeStatus = _downloadHandler
@@ -200,7 +195,7 @@ Namespace kCura.WinEDDS
 			ExportManager = serviceFactory.CreateExportManager()
 
 			_fieldProviderCache = New FieldProviderCache(exportFile.Credential, exportFile.CookieContainer)
-			_cancellationTokenSource = New CancellationTokenSource()
+			_cancellationTokenSource = If(cancellationTokenSource, New CancellationTokenSource())
 			_processContext = context
 			DocumentsExported = 0
 			TotalExportArtifactCount = 1
@@ -217,7 +212,7 @@ Namespace kCura.WinEDDS
 		Public Property DocumentsExported As Integer Implements IExporter.DocumentsExported
 			Get
 				SyncLock _syncLock
-					Return System.Convert.ToInt32(Me.Statistics.DocCount)
+					Return Me.Statistics.DocCount
 				End SyncLock
 			End Get
 			Set
@@ -239,7 +234,7 @@ Namespace kCura.WinEDDS
 
 		Public Function ExportSearch() As Boolean Implements IExporter.ExportSearch
 			Try
-				_start = System.DateTime.Now
+				_stopwatch.Restart()
 				_logger.LogInformation("Preparing to execute the export search.")
 				Me.Search()
 				_logger.LogInformation("Successfully executed the export search.")
@@ -249,6 +244,7 @@ Namespace kCura.WinEDDS
 					_volumeManager.Close()
 				End If
 			Finally
+				_stopwatch.Stop()
 				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType2.End, _lastStatisticsSnapshot, Statistics))
 			End Try
 
@@ -278,56 +274,30 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub LogApiVersionInfo()
-			Try
-				Dim dict As Dictionary(Of String, Object) = New Dictionary(Of String, Object) From
-					    {
-							{"SDK", GetType(Global.Relativity.DataExchange.IAppSettings).Assembly.GetName().Version},
-							{"TAPI", GetType(Global.Relativity.Transfer.ITransferClient).Assembly.GetName().Version}
-					    }
-				Me._logger.LogInformation("API Versions = @{ApiVersions}", dict)
-			Catch ex As Exception
-				_logger.LogWarning(ex, "Failed to log the API version info.")
-			End Try
+			Dim dict As Dictionary(Of String, Object) = New Dictionary(Of String, Object) From
+				    {
+					    {"SDK", GetType(Global.Relativity.DataExchange.IAppSettings).Assembly.GetName().Version},
+					    {"TAPI", GetType(Global.Relativity.Transfer.ITransferClient).Assembly.GetName().Version}
+				    }
+			Me._logger.LogInformation("API Versions = @{ApiVersions}", dict)
 		End Sub
 
 		Private Sub LogExportSettings()
-			Me.LogObjectAsDictionary("Export Settings = {@ExportConfiguration}", _exportConfig)
-			Me.LogObjectAsDictionary("Export File Settings = {@ExportFile}", _exportFile,
-		         Function(name)
-		             Return Not String.Equals(name, NameOf(_exportFile.FolderPath))
-		         End Function)
-			Me.LogObjectAsDictionary("Volume Info Settings = {@ExportFileVolumeInfo}", _exportFile.VolumeInfo)
+			_logger.LogObjectAsDictionary("Export Settings = {@ExportConfiguration}", _exportConfig, AddressOf LogObjectAsDictionaryFilter)
+			_logger.LogObjectAsDictionary("Export File Settings = {@ExportFile}", _exportFile, AddressOf LogObjectAsDictionaryFilter)
+			_logger.LogObjectAsDictionary("Volume Info Settings = {@ExportFileVolumeInfo}", _exportFile.VolumeInfo, AddressOf LogObjectAsDictionaryFilter)
 		End Sub
 
-		Private Sub LogObjectAsDictionary(messageTemplate As String, value As Object, Optional filter As Func(Of String, Boolean) = Nothing)
-			If value Is Nothing
-				Return
-			End If
-
-			Try
-				' Reflection is used instead of serialization (e.g. JSON) due to structure size.
-				Dim bindingFlags As System.Reflection.BindingFlags = System.Reflection.BindingFlags.Instance Or
-				                                                     System.Reflection.BindingFlags.Public
-				Dim properties As List(Of System.Reflection.PropertyInfo) = value.GetType().GetProperties(bindingFlags).Where(
-					Function(info)
-						If Not filter Is Nothing AndAlso Not filter(info.Name) Then
-							Return False
-						End If
-
-						' Reference types are intentionally limited due to size concerns.
-						Dim supported As Boolean = info.GetIndexParameters().Length = 0 AndAlso
-						                           (info.PropertyType.IsValueType OrElse
-						                            Not Nullable.GetUnderlyingType(info.PropertyType) Is Nothing OrElse
-						                            info.PropertyType = GetType(String) OrElse
-						                            info.PropertyType = GetType(System.Text.Encoding))
-						Return supported
-					End Function).ToList()
-				Dim dict As Dictionary (Of String, String) = properties.ToDictionary(function(info) info.Name, function(info) Convert.ToString(info.GetValue(value, Nothing)))
-				_logger.LogInformation(messageTemplate, dict)
-			Catch ex As Exception
-				_logger.LogWarning(ex, "Failed to log {SettingType} as a dictionary.", value.GetType())
-			End Try
-		End Sub
+		Private Function LogObjectAsDictionaryFilter(info As PropertyInfo) As Boolean
+			' Reference types are intentionally limited due to size concerns.
+			Dim supported As Boolean = info.GetIndexParameters().Length = 0 AndAlso
+			                           Not String.Equals(info.Name, NameOf(_exportFile.FolderPath)) AndAlso
+			                           (info.PropertyType.IsValueType OrElse
+			                            Not Nullable.GetUnderlyingType(info.PropertyType) Is Nothing OrElse
+			                            info.PropertyType = GetType(String) OrElse
+			                            info.PropertyType = GetType(System.Text.Encoding))
+			Return supported
+		End Function
 
 		Private Sub LogWebApiServiceException(exception As Exception)
 			_logger.LogError(exception, "A serious error occurred calling a WebAPI service.")
@@ -338,12 +308,12 @@ Namespace kCura.WinEDDS
 			_logger.LogInformation("Export statistics: {@Statistics}", statisticsDict)
 		End Sub
 
-		Private Sub LogExportSearchResults(result As Boolean)
+		Private Sub LogExportSearchResults(jobSuccessful As Boolean)
 			Dim results As Dictionary(Of String, Object) = New Dictionary(Of String, Object) From
 				{
-				    {"ElapsedTime", DateTime.Now - _start},
+				    {"ElapsedTime", _stopwatch.Elapsed},
 				    {"Errors", Me._errorCount},
-				    {"JobResult", result},
+				    {"JobSuccessful", jobSuccessful},
 				    {"JobCancelled", _cancellationTokenSource.IsCancellationRequested},
 				    {"Warnings", Me._warningCount}
 				}
@@ -466,7 +436,7 @@ Namespace kCura.WinEDDS
 				Dim objectExportableSize As IObjectExportableSize = Nothing
 
 				If UseOldExport Then
-					_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, Statistics, FileHelper, DirectoryHelper, FileNameProvider)
+					_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, Statistics, FileHelper, DirectoryHelper, FileNameProvider, _logger)
 					FieldLookupService = _volumeManager
 					_volumeManager.ColumnHeaderString = columnHeaderString
 				Else
@@ -1243,7 +1213,7 @@ Namespace kCura.WinEDDS
 				preclist.Add(Int32.Parse(pair.Value))
 			Next
 			args.ProductionPrecedence = DirectCast(preclist.ToArray(GetType(Int32)), Int32())
-			args.RunTimeInMilliseconds = CType(System.Math.Min(System.DateTime.Now.Subtract(_start).TotalMilliseconds, Int32.MaxValue), Int32)
+			args.RunTimeInMilliseconds = CType(System.Math.Min(_stopwatch.ElapsedMilliseconds, Int32.MaxValue), Int32)
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.AncestorSearch OrElse Me.Settings.TypeOfExport = ExportFile.ExportType.ParentSearch Then
 				args.SourceRootFolderID = Me.Settings.ArtifactID
 			End If

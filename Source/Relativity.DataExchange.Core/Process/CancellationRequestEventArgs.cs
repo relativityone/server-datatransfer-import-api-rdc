@@ -15,7 +15,7 @@ namespace Relativity.DataExchange.Process
 	public sealed class CancellationRequestEventArgs : EventArgs
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CancellationRequestEventArgs"/> class.
+		/// Initializes a new instance of the <see cref="CancellationRequestEventArgs"/> class. This assumes cancellation is requested by the user.
 		/// </summary>
 		/// <param name="processId">
 		/// The process unique identifier to cancel.
