@@ -241,7 +241,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 			this.filesTransferred = 0;
 			this.fatalErrors = 0;
 			this.warnings = 0;
-			this.TransferLog = new RelativityTransferLog(IntegrationTestHelper.Logger, false);
+			this.TransferLog = new RelativityTransferLog(IntegrationTestHelper.Logger);
 			this.FileCreationTime = new DateTime(2001, 6, 1, 18, 0, 0);
 			this.FileLastAccessTime = new DateTime(2002, 6, 1, 18, 0, 0);
 			this.FileLastWriteTime = new DateTime(2003, 6, 1, 18, 0, 0);

@@ -34,8 +34,9 @@ Public MustInherit Class MonitoredProcessBase
 	''' <returns>The application name</returns>
 	Public Property ApplicationName As String = Nothing
 
+	<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 	Public Sub New(metricService As IMetricService)
-		Me.New(metricService, RelativityLogFactory.CreateLog())
+		Me.New(metricService, RelativityLogger.Instance)
 	End Sub
 
 	Public Sub New(metricService As IMetricService, logger As ILog)

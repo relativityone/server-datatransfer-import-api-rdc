@@ -1,3 +1,4 @@
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Media
 Imports Relativity.DataExchange.Process
 
@@ -11,6 +12,15 @@ Namespace kCura.WinEDDS
 		Private _startTime As DateTime
 		Private _errorCount As Int32
 		Private _warningCount As Int32
+
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New()
+			Me.New(RelativityLogger.Instance)
+		End Sub
+
+		Public Sub New(logger As Global.Relativity.Logging.ILog)
+			MyBase.New(logger)
+		End Sub
 
 		Public Property TimeZoneOffset As Int32
 

@@ -9,7 +9,6 @@
 
 namespace Relativity.DataExchange.Transfer
 {
-	using System;
 	using System.Threading;
 
 	using Relativity.Logging;
@@ -74,27 +73,9 @@ namespace Relativity.DataExchange.Transfer
 		/// </returns>
 		private static ITransferLog GetTransferLog(ILog log)
 		{
-			try
-			{
-				// For legacy code and performance considerations, disable automated statistics logging.
-				GlobalSettings.Instance.StatisticsLogEnabled = false;
-				return new RelativityTransferLog(log, false);
-			}
-			catch (Exception e)
-			{
-				try
-				{
-					Relativity.Logging.Tools.InternalLogger.WriteFromExternal(
-						"Failed to setup Transfer API logging. Exception: " + e,
-						new LoggerOptions() { System = "WinEDDS" });
-				}
-				catch (Exception)
-				{
-					// Being overly cautious to ensure no fatal errors occur due to logging.
-				}
-
-				return new NullTransferLog();
-			}
+			// For legacy code and performance considerations, disable automated statistics logging.
+			GlobalSettings.Instance.StatisticsLogEnabled = false;
+			return new RelativityTransferLog(log ?? new NullLogger());
 		}
 	}
 }

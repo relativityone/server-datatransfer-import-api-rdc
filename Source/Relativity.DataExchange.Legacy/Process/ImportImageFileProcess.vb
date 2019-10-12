@@ -22,12 +22,18 @@ Namespace kCura.WinEDDS
 		Private _disableImageTypeValidation As Boolean?
 		Private _disableImageLocationValidation As Boolean?
 
-		Public Sub New ()
-			MyBase.New(new MetricService(New ImportApiMetricSinkConfig))
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New()
+			MyBase.New(new MetricService(New ImportApiMetricSinkConfig), RelativityLogger.Instance)
 		End Sub
 
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New (metricService As IMetricService)
-			MyBase.New(metricService)
+			Me.New(metricService, RelativityLogger.Instance)
+		End Sub
+
+		Public Sub New (metricService As IMetricService, logger As Global.Relativity.Logging.ILog)
+			MyBase.New(metricService, logger)
 		End Sub
 
         Public WriteOnly Property DisableImageTypeValidation As Boolean

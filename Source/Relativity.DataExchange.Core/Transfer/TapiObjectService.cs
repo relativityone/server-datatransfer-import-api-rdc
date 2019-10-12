@@ -223,7 +223,7 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			RelativityConnectionInfo connectionInfo = this.CreateRelativityConnectionInfo(parameters);
-			using (ITransferLog transferLog = new RelativityTransferLog(logger, false))
+			using (ITransferLog transferLog = new RelativityTransferLog(logger))
 			using (IRelativityTransferHost transferHost = new RelativityTransferHost(connectionInfo, transferLog))
 			{
 				Workspace workspace = await transferHost.GetWorkspaceAsync(parameters.WorkspaceId, token)
@@ -272,7 +272,7 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			RelativityConnectionInfo connectionInfo = this.CreateRelativityConnectionInfo(parameters);
-			using (ITransferLog transferLog = new RelativityTransferLog(logger, false))
+			using (ITransferLog transferLog = new RelativityTransferLog(logger))
 			using (IRelativityTransferHost transferHost = new RelativityTransferHost(connectionInfo, transferLog))
 			{
 				IFileStorageSearch service = transferHost.CreateFileStorageSearch();
@@ -324,39 +324,30 @@ namespace Relativity.DataExchange.Transfer
 				ClientId = this.GetClientId(parameters),
 			};
 
-			try
+			var connectionInfo = this.CreateRelativityConnectionInfo(parameters);
+			using (var transferLog = new RelativityTransferLog())
+			using (var transferHost = new Relativity.Transfer.RelativityTransferHost(connectionInfo, transferLog))
 			{
-				var connectionInfo = this.CreateRelativityConnectionInfo(parameters);
-				using (var transferLog = new RelativityTransferLog())
-				using (var transferHost = new Relativity.Transfer.RelativityTransferHost(connectionInfo, transferLog))
+				if (configuration.ClientId != Guid.Empty)
 				{
-					if (configuration.ClientId != Guid.Empty)
+					using (var client = transferHost.CreateClient(configuration))
 					{
-						using (var client = transferHost.CreateClient(configuration))
+						var supportCheck = await client.SupportCheckAsync().ConfigureAwait(false);
+						if (supportCheck.IsSupported)
 						{
-							var supportCheck = await client.SupportCheckAsync().ConfigureAwait(false);
-							if (supportCheck.IsSupported)
-							{
-								return client;
-							}
+							return client;
 						}
 					}
-
-					var clientStrategy = string.IsNullOrEmpty(parameters.ForceClientCandidates)
-																	 ? new Relativity.Transfer.TransferClientStrategy()
-																	 : new Relativity.Transfer.TransferClientStrategy(parameters.ForceClientCandidates);
-					using (var forcedClient = await transferHost.CreateClientAsync(configuration, clientStrategy)
-																				.ConfigureAwait(false))
-					{
-						return forcedClient;
-					}
 				}
-			}
-			catch (Exception ex)
-			{
-				Relativity.Logging.Tools.InternalLogger.WriteFromExternal(
-								"Unexpected error occurred inside Transfer API layer. Exception: " + ex, new LoggerOptions() { System = "WinEDDS" });
-				throw;
+
+				var clientStrategy = string.IsNullOrEmpty(parameters.ForceClientCandidates)
+																 ? new Relativity.Transfer.TransferClientStrategy()
+																 : new Relativity.Transfer.TransferClientStrategy(parameters.ForceClientCandidates);
+				using (var forcedClient = await transferHost.CreateClientAsync(configuration, clientStrategy)
+					                          .ConfigureAwait(false))
+				{
+					return forcedClient;
+				}
 			}
 		}
 	}

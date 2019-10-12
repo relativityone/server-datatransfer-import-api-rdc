@@ -28,63 +28,26 @@ namespace Relativity.DataExchange.Transfer
 		private readonly ILog logger;
 
 		/// <summary>
-		/// The flag that dictates whether the logger should be disposed.
-		/// </summary>
-		private readonly bool disposeLogger;
-
-		/// <summary>
-		/// The disposed backing.
-		/// </summary>
-		private bool disposed;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="RelativityTransferLog"/> class.
 		/// </summary>
 		public RelativityTransferLog()
+			: this(RelativityLogger.Instance)
 		{
-			if (Log.Logger == null)
-			{
-				this.logger = Relativity.Logging.Factory.LogFactory.GetLogger(
-					new LoggerOptions
-					{
-						System = "TAPI",
-						SubSystem = string.Empty,
-						Application = GlobalSettings.Instance.ApplicationName,
-						ConnectionString = string.Empty,
-					});
-				this.disposeLogger = true;
-				this.IsEnabled = true;
-			}
-			else
-			{
-				this.logger = Log.Logger;
-				this.disposeLogger = false;
-				this.IsEnabled = this.logger.IsEnabled;
-			}
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RelativityTransferLog"/> class.
 		/// </summary>
-		/// <param name="log">
-		/// The Relativity log.
-		/// </param>
-		/// <param name="disposeLogger">
-		/// Specify whether this instance should dispose the logger when the <see cref="Dispose()"/> method is called.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <exception cref="ArgumentNullException">
-		/// Thrown when <paramref name="log"/> is <see langword="null"/>.
+		/// Thrown when <paramref name="logger"/> is <see langword="null"/>.
 		/// </exception>
-		public RelativityTransferLog(ILog log, bool disposeLogger)
+		public RelativityTransferLog(ILog logger)
 		{
-			if (log == null)
-			{
-				throw new ArgumentNullException(nameof(log));
-			}
-
-			this.logger = log;
-			this.disposeLogger = disposeLogger;
-			this.IsEnabled = log.IsEnabled;
+			this.logger = logger.ThrowIfNull(nameof(logger));
+			this.IsEnabled = logger.IsEnabled;
 		}
 
 		/// <inheritdoc />
@@ -97,7 +60,6 @@ namespace Relativity.DataExchange.Transfer
 		/// <inheritdoc />
 		public void Dispose()
 		{
-			this.Dispose(true);
 		}
 
 		/// <inheritdoc />
@@ -230,28 +192,6 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			this.logger.LogFatal(exception, messageTemplate, propertyValues);
-		}
-
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing">
-		/// <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.
-		/// </param>
-		private void Dispose(bool disposing)
-		{
-			if (this.disposed)
-			{
-				return;
-			}
-
-			if (disposing && this.disposeLogger)
-			{
-				var disposableLogger = this.logger as IDisposable;
-				disposableLogger?.Dispose();
-			}
-
-			this.disposed = true;
 		}
 	}
 }

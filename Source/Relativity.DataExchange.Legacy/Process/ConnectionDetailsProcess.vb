@@ -12,8 +12,11 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _caseInfo As CaseInfo
 
 		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As CaseInfo)
-			MyBase.New()
+			Me.New(credential, cookieContainer, caseInfo, RelativityLogger.Instance)
+		End Sub
 
+		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As CaseInfo, logger As Global.Relativity.Logging.ILog)
+			MyBase.New(logger)
 			_credential = credential
 			_cookieContainer = cookieContainer
 			_caseInfo = caseInfo
