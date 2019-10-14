@@ -143,9 +143,9 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public virtual Relativity.Transfer.IRelativityTransferHost CreateRelativityTransferHost(Relativity.Transfer.RelativityConnectionInfo connectionInfo, Relativity.Transfer.ITransferLog log)
+		public virtual Relativity.Transfer.IRelativityTransferHost CreateRelativityTransferHost(Relativity.Transfer.RelativityConnectionInfo connectionInfo, ILog logger)
 		{
-			return new Relativity.Transfer.RelativityTransferHost(connectionInfo, log);
+			return new Relativity.Transfer.RelativityTransferHost(connectionInfo, new RelativityTransferLog(logger));
 		}
 
 		/// <inheritdoc />
@@ -156,7 +156,7 @@ namespace Relativity.DataExchange.Transfer
 				throw new ArgumentException("The client unique identifier must be non-empty.", nameof(clientId));
 			}
 
-			using (var transferLog = new RelativityTransferLog())
+			using (var transferLog = new RelativityTransferLog(RelativityLogger.Instance))
 			{
 				foreach (var clientMetadata in Relativity.Transfer.TransferClientHelper.SearchAvailableClients(transferLog))
 				{
@@ -325,7 +325,7 @@ namespace Relativity.DataExchange.Transfer
 			};
 
 			var connectionInfo = this.CreateRelativityConnectionInfo(parameters);
-			using (var transferLog = new RelativityTransferLog())
+			using (var transferLog = new RelativityTransferLog(RelativityLogger.Instance))
 			using (var transferHost = new Relativity.Transfer.RelativityTransferHost(connectionInfo, transferLog))
 			{
 				if (configuration.ClientId != Guid.Empty)

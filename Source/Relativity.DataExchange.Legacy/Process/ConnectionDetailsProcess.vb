@@ -36,7 +36,7 @@ Namespace kCura.WinEDDS
 			parameters.WebServiceUrl = Me.AppSettings.WebApiServiceUrl
 			parameters.WorkspaceId = _caseInfo.ArtifactID
 			Dim connectionInfo As Global.Relativity.Transfer.RelativityConnectionInfo = tapiObjectService.CreateRelativityConnectionInfo(parameters)
-			Using transferLog As New RelativityTransferLog()
+			Using transferLog As New RelativityTransferLog(RelativityLogger.Instance)
 				Using transferHost As New Global.Relativity.Transfer.RelativityTransferHost(connectionInfo, transferLog)
 					Dim context As New Global.Relativity.Transfer.DiagnosticsContext()
 					Dim configuration As New Global.Relativity.Transfer.DiagnosticsConfiguration(context, _cookieContainer)

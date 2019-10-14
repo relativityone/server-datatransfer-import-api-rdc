@@ -25,7 +25,7 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="parameters">
 		/// The native file transfer parameters.
 		/// </param>
-		/// <param name="log">
+		/// <param name="logger">
 		/// The Relativity logging instance.
 		/// </param>
 		/// <param name="authenticationTokenProvider">Auth token provider.</param>
@@ -35,10 +35,13 @@ namespace Relativity.DataExchange.Transfer
 		/// <returns>
 		/// The <see cref="UploadTapiBridge2"/> instance.
 		/// </returns>
-		public static UploadTapiBridge2 CreateUploadBridge(UploadTapiBridgeParameters2 parameters, ILog log, IAuthenticationTokenProvider authenticationTokenProvider, CancellationToken token)
+		public static UploadTapiBridge2 CreateUploadBridge(
+			UploadTapiBridgeParameters2 parameters,
+			ILog logger,
+			IAuthenticationTokenProvider authenticationTokenProvider,
+			CancellationToken token)
 		{
-			var transferLog = GetTransferLog(log);
-			return new UploadTapiBridge2(parameters, transferLog, authenticationTokenProvider, token);
+			return new UploadTapiBridge2(parameters, logger, authenticationTokenProvider, token);
 		}
 
 		/// <summary>
@@ -47,7 +50,7 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="parameters">
 		/// The native file transfer parameters.
 		/// </param>
-		/// <param name="log">
+		/// <param name="logger">
 		/// The Relativity logging instance.
 		/// </param>
 		/// <param name="token">
@@ -56,26 +59,9 @@ namespace Relativity.DataExchange.Transfer
 		/// <returns>
 		/// The <see cref="DownloadTapiBridge2"/> instance.
 		/// </returns>
-		public static DownloadTapiBridge2 CreateDownloadBridge(TapiBridgeParameters2 parameters, ILog log, CancellationToken token)
+		public static DownloadTapiBridge2 CreateDownloadBridge(TapiBridgeParameters2 parameters, ILog logger, CancellationToken token)
 		{
-			var transferLog = GetTransferLog(log);
-			return new DownloadTapiBridge2(parameters, transferLog, token);
-		}
-
-		/// <summary>
-		/// Gets the transfer log instance.
-		/// </summary>
-		/// <param name="log">
-		/// The Relativity logging instance.
-		/// </param>
-		/// <returns>
-		/// The <see cref="ITransferLog"/> instance.
-		/// </returns>
-		private static ITransferLog GetTransferLog(ILog log)
-		{
-			// For legacy code and performance considerations, disable automated statistics logging.
-			GlobalSettings.Instance.StatisticsLogEnabled = false;
-			return new RelativityTransferLog(log ?? new NullLogger());
+			return new DownloadTapiBridge2(parameters, logger, token);
 		}
 	}
 }

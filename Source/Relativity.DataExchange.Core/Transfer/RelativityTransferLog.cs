@@ -30,14 +30,6 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RelativityTransferLog"/> class.
 		/// </summary>
-		public RelativityTransferLog()
-			: this(RelativityLogger.Instance)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="RelativityTransferLog"/> class.
-		/// </summary>
 		/// <param name="logger">
 		/// The Relativity logger instance.
 		/// </param>

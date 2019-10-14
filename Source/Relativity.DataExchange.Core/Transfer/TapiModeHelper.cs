@@ -40,7 +40,7 @@ namespace Relativity.DataExchange.Transfer
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
 			sb.AppendLine("FILE TRANSFER MODES:");
-			using (var transferLog = new RelativityTransferLog())
+			using (var transferLog = new RelativityTransferLog(RelativityLogger.Instance))
 			{
 				foreach (var clientMetadata in Relativity.Transfer.TransferClientHelper.SearchAvailableClients(transferLog)
 					.OrderBy(x => x.DisplayName))
