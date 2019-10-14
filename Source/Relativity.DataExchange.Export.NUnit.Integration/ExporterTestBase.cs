@@ -955,7 +955,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				new ExportFileFormatterFactory(),
 				new ExportConfig(),
 				this.MockLogger.Object,
-				this.cancellationTokenSource);
+				this.cancellationTokenSource.Token);
 			try
 			{
 				exporter.StatusMessage += this.ExporterOnStatusMessage;

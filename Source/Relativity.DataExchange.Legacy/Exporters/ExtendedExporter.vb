@@ -23,8 +23,8 @@ Namespace kCura.WinEDDS
 			MyBase.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig)
 		End Sub
 
-		Public Sub New(exportFile As ExtendedExportFile, context As ProcessContext, serviceFactory As IServiceFactory, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog, cancellationTokenSource As CancellationTokenSource)
-			MyBase.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, logger, cancellationTokenSource)
+		Public Sub New(exportFile As ExtendedExportFile, context As ProcessContext, serviceFactory As IServiceFactory, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog, cancellationToken As CancellationToken)
+			MyBase.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, logger, cancellationToken)
 		End Sub
 
 		Protected Overrides Function CreateObjectExportInfo() As ObjectExportInfo
