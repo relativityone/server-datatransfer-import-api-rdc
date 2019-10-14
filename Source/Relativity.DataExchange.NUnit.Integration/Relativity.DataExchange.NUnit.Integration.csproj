@@ -179,10 +179,10 @@
     <Content Include="Resources\Media\AZIPPER_0011374_01.TIF">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\OutsideIn\Test-FileTypeId-List-2018-9.csv">
+    <Content Include="Resources\OutsideIn\Test-FileTypeId-List.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\OutsideIn\Test-FileTypeId-List-Golden-2018-9.csv">
+    <Content Include="Resources\OutsideIn\Test-FileTypeId-List-Golden.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\OutsideIn\Test-FileTypeId-List.zip">

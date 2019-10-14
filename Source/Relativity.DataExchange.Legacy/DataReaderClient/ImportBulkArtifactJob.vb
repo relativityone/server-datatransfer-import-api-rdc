@@ -1,8 +1,10 @@
 Imports System.Net
 Imports kCura.WinEDDS
+Imports Relativity.DataExchange
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
+Imports Relativity.Transfer
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -25,7 +27,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _nativeSettings As ImportSettingsBase
 
 		Private _credentials As ICredentials
-		Private _tapiCredential As NetworkCredential = Nothing
+		Private _webApiCredential As WebApiCredential
 		Private _cookieMonster As Net.CookieContainer
 
 		Private ReadOnly _executionSource As ExecutionSource
@@ -44,13 +46,16 @@ Namespace kCura.Relativity.DataReaderClient
 			_nativeDataReader = New SourceIDataReader
 
 			_bulkLoadFileFieldDelimiter = ServiceConstants.DEFAULT_FIELD_DELIMITER
+
+			_webApiCredential = New WebApiCredential()
+			_webApiCredential.TokenProvider = New NullAuthTokenProvider
 		End Sub
 
-		Friend Sub New(ByVal credentials As ICredentials, ByVal tapiCredentials As NetworkCredential, ByVal cookieMonster As Net.CookieContainer, ByVal Optional executionSource As Integer = 0)
+		Friend Sub New(ByVal credentials As ICredentials, ByVal webApiCredential As WebApiCredential, ByVal cookieMonster As Net.CookieContainer, ByVal Optional executionSource As Integer = 0)
 			Me.New()
 			_executionSource = CType(executionSource, ExecutionSource)
 			_credentials = credentials
-			_tapiCredential = tapiCredentials
+			_webApiCredential = webApiCredential
 			_cookieMonster = cookieMonster
 		End Sub
 
@@ -106,14 +111,14 @@ Namespace kCura.Relativity.DataReaderClient
 				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
 				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
 				_credentials = creds.Credentials
-				_tapiCredential = creds.TapiCredential
+				_webApiCredential.Credential = creds.TapiCredential
 				_cookieMonster = creds.CookieMonster
 			End If
 
 			If IsSettingsValid() Then
 
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
-			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_tapiCredential))
+			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_webApiCredential.Credential))
 				Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(SourceData.SourceData, metricService) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
 					process.ExecutionSource = _executionSource
                     process.ApplicationName = Settings.ApplicationName
@@ -219,7 +224,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.CopyFilesToDocumentRepository = loadFileTemp.CopyFilesToDocumentRepository
 			tempLoadFile.CreateFolderStructure = loadFileTemp.CreateFolderStructure
 			tempLoadFile.Credentials = loadFileTemp.Credentials
-			tempLoadFile.TapiCredentials = loadFileTemp.TapiCredentials
+			tempLoadFile.WebApiCredential = loadFileTemp.WebApiCredential
 			tempLoadFile.DestinationFolderID = loadFileTemp.DestinationFolderID
 			tempLoadFile.ExtractedTextFileEncoding = loadFileTemp.ExtractedTextFileEncoding
 			tempLoadFile.ExtractedTextFileEncodingName = loadFileTemp.ExtractedTextFileEncodingName
@@ -381,7 +386,7 @@ Namespace kCura.Relativity.DataReaderClient
 			'If clientSettings.Credential Is Nothing Then
 			'dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
 			'Else
-			dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(_credentials, _tapiCredential, _cookieMonster, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
+			dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(_credentials, _webApiCredential, _cookieMonster, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
 			'End If
 			_docIDFieldCollection = dosf_settings.DocumentIdentifierFields
 

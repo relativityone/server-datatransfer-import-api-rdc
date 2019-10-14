@@ -29,6 +29,27 @@ namespace Relativity.DataExchange.Transfer
 		/// </summary>
 		private static readonly Relativity.Transfer.IFileSystemService Instance = new Relativity.Transfer.FileSystemService();
 
+		private readonly IAuthenticationTokenProvider authenticationTokenProvider;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TapiObjectService"/> class.
+		/// </summary>
+		public TapiObjectService()
+			: this(new NullAuthTokenProvider())
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TapiObjectService"/> class.
+		/// </summary>
+		/// <param name="authenticationTokenProvider">Authentication token provider.</param>
+		public TapiObjectService(IAuthenticationTokenProvider authenticationTokenProvider)
+		{
+			authenticationTokenProvider.ThrowIfNull(nameof(authenticationTokenProvider));
+
+			this.authenticationTokenProvider = authenticationTokenProvider;
+		}
+
 		/// <inheritdoc />
 		public virtual Relativity.Transfer.IFileSystemService CreateFileSystemService()
 		{
@@ -93,7 +114,7 @@ namespace Relativity.DataExchange.Transfer
 			Relativity.Transfer.IHttpCredential httpCredential;
 			if (string.Compare(parameters.Credentials.UserName, Relativity.Transfer.BearerTokenCredential.OAuth2UserName, StringComparison.OrdinalIgnoreCase) == 0)
 			{
-				httpCredential = new Relativity.Transfer.BearerTokenCredential(parameters.Credentials.Password);
+				httpCredential = new Relativity.Transfer.BearerTokenCredential(parameters.Credentials.Password, this.authenticationTokenProvider);
 			}
 			else
 			{
