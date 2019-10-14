@@ -1392,6 +1392,10 @@ Namespace kCura.WinEDDS
 			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 			settings.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
 			settings.Billable = _settings.Billable
+			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing AndAlso Not _Task.IsFaulted AndAlso Not _Task.IsCanceled Then
+				WaitOnPushBatchTask()
+				_task = Nothing
+			End If
 			Dim makeServiceCalls As Action =
 				    Sub()
 					    Dim start As Int64 = DateTime.Now.Ticks
@@ -1408,11 +1412,6 @@ Namespace kCura.WinEDDS
 				_task = f.StartNew(makeServiceCalls)
 			Else
 				makeServiceCalls()
-			End If
-
-			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing Then
-				WaitOnPushBatchTask()
-				_task = Nothing
 			End If
 
 			Me.TotalTransferredFilesCount = Me.FileTapiProgressCount
