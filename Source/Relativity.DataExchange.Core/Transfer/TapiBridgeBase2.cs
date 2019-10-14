@@ -560,13 +560,13 @@ namespace Relativity.DataExchange.Transfer
 				this.PublishStatusMessage(successMessage, TapiConstants.NoLineNumber);
 				return totals;
 			}
-			catch (Exception e) when (!(e is OperationCanceledException))
+			catch (Exception ex) when (!ex.IsCanceledByUser(this.cancellationToken))
 			{
-				// We don't want to log cancellation request as the error
+				// We don't want to log cancellation request as the error if it was requested by the end user
 
 				// Note: for backwards compatibility purposes, don't publish an error message.
 				this.PublishWarningMessage(errorMessage, TapiConstants.NoLineNumber);
-				this.TransferLog.LogError(e, errorMessage);
+				this.TransferLog.LogError(ex, errorMessage);
 				throw;
 			}
 		}
@@ -1622,6 +1622,7 @@ namespace Relativity.DataExchange.Transfer
 									this.SwitchToWebMode(null);
 								}
 
+								Thread.Sleep(5000);
 								this.cancellationToken.ThrowIfCancellationRequested();
 								bool terminateWait = this.CheckCompletedTransfers()
 								                     || this.CheckDataInactivityTimeExceeded()

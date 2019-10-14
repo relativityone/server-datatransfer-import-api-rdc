@@ -1,6 +1,7 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download
 {
 	using System;
+	using System.CodeDom;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading;
@@ -34,7 +35,6 @@
 
 		public async Task DownloadFilesAsync(List<ExportRequest> requests, CancellationToken token)
 		{
-			var taskCancellationTokenSource = new DownloadCancellationTokenSource(token);
 			await _settingsService.ReadFileSharesAsync(token).ConfigureAwait(false);
 
 			List<ExportRequestsWithFileshareSettings> exportRequestsFileShareSettingsList =
@@ -48,8 +48,8 @@
 			{
 				tasks.Add(
 					Task.Run(
-						() => this.CreateJobTask(settings, taskCancellationTokenSource),
-						taskCancellationTokenSource.Token));
+						() => this.CreateJobTask(settings, token),
+						token));
 			}
 
 			await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -65,26 +65,11 @@
 
 		private void CreateJobTask(
 			ExportRequestsWithFileshareSettings settings,
-			DownloadCancellationTokenSource tokenSource)
+			CancellationToken token)
 		{
-			try
-			{
-				IDownloadTapiBridge bridge = _fileTapiBridgePool.Request(settings.FileshareSettings, tokenSource.Token);
-				this.DownloadFiles(bridge, settings.Requests, tokenSource.Token);
-				bridge.WaitForTransfers();
-			}
-			catch (TaskCanceledException)
-			{
-				if (!tokenSource.IsBatchCancelled())
-				{
-					throw;
-				}
-			}
-			catch (Exception ex) when (!(ex is OperationCanceledException))
-			{
-				tokenSource.Cancel();
-				throw;
-			}
+			IDownloadTapiBridge bridge = _fileTapiBridgePool.Request(settings.FileshareSettings, token);
+			this.DownloadFiles(bridge, settings.Requests, token);
+			bridge.WaitForTransfers();
 		}
 
 		private void DownloadFiles(
@@ -92,6 +77,7 @@
 			IEnumerable<ExportRequest> fileExportRequests,
 			CancellationToken cancellationToken)
 		{
+			_logger.LogDebug("Starting requesting files download...");
 			foreach (ExportRequest fileExportRequest in fileExportRequests)
 			{
 				if (cancellationToken.IsCancellationRequested)
