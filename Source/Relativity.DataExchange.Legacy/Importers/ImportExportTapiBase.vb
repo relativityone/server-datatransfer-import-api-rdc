@@ -5,6 +5,7 @@
 ' ----------------------------------------------------------------------------
 
 Imports System.Globalization
+Imports System.Net
 Imports System.Threading
 
 Imports kCura.WinEDDS.Helpers
@@ -174,7 +175,8 @@ Namespace kCura.WinEDDS
 			If TypeOf ex Is Service.BulkImportManager.BulkImportSqlTimeoutException Then
 				Return True
 			End If
-			return TypeOf ex Is System.Net.WebException AndAlso ex.Message.ToString.Contains("timed out")
+			Dim webException As System.Net.WebException = TryCast(ex, System.Net.WebException) 
+			return Not webException Is Nothing AndAlso webException.Status = WebExceptionStatus.Timeout
 		End Function
 
 		Protected Shared Function IsBulkImportSqlException(ByVal ex As Exception) As Boolean
