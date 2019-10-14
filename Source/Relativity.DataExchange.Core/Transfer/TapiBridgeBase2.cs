@@ -1622,7 +1622,6 @@ namespace Relativity.DataExchange.Transfer
 									this.SwitchToWebMode(null);
 								}
 
-								Thread.Sleep(5000);
 								this.cancellationToken.ThrowIfCancellationRequested();
 								bool terminateWait = this.CheckCompletedTransfers()
 								                     || this.CheckDataInactivityTimeExceeded()
