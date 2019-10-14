@@ -9,6 +9,7 @@ namespace Relativity.DataExchange.TestFramework
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Threading.Tasks;
 
 	using kCura.Relativity.Client;
 	using kCura.Relativity.Client.DTOs;
@@ -43,17 +44,17 @@ namespace Relativity.DataExchange.TestFramework
 				}
 
 				kCura.Relativity.Client.DTOs.ObjectType objectTypeDto = new kCura.Relativity.Client.DTOs.ObjectType
-					                                                        {
-						                                                        Name = objectTypeName,
-						                                                        ParentArtifactTypeID = 8,
-						                                                        SnapshotAuditingEnabledOnDelete = true,
-						                                                        Pivot = true,
-						                                                        CopyInstancesOnWorkspaceCreation =
-							                                                        false,
-						                                                        Sampling = true,
-						                                                        PersistentLists = false,
-						                                                        CopyInstancesOnParentCopy = false,
-					                                                        };
+				{
+					Name = objectTypeName,
+					ParentArtifactTypeID = 8,
+					SnapshotAuditingEnabledOnDelete = true,
+					Pivot = true,
+					CopyInstancesOnWorkspaceCreation =
+																					false,
+					Sampling = true,
+					PersistentLists = false,
+					CopyInstancesOnParentCopy = false,
+				};
 				int artifactId = client.Repositories.ObjectType.CreateSingle(objectTypeDto);
 				return artifactId;
 			}
@@ -115,6 +116,30 @@ namespace Relativity.DataExchange.TestFramework
 				{
 					throw new InvalidOperationException($"Failed to delete the {artifactId} object.");
 				}
+			}
+		}
+
+		/// <summary>
+		/// Deletes all RDOs of a given type from a test workspace.
+		/// </summary>
+		/// <param name="parameters">Test context parameters.</param>
+		/// <param name="artifactTypeID">Type of objects to delete.</param>
+		/// <returns><see cref="Task"/> which completes when all RDOs are deleted.</returns>
+		public static async Task DeleteAllObjectsByType(IntegrationTestParameters parameters, int artifactTypeID)
+		{
+			using (var objectManager = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
+			{
+				var deleteAllDocumentsRequest = new MassDeleteByCriteriaRequest
+				{
+					ObjectIdentificationCriteria = new ObjectIdentificationCriteria
+					{
+						ObjectType = new ObjectTypeRef
+						{
+							ArtifactTypeID = artifactTypeID,
+						},
+					},
+				};
+				await objectManager.DeleteAsync(parameters.WorkspaceId, deleteAllDocumentsRequest).ConfigureAwait(false);
 			}
 		}
 

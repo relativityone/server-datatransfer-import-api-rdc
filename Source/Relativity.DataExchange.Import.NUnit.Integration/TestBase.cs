@@ -14,6 +14,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using System.Net;
 	using System.Security.AccessControl;
 	using System.Security.Principal;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
@@ -398,6 +399,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			{
 				AppSettings.Instance.IoErrorNumberOfRetries = 0;
 			}
+		}
+
+		protected Task GivenNoDocumentsArePresentInWorkspace()
+		{
+			const int documentArtifactTypeID = 10;
+			return RdoHelper.DeleteAllObjectsByType(this.TestParameters, documentArtifactTypeID);
 		}
 
 		/// <summary>
