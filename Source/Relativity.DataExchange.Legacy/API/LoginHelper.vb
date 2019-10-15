@@ -69,11 +69,12 @@ Namespace kCura.WinEDDS.Api
 		''' <summary>
 		''' This method retrieves bearer token using OAuth Implicit Flow and Integrated Windows Authentication.
 		''' Implementation of implicit flow token provider requires to be run from interactive process.
-		''' So it should be used only from Desktop or Console apps.
+		''' So it should be used only from Desktop or Console apps. After successful login, compatibility with
+		''' Relativity instance is validated.
 		''' </summary>
 		''' <param name="cookieContainer">Cookie container</param>
 		''' <param name="webServiceUrl">URL of RelativityWebApi service</param>
-		''' <param name="token">cancellation token</param>
+		''' <param name="token">cancellation token for compatibility check</param>
 		''' <param name="logger">logger</param>
 		''' <returns>Bearer token <see cref="Net.NetworkCredential"/></returns>
 		Public Shared Function LoginWindowsAuth(ByVal cookieContainer As System.Net.CookieContainer,
@@ -87,7 +88,7 @@ Namespace kCura.WinEDDS.Api
 			Dim windowsAuthCredentials As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 			Using windowsAuthRelativityManager As New kCura.WinEDDS.Service.RelativityManager(windowsAuthCredentials, cookieContainer, webServiceUrl)
 				Dim provider As IntegratedAuthenticationOAuthCredentialsProvider = New IntegratedAuthenticationOAuthCredentialsProvider(windowsAuthRelativityManager)
-				Dim credentials As System.Net.NetworkCredential = provider.LoginWindowsAuthTapi()
+				Dim credentials As System.Net.NetworkCredential = provider.LoginWindowsAuth()
 				ValidateVersionCompatibility(credentials, cookieContainer, webServiceUrl, token, logger)
 				Return credentials
 			End Using
