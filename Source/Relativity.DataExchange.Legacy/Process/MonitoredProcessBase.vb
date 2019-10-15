@@ -93,13 +93,14 @@ Public MustInherit Class MonitoredProcessBase
 		Dim metric As MetricJobEndReport = New MetricJobEndReport() With {.JobStatus = jobStatus, .TotalSizeBytes = (statistics.MetadataBytes + statistics.FileBytes),
 				.FileSizeBytes = statistics.FileBytes, .MetadataSizeBytes = statistics.MetadataBytes,
 				.TotalRecords = totalRecordsCount, .CompletedRecords = completedRecordsCount,
-				.ThroughputBytesPerSecond = CalculateThroughput(statistics.FileBytes + statistics.MetadataBytes),
-				.ThroughputRecordsPerSecond = CalculateThroughput(completedRecordsCount)}
+				.ThroughputBytesPerSecond = CalculateThroughput(statistics.FileBytes + statistics.MetadataBytes, (EndTime - StartTime).TotalSeconds),
+				.ThroughputRecordsPerSecond = CalculateThroughput(completedRecordsCount, (EndTime - StartTime).TotalSeconds),
+				.SqlBulkLoadThroughput = CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.SqlTime/TimeSpan.TicksPerSecond)}
 		BuildMetricBase(metric)
 		MetricService.Log(metric)
 	End Sub
 
-	Protected Sub SendMetricJobProgress(metadataThroughput As Double, fileThroughput As Double, checkThrottling As Boolean)
+	Protected Sub SendMetricJobProgress(statistics As Statistics, checkThrottling As Boolean)
 		' Don't send metrics with no transfer mode
 		If TapiClient = TapiClient.None Then Return
 		Dim currentTime As DateTime = DateTime.Now
@@ -107,7 +108,7 @@ Public MustInherit Class MonitoredProcessBase
 			If currentTime - _lastSendTime < _metricThrottling And checkThrottling Then Return
 			_lastSendTime = currentTime
 		End SyncLock
-		Dim message As MetricJobProgress = New MetricJobProgress With {.MetadataThroughput = metadataThroughput, .FileThroughput = fileThroughput}
+		Dim message As MetricJobProgress = New MetricJobProgress With {.MetadataThroughput = statistics.MetadataThroughput, .FileThroughput = statistics.FileThroughput, .SqlBulkLoadThroughput = CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.SqlTime/TimeSpan.TicksPerSecond)}
 		BuildMetricBase(message)
 		MetricService.Log(message)
 	End Sub
@@ -150,8 +151,7 @@ Public MustInherit Class MonitoredProcessBase
 		End If
 	End Function
 
-	Private Function CalculateThroughput(size As Long) As Double
-		Dim duration As System.TimeSpan = EndTime - StartTime
-		Return CDbl(IIf(duration.TotalSeconds.Equals(0.0), 0.0, size/duration.TotalSeconds))
+	Private Function CalculateThroughput(size As Long, time As Double) As Double
+		Return CDbl(IIf(time.Equals(0.0), 0.0, size/time))
 	End Function
 End Class

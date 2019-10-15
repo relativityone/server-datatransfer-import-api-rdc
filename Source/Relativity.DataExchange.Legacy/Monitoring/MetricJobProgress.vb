@@ -30,5 +30,18 @@ Namespace Monitoring
 				CustomData.Item(TelemetryConstants.KeyName.METADATA_THROUGHPUT) = Value
 			End Set
 		End Property
+
+		''' <summary>
+		''' Gets or sets active sql bulk load throughput in records per second.
+		''' </summary>
+		''' <returns>Sql bulk load throughput in records per second.</returns>
+		Public Property SqlBulkLoadThroughput() As Double
+			Get
+				Return GetValueOrDefault (Of Double)(TelemetryConstants.KeyName.SQL_THROUGHPUT)
+			End Get
+		    Set
+				CustomData(TelemetryConstants.KeyName.SQL_THROUGHPUT) = Value
+		    End Set
+		End Property
 	End Class
 End Namespace

@@ -34,6 +34,7 @@
             Public Const USE_OLD_EXPORT As String = "UseOldExport"
             Public Const FILE_THROUGHPUT As String = "FileThroughputBytesPerSecond"
             Public Const METADATA_THROUGHPUT As String = "MetadataThroughput"
+            Public Const SQL_THROUGHPUT As String = "SqlBulkLoadThroughput"
             Public Const JOB_STATUS As String = "JobStatus"
             Public Const TOTAL_SIZE_BYTES As String = "TotalSizeBytes"
             Public Const FILE_SIZE_BYTES As String = "FileSizeBytes"

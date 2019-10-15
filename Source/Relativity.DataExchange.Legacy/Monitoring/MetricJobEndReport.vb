@@ -108,5 +108,14 @@
                 CustomData.Item(TelemetryConstants.KeyName.THROUGHPUT_RECORDS_PER_SECOND) = Value
             End Set
         End Property
+
+		Public Property SqlBulkLoadThroughput As Double
+			Get
+				Return GetValueOrDefault (Of Double)(TelemetryConstants.KeyName.SQL_THROUGHPUT)
+			End Get
+		    Set
+				CustomData.Item(TelemetryConstants.KeyName.SQL_THROUGHPUT) = Value
+		    End Set
+		End Property
     End Class
 End NameSpace
