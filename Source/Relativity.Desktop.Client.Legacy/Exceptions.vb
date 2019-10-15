@@ -76,7 +76,7 @@
 		End Sub
 	End Class
 
-	Public Class ClientCrendentialsException
+	Public Class ClientCredentialsException
 		Inherits RdcBaseException
 
 		Public Sub New()

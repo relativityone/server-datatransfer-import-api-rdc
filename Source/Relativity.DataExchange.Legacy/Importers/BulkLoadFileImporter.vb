@@ -1227,7 +1227,6 @@ Namespace kCura.WinEDDS
 					End If
 
 					Dim start As Int64 = System.DateTime.Now.Ticks
-
 					If ShouldImport Then
 						Me.PushNativeBatch(outputNativePath, shouldCompleteMetadataJob, lastRun)
 					End If
@@ -1393,21 +1392,21 @@ Namespace kCura.WinEDDS
 			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 			settings.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
 			settings.Billable = _settings.Billable
-			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing Then
+			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing AndAlso Not _Task.IsFaulted AndAlso Not _Task.IsCanceled Then
 				WaitOnPushBatchTask()
 				_task = Nothing
 			End If
 			Dim makeServiceCalls As Action =
-					Sub()
-						Dim start As Int64 = DateTime.Now.Ticks
-						Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
+				    Sub()
+					    Dim start As Int64 = DateTime.Now.Ticks
+					    Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
-						Statistics.ProcessRunResults(runResults)
-						Statistics.SqlTime += (DateTime.Now.Ticks - start)
+					    Statistics.ProcessRunResults(runResults)
+					    Statistics.SqlTime += (DateTime.Now.Ticks - start)
 
-						UpdateStatisticsSnapshot(DateTime.Now)
-						Me.ManageErrors(_artifactTypeID)
-					End Sub
+					    UpdateStatisticsSnapshot(DateTime.Now)
+					    Me.ManageErrors(_artifactTypeID)
+				    End Sub
 			If _usePipeliningForNativeAndObjectImports Then
 				Dim f As New System.Threading.Tasks.TaskFactory()
 				_task = f.StartNew(makeServiceCalls)
