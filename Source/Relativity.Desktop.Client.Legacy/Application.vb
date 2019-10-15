@@ -817,6 +817,7 @@ Namespace Relativity.Desktop.Client
 			loadFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
 			loadFile.CaseInfo = caseInfo
 			loadFile.Credentials = Await Me.GetCredentialsAsync()
+			SetWebApiCredentialForNative(loadFile)
 			loadFile.CookieContainer = Me.CookieContainer
 			loadFile.OverwriteDestination = ImportOverwriteType.Append.ToString
 			loadFile.ArtifactTypeID = Me.ArtifactTypeID
@@ -923,6 +924,7 @@ Namespace Relativity.Desktop.Client
 			Try
 				Dim imageFile As New ImageLoadFile
 				imageFile.Credential = Await Me.GetCredentialsAsync()
+				SetWebApiCredentialsForImage(imageFile)
 				imageFile.CaseInfo = caseinfo
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.DestinationFolderID = destinationArtifactID
@@ -951,6 +953,7 @@ Namespace Relativity.Desktop.Client
 			Try
 				Dim imageFile As New ImageLoadFile
 				imageFile.Credential = Await Me.GetCredentialsAsync()
+				SetWebApiCredentialsForImage(imageFile)
 				imageFile.CaseInfo = caseinfo
 				imageFile.DestinationFolderID = destinationArtifactID
 				imageFile.ForProduction = True
@@ -1281,6 +1284,7 @@ Namespace Relativity.Desktop.Client
 			tempLoadFile.CopyFilesToDocumentRepository = loadFile.CopyFilesToDocumentRepository
 			tempLoadFile.SelectedCasePath = Me.SelectedCaseInfo.DocumentPath
 			tempLoadFile.Credentials = Await Me.GetCredentialsAsync()
+			SetWebApiCredentialForNative(tempLoadFile)
 			tempLoadFile.DestinationFolderID = loadFile.DestinationFolderID
 			tempLoadFile.SelectedIdentifierField = (Await Me.CurrentFields(ArtifactTypeID, True)).Item((Await Me.GetCaseIdentifierFields(ArtifactTypeID))(0))
 			Dim x As New System.Windows.Forms.OpenFileDialog
@@ -1337,6 +1341,7 @@ Namespace Relativity.Desktop.Client
 			retval.CaseInfo = Me.SelectedCaseInfo
 			retval.DestinationFolderID = Me.SelectedCaseInfo.RootFolderID
 			retval.Credential = Await Me.GetCredentialsAsync()
+			SetWebApiCredentialsForImage(retval)
 			Return retval
 		End Function
 
@@ -1672,29 +1677,7 @@ Namespace Relativity.Desktop.Client
 
 		Public Shared Function GetProductName() As String
 			Dim sb As New System.Text.StringBuilder("Relativity Desktop Client")
-			If GetIsPreReleaseVersion() Then
-				sb.Append(" - Pre-Release")
-			End If
-
 			Return sb.ToString()
-		End Function
-
-		Public Shared Function GetIsPreReleaseVersion() As Boolean
-			Dim assembly As System.Reflection.Assembly = GetExecutingAssembly()
-
-			Try
-				' The build stamps AssemblyInformationalVersion with pre-release tags.
-				Dim fvi As FileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location)
-				Dim version As Version = Nothing
-
-				' Use TryParse to avoid annoying exceptions being thrown.
-				Dim isPreRelease As Boolean = Not System.Version.TryParse(fvi.ProductVersion, version)
-				Return isPreRelease
-			Catch ex As Exception
-				' Never allow this method to fail
-				TryLogWarning(ex, "Failed to retrieve the pre-release version.")
-				Return True
-			End Try
 		End Function
 
 		Public Shared Function GetAssemblyVersion() As System.Version
@@ -1835,6 +1818,26 @@ Namespace Relativity.Desktop.Client
 					' Never allow this check to fail.
 					_logger.LogWarning(ex, "Failed to clear all cookies in the cookie container.")
 				End Try
+			End If
+		End Sub
+
+		Private Sub SetWebApiCredentialsForImage(imageLoadFile As ImageLoadFile)
+
+			If imageLoadFile.WebApiCredential Is Nothing Then
+				imageLoadFile.WebApiCredential = New WebApiCredential() With {
+					.TokenProvider = New NullAuthTokenProvider(),
+					.Credential = imageLoadFile.Credential
+					}
+			End If
+		End Sub
+
+		Private Sub SetWebApiCredentialForNative(tempLoadFile As LoadFile)
+
+			If tempLoadFile.WebApiCredential Is Nothing Then
+				tempLoadFile.WebApiCredential = New WebApiCredential() With {
+					.TokenProvider = New NullAuthTokenProvider(),
+					.Credential = tempLoadFile.Credentials
+					}
 			End If
 		End Sub
 

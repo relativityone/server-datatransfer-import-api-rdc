@@ -5,6 +5,7 @@
 ' ----------------------------------------------------------------------------
 
 Imports System.Globalization
+Imports System.Net
 Imports System.Threading
 
 Imports kCura.WinEDDS.Helpers
@@ -16,6 +17,7 @@ Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Transfer
 Imports Relativity.Logging
+Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
 
@@ -189,13 +191,11 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Protected Shared Function IsTimeoutException(ByVal ex As Exception) As Boolean
-			If ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlTimeoutException) Then
+			If TypeOf ex Is Service.BulkImportManager.BulkImportSqlTimeoutException Then
 				Return True
-			ElseIf TypeOf ex Is System.Net.WebException AndAlso ex.Message.ToString.Contains("timed out") Then
-				Return True
-			Else
-				Return False
 			End If
+			Dim webException As System.Net.WebException = TryCast(ex, System.Net.WebException) 
+			return Not webException Is Nothing AndAlso webException.Status = WebExceptionStatus.Timeout
 		End Function
 
 		Protected Shared Function IsBulkImportSqlException(ByVal ex As Exception) As Boolean
@@ -389,8 +389,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 
-		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters2, ByVal bulkLoadParameters As UploadTapiBridgeParameters2)
-			_fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, Me.CancellationToken)
+		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters2, ByVal bulkLoadParameters As UploadTapiBridgeParameters2, authTokenProvider As IAuthenticationTokenProvider)
+			_fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, authTokenProvider, Me.CancellationToken)
 			AddHandler _fileTapiBridge.TapiClientChanged, AddressOf FileOnTapiClientChanged
 			AddHandler _fileTapiBridge.TapiFatalError, AddressOf OnTapiFatalError
 			AddHandler _fileTapiBridge.TapiProgress, AddressOf FileOnTapiProgress
@@ -399,7 +399,7 @@ Namespace kCura.WinEDDS
 			AddHandler _fileTapiBridge.TapiErrorMessage, AddressOf OnTapiErrorMessage
 			AddHandler _fileTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
 
-			_bulkLoadTapiBridge = TapiBridgeFactory.CreateUploadBridge(bulkLoadParameters, Me.Logger, Me.CancellationToken)
+			_bulkLoadTapiBridge = TapiBridgeFactory.CreateUploadBridge(bulkLoadParameters, Me.Logger, authTokenProvider, Me.CancellationToken)
 			_bulkLoadTapiBridge.TargetPath = bulkLoadParameters.FileShare
 			AddHandler _bulkLoadTapiBridge.TapiClientChanged, AddressOf BulkLoadOnTapiClientChanged
 			AddHandler _bulkLoadTapiBridge.TapiStatistics, AddressOf BulkLoadOnTapiStatistics

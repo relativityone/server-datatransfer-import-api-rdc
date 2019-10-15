@@ -116,7 +116,7 @@ Namespace Relativity.Desktop.Client
 						Console.WriteLine(Global.Relativity.Desktop.Client.Application.ACCESS_DISABLED_MESSAGE)
 						Return
 					ElseIf loginResult = Global.Relativity.Desktop.Client.Application.CredentialCheckResult.InvalidClientCredentials Then
-						Throw New ClientCrendentialsException
+						Throw New ClientCredentialsException
 					ElseIf loginResult = Global.Relativity.Desktop.Client.Application.CredentialCheckResult.FailToConnectToIdentityServer Then
 						Throw New ConnectToIdentityServerException
 					ElseIf Not loginResult = Global.Relativity.Desktop.Client.Application.CredentialCheckResult.Success Then

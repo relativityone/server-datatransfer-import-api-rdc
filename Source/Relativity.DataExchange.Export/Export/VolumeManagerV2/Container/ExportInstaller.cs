@@ -30,6 +30,7 @@
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Media;
 	using Relativity.DataExchange.Transfer;
+	using Relativity.Transfer;
 
 	public class ExportInstaller : IWindsorInstaller
 	{
@@ -102,6 +103,7 @@
 			container.Register(Component.For<IBatchInitialization>().UsingFactoryMethod(k => k.Resolve<BatchInitializationFactory>().Create(ExportSettings, ExportConfig, container)));
 			container.Register(Component.For<ILog>().UsingFactoryMethod(k => RelativityLogFactory.CreateLog(_EXPORT_SUB_SYSTEM_NAME)));
 			container.Register(Component.For<ITapiObjectService>().ImplementedBy<TapiObjectService>());
+			container.Register(Component.For<IAuthenticationTokenProvider>().ImplementedBy<NullAuthTokenProvider>());
 
 			container.Register(Component.For<ILabelManagerForArtifact>().UsingFactoryMethod(k =>
 				 (ILabelManagerForArtifact)k.Resolve<LabelManagerForArtifact>()));
