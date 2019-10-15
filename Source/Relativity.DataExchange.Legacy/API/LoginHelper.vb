@@ -3,6 +3,10 @@ Imports kCura.WinEDDS.Credentials
 Imports Relativity.DataExchange
 
 Namespace kCura.WinEDDS.Api
+
+	''' <summary>
+	''' Defines helper methods for authentication in Relativity
+	''' </summary>
 	Public Class LoginHelper
 		Public Shared Function LoginUsernamePassword(ByVal username As String,
 													 ByVal password As String,
@@ -62,6 +66,16 @@ Namespace kCura.WinEDDS.Api
 			End Using
 		End Function
 
+		''' <summary>
+		''' This method retrieves bearer token using OAuth Implicit Flow and Integrated Windows Authentication.
+		''' Implementation of implicit flow token provider requires to be run from interactive process.
+		''' So it should be used only from Desktop or Console apps.
+		''' </summary>
+		''' <param name="cookieContainer">Cookie container</param>
+		''' <param name="webServiceUrl">URL of RelativityWebApi service</param>
+		''' <param name="token">cancellation token</param>
+		''' <param name="logger">logger</param>
+		''' <returns>Bearer token <see cref="Net.NetworkCredential"/></returns>
 		Public Shared Function LoginWindowsAuth(ByVal cookieContainer As System.Net.CookieContainer,
 													ByVal webServiceUrl As String,
 													ByVal token As CancellationToken,
