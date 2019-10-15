@@ -16,7 +16,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 	using kCura.Relativity.ImportAPI;
 	using kCura.WinEDDS.Exceptions;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.DataExchange.TestFramework.RelativityTypesTestHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 

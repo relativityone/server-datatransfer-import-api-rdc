@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.TestFramework.RelativityTypesTestHelpers
+namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 {
 	using System.Linq;
 	using System.Threading.Tasks;

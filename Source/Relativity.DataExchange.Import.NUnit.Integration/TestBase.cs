@@ -19,6 +19,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.Transfer;
 
 	/// <summary>
