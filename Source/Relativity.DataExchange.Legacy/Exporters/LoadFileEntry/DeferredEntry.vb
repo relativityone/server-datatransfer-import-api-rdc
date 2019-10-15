@@ -1,4 +1,5 @@
-﻿Imports System.IO
+﻿Imports System.Collections.Generic
+Imports System.IO
 
 Namespace kCura.WinEDDS.LoadFileEntry
 
@@ -42,10 +43,10 @@ Namespace kCura.WinEDDS.LoadFileEntry
 
 	Public Class DeferredEntry
 		Implements ILoadFileEntry
-		Private ReadOnly _partialEntryList As ArrayList
+		Private ReadOnly _partialEntryList As List(Of IPartialEntry)
 
 		Public Sub New()
-			_partialEntryList = New ArrayList()
+			_partialEntryList = New List(Of IPartialEntry)()
 		End Sub
 
 		Public Sub AddStringEntry(ByVal partialEntry As String)
