@@ -42,9 +42,9 @@
 				return;
 			}
 
-			var destinationImage = (ImageExportInfo) artifact.Images[0];
+			var destinationImage = artifact.Images[0];
 
-			IList<string> imagesLocations = artifact.Images.Cast<ImageExportInfo>().Select(x => x.TempLocation).ToList();
+			IList<string> imagesLocations = artifact.Images.Select(x => x.TempLocation).ToList();
 
 			string rollupTempLocation = GetTempLocation();
 

@@ -24,7 +24,7 @@
 			}
 
 			//Opticon file should have only one entry for all pages
-			return new List<ImageExportInfo> {(ImageExportInfo) artifact.Images[0]};
+			return new List<ImageExportInfo> { artifact.Images[0] };
 		}
 
 		protected override int GetBaseImageIndex(int i)

@@ -6,9 +6,8 @@
 
 namespace Relativity.DataExchange.Export.NUnit
 {
-	using System.Collections;
-
-	using global::NUnit.Framework;
+    using System.Collections.Generic;
+    using global::NUnit.Framework;
 
 	using kCura.WinEDDS.Exporters;
 
@@ -24,7 +23,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			var artifact = new ObjectExportInfo
 			{
-				Images = new ArrayList()
+				Images = new List<ImageExportInfo>()
 			};
 
 			var image = new ImageExportInfo();
@@ -44,7 +43,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			var artifact = new ObjectExportInfo
 			{
-				Images = new ArrayList()
+				Images = new List<ImageExportInfo>()
 			};
 
 			// ACT

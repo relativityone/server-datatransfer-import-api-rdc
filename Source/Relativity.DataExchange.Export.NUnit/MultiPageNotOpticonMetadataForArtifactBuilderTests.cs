@@ -6,8 +6,8 @@
 
 namespace Relativity.DataExchange.Export.NUnit
 {
-	using System.Collections;
-	using System.Threading;
+    using System.Collections.Generic;
+    using System.Threading;
 
 	using global::NUnit.Framework;
 
@@ -41,7 +41,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Images = new ArrayList
+				Images = new List<ImageExportInfo>
 				{
 					image1,
 					image2,

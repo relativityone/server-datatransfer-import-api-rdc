@@ -19,7 +19,7 @@
 
 		protected override List<ImageExportInfo> GetImagesToProcess(ObjectExportInfo artifact)
 		{
-			return artifact.Images.Cast<ImageExportInfo>().ToList();
+			return artifact.Images;
 		}
 
 		protected override int GetBaseImageIndex(int i)
