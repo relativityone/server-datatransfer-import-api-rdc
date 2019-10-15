@@ -105,7 +105,7 @@ Namespace kCura.WinEDDS
 		''' Get a list of the column indexes that contain a choice or multi choice type
 		''' </summary>
 		''' <param name="firstRow">First row in the ArrayList returned from the LoadFilePreviewer</param>
-		''' <returns>An ArrayList containing the column indexes</returns>
+		''' <returns>A list containing the column indexes</returns>
 		Public Function GetCodeFieldColumnIndexes(ByVal firstRow As Array) As List(Of Int32)
 			Dim codeFieldColumnIndexes As New List(Of Int32)
 			Dim currentIndex As Int32 = 0
