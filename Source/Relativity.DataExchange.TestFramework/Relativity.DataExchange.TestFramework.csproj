@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CryptoHelper.cs" />
+    <Compile Include="DummyTest.cs" />
     <Compile Include="FileDto.cs" />
     <Compile Include="IntegrationTestHelper.cs" />
     <Compile Include="FieldHelper.cs" />
