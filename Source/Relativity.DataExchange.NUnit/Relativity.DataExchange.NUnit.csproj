@@ -157,6 +157,7 @@
     <Compile Include="HttpServiceExceptionTests.cs" />
     <Compile Include="ImageConverterServiceTests.cs" />
     <Compile Include="ImageLoadFileDeserializationTests.cs" />
+    <Compile Include="LogExtensionsTests.cs" />
     <Compile Include="Monitoring\Sinks\ImportApiMetricSinkConfigTest.cs" />
     <Compile Include="LoadFileDeserializationTests.cs" />
     <Compile Include="Monitoring\Sinks\MetricServiceTest.cs" />
