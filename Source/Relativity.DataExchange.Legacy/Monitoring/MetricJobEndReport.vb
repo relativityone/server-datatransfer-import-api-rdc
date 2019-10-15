@@ -109,6 +109,10 @@
             End Set
         End Property
 
+		''' <summary>
+		''' Gets or sets sql bulk load throughput in records per second.
+		''' </summary>
+		''' <returns>Sql bulk load throughput in records per second.</returns>
 		Public Property SqlBulkLoadThroughput As Double
 			Get
 				Return GetValueOrDefault (Of Double)(TelemetryConstants.KeyName.SQL_THROUGHPUT)
