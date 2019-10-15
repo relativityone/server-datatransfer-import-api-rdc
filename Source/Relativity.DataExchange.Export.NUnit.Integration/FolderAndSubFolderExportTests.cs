@@ -9,14 +9,12 @@
 
 namespace Relativity.DataExchange.Export.NUnit.Integration
 {
-	using System;
 	using System.Collections.Generic;
-	using System.Threading.Tasks;
+	using System.Linq;
 
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Service;
@@ -45,7 +43,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[TestCase(TapiClient.Web)]
 		[Category(TestCategories.Export)]
 		[Category(TestCategories.Integration)]
-		public async Task ShouldExportAllSampleDocAndImagesAsync(TapiClient client)
+		public void ShouldExportAllSampleDocAndImages(TapiClient client)
 		{
 			if ((client == TapiClient.Aspera && this.TestParameters.SkipAsperaModeTests) ||
 				(client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
@@ -54,13 +52,13 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			}
 
 			// ARRANGE
-			this.GivenTheTapiForceClientAppSettings(client);
+			GivenTheTapiForceClientAppSettings(client);
 
 			// ACT
-			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
+			this.ThenTheExportJobIsSuccessful(ExporterTestData.AllSampleFiles.Count());
 		}
 
 		[IdentifiedTest("3B50E3A9-0A28-4FA4-9ACD-5FB878DEF97A")]
@@ -68,18 +66,17 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[TestCase(true)]
 		[Category(TestCategories.Export)]
 		[Category(TestCategories.Integration)]
-		public async Task ShouldExportWhenTheFileStorageSearchResultsAreEmptyAsync(bool cloudInstance)
+		public void ShouldExportWhenTheFileStorageSearchResultsAreEmpty(bool cloudInstance)
 		{
 			// ARRANGE
 			this.GivenTheMockTapiObjectServiceIsRegistered();
 			this.GivenTheMockedSearchResultsAreEmpty(cloudInstance);
 
 			// ACT
-			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
-			this.ThenTheTransferModeShouldEqualDirectOrWebMode();
+			this.ThenTheExportJobIsSuccessful(ExporterTestData.AllSampleFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
@@ -88,25 +85,24 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[TestCase(true)]
 		[Category(TestCategories.Export)]
 		[Category(TestCategories.Integration)]
-		public async Task ShouldExportWhenTheFileStorageSearchResultsAreInvalidAsync(bool cloudInstance)
+		public void ShouldExportWhenTheFileStorageSearchResultsAreInvalid(bool cloudInstance)
 		{
 			// ARRANGE
 			this.GivenTheMockTapiObjectServiceIsRegistered();
 			this.GivenTheMockedSearchResultsAreInvalid(cloudInstance);
 
 			// ACT
-			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
-			this.ThenTheTransferModeShouldEqualDirectOrWebMode();
+			this.ThenTheExportJobIsSuccessful(ExporterTestData.AllSampleFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
 		[IdentifiedTest("77A786A1-58E5-45E3-B0BF-CB70D3FFCE62")]
 		[Category(TestCategories.Export)]
 		[Category(TestCategories.Integration)]
-		public async Task ShouldExportWhenTheFileStorageSearchThrowsNonFatalExceptionAsync()
+		public void ShouldExportWhenTheFileStorageSearchThrowsNonFatalException()
 		{
 			// ARRANGE
 			const bool Fatal = false;
@@ -114,18 +110,17 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.GivenTheMockedFileStorageSearchThrows(Fatal);
 
 			// ACT
-			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
-			this.ThenTheTransferModeShouldEqualDirectOrWebMode();
+			this.ThenTheExportJobIsSuccessful(ExporterTestData.AllSampleFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
 		[IdentifiedTest("8DFA89C0-EB36-446B-92BC-2A0D8314ECD8")]
 		[Category(TestCategories.Export)]
 		[Category(TestCategories.Integration)]
-		public async Task ShouldNotExportWhenTheFileStorageSearchThrowsFatalExceptionAsync()
+		public void ShouldNotExportWhenTheFileStorageSearchThrowsFatalException()
 		{
 			// ARRANGE
 			const bool Fatal = true;
@@ -133,7 +128,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.GivenTheMockedFileStorageSearchThrows(Fatal);
 
 			// ACT
-			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
 			const bool ExpectedSearchResult = true;
@@ -146,52 +141,52 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[TestCase(true)]
 		[Category(TestCategories.Export)]
 		[Category(TestCategories.Integration)]
-		public async Task ShouldExportWhenTheSettingsForFileShareIsNullAsync(bool forceAsperaClient)
+		public void ShouldExportWhenTheSettingsForFileShareIsNull(bool forceAsperaClient)
 		{
 			// ARRANGE
-			this.GivenTheTapiForceClientAppSettings(forceAsperaClient ? TapiClient.Aspera : TapiClient.None);
+			GivenTheTapiForceClientAppSettings(forceAsperaClient ? TapiClient.Aspera : TapiClient.None);
 			this.GivenTheMockFileShareSettingsServiceIsRegistered();
 			this.GivenTheMockedSettingsForFileShareIsNull();
 
 			// ACT
-			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheTransferModeShouldEqualDirectOrWebMode();
-			this.ThenTheExportJobIsSuccessful(AllSampleFiles.Count);
+			this.ThenTheExportJobIsSuccessful(ExporterTestData.AllSampleFiles.Count());
 			this.ThenTheMockFileShareSettingsServiceIsVerified();
 		}
 
 		[IdentifiedTest("1AB462A0-AF45-4D4E-99DB-43FF74D44131")]
 		[Category(TestCategories.Export)]
 		[Category(TestCategories.Integration)]
-		public async Task ShouldExportWhenTheNativeSourceLocationIsInvalidAsync()
+		public void ShouldExportWhenTheNativeSourceLocationIsInvalid()
 		{
 			// ARRANGE
 			const bool ValidNativeGuid = true;
 			const bool ValidNativeSourceLocation = false;
 			const bool ValidDestinationLocation = true;
-			List<ExportRequest> fileExportRequests = new List<ExportRequest>();
-			fileExportRequests.Add(
+			var fileExportRequests = new List<ExportRequest>
+			{
 				this.CreateTestPhysicalFileExportRequest(
 					1,
 					1,
 					ValidNativeGuid,
 					ValidNativeSourceLocation,
-					ValidDestinationLocation));
-			fileExportRequests.Add(
+					ValidDestinationLocation),
 				this.CreateTestFieldFileExportRequest(
 					2,
 					2,
 					2,
 					ValidNativeGuid,
 					ValidNativeSourceLocation,
-					ValidDestinationLocation));
+					ValidDestinationLocation),
+			};
+
 			this.GivenTheMockExportRequestRetrieverIsRegistered();
 			this.GivenTheMockedExportRequestRetrieverReturns(fileExportRequests, new List<LongTextExportRequest>());
 
 			// ACT
-			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
 			const int ExpectedProcessedCount = 2;
@@ -201,51 +196,59 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[IdentifiedTest("76FB096D-7948-4BFE-8CED-7E509505CA95")]
 		[Category(TestCategories.Export)]
 		[Category(TestCategories.Integration)]
-		public async Task ShouldExportWhenTheDestinationLocationIsInvalidAsync()
+		public void ShouldExportWhenTheDestinationLocationIsInvalid()
 		{
 			// ARRANGE
 			const bool ValidNativeGuid = true;
 			const bool ValidNativeSourceLocation = true;
 			const bool ValidDestinationLocation = false;
-			List<ExportRequest> fileExportRequests = new List<ExportRequest>();
-			fileExportRequests.Add(
+			var fileExportRequests = new List<ExportRequest>
+			{
 				this.CreateTestPhysicalFileExportRequest(
 					1,
 					1,
 					ValidNativeGuid,
 					ValidNativeSourceLocation,
-					ValidDestinationLocation));
-			fileExportRequests.Add(
+					ValidDestinationLocation),
 				this.CreateTestFieldFileExportRequest(
 					2,
 					2,
 					2,
 					ValidNativeGuid,
 					ValidNativeSourceLocation,
-					ValidDestinationLocation));
-			List<LongTextExportRequest> longTextExportRequests = new List<LongTextExportRequest>();
-			longTextExportRequests.Add(
-				this.CreateTestLongTextExportRequest(3, 3, 3, ValidNativeSourceLocation, ValidDestinationLocation));
+					ValidDestinationLocation),
+			};
+
+			var longTextExportRequests = new List<LongTextExportRequest>
+			{
+				this.CreateTestLongTextExportRequest(
+					3,
+					3,
+					3,
+					ValidNativeSourceLocation,
+					ValidDestinationLocation),
+			};
+
 			this.GivenTheMockExportRequestRetrieverIsRegistered();
 			this.GivenTheMockedExportRequestRetrieverReturns(fileExportRequests, longTextExportRequests);
 
 			// ACT
-			await this.ExecuteFolderAndSubfoldersAndVerifyAsync().ConfigureAwait(false);
+			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
 			const int ExpectedProcessedCount = 3;
 			this.ThenTheExportJobIsNotSuccessful(ExpectedProcessedCount);
 		}
 
-		private async Task ExecuteFolderAndSubfoldersAndVerifyAsync()
+		private void ExecuteFolderAndSubfoldersAndVerify()
 		{
 			// Note: the sample dataset is imported only 1 time for all tests.
 			this.GivenTheExportType(ExportFile.ExportType.ParentSearch);
-			this.GivenTheFilesAreImported(AllSampleFiles);
-			CaseInfo caseInfo = await this.WhenGettingTheWorkspaceInfoAsync().ConfigureAwait(false);
+			this.GivenTheFilesAreImported(null, ExporterTestData.AllSampleFiles);
+			CaseInfo caseInfo = this.WhenGettingTheWorkspaceInfo();
 			this.GivenTheSelectedFolderId(caseInfo.RootFolderID);
 			this.GivenTheIdentifierColumnName(WellKnownFields.ControlNumber);
-			await this.WhenCreatingTheExportFileAsync(caseInfo).ConfigureAwait(false);
+			this.WhenCreatingTheExportFile(caseInfo);
 			this.WhenExportingTheDocs();
 		}
 	}

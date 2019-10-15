@@ -84,6 +84,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExporterTestData.cs" />
+    <Compile Include="ExporterTestJobResult.cs" />
     <Compile Include="TestContainerFactory.cs" />
     <Compile Include="MockObjectFactory.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
