@@ -16,6 +16,7 @@ Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Transfer
 Imports Relativity.Logging
+Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
 
@@ -371,8 +372,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 
-		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters2, ByVal bulkLoadParameters As UploadTapiBridgeParameters2)
-			_fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, Me.CancellationToken)
+		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters2, ByVal bulkLoadParameters As UploadTapiBridgeParameters2, authTokenProvider As IAuthenticationTokenProvider)
+			_fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, authTokenProvider, Me.CancellationToken)
 			AddHandler _fileTapiBridge.TapiClientChanged, AddressOf FileOnTapiClientChanged
 			AddHandler _fileTapiBridge.TapiFatalError, AddressOf OnTapiFatalError
 			AddHandler _fileTapiBridge.TapiProgress, AddressOf FileOnTapiProgress
@@ -381,7 +382,7 @@ Namespace kCura.WinEDDS
 			AddHandler _fileTapiBridge.TapiErrorMessage, AddressOf OnTapiErrorMessage
 			AddHandler _fileTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
 
-			_bulkLoadTapiBridge = TapiBridgeFactory.CreateUploadBridge(bulkLoadParameters, Me.Logger, Me.CancellationToken)
+			_bulkLoadTapiBridge = TapiBridgeFactory.CreateUploadBridge(bulkLoadParameters, Me.Logger, authTokenProvider, Me.CancellationToken)
 			_bulkLoadTapiBridge.TargetPath = bulkLoadParameters.FileShare
 			AddHandler _bulkLoadTapiBridge.TapiClientChanged, AddressOf BulkLoadOnTapiClientChanged
 			AddHandler _bulkLoadTapiBridge.TapiStatistics, AddressOf BulkLoadOnTapiStatistics
