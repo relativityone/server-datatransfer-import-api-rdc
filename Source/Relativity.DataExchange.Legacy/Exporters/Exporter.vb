@@ -31,7 +31,7 @@ Namespace kCura.WinEDDS
 		Private _fieldManager As Service.Export.IFieldManager
 		Public Property ExportManager As Service.Export.IExportManager
 		Private _exportFile As kCura.WinEDDS.ExportFile
-		Private _columns As System.Collections.ArrayList
+		Private _columns As List(Of WinEDDS.ViewFieldInfo)
 		Public TotalExportArtifactCount As Int32
 		Private WithEvents _processContext As ProcessContext
 		Private _downloadHandler As Service.Export.IExportFileDownloader
@@ -84,11 +84,11 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Property Columns() As System.Collections.ArrayList
+		Public Property Columns() As List(Of WinEDDS.ViewFieldInfo)
 			Get
 				Return _columns
 			End Get
-			Set(ByVal value As System.Collections.ArrayList)
+			Set
 				_columns = value
 			End Set
 		End Property
@@ -919,7 +919,7 @@ Namespace kCura.WinEDDS
 			For Each field As WinEDDS.ViewFieldInfo In Me.Settings.SelectedViewFields
 				Me.Settings.ExportFullText = Me.Settings.ExportFullText OrElse field.Category = FieldCategory.FullText
 			Next
-			_columns = New System.Collections.ArrayList(Me.Settings.SelectedViewFields)
+			_columns = New List(Of WinEDDS.ViewFieldInfo)(Me.Settings.SelectedViewFields)
 			If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then
 				Dim longTextSelectedViewFields As New List(Of ViewFieldInfo)()
 				longTextSelectedViewFields.AddRange(Me.Settings.SelectedViewFields.Where(Function(f As ViewFieldInfo) f.FieldType = FieldType.Text OrElse f.FieldType = FieldType.OffTableText))
@@ -964,14 +964,14 @@ Namespace kCura.WinEDDS
 
 		Private Function GetProductionArtifactIDs(ByVal productionOrderList As Pair()) As Int32()
 			If _productionArtifactIDs Is Nothing Then
-				Dim retval As New System.Collections.ArrayList
+				Dim retval As New List(Of Int32)
 				Dim item As Pair
 				For Each item In productionOrderList
 					If item.Value <> "-1" Then
 						retval.Add(Int32.Parse(item.Value))
 					End If
 				Next
-				_productionArtifactIDs = DirectCast(retval.ToArray(GetType(Int32)), Int32())
+				_productionArtifactIDs = retval.ToArray()
 			End If
 			Return _productionArtifactIDs
 		End Function
