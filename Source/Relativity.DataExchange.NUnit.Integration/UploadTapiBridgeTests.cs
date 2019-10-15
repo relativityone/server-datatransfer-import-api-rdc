@@ -45,7 +45,8 @@ namespace Relativity.DataExchange.NUnit.Integration
 		[Category(TestCategories.TransferApi)]
 		public void ShouldUploadTheFiles(TapiClient client, bool preserveTimestamps)
 		{
-			this.CheckSkipTest(client);
+			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(this.TestParameters, client);
+
 			this.GivenTheTapiClientSetting(client);
 			this.GivenThePreserveFileTimestampsSetting(preserveTimestamps);
 			this.GivenTheMaxFilesPerFolder(10);

@@ -46,7 +46,8 @@ namespace Relativity.DataExchange.NUnit.Integration
 		{
 			// Note: TapiClient.Web is skipped for now because it requires a significant amount
 			//       of setup and configuration.
-			this.CheckSkipTest(client);
+			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(this.TestParameters, client);
+
 			this.GivenTheTapiClientSetting(client);
 			this.GivenThePreserveFileTimestampsSetting(preserveTimestamps);
 			this.GivenTheMaxFilesPerFolder(10);

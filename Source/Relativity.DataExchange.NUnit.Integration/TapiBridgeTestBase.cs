@@ -457,14 +457,5 @@ namespace Relativity.DataExchange.NUnit.Integration
 				Assert.That(lastWriteTime, Is.EqualTo(this.FileLastWriteTime));
 			}
 		}
-
-		protected virtual void CheckSkipTest(TapiClient client)
-		{
-			if ((client == TapiClient.Aspera && this.TestParameters.SkipAsperaModeTests) ||
-				(client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
-			{
-				Assert.Ignore(TestStrings.SkipTestMessage, $"{client}");
-			}
-		}
 	}
 }
