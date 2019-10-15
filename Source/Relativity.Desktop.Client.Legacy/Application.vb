@@ -26,7 +26,7 @@ Namespace Relativity.Desktop.Client
 			_processPool = New ProcessPool2
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_CookieContainer = New System.Net.CookieContainer
-			_logger = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
+			_logger = RelativityLogFactory.CreateLog()
 		End Sub
 
 		Public Shared ReadOnly Property Instance() As Application
@@ -1186,7 +1186,8 @@ Namespace Relativity.Desktop.Client
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
 			frm.StatusRefreshRate = 0
-			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMetricService())
+			Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog()
+			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMetricService(), logger)
 			exporter.UserNotification = New FormsUserNotification()
 			exporter.CaseInfo = SelectedCaseInfo
 			exporter.ExportFile = exportFile

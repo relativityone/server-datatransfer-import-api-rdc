@@ -3,8 +3,10 @@ Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Service.Export
 Imports Monitoring
 Imports Monitoring.Sinks
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Transfer
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public Class ExportSearchProcess
@@ -29,14 +31,22 @@ Namespace kCura.WinEDDS
 		Public Property UserNotification As Exporters.IUserNotification
 		Public Property UserNotificationFactory As Func(Of Exporter, IUserNotification)
 
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
-			MyBase.New(New MetricService(New ImportApiMetricSinkConfig))
-			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
-			_exportConfig = exportConfig
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, RelativityLogFactory.CreateLog())
 		End Sub
 
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog)
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, New MetricService(New ImportApiMetricSinkConfig), logger)
+		End Sub
+
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService)
-			MyBase.New(metricService)
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, metricService, RelativityLogFactory.CreateLog())
+		End Sub
+
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService, logger As ILog)
+			MyBase.New(metricService, logger)
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
 			_exportConfig = exportConfig
 		End Sub
@@ -78,12 +88,12 @@ Namespace kCura.WinEDDS
 				Return _
 					New ExtendedExporter(TryCast(Me.ExportFile, ExtendedExportFile), Me.Context,
 										 New WebApiServiceFactory(Me.ExportFile),
-										 _loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
+										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger, Me.CancellationTokenSource.Token) With {.InteractionManager = UserNotification}
 			Else
 				Return _
 					New Exporter(Me.ExportFile, Me.Context,
 										 New WebApiServiceFactory(Me.ExportFile),
-										 _loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
+										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger, Me.CancellationTokenSource.Token) With {.InteractionManager = UserNotification}
 
 			End If
 		End Function
@@ -116,6 +126,7 @@ Namespace kCura.WinEDDS
 			_tapiClientName = statusBarText
 			SendMetricJobStarted()
 			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)
+			Me.Logger.LogInformation("Export transfer mode changed: {@TransferClients}", args.TransferClients)
 		End Sub
 
 		Private Sub _productionExporter_StatusMessage(ByVal e As ExportEventArgs) Handles _searchExporter.StatusMessage
