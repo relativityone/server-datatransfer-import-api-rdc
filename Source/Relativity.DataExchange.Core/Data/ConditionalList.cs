@@ -1,29 +1,29 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ConditionalArrayList.cs" company="Relativity ODA LLC">
+// <copyright file="ConditionalList.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
 
 namespace Relativity.DataExchange.Data
 {
-	using System;
-	using System.Collections;
+	using System.Collections.Generic;
 
 	/// <summary>
 	/// Represents a class object that conditionally builds an array.
 	/// </summary>
-	internal class ConditionalArrayList
+	/// <typeparam name="T">The Type of the list.</typeparam>
+	internal class ConditionalList<T>
 	{
-		private readonly ArrayList list = new ArrayList();
+		private readonly List<T> list = new List<T>();
 		private readonly bool saveData;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ConditionalArrayList"/> class.
+		/// Initializes a new instance of the <see cref="ConditionalList{T}"/> class.
 		/// </summary>
 		/// <param name="saveData">
 		/// <see langword="true" /> to save the data; otherwise, <see langword="false" />.
 		/// </param>
-		public ConditionalArrayList(bool saveData)
+		public ConditionalList(bool saveData)
 		{
 			this.saveData = saveData;
 		}
@@ -42,7 +42,7 @@ namespace Relativity.DataExchange.Data
 		/// <param name="value">
 		/// The value to add to the list.
 		/// </param>
-		public void Add(object value)
+		public void Add(T value)
 		{
 			if (this.saveData)
 			{
@@ -53,15 +53,12 @@ namespace Relativity.DataExchange.Data
 		/// <summary>
 		/// Converts the list to the specified array type.
 		/// </summary>
-		/// <param name="type">
-		/// The type of array to create.
-		/// </param>
 		/// <returns>
 		/// The <see cref="System.Array"/> instance.
 		/// </returns>
-		public System.Array ToArray(Type type)
+		public T[] ToArray()
 		{
-			return this.list.ToArray(type);
+			return this.list.ToArray();
 		}
 	}
 }

@@ -98,7 +98,7 @@
     <Compile Include="CacheKeys.cs" />
     <Compile Include="Data\BooleanImporterException.cs" />
     <Compile Include="Data\CellImporterException.cs" />
-    <Compile Include="Data\ConditionalArrayList.cs" />
+    <Compile Include="Data\ConditionalList.cs" />
     <Compile Include="Data\ConditionalStringBuilder.cs" />
     <Compile Include="Data\DateImporterException.cs" />
     <Compile Include="Data\DecimalImporterException.cs" />
