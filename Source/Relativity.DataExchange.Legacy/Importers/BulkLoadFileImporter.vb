@@ -215,8 +215,8 @@ Namespace kCura.WinEDDS
 				Return retval
 			End Get
 		End Property
-
-		Public ReadOnly Property UnmappedRelationalFields() As List(Of EDDS.WebAPI.DocumentManagerBase.Field)
+		
+		Public ReadOnly Property UnmappedRelationalFields() As System.Collections.ArrayList
 			Get
 				If _unmappedRelationalFields Is Nothing Then
 					Dim mappedRelationalFieldIds As New List(Of Int32)
@@ -232,7 +232,7 @@ Namespace kCura.WinEDDS
 						End If
 					Next
 				End If
-				Return _unmappedRelationalFields
+				Return new System.Collections.ArrayList(_unmappedRelationalFields)
 			End Get
 		End Property
 
