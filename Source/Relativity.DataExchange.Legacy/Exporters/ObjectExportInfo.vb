@@ -1,4 +1,3 @@
-Imports System.Collections.Generic
 Imports System.Text
 
 Namespace kCura.WinEDDS.Exporters
@@ -14,7 +13,7 @@ Namespace kCura.WinEDDS.Exporters
 		Public Property HasCountedTextFile() As Boolean = False
 		Public Property HasFullText() As Boolean
 		Public Property IdentifierValue() As String = String.Empty
-		Public Property Images() As List(Of Exporters.ImageExportInfo)
+		Public Property Images() As System.Collections.ArrayList
 		Public Property Metadata() As Object()
 		Public Property Native() As Object
 		Public Property NativeExtension() As String = String.Empty

@@ -38,7 +38,7 @@
 
 				if (artifact.Images.Count > 0)
 				{
-					var image = artifact.Images[0];
+					var image = (ImageExportInfo) artifact.Images[0];
 					if (image.SuccessfulRollup)
 					{
 						_logger.LogVerbose("Rollup successful for image {batesNumber}. Continuing with default metadata builder.", image.BatesNumber);

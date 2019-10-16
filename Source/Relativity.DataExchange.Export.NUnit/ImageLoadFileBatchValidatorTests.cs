@@ -6,7 +6,7 @@
 
 namespace Relativity.DataExchange.Export.NUnit
 {
-	using System.Collections.Generic;
+	using System.Collections;
 	using System.Threading;
 
 	using global::NUnit.Framework;
@@ -58,7 +58,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileHelper.Setup(x => x.Exists(this._destinationPath.Object.Path)).Returns(true);
 			this._fileHelper.Setup(x => x.GetFileSize(this._destinationPath.Object.Path)).Returns(0);
 
-			List<ImageExportInfo> images = new List<ImageExportInfo> { new ImageExportInfo() };
+			ArrayList images = new ArrayList { new ImageExportInfo() };
 			ObjectExportInfo[] artifacts =
 			{
 				new ObjectExportInfo
@@ -97,7 +97,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			{
 				new ObjectExportInfo
 				{
-					Images = new List<ImageExportInfo>()
+					Images = new ArrayList()
 				}
 			};
 

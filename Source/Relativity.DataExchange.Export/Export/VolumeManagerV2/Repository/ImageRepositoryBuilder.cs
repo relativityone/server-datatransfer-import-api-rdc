@@ -32,7 +32,7 @@
 
 			IList<Image> images = new List<Image>();
 
-			foreach (var imageExportInfo in artifact.Images)
+			foreach (var imageExportInfo in artifact.Images.Cast<ImageExportInfo>())
 			{
 				ExportRequest imageExportRequest = exportRequests.FirstOrDefault(x => x.DestinationLocation == imageExportInfo.TempLocation);
 

@@ -7,6 +7,7 @@
 namespace Relativity.DataExchange.Export.NUnit
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Threading;
 
@@ -47,7 +48,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			{
 				FileGuid = string.Empty
 			};
-			List<ImageExportInfo> images = new List<ImageExportInfo> { image };
+			ArrayList images = new ArrayList { image };
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
@@ -72,7 +73,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				FileName = "image_file_name"
 			};
 
-			List<ImageExportInfo> images = new List<ImageExportInfo> { image };
+			ArrayList images = new ArrayList { image };
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
@@ -104,7 +105,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				FileName = "image_file_name_2"
 			};
 
-			List<ImageExportInfo> images = new List<ImageExportInfo> { image1, image2 };
+			ArrayList images = new ArrayList { image1, image2 };
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{

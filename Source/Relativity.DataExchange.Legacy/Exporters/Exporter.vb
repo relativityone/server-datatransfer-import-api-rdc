@@ -749,8 +749,8 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Function PrepareImagesForProduction(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo, ByRef prediction As VolumePredictions) As List(Of Exporters.ImageExportInfo)
-			Dim retval As New List(Of Exporters.ImageExportInfo)
+		Private Function PrepareImagesForProduction(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo, ByRef prediction As VolumePredictions) As System.Collections.ArrayList
+			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
 			Dim matchingRows As DataRow() = imagesView.Table.Select("DocumentArtifactID = " & documentArtifactID.ToString)
 			Dim i As Int32 = 0
@@ -806,8 +806,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal productionImagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo,
-																	 ByVal productionOrderList As Pair(), ByRef prediction As VolumePredictions) As List(Of Exporters.ImageExportInfo)
-			Dim retval As New List(Of Exporters.ImageExportInfo)
+																	 ByVal productionOrderList As Pair(), ByRef prediction As VolumePredictions) As System.Collections.ArrayList
+			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 				productionImagesView.Sort = "DocumentArtifactID ASC, PageID ASC"
@@ -855,8 +855,8 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function PrepareOriginalImages(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo, ByRef prediction As VolumePredictions) As List(Of Exporters.ImageExportInfo)
-			Dim retval As New List(Of Exporters.ImageExportInfo)
+		Private Function PrepareOriginalImages(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo, ByRef prediction As VolumePredictions) As System.Collections.ArrayList
+			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
 			imagesView.RowFilter = "DocumentArtifactID = " & documentArtifactID.ToString
 			Dim i As Int32 = 0
