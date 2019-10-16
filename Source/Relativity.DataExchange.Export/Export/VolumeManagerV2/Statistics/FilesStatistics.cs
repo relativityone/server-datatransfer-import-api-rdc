@@ -48,6 +48,7 @@
 				{
 					_statistics.FileBytes += e.FileBytes;
 					_statistics.FileTime += e.EndTime.Ticks - e.StartTime.Ticks;
+					_statistics.NativeFilesTransferredCount++;
 				}
 			}
 		}
