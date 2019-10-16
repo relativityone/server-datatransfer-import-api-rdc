@@ -27,8 +27,17 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 	[Feature.DataTransfer.ImportApi.Authentication]
 	public class IntegratedAuthenticationTests : ImportJobTestBase
 	{
-		private const int _TIMEOUT_IN_MS = 70 * 1000;
+		/// <summary>
+		/// instance settings cache is 30 seconds.
+		/// </summary>
 		private const int _WAIT_TIME_FOR_INSTANCE_SETTING_CHANGE_IN_MS = 30 * 1000;
+
+		/// <summary>
+		/// it's 30s for cache invalidation and 40s for tests execution.
+		/// in negative case we need to wait 30s for implicit flow timeout, 10s is for other calls.
+		/// in positive cases 40s seems to be reasonable limit for importing 5 small files.
+		/// </summary>
+		private const int _TIMEOUT_IN_MS = 70 * 1000;
 
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
