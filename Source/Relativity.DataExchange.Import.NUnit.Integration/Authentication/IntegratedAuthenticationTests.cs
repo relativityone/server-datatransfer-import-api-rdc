@@ -25,6 +25,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 	/// </summary>
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Authentication]
+	[Explicit("These tests don't work on Trident, because they are executed there in an non-interactive process.")]
 	public class IntegratedAuthenticationTests : ImportJobTestBase
 	{
 		/// <summary>
