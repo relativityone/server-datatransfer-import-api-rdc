@@ -39,6 +39,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 		/// </summary>
 		private const int _TIMEOUT_IN_MS = 70 * 1000;
 
+		[OneTimeTearDown]
+		public Task OneTimeTearDown()
+		{
+			return Task.WhenAll(
+				UsersHelper.SwitchIntegratedAuthenticationForCurrentUser(this.TestParameters, isEnabled: false),
+				this.ChangeStateOfIntegratedAuthentication(isEnabled: false));
+		}
+
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IdentifiedTestCase("511fb3d4-4f31-42d2-90a6-f70d17dce82f", TapiClient.Direct)]
