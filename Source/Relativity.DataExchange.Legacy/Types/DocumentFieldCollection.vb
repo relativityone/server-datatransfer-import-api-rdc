@@ -88,13 +88,13 @@ Namespace kCura.WinEDDS
 
 		Public Function IdentifierFields() As DocumentField()
 			Dim df As DocumentField
-			Dim al As New ArrayList
+			Dim al As New List(Of DocumentField)
 			For Each df In _idIndex.Values
 				If df.FieldCategoryID = FieldCategory.Identifier Then
 					al.Add(df)
 				End If
 			Next
-			Return DirectCast(al.ToArray(GetType(DocumentField)), DocumentField())
+			Return al.ToArray()
 		End Function
 
 		Public ReadOnly Property AllFields() As ICollection
