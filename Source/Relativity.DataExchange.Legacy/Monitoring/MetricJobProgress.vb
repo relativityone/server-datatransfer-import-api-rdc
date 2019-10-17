@@ -9,7 +9,7 @@ Namespace Monitoring
         ''' Gets or sets active file transfer rate in bytes per second
         ''' </summary>
         ''' <returns>File throughput in bytes per second</returns>
-		Public Property FileThroughput As Double
+		Public Property FileThroughputBytesPerSecond As Double
 			Get
 				Return GetValueOrDefault (Of Double)(TelemetryConstants.KeyName.FILE_THROUGHPUT)
 			End Get
@@ -22,7 +22,7 @@ Namespace Monitoring
         ''' Gets or sets active metadata transfer rate in bytes per second
         ''' </summary>
         ''' <returns>Metadata throughput in bytes per second</returns>
-		Public Property MetadataThroughput As Double
+		Public Property MetadataThroughputBytesPerSecond As Double
 			Get
 				Return GetValueOrDefault (Of Double)(TelemetryConstants.KeyName.METADATA_THROUGHPUT)
 			End Get
@@ -35,7 +35,7 @@ Namespace Monitoring
 		''' Gets or sets active sql bulk load throughput in records per second.
 		''' </summary>
 		''' <returns>Sql bulk load throughput in records per second.</returns>
-		Public Property SqlBulkLoadThroughput() As Double
+		Public Property SqlBulkLoadThroughputRecordsPerSecond As Double
 			Get
 				Return GetValueOrDefault (Of Double)(TelemetryConstants.KeyName.SQL_THROUGHPUT)
 			End Get

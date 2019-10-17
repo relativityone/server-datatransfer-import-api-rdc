@@ -90,12 +90,17 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Sub SendMetricJobEndReport(jobStatus As String, statistics As Statistics)
 		Dim totalRecordsCount As Long = GetTotalRecordsCount()
 		Dim completedRecordsCount As Long = GetCompletedRecordsCount()
-		Dim metric As MetricJobEndReport = New MetricJobEndReport() With {.JobStatus = jobStatus, .TotalSizeBytes = (statistics.MetadataBytes + statistics.FileBytes),
-				.FileSizeBytes = statistics.FileBytes, .MetadataSizeBytes = statistics.MetadataBytes,
-				.TotalRecords = totalRecordsCount, .CompletedRecords = completedRecordsCount,
-				.ThroughputBytesPerSecond = CalculateThroughput(statistics.FileBytes + statistics.MetadataBytes, (EndTime - StartTime).TotalSeconds),
-				.ThroughputRecordsPerSecond = CalculateThroughput(completedRecordsCount, (EndTime - StartTime).TotalSeconds),
-				.SqlBulkLoadThroughput = CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.SqlTime/TimeSpan.TicksPerSecond)}
+		Dim jobDuration As Double = (EndTime - StartTime).TotalSeconds
+		Dim metric As MetricJobEndReport = New MetricJobEndReport() With {
+				.JobStatus = jobStatus,
+				.TotalSizeBytes = (statistics.TotalBytes),
+				.FileSizeBytes = statistics.FileBytes,
+				.MetadataSizeBytes = statistics.MetadataBytes,
+				.TotalRecords = totalRecordsCount,
+				.CompletedRecords = completedRecordsCount,
+				.ThroughputBytesPerSecond = Statistics.CalculateThroughput(statistics.TotalBytes, jobDuration),
+				.ThroughputRecordsPerSecond = Statistics.CalculateThroughput(completedRecordsCount, jobDuration),
+				.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.SqlTime/TimeSpan.TicksPerSecond)}
 		BuildMetricBase(metric)
 		MetricService.Log(metric)
 	End Sub
@@ -108,7 +113,10 @@ Public MustInherit Class MonitoredProcessBase
 			If currentTime - _lastSendTime < _metricThrottling And checkThrottling Then Return
 			_lastSendTime = currentTime
 		End SyncLock
-		Dim message As MetricJobProgress = New MetricJobProgress With {.MetadataThroughput = statistics.MetadataThroughput, .FileThroughput = statistics.FileThroughput, .SqlBulkLoadThroughput = CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.SqlTime/TimeSpan.TicksPerSecond)}
+		Dim message As MetricJobProgress = New MetricJobProgress With {
+			.MetadataThroughputBytesPerSecond = statistics.MetadataThroughput,
+			.FileThroughputBytesPerSecond = statistics.FileThroughput,
+			.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.SqlTime/TimeSpan.TicksPerSecond)}
 		BuildMetricBase(message)
 		MetricService.Log(message)
 	End Sub
@@ -149,9 +157,5 @@ Public MustInherit Class MonitoredProcessBase
 		Else
 			Return ExecutionSource.ToString()
 		End If
-	End Function
-
-	Private Function CalculateThroughput(size As Long, time As Double) As Double
-		Return CDbl(IIf(time.Equals(0.0), 0.0, size/time))
 	End Function
 End Class
