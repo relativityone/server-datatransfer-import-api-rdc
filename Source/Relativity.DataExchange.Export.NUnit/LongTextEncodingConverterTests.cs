@@ -152,18 +152,32 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldThrowWhenConvertingNewFileAfterMarkingQueueAsCompleted()
+		public void ItShouldLogErrorWhenConvertingNewFileAfterMarkingQueueAsCompleted()
 		{
 			// ARRANGE
 			string fileName = "fileName";
 
-			// ACT
-
 			// Mark a conversion task as completed
+			this._fileDownloadCompletedSubject.OnNext(true);
+			this._fileDownloadSubject.OnNext(fileName);
+
+			// ASSERT
+			_logger.Verify(x => x.LogError(It.IsAny<InvalidOperationException>(), It.IsAny<string>()), Times.Once);
+		}
+
+		[Test]
+		public void ItShouldLogInfoWhenJobWasCancelled()
+		{
+			// ARRANGE
+			string fileName = "fileName";
+
+			// Mark entire job as cancelled
+			this._cancellationTokenSource.Cancel();
+			this._fileDownloadSubject.OnNext(fileName);
 			this._fileDownloadCompletedSubject.OnNext(true);
 
 			// ASSERT
-			Assert.Throws<InvalidOperationException>(() => this._fileDownloadSubject.OnNext(fileName));
+			_logger.Verify(x => x.LogInformation(It.IsAny<OperationCanceledException>(), It.IsAny<string>()), Times.AtLeast(1));
 		}
 
 		[Test]

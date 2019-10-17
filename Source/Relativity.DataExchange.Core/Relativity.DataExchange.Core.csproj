@@ -110,6 +110,7 @@
     <Compile Include="Data\ObjectNameImporterException.cs" />
     <Compile Include="Data\StringImporterException.cs" />
     <Compile Include="Data\TrimOption.cs" />
+    <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="ExceptionHelper.cs" />
     <Compile Include="Io\ErrorBeforeMassImportArgs.cs" />
     <Compile Include="Io\ErrorDuringMassImportArgs.cs" />

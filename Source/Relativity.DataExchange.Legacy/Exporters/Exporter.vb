@@ -540,7 +540,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub ValidateExportedRecordCount(actualExportedRecordsCount As Int32, expectedExportedRecordsCount As Long)
-			If actualExportedRecordsCount <> expectedExportedRecordsCount Then
+			' We don't want to display validation message on the cancelled job
+			If actualExportedRecordsCount <> expectedExportedRecordsCount AndAlso Not _cancellationTokenSource.IsCancellationRequested Then
 				WriteError($"Total items processed ({actualExportedRecordsCount}) is different than expected total records count ({expectedExportedRecordsCount}).")
 			End If
 		End Sub
