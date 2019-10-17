@@ -15,8 +15,46 @@ Namespace kCura.WinEDDS
 		Private _documentsUpdated As Int32 = 0
 		Private _filesProcessed As Int32 = 0
 
+		Public ReadOnly Property LastAccessed() As System.DateTime
+			Get
+				Return _lastAccessed
+			End Get
+		End Property
+
+		Public ReadOnly Property DocumentsCreated() As Int32
+			Get
+				Return _documentsCreated
+			End Get
+		End Property
+
+		Public ReadOnly Property DocumentsUpdated() As Int32
+			Get
+				Return _documentsUpdated
+			End Get
+		End Property
+
+		Public ReadOnly Property FilesProcessed() As Int32
+			Get
+				Return _filesProcessed
+			End Get
+		End Property
+
+		''' <summary>
+		''' Gets total transferred bytes. This value is equal to sum of <see cref="FileBytes"/> and <see cref="MetadataBytes"/>.
+		''' </summary>
+		''' <returns>Total number of transferred bytes.</returns>
+		Public ReadOnly Property TotalBytes() As Int64
+			Get
+				Return _fileBytes + _metadataBytes
+			End Get
+		End Property
+
 		Public Property BatchSize As Int32 = 0
 
+		''' <summary>
+		'''  Gets or sets transferred metadata bytes.
+		''' </summary>
+		''' <returns>Transferred metadata bytes.</returns>
 		Public Property MetadataBytes() As Int64
 			Get
 				Return _metadataBytes
@@ -27,6 +65,10 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		''' <summary>
+		''' Gets or sets metadata transfer time in ticks.
+		''' </summary>
+		''' <returns>Metadata transfer time in ticks.</returns>
 		Public Property MetadataTime() As Int64
 			Get
 				Return _metadataTime
@@ -37,6 +79,10 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		''' <summary>
+		''' Gets or sets metadata transfer rate in bytes per second.
+		''' </summary>
+		''' <returns>Metadata transfer rate in bytes per second.</returns>
 		Public Property MetadataThroughput() As Double
 			Get
 				Return _metadataThroughput
@@ -47,6 +93,10 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		''' <summary>
+		'''  Gets or sets transferred file bytes.
+		''' </summary>
+		''' <returns>Transferred file bytes.</returns>
 		Public Property FileBytes() As Int64
 			Get
 				Return _fileBytes
@@ -57,6 +107,10 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		''' <summary>
+		''' Gets or sets file transfer time in ticks.
+		''' </summary>
+		''' <returns>File transfer time in ticks.</returns>
 		Public Property FileTime() As Int64
 			Get
 				Return _fileTime
@@ -66,7 +120,11 @@ Namespace kCura.WinEDDS
 				_fileTime = value
 			End Set
 		End Property
-
+		
+		''' <summary>
+		''' Gets or sets file transfer rate in bytes per second.
+		''' </summary>
+		''' <returns>File transfer rate in bytes per second.</returns>
 		Public Property FileThroughput() As Double
 			Get
 				Return _fileThroughput
@@ -96,7 +154,11 @@ Namespace kCura.WinEDDS
 				_metadataWaitTime = value
 			End Set
 		End Property
-
+		
+		''' <summary>
+		''' Gets or sets client side time of SQL bulk insert operation in ticks.
+		''' </summary>
+		''' <returns>Client side time of SQL bulk insert operation in ticks.</returns>
 		Public Property SqlTime() As Int64
 			Get
 				Return _sqlTime
@@ -116,12 +178,22 @@ Namespace kCura.WinEDDS
 				_docCount = value
 			End Set
 		End Property
+		
+		Public Sub ProcessRunResults(ByVal results As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
+			_documentsCreated += results.ArtifactsCreated
+			_documentsUpdated += results.ArtifactsUpdated
+			_filesProcessed += results.FilesProcessed
+		End Sub
 
-		Public ReadOnly Property LastAccessed() As System.DateTime
-			Get
-				Return _lastAccessed
-			End Get
-		End Property
+		''' <summary>
+		''' General function calculating throughput in units per second.
+		''' </summary>
+		''' <param name="size">Size in any unit.</param>
+		''' <param name="timeSeconds">Time in seconds.</param>
+		''' <returns>Throughput in units per second if timeSeconds is not equal to zero; Zero otherwise.</returns>
+		Public Shared Function CalculateThroughput(size As Long, timeSeconds As Double) As Double
+			Return CDbl(IIf(timeSeconds.Equals(0.0), 0.0, size/timeSeconds))
+		End Function
 
 		Public Function ToFileSizeSpecification(ByVal value As Double) As String
 			Dim prefix As String = Nothing
@@ -153,31 +225,6 @@ Namespace kCura.WinEDDS
 			End Select
 			Return (value / Math.Pow(1000, k)).ToString("N2") & " " & prefix & "B"
 		End Function
-
-		Public ReadOnly Property DocumentsCreated() As Int32
-			Get
-				Return _documentsCreated
-			End Get
-		End Property
-
-		Public ReadOnly Property DocumentsUpdated() As Int32
-			Get
-				Return _documentsUpdated
-			End Get
-		End Property
-
-		Public ReadOnly Property FilesProcessed() As Int32
-			Get
-				Return _filesProcessed
-			End Get
-		End Property
-
-		Public Sub ProcessRunResults(ByVal results As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
-			_documentsCreated += results.ArtifactsCreated
-			_documentsUpdated += results.ArtifactsUpdated
-			_filesProcessed += results.FilesProcessed
-		End Sub
-
 
 		Public Overridable Function ToDictionary() As IDictionary
 			Dim retval As New System.Collections.Specialized.HybridDictionary
