@@ -27,7 +27,7 @@ Namespace kCura.WinEDDS
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New()
-			MyBase.New(New MetricService(New ImportApiMetricSinkConfig), RelativityLogger.Instance)
+			Me.New(New MetricService(New ImportApiMetricSinkConfig))
 		End Sub
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>

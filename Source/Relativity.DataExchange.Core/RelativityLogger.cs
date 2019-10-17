@@ -16,6 +16,7 @@ namespace Relativity.DataExchange
 	{
 		/// <summary>
 		/// Gets the registered Relativity logging instance. If not defined, returns the <see cref="Relativity.Logging.NullLogger"/> instance.
+		/// This should only be used by class objects where the <see cref="Relativity.Logging.ILog"/> instance isn't already constructor injected or by existing constructors marked with <see cref="System.ObsoleteAttribute"/>.
 		/// </summary>
 		/// <value>
 		/// The <see cref="Relativity.Logging.ILog"/> instance.
