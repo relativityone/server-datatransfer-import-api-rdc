@@ -1,5 +1,6 @@
 ﻿Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Exporters
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Export
 Imports Relativity.DataExchange.Service
 
@@ -19,7 +20,8 @@ Namespace Relativity.Desktop.Client
 #Region " Run Import "
 
 		Friend Async Function RunExport(options As ExportFile) As Task
-			Dim exporter As New ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig(), Await _application.SetupMetricService())
+			Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog()
+			Dim exporter As New ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig(), Await _application.SetupMetricService(), logger)
 			exporter.UserNotificationFactory = Function(e) New EventBackedUserNotification(e)
 			exporter.ExportFile = options
 			Dim executor As New CommandLineProcessRunner(exporter.Context, Nothing, Nothing)

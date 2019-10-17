@@ -416,7 +416,8 @@ End Sub
 		Private Sub _stopImportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _stopImportButton.Click
 			Try
 				If _stopImportButton.Text = "Stop" Then
-					_processContext.PublishCancellationRequest(_processId)
+					Const RequestByUser = True
+					_processContext.PublishCancellationRequest(_processId, RequestByUser)
 					_stopImportButton.Enabled = False
 					_currentRecordLabel.Text = "Process halting"
 					_hasClickedStop = True
@@ -725,7 +726,8 @@ End Sub
 		End Sub
 
 		Private Sub ProgressForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
-			_processContext.PublishCancellationRequest(_processId)
+			Const RequestByUser = False
+			_processContext.PublishCancellationRequest(_processId, RequestByUser)
 			_processContext.PublishParentFormClosing(_processId)
 		End Sub
 

@@ -20,6 +20,8 @@
 		public void Subscribe(ITapiBridge tapiBridge)
 		{
 			// Note: this is executed from multiple tasks but is thread-safe.
+			tapiBridge.ThrowIfNull(nameof(tapiBridge));
+			_logger.LogVerbose("Attached tapi bridge {TapiBridgeInstanceId} to the message handler.", tapiBridge.InstanceId);
 			tapiBridge.TapiErrorMessage += this.OnErrorMessage;
 			tapiBridge.TapiStatusMessage += this.OnStatusMessage;
 			tapiBridge.TapiWarningMessage += this.OnWarningMessage;
@@ -29,6 +31,8 @@
 		public void Unsubscribe(ITapiBridge tapiBridge)
 		{
 			// Note: this is executed from multiple tasks but is thread-safe.
+			tapiBridge.ThrowIfNull(nameof(tapiBridge));
+			_logger.LogVerbose("Detached tapi bridge {TapiBridgeInstanceId} from the message handler.", tapiBridge.InstanceId);
 			tapiBridge.TapiErrorMessage -= this.OnErrorMessage;
 			tapiBridge.TapiStatusMessage -= this.OnStatusMessage;
 			tapiBridge.TapiWarningMessage -= this.OnWarningMessage;
@@ -37,25 +41,21 @@
 
 		private void OnErrorMessage(object sender, TapiMessageEventArgs e)
 		{
-			_logger.LogError(e.Message);
 			_status.WriteError(e.Message);
 		}
 
 		private void OnStatusMessage(object sender, TapiMessageEventArgs e)
 		{
-			_logger.LogInformation(e.Message);
 			_status.WriteStatusLine(EventType2.Status, e.Message, false);
 		}
 
 		private void OnWarningMessage(object sender, TapiMessageEventArgs e)
 		{
-			_logger.LogWarning(e.Message);
 			_status.WriteWarning(e.Message);
 		}
 
 		private void OnFatalError(object sender, TapiMessageEventArgs e)
 		{
-			_logger.LogError(e.Message);
 			_status.WriteError(e.Message);
 		}
 	}
