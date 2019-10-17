@@ -52,7 +52,9 @@
 		{
 			fileTransferProducer.ThrowIfNull(nameof(fileTransferProducer));
 
-			this._fileDownloadedSubscriber = fileTransferProducer.FileDownloaded.Subscribe(this.AddForConversion);
+			this._fileDownloadedSubscriber = fileTransferProducer
+				.FileDownloaded
+				.Subscribe(this.AddForConversion);
 			this._fileDownloadCompletedSubscriber = fileTransferProducer.FileDownloadCompleted.Subscribe(this.CompleteConversion);
 
 			this._conversionTask = Task.Run(() => this.ConvertLongTextFiles(), this._cancellationToken);
@@ -70,18 +72,27 @@
 		{
 			try
 			{
-				_logger.LogVerbose("Preparing to add the '{fileName}' long text file to the queue...", fileName);
-				_longTextFilesToConvert.Add(fileName, this._cancellationToken);
-				_logger.LogVerbose(
-					"Successfully added the '{fileName}' long text file to the queue.",
-					fileName);
+				this._logger.LogVerbose("Preparing to add the '{fileName}' long text file to the queue...", fileName);
+
+				this._longTextFilesToConvert.Add(fileName, this._cancellationToken);
+
+				this._logger.LogVerbose("Successfully added the '{fileName}' long text file to the queue.", fileName);
 			}
-			catch (InvalidOperationException e2)
+			// We should never re-thrown exception from here as it will cause not handled exception
+			// We have two practical options that would be triggered
+			// 1) Cancellation - this will end the entire job
+			// 2) InvalidOperationException - issue with adding the item to blocking collection that is more like unexpected error
+			catch (InvalidOperationException ex)
 			{
-				_logger.LogError(
-					e2,
-					"The long text encoding converter received a transfer successful progress event but the blocking collection has already been marked as completed. This exception suggests either a logic or task switch context issue.");
-				throw;
+				this._logger.LogError(ex, "The long text encoding converter received a transfer successful progress event but the blocking collection has already been marked as completed. This exception suggests either a logic or task switch context issue.");
+			}
+			catch (OperationCanceledException ex)
+			{
+				this._logger.LogInformation(ex, "The cancellation operation has been requested by the user");
+			}
+			catch (Exception ex)
+			{
+				this._logger.LogError(ex, "The error happened when converting {0} file", fileName);
 			}
 		}
 
