@@ -12,6 +12,7 @@ Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Media
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public Class VolumeManager
@@ -142,7 +143,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As Timekeeper2, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As Global.Relativity.DataExchange.Io.IFile, directoryHelper As Global.Relativity.DataExchange.Io.IDirectory, fileNameProvider As IFileNameProvider)
+			Me.New(settings, totalFiles, parent, downloadHandler, t, columnNamesInOrder, statistics, fileHelper, directoryHelper, fileNameProvider, RelativityLogFactory.CreateLog())
+		End Sub
+
+		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As Timekeeper2, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As Global.Relativity.DataExchange.Io.IFile, directoryHelper As Global.Relativity.DataExchange.Io.IDirectory, fileNameProvider As IFileNameProvider, logger as ILog)
 			_settings = settings
 			_statistics = statistics
 			_parent = parent
@@ -151,9 +157,7 @@ Namespace kCura.WinEDDS
 			_fileStreamFactory = New FileStreamFactory(_fileHelper)
 			_directoryHelper = directoryHelper
 			_fileNameProvider = fileNameProvider
-
-			_logger = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
-
+			_logger = logger
 			_timekeeper = t
 			_currentVolumeNumber = _settings.VolumeInfo.VolumeStartNumber
 			_currentSubdirectoryNumber = _settings.VolumeInfo.SubdirectoryStartNumber

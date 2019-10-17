@@ -129,6 +129,7 @@
     <Compile Include="Io\OutsideInFileTypeIdentifierService.cs" />
     <Compile Include="Io\TempFileBuilder.cs" />
     <Compile Include="Io\TempFileConstants.cs" />
+    <Compile Include="LogExtensions.cs" />
     <Compile Include="Media\ByteOrdering.cs" />
     <Compile Include="Media\FreeImageService.cs" />
     <Compile Include="Media\IImageConverter.cs" />
