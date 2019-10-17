@@ -1,3 +1,4 @@
+Imports System.Collections.Generic
 Imports kCura.WinEDDS.Api
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
@@ -124,11 +125,11 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Public Function GetColumnNames(ByVal args As Object) As String() Implements kCura.WinEDDS.Api.IArtifactReader.GetColumnNames
 			If _columnNames Is Nothing Then
-				Dim retval As New System.Collections.ArrayList
+				Dim retval As New List(Of string)
 				For iFieldIndex As Integer = 0 To _reader.FieldCount - 1
 					retval.Add(_reader.GetName(iFieldIndex))
 				Next
-				_columnNames = DirectCast(retval.ToArray(GetType(String)), String())
+				_columnNames = retval.ToArray()
 			End If
 			Return _columnNames
 		End Function

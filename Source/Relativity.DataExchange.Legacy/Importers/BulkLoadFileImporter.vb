@@ -77,7 +77,7 @@ Namespace kCura.WinEDDS
 
 		Private _processId As Guid
 		Private _parentArtifactTypeId As Int32?
-		Private _unmappedRelationalFields As System.Collections.ArrayList
+		Private _unmappedRelationalFields As List(Of EDDS.WebAPI.DocumentManagerBase.Field)
 
 		Protected BulkLoadFileFieldDelimiter As String
 
@@ -154,13 +154,13 @@ Namespace kCura.WinEDDS
 		Public ReadOnly Property DocumentFieldsForCreate() As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			Get
 				If _fieldsForCreate Is Nothing Then
-					Dim fieldsForCreate As New System.Collections.ArrayList
+					Dim fieldsForCreate As New List(Of kCura.EDDS.WebAPI.DocumentManagerBase.Field)
 					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(ArtifactType.Document)
 						If System.Array.IndexOf(_fieldArtifactIds, field.ArtifactID) <> -1 Then
 							fieldsForCreate.Add(field)
 						End If
 					Next
-					_fieldsForCreate = DirectCast(fieldsForCreate.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
+					_fieldsForCreate = fieldsForCreate.ToArray()
 				End If
 				Return _fieldsForCreate
 			End Get
@@ -215,24 +215,24 @@ Namespace kCura.WinEDDS
 				Return retval
 			End Get
 		End Property
-
+		
 		Public ReadOnly Property UnmappedRelationalFields() As System.Collections.ArrayList
 			Get
 				If _unmappedRelationalFields Is Nothing Then
-					Dim mappedRelationalFieldIds As New System.Collections.ArrayList
+					Dim mappedRelationalFieldIds As New List(Of Int32)
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
 						If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = FieldCategory.Relational AndAlso item.DocumentField.ImportBehavior = kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
 							mappedRelationalFieldIds.Add(item.DocumentField.FieldID)
 						End If
 					Next
-					_unmappedRelationalFields = New System.Collections.ArrayList
+					_unmappedRelationalFields = New List(Of EDDS.WebAPI.DocumentManagerBase.Field)
 					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(_artifactTypeID)
 						If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational And Not mappedRelationalFieldIds.Contains(field.ArtifactID) AndAlso field.ImportBehavior = kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
 							_unmappedRelationalFields.Add(field)
 						End If
 					Next
 				End If
-				Return _unmappedRelationalFields
+				Return new System.Collections.ArrayList(_unmappedRelationalFields)
 			End Get
 		End Property
 
@@ -795,15 +795,14 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub InitializeFieldIdList()
-			Dim fieldIdList As New System.Collections.ArrayList
+			Dim fieldIdList As New List(Of Int32)
 			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
 				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 Then
-					'If item.DocumentField.FieldCategoryID <> FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
 					fieldIdList.Add(item.DocumentField.FieldID)
 				End If
 			Next
 			fieldIdList.Add(Me.FileInfoField(_artifactTypeID).ArtifactID)
-			_fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
+			_fieldArtifactIds = fieldIdList.ToArray()
 		End Sub
 
 		Private Function ManageDocument(ByVal fileTypeIdentifier As IFileTypeIdentifier, ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String

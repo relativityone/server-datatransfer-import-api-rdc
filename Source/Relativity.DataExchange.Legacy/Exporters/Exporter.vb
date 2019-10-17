@@ -91,7 +91,7 @@ Namespace kCura.WinEDDS
 			Get
 				Return _columns
 			End Get
-			Set(ByVal value As System.Collections.ArrayList)
+			Set
 				_columns = value
 			End Set
 		End Property
@@ -1092,14 +1092,14 @@ Namespace kCura.WinEDDS
 
 		Private Function GetProductionArtifactIDs(ByVal productionOrderList As Pair()) As Int32()
 			If _productionArtifactIDs Is Nothing Then
-				Dim retval As New System.Collections.ArrayList
+				Dim retval As New List(Of Int32)
 				Dim item As Pair
 				For Each item In productionOrderList
 					If item.Value <> "-1" Then
 						retval.Add(Int32.Parse(item.Value))
 					End If
 				Next
-				_productionArtifactIDs = DirectCast(retval.ToArray(GetType(Int32)), Int32())
+				_productionArtifactIDs = retval.ToArray()
 			End If
 			Return _productionArtifactIDs
 		End Function
@@ -1135,11 +1135,11 @@ Namespace kCura.WinEDDS
 			Else
 				args.ExportTextFieldAsFiles = False
 			End If
-			Dim fields As New System.Collections.ArrayList
+			Dim fields As New List(Of Int32)
 			For Each field As ViewFieldInfo In Me.Settings.SelectedViewFields
 				If Not fields.Contains(field.FieldArtifactId) Then fields.Add(field.FieldArtifactId)
 			Next
-			args.Fields = DirectCast(fields.ToArray(GetType(Int32)), Int32())
+			args.Fields = fields.ToArray()
 			args.ExportNativeFiles = Me.Settings.ExportNative
 			If args.Fields.Length > 0 OrElse Me.Settings.ExportNative Then
 				args.MetadataLoadFileEncodingCodePage = Me.Settings.LoadFileEncoding.CodePage
@@ -1209,11 +1209,11 @@ Namespace kCura.WinEDDS
 				args.ExportImages = False
 			End If
 			args.OverwriteFiles = Me.Settings.Overwrite
-			Dim preclist As New System.Collections.ArrayList
+			Dim preclist As New List(Of Int32)
 			For Each pair As WinEDDS.Pair In Me.Settings.ImagePrecedence
 				preclist.Add(Int32.Parse(pair.Value))
 			Next
-			args.ProductionPrecedence = DirectCast(preclist.ToArray(GetType(Int32)), Int32())
+			args.ProductionPrecedence = preclist.ToArray()
 			args.RunTimeInMilliseconds = CType(System.Math.Min(_stopwatch.ElapsedMilliseconds, Int32.MaxValue), Int32)
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.AncestorSearch OrElse Me.Settings.TypeOfExport = ExportFile.ExportType.ParentSearch Then
 				args.SourceRootFolderID = Me.Settings.ArtifactID

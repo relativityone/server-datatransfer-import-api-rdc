@@ -1,3 +1,4 @@
+Imports System.Collections.Generic
 Imports System.Threading
 
 Imports kCura.WinEDDS.Service
@@ -875,7 +876,7 @@ Namespace kCura.WinEDDS
 			If hasFileIdentifierProblem Then status += ImportStatus.IdentifierOverlap
 
 			Dim record As Api.ImageRecord = lines(0)
-			Dim textFileList As New System.Collections.ArrayList
+			Dim textFileList As New List(Of string)
 			Dim documentId As String = record.BatesNumber
 			Dim offset As Int64 = 0
 			For i As Int32 = 0 To lines.Count - 1
@@ -952,7 +953,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Function GetextractedTextEncodings(ByVal textFileList As System.Collections.ArrayList) As Generic.List(Of Int32)
+		Private Function GetextractedTextEncodings(ByVal textFileList As List(Of string)) As Generic.List(Of Int32)
 			Dim encodingList As New Generic.List(Of Int32)
 			For Each filename As String In textFileList
 				Dim chosenEncoding As System.Text.Encoding = _settings.FullTextEncoding
@@ -989,7 +990,7 @@ Namespace kCura.WinEDDS
 			Next
 		End Sub
 
-		Private Sub GetImageForDocument(ByVal imageFile As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As Int32, ByVal status As Int64, ByVal totalForDocument As Int32, ByVal isStartRecord As Boolean)
+		Private Sub GetImageForDocument(ByVal imageFile As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As List(Of string), ByVal writeLineTermination As Boolean, ByVal originalLineNumber As Int32, ByVal status As Int64, ByVal totalForDocument As Int32, ByVal isStartRecord As Boolean)
 			_totalProcessed += 1
 			Dim filename As String = imageFile.Substring(imageFile.LastIndexOf("\") + 1)
 			Dim extractedTextFileName As String = imageFile.Substring(0, imageFile.LastIndexOf("."c) + 1) & "txt"

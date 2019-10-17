@@ -163,7 +163,7 @@ Namespace Relativity.Desktop.Client
 
 		Private Sub ProductionPrecedenceForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Dim row As System.Data.DataRow
-			Dim activeValues As New System.Collections.ArrayList
+			Dim activeValues As New List(Of String)
 			Dim item As kCura.WinEDDS.Pair
 			Dim firstTimeThrough As Boolean = True
 			Dim hasOriginals As Boolean = False
@@ -200,7 +200,7 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Sub _okButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _okButton.Click
-			Dim al As New ArrayList
+			Dim al As New List(Of kCura.WinEDDS.Pair)
 			Dim isProductionPrecedenceSelected As Boolean = _productions.RightSearchableListItems.Count > 0
 			If (Not isProductionPrecedenceSelected) OrElse _originalImages.Checked Then
 				al.Add(New kCura.WinEDDS.Pair("-1", "Original"))
@@ -213,7 +213,7 @@ Namespace Relativity.Desktop.Client
 				End If
 			End If
 			Me.Close()
-			RaiseEvent PrecedenceOK(DirectCast(al.ToArray(GetType(kCura.WinEDDS.Pair)), kCura.WinEDDS.Pair()))
+			RaiseEvent PrecedenceOK(al.ToArray())
 		End Sub
 
 		Private Sub _cancelButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _cancelButton.Click
