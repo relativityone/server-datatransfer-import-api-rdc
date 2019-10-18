@@ -16,6 +16,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 	using kCura.WinEDDS;
 
+	using Relativity.DataExchange.Export.NUnit.Integration.Dto;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
@@ -26,38 +27,45 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	public class GoldPathExporterTests : ExporterTestBase
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
-		private static readonly ExportNativeValue[] ExportNatives =
+		private static readonly ExportTypeDto[] ExportTypes =
+		{
+			new ExportTypeDto(ExportFile.ExportType.AncestorSearch),
+			new ExportTypeDto(ExportFile.ExportType.ParentSearch),
+		};
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
+		private static readonly ExportNativeDto[] ExportNatives =
 		{
 			null,
-			new ExportNativeValue(ExportFile.ExportedFilePathType.Absolute, null),
-			new ExportNativeValue(ExportFile.ExportedFilePathType.Prefix, @"C:\filePrefix"),
-			new ExportNativeValue(ExportFile.ExportedFilePathType.Relative, null),
+			new ExportNativeDto(ExportFile.ExportedFilePathType.Absolute, null),
+			new ExportNativeDto(ExportFile.ExportedFilePathType.Prefix, @"C:\filePrefix"),
+			new ExportNativeDto(ExportFile.ExportedFilePathType.Relative, null),
 		};
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
-		private static readonly ExportImageValue[] ExportImages =
+		private static readonly ExportImageDto[] ExportImages =
 		{
 			null,
-			new ExportImageValue(LoadFileType.FileFormat.IPRO, ExportFile.ImageType.MultiPageTiff),
-			new ExportImageValue(LoadFileType.FileFormat.IPRO_FullText, ExportFile.ImageType.SinglePage),
-			new ExportImageValue(LoadFileType.FileFormat.IPRO_FullText, ExportFile.ImageType.Pdf),
-			new ExportImageValue(LoadFileType.FileFormat.Opticon, ExportFile.ImageType.SinglePage),
-			new ExportImageValue(LoadFileType.FileFormat.Opticon, ExportFile.ImageType.MultiPageTiff),
-			new ExportImageValue(LoadFileType.FileFormat.Opticon, ExportFile.ImageType.Pdf),
+			new ExportImageDto(LoadFileType.FileFormat.IPRO, ExportFile.ImageType.MultiPageTiff),
+			new ExportImageDto(LoadFileType.FileFormat.IPRO_FullText, ExportFile.ImageType.SinglePage),
+			new ExportImageDto(LoadFileType.FileFormat.IPRO_FullText, ExportFile.ImageType.Pdf),
+			new ExportImageDto(LoadFileType.FileFormat.Opticon, ExportFile.ImageType.SinglePage),
+			new ExportImageDto(LoadFileType.FileFormat.Opticon, ExportFile.ImageType.MultiPageTiff),
+			new ExportImageDto(LoadFileType.FileFormat.Opticon, ExportFile.ImageType.Pdf),
 		};
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
-		private static readonly PaddingValue[] Paddings =
+		private static readonly PaddingDto[] Paddings =
 		{
-			new PaddingValue(3, 2),
-			new PaddingValue(5, 6),
+			new PaddingDto(3, 2),
+			new PaddingDto(5, 6),
 		};
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
-		private static readonly DelimiterValue[] Delimiters =
+		private static readonly DelimiterDto[] Delimiters =
 		{
-			new DelimiterValue(';', '\\', '@', 'þ', '¶'),
-			new DelimiterValue(':', '/', '\n', '"', '\r'),
+			new DelimiterDto(';', '\\', '@', 'þ', '¶'),
+			new DelimiterDto(':', '/', '\n', '"', '\r'),
 		};
 
 		[IdentifiedTest("5b20c6f1-1196-41ea-9326-0e875e2cabe9")]
@@ -65,13 +73,13 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[Pairwise]
 		public void ShouldExportAllSampleDocAndImages(
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client,
-			[Values(ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch)] ExportFile.ExportType exportType,
+			[ValueSource(nameof(ExportTypes))] ExportTypeDto exportType,
 			[Values("utf-8", "utf-16")] string textFileEncoding,
 			[Values("utf-8", "utf-16")] string loadFileEncoding,
-			[ValueSource(nameof(ExportNatives))] ExportNativeValue exportNative,
-			[ValueSource(nameof(ExportImages))] ExportImageValue exportImage,
-			[ValueSource(nameof(Paddings))] PaddingValue paddingValue,
-			[ValueSource(nameof(Delimiters))] DelimiterValue delimiterValue)
+			[ValueSource(nameof(ExportNatives))] ExportNativeDto exportNative,
+			[ValueSource(nameof(ExportImages))] ExportImageDto exportImage,
+			[ValueSource(nameof(Paddings))] PaddingDto paddingValue,
+			[ValueSource(nameof(Delimiters))] DelimiterDto delimiterValue)
 		{
 			if ((client == TapiClient.Aspera && AssemblySetup.TestParameters.SkipAsperaModeTests) ||
 				(client == TapiClient.Direct && AssemblySetup.TestParameters.SkipDirectModeTests))
@@ -83,7 +91,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			GivenTheTapiForceClientAppSettings(client);
 
 			// TODO enable ExportFile.ExportType.ArtifactSearch and ExportFile.ExportType.Production
-			this.ExtendedExportFile.TypeOfExport = exportType;
+			this.ExtendedExportFile.TypeOfExport = exportType.ExportType;
 
 			this.ExtendedExportFile.TextFileEncoding = Encoding.GetEncoding(textFileEncoding);
 			this.ExtendedExportFile.LoadFileEncoding = Encoding.GetEncoding(loadFileEncoding);

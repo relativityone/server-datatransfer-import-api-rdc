@@ -1,14 +1,14 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="DelimiterValue.cs" company="Relativity ODA LLC">
+// <copyright file="DelimiterDto.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.Export.NUnit.Integration
+namespace Relativity.DataExchange.Export.NUnit.Integration.Dto
 {
-	public class DelimiterValue
+	public class DelimiterDto
 	{
-		public DelimiterValue(char multiRecordDelimiter, char nestedValueDelimiter, char newlineDelimiter, char quoteDelimiter, char recordDelimiter)
+		public DelimiterDto(char multiRecordDelimiter, char nestedValueDelimiter, char newlineDelimiter, char quoteDelimiter, char recordDelimiter)
 		{
 			this.MultiRecordDelimiter = multiRecordDelimiter;
 			this.NestedValueDelimiter = nestedValueDelimiter;
@@ -17,15 +17,15 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.RecordDelimiter = recordDelimiter;
 		}
 
-		public char MultiRecordDelimiter { get; set; }
+		public char MultiRecordDelimiter { get; }
 
-		public char NestedValueDelimiter { get; set; }
+		public char NestedValueDelimiter { get; }
 
-		public char NewlineDelimiter { get; set; }
+		public char NewlineDelimiter { get; }
 
-		public char QuoteDelimiter { get; set; }
+		public char QuoteDelimiter { get; }
 
-		public char RecordDelimiter { get; set; }
+		public char RecordDelimiter { get; }
 
 		public override string ToString()
 		{

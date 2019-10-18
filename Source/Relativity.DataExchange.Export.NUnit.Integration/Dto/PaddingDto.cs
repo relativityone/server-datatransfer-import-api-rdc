@@ -1,22 +1,22 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="PaddingValue.cs" company="Relativity ODA LLC">
+// <copyright file="PaddingDto.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.Export.NUnit.Integration
+namespace Relativity.DataExchange.Export.NUnit.Integration.Dto
 {
-	public class PaddingValue
+	public class PaddingDto
 	{
-		public PaddingValue(int subdirectoryDigitPadding, int volumeDigitPadding)
+		public PaddingDto(int subdirectoryDigitPadding, int volumeDigitPadding)
 		{
 			this.SubdirectoryDigitPadding = subdirectoryDigitPadding;
 			this.VolumeDigitPadding = volumeDigitPadding;
 		}
 
-		public int SubdirectoryDigitPadding { get; set; }
+		public int SubdirectoryDigitPadding { get; }
 
-		public int VolumeDigitPadding { get; set; }
+		public int VolumeDigitPadding { get; }
 
 		public override string ToString()
 		{

@@ -1,24 +1,24 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ExportNativeValue.cs" company="Relativity ODA LLC">
+// <copyright file="ExportNativeDto.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.Export.NUnit.Integration
+namespace Relativity.DataExchange.Export.NUnit.Integration.Dto
 {
 	using kCura.WinEDDS;
 
-	public class ExportNativeValue
+	public class ExportNativeDto
 	{
-		public ExportNativeValue(ExportFile.ExportedFilePathType exportedFilePathType, string filePrefix)
+		public ExportNativeDto(ExportFile.ExportedFilePathType exportedFilePathType, string filePrefix)
 		{
 			this.ExportedFilePathType = exportedFilePathType;
 			this.FilePrefix = filePrefix;
 		}
 
-		public ExportFile.ExportedFilePathType ExportedFilePathType { get; set; }
+		public ExportFile.ExportedFilePathType ExportedFilePathType { get; }
 
-		public string FilePrefix { get; set; }
+		public string FilePrefix { get; }
 
 		public override string ToString()
 		{

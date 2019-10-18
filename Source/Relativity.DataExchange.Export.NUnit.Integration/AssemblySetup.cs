@@ -39,14 +39,22 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			private set;
 		}
 
-		/// <summary>
-		/// The main setup method.
-		/// </summary>
 		[OneTimeSetUp]
 		public static void Setup()
 		{
 			TestParameters = IntegrationTestHelper.Create();
 
+			ImportDefaultTestData();
+		}
+
+		[OneTimeTearDown]
+		public static void TearDown()
+		{
+			IntegrationTestHelper.Destroy(TestParameters);
+		}
+
+		private static void ImportDefaultTestData()
+		{
 			var importApi = new ImportAPI(
 				TestParameters.RelativityUserName,
 				TestParameters.RelativityPassword,
@@ -97,30 +105,21 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				job.SourceData.SourceData = dataSource.CreateDataReader();
 				job.OnFatalException += report => throw report.FatalException;
 				job.OnComplete += report =>
+				{
+					if (report.FatalException != null)
 					{
-						if (report.FatalException != null)
-						{
-							throw report.FatalException;
-						}
+						throw report.FatalException;
+					}
 
-						if (report.ErrorRowCount > 0)
-						{
-							IEnumerable<string> errors = report.ErrorRows.Select(x => $"{x.Identifier} - {x.Message}");
-							throw new InvalidOperationException(string.Join("\n", errors));
-						}
-					};
+					if (report.ErrorRowCount > 0)
+					{
+						IEnumerable<string> errors = report.ErrorRows.Select(x => $"{x.Identifier} - {x.Message}");
+						throw new InvalidOperationException(string.Join("\n", errors));
+					}
+				};
 
 				job.Execute();
 			}
-		}
-
-		/// <summary>
-		/// The main teardown method.
-		/// </summary>
-		[OneTimeTearDown]
-		public static void TearDown()
-		{
-			IntegrationTestHelper.Destroy(TestParameters);
 		}
 	}
 }

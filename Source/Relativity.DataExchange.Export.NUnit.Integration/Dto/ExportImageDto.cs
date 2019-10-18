@@ -1,24 +1,24 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ExportImageValue.cs" company="Relativity ODA LLC">
+// <copyright file="ExportImageDto.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.Export.NUnit.Integration
+namespace Relativity.DataExchange.Export.NUnit.Integration.Dto
 {
 	using kCura.WinEDDS;
 
-	public class ExportImageValue
+	public class ExportImageDto
 	{
-		public ExportImageValue(LoadFileType.FileFormat fileFormat, ExportFile.ImageType imageType)
+		public ExportImageDto(LoadFileType.FileFormat fileFormat, ExportFile.ImageType imageType)
 		{
 			this.FileFormat = fileFormat;
 			this.ImageType = imageType;
 		}
 
-		public LoadFileType.FileFormat FileFormat { get; set; }
+		public LoadFileType.FileFormat FileFormat { get; }
 
-		public ExportFile.ImageType ImageType { get; set; }
+		public ExportFile.ImageType ImageType { get; }
 
 		public override string ToString()
 		{

@@ -84,13 +84,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DelimiterValue.cs" />
+    <Compile Include="Dto\DelimiterDto.cs" />
+    <Compile Include="Dto\ExportTypeDto.cs" />
     <Compile Include="ExporterTestData.cs" />
     <Compile Include="ExporterTestJobResult.cs" />
-    <Compile Include="ExportImageValue.cs" />
-    <Compile Include="ExportNativeValue.cs" />
+    <Compile Include="Dto\ExportImageDto.cs" />
+    <Compile Include="Dto\ExportNativeDto.cs" />
     <Compile Include="GoldPathExporterTests.cs" />
-    <Compile Include="PaddingValue.cs" />
+    <Compile Include="Dto\PaddingDto.cs" />
     <Compile Include="TestContainerFactory.cs" />
     <Compile Include="MockObjectFactory.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
@@ -538,6 +539,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
