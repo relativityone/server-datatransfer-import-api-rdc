@@ -46,6 +46,7 @@ Namespace Relativity.Desktop.Client
 			importOptions.SelectedNativeLoadFile.CopyFilesToDocumentRepository = importOptions.CopyFilesToDocumentRepository
 			importOptions.SelectedNativeLoadFile.DestinationFolderID = importOptions.DestinationFolderID
 			importOptions.SelectedNativeLoadFile.StartLineNumber = importOptions.StartLineNumber
+			WebApiCredentialSetter.PopulateNativeLoadFile(importOptions.SelectedNativeLoadFile)
 			importer.LoadFile = importOptions.SelectedNativeLoadFile
 			importer.TimeZoneOffset = _application.TimeZoneOffset
 			importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
@@ -62,6 +63,7 @@ Namespace Relativity.Desktop.Client
 				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Await _application.GetCredentialsAsync(), _application.CookieContainer)
 				If folderManager.Exists(importOptions.SelectedCaseInfo.ArtifactID, importOptions.SelectedCaseInfo.RootFolderID) Then
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await _application.SetupMetricService(), _logger)
+					WebApiCredentialSetter.PopulateNativeLoadFile(importOptions.SelectedNativeLoadFile)
 					importOptions.SelectedNativeLoadFile.SourceFileEncoding = importOptions.SourceFileEncoding
 					importOptions.SelectedNativeLoadFile.ExtractedTextFileEncoding = importOptions.ExtractedTextFileEncoding
 					importOptions.SelectedNativeLoadFile.SelectedCasePath = importOptions.SelectedCasePath
@@ -89,6 +91,7 @@ Namespace Relativity.Desktop.Client
 				Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await _application.SetupMetricService(), _logger)
 				importOptions.SelectedImageLoadFile.CookieContainer = _application.CookieContainer
 				importOptions.SelectedImageLoadFile.Credential = Await _application.GetCredentialsAsync()
+				WebApiCredentialSetter.PopulateImageLoadFile(importOptions.SelectedImageLoadFile)
 				importOptions.SelectedImageLoadFile.SelectedCasePath = importOptions.SelectedCasePath
 				importOptions.SelectedImageLoadFile.CaseDefaultPath = importOptions.SelectedCaseInfo.DocumentPath
 				importOptions.SelectedImageLoadFile.CopyFilesToDocumentRepository = importOptions.CopyFilesToDocumentRepository

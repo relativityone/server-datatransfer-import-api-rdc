@@ -29,41 +29,23 @@ namespace Relativity.DataExchange.NUnit
 		public const char DefaultNewline = (char)10;
 
 		public MockDelimitedFileImport()
-			: this(DefaultDelimiter.ToString(), DefaultBound.ToString(), DefaultNewline.ToString())
+			: this(DefaultDelimiter, DefaultBound, DefaultNewline)
 		{
 		}
 
-		public MockDelimitedFileImport(string delimiter)
-			: this(delimiter, DefaultBound.ToString())
+		public MockDelimitedFileImport(char delimiter)
+			: this(delimiter, DefaultBound)
 		{
 		}
 
-		public MockDelimitedFileImport(string delimiter, string bound)
-			: this(
-				delimiter,
-				bound,
-				DefaultNewline.ToString(),
-				new IoReporterContext(),
-				new NullLogger(),
-				CancellationToken.None)
+		public MockDelimitedFileImport(char delimiter, char bound)
+			: this(delimiter, bound, DefaultNewline, new IoReporterContext(), new NullLogger(), CancellationToken.None)
 		{
 		}
 
-		public MockDelimitedFileImport(string delimiter, string bound, string newlineProxy)
+		public MockDelimitedFileImport(char delimiter, char bound, char newlineProxy)
 			: this(delimiter, bound, newlineProxy, new IoReporterContext(), new NullLogger(), CancellationToken.None)
 		{
-		}
-
-		public MockDelimitedFileImport(
-			string delimiter,
-			string bound,
-			string newlineProxy,
-			IoReporterContext context,
-			Relativity.Logging.ILog logger,
-			CancellationToken token)
-			: base(delimiter, bound, newlineProxy, context, logger, token)
-		{
-			this.TrimOption = TrimOption.Both;
 		}
 
 		public MockDelimitedFileImport(

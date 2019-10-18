@@ -564,11 +564,13 @@ namespace Relativity.DataExchange.Transfer
 				this.PublishStatusMessage(successMessage, TapiConstants.NoLineNumber);
 				return totals;
 			}
-			catch (Exception e)
+			catch (Exception ex) when (!ex.IsCanceledByUser(this.cancellationToken))
 			{
+				// We don't want to log cancellation request as the error if it was requested by the end user
+
 				// Note: for backwards compatibility purposes, don't publish an error message.
 				this.PublishWarningMessage(errorMessage, TapiConstants.NoLineNumber);
-				this.Logger.LogError(e, errorMessage);
+				this.Logger.LogError(ex, errorMessage);
 				throw;
 			}
 		}
