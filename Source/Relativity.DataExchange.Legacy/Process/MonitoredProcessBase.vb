@@ -145,7 +145,7 @@ Public MustInherit Class MonitoredProcessBase
 	''' <returns>Number of completed records.</returns>
 	Protected MustOverride Function GetCompletedRecordsCount() As Long
 
-	Private Sub BuildMetricBase(metric As MetricBase)
+	Private Sub BuildMetricBase(metric As MetricJobBase)
 		metric.JobType = JobType
 		metric.TransferMode = TapiClient
 		metric.CorrelationID = JobGuid.ToString()
