@@ -62,15 +62,15 @@ Namespace kCura.WinEDDS
 
 		Public Function GetFieldsByCategory(ByVal type As FieldCategory) As DocumentField()
 			Dim ind As Int32
-			Dim retval As New List(Of DocumentField)
+			Dim retval As New System.Collections.ArrayList
 			Dim field As DocumentField
 			For Each ind In _idIndex.Keys
-				field = _idIndex(ind)
+				field = DirectCast(_idIndex(ind), DocumentField)
 				If field.FieldCategory = type Then
 					retval.Add(field)
 				End If
 			Next
-			Return retval.ToArray()
+			Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
 		End Function
 
 

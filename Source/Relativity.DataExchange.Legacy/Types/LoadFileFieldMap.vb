@@ -1,4 +1,3 @@
-Imports System.Collections.Generic
 Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS
@@ -14,14 +13,14 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property DocumentFields() As DocumentField()
 			Get
-				Dim retval As New List(Of DocumentField)
+				Dim retval As New ArrayList
 				Dim it As LoadFileFieldMapItem
 				For Each it In _al
 					If Not it.DocumentField Is Nothing Then
 						retval.Add(it.DocumentField)
 					End If
 				Next
-				Return retval.ToArray()
+				Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
 			End Get
 		End Property
 
