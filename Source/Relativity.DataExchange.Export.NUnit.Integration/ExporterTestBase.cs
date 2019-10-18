@@ -106,6 +106,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				NestedValueDelimiter = '\\',
 				NewlineDelimiter = '@',
 				QuoteDelimiter = 'þ',
+				RecordDelimiter = '¶',
 				ViewID = 1003684,
 				SelectedViewFields = new kCura.WinEDDS.ViewFieldInfo[] { },
 
