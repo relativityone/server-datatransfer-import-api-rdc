@@ -1016,14 +1016,14 @@ namespace Relativity.DataExchange.Data
 		private string[] GetLineBounded(bool saveData, int maximumFieldLength, int maximumLineLength)
 		{
 			ConditionalList<string> returnValue = new ConditionalList<string>(saveData);
-			ConditionalList<string> currentList = returnValue;
+			ConditionalList<string> currentArrayList = returnValue;
 			bool hasHitEndOfLine = false;
 			while (this.Peek() != EofChar && !hasHitEndOfLine)
 			{
 				int charCode = this.Read();
-				if (currentList.Count > maximumLineLength)
+				if (currentArrayList.Count > maximumLineLength)
 				{
-					currentList = new ConditionalList<string>(false);
+					currentArrayList = new ConditionalList<string>(false);
 				}
 
 				// TODO: Verify the usage of "Or" vs "OrAlso"
@@ -1038,30 +1038,30 @@ namespace Relativity.DataExchange.Data
 				char ch = Microsoft.VisualBasic.Strings.ChrW(charCode);
 				if ((int)ch == (int)this.Bound)
 				{
-					currentList.Add(
-						this.GetBoundedFieldValue(ref hasHitEndOfLine, currentList.Count, maximumFieldLength));
+					currentArrayList.Add(
+						this.GetBoundedFieldValue(ref hasHitEndOfLine, currentArrayList.Count, maximumFieldLength));
 				}
 				else if ((int)ch == (int)this.Delimiter)
 				{
 					// Add an empty value
-					currentList.Add(string.Empty);
+					currentArrayList.Add(string.Empty);
 					if (this.Peek() == EofChar)
 					{
 						// if this delimiter is the last character in the file, add another empty value for the field that comes AFTER the delimiter
-						currentList.Add(string.Empty);
+						currentArrayList.Add(string.Empty);
 					}
 				}
 				else if (ch == '\r')
 				{
 					if (this.Peek() == 10)
 					{
-						currentList.Add(string.Empty);
+						currentArrayList.Add(string.Empty);
 						this.Read();
 						hasHitEndOfLine = true;
 					}
 					else
 					{
-						currentList.Add(
+						currentArrayList.Add(
 							Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(charCode))
 							+ this.GetSimpleDelimitedValue(ref hasHitEndOfLine, maximumFieldLength));
 					}
@@ -1071,14 +1071,14 @@ namespace Relativity.DataExchange.Data
 				           && (this.TrimOption == TrimOption.Both ||
 				               this.TrimOption == TrimOption.Leading)))
 				{
-					currentList.Add(
+					currentArrayList.Add(
 						Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(charCode))
 						+ this.GetSimpleDelimitedValue(ref hasHitEndOfLine, maximumFieldLength));
 				}
 			}
 
 			this.CurrentLineNumber++;
-			if (currentList != returnValue)
+			if (currentArrayList != returnValue)
 			{
 				string message = "This line's column length has exceeded the maximum defined column length of "
 				                 + Conversions.ToString(10000) + ".  Remaining columns in line truncated";

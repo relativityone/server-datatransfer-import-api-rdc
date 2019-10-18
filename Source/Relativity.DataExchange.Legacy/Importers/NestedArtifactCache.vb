@@ -1,6 +1,4 @@
 Imports System.Collections
-Imports System.Collections.Generic
-
 Namespace kCura.WinEDDS
 	Public Class NestedArtifactCache
 
@@ -20,14 +18,13 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property SelectedIds(ByVal artifactPath As String) As Object()
 			Get
-				Dim artifactVal As Int32 
+				Dim artifactVal As Int32 = -1
 				Dim strings As String() = artifactPath.Trim(_nestedItemDelimiter.ToCharArray).Split(_nestedItemDelimiter.ToCharArray)
-
-				Dim goodArtifacts As New List(Of String)
+				Dim goodArtifacts As New System.Collections.ArrayList
 				For Each name As String In strings
 					If name.Trim <> "" Then goodArtifacts.Add(name.Trim)
 				Next
-				strings = goodArtifacts.ToArray()
+				strings = DirectCast(goodArtifacts.ToArray(GetType(String)), String())
 				If strings.Length = 0 Then Return New Object() {}
 				Dim sb As New System.Text.StringBuilder
 				For Each s As String In strings
@@ -41,7 +38,7 @@ Namespace kCura.WinEDDS
 					If Not _ht.ContainsKey(cleansedArtifactPath) Then _ht.Add(cleansedArtifactPath, newArtifact)
 					artifactVal = newArtifact.ArtifactID
 				End If
-				Dim retval As New List(Of Object)
+				Dim retval As New System.Collections.ArrayList
 				If strings.Length = 1 Then Return New Object() {New Object() {artifactVal, strings(0)}}
 				Dim keyLookup As String = ""
 				For i As Int32 = 0 To strings.Length - 1
@@ -49,12 +46,12 @@ Namespace kCura.WinEDDS
 					keyLookup &= strings(i)
 					retval.Add(New Object() {DirectCast(_ht(keyLookup), ArtifactCacheItem).ArtifactID, keyLookup})
 				Next
-				Return retval.ToArray()
+				Return DirectCast(retval.ToArray(GetType(Object())), Object())
 			End Get
 		End Property
 
 		Private Function GetNewArtifact(ByVal fullPath As String) As ArtifactCacheItem
-			Dim pathToDestination As New List(Of String)
+			Dim pathToDestination As New ArrayList
 			Dim s As String
 			If fullPath = "" OrElse fullPath = _nestedItemDelimiter Then
 				s = _nestedItemDelimiter
@@ -66,9 +63,9 @@ Namespace kCura.WinEDDS
 			Return CreateArtifacts(parentArtifact, pathToDestination)
 		End Function
 
-		Private Function CreateArtifacts(ByVal parentArtifact As ArtifactCacheItem, ByVal artifactNames As IList(Of String)) As ArtifactCacheItem
+		Private Function CreateArtifacts(ByVal parentArtifact As ArtifactCacheItem, ByVal artifactNames As ArrayList) As ArtifactCacheItem
 			If artifactNames.Count > 0 Then
-				Dim newArtifactName As String = artifactNames(0)
+				Dim newArtifactName As String = CType(artifactNames(0), String)
 				artifactNames.RemoveAt(0)
 				Dim newArtifactID As Int32 = _manager.Read(_caseContextArtifactID, parentArtifact.ArtifactID, newArtifactName)
 				If newArtifactID < 1 Then
@@ -90,12 +87,13 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-		Private Function FindParentArtifact(ByVal artifactPath As String, ByVal pathToDestination As IList(Of String)) As ArtifactCacheItem
+		Private Function FindParentArtifact(ByVal artifactPath As String, ByVal pathToDestination As ArrayList) As ArtifactCacheItem
 			If _ht.ContainsKey(artifactPath) Then
 				Return DirectCast(_ht(artifactPath), ArtifactCacheItem)
 			Else
 				Dim pathEntry As String = artifactPath.Substring(artifactPath.LastIndexOf(_nestedItemDelimiter) + 1)
 				If pathEntry = "" Then
+					pathEntry = _nestedItemDelimiter
 					Return DirectCast(_ht(_nestedItemDelimiter), ArtifactCacheItem)
 				End If
 				pathToDestination.Insert(0, pathEntry)
@@ -146,7 +144,7 @@ Namespace kCura.WinEDDS
 		Private _name As String
 		Private _path As String
 		Private _artifactID As Int32
-		Private _children As List(Of ArtifactCacheItem)
+		Private _children As System.Collections.ArrayList
 		Public Property Name() As String
 			Get
 				Return _name
@@ -176,10 +174,10 @@ Namespace kCura.WinEDDS
 
 		Public Property Children() As ArtifactCacheItem()
 			Get
-				Return _children.ToArray()
+				Return DirectCast(_children.ToArray(GetType(ArtifactCacheItem)), ArtifactCacheItem())
 			End Get
-			Set
-				_children = value.ToList()
+			Set(ByVal value As ArtifactCacheItem())
+				_children = New ArrayList(value)
 			End Set
 		End Property
 
@@ -191,7 +189,7 @@ Namespace kCura.WinEDDS
 			_name = name
 			_path = path
 			_artifactID = artifactID
-			_children = New List(Of ArtifactCacheItem)
+			_children = New ArrayList
 		End Sub
 	End Class
 #End Region
