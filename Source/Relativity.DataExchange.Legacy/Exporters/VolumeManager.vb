@@ -434,7 +434,7 @@ Namespace kCura.WinEDDS
 														 ByVal image As kCura.WinEDDS.Exporters.ImageExportInfo, ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer)
 			Dim imageList(artifact.Images.Count - 1) As String
 			For i As Int32 = 0 To imageList.Length - 1
-				imageList(i) = DirectCast(artifact.Images(i), Exporters.ImageExportInfo).TempLocation
+				imageList(i) = artifact.Images(i).TempLocation
 			Next
 			Dim tempLocation As String = Me.Settings.FolderPath.TrimEnd("\"c) & "\" & System.Guid.NewGuid.ToString & ".tmp"
 			Dim imageConverterService As IImageConverter = New ImageConverterService
@@ -461,21 +461,21 @@ Namespace kCura.WinEDDS
 				Dim currentTempLocation As String = Me.GetImageExportLocation(image, currentVolumeNumber, currentSubDirectoryNumber)
 				If currentTempLocation.IndexOf("."c) <> -1 Then currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
 				currentTempLocation &= ext
-				DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation = currentTempLocation
-				currentTempLocation = DirectCast(artifact.Images(0), Exporters.ImageExportInfo).FileName
+				artifact.Images(0).TempLocation = currentTempLocation
+				currentTempLocation = artifact.Images(0).FileName
 				If currentTempLocation.IndexOf("."c) <> -1 Then currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
 				currentTempLocation &= ext
-				DirectCast(artifact.Images(0), Exporters.ImageExportInfo).FileName = currentTempLocation
-				Dim location As String = DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation
-				If _fileHelper.Exists(DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation) Then
+				artifact.Images(0).FileName = currentTempLocation
+				Dim location As String = artifact.Images(0).TempLocation
+				If _fileHelper.Exists(artifact.Images(0).TempLocation) Then
 					If Me.Settings.Overwrite Then
-						_fileHelper.Delete(DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
-						_fileHelper.Move(tempLocation, DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
+						_fileHelper.Delete(artifact.Images(0).TempLocation)
+						_fileHelper.Move(tempLocation, artifact.Images(0).TempLocation)
 					Else
-						_parent.WriteWarning("File exists - file copy skipped: " & DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
+						_parent.WriteWarning("File exists - file copy skipped: " & artifact.Images(0).TempLocation)
 					End If
 				Else
-					_fileHelper.Move(tempLocation, DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
+					_fileHelper.Move(tempLocation, artifact.Images(0).TempLocation)
 				End If
 			Catch ex As ImageConversionException
 				successfulRollup = False
@@ -781,7 +781,7 @@ Namespace kCura.WinEDDS
 			Return localFilePath & image.FileName
 		End Function
 
-		Public Sub ExportImages(ByVal images As System.Collections.ArrayList, ByVal localFullTextPath As String, ByVal successfulRollup As Boolean, ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)),
+		Public Sub ExportImages(ByVal images As List(Of Exporters.ImageExportInfo), ByVal localFullTextPath As String, ByVal successfulRollup As Boolean, ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)),
 		                        ByVal threadNumber As Integer, ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer)
 			Dim image As WinEDDS.Exporters.ImageExportInfo
 			Dim i As Int32 = 0
@@ -799,7 +799,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 				If images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) AndAlso successfulRollup Then
-					Dim marker As Exporters.ImageExportInfo = DirectCast(images(0), Exporters.ImageExportInfo)
+					Dim marker As Exporters.ImageExportInfo = images(0)
 					Me.ExportDocumentImage(localFilePath & marker.FileName, marker.FileGuid, marker.ArtifactID, marker.BatesNumber, marker.TempLocation, threadNumber)
 					Dim copyfile As String = Nothing
 					Select Case Me.Settings.TypeOfExportedFilePath
@@ -814,17 +814,17 @@ Namespace kCura.WinEDDS
 						Me.CreateImageLogEntry(marker.BatesNumber, copyfile, localFilePath, 1, fullTextReader, localFullTextPath <> "", Int64.MinValue, images.Count, linesToWriteOpt, currentVolumeNumber)
 					Else
 						For j As Int32 = 0 To images.Count - 1
-							If (j = 0 AndAlso DirectCast(images(j), Exporters.ImageExportInfo).PageOffset Is Nothing) OrElse j = images.Count - 1 Then
+							If (j = 0 AndAlso images(j).PageOffset Is Nothing) OrElse j = images.Count - 1 Then
 								pageOffset = Int64.MinValue
 							Else
-								Dim nextImage As Exporters.ImageExportInfo = DirectCast(images(j + 1), Exporters.ImageExportInfo)
+								Dim nextImage As Exporters.ImageExportInfo = images(j + 1)
 								If nextImage.PageOffset Is Nothing Then
 									pageOffset = Int64.MinValue
 								Else
 									pageOffset = nextImage.PageOffset.Value
 								End If
 							End If
-							image = DirectCast(images(j), WinEDDS.Exporters.ImageExportInfo)
+							image = images(j)
 							Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, j + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count, linesToWriteOpt, currentVolumeNumber)
 						Next
 					End If
@@ -834,7 +834,7 @@ Namespace kCura.WinEDDS
 						If (i = 0 AndAlso image.PageOffset Is Nothing) OrElse i = images.Count - 1 Then
 							pageOffset = Int64.MinValue
 						Else
-							Dim nextImage As Exporters.ImageExportInfo = DirectCast(images(i + 1), Exporters.ImageExportInfo)
+							Dim nextImage As Exporters.ImageExportInfo = images(i + 1)
 							If nextImage.PageOffset Is Nothing Then
 								pageOffset = Int64.MinValue
 							Else
@@ -1351,7 +1351,7 @@ Namespace kCura.WinEDDS
 				Try
 					'Write artifact entries
 					For Each artifact As Exporters.ObjectExportInfo In artifacts
-						For Each bates As String In artifact.Images.Cast(Of WinEDDS.Exporters.ImageExportInfo)().Select(Function(i) i.BatesNumber).Distinct()
+						For Each bates As String In artifact.Images.Select(Function(i) i.BatesNumber).Distinct()
 							'If IPRO Full Text append FT Lines
 							Dim key As String = bates
 							For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = "FT" + key).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value, comparer)

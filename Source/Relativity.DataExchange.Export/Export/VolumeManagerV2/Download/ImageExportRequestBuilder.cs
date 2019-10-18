@@ -44,7 +44,7 @@
 		{
 			var fileExportRequests = new List<ExportRequest>();
 			_logger.LogVerbose("Creating image files ExportRequests for artifact {artifactId}.", artifact.ArtifactID);
-			foreach (var image in artifact.Images.Cast<ImageExportInfo>())
+			foreach (var image in artifact.Images)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{

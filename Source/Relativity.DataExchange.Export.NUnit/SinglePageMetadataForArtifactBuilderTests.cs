@@ -6,7 +6,7 @@
 
 namespace Relativity.DataExchange.Export.NUnit
 {
-	using System.Collections;
+	using System.Collections.Generic;
 	using System.Threading;
 
 	using global::NUnit.Framework;
@@ -53,7 +53,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Images = new ArrayList
+				Images = new List<ImageExportInfo>
 				{
 					image1,
 					image2,
@@ -83,7 +83,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				BatesNumber = "image2",
 				PageOffset = null
 			};
-			ObjectExportInfo artifact = new ObjectExportInfo { Images = new ArrayList { image1, image2 } };
+			ObjectExportInfo artifact = new ObjectExportInfo { Images = new List<ImageExportInfo> { image1, image2 } };
 
 			// ACT
 			this.Instance.WriteLoadFileEntry(artifact, this.Writer.Object, CancellationToken.None);
@@ -116,7 +116,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Images = new ArrayList
+				Images = new List<ImageExportInfo>
 				{
 					image1,
 					image2,
@@ -168,7 +168,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Images = new ArrayList
+				Images = new List<ImageExportInfo>
 				{
 					image1,
 					image2,

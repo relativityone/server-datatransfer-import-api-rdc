@@ -6,7 +6,7 @@
 
 namespace Relativity.DataExchange.Export.NUnit
 {
-	using System.Collections;
+	using System.Collections.Generic;
 
 	using global::NUnit.Framework;
 
@@ -74,7 +74,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			HtmlCellFormatter subject = new HtmlCellFormatter(settings, new Mock<IFilePathTransformer>().Object);
 			ObjectExportInfo arg = new ObjectExportInfo()
 			{
-				Images = new ArrayList()
+				Images = new List<ImageExportInfo>()
 			};
 			var newResult = subject.CreateImageCell(arg);
 			Assert.AreEqual("<td></td>", newResult);
@@ -98,7 +98,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			ObjectExportInfo arg = new ObjectExportInfo()
 			{
-				Images = new ArrayList()
+				Images = new List<ImageExportInfo>()
 				{
 					new ImageExportInfo()
 					{
@@ -128,7 +128,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			ObjectExportInfo arg = new ObjectExportInfo()
 			{
-				Images = new ArrayList()
+				Images = new List<ImageExportInfo>()
 				{
 					new ImageExportInfo()
 					{
@@ -158,7 +158,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			ObjectExportInfo arg = new ObjectExportInfo()
 			{
-				Images = new ArrayList()
+				Images = new List<ImageExportInfo>()
 				{
 					new ImageExportInfo()
 					{

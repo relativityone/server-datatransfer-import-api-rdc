@@ -56,7 +56,7 @@
 				return;
 			}
 
-			List<ImageExportInfo> images = artifact.Images.Cast<ImageExportInfo>().ToList();
+			List<ImageExportInfo> images = artifact.Images;
 
 			if (images[0].SuccessfulRollup)
 			{
