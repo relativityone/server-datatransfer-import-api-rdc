@@ -1822,5 +1822,12 @@ Namespace Relativity.Desktop.Client
 				End Try
 			End If
 		End Sub
+
+		Public Sub ResetFieldsCache()
+			If (Not _fieldProviderCache Is Nothing) Then
+				_fieldProviderCache.ResetCache()
+			End If
+		End Sub
+
 	End Class
 End Namespace
