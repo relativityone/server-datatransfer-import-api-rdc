@@ -7,7 +7,7 @@
 namespace Relativity.DataExchange.Export.NUnit
 {
 	using System;
-	using System.Collections.Generic;
+	using System.Collections;
 	using System.IO;
 
 	using global::NUnit.Framework;
@@ -55,7 +55,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Images = new List<ImageExportInfo>()
+				Images = new ArrayList()
 			};
 
 			// ACT & ASSERT
@@ -67,7 +67,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Images = new List<ImageExportInfo>()
+				Images = new ArrayList()
 			};
 
 			string image1Location = "image_temp_location_1";
@@ -97,7 +97,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Images = new List<ImageExportInfo>()
+				Images = new ArrayList()
 			};
 
 			string image1Location = "image_temp_location_1";
@@ -136,7 +136,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Images = new List<ImageExportInfo>()
+				Images = new ArrayList()
 			};
 
 			string image1Location = "image_temp_location_1";
@@ -169,7 +169,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Images = new List<ImageExportInfo>()
+				Images = new ArrayList()
 			};
 
 			string image1Location = "image_temp_location_1";
@@ -198,7 +198,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Images = new List<ImageExportInfo>()
+				Images = new ArrayList()
 			};
 
 			string image1Location = "image_temp_location_1";
@@ -227,7 +227,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Images = new List<ImageExportInfo>()
+				Images = new ArrayList()
 			};
 
 			string image1Location = "image_temp_location_1";

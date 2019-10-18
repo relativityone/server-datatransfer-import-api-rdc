@@ -8,7 +8,7 @@
 		{
 			if (artifact.Images.Count > 0)
 			{
-				artifact.Images[0].SuccessfulRollup = false;
+				((ImageExportInfo) artifact.Images[0]).SuccessfulRollup = false;
 			}
 		}
 	}

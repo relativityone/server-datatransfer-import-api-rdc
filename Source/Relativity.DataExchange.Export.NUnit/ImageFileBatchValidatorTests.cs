@@ -7,8 +7,8 @@
 namespace Relativity.DataExchange.Export.NUnit
 {
 	using System;
-    using System.Collections.Generic;
-    using System.Threading;
+	using System.Collections;
+	using System.Threading;
 
 	using global::NUnit.Framework;
 
@@ -286,7 +286,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				SuccessfulRollup = false,
 				TempLocation = location2
 			};
-			var images = new List<ImageExportInfo>
+			ArrayList images = new ArrayList
 			{
 				image1,
 				image2
@@ -306,7 +306,7 @@ namespace Relativity.DataExchange.Export.NUnit
 					                        SuccessfulRollup = true,
 					                        TempLocation = location
 				                        };
-			var images = new List<ImageExportInfo> { image };
+			ArrayList images = new ArrayList { image };
 			return new ObjectExportInfo
 			{
 				Images = images
@@ -320,7 +320,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				FileGuid = string.Empty,
 				SuccessfulRollup = successfulRollup
 			};
-			var images = new List<ImageExportInfo>
+			ArrayList images = new ArrayList
 			{
 				image
 			};
