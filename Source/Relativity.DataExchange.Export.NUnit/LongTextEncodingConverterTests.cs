@@ -152,7 +152,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldThrowWhenConvertingNewFileAfterMarkingQueueAsCompleted()
+		public void ItShouldNotThrowWhenConvertingNewFileAfterMarkingQueueAsCompleted()
 		{
 			// ARRANGE
 			string fileName = "fileName";
@@ -163,7 +163,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileDownloadCompletedSubject.OnNext(true);
 
 			// ASSERT
-			Assert.Throws<InvalidOperationException>(() => this._fileDownloadSubject.OnNext(fileName));
+			this._fileDownloadSubject.OnNext(fileName);
 		}
 
 		[Test]
