@@ -1015,15 +1015,15 @@ namespace Relativity.DataExchange.Data
 		/// </returns>
 		private string[] GetLineBounded(bool saveData, int maximumFieldLength, int maximumLineLength)
 		{
-			ConditionalList<string> returnValue = new ConditionalList<string>(saveData);
-			ConditionalList<string> currentArrayList = returnValue;
+			ConditionalArrayList returnValue = new ConditionalArrayList(saveData);
+			ConditionalArrayList currentArrayList = returnValue;
 			bool hasHitEndOfLine = false;
 			while (this.Peek() != EofChar && !hasHitEndOfLine)
 			{
 				int charCode = this.Read();
 				if (currentArrayList.Count > maximumLineLength)
 				{
-					currentArrayList = new ConditionalList<string>(false);
+					currentArrayList = new ConditionalArrayList(false);
 				}
 
 				// TODO: Verify the usage of "Or" vs "OrAlso"
@@ -1086,7 +1086,7 @@ namespace Relativity.DataExchange.Data
 				this.PublishWarningMessage(args);
 			}
 
-			return returnValue.ToArray();
+			return (string[])returnValue.ToArray(typeof(string));
 		}
 
 		/// <summary>
