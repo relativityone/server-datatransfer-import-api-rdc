@@ -60,28 +60,46 @@
 
 		private void CompleteConversion(bool anyFileToConvert)
 		{
-			_logger.LogVerbose("Preparing to mark the long text encoding conversion queue complete...");
-			_logger.LogVerbose("Any files to convert: {anyFileToConvert} ", anyFileToConvert);
-			_longTextFilesToConvert.CompleteAdding();
-			_logger.LogVerbose("Successfully marked the long text encoding conversion queue complete.");
+			try
+			{
+				_logger.LogVerbose("Preparing to mark the long text encoding conversion queue complete...");
+				_logger.LogVerbose("Any files to convert: {anyFileToConvert} ", anyFileToConvert);
+				_longTextFilesToConvert.CompleteAdding();
+				_logger.LogVerbose("Successfully marked the long text encoding conversion queue complete.");
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Failed to mark the long text encoding conversion queue complete.");
+			}
 		}
 
 		private void AddForConversion(string fileName)
 		{
 			try
 			{
-				_logger.LogVerbose("Preparing to add the '{fileName}' long text file to the queue...", fileName);
+				_logger.LogVerbose("Preparing to add the '{LongTextFileName}' long text file to the queue...", fileName);
 				_longTextFilesToConvert.Add(fileName, this._cancellationToken);
 				_logger.LogVerbose(
-					"Successfully added the '{fileName}' long text file to the queue.",
+					"Successfully added the '{LongTextFileName}' long text file to the queue.",
 					fileName);
 			}
-			catch (InvalidOperationException e2)
+			catch (InvalidOperationException ex)
 			{
-				_logger.LogError(
-					e2,
-					"The long text encoding converter received a transfer successful progress event but the blocking collection has already been marked as completed. This exception suggests either a logic or task switch context issue.");
-				throw;
+				this._logger.LogWarning(
+					ex,
+					"The {LongTextFileName} long text file cannot be added to the encoding conversion queue because it has been marked as completed.",
+					fileName);
+			}
+			catch (OperationCanceledException ex)
+			{
+				this._logger.LogInformation(ex, "The cancellation operation has been requested by the user");
+			}
+			catch (Exception ex)
+			{
+				this._logger.LogError(
+					ex,
+					"The {LongTextFileName} long text file cannot be added to the encoding conversion queue because an unexpected error occurred.",
+					fileName);
 			}
 		}
 
@@ -120,12 +138,11 @@
 			}
 			catch (OperationCanceledException e)
 			{
-				_logger.LogInformation(e, "LongText encoding conversion canceled.");
+				_logger.LogInformation(e, "The long text encoding conversion is canceled.");
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Failed to convert long text file.");
-				throw;
+				_logger.LogError(ex, "An error occurred converting the long text file.");
 			}
 		}
 
