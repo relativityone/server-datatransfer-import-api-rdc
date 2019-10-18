@@ -8,6 +8,7 @@
             Public Const METRIC_JOB_STARTED As String = "RDC.MetricJobStarted"
             Public Const METRIC_JOB_PROGRESS As String = "RDC.MetricJobProgress"
             Public Const METRIC_JOB_END_REPORT As String = "RDC.MetricJobEndReport"
+			Public Const METRIC_AUTHENTICATION_TYPE As String = "RDC.MetricAuthenticationType"
         End Class
 
         class SumBucketPrefix
@@ -43,6 +44,9 @@
             Public Const COMPLETED_RECORDS As String = "CompletedRecords"
             Public Const THROUGHPUT_BYTES_PER_SECOND As String = "ThroughputBytesPerSecond"
             Public Const THROUGHPUT_RECORDS_PER_SECOND As String = "ThroughputRecordsPerSecond"
+            Public Const AUTHENTICATION_METHOD As String = "AuthenticationMethod"
+            Public Const SYSTEM_TYPE As String = "SystemType"
+            Public Const SUB_SYSTEM_TYPE As String = "SubSystemType"
         End Class
 
         ''' <summary>
@@ -59,5 +63,14 @@
             Public Const COMPLETED As String = "Completed"
             Public Const FAILED As String = "Failed"
         End Class
+
+        ''' <summary>
+        ''' Contain values for <see cref="MetricAuthenticationType.AuthenticationMethod"/> property.
+        ''' </summary>
+        Enum AuthenticationMethod
+            UsernamePassword
+            BearerToken
+            Windows
+        End Enum
     End Class
 End Namespace
