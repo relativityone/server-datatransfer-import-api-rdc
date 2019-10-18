@@ -21,7 +21,13 @@ Namespace kCura.WinEDDS
 		Public ReturnValueCollection As Hashtable
 		Public ReturnValueKey As Guid
 
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(ByVal formType As Int32)
+			Me.New(formType, RelativityLogger.Instance)
+		End Sub
+
+		Public Sub New(ByVal formType As Int32, logger As Global.Relativity.Logging.ILog)
+			MyBase.New(logger)
 			_formType = formType
 		End Sub
 

@@ -9,6 +9,7 @@ namespace Relativity.DataExchange.Transfer
 	using System.Globalization;
 
 	using Relativity.DataExchange.Resources;
+	using Relativity.Logging;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -24,8 +25,8 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TapiJobRetryListener"/> class.
 		/// </summary>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <param name="maxRetryCount">
 		/// The max retry count.
@@ -33,8 +34,8 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="context">
 		/// The transfer context.
 		/// </param>
-		public TapiJobRetryListener(ITransferLog log, int maxRetryCount, TransferContext context)
-			: base(log, context)
+		public TapiJobRetryListener(ILog logger, int maxRetryCount, TransferContext context)
+			: base(logger, context)
 		{
 			this.maxRetryCount = maxRetryCount;
 		}

@@ -167,7 +167,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(exportFile As kCura.WinEDDS.ExportFile, 
 		               context As ProcessContext,
 		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
-			Me.New(exportFile, context, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig, RelativityLogFactory.CreateLog(), CancellationToken.None)
+			Me.New(exportFile, context, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig, RelativityLogger.Instance, CancellationToken.None)
 		End Sub
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
@@ -176,7 +176,7 @@ Namespace kCura.WinEDDS
 		               serviceFactory As Service.Export.IServiceFactory,
 		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
 		               exportConfig As IExportConfig)
-			Me.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, RelativityLogFactory.CreateLog(), CancellationToken.None)
+			Me.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, RelativityLogger.Instance, CancellationToken.None)
 		End Sub
 
 		Public Sub New(exportFile As kCura.WinEDDS.ExportFile,

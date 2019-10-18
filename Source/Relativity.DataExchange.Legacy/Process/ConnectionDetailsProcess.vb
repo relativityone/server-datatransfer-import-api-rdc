@@ -11,9 +11,13 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _cookieContainer As Net.CookieContainer
 		Private ReadOnly _caseInfo As CaseInfo
 
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As CaseInfo)
-			MyBase.New()
+			Me.New(credential, cookieContainer, caseInfo, RelativityLogger.Instance)
+		End Sub
 
+		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As CaseInfo, logger As Global.Relativity.Logging.ILog)
+			MyBase.New(logger)
 			_credential = credential
 			_cookieContainer = cookieContainer
 			_caseInfo = caseInfo
@@ -33,7 +37,7 @@ Namespace kCura.WinEDDS
 			parameters.WebServiceUrl = Me.AppSettings.WebApiServiceUrl
 			parameters.WorkspaceId = _caseInfo.ArtifactID
 			Dim connectionInfo As Global.Relativity.Transfer.RelativityConnectionInfo = tapiObjectService.CreateRelativityConnectionInfo(parameters)
-			Using transferLog As New RelativityTransferLog()
+			Using transferLog As New RelativityTransferLog(Me.Logger)
 				Using transferHost As New Global.Relativity.Transfer.RelativityTransferHost(connectionInfo, transferLog)
 					Dim context As New Global.Relativity.Transfer.DiagnosticsContext()
 					Dim configuration As New Global.Relativity.Transfer.DiagnosticsConfiguration(context, _cookieContainer)

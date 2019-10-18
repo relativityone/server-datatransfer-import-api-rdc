@@ -143,9 +143,9 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
-		public virtual Relativity.Transfer.IRelativityTransferHost CreateRelativityTransferHost(Relativity.Transfer.RelativityConnectionInfo connectionInfo, Relativity.Transfer.ITransferLog log)
+		public virtual Relativity.Transfer.IRelativityTransferHost CreateRelativityTransferHost(Relativity.Transfer.RelativityConnectionInfo connectionInfo, ILog logger)
 		{
-			return new Relativity.Transfer.RelativityTransferHost(connectionInfo, log);
+			return new Relativity.Transfer.RelativityTransferHost(connectionInfo, new RelativityTransferLog(logger));
 		}
 
 		/// <inheritdoc />
@@ -156,7 +156,7 @@ namespace Relativity.DataExchange.Transfer
 				throw new ArgumentException("The client unique identifier must be non-empty.", nameof(clientId));
 			}
 
-			using (var transferLog = new RelativityTransferLog())
+			using (var transferLog = new RelativityTransferLog(RelativityLogger.Instance))
 			{
 				foreach (var clientMetadata in Relativity.Transfer.TransferClientHelper.SearchAvailableClients(transferLog))
 				{
@@ -222,9 +222,10 @@ namespace Relativity.DataExchange.Transfer
 				throw new ArgumentNullException(nameof(parameters));
 			}
 
-			RelativityConnectionInfo connectionInfo = this.CreateRelativityConnectionInfo(parameters);
-			using (ITransferLog transferLog = new RelativityTransferLog(logger, false))
-			using (IRelativityTransferHost transferHost = new RelativityTransferHost(connectionInfo, transferLog))
+			using (ITransferLog transferLog = new RelativityTransferLog(logger))
+			using (IRelativityTransferHost transferHost = new RelativityTransferHost(
+				this.CreateRelativityConnectionInfo(parameters),
+				transferLog))
 			{
 				Workspace workspace = await transferHost.GetWorkspaceAsync(parameters.WorkspaceId, token)
 					                      .ConfigureAwait(false);
@@ -244,8 +245,9 @@ namespace Relativity.DataExchange.Transfer
 		/// <inheritdoc />
 		public virtual async Task<string> GetWorkspaceClientDisplayNameAsync(TapiBridgeParameters2 parameters)
 		{
-			Relativity.Transfer.ITransferClient transferClient = await this.GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
-			return transferClient.DisplayName;
+			Tuple<Guid, string> transferClientInfo =
+				await this.GetWorkspaceTransferClientInfoAsync(parameters).ConfigureAwait(false);
+			return transferClientInfo.Item2;
 		}
 
 		/// <inheritdoc />
@@ -256,8 +258,9 @@ namespace Relativity.DataExchange.Transfer
 				throw new ArgumentNullException(nameof(parameters));
 			}
 
-			Relativity.Transfer.ITransferClient transferClient = await this.GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
-			return transferClient.Id;
+			Tuple<Guid, string> transferClientInfo =
+				await this.GetWorkspaceTransferClientInfoAsync(parameters).ConfigureAwait(false);
+			return transferClientInfo.Item1;
 		}
 
 		/// <inheritdoc />
@@ -271,9 +274,10 @@ namespace Relativity.DataExchange.Transfer
 				throw new ArgumentNullException(nameof(parameters));
 			}
 
-			RelativityConnectionInfo connectionInfo = this.CreateRelativityConnectionInfo(parameters);
-			using (ITransferLog transferLog = new RelativityTransferLog(logger, false))
-			using (IRelativityTransferHost transferHost = new RelativityTransferHost(connectionInfo, transferLog))
+			using (ITransferLog transferLog = new RelativityTransferLog(logger))
+			using (IRelativityTransferHost transferHost = new RelativityTransferHost(
+				this.CreateRelativityConnectionInfo(parameters),
+				transferLog))
 			{
 				IFileStorageSearch service = transferHost.CreateFileStorageSearch();
 				FileStorageSearchContext context =
@@ -308,55 +312,50 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
-		/// Asynchronously gets the Transfer API client that will be used for the given workspace.
+		/// Asynchronously gets the transfer client info that will be used for the given workspace.
 		/// </summary>
 		/// <param name="parameters">
 		/// The bridge connection parameters.
 		/// </param>
 		/// <returns>
-		/// The <see cref="Relativity.Transfer.ITransferClient"/> instance.
+		/// The <see cref="Tuple{Guid,String}"/> containing the transfer client identifier and display name.
 		/// </returns>
-		private async Task<Relativity.Transfer.ITransferClient> GetWorkspaceClientAsync(TapiBridgeParameters2 parameters)
+		private async Task<Tuple<Guid, string>> GetWorkspaceTransferClientInfoAsync(TapiBridgeParameters2 parameters)
 		{
-			var configuration = new Relativity.Transfer.ClientConfiguration
-			{
-				CookieContainer = parameters.WebCookieContainer,
-				ClientId = this.GetClientId(parameters),
-			};
+			Relativity.Transfer.ClientConfiguration configuration = new Relativity.Transfer.ClientConfiguration
+				                                                        {
+					                                                        CookieContainer =
+						                                                        parameters.WebCookieContainer,
+					                                                        ClientId = this.GetClientId(parameters),
+				                                                        };
 
-			try
+			using (RelativityTransferLog transferLog = new RelativityTransferLog(RelativityLogger.Instance))
+			using (RelativityTransferHost transferHost = new RelativityTransferHost(
+				this.CreateRelativityConnectionInfo(parameters),
+				transferLog))
 			{
-				var connectionInfo = this.CreateRelativityConnectionInfo(parameters);
-				using (var transferLog = new RelativityTransferLog())
-				using (var transferHost = new Relativity.Transfer.RelativityTransferHost(connectionInfo, transferLog))
+				if (configuration.ClientId != Guid.Empty)
 				{
-					if (configuration.ClientId != Guid.Empty)
+					using (Relativity.Transfer.ITransferClient client = transferHost.CreateClient(configuration))
 					{
-						using (var client = transferHost.CreateClient(configuration))
+						Relativity.Transfer.ISupportCheckResult supportCheck =
+							await client.SupportCheckAsync().ConfigureAwait(false);
+						if (supportCheck.IsSupported)
 						{
-							var supportCheck = await client.SupportCheckAsync().ConfigureAwait(false);
-							if (supportCheck.IsSupported)
-							{
-								return client;
-							}
+							return Tuple.Create(client.Id, client.DisplayName);
 						}
 					}
-
-					var clientStrategy = string.IsNullOrEmpty(parameters.ForceClientCandidates)
-																	 ? new Relativity.Transfer.TransferClientStrategy()
-																	 : new Relativity.Transfer.TransferClientStrategy(parameters.ForceClientCandidates);
-					using (var forcedClient = await transferHost.CreateClientAsync(configuration, clientStrategy)
-																				.ConfigureAwait(false))
-					{
-						return forcedClient;
-					}
 				}
-			}
-			catch (Exception ex)
-			{
-				Relativity.Logging.Tools.InternalLogger.WriteFromExternal(
-								"Unexpected error occurred inside Transfer API layer. Exception: " + ex, new LoggerOptions() { System = "WinEDDS" });
-				throw;
+
+				Relativity.Transfer.TransferClientStrategy clientStrategy =
+					string.IsNullOrEmpty(parameters.ForceClientCandidates)
+						? new TransferClientStrategy()
+						: new TransferClientStrategy(parameters.ForceClientCandidates);
+				using (Relativity.Transfer.ITransferClient client =
+					await transferHost.CreateClientAsync(configuration, clientStrategy).ConfigureAwait(false))
+				{
+					return Tuple.Create(client.Id, client.DisplayName);
+				}
 			}
 		}
 	}

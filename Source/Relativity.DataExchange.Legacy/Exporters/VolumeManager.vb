@@ -145,7 +145,7 @@ Namespace kCura.WinEDDS
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As Timekeeper2, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As Global.Relativity.DataExchange.Io.IFile, directoryHelper As Global.Relativity.DataExchange.Io.IDirectory, fileNameProvider As IFileNameProvider)
-			Me.New(settings, totalFiles, parent, downloadHandler, t, columnNamesInOrder, statistics, fileHelper, directoryHelper, fileNameProvider, RelativityLogFactory.CreateLog())
+			Me.New(settings, totalFiles, parent, downloadHandler, t, columnNamesInOrder, statistics, fileHelper, directoryHelper, fileNameProvider, RelativityLogger.Instance)
 		End Sub
 
 		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As Timekeeper2, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As Global.Relativity.DataExchange.Io.IFile, directoryHelper As Global.Relativity.DataExchange.Io.IDirectory, fileNameProvider As IFileNameProvider, logger as ILog)
