@@ -7,8 +7,8 @@
 namespace Relativity.DataExchange.Export.NUnit
 {
 	using System;
-	using System.Collections.Generic;
-	using System.Threading;
+    using System.Collections.Generic;
+    using System.Threading;
 
 	using global::NUnit.Framework;
 
