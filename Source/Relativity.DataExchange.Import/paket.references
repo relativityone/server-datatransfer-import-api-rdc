@@ -2,7 +2,6 @@ kcura.outsidein.fi.win32
 newtonsoft.json
 relativity.datatransfer.messageservice
 relativity.kepler.client
-relativity.logging
 relativity.logging.interfaces
 relativity.oauth2client
 relativity.oauth2client.implicit
