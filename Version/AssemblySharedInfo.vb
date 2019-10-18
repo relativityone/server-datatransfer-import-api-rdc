@@ -11,7 +11,7 @@ Imports System.Resources
 <assembly: AssemblyTrademark("Relativity")>
 <assembly: AssemblyCulture("")>
 
-' Note: do NOT modify these values! This is automatically updated by GitVersion during the build script.
+' Note: do NOT modify these values! This is automatically updated by powershell during the build script.
 <assembly: AssemblyVersion("1.0.0.0")>
 <assembly: AssemblyFileVersion("1.0.0.0")>
 <assembly: AssemblyConfiguration("Release")>

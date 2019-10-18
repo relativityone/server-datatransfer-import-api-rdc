@@ -77,7 +77,7 @@ Namespace kCura.WinEDDS
 
 		Private _processId As Guid
 		Private _parentArtifactTypeId As Int32?
-		Private _unmappedRelationalFields As System.Collections.ArrayList
+		Private _unmappedRelationalFields As List(Of EDDS.WebAPI.DocumentManagerBase.Field)
 
 		Protected BulkLoadFileFieldDelimiter As String
 
@@ -154,13 +154,13 @@ Namespace kCura.WinEDDS
 		Public ReadOnly Property DocumentFieldsForCreate() As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			Get
 				If _fieldsForCreate Is Nothing Then
-					Dim fieldsForCreate As New System.Collections.ArrayList
+					Dim fieldsForCreate As New List(Of kCura.EDDS.WebAPI.DocumentManagerBase.Field)
 					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(ArtifactType.Document)
 						If System.Array.IndexOf(_fieldArtifactIds, field.ArtifactID) <> -1 Then
 							fieldsForCreate.Add(field)
 						End If
 					Next
-					_fieldsForCreate = DirectCast(fieldsForCreate.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
+					_fieldsForCreate = fieldsForCreate.ToArray()
 				End If
 				Return _fieldsForCreate
 			End Get
@@ -215,24 +215,24 @@ Namespace kCura.WinEDDS
 				Return retval
 			End Get
 		End Property
-
+		
 		Public ReadOnly Property UnmappedRelationalFields() As System.Collections.ArrayList
 			Get
 				If _unmappedRelationalFields Is Nothing Then
-					Dim mappedRelationalFieldIds As New System.Collections.ArrayList
+					Dim mappedRelationalFieldIds As New List(Of Int32)
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
 						If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = FieldCategory.Relational AndAlso item.DocumentField.ImportBehavior = kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
 							mappedRelationalFieldIds.Add(item.DocumentField.FieldID)
 						End If
 					Next
-					_unmappedRelationalFields = New System.Collections.ArrayList
+					_unmappedRelationalFields = New List(Of EDDS.WebAPI.DocumentManagerBase.Field)
 					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(_artifactTypeID)
 						If field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Relational And Not mappedRelationalFieldIds.Contains(field.ArtifactID) AndAlso field.ImportBehavior = kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
 							_unmappedRelationalFields.Add(field)
 						End If
 					Next
 				End If
-				Return _unmappedRelationalFields
+				Return new System.Collections.ArrayList(_unmappedRelationalFields)
 			End Get
 		End Property
 
@@ -492,7 +492,7 @@ Namespace kCura.WinEDDS
 
 			' This will tie both native and BCP to a single unique identifier.
 			nativeParameters.ClientRequestId = Guid.NewGuid()
-			nativeParameters.Credentials = If(args.TapiCredentials, args.Credentials)
+			nativeParameters.Credentials = If(args.WebApiCredential.Credential, args.Credentials)
 			nativeParameters.AsperaDocRootLevels = AppSettings.Instance.TapiAsperaNativeDocRootLevels
 			nativeParameters.FileShare = args.CaseInfo.DocumentPath
 			nativeParameters.ForceAsperaClient = AppSettings.Instance.TapiForceAsperaClient
@@ -530,7 +530,7 @@ Namespace kCura.WinEDDS
 
 			' Never preserve timestamps for BCP load files.
 			bcpParameters.PreserveFileTimestamps = false
-			CreateTapiBridges(nativeParameters, bcpParameters)
+			CreateTapiBridges(nativeParameters, bcpParameters, args.WebApiCredential.TokenProvider)
 		End Sub
 
 #End Region
@@ -733,12 +733,12 @@ Namespace kCura.WinEDDS
 				End Using
 				Timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
 				Me.LogInformation("Successfully imported {ImportCount} documents via WinEDDS.", Me.FileTapiProgressCount)
-				Me.DumpStatisticsInfo()
+				Me.LogStatistics()
 				Return True
 			Catch ex As System.Exception
 				Me.WriteFatalError(Me.CurrentLineNumber, ex)
 				Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
-				Me.DumpStatisticsInfo()
+				Me.LogStatistics()
 			Finally
 				Using Timekeeper.CaptureTime("ReadFile_CleanupTempTables")
 					DestroyTapiBridges()
@@ -795,15 +795,14 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub InitializeFieldIdList()
-			Dim fieldIdList As New System.Collections.ArrayList
+			Dim fieldIdList As New List(Of Int32)
 			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
 				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 Then
-					'If item.DocumentField.FieldCategoryID <> FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
 					fieldIdList.Add(item.DocumentField.FieldID)
 				End If
 			Next
 			fieldIdList.Add(Me.FileInfoField(_artifactTypeID).ArtifactID)
-			_fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
+			_fieldArtifactIds = fieldIdList.ToArray()
 		End Sub
 
 		Private Function ManageDocument(ByVal fileTypeIdentifier As IFileTypeIdentifier, ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String
@@ -1227,7 +1226,6 @@ Namespace kCura.WinEDDS
 					End If
 
 					Dim start As Int64 = System.DateTime.Now.Ticks
-
 					If ShouldImport Then
 						Me.PushNativeBatch(outputNativePath, shouldCompleteMetadataJob, lastRun)
 					End If
@@ -1393,21 +1391,22 @@ Namespace kCura.WinEDDS
 			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 			settings.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
 			settings.Billable = _settings.Billable
-			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing Then
+			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing AndAlso Not _Task.IsFaulted AndAlso Not _Task.IsCanceled Then
 				WaitOnPushBatchTask()
 				_task = Nothing
 			End If
 			Dim makeServiceCalls As Action =
-					Sub()
-						Dim start As Int64 = DateTime.Now.Ticks
-						Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
+				    Sub()
+					    Dim start As Int64 = DateTime.Now.Ticks
+					    Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
-						Statistics.ProcessRunResults(runResults)
-						Statistics.SqlTime += (DateTime.Now.Ticks - start)
+					    Statistics.ProcessRunResults(runResults)
+					    Statistics.SqlTime += (DateTime.Now.Ticks - start)
+					    Statistics.BatchCount += 1
 
-						UpdateStatisticsSnapshot(DateTime.Now)
-						Me.ManageErrors(_artifactTypeID)
-					End Sub
+					    UpdateStatisticsSnapshot(DateTime.Now)
+					    Me.ManageErrors(_artifactTypeID)
+				    End Sub
 			If _usePipeliningForNativeAndObjectImports Then
 				Dim f As New System.Threading.Tasks.TaskFactory()
 				_task = f.StartNew(makeServiceCalls)
@@ -1432,7 +1431,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private _task As System.Threading.Tasks.Task = Nothing
-		Private _isRunOccurring As Boolean = False
 		Protected Function GetMassImportOverlayBehavior(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior?) As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior
 			Select Case inputOverlayType
 				Case LoadFile.FieldOverlayBehavior.MergeAll
@@ -1479,10 +1477,6 @@ Namespace kCura.WinEDDS
 				retval.Add(Me.GetIsSupportedRelativityFileTypeField)
 				retval.Add(Me.GetRelativityFileTypeField)
 				retval.Add(Me.GetHasNativesField)
-			Else
-				'If (_filePathColumnIndex <> -1) AndAlso _uploadFiles Then
-				'	retval.Add(Me.GetObjectFileField())
-				'End If
 			End If
 			Return DirectCast(retval.ToArray(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo)), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo())
 		End Function
@@ -1816,15 +1810,6 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
-		Private Function GetObjectFileField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In AllFields(_artifactTypeID)
-				If field.FieldTypeID = FieldType.File Then
-					Return Me.FieldDtoToFieldInfo(field)
-				End If
-			Next
-			Return Nothing
-		End Function
-
 		Private Function FieldDtoToFieldInfo(ByVal input As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			retval.ArtifactID = input.ArtifactID
@@ -1881,10 +1866,10 @@ Namespace kCura.WinEDDS
 				For Each item In _fieldMap
 					If FirstTimeThrough Then
 						If item.DocumentField Is Nothing Then
-							WriteStatusLine(EventType2.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)
+							WriteStatusLine(EventType2.Warning, $"File column '{(item.NativeFileColumnIndex + 1)}' will be unmapped", 0)
 						End If
 						If item.NativeFileColumnIndex = -1 Then
-							WriteStatusLine(EventType2.Warning, String.Format("Field '{0}' will be unmapped", item.DocumentField.FieldName), 0)
+							WriteStatusLine(EventType2.Warning, $"Field '{item.DocumentField.FieldName}' will be unmapped", 0)
 						End If
 					End If
 					If Not item.DocumentField Is Nothing Then
@@ -2360,7 +2345,7 @@ Namespace kCura.WinEDDS
 			RaiseEvent FieldMapped(sourceField, workspaceField)
 		End Sub
 
-		Public Sub Dispose() Implements IDisposable.Dispose
+		Public Overridable Sub Dispose() Implements IDisposable.Dispose
 			Me.errorMessageFileWriter?.Dispose()
 			Me.prePushErrorWriter?.Dispose()
 		End Sub

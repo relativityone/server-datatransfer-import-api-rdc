@@ -5,6 +5,7 @@
 ' ----------------------------------------------------------------------------
 
 Imports System.Globalization
+Imports System.Net
 Imports System.Threading
 
 Imports kCura.WinEDDS.Helpers
@@ -16,6 +17,7 @@ Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Transfer
 Imports Relativity.Logging
+Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
 
@@ -35,6 +37,7 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _statistics As New Statistics
 		Private WithEvents _bulkLoadTapiBridge As UploadTapiBridge2
 		Private WithEvents _fileTapiBridge As UploadTapiBridge2
+		Private _bulkLoadTapiClient As TapiClient = TapiClient.None
 		Private _bulkLoadTapiClientName As String
 		Private _fileTapiClient As TapiClient = TapiClient.None
 		Private _fileTapiClientName As String
@@ -88,6 +91,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected ReadOnly Property BulkLoadTapiClient As TapiClient
+			Get
+				Return _bulkLoadTapiClient
+			End Get
+		End Property
+
 		Protected ReadOnly Property BulkLoadTapiClientName As String
 			Get
 				Return _bulkLoadTapiClientName
@@ -134,6 +143,17 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public ReadOnly Property TapiClient As TapiClient
+			Get
+				If Not FileTapiClient = TapiClient.None
+					Return FileTapiClient
+				ElseIf Not BulkLoadTapiClient = TapiClient.None
+					Return BulkLoadTapiClient
+				End If
+				Return TapiClient.None
+			End Get
+		End Property
+
 		Public Property DisableNativeLocationValidation As Boolean = AppSettings.Instance.DisableThrowOnIllegalCharacters
 
 		Protected Property FileTapiProgressCount As Int32
@@ -171,13 +191,11 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Protected Shared Function IsTimeoutException(ByVal ex As Exception) As Boolean
-			If ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlTimeoutException) Then
+			If TypeOf ex Is Service.BulkImportManager.BulkImportSqlTimeoutException Then
 				Return True
-			ElseIf TypeOf ex Is System.Net.WebException AndAlso ex.Message.ToString.Contains("timed out") Then
-				Return True
-			Else
-				Return False
 			End If
+			Dim webException As System.Net.WebException = TryCast(ex, System.Net.WebException) 
+			return Not webException Is Nothing AndAlso webException.Status = WebExceptionStatus.Timeout
 		End Function
 
 		Protected Shared Function IsBulkImportSqlException(ByVal ex As Exception) As Boolean
@@ -371,8 +389,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 
-		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters2, ByVal bulkLoadParameters As UploadTapiBridgeParameters2)
-			_fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, Me.CancellationToken)
+		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters2, ByVal bulkLoadParameters As UploadTapiBridgeParameters2, authTokenProvider As IAuthenticationTokenProvider)
+			_fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, authTokenProvider, Me.CancellationToken)
 			AddHandler _fileTapiBridge.TapiClientChanged, AddressOf FileOnTapiClientChanged
 			AddHandler _fileTapiBridge.TapiFatalError, AddressOf OnTapiFatalError
 			AddHandler _fileTapiBridge.TapiProgress, AddressOf FileOnTapiProgress
@@ -381,7 +399,7 @@ Namespace kCura.WinEDDS
 			AddHandler _fileTapiBridge.TapiErrorMessage, AddressOf OnTapiErrorMessage
 			AddHandler _fileTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
 
-			_bulkLoadTapiBridge = TapiBridgeFactory.CreateUploadBridge(bulkLoadParameters, Me.Logger, Me.CancellationToken)
+			_bulkLoadTapiBridge = TapiBridgeFactory.CreateUploadBridge(bulkLoadParameters, Me.Logger, authTokenProvider, Me.CancellationToken)
 			_bulkLoadTapiBridge.TargetPath = bulkLoadParameters.FileShare
 			AddHandler _bulkLoadTapiBridge.TapiClientChanged, AddressOf BulkLoadOnTapiClientChanged
 			AddHandler _bulkLoadTapiBridge.TapiStatistics, AddressOf BulkLoadOnTapiStatistics
@@ -426,19 +444,11 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		''' <summary>
-		''' Dump the statistic object.
+		''' Logs the statistics object.
 		''' </summary>
-		Protected Sub DumpStatisticsInfo()
-			Me.LogInformation("Statistics info:")
-			Me.LogInformation("Document count: {DocCount}", _statistics.DocCount)
-			Me.LogInformation("Documents created: {DocsCreated}", _statistics.DocumentsCreated)
-			Me.LogInformation("Documents updated: {DocsUpdated}", _statistics.DocumentsUpdated)
-			Me.LogInformation("Files processed: {FilesProcessed}", _statistics.FilesProcessed)
-
-			Dim pair As DictionaryEntry
-			For Each pair In _statistics.ToDictionary()
-				Me.LogInformation("{StatsKey}: {StatsValue}", pair.Key, pair.Value)
-			Next
+		Protected Sub LogStatistics()
+			Dim statisticsDict As System.Collections.Generic.IDictionary(Of String, Object) = _statistics.ToDictionaryForLogs()
+			Me.LogInformation("Import statistics: {@Statistics}", statisticsDict)
 		End Sub
 
 		Protected Sub LogInformation(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
@@ -514,6 +524,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub BulkLoadOnTapiClientChanged(ByVal sender As Object, ByVal e As TapiClientEventArgs)
+			Me._bulkLoadTapiClient = e.Client
 			Me._bulkLoadTapiClientName = e.Name
 			Me.OnTapiClientChanged()
 		End Sub
@@ -541,6 +552,7 @@ Namespace kCura.WinEDDS
 
 				If ShouldImport AndAlso e.Successful Then
 					Me.FileTapiProgressCount += 1
+					_statistics.NativeFilesTransferredCount += 1
 					WriteTapiProgressMessage($"End upload '{e.FileName}' file. ({System.DateTime.op_Subtraction(e.EndTime, e.StartTime).Milliseconds}ms)", e.LineNumber)
 				End If
 			End SyncLock
@@ -550,6 +562,10 @@ Namespace kCura.WinEDDS
 			SyncLock _syncRoot
 				If e.Completed Then
 					_batchMetadataTapiProgressCount += 1
+				End If
+
+				If ShouldImport AndAlso e.Successful Then
+					_statistics.MetadataFilesTransferredCount += 1
 				End If
 			End SyncLock
 		End Sub

@@ -26,13 +26,11 @@ properties {
     $UnitTestsReportDir = Join-Path $TestReportsDir "unit-tests"
     $UnitTestsResultXmlFile = Join-Path $UnitTestsReportDir "test-results-unit.xml"
     $ExtentCliExe = Join-Path $PackagesDir "extent\tools\extent.exe"
-    $GitVersionExe = Join-Path $PackagesDir "GitVersion.CommandLine\tools\GitVersion.exe"
     $NunitExe = Join-Path $PackagesDir "NUnit.ConsoleRunner\tools\nunit3-console.exe"
     $DotCoverExe = Join-Path $PackagesDir "JetBrains.dotCover.CommandLineTools\tools\dotCover.exe"
     $ReportGeneratorExe = Join-Path $PackagesDir "ReportGenerator\tools\net47\ReportGenerator.exe"
     $PaketExe = Join-Path $PaketDir "paket.exe"
     $ProgetUrl = "https://proget.kcura.corp/nuget/NuGet"
-    $ProgetApiKey = "03abad83-912d-4f24-ae99-03b15444eec8"
 
     # Installer paths
     $SignToolPath = "${Env:ProgramFiles(x86)}\Windows Kits\8.1\bin\x86\signtool.exe"
@@ -54,8 +52,53 @@ properties {
     $PackageTemplateRegex = $Null
     $ILMerge = $Null
     $Sign = $Null
-    $ForcePublishRdcPackage = $Null
+    $SkipPublishRdcPackage = $Null
+    $SkipPublishSdkPackage = $Null
     $Simulate = $Null
+    $ProgetApiKey = $Null
+}
+enum BranchType 
+{
+    Release
+    HotfixRelease
+    Develop
+    FeatureBranch
+}
+
+Function Get-CurrentBranchType{
+    param(
+        [string]$currentBranch
+    )
+    
+    $jiraVersionNumber = Get-JiraTicketNumberFromBranchName
+    If ($currentBranch.ToString() -eq "develop" ) 
+    {
+       return [BranchType]::Develop
+    }    
+    elseif ($currentBranch.ToString().StartsWith("release-")) 
+    {
+        if(-Not ($currentBranch.Contains("$major.$minor")))
+        {
+            $(Throw New-Object System.ArgumentException "Current branch should contain the latest tag : currentbranch = $currentBranch, last tag = $version, string to find = $major.$minor", "tag not found")
+        }
+        if($currentBranch -like "*hotfix*")
+        {
+             return [BranchType]::HotfixRelease
+        }
+        return [BranchType]::Release
+    }
+    elseif (![string]::IsNullOrEmpty($jiraVersionNumber)) 
+    {
+        if(!$currentBranch.StartsWith($jiraVersionNumber))
+        {
+            throw "Branch should start with the jira version number, detected jira version number = '$jiraVersionNumber', and branch = '$Branch'"
+        }
+        return [BranchType]::FeatureBranch
+    }
+    else
+    {
+        $(Throw New-Object System.ArgumentException "Branch must start with 'feature' or 'bugfix' (case sensitive), or be equal to 'develop', current branch is '$currentBranch'","branch name")
+    }
 }
 
 task Build -Description "Builds the source code"  {
@@ -190,7 +233,7 @@ task BuildInstallPackages -Description "Builds all install packages" {
             Write-Output "Successfully built the RDC bootstrapper package."
         } -errorMessage "There was an error building the RDC bootstrapper."
 
-		Write-Output "Successfuly built all RDC MSI and bootstrapper packages."
+        Write-Output "Successfuly built all RDC MSI and bootstrapper packages."
     }
     finally {
         Remove-EmptyLogFile $ErrorFilePath
@@ -203,12 +246,9 @@ task BuildPackages -Depends BuildRdcPackage,BuildSdkPackages -Description "Build
 task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
     Initialize-Folder $LogsDir -Safe
     Initialize-Folder $PackagesArtifactsDir -Safe
-    $majorMinorPatchVersion = exec {
-        & $GitVersionExe /output json /showvariable MajorMinorPatch
-    } -errorMessage "There was an error retrieving MajorMinorPatch using GitVersion."
+    $version = Get-ReleaseVersion "$Branch"
 
-    $packageVersion =  Format-NuGetPackageVersion -MajorMinorPatchVersion $majorMinorPatchVersion
-    Write-Host "Package version: $packageVersion"
+    Write-Host "Package version: $version"
     Write-Host "Working directory: $PSScriptRoot"
     $packageLogFile = Join-Path $LogsDir "package-build.log"
 
@@ -222,7 +262,7 @@ task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
         
         Write-Host "Creating package for template '$packageTemplateFile' and outputting to '$PackagesArtifactsDir'."
         exec {
-             & $PaketExe pack --template `"$packageTemplateFile`" --version $packageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" 
+             & $PaketExe pack --template `"$packageTemplateFile`" --version $version --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" 
         } -errorMessage "There was an error creating the SDK NUGet package."
     }
 }
@@ -232,7 +272,20 @@ task BuildRdcPackage -Description "Builds the RDC NuGet package" {
     Initialize-Folder $PackagesArtifactsDir -Safe
 
     $majorMinorPatchVersion = Get-RdcWixVersion 
-    $packageVersion =  Format-NuGetPackageVersion -MajorMinorPatchVersion $majorMinorPatchVersion
+    $postFix = Get-ReleaseVersion "$Branch" -postFixOnly
+    
+    
+    [BranchType]$typeOfBranch = Get-CurrentBranchType "$branch"
+    # Means its not a release branch
+    if(-Not ($typeOfBranch -eq [BranchType]::HotfixRelease -or $typeOfBranch -eq [BranchType]::Release))
+    {
+        Write-Host "PostFix: $postFix"
+        $commitsSince = Get-ReleaseVersion "$Branch" -returnCommitsSinceOnly
+        Write-Host "commitsSince: $commitsSince"
+        $postFix = ".$commitsSince$postFix"
+        Write-Host "PostFix: $postFix"
+    }
+    $packageVersion = "$majorMinorPatchVersion$postFix"
     Write-Host "Package version: $packageVersion"
     Write-Host "Working directory: $PSScriptRoot"
     $packageLogFile = Join-Path $LogsDir "rdc-package-build.log"
@@ -243,24 +296,17 @@ task BuildRdcPackage -Description "Builds the RDC NuGet package" {
     } -errorMessage "There was an error creating the RDC NuGet package."
 }
 
-task BuildVersion -Description "Retrieves the build version from GitVersion" {
+task BuildVersion -Description "Retrieves the build version from powershell" {
     Assert ($BuildUrl -ne $null -and $BuildUrl -ne "") "BuildUrl must be provided"
-    Write-Output "Importing GitVersion properties.."
+    Write-Host "Importing powershell properties.."
 
-    $buildVersionMajor = Get-BuildVersionMajor
-    $buildVersionMinor = Get-BuildVersionMinor
-    $buildVersionPatch = Get-BuildVersionPatch
-    $commitsSinceVersionSource = Get-CommitsSinceVersionSource
+    $majorMinorIncrease = Get-ReleaseVersion "$Branch" -omitPostFix
+    
     Write-Output "Build Url: $BuildUrl"
-    Write-Output "Version major: $buildVersionMajor"
-    Write-Output "Version minor: $buildVersionMinor"
-    Write-Output "Version patch: $buildVersionPatch"
-    Write-Output "Number of commits since version source: $commitsSinceVersionSource"
-
     $maxVersionLength = 50
-    $localBuildVersion = "$buildVersionMajor.$buildVersionMinor.$buildVersionPatch.$commitsSinceVersionSource"
+    $localBuildVersion = $majorMinorIncrease
     if ($localBuildVersion.Length -gt $maxVersionLength) {
-        Throw "The version length exceeds the maximum of $maxVersionLength characters and suggests a serious GIT or GitVersion issue."
+        Throw "The version length exceeds the maximum of $maxVersionLength characters and suggests a serious GIT or powershell issue."
     }
 
     $global:BuildVersion = $localBuildVersion
@@ -366,21 +412,19 @@ task IntegrationTestResults -Description "Retrieve the integration test results 
     Write-TestResultsOutput $IntegrationTestsResultXmlFile
 }
 
-task PackageVersion -Description "Retrieves the package version from GitVersion" {
+task PackageVersion -Description "Retrieves the package version from powershell" {
 
-    $localPackageVersion = exec { 
-        & $GitVersionExe /output json /showvariable NuGetVersion
-    } -errorMessage "There was an error retrieving the Nuget package version from GitVersion."
+    $localPackageVersion = Get-ReleaseVersion "$Branch"
 
     $maxVersionLength = 255
     if ($localPackageVersion.Length -gt $maxVersionLength) {
-        Throw "The version length exceeds the maximum of $maxVersionLength characters and suggests a serious GIT or GitVersion issue."
+        Throw "The version length exceeds the maximum of $maxVersionLength characters and suggests a serious GIT or powershell issue."
     }
 
     $global:PackageVersion = $localPackageVersion
 
     # So Jenkins can get the package version number
-    Write-Output "packageVersion=$localPackageVersion"
+    Write-Output "$localPackageVersion"
 }
 
 task PublishBuildArtifacts -Description "Publish build artifacts" {
@@ -395,16 +439,28 @@ task PublishBuildArtifacts -Description "Publish build artifacts" {
 }
 
 task PublishPackages -Description "Publishes packages to the NuGet feed" {
-    $packageLogFile = Join-Path $LogsDir "package-publish.log"    
-    $commitsSinceVersionSource = Get-CommitsSinceVersionSource
-    $filter = ""
-    if (($commitsSinceVersionSource -eq 0) -or $ForcePublishRdcPackage) {
-        $filter = "*.nupkg"
-        Write-Host "Pushing both SDK and RDC .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
-    }    
-    else {
+    $packageLogFile = Join-Path $LogsDir "package-publish.log"
+    $filter = "*.nupkg"
+	if([string]::IsNullOrWhiteSpace($ProgetApiKey))
+	{
+		Throw "The api key of the proget feed is not provided. This is required for this step (push to the nuget feed)"
+	}
+	
+    if ($SkipPublishRdcPackage -and $SkipPublishSdkPackage) {
+        Write-Host "Skip publishing the the SDK and REC packages."
+        return
+    }
+    
+    if ($SkipPublishRdcPackage) {
         $filter = "Relativity.DataExchange.Client.SDK*.nupkg"
-        Write-Host "Pushing only the SDK .nupkg file contained within '$PaketDir' to '$ProgetUrl'."
+        Write-Host "Pushing just the SDK .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
+    }
+    elseif ($SkipPublishSdkPackage) {
+        $filter = "*Relativity.Desktop.Client*.nupkg"
+        Write-Host "Pushing just the RDC .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
+    }
+    else {
+        Write-Host "Pushing all SDK and RDC .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
     }
 
     $path = Join-Path $PackagesArtifactsDir "*.*"
@@ -511,15 +567,15 @@ task UpdateAssemblyInfo -Depends UpdateSdkAssemblyInfo,UpdateRdcAssemblyInfo -De
 }
 
 task UpdateSdkAssemblyInfo -Description "Update the version contained within the SDK assembly shared info source file" {
-    exec { 
-         & $GitVersionExe /updateassemblyinfo .\Version\AssemblySharedInfo.cs .\Version\AssemblySharedInfo.vb 
-    } -errorMessage "There was an error updating the assembly info."
+    $version = Get-ReleaseVersion "$Branch" -omitPostFix
+    Update-AssemblyInfo "$version.0"
 }
 
 task UpdateRdcAssemblyInfo -Description "Update the version contained within the RDC assembly shared info source file" {    
     exec { 
         $majorMinorPatchVersion = Get-RdcWixVersion
-        $InformationalVersion = Format-NuGetPackageVersion -MajorMinorPatchVersion $majorMinorPatchVersion
+        $postFix = Get-ReleaseVersion "$Branch" -postFixOnly
+        $InformationalVersion = "$majorMinorPatchVersion$postFix"
         $VersionPath = Join-Path $Root "Version"
         $ScriptPath = Join-Path $VersionPath "Update-RdcAssemblySharedInfo.ps1"
         & $ScriptPath -Version "$majorMinorPatchVersion.0" -InformationalVersion $InformationalVersion -VersionFolderPath $VersionPath
@@ -542,115 +598,6 @@ Function Copy-Folder {
     }
 }
 
-Function Format-NuGetPackageVersion {
-    param(
-        [String]$MajorMinorPatchVersion
-    )
-
-    if (!$MajorMinorPatchVersion -or $MajorMinorPatchVersion.Length -eq 0) {
-        Throw "The NuGet package version cannot be formatted because the Major.Minor.Patch value is null or empty."
-    }
-    
-    $currentBranchName = Get-BrancehName
-    if (!$currentBranchName -or $currentBranchName.Length -eq 0) {
-        Throw "The NuGet package version cannot be formatted because the branch name is null or empty."
-    }
-
-    $preReleaseLabel = Get-PreReleaseLabel
-    $commitsSinceVersionSource = Get-CommitsSinceVersionSource
-    $commitsSinceVersionSourcePadded = Get-CommitsSinceVersionSourcePadded
-
-    # All validation exception messages go here.
-    $preReleaseLabelExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the pre-release label is null or empty. If this branch was just tagged, ensure that at least 1 commit has been made since creating the tag."
-    $commitsSinceVersionSourcePaddedExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the total number of commits since the last tag is null or empty."
-    $buildNumberExceptionMessage = "The NuGet package version cannot be formatted for branch '$currentBranchName' because the build number is null or empty."    
-    $formattedVersion = ""
-
-    # Now support publishing official packages from release branches - as long as the last commit was tagged.
-    if (($currentBranchName -eq "master" -or $currentBranchName -like "relativity-*") -and $commitsSinceVersionSource -eq 0) {
-        $formattedVersion = $MajorMinorPatchVersion
-    }
-    elseif ($currentBranchName -eq "develop" -or $currentBranchName -like "relativity-*") {
-        # Develop or release branches that haven't been tagged must rely on pre-release labels
-        if (!$preReleaseLabel -or $preReleaseLabel.Length -eq 0) {
-            Throw $preReleaseLabelExceptionMessage
-        }
-
-        if (!$commitsSinceVersionSourcePadded -or $commitsSinceVersionSourcePadded.Length -eq 0) {
-            Throw $commitsSinceVersionSourcePaddedExceptionMessage
-        }
-
-        $formattedVersion = "$MajorMinorPatchVersion-$preReleaseLabel$commitsSinceVersionSourcePadded"
-    }
-    else {
-        # Feature branches will always be prefixed with the JIRA ticket number.
-        $jiraTicketNumber = Get-JiraTicketNumberFromBranchName
-        if ($jiraTicketNumber -and $jiraTicketNumber.Length -gt 0) {
-            # See https://gitversion.readthedocs.io/en/latest/more-info/version-increments/ for more details on issues with semantic versioning, NuGet, and feature branches.
-            if (!$preReleaseLabel -or $preReleaseLabel.Length -eq 0) {
-                Throw $preReleaseLabelExceptionMessage
-            }
-            
-            if (!$BuildNumber -or $BuildNumber.Length -eq 0) {
-                Throw $buildNumberExceptionMessage
-            }
-
-            $paddedBuildNumber = $BuildNumber.PadLeft(4, '0')
-            $formattedVersion = "$MajorMinorPatchVersion-$jiraTicketNumber-$preReleaseLabel$paddedBuildNumber"
-        }
-        else {
-            # A hotfix may not include a pre-release label.
-            $formattedVersion = $MajorMinorPatchVersion
-            if ($preReleaseLabel -and $preReleaseLabel.Length -gt 0) {
-                if (!$commitsSinceVersionSourcePadded -or $commitsSinceVersionSourcePadded.Length -eq 0) {
-                    Throw $commitsSinceVersionSourcePaddedExceptionMessage
-                }
-
-                $formattedVersion += "$MajorMinorPatchVersion-$preReleaseLabel$commitsSinceVersionSourcePadded"
-            }
-        }
-    }
-
-    return $formattedVersion
-}
-
-Function Get-BrancehName {
-    exec {
-        & $GitVersionExe /output json /showvariable BranchName
-    } -errorMessage "There was an error retrieving the branch name using GitVersion."
-}
-
-Function Get-BuildVersionMajor
-{
-    exec {
-        & $GitVersionExe /output json /showvariable Major
-    } -errorMessage "There was an error retrieving the major version using GitVersion."
-}
-
-Function Get-BuildVersionMinor {
-    exec {
-        & $GitVersionExe /output json /showvariable Minor
-    } -errorMessage "There was an error retrieving the minor version using GitVersion."
-}
-
-Function Get-BuildVersionPatch {
-    exec {
-        & $GitVersionExe /output json /showvariable Patch
-    } -errorMessage "There was an error retrieving the patch version using GitVersion."
-}
-
-Function Get-CommitsSinceVersionSource {
-    exec {
-        & $GitVersionExe /output json /showvariable CommitsSinceVersionSource
-    } -errorMessage "There was an error retrieving the number of commits since the last commit was tagged."
-}
-
-Function Get-CommitsSinceVersionSourcePadded {
-    exec {
-        & $GitVersionExe /output json /showvariable CommitsSinceVersionSourcePadded
-    } -errorMessage "There was an error retrieving the number of padded commits since the last commit was tagged."
-}
-
 Function Get-JiraTicketNumberFromBranchName {
     # Remove the REL number to reduce the version length.
     $options = [Text.RegularExpressions.RegexOptions]::IgnoreCase
@@ -669,12 +616,6 @@ Function Get-JiraTicketNumberFromBranchName {
     }
 
     return $null
-}
-
-Function Get-PreReleaseLabel {
-    exec {
-        & $GitVersionExe /output json /showvariable PreReleaseLabel
-    } -errorMessage "There was an error retrieving the pre-release label."
 }
 
 Function Get-RdcWixVersion {
@@ -865,4 +806,106 @@ Function Write-TestResultsOutput {
     Write-Output "testResultsPassed=$passed"
     Write-Output "testResultsFailed=$failed"
     Write-Output "testResultsSkipped=$skipped"
+}
+
+Function Update-AssemblyInfo {
+    param(
+    [string]$NewVersion
+    )
+    cd .\Version
+
+    Get-ChildItem -Include AssemblySharedInfo.cs, AssemblySharedInfo.vb -Recurse | 
+        ForEach-Object {
+            $_.IsReadOnly = $false
+            (Get-Content -Path $_) -replace '(?<=Assembly(?:(File|Informational))?Version\(")[^"]*(?="\))', $NewVersion |
+                Set-Content -Path $_
+        }
+    cd .. 
+}
+
+Function Get-ReleaseVersion {
+    param(
+        [string]$branchNameJenkins,
+        [switch]$postFixOnly = $false,
+        [switch]$omitPostFix = $false,
+        [switch]$returnCommitsSinceOnly = $false
+    )
+    $host.UI.RawUI.WindowTitle = "Getting release version"
+
+    function gitBranchName {
+        $branchName = git rev-parse --abbrev-ref HEAD
+        If($branchName -eq 'HEAD')
+        {
+            if ($TestResultsXmlFile -eq 'HEAD') {
+                Throw "The branchname is not given, it is currently HEAD (meaning the code is checked out at a commit, not at a branch)"
+            }
+            return $branchNameJenkins
+        }
+        else
+        {
+            return $branchName
+        }
+    }
+
+    $gitVersion = git describe --tags --always
+    Write-Host $gitVersion
+    $gitVersionSplit = $gitVersion.ToString().Split('-')
+    $version = $gitVersionSplit[0]
+    $commitsSince = $gitVersionSplit[1]
+
+    Write-Host "Version = $version"
+    $major = $version.Split('.')[0]
+    $minor = $version.Split('.')[1]
+    
+    # git describe does not give the commits since tag if the numer of commits since tag is null.
+    if("$commitsSince" -eq "")
+    {
+        $commitsSince = "0"
+    }
+    Write-Host "Commits since version was created = $commitsSince"
+    if($returnCommitsSinceOnly)
+    {
+        return $commitsSince
+    }
+    $currentBranch = gitBranchName
+    Write-Host "Current branch is $currentBranch"
+    
+    [BranchType]$typeOfBranch = Get-CurrentBranchType "$currentBranch"
+    
+    Write-Host "Type of branch = $typeOfBranch"
+    
+    # Different branches get different postfixes
+    switch ($typeOfBranch) {
+        ([BranchType]::Develop) {$postfix = "-dev"}
+        ([BranchType]::FeatureBranch) {$postfix = "-$currentBranch"}
+        ([BranchType]::Release) {$postfix = ""}
+        ([BranchType]::HotfixRelease) {
+            $numbersAtTheEnd = $currentBranch | Foreach {if ($_ -match '(\d+)$') {$matches[1]}}
+            $postfix = "-Hotfix-$numbersAtTheEnd"
+        }
+        default { Throw "Branch type is unknown" }
+    }
+    
+    #Escape as version numbers should not contain anything special, like underscores. Dashes are fine tough
+    $pattern = '[^a-zA-Z0-9]'
+    $postfix = $postfix -replace $pattern ,"-"
+
+    If($omitPostFix)
+    {
+        $majorMinorCommits = "$major.$minor.$commitsSince"
+        Write-Host "MajorMinorCommitsSince = $majorMinorCommits"
+        Write-Output $majorMinorCommits    
+    }
+    elseif($postFixOnly)
+    {
+        $newVersion = "$postfix"
+        Write-Host "Postfix = $newVersion"
+        Write-Output $newVersion
+    }    
+    else
+    {
+        $newVersion = "$major.$minor.$commitsSince$postfix"
+        Write-Host "New complete version should be = $newVersion"
+        Write-Output $newVersion
+    }
 }

@@ -560,11 +560,13 @@ namespace Relativity.DataExchange.Transfer
 				this.PublishStatusMessage(successMessage, TapiConstants.NoLineNumber);
 				return totals;
 			}
-			catch (Exception e)
+			catch (Exception ex) when (!ex.IsCanceledByUser(this.cancellationToken))
 			{
+				// We don't want to log cancellation request as the error if it was requested by the end user
+
 				// Note: for backwards compatibility purposes, don't publish an error message.
 				this.PublishWarningMessage(errorMessage, TapiConstants.NoLineNumber);
-				this.TransferLog.LogError(e, errorMessage);
+				this.TransferLog.LogError(ex, errorMessage);
 				throw;
 			}
 		}
@@ -741,7 +743,7 @@ namespace Relativity.DataExchange.Transfer
 			bool completed = this.batchTotals.TotalFileTransferRequests == this.batchTotals.TotalCompletedFileTransfers;
 			if (completed)
 			{
-				this.TransferLog.LogInformation2(this.jobRequest, "Successfully waited for all transfers to complete.");
+				this.TransferLog.LogTransferInformation(this.jobRequest, "Successfully waited for all transfers to complete.");
 			}
 
 			return completed;
@@ -762,7 +764,7 @@ namespace Relativity.DataExchange.Transfer
 				bool exceeded = (DateTime.Now - lastTransferActivityTimestamp).TotalSeconds > this.maxInactivitySeconds;
 				if (exceeded)
 				{
-					this.TransferLog.LogWarning2(
+					this.TransferLog.LogTransferWarning(
 						this.jobRequest,
 						"Exceeded the max inactivity time of {MaxInactivitySeconds} seconds since the previous {LastTransferActivityTimestamp} timestamp update.",
 						this.maxInactivitySeconds,
@@ -790,7 +792,7 @@ namespace Relativity.DataExchange.Transfer
 			bool result = this.RaisedPermissionIssue && !this.parameters.PermissionErrorsRetry;
 			if (result)
 			{
-				this.TransferLog.LogWarning2(
+				this.TransferLog.LogTransferWarning(
 					this.jobRequest,
 					"The transfer job will abort because a file permission issue was raised. {Error}",
 					this.RaisedPermissionIssueMessage);
@@ -818,7 +820,7 @@ namespace Relativity.DataExchange.Transfer
 			                                                       || status == TransferJobStatus.Canceled;
 			if (!result)
 			{
-				this.TransferLog.LogWarning2(
+				this.TransferLog.LogTransferWarning(
 					this.jobRequest,
 					"The transfer job status {TransferJobStatus} is neither running or retrying and is considered invalid.",
 					status);
@@ -1691,7 +1693,7 @@ namespace Relativity.DataExchange.Transfer
 					(exception, count) =>
 						{
 							handledException = exception;
-							this.TransferLog.LogWarning2(
+							this.TransferLog.LogTransferWarning(
 								exception,
 								this.jobRequest,
 								Strings.CompleteJobExceptionMessage);

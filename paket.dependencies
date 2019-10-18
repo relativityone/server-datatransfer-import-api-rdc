@@ -9,7 +9,6 @@ nuget csvhelper = 12.1.2
 # This is used strictly for producing unit test results.
 nuget extent = 0.0.3
 nuget filehelpers = 3.4.0
-nuget gitversion.commandline = 4.0.0
 nuget ilmerge = 3.0.29
 nuget jetbrains.dotcover.commandlinetools = 2019.1.0-eap06
 nuget microsoft.build.logging.structuredlogger = 1.0.89
@@ -47,7 +46,7 @@ nuget EWSoftware.SHFB = 2019.8.24
 
 # Proget packages are below.
 source https://proget.kcura.corp/NuGet/NuGet
-nuget kcura.outsidein.fi.win32 = 2019.3.0
+nuget kcura.outsidein.fi.win32 = 2019.4.0
 nuget relativity.dataTransfer.messageService = 10.2.0
 nuget relativity.logging = 2018.11.8
 nuget relativity.logging.interfaces = 2018.11.8
@@ -58,11 +57,11 @@ nuget relativity.oauth2client.interfaces = 1.0.27
 nuget relativity.telemetry.apm = 2019.1.0
 nuget relativity.telemetry.datacontracts.shared = 2019.1.0
 nuget relativity.telemetry.services.interface = 2019.1.0
-nuget relativity.transfer.client = 6.2.1
+nuget relativity.transfer.client ~> 6.3.2
 
 # The Relativity packages below are ONLY used for testing!
-nuget kcura.relativity.client = 10.3.142.22
-nuget relativity.productions.services.interfaces = 10.3.37
-nuget relativity.services.datacontracts = 10.3.142.22
-nuget relativity.services.interfaces = 10.3.142.22
+nuget kcura.relativity.client = 11.0.79.97-DEV
+nuget relativity.productions.services.interfaces = 11.0.4
+nuget relativity.services.datacontracts = 11.0.79.97-DEV
+nuget relativity.services.interfaces = 11.0.79.97-DEV
 nuget relativity.testing.identification ~> 1.6.0

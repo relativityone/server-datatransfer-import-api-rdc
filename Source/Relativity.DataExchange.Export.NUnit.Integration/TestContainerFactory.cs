@@ -17,6 +17,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Container;
+	using Relativity.Logging;
 
 	/// <summary>
 	/// Represents a class object factory to create a test container that installs <see cref="ExportInstaller"/> but also allows tests to register mocks.
@@ -26,6 +27,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	public class TestContainerFactory : IContainerFactory
 	{
 		private readonly IWindsorContainer container;
+		private readonly ILog logger;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TestContainerFactory"/> class.
@@ -33,9 +35,13 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		/// <param name="container">
 		/// The Castle Windsor container.
 		/// </param>
-		public TestContainerFactory(IWindsorContainer container)
+		/// <param name="logger">
+		/// The logger instance.
+		/// </param>
+		public TestContainerFactory(IWindsorContainer container, ILog logger)
 		{
 			this.container = container.ThrowIfNull(nameof(container));
+			this.logger = logger.ThrowIfNull(nameof(logger));
 		}
 
 		public virtual IWindsorContainer Create(
@@ -48,7 +54,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			if (!useOldExport)
 			{
 				this.container.Kernel.Resolver.AddSubResolver(new CollectionResolver(this.container.Kernel, true));
-				this.container.Install(new ExportInstaller(exporter, columnNamesInOrder, loadFileHeaderFormatterFactory));
+				this.container.Install(
+					new ExportInstaller(exporter, columnNamesInOrder, loadFileHeaderFormatterFactory, this.logger));
 			}
 
 			return this.container;

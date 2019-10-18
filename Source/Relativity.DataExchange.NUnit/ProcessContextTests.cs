@@ -95,12 +95,15 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldPublishTheCancellationRequestEvent()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ShouldPublishTheCancellationRequestEvent(bool requestByUser)
 		{
 			Guid processId = Guid.NewGuid();
-			this.context.PublishCancellationRequest(processId);
+			this.context.PublishCancellationRequest(processId, requestByUser);
 			Assert.That(this.cancellationRequestEvents.Count, Is.EqualTo(1));
 			Assert.That(this.cancellationRequestEvents.All(x => x.ProcessId == processId), Is.True);
+			Assert.That(this.cancellationRequestEvents.All(x => x.RequestByUser == requestByUser), Is.True);
 
 			// Assert that null events are handled.
 			this.context.CancellationRequest -= this.OnCancellationRequest;

@@ -31,7 +31,7 @@ namespace Relativity.DataExchange.NUnit
 		[SetUp]
 		public void Setup()
 		{
-			this.service = new TapiObjectService();
+			this.service = new TapiObjectService(new NullAuthTokenProvider());
 		}
 
 		[Test]

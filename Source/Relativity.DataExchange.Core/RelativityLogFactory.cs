@@ -34,20 +34,6 @@ namespace Relativity.DataExchange
 		/// </returns>
 		public static Relativity.Logging.ILog CreateLog()
 		{
-			return CreateLog(DefaultSubSystem);
-		}
-
-		/// <summary>
-		/// Creates a Relativity logging instance.
-		/// </summary>
-		/// <param name="subSystem">
-		/// The sub system.
-		/// </param>
-		/// <returns>
-		/// The <see cref="Relativity.Logging.ILog"/> instance.
-		/// </returns>
-		public static Relativity.Logging.ILog CreateLog(string subSystem)
-		{
 			try
 			{
 				Relativity.Logging.ILog log = Relativity.Logging.Log.Logger;
@@ -67,12 +53,12 @@ namespace Relativity.DataExchange
 
 					if (string.IsNullOrEmpty(options.System))
 					{
-						options.System = DefaultSubSystem;
+						options.System = DefaultSystem;
 					}
 
 					if (string.IsNullOrEmpty(options.SubSystem))
 					{
-						options.SubSystem = subSystem;
+						options.SubSystem = DefaultSubSystem;
 					}
 
 					log = Relativity.Logging.Factory.LogFactory.GetLogger(options);

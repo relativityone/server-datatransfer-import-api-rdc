@@ -41,7 +41,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		Public Sub PreviewHelper_FindCodeFieldColumnIndexes()
 			PopulateArtifactList()
 
-			Dim fieldList As ArrayList = previewHelper.GetCodeFieldColumnIndexes(DirectCast(al(0), System.Array))
+			Dim fieldList As List(Of Int32) = previewHelper.GetCodeFieldColumnIndexes(DirectCast(al(0), System.Array))
 
 			'Assert that it identified that columns with artifactId 2 and 3 were a Code type
 			Assert.AreEqual(2, fieldList.Count)

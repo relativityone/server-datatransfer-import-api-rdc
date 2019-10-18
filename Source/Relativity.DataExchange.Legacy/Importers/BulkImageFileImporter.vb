@@ -1,3 +1,4 @@
+Imports System.Collections.Generic
 Imports System.Threading
 
 Imports kCura.WinEDDS.Service
@@ -305,7 +306,7 @@ Namespace kCura.WinEDDS
 
 			' Never preserve timestamps for BCP load files.
 			bcpParameters.PreserveFileTimestamps = false
-			CreateTapiBridges(nativeParameters, bcpParameters)
+			CreateTapiBridges(nativeParameters, bcpParameters, args.WebApiCredential.TokenProvider)
 		End Sub
 
 		Protected Overridable Sub InitializeDTOs(ByVal args As ImageLoadFile)
@@ -625,6 +626,7 @@ Namespace kCura.WinEDDS
 				Me.Statistics.ProcessRunResults(runResults)
 				_runId = runResults.RunID
 				Me.Statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+				Me.Statistics.BatchCount += 1
 				ManageErrors()
 
 				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount
@@ -733,14 +735,14 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkStart("ReadFile_Cleanup")
 				Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, True, True, False)
 				Me.LogInformation("Successfully imported {ImportCount} images via WinEDDS.", Me.FileTapiProgressCount)
-				Me.DumpStatisticsInfo()
+				Me.LogStatistics()
 				Me.CompleteSuccess()
 				_timekeeper.MarkEnd("ReadFile_Cleanup")
 				_timekeeper.MarkEnd("TOTAL")
 				_timekeeper.GenerateCsvReportItemsAsRows("_winedds_image", "C:\")
 			Catch ex As Exception
 				Me.LogFatal(ex, "A serious unexpected error has occurred importing images.")
-				Me.DumpStatisticsInfo()
+				Me.LogStatistics()
 				Me.CompleteError(ex)
 			Finally
 				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
@@ -874,7 +876,7 @@ Namespace kCura.WinEDDS
 			If hasFileIdentifierProblem Then status += ImportStatus.IdentifierOverlap
 
 			Dim record As Api.ImageRecord = lines(0)
-			Dim textFileList As New System.Collections.ArrayList
+			Dim textFileList As New List(Of string)
 			Dim documentId As String = record.BatesNumber
 			Dim offset As Int64 = 0
 			For i As Int32 = 0 To lines.Count - 1
@@ -951,7 +953,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Function GetextractedTextEncodings(ByVal textFileList As System.Collections.ArrayList) As Generic.List(Of Int32)
+		Private Function GetextractedTextEncodings(ByVal textFileList As List(Of string)) As Generic.List(Of Int32)
 			Dim encodingList As New Generic.List(Of Int32)
 			For Each filename As String In textFileList
 				Dim chosenEncoding As System.Text.Encoding = _settings.FullTextEncoding
@@ -988,7 +990,7 @@ Namespace kCura.WinEDDS
 			Next
 		End Sub
 
-		Private Sub GetImageForDocument(ByVal imageFile As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As Int32, ByVal status As Int64, ByVal totalForDocument As Int32, ByVal isStartRecord As Boolean)
+		Private Sub GetImageForDocument(ByVal imageFile As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As List(Of string), ByVal writeLineTermination As Boolean, ByVal originalLineNumber As Int32, ByVal status As Int64, ByVal totalForDocument As Int32, ByVal isStartRecord As Boolean)
 			_totalProcessed += 1
 			Dim filename As String = imageFile.Substring(imageFile.LastIndexOf("\") + 1)
 			Dim extractedTextFileName As String = imageFile.Substring(0, imageFile.LastIndexOf("."c) + 1) & "txt"

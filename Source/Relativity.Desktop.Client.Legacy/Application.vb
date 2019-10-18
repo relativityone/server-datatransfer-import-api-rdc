@@ -2,6 +2,7 @@ Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
+Imports System.Xml
 Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Credentials
@@ -26,7 +27,7 @@ Namespace Relativity.Desktop.Client
 			_processPool = New ProcessPool2
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_CookieContainer = New System.Net.CookieContainer
-			_logger = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
+			_logger = RelativityLogFactory.CreateLog()
 		End Sub
 
 		Public Shared ReadOnly Property Instance() As Application
@@ -215,6 +216,7 @@ Namespace Relativity.Desktop.Client
 		Public Sub UpdateWebServiceURL(ByVal relogin As Boolean)
 			If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = String.Empty AndAlso Not Me.TemporaryWebServiceURL.Equals(AppSettings.Instance.WebApiServiceUrl) Then
 				AppSettings.Instance.WebApiServiceUrl = Me.TemporaryWebServiceURL
+				_metricService = Nothing
 				Me.IsCaseFolderSelected = False
 				'' Turn off our trust of bad certificates! This needs to happen here (references need to be added to add it to MainForm - bad practice).
 				ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) sslPolicyErrors.Equals(SslPolicyErrors.None)
@@ -755,7 +757,7 @@ Namespace Relativity.Desktop.Client
 			Dim unmapped As String()
 			Dim fmi As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim fieldsNotColumnsMapped As Boolean
-			Dim values As New ArrayList
+			Dim values As New List(Of String)
 			For Each fmi In loadFile.FieldMap
 				If fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex <> -1 Then
 					values.Add("Column " & fmi.NativeFileColumnIndex + 1)
@@ -766,7 +768,7 @@ Namespace Relativity.Desktop.Client
 				End If
 			Next
 			If values.Count > 0 Then
-				unmapped = DirectCast(values.ToArray(GetType(String)), String())
+				unmapped = values.ToArray()
 				Dim sb As New System.Text.StringBuilder
 				Dim nl As String = System.Environment.NewLine
 				If fieldsNotColumnsMapped Then
@@ -816,6 +818,7 @@ Namespace Relativity.Desktop.Client
 			loadFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
 			loadFile.CaseInfo = caseInfo
 			loadFile.Credentials = Await Me.GetCredentialsAsync()
+			SetWebApiCredentialForNative(loadFile)
 			loadFile.CookieContainer = Me.CookieContainer
 			loadFile.OverwriteDestination = ImportOverwriteType.Append.ToString
 			loadFile.ArtifactTypeID = Me.ArtifactTypeID
@@ -882,7 +885,7 @@ Namespace Relativity.Desktop.Client
 				Case Else
 					exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch, exportFile.ArtifactTypeID)
 			End Select
-			Dim ids As New System.Collections.ArrayList
+			Dim ids As New List(Of Int32)
 			For Each row As System.Data.DataRow In exportFile.DataTable.Rows
 				ids.Add(row("ArtifactID"))
 			Next
@@ -896,7 +899,7 @@ Namespace Relativity.Desktop.Client
 				exportFile.ArtifactAvfLookup = New System.Collections.Specialized.HybridDictionary
 				exportFile.AllExportableFields = New kCura.WinEDDS.ViewFieldInfo() {}
 			Else
-				exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, exportFile.ArtifactTypeID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production)
+				exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, exportFile.ArtifactTypeID, ids.ToArray(), typeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production)
 				exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(caseInfo.ArtifactID, exportFile.ArtifactTypeID)
 			End If
 			Return exportFile
@@ -922,6 +925,7 @@ Namespace Relativity.Desktop.Client
 			Try
 				Dim imageFile As New ImageLoadFile
 				imageFile.Credential = Await Me.GetCredentialsAsync()
+				SetWebApiCredentialsForImage(imageFile)
 				imageFile.CaseInfo = caseinfo
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.DestinationFolderID = destinationArtifactID
@@ -950,6 +954,7 @@ Namespace Relativity.Desktop.Client
 			Try
 				Dim imageFile As New ImageLoadFile
 				imageFile.Credential = Await Me.GetCredentialsAsync()
+				SetWebApiCredentialsForImage(imageFile)
 				imageFile.CaseInfo = caseinfo
 				imageFile.DestinationFolderID = destinationArtifactID
 				imageFile.ForProduction = True
@@ -1183,7 +1188,8 @@ Namespace Relativity.Desktop.Client
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
 			frm.StatusRefreshRate = 0
-			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMetricService())
+			Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog()
+			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMetricService(), logger)
 			exporter.UserNotification = New FormsUserNotification()
 			exporter.CaseInfo = SelectedCaseInfo
 			exporter.ExportFile = exportFile
@@ -1243,7 +1249,7 @@ Namespace Relativity.Desktop.Client
 		Public Function CleanLoadFile(ByVal doc As System.Xml.XmlDocument) As String
 			For Each node As System.Xml.XmlNode In doc.ChildNodes(0).ChildNodes(0)
 				If node.Name = "a1:DocumentField" Then
-					Dim nodesToRemove As New System.Collections.ArrayList
+					Dim nodesToRemove As New List(Of XmlNode)
 					For Each dfNode As System.Xml.XmlNode In node.ChildNodes
 						If dfNode.Name = "_codeTypeID" Then nodesToRemove.Add(dfNode)
 						If dfNode.Name = "_fieldLength" Then nodesToRemove.Add(dfNode)
@@ -1280,6 +1286,7 @@ Namespace Relativity.Desktop.Client
 			tempLoadFile.CopyFilesToDocumentRepository = loadFile.CopyFilesToDocumentRepository
 			tempLoadFile.SelectedCasePath = Me.SelectedCaseInfo.DocumentPath
 			tempLoadFile.Credentials = Await Me.GetCredentialsAsync()
+			SetWebApiCredentialForNative(tempLoadFile)
 			tempLoadFile.DestinationFolderID = loadFile.DestinationFolderID
 			tempLoadFile.SelectedIdentifierField = (Await Me.CurrentFields(ArtifactTypeID, True)).Item((Await Me.GetCaseIdentifierFields(ArtifactTypeID))(0))
 			Dim x As New System.Windows.Forms.OpenFileDialog
@@ -1336,6 +1343,7 @@ Namespace Relativity.Desktop.Client
 			retval.CaseInfo = Me.SelectedCaseInfo
 			retval.DestinationFolderID = Me.SelectedCaseInfo.RootFolderID
 			retval.Credential = Await Me.GetCredentialsAsync()
+			SetWebApiCredentialsForImage(retval)
 			Return retval
 		End Function
 
@@ -1671,29 +1679,7 @@ Namespace Relativity.Desktop.Client
 
 		Public Shared Function GetProductName() As String
 			Dim sb As New System.Text.StringBuilder("Relativity Desktop Client")
-			If GetIsPreReleaseVersion() Then
-				sb.Append(" - Pre-Release")
-			End If
-
 			Return sb.ToString()
-		End Function
-
-		Public Shared Function GetIsPreReleaseVersion() As Boolean
-			Dim assembly As System.Reflection.Assembly = GetExecutingAssembly()
-
-			Try
-				' The build stamps AssemblyInformationalVersion with pre-release tags.
-				Dim fvi As FileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location)
-				Dim version As Version = Nothing
-
-				' Use TryParse to avoid annoying exceptions being thrown.
-				Dim isPreRelease As Boolean = Not System.Version.TryParse(fvi.ProductVersion, version)
-				Return isPreRelease
-			Catch ex As Exception
-				' Never allow this method to fail
-				TryLogWarning(ex, "Failed to retrieve the pre-release version.")
-				Return True
-			End Try
 		End Function
 
 		Public Shared Function GetAssemblyVersion() As System.Version
@@ -1836,5 +1822,32 @@ Namespace Relativity.Desktop.Client
 				End Try
 			End If
 		End Sub
+
+		Private Sub SetWebApiCredentialsForImage(imageLoadFile As ImageLoadFile)
+
+			If imageLoadFile.WebApiCredential Is Nothing Then
+				imageLoadFile.WebApiCredential = New WebApiCredential() With {
+					.TokenProvider = New NullAuthTokenProvider(),
+					.Credential = imageLoadFile.Credential
+					}
+			End If
+		End Sub
+
+		Private Sub SetWebApiCredentialForNative(tempLoadFile As LoadFile)
+
+			If tempLoadFile.WebApiCredential Is Nothing Then
+				tempLoadFile.WebApiCredential = New WebApiCredential() With {
+					.TokenProvider = New NullAuthTokenProvider(),
+					.Credential = tempLoadFile.Credentials
+					}
+			End If
+		End Sub
+
+		Public Sub ResetFieldsCache()
+			If (Not _fieldProviderCache Is Nothing) Then
+				_fieldProviderCache.ResetCache()
+			End If
+		End Sub
+
 	End Class
 End Namespace

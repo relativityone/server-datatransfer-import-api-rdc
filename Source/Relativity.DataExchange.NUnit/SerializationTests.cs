@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------------------------------------
-// <copyright file="ExportFileDeserializationTests.cs" company="Relativity ODA LLC">
-//   © Relativity All Rights Reserved.
+// <copyright file="SerializationTests.cs" company="Relativity ODA LLC">
+// © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
 //   Represents <see cref="ProcessErrorWriter"/> tests.
@@ -11,6 +11,7 @@ namespace Relativity.DataExchange.NUnit
 {
 	using System.Collections.Generic;
 	using System.IO;
+	using System.Linq;
 
 	using global::NUnit.Framework;
 
@@ -21,14 +22,14 @@ namespace Relativity.DataExchange.NUnit
 	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
-	public class ExportFileDeserializationTests
+	public static class SerializationTests
 	{
 		private static IEnumerable<string> FileNames => Directory.GetFiles(ResourceFileHelper.GetResourceFolderDirectory("ExportFile"), "*.kwx");
 
 		[Test]
 		[TestCaseSource(nameof(FileNames))]
 		[Category(TestCategories.SeparateDomain)]
-		public void DeserializeExportFile(string filename)
+		public static void DeserializeExportFile(string filename)
 		{
 			var exportFile = SerializationHelper.DeserializeFromSoapFile<ExportFile>(filename);
 
@@ -79,6 +80,24 @@ namespace Relativity.DataExchange.NUnit
 			Assert.AreEqual(ParentReflectionType.Empty, exportFile.SelectedViewFields[0].ParentReflectionType);
 			Assert.IsFalse(exportFile.SelectedViewFields[0].EnableDataGrid);
 			Assert.IsFalse(exportFile.SelectedViewFields[0].IsVirtualAssociativeArtifactType);
+		}
+
+		[Test]
+		[TestCaseSource(nameof(FileNames))]
+		[Category(TestCategories.SeparateDomain)]
+		public static void SerializeExportFile(string filename)
+		{
+			var exportFile = SerializationHelper.DeserializeFromSoapFile<ExportFile>(filename);
+			var newFileName = Path.GetRandomFileName();
+			SerializationHelper.SerializeToSoapFile(exportFile, newFileName);
+			var newFileNameAdditional = Path.GetRandomFileName();
+			SerializationHelper.SerializeToSoapFile(exportFile, newFileNameAdditional);
+			Assert.IsTrue(File.ReadAllBytes(newFileNameAdditional).SequenceEqual(File.ReadAllBytes(newFileName)));
+			exportFile.SelectedTextFields = new[] { new QueryFieldFactory().GetIdentifierQueryField() };
+			SerializationHelper.SerializeToSoapFile(exportFile, newFileName);
+			exportFile.SelectedTextFields = null;
+			SerializationHelper.SerializeToSoapFile(exportFile, newFileName);
+			Assert.IsTrue(File.ReadAllBytes(newFileNameAdditional).SequenceEqual(File.ReadAllBytes(newFileName)));
 		}
 	}
 }

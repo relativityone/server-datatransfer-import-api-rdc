@@ -29,16 +29,17 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="log">
 		/// The Relativity logging instance.
 		/// </param>
+		/// <param name="authenticationTokenProvider">Auth token provider.</param>
 		/// <param name="token">
 		/// The cancellation token.
 		/// </param>
 		/// <returns>
 		/// The <see cref="UploadTapiBridge2"/> instance.
 		/// </returns>
-		public static UploadTapiBridge2 CreateUploadBridge(UploadTapiBridgeParameters2 parameters, ILog log, CancellationToken token)
+		public static UploadTapiBridge2 CreateUploadBridge(UploadTapiBridgeParameters2 parameters, ILog log, IAuthenticationTokenProvider authenticationTokenProvider, CancellationToken token)
 		{
 			var transferLog = GetTransferLog(log);
-			return new UploadTapiBridge2(parameters, transferLog, token);
+			return new UploadTapiBridge2(parameters, transferLog, authenticationTokenProvider, token);
 		}
 
 		/// <summary>

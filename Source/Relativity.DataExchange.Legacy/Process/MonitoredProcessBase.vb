@@ -1,9 +1,12 @@
-﻿Imports kCura.WinEDDS
+﻿Imports System.Threading
+Imports kCura.WinEDDS
 Imports Monitoring
 Imports Monitoring.Sinks
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
+Imports Relativity.Logging
 
 Public MustInherit Class MonitoredProcessBase
 	Inherits ProcessBase2
@@ -14,12 +17,11 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Property JobGuid As System.Guid = System.Guid.NewGuid()
 	Protected Property StartTime As System.DateTime
 	Protected Property EndTime As System.DateTime
-	Protected Property InitialTapiClientName As String
 	Protected MustOverride ReadOnly Property JobType As String
-	Protected MustOverride ReadOnly Property TapiClientName As String
 	Protected ReadOnly Property MetricService() As IMetricService
 	Protected _hasFatalErrorOccured As Boolean
-	Protected _tapiClientName As String = TapiClient.None.ToString()
+	Private _jobStartedMetricSent As Boolean = False
+	Protected MustOverride ReadOnly Property TapiClient As TapiClient
 
 	Public Property CaseInfo As CaseInfo
 
@@ -32,6 +34,15 @@ Public MustInherit Class MonitoredProcessBase
 	Public Property ApplicationName As String = Nothing
 
 	Public Sub New(metricService As IMetricService)
+		Me.New(metricService, RelativityLogFactory.CreateLog())
+	End Sub
+
+	Public Sub New(metricService As IMetricService, logger As ILog)
+		Me.New(metricService, logger, New CancellationTokenSource())
+	End Sub
+
+	Public Sub New(metricService As IMetricService, logger As ILog, tokenSource As CancellationTokenSource)
+		MyBase.New(logger, tokenSource)
 		Me.MetricService = metricService
 		_metricThrottling = metricService.MetricSinkConfig.ThrottleTimeout
 	End Sub
@@ -80,33 +91,44 @@ Public MustInherit Class MonitoredProcessBase
 	Protected MustOverride Function Run() As Boolean
 
 	Protected Sub SendMetricJobStarted()
-		If InitialTapiClientName Is Nothing Then
+		If Not _jobStartedMetricSent And TapiClient <> TapiClient.None Then
 			Dim message As MetricJobStarted = New MetricJobStarted
 			BuildMetricBase(message)
 			MetricService.Log(message)
-			InitialTapiClientName = TapiClientName
+			_jobStartedMetricSent = True
 		End If
 	End Sub
 
 	Protected Sub SendMetricJobEndReport(jobStatus As String, statistics As Statistics)
 		Dim totalRecordsCount As Long = GetTotalRecordsCount()
 		Dim completedRecordsCount As Long = GetCompletedRecordsCount()
-		Dim metric As MetricJobEndReport = New MetricJobEndReport() With {.JobStatus = jobStatus, .TotalSizeBytes = (statistics.MetadataBytes + statistics.FileBytes),
-				.FileSizeBytes = statistics.FileBytes, .MetadataSizeBytes = statistics.MetadataBytes,
-				.TotalRecords = totalRecordsCount, .CompletedRecords = completedRecordsCount,
-				.ThroughputBytesPerSecond = CalculateThroughput(statistics.FileBytes + statistics.MetadataBytes),
-				.ThroughputRecordsPerSecond = CalculateThroughput(completedRecordsCount)}
+		Dim jobDuration As Double = (EndTime - StartTime).TotalSeconds
+		Dim metric As MetricJobEndReport = New MetricJobEndReport() With {
+				.JobStatus = jobStatus,
+				.TotalSizeBytes = (statistics.TotalBytes),
+				.FileSizeBytes = statistics.FileBytes,
+				.MetadataSizeBytes = statistics.MetadataBytes,
+				.TotalRecords = totalRecordsCount,
+				.CompletedRecords = completedRecordsCount,
+				.ThroughputBytesPerSecond = Statistics.CalculateThroughput(statistics.TotalBytes, jobDuration),
+				.ThroughputRecordsPerSecond = Statistics.CalculateThroughput(completedRecordsCount, jobDuration),
+				.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.SqlTime/TimeSpan.TicksPerSecond)}
 		BuildMetricBase(metric)
 		MetricService.Log(metric)
 	End Sub
 
-	Protected Sub SendMetricJobProgress(metadataThroughput As Double, fileThroughput As Double)
+	Protected Sub SendMetricJobProgress(statistics As Statistics, checkThrottling As Boolean)
+		' Don't send metrics with no transfer mode
+		If TapiClient = TapiClient.None Then Return
 		Dim currentTime As DateTime = DateTime.Now
 		SyncLock _lockObject
-			If currentTime - _lastSendTime < _metricThrottling Then Return
+			If currentTime - _lastSendTime < _metricThrottling And checkThrottling Then Return
 			_lastSendTime = currentTime
 		End SyncLock
-		Dim message As MetricJobProgress = New MetricJobProgress With {.MetadataThroughput = metadataThroughput, .FileThroughput = fileThroughput}
+		Dim message As MetricJobProgress = New MetricJobProgress With {
+			.MetadataThroughputBytesPerSecond = statistics.MetadataThroughput,
+			.FileThroughputBytesPerSecond = statistics.FileThroughput,
+			.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.SqlTime/TimeSpan.TicksPerSecond)}
 		BuildMetricBase(message)
 		MetricService.Log(message)
 	End Sub
@@ -125,7 +147,7 @@ Public MustInherit Class MonitoredProcessBase
 
 	Private Sub BuildMetricBase(metric As MetricBase)
 		metric.JobType = JobType
-		metric.TransferMode = TapiClientName
+		metric.TransferMode = TapiClient
 		metric.CorrelationID = JobGuid.ToString()
 		metric.UseOldExport = Me.AppSettings.UseOldExport
 		metric.UnitOfMeasure = TelemetryConstants.Values.NOT_APPLICABLE
@@ -147,10 +169,5 @@ Public MustInherit Class MonitoredProcessBase
 		Else
 			Return ExecutionSource.ToString()
 		End If
-	End Function
-
-	Private Function CalculateThroughput(size As Long) As Double
-		Dim duration As System.TimeSpan = EndTime - StartTime
-		Return CDbl(IIf(duration.TotalSeconds.Equals(0.0), 0.0, size/duration.TotalSeconds))
 	End Function
 End Class

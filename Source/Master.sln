@@ -38,9 +38,6 @@ EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Desktop.Client.Legacy", "Relativity.Desktop.Client.Legacy\Relativity.Desktop.Client.Legacy.vbproj", "{49CDE7EB-9385-41D9-8CD9-687C09C46996}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api-Import", "Api-Import", "{D46C8AE9-2431-43EC-9AC6-3CB06EE99453}"
-	ProjectSection(SolutionItems) = preProject
-		..\buildtools\stylecop.json = ..\buildtools\stylecop.json
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api-Export", "Api-Export", "{1114F579-C126-48A5-8182-50AB87366325}"
 EndProject

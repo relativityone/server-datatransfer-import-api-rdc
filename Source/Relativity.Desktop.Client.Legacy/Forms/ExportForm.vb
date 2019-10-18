@@ -1483,11 +1483,11 @@ Public Class ExportForm
 		End If
 		_exportFile.ImagePrecedence = Me.GetImagePrecedence
 		_exportFile.TypeOfImage = Me.GetSelectedImageType
-		Dim selectedViewFields As New System.Collections.ArrayList
+		Dim selectedViewFields As New List(Of kCura.WinEDDS.ViewFieldInfo)
 		For Each field As kCura.WinEDDS.ViewFieldInfo In _columnSelector.RightSearchableListItems
 			selectedViewFields.Add(field)
 		Next
-		_exportFile.SelectedViewFields = DirectCast(selectedViewFields.ToArray(GetType(kCura.WinEDDS.ViewFieldInfo)), kCura.WinEDDS.ViewFieldInfo())
+		_exportFile.SelectedViewFields = selectedViewFields.ToArray()
 		If _textFieldPrecedencePicker.SelectedFields.Count > 0 Then
 			_exportFile.SelectedTextFields = _textFieldPrecedencePicker.SelectedFields.ToArray()
 			_exportFile.ExportFullText = True
@@ -1668,10 +1668,10 @@ Public Class ExportForm
 				.ForEach(AddressOf SelectField)
 
 			If ef.AllExportableFields IsNot Nothing Then
-				Dim defaultSelectedIds As New System.Collections.ArrayList
+				Dim defaultSelectedIds As New List(Of Int32)
 				If _columnSelector.RightSearchableListItems.Count = 0 Then
 					_metadataGroupBox.Enabled = False
-					If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
+					If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32))
 					For Each defaultSelectedId As Int32 In defaultSelectedIds
 						For Each field As kCura.WinEDDS.ViewFieldInfo In ef.AllExportableFields
 							If field.AvfId = defaultSelectedId Then
@@ -1952,11 +1952,11 @@ Public Class ExportForm
 
 	Private Sub InitializeColumnSelecter()
 		_columnSelector.ClearAll()
-		Dim defaultSelectedIds As New System.Collections.ArrayList
-		If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
+		Dim defaultSelectedIds As New List(Of Int32)
+		If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32))
 		Dim leftListBoxItems As New System.Collections.ArrayList
 		If defaultSelectedIds Is Nothing Then
-			defaultSelectedIds = New ArrayList()
+			defaultSelectedIds = New List(Of Int32)
 		End If
 		For Each field As kCura.WinEDDS.ViewFieldInfo In Me.ExportFile.AllExportableFields
 			If Not defaultSelectedIds.Contains(field.AvfId) Then
@@ -2167,7 +2167,7 @@ Public Class ExportForm
 	End Sub
 
 	Private Async Function RefreshRelativityInformation() As Task
-		Dim selectedColumns As New System.Collections.ArrayList
+		Dim selectedColumns As New List(Of kCura.WinEDDS.ViewFieldInfo)
 		For Each field As kCura.WinEDDS.ViewFieldInfo In _columnSelector.RightSearchableListItems
 			selectedColumns.Add(New kCura.WinEDDS.ViewFieldInfo(field))
 		Next
@@ -2220,7 +2220,7 @@ Public Class ExportForm
 		'TODO: this will send -1 index to OnDraw during refresh on exports. Known defect. In backlog
 		_columnSelector.LeftSearchableList.ClearListBox()
 		_columnSelector.RightSearchableList.ClearListBox()
-		Dim al As New System.Collections.ArrayList(_exportFile.AllExportableFields)
+		Dim al As New List(Of kCura.WinEDDS.ViewFieldInfo)(_exportFile.AllExportableFields)
 		al.Sort()
 		_columnSelector.LeftSearchableList.AddFields(al.ToArray())
 		For Each field As kCura.WinEDDS.ViewFieldInfo In selectedColumns

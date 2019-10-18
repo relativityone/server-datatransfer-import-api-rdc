@@ -53,7 +53,7 @@ Friend Class ImportCredentialManager
 			Else
 
 				' 2. credential in cache not found, so actually log in and create credentials
-				Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
+				Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog()
 				Dim token As CancellationToken = CancellationToken.None
 				Dim creds As NetworkCredential = Nothing
 				Dim credsTapi As NetworkCredential = Nothing

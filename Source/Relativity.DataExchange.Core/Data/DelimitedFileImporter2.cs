@@ -58,116 +58,6 @@ namespace Relativity.DataExchange.Data
 		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
 		/// </summary>
 		/// <param name="delimiter">
-		/// The delimiter string to use while splitting lines. This is limited to 1 character and must be specified.
-		/// </param>
-		/// <param name="bound">
-		/// The bounding string surrounding each delimiter. This is limited to 1 character and must be specified.
-		/// </param>
-		/// <param name="newlineProxy">
-		/// The string with which to replace system newline characters (ClRf). This is limited to 1 character and optional.
-		/// </param>
-		protected DelimitedFileImporter2(string delimiter, string bound, string newlineProxy)
-			: this(delimiter, bound, newlineProxy, new IoReporterContext(), new NullLogger(), CancellationToken.None)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
-		/// </summary>
-		/// <param name="delimiter">
-		/// The delimiter character to use while splitting lines. This is limited to 1 character and must be specified.
-		/// </param>
-		/// <param name="bound">
-		/// The bounding string surrounding each delimiter. This is limited to 1 character and must be specified.
-		/// </param>
-		/// <param name="newlineProxy">
-		/// The string with which to replace system newline characters (ClRf). This is limited to 1 character and optional.
-		/// </param>
-		/// <param name="retry">
-		/// Specify whether retry behavior is required. This flag was added for backwards compatibility with legacy code.
-		/// </param>
-		protected DelimitedFileImporter2(string delimiter, string bound, string newlineProxy, bool retry)
-			: this(
-				delimiter,
-				bound,
-				newlineProxy,
-				new IoReporterContext { RetryOptions = retry ? RetryOptions.Io : RetryOptions.None },
-				new NullLogger(),
-				CancellationToken.None)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
-		/// </summary>
-		/// <param name="delimiter">
-		/// The delimiter string to use while splitting lines. This is limited to 1 character and must be specified.
-		/// </param>
-		/// <param name="bound">
-		/// The bounding string surrounding each delimiter. This is limited to 1 character and must be specified.
-		/// </param>
-		/// <param name="newlineProxy">
-		/// The string with which to replace system newline characters (ClRf). This is limited to 1 character and optional.
-		/// </param>
-		/// <param name="context">
-		/// The I/O reporter context.
-		/// </param>
-		/// <param name="logger">
-		/// The Relativity logger.
-		/// </param>
-		/// <param name="token">
-		/// The cancellation token used to stop the process upon request.
-		/// </param>
-		/// <exception cref="ArgumentNullException">
-		/// Thrown when <paramref name="delimiter"/> or <paramref name="bound"/> is <see langword="null" /> or empty.
-		/// </exception>
-		/// <exception cref="ArgumentOutOfRangeException">
-		/// Thrown when <paramref name="delimiter"/> or <paramref name="bound"/> is not exactly 1 character.
-		/// </exception>
-		protected DelimitedFileImporter2(
-			string delimiter,
-			string bound,
-			string newlineProxy,
-			IoReporterContext context,
-			ILog logger,
-			CancellationToken token)
-			: base(context, logger, token)
-		{
-			if (string.IsNullOrWhiteSpace(delimiter))
-			{
-				throw new ArgumentNullException(nameof(delimiter));
-			}
-
-			if (delimiter.Length != 1)
-			{
-				throw new ArgumentOutOfRangeException(
-					nameof(delimiter),
-					"The delimiter string parameter must define 1 character.");
-			}
-
-			if (string.IsNullOrWhiteSpace(bound))
-			{
-				throw new ArgumentNullException(nameof(bound));
-			}
-
-			if (bound.Length != 1)
-			{
-				throw new ArgumentOutOfRangeException(
-					nameof(bound),
-					"The bound string parameter must define 1 character.");
-			}
-
-			this.Delimiter = delimiter[0];
-			this.Bound = bound[0];
-
-			// Do NOT be tempted to use IsNullOrWhitespace here!
-			this.NewlineProxy = string.IsNullOrEmpty(newlineProxy) ? UnspecifiedNewlineProxyChar : newlineProxy[0];
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
-		/// </summary>
-		/// <param name="delimiter">
 		/// The delimiter character to use while splitting lines.
 		/// </param>
 		/// <param name="retry">
@@ -178,6 +68,36 @@ namespace Relativity.DataExchange.Data
 				delimiter,
 				UnboundedChar,
 				UnspecifiedNewlineProxyChar,
+				new IoReporterContext { RetryOptions = retry ? RetryOptions.Io : RetryOptions.None },
+				new NullLogger(),
+				CancellationToken.None)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
+		/// </summary>
+		/// <param name="delimiter">
+		/// The delimiter character to use while splitting lines.
+		/// </param>
+		/// <param name="bound">
+		/// The bounding characters surrounding each delimiter.
+		/// </param>
+		/// <param name="newlineProxy">
+		/// The character with which to replace system newline characters (ClRf).
+		/// </param>
+		/// <param name="retry">
+		/// Specify whether retry behavior is required. This flag was added for backwards compatibility with legacy code.
+		/// </param>
+		protected DelimitedFileImporter2(
+			char delimiter,
+			char bound,
+			char newlineProxy,
+			bool retry)
+			: this(
+				delimiter,
+				bound,
+				newlineProxy,
 				new IoReporterContext { RetryOptions = retry ? RetryOptions.Io : RetryOptions.None },
 				new NullLogger(),
 				CancellationToken.None)
@@ -1095,15 +1015,15 @@ namespace Relativity.DataExchange.Data
 		/// </returns>
 		private string[] GetLineBounded(bool saveData, int maximumFieldLength, int maximumLineLength)
 		{
-			ConditionalArrayList returnValue = new ConditionalArrayList(saveData);
-			ConditionalArrayList currentArrayList = returnValue;
+			ConditionalList<string> returnValue = new ConditionalList<string>(saveData);
+			ConditionalList<string> currentList = returnValue;
 			bool hasHitEndOfLine = false;
 			while (this.Peek() != EofChar && !hasHitEndOfLine)
 			{
 				int charCode = this.Read();
-				if (currentArrayList.Count > maximumLineLength)
+				if (currentList.Count > maximumLineLength)
 				{
-					currentArrayList = new ConditionalArrayList(false);
+					currentList = new ConditionalList<string>(false);
 				}
 
 				// TODO: Verify the usage of "Or" vs "OrAlso"
@@ -1118,30 +1038,30 @@ namespace Relativity.DataExchange.Data
 				char ch = Microsoft.VisualBasic.Strings.ChrW(charCode);
 				if ((int)ch == (int)this.Bound)
 				{
-					currentArrayList.Add(
-						this.GetBoundedFieldValue(ref hasHitEndOfLine, currentArrayList.Count, maximumFieldLength));
+					currentList.Add(
+						this.GetBoundedFieldValue(ref hasHitEndOfLine, currentList.Count, maximumFieldLength));
 				}
 				else if ((int)ch == (int)this.Delimiter)
 				{
 					// Add an empty value
-					currentArrayList.Add(string.Empty);
+					currentList.Add(string.Empty);
 					if (this.Peek() == EofChar)
 					{
 						// if this delimiter is the last character in the file, add another empty value for the field that comes AFTER the delimiter
-						currentArrayList.Add(string.Empty);
+						currentList.Add(string.Empty);
 					}
 				}
 				else if (ch == '\r')
 				{
 					if (this.Peek() == 10)
 					{
-						currentArrayList.Add(string.Empty);
+						currentList.Add(string.Empty);
 						this.Read();
 						hasHitEndOfLine = true;
 					}
 					else
 					{
-						currentArrayList.Add(
+						currentList.Add(
 							Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(charCode))
 							+ this.GetSimpleDelimitedValue(ref hasHitEndOfLine, maximumFieldLength));
 					}
@@ -1151,14 +1071,14 @@ namespace Relativity.DataExchange.Data
 				           && (this.TrimOption == TrimOption.Both ||
 				               this.TrimOption == TrimOption.Leading)))
 				{
-					currentArrayList.Add(
+					currentList.Add(
 						Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(charCode))
 						+ this.GetSimpleDelimitedValue(ref hasHitEndOfLine, maximumFieldLength));
 				}
 			}
 
 			this.CurrentLineNumber++;
-			if (currentArrayList != returnValue)
+			if (currentList != returnValue)
 			{
 				string message = "This line's column length has exceeded the maximum defined column length of "
 				                 + Conversions.ToString(10000) + ".  Remaining columns in line truncated";
@@ -1166,7 +1086,7 @@ namespace Relativity.DataExchange.Data
 				this.PublishWarningMessage(args);
 			}
 
-			return (string[])returnValue.ToArray(typeof(string));
+			return returnValue.ToArray();
 		}
 
 		/// <summary>

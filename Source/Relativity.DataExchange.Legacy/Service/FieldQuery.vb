@@ -25,10 +25,10 @@ Namespace kCura.WinEDDS.Service
 
 		Public Function RetrieveAllAsArray(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, Optional ByVal includeUnmappable As Boolean = False) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 			Dim dv As New SqlDataView(RetrieveAllMappable(caseContextArtifactID, artifactTypeID))
-			Dim fields As New System.Collections.ArrayList
+			Dim fields As New List(Of kCura.EDDS.WebAPI.DocumentManagerBase.Field)
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			Dim unmappableFields As New System.Collections.Specialized.StringCollection
-			Dim unmappableFieldCategories As New System.Collections.ArrayList
+			Dim unmappableFieldCategories As New List(Of FieldCategory)
 			If Not includeUnmappable Then
 				unmappableFieldCategories.AddRange(New FieldCategory() {FieldCategory.Reflected, FieldCategory.Batch, FieldCategory.MultiReflected, FieldCategory.FileInfo, FieldCategory.AutoCreate, FieldCategory.FileSize, FieldCategory.ProductionMarker, FieldCategory.MarkupSetMarker})
 			End If
@@ -79,7 +79,7 @@ Namespace kCura.WinEDDS.Service
 				End If
 
 			Next
-			Return DirectCast(fields.ToArray(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.Field)), kCura.EDDS.WebAPI.DocumentManagerBase.Field())
+			Return fields.ToArray()
 		End Function
 
 		Private Function ConvertImportBehaviorEnum(ByVal input As Int32?) As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?

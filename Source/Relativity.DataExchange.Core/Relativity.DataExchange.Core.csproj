@@ -98,7 +98,7 @@
     <Compile Include="CacheKeys.cs" />
     <Compile Include="Data\BooleanImporterException.cs" />
     <Compile Include="Data\CellImporterException.cs" />
-    <Compile Include="Data\ConditionalArrayList.cs" />
+    <Compile Include="Data\ConditionalList.cs" />
     <Compile Include="Data\ConditionalStringBuilder.cs" />
     <Compile Include="Data\DateImporterException.cs" />
     <Compile Include="Data\DecimalImporterException.cs" />
@@ -110,6 +110,7 @@
     <Compile Include="Data\ObjectNameImporterException.cs" />
     <Compile Include="Data\StringImporterException.cs" />
     <Compile Include="Data\TrimOption.cs" />
+    <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="ExceptionHelper.cs" />
     <Compile Include="Io\ErrorBeforeMassImportArgs.cs" />
     <Compile Include="Io\ErrorDuringMassImportArgs.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="Io\OutsideInFileTypeIdentifierService.cs" />
     <Compile Include="Io\TempFileBuilder.cs" />
     <Compile Include="Io\TempFileConstants.cs" />
+    <Compile Include="LogExtensions.cs" />
     <Compile Include="Media\ByteOrdering.cs" />
     <Compile Include="Media\FreeImageService.cs" />
     <Compile Include="Media\IImageConverter.cs" />
@@ -142,6 +144,7 @@
     <Compile Include="Media\MultiPagePdfConversionException.cs" />
     <Compile Include="Media\MultiPageTiffConversionException.cs" />
     <Compile Include="MemoryCacheRepository.cs" />
+    <Compile Include="NullAuthTokenProvider.cs" />
     <Compile Include="Process\EventType2.cs" />
     <Compile Include="Process\ProcessBase2.cs" />
     <Compile Include="Process\NullProcessEventWriter.cs" />
@@ -204,6 +207,7 @@
     <Compile Include="StringExtensions.cs" />
     <Compile Include="ImportExportCompatibilityCheck.cs" />
     <Compile Include="IApplicationVersionService.cs" />
+    <Compile Include="WebApiCredential.cs" />
     <Compile Include="TempDirectory2.cs" />
     <Compile Include="Timekeeper2.cs" />
     <Compile Include="TimekeeperEntry2.cs" />

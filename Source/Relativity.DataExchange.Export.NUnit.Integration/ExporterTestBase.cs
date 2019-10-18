@@ -51,6 +51,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		private WindsorContainer testContainer;
 		private CookieContainer cookieContainer;
 		private NetworkCredential credentials;
+		private CancellationTokenSource cancellationTokenSource;
 
 		protected ExporterTestBase()
 		{
@@ -76,7 +77,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		{
 			// This registers all components.
 			this.testContainer = new WindsorContainer();
-			ContainerFactoryProvider.ContainerFactory = new TestContainerFactory(this.testContainer);
+			ContainerFactoryProvider.ContainerFactory = new TestContainerFactory(this.testContainer, new NullLogger());
 
 			this.cookieContainer = new CookieContainer();
 			this.credentials = new NetworkCredential(AssemblySetup.TestParameters.RelativityUserName, AssemblySetup.TestParameters.RelativityPassword);
@@ -137,6 +138,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.MockFileShareSettingsService = new Mock<IFileShareSettingsService>();
 			this.MockTapiObjectService = MockObjectFactory.CreateMockTapiObjectService();
 
+			this.cancellationTokenSource = new CancellationTokenSource();
 			this.exporterTestJobResult = new ExporterTestJobResult();
 
 			AppSettingsManager.Default(AppSettings.Instance);
@@ -156,6 +158,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			{
 				this.testContainer.Dispose();
 				this.testContainer = null;
+			}
+
+			if (this.cancellationTokenSource != null)
+			{
+				this.cancellationTokenSource.Dispose();
+				this.cancellationTokenSource = null;
 			}
 		}
 
@@ -342,7 +350,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				new ProcessContext(),
 				new WebApiServiceFactory(this.ExtendedExportFile),
 				new ExportFileFormatterFactory(),
-				new ExportConfig());
+				new ExportConfig(),
+				new NullLogger(),
+				this.cancellationTokenSource.Token);
 			try
 			{
 				exporter.StatusMessage += this.ExporterOnStatusMessage;

@@ -428,7 +428,7 @@ Namespace Relativity.Desktop.Client
 				Case AppEvent.AppEventType.LogOnRequested
 					'' please note that url input and connection loop retry takes place on the stack
 					'' if in doubt what it means please try to input several times invalid web api url from main form settings and check call stack while having breakpoint on the following line
-					'' TODO: this shloud be rewritten to use simple while-like loop
+					'' TODO: this should be rewritten to use simple while-like loop
 					Await CheckCertificateAsync()
 			End Select
 		End Function
