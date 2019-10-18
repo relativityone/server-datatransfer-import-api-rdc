@@ -262,7 +262,7 @@ Namespace kCura.WinEDDS
 				Dim count As Int32
 				Dim columnName As String
 				For count = 0 To _parent.Columns.Count - 1
-					Dim field As WinEDDS.ViewFieldInfo = _parent.Columns(count)
+					Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 					columnName = field.AvfColumnName
 					Dim fieldValue As Object = artifact.Metadata(_ordinalLookup(columnName))
 					If field.FieldType = FieldType.Text OrElse field.FieldType = FieldType.OffTableText Then
@@ -1216,7 +1216,7 @@ Namespace kCura.WinEDDS
 			Dim rowPrefix As String = _loadFileFormatter.RowPrefix
 			If Not String.IsNullOrEmpty(rowPrefix) Then loadFileEntry.AddStringEntry(rowPrefix)
 			For count = 0 To _parent.Columns.Count - 1
-				Dim field As WinEDDS.ViewFieldInfo = _parent.Columns(count)
+				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				Dim val As Object = record(_ordinalLookup(columnName))
 				If field.FieldType = FieldType.Text OrElse field.FieldType = FieldType.OffTableText Then
