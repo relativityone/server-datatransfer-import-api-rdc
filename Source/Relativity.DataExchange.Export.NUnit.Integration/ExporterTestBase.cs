@@ -143,6 +143,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		private ExtendedExportFile exportFile;
 		private ProcessContext processContext;
 		private TestContainerFactory testContainerFactory;
+		private CancellationTokenSource cancellationTokenSource;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ExporterTestBase"/> class.
@@ -309,6 +310,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[SetUp]
 		public void Setup()
 		{
+			this.cancellationTokenSource = new CancellationTokenSource();
 			foreach (var item in System.Text.Encoding.GetEncodings())
 			{
 				System.Console.WriteLine($"Name={item.Name}, Display={item.DisplayName}, Code Page={item.CodePage}");
@@ -318,8 +320,15 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
+			this.MockLogger = MockObjectFactory.CreateMockLogger();
+			this.MockAppSettings = MockObjectFactory.CreateMockAppSettings();
+			this.MockExportRequestRetriever = MockObjectFactory.CreateMockExportRequestRetriever();
+			this.MockFileShareSettingsService = MockObjectFactory.CreateMockFileShareSettingsService();
+			this.MockProcessEventWriter = MockObjectFactory.CreateMockProcessEventWriter();
+			this.MockProcessErrorWriter = MockObjectFactory.CreateMockProcessErrorWriter();
+			this.MockTapiObjectService = MockObjectFactory.CreateMockTapiObjectService();
 			this.testContainer = new WindsorContainer();
-			this.testContainerFactory = new TestContainerFactory(this.testContainer);
+			this.testContainerFactory = new TestContainerFactory(this.testContainer, this.MockLogger.Object);
 			this.AssignTestSettings();
 			Assert.That(
 				this.TestParameters.WorkspaceId,
@@ -338,13 +347,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.identifierColumnName = null;
 			this.loadFileEncoding = Encoding.Unicode;
 			this.textFileEncoding = Encoding.Unicode;
-			this.MockAppSettings = MockObjectFactory.CreateMockAppSettings();
-			this.MockExportRequestRetriever = MockObjectFactory.CreateMockExportRequestRetriever();
-			this.MockFileShareSettingsService = MockObjectFactory.CreateMockFileShareSettingsService();
-			this.MockLogger = MockObjectFactory.CreateMockLogger();
-			this.MockProcessEventWriter = MockObjectFactory.CreateMockProcessEventWriter();
-			this.MockProcessErrorWriter = MockObjectFactory.CreateMockProcessErrorWriter();
-			this.MockTapiObjectService = MockObjectFactory.CreateMockTapiObjectService();
 			this.searchResult = false;
 			this.tempDirectory = new TempDirectory2();
 			this.tempDirectory.ClearReadOnlyAttributes = true;
@@ -398,6 +400,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.tempDirectory = null;
 			this.testContainer?.Dispose();
 			this.testContainer = null;
+			this.cancellationTokenSource?.Dispose();
+			this.cancellationTokenSource = null;
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -949,7 +953,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				this.processContext,
 				new WebApiServiceFactory(this.exportFile),
 				new ExportFileFormatterFactory(),
-				new ExportConfig());
+				new ExportConfig(),
+				this.MockLogger.Object,
+				this.cancellationTokenSource.Token);
 			try
 			{
 				exporter.StatusMessage += this.ExporterOnStatusMessage;
