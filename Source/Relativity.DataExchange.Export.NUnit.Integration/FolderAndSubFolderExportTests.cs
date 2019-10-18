@@ -9,58 +9,22 @@
 
 namespace Relativity.DataExchange.Export.NUnit.Integration
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 
 	using global::NUnit.Framework;
 
-	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
-	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
-	/// <summary>
-	/// Represents all folder and sub-folder export integration tests.
-	/// </summary>
-	[TestFixture("utf-8", "utf-8")]
-	[TestFixture("utf-8", "utf-16")]
-	[TestFixture("utf-16", "utf-16")]
-	[TestFixture("utf-16", "utf-8")]
 	[Feature.DataTransfer.RelativityDesktopClient.Export]
 	public class FolderAndSubFolderExportTests : ExporterTestBase
 	{
-		public FolderAndSubFolderExportTests(string loadFileEncoding, string textFileEncoding)
-			: base(loadFileEncoding, textFileEncoding)
-		{
-		}
-
-		[IdentifiedTest("5b20c6f1-1196-41ea-9326-0e875e2cabe9")]
-		[TestCase(TapiClient.Aspera)]
-		[TestCase(TapiClient.Direct)]
-		[TestCase(TapiClient.Web)]
-		[Category(TestCategories.Export)]
-		[Category(TestCategories.Integration)]
-		public void ShouldExportAllSampleDocAndImages(TapiClient client)
-		{
-			if ((client == TapiClient.Aspera && this.TestParameters.SkipAsperaModeTests) ||
-				(client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
-			{
-				Assert.Ignore(TestStrings.SkipTestMessage, $"{client}");
-			}
-
-			// ARRANGE
-			GivenTheTapiForceClientAppSettings(client);
-
-			// ACT
-			this.ExecuteFolderAndSubfoldersAndVerify();
-
-			// ASSERT
-			this.ThenTheExportJobIsSuccessful(ExporterTestData.AllSampleFiles.Count());
-		}
-
 		[IdentifiedTest("3B50E3A9-0A28-4FA4-9ACD-5FB878DEF97A")]
 		[TestCase(false)]
 		[TestCase(true)]
@@ -137,15 +101,14 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		[IdentifiedTest("14A8EB3C-5662-428C-B1E6-FA95E8C79259")]
-		[TestCase(false)]
-		[TestCase(true)]
+		[TestCase(TapiClient.None)]
+		[TestCase(TapiClient.Aspera)]
 		[Category(TestCategories.Export)]
 		[Category(TestCategories.Integration)]
-		public void ShouldExportWhenTheSettingsForFileShareIsNull(bool forceAsperaClient)
+		public void ShouldExportWhenTheSettingsForFileShareIsNull(TapiClient tapiClient)
 		{
 			// ARRANGE
-			GivenTheTapiForceClientAppSettings(forceAsperaClient ? TapiClient.Aspera : TapiClient.None);
-			this.GivenTheMockFileShareSettingsServiceIsRegistered();
+			GivenTheTapiForceClientAppSettings(tapiClient);
 			this.GivenTheMockedSettingsForFileShareIsNull();
 
 			// ACT
@@ -162,27 +125,33 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		public void ShouldExportWhenTheNativeSourceLocationIsInvalid()
 		{
 			// ARRANGE
-			const bool ValidNativeGuid = true;
-			const bool ValidNativeSourceLocation = false;
-			const bool ValidDestinationLocation = true;
 			var fileExportRequests = new List<ExportRequest>
 			{
-				this.CreateTestPhysicalFileExportRequest(
-					1,
-					1,
-					ValidNativeGuid,
-					ValidNativeSourceLocation,
-					ValidDestinationLocation),
-				this.CreateTestFieldFileExportRequest(
+				new PhysicalFileExportRequest(
+					new ObjectExportInfo
+						{
+							ArtifactID = 1,
+							NativeSourceLocation = null,
+							NativeFileGuid = System.Guid.NewGuid().ToString(),
+						},
+					System.IO.Path.Combine(this.TempDirectory.Directory, $"{Guid.NewGuid()}.doc"))
+					{
+						Order = 1,
+					},
+				new FieldFileExportRequest(
+					new ObjectExportInfo
+						{
+							ArtifactID = 2,
+							NativeSourceLocation = null,
+							NativeFileGuid = System.Guid.NewGuid().ToString(),
+						},
 					2,
-					2,
-					2,
-					ValidNativeGuid,
-					ValidNativeSourceLocation,
-					ValidDestinationLocation),
+					System.IO.Path.Combine(this.TempDirectory.Directory, $"{Guid.NewGuid()}.msg"))
+					{
+						Order = 2,
+					},
 			};
 
-			this.GivenTheMockExportRequestRetrieverIsRegistered();
 			this.GivenTheMockedExportRequestRetrieverReturns(fileExportRequests, new List<LongTextExportRequest>());
 
 			// ACT
@@ -199,37 +168,51 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		public void ShouldExportWhenTheDestinationLocationIsInvalid()
 		{
 			// ARRANGE
-			const bool ValidNativeGuid = true;
-			const bool ValidNativeSourceLocation = true;
-			const bool ValidDestinationLocation = false;
 			var fileExportRequests = new List<ExportRequest>
 			{
-				this.CreateTestPhysicalFileExportRequest(
-					1,
-					1,
-					ValidNativeGuid,
-					ValidNativeSourceLocation,
-					ValidDestinationLocation),
-				this.CreateTestFieldFileExportRequest(
+				new PhysicalFileExportRequest(
+					new ObjectExportInfo
+						{
+							ArtifactID = 1,
+							NativeSourceLocation = $"{ExporterTestData.DummyUncPath}{Guid.NewGuid()}.doc",
+							NativeFileGuid = System.Guid.NewGuid().ToString(),
+						},
+					null)
+					{
+						Order = 1,
+					},
+				new FieldFileExportRequest(
+					new ObjectExportInfo
+						{
+							ArtifactID = 2,
+							NativeSourceLocation = $"{ExporterTestData.DummyUncPath}{Guid.NewGuid()}.msg",
+							NativeFileGuid = System.Guid.NewGuid().ToString(),
+						},
 					2,
-					2,
-					2,
-					ValidNativeGuid,
-					ValidNativeSourceLocation,
-					ValidDestinationLocation),
+					null)
+					{
+						Order = 2,
+					},
 			};
 
 			var longTextExportRequests = new List<LongTextExportRequest>
 			{
-				this.CreateTestLongTextExportRequest(
-					3,
-					3,
-					3,
-					ValidNativeSourceLocation,
-					ValidDestinationLocation),
+				((Func<LongTextExportRequest>)(() =>
+					{
+						LongTextExportRequest request = LongTextExportRequest.CreateRequestForLongText(
+							new ObjectExportInfo
+								{
+									ArtifactID = 3,
+									NativeSourceLocation = $"{ExporterTestData.DummyUncPath}{Guid.NewGuid()}.txt",
+									NativeFileGuid = null,
+								},
+							3,
+							null);
+						request.Order = 3;
+						return request;
+					}))(),
 			};
 
-			this.GivenTheMockExportRequestRetrieverIsRegistered();
 			this.GivenTheMockedExportRequestRetrieverReturns(fileExportRequests, longTextExportRequests);
 
 			// ACT
@@ -238,18 +221,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// ASSERT
 			const int ExpectedProcessedCount = 3;
 			this.ThenTheExportJobIsNotSuccessful(ExpectedProcessedCount);
-		}
-
-		private void ExecuteFolderAndSubfoldersAndVerify()
-		{
-			// Note: the sample dataset is imported only 1 time for all tests.
-			this.GivenTheExportType(ExportFile.ExportType.ParentSearch);
-			this.GivenTheFilesAreImported(null, ExporterTestData.AllSampleFiles);
-			CaseInfo caseInfo = this.WhenGettingTheWorkspaceInfo();
-			this.GivenTheSelectedFolderId(caseInfo.RootFolderID);
-			this.GivenTheIdentifierColumnName(WellKnownFields.ControlNumber);
-			this.WhenCreatingTheExportFile(caseInfo);
-			this.WhenExportingTheDocs();
 		}
 	}
 }

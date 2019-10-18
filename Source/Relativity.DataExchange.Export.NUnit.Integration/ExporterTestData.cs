@@ -12,6 +12,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 	public static class ExporterTestData
 	{
+		/// <summary>
+		/// The dummy UNC path. This should never be used for positive tests.
+		/// </summary>
+		public const string DummyUncPath = @"\\files\T001\Files\EDDS123456\";
+
 		public const string SampleDocPdfFileName = "EDRM-Sample1.pdf";
 		public const string SampleDocWordFileName = "EDRM-Sample2.doc";
 		public const string SampleDocExcelFileName = "EDRM-Sample3.xlsx";
