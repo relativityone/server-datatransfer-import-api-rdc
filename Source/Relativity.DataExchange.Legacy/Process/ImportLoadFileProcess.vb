@@ -1,4 +1,3 @@
-Imports System.Collections.Generic
 Imports Monitoring
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange
@@ -212,7 +211,7 @@ Namespace kCura.WinEDDS
 				retval.NestedValueDelimiter = LoadFile.HierarchicalValueDelimiter
 				retval.DestinationFolderArtifactID = LoadFile.DetermineDestinationFolderID()
 				If LoadFile.ArtifactTypeID <> ArtifactType.Document Then retval.DestinationFolderArtifactID = -1
-				Dim fieldMap As New List(Of Int32())
+				Dim fieldMap As New System.Collections.ArrayList
 				Dim mappedExtractedText As Boolean = False
 				For Each item As WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In LoadFile.FieldMap
 					If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 Then
@@ -226,7 +225,7 @@ Namespace kCura.WinEDDS
 				Else
 					retval.FilesCopiedToRepository = String.Empty
 				End If
-				retval.FieldsMapped = fieldMap.ToArray()
+				retval.FieldsMapped = DirectCast(fieldMap.ToArray(GetType(Int32())), Int32()())
 				If LoadFile.LoadNativeFiles Then
 					retval.FileFieldColumnName = LoadFile.NativeFilePathColumn
 				Else

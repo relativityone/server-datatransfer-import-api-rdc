@@ -927,7 +927,7 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Private Async Function GetSuitableKeyFields() As Task(Of kCura.WinEDDS.DocumentField())
-			Dim retval As New List(Of DocumentField)
+			Dim retval As New System.Collections.ArrayList
 			For Each field As kCura.WinEDDS.DocumentField In Await _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
 				If (field.FieldCategory = FieldCategory.Generic OrElse field.FieldCategory = FieldCategory.Identifier) AndAlso field.FieldTypeID = FieldType.Varchar Then
 					If field.FieldCategory = FieldCategory.Identifier Then field.FieldName &= " [Identifier]"
@@ -935,7 +935,7 @@ Namespace Relativity.Desktop.Client
 				End If
 			Next
 			retval.Sort(New DocumentFieldCollection.FieldNameComparer)
-			Return retval.ToArray()
+			Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
 		End Function
 
 		Private Async Function GetLongTextFields() As Task(Of DocumentFieldCollection)
@@ -951,14 +951,14 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Private Async Function GetMappedLongTextFields() As Task(Of DocumentField())
-			Dim mappedLongTextFields As New List(Of DocumentField)
+			Dim mappedLongTextFields As New System.Collections.ArrayList
 			For Each field As DocumentField In Await Me.GetLongTextFields()
 				If Me._fieldMap.FieldColumns.RightSearchableListItems.Contains(field.FieldName) Then
 					mappedLongTextFields.Add(field)
 				End If
 			Next
 			mappedLongTextFields.Sort(New DocumentFieldCollection.FieldNameComparer)
-			Return mappedLongTextFields.ToArray()
+			Return DirectCast(mappedLongTextFields.ToArray(GetType(DocumentField)), DocumentField())
 		End Function
 
 		Private Async Function AnyLongTextIsMapped() As Task(Of Boolean)
@@ -1444,14 +1444,14 @@ Namespace Relativity.Desktop.Client
 				End If
 
 				System.Array.Sort(columnHeaders)
-				Dim currentHeaderList As New List(Of String)
+				Dim currentHeaderList As New System.Collections.ArrayList
 				For Each item As Object In _fieldMap.LoadFileColumns.LeftSearchableListItems
 					If Not currentHeaderList.Contains(item.ToString) Then currentHeaderList.Add(item.ToString)
 				Next
 				For Each item As Object In _fieldMap.LoadFileColumns.RightSearchableListItems
 					If Not currentHeaderList.Contains(item.ToString) Then currentHeaderList.Add(item.ToString)
 				Next
-				currentHeaders = currentHeaderList.ToArray()
+				currentHeaders = DirectCast(currentHeaderList.ToArray(GetType(String)), String())
 				System.Array.Sort(currentHeaders)
 				If currentHeaders.Length <> columnHeaders.Length Then listsAreSame = False
 				If listsAreSame Then
@@ -1509,8 +1509,8 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Async Function MatchAndAddLoadFileColumns(ByVal columnHeaders As IEnumerable(Of String)) As Task
-			Dim matchedColumnHeaders = New List(Of String)
-			Dim matchedFields = New List(Of String)
+			Dim matchedColumnHeaders = New ArrayList
+			Dim matchedFields = New ArrayList
 			Dim currentFields As String() = Await _application.GetCaseFields(_application.SelectedCaseFolderID, _application.ArtifactTypeID, False)
 			For Each header In columnHeaders
 				Dim parsedHeader = ParseHeader(header)
@@ -1522,8 +1522,8 @@ Namespace Relativity.Desktop.Client
 					End If
 				Next
 			Next
-			Dim updatedMatchedFields = AddIdentifierToStrings(Await _application.GetCaseIdentifierFields(_application.ArtifactTypeID), matchedFields.ToArray())
-			Dim updatedMatchedHeaders = matchedColumnHeaders.ToArray()
+			Dim updatedMatchedFields = AddIdentifierToStrings(Await _application.GetCaseIdentifierFields(_application.ArtifactTypeID), CType(matchedFields.ToArray(GetType(String)), String()))
+			Dim updatedMatchedHeaders = CType(matchedColumnHeaders.ToArray(GetType(String)), String())
 			CheckAndRemoveStringRange(_fieldMap.FieldColumns.LeftSearchableList, updatedMatchedFields)
 			CheckAndAddStringRange(_fieldMap.FieldColumns.RightSearchableList, updatedMatchedFields)
 			CheckAndRemoveStringRange(_fieldMap.LoadFileColumns.RightSearchableList, updatedMatchedHeaders)
@@ -1957,7 +1957,7 @@ Namespace Relativity.Desktop.Client
 					_fieldMap.FieldColumns.LeftSearchableList.AddField(fieldName)
 				End If
 			Next
-			Dim itemsToRemove As New List(Of string)
+			Dim itemsToRemove As New System.Collections.ArrayList
 			For Each fieldName In _fieldMap.FieldColumns.LeftSearchableListItems
 				If Array.IndexOf(caseFields, (fieldName)) = -1 Then
 					itemsToRemove.Add(fieldName)
@@ -1967,7 +1967,7 @@ Namespace Relativity.Desktop.Client
 				_fieldMap.FieldColumns.LeftSearchableList.RemoveField(fieldName)
 			Next
 
-			itemsToRemove = New List(Of string)
+			itemsToRemove = New Collections.ArrayList
 			For Each fieldName In _fieldMap.FieldColumns.RightSearchableListItems
 				If Array.IndexOf(caseFields, (fieldName)) = -1 Then
 					itemsToRemove.Add(fieldName)
