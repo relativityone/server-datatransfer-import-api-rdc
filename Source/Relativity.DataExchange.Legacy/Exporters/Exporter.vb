@@ -1007,11 +1007,11 @@ Namespace kCura.WinEDDS
 			Else
 				args.ExportTextFieldAsFiles = False
 			End If
-			Dim fields As New List(Of Int32)
+			Dim fields As New System.Collections.ArrayList
 			For Each field As ViewFieldInfo In Me.Settings.SelectedViewFields
 				If Not fields.Contains(field.FieldArtifactId) Then fields.Add(field.FieldArtifactId)
 			Next
-			args.Fields = fields.ToArray()
+			args.Fields = DirectCast(fields.ToArray(GetType(Int32)), Int32())
 			args.ExportNativeFiles = Me.Settings.ExportNative
 			If args.Fields.Length > 0 OrElse Me.Settings.ExportNative Then
 				args.MetadataLoadFileEncodingCodePage = Me.Settings.LoadFileEncoding.CodePage
@@ -1080,11 +1080,11 @@ Namespace kCura.WinEDDS
 				args.ExportImages = False
 			End If
 			args.OverwriteFiles = Me.Settings.Overwrite
-			Dim preclist As New List(Of Int32)
+			Dim preclist As New System.Collections.ArrayList
 			For Each pair As WinEDDS.Pair In Me.Settings.ImagePrecedence
 				preclist.Add(Int32.Parse(pair.Value))
 			Next
-			args.ProductionPrecedence = preclist.ToArray()
+			args.ProductionPrecedence = DirectCast(preclist.ToArray(GetType(Int32)), Int32())
 			args.RunTimeInMilliseconds = CType(System.Math.Min(System.DateTime.Now.Subtract(_start).TotalMilliseconds, Int32.MaxValue), Int32)
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.AncestorSearch OrElse Me.Settings.TypeOfExport = ExportFile.ExportType.ParentSearch Then
 				args.SourceRootFolderID = Me.Settings.ArtifactID
