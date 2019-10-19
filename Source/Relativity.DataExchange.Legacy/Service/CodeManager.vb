@@ -1,4 +1,3 @@
-Imports System.Collections.Generic
 Imports System.Web
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Service
@@ -110,7 +109,7 @@ Namespace kCura.WinEDDS.Service
 
 		Public Function RetrieveAllCodesOfType(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32) As ChoiceInfo()
 			Dim dt As System.Data.DataTable
-			Dim retval As New List(Of ChoiceInfo)
+			Dim retval As New System.Collections.ArrayList
 			Dim lastcodeId As Int32 = -1
 			Do
 				If lastcodeId = -1 Then
@@ -121,9 +120,9 @@ Namespace kCura.WinEDDS.Service
 				For Each row As System.Data.DataRow In dt.Rows
 					retval.Add(New ChoiceInfo(row))
 				Next
-				If retval.Count > 0 Then lastcodeId = retval(retval.Count - 1).ArtifactID
+				If retval.Count > 0 Then lastcodeId = DirectCast(retval(retval.Count - 1), ChoiceInfo).ArtifactID
 			Loop Until dt Is Nothing OrElse dt.Rows.Count = 0
-			Return retval.ToArray()
+			Return DirectCast(retval.ToArray(GetType(ChoiceInfo)), ChoiceInfo())
 		End Function
 
 		Public Shadows Function RetrieveCodeByNameAndTypeID(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32, ByVal name As String) As ChoiceInfo

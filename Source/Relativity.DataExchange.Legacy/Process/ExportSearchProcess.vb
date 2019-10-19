@@ -67,7 +67,7 @@ Namespace kCura.WinEDDS
 			MyBase.OnSuccess()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_searchExporter.Statistics.MetadataThroughput, _searchExporter.Statistics.FileThroughput, checkThrottling := False)
+			SendMetricJobProgress(_searchExporter.Statistics, checkThrottling := False)
 			Me.Context.PublishStatusEvent("", "Export completed")
 			Me.Context.PublishProcessCompleted()
 		End Sub
@@ -76,14 +76,14 @@ Namespace kCura.WinEDDS
 			MyBase.OnFatalError()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _searchExporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_searchExporter.Statistics.MetadataThroughput, _searchExporter.Statistics.FileThroughput, checkThrottling := False)
+			SendMetricJobProgress(_searchExporter.Statistics, checkThrottling := False)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_searchExporter.Statistics.MetadataThroughput, _searchExporter.Statistics.FileThroughput, checkThrottling := False)
+			SendMetricJobProgress(_searchExporter.Statistics, checkThrottling := False)
 			Me.Context.PublishProcessCompleted(False, _searchExporter.ErrorLogFileName, True)
 		End Sub
 
@@ -144,10 +144,10 @@ Namespace kCura.WinEDDS
 					Interlocked.Increment(_errorCount)
 					Me.Context.PublishErrorEvent(e.DocumentsExported.ToString, e.Message)
 				Case EventType2.Progress
-					SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, checkThrottling := True)
+					SendMetricJobProgress(e.Statistics, checkThrottling := True)
 					Me.Context.PublishStatusEvent("", e.Message)
 				Case EventType2.Statistics
-					SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, checkThrottling := True)
+					SendMetricJobProgress(e.Statistics, checkThrottling := True)
 				Case EventType2.Status
 					Me.Context.PublishStatusEvent(e.DocumentsExported.ToString, e.Message)
 				Case EventType2.Warning

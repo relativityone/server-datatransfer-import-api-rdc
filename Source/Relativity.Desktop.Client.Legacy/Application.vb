@@ -2,7 +2,6 @@ Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
-Imports System.Xml
 Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Credentials
@@ -757,7 +756,7 @@ Namespace Relativity.Desktop.Client
 			Dim unmapped As String()
 			Dim fmi As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim fieldsNotColumnsMapped As Boolean
-			Dim values As New List(Of String)
+			Dim values As New ArrayList
 			For Each fmi In loadFile.FieldMap
 				If fmi.DocumentField Is Nothing AndAlso fmi.NativeFileColumnIndex <> -1 Then
 					values.Add("Column " & fmi.NativeFileColumnIndex + 1)
@@ -768,7 +767,7 @@ Namespace Relativity.Desktop.Client
 				End If
 			Next
 			If values.Count > 0 Then
-				unmapped = values.ToArray()
+				unmapped = DirectCast(values.ToArray(GetType(String)), String())
 				Dim sb As New System.Text.StringBuilder
 				Dim nl As String = System.Environment.NewLine
 				If fieldsNotColumnsMapped Then
@@ -885,7 +884,7 @@ Namespace Relativity.Desktop.Client
 				Case Else
 					exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch, exportFile.ArtifactTypeID)
 			End Select
-			Dim ids As New List(Of Int32)
+			Dim ids As New System.Collections.ArrayList
 			For Each row As System.Data.DataRow In exportFile.DataTable.Rows
 				ids.Add(row("ArtifactID"))
 			Next
@@ -899,7 +898,7 @@ Namespace Relativity.Desktop.Client
 				exportFile.ArtifactAvfLookup = New System.Collections.Specialized.HybridDictionary
 				exportFile.AllExportableFields = New kCura.WinEDDS.ViewFieldInfo() {}
 			Else
-				exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, exportFile.ArtifactTypeID, ids.ToArray(), typeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production)
+				exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, exportFile.ArtifactTypeID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production)
 				exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(caseInfo.ArtifactID, exportFile.ArtifactTypeID)
 			End If
 			Return exportFile
@@ -1248,7 +1247,7 @@ Namespace Relativity.Desktop.Client
 		Public Function CleanLoadFile(ByVal doc As System.Xml.XmlDocument) As String
 			For Each node As System.Xml.XmlNode In doc.ChildNodes(0).ChildNodes(0)
 				If node.Name = "a1:DocumentField" Then
-					Dim nodesToRemove As New List(Of XmlNode)
+					Dim nodesToRemove As New System.Collections.ArrayList
 					For Each dfNode As System.Xml.XmlNode In node.ChildNodes
 						If dfNode.Name = "_codeTypeID" Then nodesToRemove.Add(dfNode)
 						If dfNode.Name = "_fieldLength" Then nodesToRemove.Add(dfNode)
