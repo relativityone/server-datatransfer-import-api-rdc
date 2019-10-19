@@ -218,7 +218,6 @@
     <Compile Include="Transfer\TapiModeHelper.cs" />
     <Compile Include="Transfer\TapiTotals.cs" />
     <Compile Include="Transfer\ITapiBridge.cs" />
-    <Compile Include="Transfer\MetadataTransferException.cs" />
     <Compile Include="Transfer\TapiBridgeBase2.cs" />
     <Compile Include="Transfer\TapiBridgeFactory.cs" />
     <Compile Include="Transfer\TapiBridgeParameters2.cs" />

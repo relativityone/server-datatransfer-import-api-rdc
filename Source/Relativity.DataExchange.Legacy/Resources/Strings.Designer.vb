@@ -74,6 +74,33 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Failed to complete all pending metadata file uploads..
+        '''</summary>
+        Friend Shared ReadOnly Property BulkLoadFileUploadsErrorMessage() As String
+            Get
+                Return ResourceManager.GetString("BulkLoadFileUploadsErrorMessage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to All metadata file have been successfully uploaded..
+        '''</summary>
+        Friend Shared ReadOnly Property BulkLoadFileUploadsSuccessMessage() As String
+            Get
+                Return ResourceManager.GetString("BulkLoadFileUploadsSuccessMessage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Waiting for all metadata files to upload....
+        '''</summary>
+        Friend Shared ReadOnly Property BulkLoadFileUploadsWaitMessage() As String
+            Get
+                Return ResourceManager.GetString("BulkLoadFileUploadsWaitMessage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Failed to retrieve the import/export API version. Contact your system administrator for assistance if this problem persists..
         '''</summary>
         Friend Shared ReadOnly Property GetImportExportWebApiVersionExceptionMessage() As String
@@ -101,11 +128,29 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to The metadata transfer job failed because the maximum time limit of {0} minute(s) was reached waiting for all metadata load files to transfer. Try again. If the problem persists, contact your system administrator for assistance..
+        '''  Looks up a localized string similar to Failed to complete all pending files file uploads..
         '''</summary>
-        Friend Shared ReadOnly Property MetadataTransferExceptionMessage() As String
+        Friend Shared ReadOnly Property PhysicalFileUploadsErrorMessage() As String
             Get
-                Return ResourceManager.GetString("MetadataTransferExceptionMessage", resourceCulture)
+                Return ResourceManager.GetString("PhysicalFileUploadsErrorMessage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to All files have been successfully uploaded..
+        '''</summary>
+        Friend Shared ReadOnly Property PhysicalFileUploadsSuccessMessage() As String
+            Get
+                Return ResourceManager.GetString("PhysicalFileUploadsSuccessMessage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Waiting for all files to upload....
+        '''</summary>
+        Friend Shared ReadOnly Property PhysicalFileUploadsWaitMessage() As String
+            Get
+                Return ResourceManager.GetString("PhysicalFileUploadsWaitMessage", resourceCulture)
             End Get
         End Property
     End Class
