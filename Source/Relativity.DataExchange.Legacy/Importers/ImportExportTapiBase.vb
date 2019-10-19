@@ -4,11 +4,9 @@
 ' </copyright>
 ' ----------------------------------------------------------------------------
 
-Imports System.Globalization
 Imports System.Threading
 
 Imports kCura.WinEDDS.Helpers
-
 Imports Polly
 
 Imports Relativity.DataExchange
@@ -26,7 +24,6 @@ Namespace kCura.WinEDDS
 	Public MustInherit Class ImportExportTapiBase
 
 #Region "Members"
-		Private Const _metadataFileCheckRetryCount As Int32 = 60000
 		Private Const _fileCheckRetryCount As Int32 = 6000
 		Private Const _fileCheckWaitBetweenRetriesMilliseconds As Int32 = 10
 		Private ReadOnly _ioReporter As IIoReporter
@@ -41,7 +38,6 @@ Namespace kCura.WinEDDS
 		Private _fileTapiClientName As String
 		Private _statisticsLastUpdated As DateTime = DateTime.Now
 		Private _batchFileTapiProgressCount As Int32 = 0
-		Private _batchMetadataTapiProgressCount As Int32 = 0
 		Private ReadOnly _logger As ILog
 		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 		Private _waitAndRetryPolicy As IWaitAndRetryPolicy
@@ -351,26 +347,29 @@ Namespace kCura.WinEDDS
 			_ioReporter.PublishWarningMessage(args)
 		End Sub
 
-		Protected Sub CompletePendingPhysicalFileTransfers(waitMessage As String, completedMessage As String, errorMessage As String)
-			' TODO: Invert this flag after RDC Export hardening is completed.
+		''' <summary>
+		''' Awaits completion of all pending physical file uploads for the import job and dispose all transfer related objects.
+		''' </summary>
+		Protected Sub AwaitPendingPhysicalFileUploadsForJob()
 			Const KeepJobAlive As Boolean = False
 			Me.FileTapiBridge.WaitForTransfers(
-				waitMessage,
-				completedMessage,
-				errorMessage,
+				My.Resources.Strings.PhysicalFileUploadsWaitMessage,
+				My.Resources.Strings.PhysicalFileUploadsSuccessMessage,
+				My.Resources.Strings.PhysicalFileUploadsErrorMessage,
 				KeepJobAlive)
 		End Sub
 
-		Protected Sub CompletePendingBulkLoadFileTransfers()
-			' TODO: Invert this flag after RDC Export hardening is completed.
+		''' <summary>
+		''' Awaits completion of all pending metadata uploads for the import job and dispose all transfer related objects. This should be called before the mass import API service call.
+		''' </summary>
+		Protected Sub AwaitPendingBulkLoadFileUploadsForJob()
 			Const KeepJobAlive As Boolean = False
 			Me.BulkLoadTapiBridge.WaitForTransfers(
-				"Waiting for all metadata files to upload...",
-				"Metadata file uploads completed.",
-				"Failed to complete all pending metadata file uploads.",
+				My.Resources.Strings.BulkLoadFileUploadsWaitMessage,
+				My.Resources.Strings.BulkLoadFileUploadsSuccessMessage,
+				My.Resources.Strings.BulkLoadFileUploadsErrorMessage,
 				KeepJobAlive)
 		End Sub
-
 
 		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters2, ByVal bulkLoadParameters As UploadTapiBridgeParameters2, authTokenProvider As IAuthenticationTokenProvider)
 			_fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, authTokenProvider, Me.CancellationToken)
@@ -542,10 +541,6 @@ Namespace kCura.WinEDDS
 
 		Private Sub BulkLoadOnTapiProgress(ByVal sender As Object, ByVal e As TapiProgressEventArgs)
 			SyncLock _syncRoot
-				If e.Completed Then
-					_batchMetadataTapiProgressCount += 1
-				End If
-
 				If ShouldImport AndAlso e.Successful Then
 					_statistics.MetadataFilesTransferredCount += 1
 				End If
@@ -625,40 +620,33 @@ Namespace kCura.WinEDDS
 			RaiseEvent UploadModeChangeEvent(statusBarText)
 		End Sub
 
-		Public Sub WaitForPendingMetadataUploads()
-			Dim waitResult As Boolean = WaitForRetry(
-				Function()
-					Return _batchMetadataTapiProgressCount >= Me.MetadataFilesCount
-				End Function,
-				"Waiting for all metadata files to upload...",
-				"Metadata file uploads completed.",
-				"Failed to wait for all pending metadata file uploads.",
-				_metadataFileCheckRetryCount,
-				_fileCheckWaitBetweenRetriesMilliseconds)
-
-			_batchMetadataTapiProgressCount = 0
+		''' <summary>
+		''' Awaits completion of all pending metadata uploads for the current batch and optimize file transfers by not disposing the transfer job. This should be executed before the mass import API service call.
+		''' </summary>
+		Protected Sub AwaitPendingBulkLoadFileUploadsForBatch()
+			Const KeepJobAlive As Boolean = True
+			Me.BulkLoadTapiBridge.WaitForTransfers(
+				My.Resources.Strings.BulkLoadFileUploadsWaitMessage,
+				My.Resources.Strings.BulkLoadFileUploadsSuccessMessage,
+				My.Resources.Strings.BulkLoadFileUploadsErrorMessage,
+				KeepJobAlive)
 			Me.MetadataFilesCount = 0
-
-			' REL-317973: Design expectations require ALL BCP load files to transfer successfully!
-			'             Otherwise, subsequent exceptions are virtually guaranteed.
-			If Not waitResult And Me.ShouldImport
-				Dim maxWaitPeriod As TimeSpan = TimeSpan.FromMilliseconds(_metadataFileCheckRetryCount * _fileCheckWaitBetweenRetriesMilliseconds)
-				Dim errorMessage As String = String.Format(
-					CultureInfo.CurrentCulture,
-					My.Resources.Strings.MetadataTransferExceptionMessage,
-					maxWaitPeriod.TotalMinutes)
-				Throw New MetadataTransferException(errorMessage)
-			End If
 		End Sub
 
-		Public Sub WaitForPendingFileUploads()
+		''' <summary>
+		''' Awaits completion of all pending physical file uploads for the current batch and optimize file transfers by not disposing the transfer job.
+		''' </summary>
+		''' <remarks>
+		''' Migrating to WaitForTransfers was avoided to address risk/SOI concerns but should be done in a future release.
+		''' </remarks>
+		Protected Sub AwaitPendingPhysicalFileUploadsForBatch()
 			WaitForRetry(
 				Function()
 					Return _batchFileTapiProgressCount >= Me.ImportFilesCount
 				End Function,
-				"Waiting for all native files to upload...",
-				"Native file uploads completed.",
-				"Failed to wait for all pending native file uploads.",
+				My.Resources.Strings.PhysicalFileUploadsWaitMessage,
+				My.Resources.Strings.PhysicalFileUploadsSuccessMessage,
+				My.Resources.Strings.PhysicalFileUploadsErrorMessage,
 				_fileCheckRetryCount,
 				_fileCheckWaitBetweenRetriesMilliseconds)
 
