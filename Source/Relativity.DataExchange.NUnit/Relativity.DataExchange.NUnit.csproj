@@ -164,6 +164,7 @@
     <Compile Include="Monitoring\Sinks\MetricSinkApmTest.cs" />
     <Compile Include="Monitoring\Sinks\MetricSinkSumTest.cs" />
     <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
+    <Compile Include="UrlHelperTests.cs" />
     <Compile Include="SerializationTests.cs" />
     <Compile Include="SoapExceptionDetailTests.cs" />
     <Compile Include="SerializationTestsBase.cs" />
@@ -204,7 +205,7 @@
     <AdditionalFiles Include="..\..\buildtools\stylecop.json">
       <Link>stylecop.json</Link>
     </AdditionalFiles>
-    <None Include="app.config" />
+    <None Include="App.config" />
     <None Include="app.manifest" />
     <None Include="paket.references" />
     <Content Include="Resources\ExportFile\ExportFile10.0.kwx">

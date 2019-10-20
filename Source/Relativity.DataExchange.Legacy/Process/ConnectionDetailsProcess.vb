@@ -63,27 +63,27 @@ Namespace kCura.WinEDDS
 		
 		Private Sub CheckDownloadHandlerURL()
 			Me.WriteStatus("Validate Download URL:")
-			Dim downloadUrl As String = Global.Relativity.DataExchange.Io.FileSystem.Instance.Path.GetFullyQualifiedPath(New System.Uri(Me.AppSettings.WebApiServiceUrl), _caseInfo.DownloadHandlerURL)
+			Dim downloadUrl As String = UrlHelper.Combine(UrlHelper.GetBaseUrl(Me.AppSettings.WebApiServiceUrl), _caseInfo.DownloadHandlerURL)
 			Me.WriteStatus(downloadUrl)
 			Dim myReq As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(downloadUrl & "AccessDenied.aspx"), System.Net.HttpWebRequest)
-	  Try
-		'SF00204217: Set credentials to avoid http 401 when IIS is using Integrated Windows Authentication.
-		myReq.UseDefaultCredentials = True
-		myReq.GetResponse()
-		Me.WriteStatus("URL validated")
-	  Catch ex As System.Net.WebException
-		With DirectCast(ex.Response, System.Net.HttpWebResponse)
-		  If .StatusCode = Net.HttpStatusCode.Forbidden AndAlso .StatusDescription = "kcuraaccessdeniedmarker" Then
-			Me.WriteStatus("URL validated")
-		  Else
-			Me.WriteStatus("Cannot find URL")
-			Me.WriteStatus(ex.ToString)
-		  End If
-		End With
-	  Catch ex As System.Exception
-		Me.WriteStatus("Cannot find URL")
-		Me.WriteStatus(ex.ToString)
-	  End Try
+			Try
+				'SF00204217: Set credentials to avoid http 401 when IIS is using Integrated Windows Authentication.
+				myReq.UseDefaultCredentials = True
+				myReq.GetResponse()
+				Me.WriteStatus("URL validated")
+			Catch ex As System.Net.WebException
+				With DirectCast(ex.Response, System.Net.HttpWebResponse)
+					If .StatusCode = Net.HttpStatusCode.Forbidden AndAlso .StatusDescription = "kcuraaccessdeniedmarker" Then
+						Me.WriteStatus("URL validated")
+					Else
+						Me.WriteStatus("Cannot find URL")
+						Me.WriteStatus(ex.ToString)
+					End If
+				End With
+			Catch ex As System.Exception
+				Me.WriteStatus("Cannot find URL")
+				Me.WriteStatus(ex.ToString)
+			End Try
 		End Sub
 
 		Private Sub CheckBcp()
