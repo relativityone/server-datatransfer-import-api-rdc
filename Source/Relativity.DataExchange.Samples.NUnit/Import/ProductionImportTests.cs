@@ -43,6 +43,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		private const int TotalImagesForFirstDocument = 1001;
 
 		[Test]
+		[Ignore("This version of the production API causes a serialization exception due to Kepler contract changes.")]
 		[Category(TestCategories.ImportProduction)]
 		[Category(TestCategories.Integration)]
 		public void ShouldImportTheProductionImages()
