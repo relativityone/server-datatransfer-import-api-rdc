@@ -170,6 +170,7 @@ namespace Relativity.DataExchange.Io
 			Justification = "The original implementation was explicitly designed to throw NullReferenceException.")]
 		public string GetFullyQualifiedPath(Uri baseUri, string path)
 		{
+			// Note: this check follows the original URI class design (e.g. kCura VB.NET assembly).
 			if (this.IsPathFullyQualified(path))
 			{
 				if (!path.EndsWith("/", StringComparison.OrdinalIgnoreCase))
@@ -180,17 +181,8 @@ namespace Relativity.DataExchange.Io
 				return path;
 			}
 
-			if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-			{
-				path = "/" + path;
-			}
-
-			if (!path.EndsWith("/", StringComparison.OrdinalIgnoreCase))
-			{
-				path += "/";
-			}
-
-			return baseUri.Scheme + Uri.SchemeDelimiter + baseUri.Host + path;
+			// The original VB.NET design assumed the base URL must be retrieved and combined.
+			return UrlHelper.Combine(UrlHelper.GetBaseUrl(baseUri.ToString()), path);
 		}
 
 		/// <inheritdoc />
