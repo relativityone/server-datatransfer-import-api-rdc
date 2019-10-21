@@ -4,7 +4,6 @@ newtonsoft.json
 relativity.datatransfer.messageservice
 relativity.kepler
 relativity.kepler.client
-relativity.logging
 relativity.logging.interfaces
 relativity.oauth2client
 relativity.oauth2client.implicit

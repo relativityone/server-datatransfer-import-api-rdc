@@ -65,7 +65,7 @@
 				exporter,
 				columnNamesInOrder,
 				loadFileHeaderFormatterFactory,
-				RelativityLogFactory.CreateLog())
+				RelativityLogger.Instance)
 		{
 		}
 

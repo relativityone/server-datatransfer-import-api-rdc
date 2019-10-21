@@ -35,8 +35,9 @@ namespace Relativity.DataExchange.Process
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProcessBase2"/> class.
 		/// </summary>
+		[Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")]
 		protected ProcessBase2()
-			: this(RelativityLogFactory.CreateLog())
+			: this(RelativityLogger.Instance)
 		{
 		}
 
