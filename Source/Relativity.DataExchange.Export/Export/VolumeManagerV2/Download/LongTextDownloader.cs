@@ -58,7 +58,7 @@
 
 				_logger.LogDebug("Subscribing '{_fileDownloadSubscriber}' for the download event", this._fileDownloadSubscriber);
 
-				if (longTextExportRequests.Any())
+				//if (longTextExportRequests.Any())
 				{
 					this._fileDownloadSubscriber?.SubscribeForDownloadEvents(bridge);
 				}
