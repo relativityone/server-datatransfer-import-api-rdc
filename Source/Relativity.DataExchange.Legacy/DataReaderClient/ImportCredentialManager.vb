@@ -131,7 +131,6 @@ Friend Class ImportCredentialManager
 		ce.UserName = UserName
 		ce.PassWord = Password
 		ce.Credentials = creds
-		ce.TapiCredential = creds
 		ce.CookieMonster = cookieMonster
 		ce.URL = WebServiceURL
 
@@ -142,14 +141,13 @@ Friend Class ImportCredentialManager
 	Public Class SessionCredentials
 		Public UserName As String
 		Public CookieMonster As CookieContainer
-		Public TapiCredential As NetworkCredential
-		Private _Credentials As ICredentials
+		Private _Credentials As NetworkCredential
 
-		Public Property Credentials As ICredentials
+		Public Property Credentials As NetworkCredential
 			Get
 				Return _Credentials
 			End Get
-			Friend Set(value As ICredentials)
+			Friend Set(value As NetworkCredential)
 				If value Is Nothing Then
 					Throw New System.Exception("Invalid property value.  Credentials cannot be null")
 				End If
@@ -163,14 +161,13 @@ Friend Class ImportCredentialManager
 		Public PassWord As String
 		Public URL As String
 		Public CookieMonster As CookieContainer
-		Public TapiCredential As NetworkCredential
-		Private _Credentials As ICredentials
+		Private _Credentials As NetworkCredential
 
-		Public Property Credentials As ICredentials
+		Public Property Credentials As NetworkCredential
 			Get
 				Return _Credentials
 			End Get
-			Friend Set(value As ICredentials)
+			Friend Set(value As NetworkCredential)
 				If value Is Nothing Then
 					Throw New System.Exception("Invalid property value.  Credentials cannot be null")
 				End If
@@ -182,7 +179,6 @@ Friend Class ImportCredentialManager
 			Dim sc As New SessionCredentials()
 			sc.UserName = UserName
 			sc.Credentials = Credentials
-			sc.TapiCredential = TapiCredential
 			sc.CookieMonster = CookieMonster
 			Return sc
 		End Function

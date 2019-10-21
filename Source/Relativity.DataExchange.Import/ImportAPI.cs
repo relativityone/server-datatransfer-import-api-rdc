@@ -475,7 +475,7 @@ namespace kCura.Relativity.ImportAPI
 			_credentials = credentials.Credentials;
 			this.webApiCredential = new WebApiCredential()
 			{
-				Credential = credentials.TapiCredential,
+				Credential = credentials.Credentials,
 				TokenProvider = this._authenticationTokenProvider
 			};
 			_cookieMonster = credentials.CookieMonster;
