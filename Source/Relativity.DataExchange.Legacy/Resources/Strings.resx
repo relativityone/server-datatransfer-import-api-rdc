@@ -133,7 +133,7 @@
     <value>Waiting for all metadata files to upload...</value>
   </data>
   <data name="BulkLoadFileUploadsSuccessMessage" xml:space="preserve">
-    <value>All metadata file have been successfully uploaded.</value>
+    <value>All metadata files have been successfully uploaded.</value>
   </data>
   <data name="BulkLoadFileUploadsErrorMessage" xml:space="preserve">
     <value>Failed to complete all pending metadata file uploads.</value>
@@ -145,6 +145,6 @@
     <value>All files have been successfully uploaded.</value>
   </data>
   <data name="PhysicalFileUploadsErrorMessage" xml:space="preserve">
-    <value>Failed to complete all pending files file uploads.</value>
+    <value>Failed to complete all pending file uploads.</value>
   </data>
 </root>

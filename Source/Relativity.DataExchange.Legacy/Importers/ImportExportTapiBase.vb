@@ -364,30 +364,6 @@ Namespace kCura.WinEDDS
 			_ioReporter.PublishWarningMessage(args)
 		End Sub
 
-		''' <summary>
-		''' Awaits completion of all pending physical file uploads for the import job and dispose all transfer related objects.
-		''' </summary>
-		Protected Sub AwaitPendingPhysicalFileUploadsForJob()
-			Const KeepJobAlive As Boolean = False
-			Me.FileTapiBridge.WaitForTransfers(
-				My.Resources.Strings.PhysicalFileUploadsWaitMessage,
-				My.Resources.Strings.PhysicalFileUploadsSuccessMessage,
-				My.Resources.Strings.PhysicalFileUploadsErrorMessage,
-				KeepJobAlive)
-		End Sub
-
-		''' <summary>
-		''' Awaits completion of all pending metadata uploads for the import job and dispose all transfer related objects. This should be called before the mass import API service call.
-		''' </summary>
-		Protected Sub AwaitPendingBulkLoadFileUploadsForJob()
-			Const KeepJobAlive As Boolean = False
-			Me.BulkLoadTapiBridge.WaitForTransfers(
-				My.Resources.Strings.BulkLoadFileUploadsWaitMessage,
-				My.Resources.Strings.BulkLoadFileUploadsSuccessMessage,
-				My.Resources.Strings.BulkLoadFileUploadsErrorMessage,
-				KeepJobAlive)
-		End Sub
-
 		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters2, ByVal bulkLoadParameters As UploadTapiBridgeParameters2, authTokenProvider As IAuthenticationTokenProvider)
 			_fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, authTokenProvider, Me.CancellationToken)
 			AddHandler _fileTapiBridge.TapiClientChanged, AddressOf FileOnTapiClientChanged
@@ -652,6 +628,18 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		''' <summary>
+		''' Awaits completion of all pending metadata uploads for the import job and dispose all transfer related objects. This should be called before the mass import API service call.
+		''' </summary>
+		Protected Sub AwaitPendingBulkLoadFileUploadsForJob()
+			Const KeepJobAlive As Boolean = False
+			Me.BulkLoadTapiBridge.WaitForTransfers(
+				My.Resources.Strings.BulkLoadFileUploadsWaitMessage,
+				My.Resources.Strings.BulkLoadFileUploadsSuccessMessage,
+				My.Resources.Strings.BulkLoadFileUploadsErrorMessage,
+				KeepJobAlive)
+		End Sub
+
+		''' <summary>
 		''' Awaits completion of all pending physical file uploads for the current batch and optimize file transfers by not disposing the transfer job.
 		''' </summary>
 		''' <remarks>
@@ -670,6 +658,18 @@ Namespace kCura.WinEDDS
 
 			_batchFileTapiProgressCount = 0
 			Me.ImportFilesCount = 0
+		End Sub
+
+		''' <summary>
+		''' Awaits completion of all pending physical file uploads for the import job and dispose all transfer related objects.
+		''' </summary>
+		Protected Sub AwaitPendingPhysicalFileUploadsForJob()
+			Const KeepJobAlive As Boolean = False
+			Me.FileTapiBridge.WaitForTransfers(
+				My.Resources.Strings.PhysicalFileUploadsWaitMessage,
+				My.Resources.Strings.PhysicalFileUploadsSuccessMessage,
+				My.Resources.Strings.PhysicalFileUploadsErrorMessage,
+				KeepJobAlive)
 		End Sub
 
 		Public Function WaitForRetry(ByVal retryFunction As Func(Of Boolean),
