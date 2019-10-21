@@ -1,2 +1,4 @@
 group ui-automation	
 	microsoft.winappdriver.appium.webdriver
+	selenium.support
+	selenium.webdriver

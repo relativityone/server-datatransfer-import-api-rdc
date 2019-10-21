@@ -70,3 +70,5 @@ nuget relativity.testing.identification ~> 1.6.0
 group ui-automation
 	source https://nuget.org/api/v2	
 	nuget microsoft.winappdriver.appium.webdriver = 1.0.1-preview
+	nuget selenium.support = 3.8.0
+	nuget selenium.webdriver = 3.8.0	
