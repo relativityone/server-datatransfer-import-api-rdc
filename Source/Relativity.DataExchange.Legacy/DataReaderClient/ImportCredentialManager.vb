@@ -23,6 +23,16 @@ Friend Class ImportCredentialManager
 		End Set
 	End Property
 
+	''' <summary>
+	''' Authenticates in Relativity and returns credentials.
+	''' When <paramref name="UserName"/> is empty then Integrated Windows Authentication is used.
+	''' When <paramref name="UserName"/> is equal to <see cref="kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName"/>
+	''' then bearer token authentication is used.
+	''' Otherwise it uses standard username and password authentication
+	'''  </summary>
+	''' <param name="UserName">username or <see cref="kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName"/></param>
+	''' <param name="Password">password or bearer token</param>
+	''' <returns>Credentials <see cref="SessionCredentials"/></returns>
 	Public Shared Function GetCredentials(ByVal UserName As String, ByVal Password As String) As SessionCredentials
 		' this function needs to be thread safe so that multiple simultaneous threads could call it
 
@@ -56,16 +66,13 @@ Friend Class ImportCredentialManager
 				Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog()
 				Dim token As CancellationToken = CancellationToken.None
 				Dim creds As NetworkCredential = Nothing
-				Dim credsTapi As NetworkCredential = Nothing
 				Dim cookieMonster As New CookieContainer
 
 				Try
 					If String.IsNullOrEmpty(UserName) Then
 						creds = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster, WebServiceURL, token, logger)
-						credsTapi = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuthTapi(cookieMonster, WebServiceURL, token, logger)
 					Else
 						creds = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(UserName.Trim(), Password.Trim(), cookieMonster, WebServiceURL, token, logger)
-						credsTapi = creds
 					End If
 				Catch ex As kCura.WinEDDS.Exceptions.CredentialsNotSupportedException
 					Throw
@@ -79,7 +86,7 @@ Friend Class ImportCredentialManager
 
 				' add credentials to cache and return session credentials to caller
 				If Not creds Is Nothing Then
-					retVal = AddCredentials(UserName, Password, creds, cookieMonster, credsTapi).SessionCredentials()
+					retVal = AddCredentials(UserName, Password, creds, cookieMonster).SessionCredentials()
 				End If
 				cachedCreds = False
 			End If
@@ -114,7 +121,7 @@ Friend Class ImportCredentialManager
 		Return Nothing
 	End Function
 
-	Private Shared Function AddCredentials(ByVal UserName As String, ByVal Password As String, ByVal creds As ICredentials, ByVal cookieMonster As CookieContainer, ByVal tapiCreds As NetworkCredential) As CredentialEntry
+	Private Shared Function AddCredentials(ByVal UserName As String, ByVal Password As String, ByVal creds As NetworkCredential, ByVal cookieMonster As CookieContainer) As CredentialEntry
 		If CredentialCache Is Nothing Then
 			CredentialCache = New List(Of CredentialEntry)
 		End If
@@ -124,7 +131,7 @@ Friend Class ImportCredentialManager
 		ce.UserName = UserName
 		ce.PassWord = Password
 		ce.Credentials = creds
-		ce.TapiCredential = tapiCreds
+		ce.TapiCredential = creds
 		ce.CookieMonster = cookieMonster
 		ce.URL = WebServiceURL
 
@@ -158,7 +165,7 @@ Friend Class ImportCredentialManager
 		Public CookieMonster As CookieContainer
 		Public TapiCredential As NetworkCredential
 		Private _Credentials As ICredentials
-		
+
 		Public Property Credentials As ICredentials
 			Get
 				Return _Credentials
