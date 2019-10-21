@@ -65,3 +65,8 @@ nuget relativity.productions.services.interfaces = 10.3.37
 nuget relativity.services.datacontracts = 10.3.142.22
 nuget relativity.services.interfaces = 10.3.142.22
 nuget relativity.testing.identification ~> 1.6.0
+
+# A group is used to address dependency conflicts and only required by UI automation tests.
+group ui-automation
+	source https://nuget.org/api/v2	
+	nuget microsoft.winappdriver.appium.webdriver = 1.0.1-preview
