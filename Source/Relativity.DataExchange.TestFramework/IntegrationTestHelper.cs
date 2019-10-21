@@ -18,6 +18,8 @@ namespace Relativity.DataExchange.TestFramework
 
 	using Newtonsoft.Json;
 
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+
 	/// <summary>
 	/// Defines static methods to setup and teardown integration tests.
 	/// </summary>

@@ -3,29 +3,30 @@ Imports kCura.WinEDDS.Credentials
 Imports Relativity.DataExchange
 
 Namespace kCura.WinEDDS.Api
+
+	''' <summary>
+	''' Defines helper methods for authentication in Relativity
+	''' </summary>
 	Public Class LoginHelper
-
-		Private Shared _windowsAuthRelativityManager As kCura.WinEDDS.Service.RelativityManager
-
 		Public Shared Function LoginUsernamePassword(ByVal username As String,
-		                                             ByVal password As String,
-		                                             ByVal cookieContainer As Net.CookieContainer) As System.Net.NetworkCredential
+													 ByVal password As String,
+													 ByVal cookieContainer As Net.CookieContainer) As System.Net.NetworkCredential
 			Return LoginUsernamePassword(
-				username, 
-				password, 
-				cookieContainer, 
+				username,
+				password,
+				cookieContainer,
 				AppSettings.Instance.WebApiServiceUrl)
 		End Function
 
 		Public Shared Function LoginUsernamePassword(ByVal username As String,
-		                                             ByVal password As String,
-		                                             ByVal cookieContainer As Net.CookieContainer,
-		                                             ByVal webServiceUrl As String) As System.Net.NetworkCredential
+													 ByVal password As String,
+													 ByVal cookieContainer As Net.CookieContainer,
+													 ByVal webServiceUrl As String) As System.Net.NetworkCredential
 			Return LoginUsernamePassword(
-				username, 
-				password, 
-				cookieContainer, 
-				AppSettings.Instance.WebApiServiceUrl, 
+				username,
+				password,
+				cookieContainer,
+				AppSettings.Instance.WebApiServiceUrl,
 				CancellationToken.None,
 				New Global.Relativity.Logging.NullLogger())
 		End Function
@@ -65,59 +66,32 @@ Namespace kCura.WinEDDS.Api
 			End Using
 		End Function
 
-		Public Shared Function LoginWindowsAuth(ByVal cookieContainer As System.Net.CookieContainer) As System.Net.NetworkCredential
-			Return LoginWindowsAuth(
-				cookieContainer, 
-				AppSettings.Instance.WebApiServiceUrl, 
-				CancellationToken.None,
-				New Global.Relativity.Logging.NullLogger())
-		End Function
-
+		''' <summary>
+		''' This method retrieves bearer token using OAuth Implicit Flow and Integrated Windows Authentication.
+		''' Implementation of implicit flow token provider requires to be run from interactive process.
+		''' So it should be used only from Desktop or Console apps. After successful login, compatibility with
+		''' Relativity instance is validated.
+		''' </summary>
+		''' <param name="cookieContainer">Cookie container</param>
+		''' <param name="webServiceUrl">URL of RelativityWebApi service</param>
+		''' <param name="token">cancellation token for compatibility check</param>
+		''' <param name="logger">logger</param>
+		''' <returns>Bearer token <see cref="Net.NetworkCredential"/></returns>
 		Public Shared Function LoginWindowsAuth(ByVal cookieContainer As System.Net.CookieContainer,
-												ByVal webServiceUrl As String,
-												ByVal token As CancellationToken,
-												ByVal logger As Global.Relativity.Logging.ILog) As System.Net.NetworkCredential
-			If cookieContainer Is Nothing Then
-				Throw New ArgumentException(NameOf(cookieContainer))
-			End If
-
-			If String.IsNullOrEmpty(webServiceUrl) Then
-				Throw New ArgumentException(NameOf(webServiceUrl))
-			End If
-
-			Dim credentials As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
-			webServiceUrl = AppSettings.Instance.ValidateUriFormat(webServiceUrl)
-			if (Not _windowsAuthRelativityManager Is Nothing)
-				_windowsAuthRelativityManager.Dispose()
-			End If
-
-			_windowsAuthRelativityManager = New kCura.WinEDDS.Service.RelativityManager(credentials, cookieContainer, webServiceUrl)
-			If _windowsAuthRelativityManager.ValidateSuccesfulLogin() Then
-				Initialize(_windowsAuthRelativityManager, webServiceUrl)
+													ByVal webServiceUrl As String,
+													ByVal token As CancellationToken,
+													ByVal logger As Global.Relativity.Logging.ILog) As System.Net.NetworkCredential
+			' Windows Authentication is used only to authenticate in a implicit flow process which returns credentials used in the import process
+			' RDC behavior is similar, it tries to authenticate in RelativityManager using Windows Authentication
+			' but it always fails and fall back on implicit flow. Please see comment in Application.AttemptWindowsAuthentication
+			' which was added in commit ba46946f (01 May 2019)
+			Dim windowsAuthCredentials As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
+			Using windowsAuthRelativityManager As New kCura.WinEDDS.Service.RelativityManager(windowsAuthCredentials, cookieContainer, webServiceUrl)
+				Dim provider As IntegratedAuthenticationOAuthCredentialsProvider = New IntegratedAuthenticationOAuthCredentialsProvider(windowsAuthRelativityManager)
+				Dim credentials As System.Net.NetworkCredential = provider.LoginWindowsAuth()
 				ValidateVersionCompatibility(credentials, cookieContainer, webServiceUrl, token, logger)
 				Return credentials
-			End If
-			Return Nothing
-		End Function
-
-		Public Shared Function LoginWindowsAuthTapi(ByVal cookieContainer As System.Net.CookieContainer,
-		                                            ByVal webServiceUrl As String,
-		                                            ByVal token As CancellationToken,
-		                                            ByVal logger As Global.Relativity.Logging.ILog) As System.Net.NetworkCredential
-			' Commit 21e69fd0 introduced the expectation that LoginWindowsAuth was called right before this method.
-			If _windowsAuthRelativityManager Is Nothing Then
-				Throw New InvalidOperationException("This operation cannot be completed because a Windows authentication logic error exists.")
-			End If
-
-			Try
-				Dim provider As IntegratedAuthenticationOAuthCredentialsProvider = New IntegratedAuthenticationOAuthCredentialsProvider(_windowsAuthRelativityManager)
-				Dim credentials As System.Net.NetworkCredential = provider.LoginWindowsAuthTapi()
-				ValidateVersionCompatibility(credentials, cookieContainer, webServiceUrl, token, logger)
-				Return credentials
-			Finally
-				_windowsAuthRelativityManager.Dispose()
-				_windowsAuthRelativityManager = Nothing
-			End Try
+			End Using
 		End Function
 
 		Public Shared Sub ValidateVersionCompatibility(ByVal credential As System.Net.NetworkCredential,

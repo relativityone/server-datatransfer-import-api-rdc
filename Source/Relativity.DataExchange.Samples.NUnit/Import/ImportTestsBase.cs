@@ -17,6 +17,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 
 	/// <summary>
 	/// Represents an abstract base class object to provide common functionality and helper methods.
