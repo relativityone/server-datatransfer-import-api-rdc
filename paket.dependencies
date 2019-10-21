@@ -23,7 +23,7 @@ nuget nunit = 3.11.0
 nuget nunit.consolerunner = 3.10.0
 nuget nunit.extension.vsprojectloader = 3.8.0
 
-# Polly is explicitly listed to avoid conflicts between TAPI and Relatativity.
+# Polly is explicitly listed to avoid conflicts between TAPI and Relativity.
 nuget polly = 5.7.0.0
 nuget psake = 4.7.4
 nuget reportgenerator = 4.1.2
@@ -64,4 +64,5 @@ nuget kcura.relativity.client = 11.0.79.97-DEV
 nuget relativity.productions.services.interfaces = 11.0.4
 nuget relativity.services.datacontracts = 11.0.79.97-DEV
 nuget relativity.services.interfaces = 11.0.79.97-DEV
+nuget relativity.services.interfaces.private = 11.0.79.97-DEV
 nuget relativity.testing.identification ~> 1.6.0
