@@ -83,7 +83,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to All metadata file have been successfully uploaded..
+        '''  Looks up a localized string similar to All metadata files have been successfully uploaded..
         '''</summary>
         Friend Shared ReadOnly Property BulkLoadFileUploadsSuccessMessage() As String
             Get
@@ -128,7 +128,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Failed to complete all pending files file uploads..
+        '''  Looks up a localized string similar to Failed to complete all pending file uploads..
         '''</summary>
         Friend Shared ReadOnly Property PhysicalFileUploadsErrorMessage() As String
             Get
