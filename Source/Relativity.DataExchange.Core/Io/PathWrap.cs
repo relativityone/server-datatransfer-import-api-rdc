@@ -182,7 +182,7 @@ namespace Relativity.DataExchange.Io
 			}
 
 			// The original VB.NET design assumed the base URL must be retrieved and combined.
-			return UrlHelper.Combine(UrlHelper.GetBaseUrl(baseUri.ToString()), path);
+			return UrlHelper.GetBaseUrlAndCombine(baseUri.ToString(), path);
 		}
 
 		/// <inheritdoc />
