@@ -81,16 +81,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			[ValueSource(nameof(Paddings))] PaddingDto paddingValue,
 			[ValueSource(nameof(Delimiters))] DelimiterDto delimiterValue)
 		{
-			if ((client == TapiClient.Aspera && AssemblySetup.TestParameters.SkipAsperaModeTests) ||
-				(client == TapiClient.Direct && AssemblySetup.TestParameters.SkipDirectModeTests))
-			{
-				Assert.Ignore(TestStrings.SkipTestMessage, $"{client}");
-			}
+			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 
 			// ARRANGE
 			GivenTheTapiForceClientAppSettings(client);
 
-			// TODO enable ExportFile.ExportType.ArtifactSearch and ExportFile.ExportType.Production
+			// TODO REL-369935 enable ExportFile.ExportType.ArtifactSearch and ExportFile.ExportType.Production
 			this.ExtendedExportFile.TypeOfExport = exportType.ExportType;
 
 			this.ExtendedExportFile.TextFileEncoding = Encoding.GetEncoding(textFileEncoding);
@@ -126,7 +122,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			// TODO add much better validation for each of the results.
+			// TODO REL-369935 add much better validation for each of the results.
 			this.ThenTheExportJobIsSuccessful(ExporterTestData.AllSampleFiles.Count());
 		}
 	}

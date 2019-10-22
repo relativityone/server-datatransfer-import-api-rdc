@@ -124,7 +124,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 							NativeSourceLocation = null,
 							NativeFileGuid = System.Guid.NewGuid().ToString(),
 						},
-					System.IO.Path.Combine(this.TempDirectory.Directory, $"{Guid.NewGuid()}.doc"))
+					destinationLocation: System.IO.Path.Combine(this.TempDirectory.Directory, $"{Guid.NewGuid()}.doc"))
 					{
 						Order = 1,
 					},
@@ -135,8 +135,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 							NativeSourceLocation = null,
 							NativeFileGuid = System.Guid.NewGuid().ToString(),
 						},
-					2,
-					System.IO.Path.Combine(this.TempDirectory.Directory, $"{Guid.NewGuid()}.msg"))
+					fileFieldArtifactId: 2,
+					destinationLocation: System.IO.Path.Combine(this.TempDirectory.Directory, $"{Guid.NewGuid()}.msg"))
 					{
 						Order = 2,
 					},
@@ -165,7 +165,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 							NativeSourceLocation = $"{ExporterTestData.DummyUncPath}{Guid.NewGuid()}.doc",
 							NativeFileGuid = System.Guid.NewGuid().ToString(),
 						},
-					null)
+					destinationLocation: null)
 					{
 						Order = 1,
 					},
@@ -176,8 +176,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 							NativeSourceLocation = $"{ExporterTestData.DummyUncPath}{Guid.NewGuid()}.msg",
 							NativeFileGuid = System.Guid.NewGuid().ToString(),
 						},
-					2,
-					null)
+					fileFieldArtifactId: 2,
+					destinationLocation: null)
 					{
 						Order = 2,
 					},
@@ -194,8 +194,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 									NativeSourceLocation = $"{ExporterTestData.DummyUncPath}{Guid.NewGuid()}.txt",
 									NativeFileGuid = null,
 								},
-							3,
-							null);
+							fieldArtifactId: 3,
+							destinationLocation: null);
 						request.Order = 3;
 						return request;
 					}))(),

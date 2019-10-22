@@ -39,7 +39,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.Process;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 
