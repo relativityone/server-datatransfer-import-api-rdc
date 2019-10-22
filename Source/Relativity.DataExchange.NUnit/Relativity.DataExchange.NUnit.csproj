@@ -150,6 +150,7 @@
     <Compile Include="ImageLoadFileDeserializationTests.cs" />
     <Compile Include="LoadFileDeserializationTests.cs" />
     <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
+    <Compile Include="UrlHelperTests.cs" />
     <Compile Include="SoapExceptionDetailTests.cs" />
     <Compile Include="SerializationTestsBase.cs" />
     <Compile Include="ImportExportCompatibilityCheckTests.cs" />
