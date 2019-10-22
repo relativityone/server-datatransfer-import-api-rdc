@@ -13,6 +13,7 @@ namespace Relativity.DataExchange.Transfer
 	using System.Threading;
 
 	using Relativity.DataExchange.Resources;
+	using Relativity.Logging;
 	using Relativity.Transfer;
 	using Relativity.Transfer.Aspera;
 
@@ -29,14 +30,14 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="parameters">
 		/// The native file transfer parameters.
 		/// </param>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logging instance.
 		/// </param>
 		/// <param name="token">
 		/// The cancellation token.
 		/// </param>
-		public DownloadTapiBridge2(TapiBridgeParameters2 parameters, ITransferLog log, CancellationToken token)
-			: this(new TapiObjectService(), parameters, log, token)
+		public DownloadTapiBridge2(TapiBridgeParameters2 parameters, ILog logger, CancellationToken token)
+			: this(new TapiObjectService(), parameters, logger, token)
 		{
 		}
 
@@ -49,8 +50,8 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="parameters">
 		/// The native file transfer parameters.
 		/// </param>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logging instance.
 		/// </param>
 		/// <param name="token">
 		/// The cancellation token.
@@ -58,9 +59,9 @@ namespace Relativity.DataExchange.Transfer
 		public DownloadTapiBridge2(
 			ITapiObjectService factory,
 			TapiBridgeParameters2 parameters,
-			ITransferLog log,
+			ILog logger,
 			CancellationToken token)
-			: this(factory, parameters, null, log, token)
+			: this(factory, parameters, null, logger, token)
 		{
 		}
 
@@ -76,8 +77,8 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="context">
 		/// The transfer context.
 		/// </param>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logging instance.
 		/// </param>
 		/// <param name="token">
 		/// The cancellation token.
@@ -86,9 +87,9 @@ namespace Relativity.DataExchange.Transfer
 			ITapiObjectService factory,
 			TapiBridgeParameters2 parameters,
 			TransferContext context,
-			ITransferLog log,
+			ILog logger,
 			CancellationToken token)
-			: base(factory, parameters, TransferDirection.Download, context, log, token)
+			: base(factory, parameters, TransferDirection.Download, context, logger, token)
 		{
 			this.parameters = parameters;
 		}

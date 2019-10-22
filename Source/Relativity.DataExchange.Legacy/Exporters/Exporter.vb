@@ -91,7 +91,7 @@ Namespace kCura.WinEDDS
 			Get
 				Return _columns
 			End Get
-			Set
+			Set(ByVal value As System.Collections.ArrayList)
 				_columns = value
 			End Set
 		End Property
@@ -167,7 +167,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(exportFile As kCura.WinEDDS.ExportFile, 
 		               context As ProcessContext,
 		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
-			Me.New(exportFile, context, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig, RelativityLogFactory.CreateLog(), CancellationToken.None)
+			Me.New(exportFile, context, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig, RelativityLogger.Instance, CancellationToken.None)
 		End Sub
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
@@ -176,7 +176,7 @@ Namespace kCura.WinEDDS
 		               serviceFactory As Service.Export.IServiceFactory,
 		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
 		               exportConfig As IExportConfig)
-			Me.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, RelativityLogFactory.CreateLog(), CancellationToken.None)
+			Me.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, RelativityLogger.Instance, CancellationToken.None)
 		End Sub
 
 		Public Sub New(exportFile As kCura.WinEDDS.ExportFile,
@@ -1092,14 +1092,14 @@ Namespace kCura.WinEDDS
 
 		Private Function GetProductionArtifactIDs(ByVal productionOrderList As Pair()) As Int32()
 			If _productionArtifactIDs Is Nothing Then
-				Dim retval As New List(Of Int32)
+				Dim retval As New System.Collections.ArrayList
 				Dim item As Pair
 				For Each item In productionOrderList
 					If item.Value <> "-1" Then
 						retval.Add(Int32.Parse(item.Value))
 					End If
 				Next
-				_productionArtifactIDs = retval.ToArray()
+				_productionArtifactIDs = DirectCast(retval.ToArray(GetType(Int32)), Int32())
 			End If
 			Return _productionArtifactIDs
 		End Function
@@ -1135,11 +1135,11 @@ Namespace kCura.WinEDDS
 			Else
 				args.ExportTextFieldAsFiles = False
 			End If
-			Dim fields As New List(Of Int32)
+			Dim fields As New System.Collections.ArrayList
 			For Each field As ViewFieldInfo In Me.Settings.SelectedViewFields
 				If Not fields.Contains(field.FieldArtifactId) Then fields.Add(field.FieldArtifactId)
 			Next
-			args.Fields = fields.ToArray()
+			args.Fields = DirectCast(fields.ToArray(GetType(Int32)), Int32())
 			args.ExportNativeFiles = Me.Settings.ExportNative
 			If args.Fields.Length > 0 OrElse Me.Settings.ExportNative Then
 				args.MetadataLoadFileEncodingCodePage = Me.Settings.LoadFileEncoding.CodePage
@@ -1209,11 +1209,11 @@ Namespace kCura.WinEDDS
 				args.ExportImages = False
 			End If
 			args.OverwriteFiles = Me.Settings.Overwrite
-			Dim preclist As New List(Of Int32)
+			Dim preclist As New System.Collections.ArrayList
 			For Each pair As WinEDDS.Pair In Me.Settings.ImagePrecedence
 				preclist.Add(Int32.Parse(pair.Value))
 			Next
-			args.ProductionPrecedence = preclist.ToArray()
+			args.ProductionPrecedence = DirectCast(preclist.ToArray(GetType(Int32)), Int32())
 			args.RunTimeInMilliseconds = CType(System.Math.Min(_stopwatch.ElapsedMilliseconds, Int32.MaxValue), Int32)
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.AncestorSearch OrElse Me.Settings.TypeOfExport = ExportFile.ExportType.ParentSearch Then
 				args.SourceRootFolderID = Me.Settings.ArtifactID

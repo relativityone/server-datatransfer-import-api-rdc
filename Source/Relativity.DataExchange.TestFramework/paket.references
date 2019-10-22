@@ -2,6 +2,7 @@ castle.core
 castle.windsor
 kCura.relativity.client
 nbuilder
+NUnit
 newtonsoft.json
 relativity.dataTransfer.messageService
 relativity.kepler
@@ -11,6 +12,7 @@ relativity.logging.interfaces
 relativity.productions.services.interfaces
 relativity.services.datacontracts
 relativity.services.interfaces
+relativity.services.interfaces.private
 relativity.transfer.client
 serilog
 stylecop.analyzers

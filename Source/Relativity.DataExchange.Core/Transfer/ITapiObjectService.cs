@@ -54,13 +54,13 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="connectionInfo">
 		/// The Relativity connection information.
 		/// </param>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <returns>
 		/// The <see cref="Relativity.Transfer.IRelativityTransferHost"/> instance.
 		/// </returns>
-		Relativity.Transfer.IRelativityTransferHost CreateRelativityTransferHost(Relativity.Transfer.RelativityConnectionInfo connectionInfo, Relativity.Transfer.ITransferLog log);
+		Relativity.Transfer.IRelativityTransferHost CreateRelativityTransferHost(Relativity.Transfer.RelativityConnectionInfo connectionInfo, ILog logger);
 
 		/// <summary>
 		/// Gets the client display name associated with the specified transfer client identifier.

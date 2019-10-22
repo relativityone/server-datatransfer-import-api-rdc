@@ -35,7 +35,7 @@ Namespace kCura.WinEDDS
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
-			Me.New(loadFileHeaderFormatterFactory, exportConfig, RelativityLogFactory.CreateLog())
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, RelativityLogger.Instance)
 		End Sub
 
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog)
@@ -44,7 +44,7 @@ Namespace kCura.WinEDDS
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService)
-			Me.New(loadFileHeaderFormatterFactory, exportConfig, metricService, RelativityLogFactory.CreateLog())
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, metricService, RelativityLogger.Instance)
 		End Sub
 
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService, logger As ILog)

@@ -24,7 +24,7 @@ Namespace kCura.WinEDDS
 		Public Function BuildFoldersAndCodesDataSource(ByVal al As ArrayList, ByVal previewCodeCount As System.Collections.Specialized.HybridDictionary) As DataTable
 			Dim folderCount As Int32 = GetFolderCount(al)
 			Dim dt As New DataTable
-			Dim codeFieldColumnIndexes As List(Of Int32) = GetCodeFieldColumnIndexes(DirectCast(al(0), System.Array))
+			Dim codeFieldColumnIndexes As ArrayList = GetCodeFieldColumnIndexes(DirectCast(al(0), System.Array))
 
 			'setup columns
 			dt.Columns.Add("Field Name")
@@ -105,9 +105,9 @@ Namespace kCura.WinEDDS
 		''' Get a list of the column indexes that contain a choice or multi choice type
 		''' </summary>
 		''' <param name="firstRow">First row in the ArrayList returned from the LoadFilePreviewer</param>
-		''' <returns>A list containing the column indexes</returns>
-		Public Function GetCodeFieldColumnIndexes(ByVal firstRow As Array) As List(Of Int32)
-			Dim codeFieldColumnIndexes As New List(Of Int32)
+		''' <returns>An ArrayList containing the column indexes</returns>
+		Public Function GetCodeFieldColumnIndexes(ByVal firstRow As Array) As ArrayList
+			Dim codeFieldColumnIndexes As New ArrayList
 			Dim currentIndex As Int32 = 0
 			For Each field As Api.ArtifactField In firstRow
 				If field.Type = FieldType.Code OrElse field.Type = FieldType.MultiCode Then

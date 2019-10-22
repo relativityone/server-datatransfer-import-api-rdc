@@ -145,7 +145,7 @@ Namespace kCura.WinEDDS
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As Timekeeper2, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As Global.Relativity.DataExchange.Io.IFile, directoryHelper As Global.Relativity.DataExchange.Io.IDirectory, fileNameProvider As IFileNameProvider)
-			Me.New(settings, totalFiles, parent, downloadHandler, t, columnNamesInOrder, statistics, fileHelper, directoryHelper, fileNameProvider, RelativityLogFactory.CreateLog())
+			Me.New(settings, totalFiles, parent, downloadHandler, t, columnNamesInOrder, statistics, fileHelper, directoryHelper, fileNameProvider, RelativityLogger.Instance)
 		End Sub
 
 		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As Timekeeper2, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As Global.Relativity.DataExchange.Io.IFile, directoryHelper As Global.Relativity.DataExchange.Io.IDirectory, fileNameProvider As IFileNameProvider, logger as ILog)
@@ -266,7 +266,7 @@ Namespace kCura.WinEDDS
 				Dim count As Int32
 				Dim columnName As String
 				For count = 0 To _parent.Columns.Count - 1
-					Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo) 
+					Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 					columnName = field.AvfColumnName
 					Dim fieldValue As Object = artifact.Metadata(_ordinalLookup(columnName))
 					If field.FieldType = FieldType.Text OrElse field.FieldType = FieldType.OffTableText Then
@@ -1220,7 +1220,7 @@ Namespace kCura.WinEDDS
 			Dim rowPrefix As String = _loadFileFormatter.RowPrefix
 			If Not String.IsNullOrEmpty(rowPrefix) Then loadFileEntry.AddStringEntry(rowPrefix)
 			For count = 0 To _parent.Columns.Count - 1
-				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo) 
+				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				Dim val As Object = record(_ordinalLookup(columnName))
 				If field.FieldType = FieldType.Text OrElse field.FieldType = FieldType.OffTableText Then

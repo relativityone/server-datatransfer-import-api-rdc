@@ -9,6 +9,7 @@ namespace Relativity.DataExchange.Transfer
 	using System;
 
 	using Relativity.DataExchange.Resources;
+	using Relativity.Logging;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -29,26 +30,16 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TapiListenerBase"/> class.
 		/// </summary>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <param name="context">
 		/// The transfer context.
 		/// </param>
-		protected TapiListenerBase(ITransferLog log, TransferContext context)
+		protected TapiListenerBase(ILog logger, TransferContext context)
 		{
-			if (log == null)
-			{
-				throw new ArgumentNullException(nameof(log));
-			}
-
-			if (context == null)
-			{
-				throw new ArgumentNullException(nameof(context));
-			}
-
-			this.TransferLog = log;
-			this.Context = context;
+			this.Logger = logger.ThrowIfNull(nameof(logger));
+			this.Context = context.ThrowIfNull(nameof(context));
 			this.Context.LargeFileProgress += this.OnLargeFileProgress;
 			this.Context.TransferPathProgress += this.OnTransferPathProgress;
 			this.Context.TransferPathIssue += this.OnTransferPathIssue;
@@ -104,9 +95,9 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
-		/// Gets the transfer log.
+		/// Gets the Relativity logger instance.
 		/// </summary>
-		protected ITransferLog TransferLog
+		protected ILog Logger
 		{
 			get;
 		}

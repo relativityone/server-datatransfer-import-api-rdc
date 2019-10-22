@@ -1,4 +1,3 @@
-Imports System.Collections.Generic
 Imports System.Threading
 
 Imports Relativity.DataExchange
@@ -263,8 +262,9 @@ Namespace kCura.WinEDDS
 
 		Public Overridable Function GetMultiCode(ByVal value As String(), ByVal column As Int32, ByVal field As Api.ArtifactField, ByVal forPreview As Boolean) As Nullable(Of Int32)()
 			Try
-				Dim goodCodes As New List(Of String)
-				For Each codeString As String In value
+				Dim al As New System.Collections.ArrayList(value)
+				Dim goodCodes As New System.Collections.ArrayList
+				For Each codeString As String In al
 					codeString = codeString.Trim
 					If codeString <> "" Then
 						If goodCodes.Contains(codeString) Then Throw New DuplicateMulticodeValueException(Me.CurrentLineNumber, column, codeString)
@@ -272,7 +272,7 @@ Namespace kCura.WinEDDS
 						goodCodes.Add(codeString)
 					End If
 				Next
-				Dim codeDisplayNames As List(Of String) = goodCodes
+				Dim codeDisplayNames As String() = DirectCast(goodCodes.ToArray(GetType(String)), String())
 				Dim i As Int32
 				Dim hierarchicCodeManager As Service.IHierarchicArtifactManager
 				If forPreview Then
@@ -284,7 +284,7 @@ Namespace kCura.WinEDDS
 					Me.MulticodeMatrix.Add(field.CodeTypeID, New NestedArtifactCache(hierarchicCodeManager, _caseSystemID, _caseArtifactID, _hierarchicalMultiValueFieldDelmiter))
 				End If
 				Dim artifactCache As NestedArtifactCache = DirectCast(Me.MulticodeMatrix(field.CodeTypeID), NestedArtifactCache)
-				Dim c As New List(Of Int32)
+				Dim c As New System.Collections.ArrayList
 				For Each codeString As String In codeDisplayNames
 					For Each id As Object() In artifactCache.SelectedIds(_hierarchicalMultiValueFieldDelmiter & codeString.Trim(_hierarchicalMultiValueFieldDelmiter.ToCharArray))
 						If CType(id(0), Int32) = -200 Then Throw New System.Exception("This choice or multi-choice field is not enabled as unicode.  Upload halted")
@@ -299,7 +299,7 @@ Namespace kCura.WinEDDS
 				If c.Count > 0 Then
 					Dim codes(c.Count - 1) As Nullable(Of Int32)
 					For i = 0 To codes.Length - 1
-						codes(i) = New Nullable(Of Int32)(c(i))
+						codes(i) = New Nullable(Of Int32)(CType(c(i), Int32))
 					Next
 					Return codes
 				Else
@@ -312,8 +312,9 @@ Namespace kCura.WinEDDS
 
 		'returning identifier/artifactID pairs for objects. -1 for new artifactIDs
 		Public Overridable Function GetObjects(ByVal value As String(), ByVal column As Int32, ByVal field As Api.ArtifactField, ByVal associatedObjectTypeID As Int32) As System.Collections.Hashtable
-			Dim goodObjects As New List(Of string)
-			For Each objectString As String In value
+			Dim al As New System.Collections.ArrayList(value)
+			Dim goodObjects As New System.Collections.ArrayList
+			For Each objectString As String In al
 				objectString = objectString.Trim
 				If objectString <> String.Empty Then
 					'################################################ EXCEPTION TYPE #####################################
@@ -322,7 +323,7 @@ Namespace kCura.WinEDDS
 					goodObjects.Add(objectString)
 				End If
 			Next
-			Dim objectDisplayNames As List(Of string) = goodObjects
+			Dim objectDisplayNames As String() = DirectCast(goodObjects.ToArray(GetType(String)), String())
 			Dim nameIDPairs As New System.Collections.Hashtable
 			For Each objectName As String In objectDisplayNames
 				If objectName.Length > field.TextLength Then
@@ -349,8 +350,9 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Overridable Function GetObjectsByArtifactID(ByVal value As String(), ByVal column As Int32, ByVal field As Api.ArtifactField, ByVal associatedObjectTypeID As Int32) As System.Collections.Hashtable
-			Dim goodObjects As New List(Of String)
-			For Each objectString As String In value
+			Dim al As New System.Collections.ArrayList(value)
+			Dim goodObjects As New System.Collections.ArrayList
+			For Each objectString As String In al
 				objectString = objectString.Trim
 				If objectString <> String.Empty Then
 					'################################################ EXCEPTION TYPE #####################################
@@ -360,7 +362,7 @@ Namespace kCura.WinEDDS
 				End If
 			Next
 
-			Dim objectArtifactIds As List(Of String) = goodObjects
+			Dim objectArtifactIds As String() = DirectCast(goodObjects.ToArray(GetType(String)), String())
 			Dim nameIDPairs As New System.Collections.Hashtable
 
 			For Each objectArtifactId As String In objectArtifactIds
