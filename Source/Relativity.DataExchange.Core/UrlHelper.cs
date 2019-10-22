@@ -41,13 +41,33 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Combines the absolute URL and relative URL into a single URL. Leading and trailing slashes are automatically handled.
+		/// Combines the base URL and relative URL parts into a single URL. Leading and trailing slashes are automatically added.
+		/// </summary>
+		/// <param name="baseUrl">
+		/// The base URL. Trailing paths are automatically removed.
+		/// </param>
+		/// <param name="relativePath">
+		/// The relative path to add to the <paramref name="baseUrl"/>.
+		/// </param>
+		/// <returns>
+		/// The combined URL.
+		/// </returns>
+		/// <exception cref="UriFormatException">
+		/// Thrown when <paramref name="baseUrl"/> is not well-formed.
+		/// </exception>
+		public static string GetBaseUrlAndCombine(string baseUrl, string relativePath)
+		{
+			return Combine(GetBaseUrl(baseUrl), relativePath);
+		}
+
+		/// <summary>
+		/// Combines the absolute URL and relative URL parts into a single URL. Leading and trailing slashes are automatically added.
 		/// </summary>
 		/// <param name="absoluteUrl">
-		/// The absolute url. If you require the base URL, you're required to call <see cref="GetBaseUrl"/> separately.
+		/// The absolute URL.
 		/// </param>
-		/// <param name="relativeUrl">
-		/// The relative URL to add to the <paramref name="absoluteUrl"/>.
+		/// <param name="relativePath">
+		/// The relative path to add to the <paramref name="absoluteUrl"/>.
 		/// </param>
 		/// <returns>
 		/// The combined URL.
@@ -55,31 +75,22 @@ namespace Relativity.DataExchange
 		/// <exception cref="UriFormatException">
 		/// Thrown when <paramref name="absoluteUrl"/> is not well-formed.
 		/// </exception>
-		public static string Combine(string absoluteUrl, string relativeUrl)
+		public static string Combine(string absoluteUrl, string relativePath)
 		{
 			if (!Uri.IsWellFormedUriString(absoluteUrl, UriKind.Absolute))
 			{
-				throw new UriFormatException($"The URL {absoluteUrl} cannot be combined with '{relativeUrl}' because it's not well-formed.");
+				throw new UriFormatException($"The URL {absoluteUrl} cannot be combined with '{relativePath}' because it's not well-formed.");
 			}
 
 			const string Separator = "/";
-			if (absoluteUrl.EndsWith(Separator, StringComparison.OrdinalIgnoreCase))
+			Uri combinedUri = new Uri(new Uri(absoluteUrl), relativePath);
+			string combinedUriString = combinedUri.ToString();
+			if (!combinedUriString.EndsWith(Separator, StringComparison.OrdinalIgnoreCase))
 			{
-				absoluteUrl = absoluteUrl.TrimEnd(Separator.ToCharArray());
+				combinedUriString += Separator;
 			}
 
-			if (!relativeUrl.StartsWith(Separator, StringComparison.OrdinalIgnoreCase))
-			{
-				relativeUrl = Separator + relativeUrl;
-			}
-
-			if (!relativeUrl.EndsWith(Separator, StringComparison.OrdinalIgnoreCase))
-			{
-				relativeUrl += Separator;
-			}
-
-			string combined = absoluteUrl + relativeUrl;
-			return combined;
+			return combinedUriString;
 		}
 	}
 }

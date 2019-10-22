@@ -59,7 +59,7 @@ Namespace kCura.WinEDDS
 		
 		Private Sub CheckDownloadHandlerURL()
 			Me.WriteStatus("Validate Download URL:")
-			Dim downloadUrl As String = UrlHelper.Combine(UrlHelper.GetBaseUrl(Me.AppSettings.WebApiServiceUrl), _caseInfo.DownloadHandlerURL)
+			Dim downloadUrl As String = UrlHelper.GetBaseUrlAndCombine(Me.AppSettings.WebApiServiceUrl, _caseInfo.DownloadHandlerURL)
 			Me.WriteStatus(downloadUrl)
 			Dim myReq As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(downloadUrl & "AccessDenied.aspx"), System.Net.HttpWebRequest)
 			Try
