@@ -129,7 +129,22 @@
   <data name="BcpAccessExceptionMessage" xml:space="preserve">
     <value>Failed to access the BCP share due to possible network, connectivity, or permission issue. Try again. If the problem persists, contact your system administrator for assistance.</value>
   </data>
-  <data name="MetadataTransferExceptionMessage" xml:space="preserve">
-    <value>The metadata transfer job failed because the maximum time limit of {0} minute(s) was reached waiting for all metadata load files to transfer. Try again. If the problem persists, contact your system administrator for assistance.</value>
+  <data name="BulkLoadFileUploadsWaitMessage" xml:space="preserve">
+    <value>Waiting for all metadata files to upload...</value>
+  </data>
+  <data name="BulkLoadFileUploadsSuccessMessage" xml:space="preserve">
+    <value>All metadata files have been successfully uploaded.</value>
+  </data>
+  <data name="BulkLoadFileUploadsErrorMessage" xml:space="preserve">
+    <value>Failed to complete all pending metadata file uploads.</value>
+  </data>
+  <data name="PhysicalFileUploadsWaitMessage" xml:space="preserve">
+    <value>Waiting for all files to upload...</value>
+  </data>
+  <data name="PhysicalFileUploadsSuccessMessage" xml:space="preserve">
+    <value>All files have been successfully uploaded.</value>
+  </data>
+  <data name="PhysicalFileUploadsErrorMessage" xml:space="preserve">
+    <value>Failed to complete all pending file uploads.</value>
   </data>
 </root>

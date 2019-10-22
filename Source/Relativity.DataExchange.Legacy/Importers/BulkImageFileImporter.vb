@@ -434,12 +434,12 @@ Namespace kCura.WinEDDS
 
 			If (shouldCompleteImageJob Or isFinal) And _jobCompleteImageCount > 0 Then
 				_jobCompleteImageCount = 0
-				CompletePendingPhysicalFileTransfers("Waiting for the image file job to complete...", "Image file job completed.", "Failed to complete all pending image file transfers.")
+				Me.AwaitPendingPhysicalFileUploadsForJob()
 			End If
 
 			Try
 				If ShouldImport AndAlso _copyFilesToRepository AndAlso Me.FileTapiBridge.TransfersPending Then
-					WaitForPendingFileUploads()
+					Me.AwaitPendingPhysicalFileUploadsForBatch()
 					Me.JobCounter += 1
 				End If
 
@@ -580,14 +580,14 @@ Namespace kCura.WinEDDS
 			If _batchCount = 0 Then
 				If _jobCompleteMetadataCount > 0 Then
 					_jobCompleteMetadataCount = 0
-					CompletePendingBulkLoadFileTransfers()
+					Me.AwaitPendingBulkLoadFileUploadsForJob()
 				End If
 				Return
 			End If
 
 			If shouldCompleteJob And _jobCompleteMetadataCount > 0 Then
 				_jobCompleteMetadataCount = 0
-				CompletePendingBulkLoadFileTransfers()
+				Me.AwaitPendingBulkLoadFileUploadsForJob()
 			End If
 
 			_batchCount = 0
@@ -602,9 +602,9 @@ Namespace kCura.WinEDDS
 			_jobCompleteMetadataCount += 2
 
 			If lastRun Then
-				CompletePendingBulkLoadFileTransfers()
+				Me.AwaitPendingBulkLoadFileUploadsForJob()
 			Else
-				WaitForPendingMetadataUploads()
+				Me.AwaitPendingBulkLoadFileUploadsForBatch()
 			End If
 
 			_lastRunMetadataImport = System.DateTime.Now.Ticks
