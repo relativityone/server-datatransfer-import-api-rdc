@@ -111,7 +111,7 @@ Namespace kCura.Relativity.DataReaderClient
 				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
 				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
 				_credentials = creds.Credentials
-				_webApiCredential.Credential = creds.TapiCredential
+				_webApiCredential.Credential = creds.Credentials
 				_cookieMonster = creds.CookieMonster
 			End If
 

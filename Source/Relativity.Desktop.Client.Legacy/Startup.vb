@@ -19,6 +19,7 @@ Namespace Relativity.Desktop.Client
 		Friend _application As Global.Relativity.Desktop.Client.Application
 		Private _importOptions As ImportOptions = New ImportOptions()
 		Private _authOptions As AuthenticationOptions = New AuthenticationOptions()
+		Private _logger As Relativity.Logging.ILog
 #End Region
 
 #Region " Enumerations "
@@ -34,7 +35,8 @@ Namespace Relativity.Desktop.Client
 #End Region
 
 		Public Sub Main()
-			ContainerFactoryProvider.ContainerFactory = New ContainerFactory()
+			SetupRelativityLogging()
+			ContainerFactoryProvider.ContainerFactory = New ContainerFactory(_logger)
 			Dim handler As ThreadExceptionHandler = New ThreadExceptionHandler()
 			AddHandler System.Windows.Forms.Application.ThreadException, AddressOf handler.Application_ThreadException
 
@@ -69,7 +71,7 @@ Namespace Relativity.Desktop.Client
 		Private Async Function RunInConsoleMode() As Task
 			Try
 				_application = Global.Relativity.Desktop.Client.Application.Instance
-				Dim _import As ImportManager = New ImportManager()
+				Dim _import As ImportManager = New ImportManager(_logger)
 
 				Dim commandList As CommandList = CommandLineParser.Parse
 				For Each command As Command In commandList
@@ -159,6 +161,49 @@ Namespace Relativity.Desktop.Client
 			End Try
 
 		End Function
+
+		Private Sub SetupRelativityLogging()
+			Const RdcLoggingApplication = "626BD889-2BFF-4407-9CE5-5CF3712E1BB7"
+			Const RdcLoggingSystem = "Relativity.Desktop.Client"
+			Const RdcLoggingSubSystem = "Relativity.DataExchange"
+
+			Try
+				Dim options As Relativity.Logging.LoggerOptions = New Relativity.Logging.LoggerOptions()
+				options.Application = RdcLoggingApplication
+				options.System = RdcLoggingSystem
+				options.SubSystem = RdcLoggingSubSystem
+				Dim configFileName As String = AppSettings.Instance.LogConfigXmlFileName
+				If String.IsNullOrWhiteSpace(configFileName) Then
+					configFileName = "LogConfig.xml"
+				End If
+
+				If (Not String.IsNullOrEmpty(configFileName) AndAlso (System.IO.Path.IsPathRooted(configFileName) AndAlso System.IO.File.Exists(configFileName))) Then
+					options.ConfigurationFileLocation = configFileName
+				Else 
+					Dim assembly As System.Reflection.Assembly = System.Reflection.Assembly.GetEntryAssembly()
+					Dim directory As String = System.IO.Directory.GetParent(assembly.Location).FullName
+					Dim file = System.IO.Path.Combine(directory, configFileName)
+					If (System.IO.File.Exists(file)) Then
+						options.ConfigurationFileLocation = file
+					End If
+				End If
+
+				' Storing the logger reference on the singleton ensures it will be used throughout (see RelativityLogFactory).
+				_logger = Relativity.Logging.Factory.LogFactory.GetLogger(options)
+			Catch ex As Exception
+				Try
+					Relativity.Logging.Tools.InternalLogger.WriteFromExternal(
+						$"Failed to setup Relativity logging and reverting to a NullLogger. Exception: {ex.ToString()}",
+						New Relativity.Logging.LoggerOptions With { .System = RdcLoggingSystem, .SubSystem = RdcLoggingSubSystem })
+				Catch ex2 As Exception
+					' Being overly cautious to ensure no fatal errors occur due to logging.
+				End Try
+
+				_logger = New Relativity.Logging.NullLogger()
+			Finally
+				Relativity.Logging.Log.Logger = _logger
+			End Try
+		End Sub
 
 #Region " Utility "
 

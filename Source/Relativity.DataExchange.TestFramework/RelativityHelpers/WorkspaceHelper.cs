@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.TestFramework
+namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 {
 	using System;
 	using System.Collections.Generic;

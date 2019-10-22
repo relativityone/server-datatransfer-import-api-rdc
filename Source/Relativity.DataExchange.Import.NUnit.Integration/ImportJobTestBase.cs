@@ -155,27 +155,16 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				this.TestParameters.RelativityUserName,
 				this.TestParameters.RelativityPassword,
 				this.TestParameters.RelativityWebApiUrl.ToString());
-			this.importJob = iapi.NewNativeDocumentImportJob();
-			this.importJob.Settings.WebServiceURL = this.TestParameters.RelativityWebApiUrl.ToString();
-			this.importJob.Settings.CaseArtifactId = this.TestParameters.WorkspaceId;
-			this.importJob.Settings.ArtifactTypeId = 10;
-			this.importJob.Settings.ExtractedTextFieldContainsFilePath = false;
-			this.importJob.Settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
-			this.importJob.Settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
-			this.importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
-			this.importJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
-			this.importJob.Settings.OIFileIdMapped = true;
-			this.importJob.Settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
-			this.importJob.Settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
-			this.importJob.Settings.ExtractedTextEncoding = Encoding.Unicode;
-			this.importJob.Settings.FileSizeMapped = true;
-			this.importJob.Settings.FileSizeColumn = WellKnownFields.NativeFileSize;
-			this.importJob.SourceData.SourceData = this.SourceData.CreateDataReader();
-			this.importJob.OnError += this.ImportJob_OnError;
-			this.importJob.OnFatalException += this.ImportJob_OnFatalException;
-			this.importJob.OnMessage += this.ImportJob_OnMessage;
-			this.importJob.OnComplete += this.ImportJob_OnComplete;
-			this.importJob.OnProgress += this.ImportJob_OnProgress;
+			this.InitializeDefaultImportJob(iapi);
+		}
+
+		/// <summary>
+		/// Given the import job with integrated authentication.
+		/// </summary>
+		protected void GivenTheImportJobWithIntegratedAuthentication()
+		{
+			var iapi = new ImportAPI(this.TestParameters.RelativityWebApiUrl.ToString());
+			this.InitializeDefaultImportJob(iapi);
 		}
 
 		/// <summary>
@@ -425,6 +414,35 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 				Console.WriteLine("[Job Error Metadata]: " + rowMetaData);
 			}
+		}
+
+		/// <summary>
+		/// Creates import job and sets default parameters.
+		/// </summary>
+		/// <param name="importApi"><see cref="ImportAPI"/> instance used to create a job.</param>
+		private void InitializeDefaultImportJob(ImportAPI importApi)
+		{
+			this.importJob = importApi.NewNativeDocumentImportJob();
+			this.importJob.Settings.WebServiceURL = this.TestParameters.RelativityWebApiUrl.ToString();
+			this.importJob.Settings.CaseArtifactId = this.TestParameters.WorkspaceId;
+			this.importJob.Settings.ArtifactTypeId = 10;
+			this.importJob.Settings.ExtractedTextFieldContainsFilePath = false;
+			this.importJob.Settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
+			this.importJob.Settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
+			this.importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
+			this.importJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
+			this.importJob.Settings.OIFileIdMapped = true;
+			this.importJob.Settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
+			this.importJob.Settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
+			this.importJob.Settings.ExtractedTextEncoding = Encoding.Unicode;
+			this.importJob.Settings.FileSizeMapped = true;
+			this.importJob.Settings.FileSizeColumn = WellKnownFields.NativeFileSize;
+			this.importJob.SourceData.SourceData = this.SourceData.CreateDataReader();
+			this.importJob.OnError += this.ImportJob_OnError;
+			this.importJob.OnFatalException += this.ImportJob_OnFatalException;
+			this.importJob.OnMessage += this.ImportJob_OnMessage;
+			this.importJob.OnComplete += this.ImportJob_OnComplete;
+			this.importJob.OnProgress += this.ImportJob_OnProgress;
 		}
 	}
 }

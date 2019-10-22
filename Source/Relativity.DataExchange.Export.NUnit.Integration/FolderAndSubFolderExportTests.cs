@@ -47,11 +47,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[Category(TestCategories.Integration)]
 		public async Task ShouldExportAllSampleDocAndImagesAsync(TapiClient client)
 		{
-			if ((client == TapiClient.Aspera && this.TestParameters.SkipAsperaModeTests) ||
-				(client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
-			{
-				Assert.Ignore(TestStrings.SkipTestMessage, $"{client}");
-			}
+			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(this.TestParameters, client);
 
 			// ARRANGE
 			this.GivenTheTapiForceClientAppSettings(client);
