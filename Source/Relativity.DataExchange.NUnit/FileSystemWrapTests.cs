@@ -293,21 +293,14 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		[TestCase("https://kcura.relativity.one", "Relativity.Distributed")]
-		[TestCase("https://kcura.relativity.one", "/Relativity.Distributed")]
-		[TestCase("https://kcura.relativity.one", "/Relativity.Distributed/")]
-		[TestCase("https://kcura.relativity.one/", "Relativity.Distributed")]
-		[TestCase("https://kcura.relativity.one/", "/Relativity.Distributed")]
-		[TestCase("https://kcura.relativity.one/", "/Relativity.Distributed/")]
-		[TestCase("https://kcura.relativity.one/RelativityWebAPI/", "/Relativity.Distributed/")]
-		[TestCase("https://kcura.relativity.one/RelativityWebAPI/", "Relativity.Distributed")]
-		[TestCase("https://kcura.relativity.one/RelativityWebAPI/", "/Relativity.Distributed")]
-		[TestCase("https://kcura.relativity.one/RelativityWebAPI/", "/Relativity.Distributed/")]
+		[TestCase(@"\\abc\def", @"\\abc\def\temp.txt", @"file://abc/def/temp.txt/")]
+		[TestCase("https://kcura.relativity.one", "Relativity.Distributed", "https://kcura.relativity.one/Relativity.Distributed/")]
+		[TestCase("https://kcura.relativity.one:8443", "Relativity.Distributed", "https://kcura.relativity.one:8443/Relativity.Distributed/")]
 		[Category(TestCategories.FileSystem)]
-		public void ShouldGetTheFullyQualifiedPath(string basePath, string path)
+		public void ShouldGetTheFullyQualifiedPath(string baseUri, string path, string expected)
 		{
-			string returnedPath = this.fileSystem.Path.GetFullyQualifiedPath(new Uri(basePath), path);
-			Assert.That(returnedPath, Is.EqualTo("https://kcura.relativity.one/Relativity.Distributed/"));
+			string returnedPath = this.fileSystem.Path.GetFullyQualifiedPath(new Uri(baseUri), path);
+			Assert.That(returnedPath, Is.EqualTo(expected));
 		}
 
 		[Test]
