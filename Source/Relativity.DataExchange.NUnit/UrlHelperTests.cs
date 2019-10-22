@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.NUnit
 	public class UrlHelperTests
 	{
 		/// <summary>
-		/// Gets the test case source used to validate combining absolute and relative URL components.
+		/// Gets the test case source used to validate getting the base URl and combining with the relative path components.
 		/// </summary>
 		/// <value>
 		/// The <see cref="IEnumerable"/> instance.
@@ -66,6 +66,29 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		/// <summary>
+		/// Gets the test case source used to validate combining absolute URL and relative path components.
+		/// </summary>
+		/// <value>
+		/// The <see cref="IEnumerable"/> instance.
+		/// </value>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Performance",
+			"CA1811:AvoidUncalledPrivateCode",
+			Justification = "This is used via NUnit's TestCaseSource feature.")]
+		public static IEnumerable CombineOnlyTestCaseSource
+		{
+			get
+			{
+				yield return new TestCaseData("https://VM-T005WEB001.T005.relativityone.local", "RelativityWebAPI", "https://VM-T005WEB001.T005.relativityone.local/RelativityWebAPI/");
+				yield return new TestCaseData("https://VM-T005WEB001.T005.relativityone.local/", "/RelativityWebAPI", "https://VM-T005WEB001.T005.relativityone.local/RelativityWebAPI/");
+				yield return new TestCaseData("https://VM-T005WEB001.T005.relativityone.local/", "/RelativityWebAPI/", "https://VM-T005WEB001.T005.relativityone.local/RelativityWebAPI/");
+				yield return new TestCaseData("https://VM-T005WEB001.T005.relativityone.local:8443", "RelativityWebAPI", "https://VM-T005WEB001.T005.relativityone.local:8443/RelativityWebAPI/");
+				yield return new TestCaseData("https://VM-T005WEB001.T005.relativityone.local:8443/", "/RelativityWebAPI", "https://VM-T005WEB001.T005.relativityone.local:8443/RelativityWebAPI/");
+				yield return new TestCaseData("https://VM-T005WEB001.T005.relativityone.local:8443/", "/RelativityWebAPI/", "https://VM-T005WEB001.T005.relativityone.local:8443/RelativityWebAPI/");
+			}
+		}
+
+		/// <summary>
 		/// Gets the test case source used to validate non well-formed URL's.
 		/// </summary>
 		/// <value>
@@ -86,12 +109,24 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		[TestCaseSource(nameof(BaseUrlAndCombineTestCaseSource))]
+		[TestCaseSource(nameof(CombineOnlyTestCaseSource))]
 		[Category(TestCategories.Framework)]
-		public void ShouldGetTheBaseUrlAndCombineTheParts(string absoluteUrl, string relativeUrl, string expected)
+		public void ShouldOnlyCombineTheParts(string absoluteUrl, string relativePath, string expected)
 		{
 			// ACT
-			string returnedPath = UrlHelper.Combine(UrlHelper.GetBaseUrl(absoluteUrl), relativeUrl);
+			string returnedPath = UrlHelper.Combine(absoluteUrl, relativePath);
+
+			// ASSERT
+			Assert.That(returnedPath, Is.EqualTo(expected).IgnoreCase);
+		}
+
+		[Test]
+		[TestCaseSource(nameof(BaseUrlAndCombineTestCaseSource))]
+		[Category(TestCategories.Framework)]
+		public void ShouldGetTheBaseUrlAndCombineTheParts(string baseUrl, string relativePath, string expected)
+		{
+			// ACT
+			string returnedPath = UrlHelper.GetBaseUrlAndCombine(baseUrl, relativePath);
 
 			// ASSERT
 			Assert.That(returnedPath, Is.EqualTo(expected).IgnoreCase);
@@ -113,6 +148,7 @@ namespace Relativity.DataExchange.NUnit
 		{
 			// ACT/ASSERT
 			Assert.Throws<UriFormatException>(() => UrlHelper.Combine(url, "RelativityWebAPI"));
+			Assert.Throws<UriFormatException>(() => UrlHelper.GetBaseUrlAndCombine(url, "RelativityWebAPI"));
 		}
 	}
 }
