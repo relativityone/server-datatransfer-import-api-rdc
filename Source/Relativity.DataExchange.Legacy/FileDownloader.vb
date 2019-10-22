@@ -47,7 +47,7 @@ Namespace kCura.WinEDDS
 				destinationFolderPath &= "\"
 			End If
 			Me.DestinationFolderPath = destinationFolderPath
-			_downloadUrl = UrlHelper.Combine(UrlHelper.GetBaseUrl(AppSettings.Instance.WebApiServiceUrl), downloadHandlerUrl)
+			_downloadUrl = UrlHelper.GetBaseUrlAndCombine(AppSettings.Instance.WebApiServiceUrl, downloadHandlerUrl)
 			_userManager = New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer)
 
 			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New ConcurrentDictionary(Of String, TapiClient)
