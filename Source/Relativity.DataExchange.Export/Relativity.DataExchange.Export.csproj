@@ -331,8 +331,6 @@
     <Compile Include="Export\VolumeManagerV2\Validation\ExportValidation.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\VolumeAndSubdirectoryValidator.cs" />
-    <Compile Include="IO\LongPathDirectoryHelper.cs" />
-    <Compile Include="IO\LongPathFileHelper.cs" />
     <Compile Include="LogMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
