@@ -37,7 +37,7 @@ Namespace Monitoring.Sinks
         End Function
 
         ''' <summary>
-        ''' Formatting SUM bucket name. SUM metrics does not allow to add custom properties so we need to pass <see cref="MetricBase.JobType"/> and <see cref="MetricBase.TransferMode"/> in bucket name.
+        ''' Formatting SUM bucket name. SUM metrics does not allow to add custom properties so we need to pass <see cref="MetricJobBase.JobType"/> and <see cref="MetricJobBase.TransferMode"/> in bucket name.
         ''' </summary>
         ''' <param name="prefix">Bucket name prefix. This values are stored in <see cref="TelemetryConstants.SumBucketPrefix"/>.</param>
         ''' <param name="jobType">Job type - Import or Export</param>
