@@ -8,7 +8,7 @@
             Public Const METRIC_JOB_STARTED As String = "RDC.MetricJobStarted"
             Public Const METRIC_JOB_PROGRESS As String = "RDC.MetricJobProgress"
             Public Const METRIC_JOB_END_REPORT As String = "RDC.MetricJobEndReport"
-			Public Const METRIC_AUTHENTICATION_TYPE As String = "RDC.MetricAuthenticationType"
+			Public Const METRIC_AUTHENTICATION_TYPE As String = "RDC.MetricImportAPIAuthenticationType"
         End Class
 
         class SumBucketPrefix

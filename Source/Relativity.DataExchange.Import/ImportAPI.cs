@@ -446,21 +446,6 @@ namespace kCura.Relativity.ImportAPI
 
 		#region "Private items"
 
-		private void SendAuthenticationTypeMetric(NetworkCredential credentials, TelemetryConstants.AuthenticationMethod authenticationMethod)
-		{
-			Monitoring.Sinks.IMetricService metricService = new Monitoring.Sinks.MetricService(new Monitoring.Sinks.ImportApiMetricSinkConfig(), ServiceFactoryFactory.Create(credentials));
-			var logger = RelativityLogFactory.CreateLog();
-			var metric = new MetricAuthenticationType()
-							{
-								CorrelationID = Guid.NewGuid().ToString(),
-								UnitOfMeasure = "login(s)",
-								AuthenticationMethod = authenticationMethod,
-								SystemType = logger.System,
-								SubSystemType = logger.SubSystem
-							};
-			metricService.Log(metric);
-		}
-
 		private void PerformLogin(string userName, string password, string webServiceURL)
 		{
 			ImportCredentialManager.SessionCredentials credentials;
@@ -500,6 +485,21 @@ namespace kCura.Relativity.ImportAPI
 			}
 
 			this.SendAuthenticationTypeMetric(credentials.TapiCredential, (string.IsNullOrEmpty(userName) ? TelemetryConstants.AuthenticationMethod.Windows : (userName == kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName ? TelemetryConstants.AuthenticationMethod.BearerToken : TelemetryConstants.AuthenticationMethod.UsernamePassword)));
+		}
+
+		private void SendAuthenticationTypeMetric(NetworkCredential credentials, TelemetryConstants.AuthenticationMethod authenticationMethod)
+		{
+			Monitoring.Sinks.IMetricService metricService = new Monitoring.Sinks.MetricService(new Monitoring.Sinks.ImportApiMetricSinkConfig(), ServiceFactoryFactory.Create(credentials));
+			var logger = RelativityLogFactory.CreateLog();
+			var metric = new MetricAuthenticationType()
+							{
+								CorrelationID = Guid.NewGuid().ToString(),
+								UnitOfMeasure = "login(s)",
+								AuthenticationMethod = authenticationMethod,
+								SystemType = logger.System,
+								SubSystemType = logger.SubSystem
+							};
+			metricService.Log(metric);
 		}
 
 		/// <summary>
