@@ -11,15 +11,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 {
 	using System.Collections.Generic;
 
-	using kCura.WinEDDS.Exporters;
-
 	using Moq;
 
-	using Relativity.DataExchange.Export.VolumeManagerV2;
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
-	using Relativity.DataExchange.Process;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.Logging;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -27,45 +21,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	/// </summary>
 	internal static class MockObjectFactory
 	{
-		public static Mock<ILog> CreateMockLogger()
-		{
-			return new Mock<ILog>();
-		}
-
-		public static Mock<IAppSettings> CreateMockAppSettings()
-		{
-			return new Mock<IAppSettings>();
-		}
-
-		public static Mock<IExportRequestRetriever> CreateMockExportRequestRetriever()
-		{
-			return new Mock<IExportRequestRetriever>();
-		}
-
-		public static Mock<IFileShareSettingsService> CreateMockFileShareSettingsService()
-		{
-			return new Mock<IFileShareSettingsService>();
-		}
-
-		public static Mock<IProcessEventWriter> CreateMockProcessEventWriter()
-		{
-			return new Mock<IProcessEventWriter>();
-		}
-
-		public static Mock<IProcessErrorWriter> CreateMockProcessErrorWriter()
-		{
-			return new Mock<IProcessErrorWriter>();
-		}
-
 		public static Mock<TapiObjectService> CreateMockTapiObjectService()
 		{
 			// The understanding is - accept all default methods and replace specific methods with a mock.
 			return new Mock<TapiObjectService> { CallBase = true };
-		}
-
-		public static Mock<IUserNotification> CreateMockUserNotification()
-		{
-			return new Mock<IUserNotification>();
 		}
 
 		public static Mock<ITapiFileStorageSearchResults> CreateMockEmptyTapiFileStorageSearchResults(bool cloudInstance)
