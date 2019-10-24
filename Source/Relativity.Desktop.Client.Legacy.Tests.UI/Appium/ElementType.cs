@@ -21,5 +21,11 @@
 		public const string Window = "Window";
 
 		public const string ComboBox = "ComboBox";
+
+		public const string TabItem = "TabItem";
+
+		public const string Tab = "Tab";
+
+		public const string TitleBar = "TitleBar";
 	}
 }

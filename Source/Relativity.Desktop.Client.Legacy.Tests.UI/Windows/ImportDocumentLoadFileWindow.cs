@@ -1,47 +1,40 @@
-﻿namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
+﻿using OpenQA.Selenium.Appium;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
+
+namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	using OpenQA.Selenium.Appium;
-	using OpenQA.Selenium.Appium.Windows;
-
-	using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
-
-	public class ImportDocumentLoadFileWindow
+	internal class ImportDocumentLoadFileWindow : WindowBase
 	{
-		private readonly WindowsElement window;
-
-		public ImportDocumentLoadFileWindow(WindowsElement window)
+		public ImportDocumentLoadFileWindow(WindowDetails window)
+			: base(window)
 		{
-			this.window = window;
 		}
 
 		public void ClickLoadImportSettingsMenuItem()
 		{
-			this.window.FindMenuBar("Application").ClickMenuItem("File").ClickMenuItem("Load Import Settings (kwe)\tCtrl+O");
+			Element.FindMenuBar("Application").ClickMenuItem("File")
+				.ClickMenuItem("Load Import Settings (kwe)\tCtrl+O");
 		}
 
 		public void ClickImportFileMenuItem()
 		{
-			this.window.FindMenuBar("Application").ClickMenuItem("Import").ClickMenuItem("Import File...");
+			Element.FindMenuBar("Application").ClickMenuItem("Import").ClickMenuItem("Import File...");
 		}
 
 		private AppiumWebElement GetOpenSavedFieldMapDialog()
 		{
-			return this.window.FindWindow("Open Saved Field Map");
+			return Element.WaitForWindow("Open Saved Field Map");
 		}
 
 		public void LoadKweFile(string kweFile, string dateFile)
 		{
-			var openDialog = this.GetOpenSavedFieldMapDialog();
+			var openDialog = GetOpenSavedFieldMapDialog();
 			openDialog.FindEdit("File name:").SendKeys(kweFile);
-			Wait.Tiny();
-
 			openDialog.ClickButtonWithClass("Open", ElementClass.Button);
-			Wait.Small();
+			openDialog.WaitForWindow("Relativity.Desktop.Client").ClickButton("OK");
 
-			openDialog.FindWindow("Relativity.Desktop.Client").ClickButton("OK");
-			Wait.Second();
-
-			var loadFileDialog = openDialog.FindElementByName("Choose Load File");
+			var loadFileDialog = openDialog.WaitForWindow("Choose Load File");
 			loadFileDialog.FindEdit("File name:").SendKeys(dateFile);
 			loadFileDialog.ClickButtonWithClass("Open", ElementClass.Button);
 		}

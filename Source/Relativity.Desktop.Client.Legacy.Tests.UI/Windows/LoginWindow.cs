@@ -1,68 +1,65 @@
-﻿namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
+﻿using OpenQA.Selenium.Appium;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
+
+namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	using OpenQA.Selenium.Appium;
-	using OpenQA.Selenium.Appium.Windows;
-
-	using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
-
-	public class LoginWindow
+	internal class LoginWindow : WindowBase
 	{
-		private readonly WindowsElement window;
-
-		public LoginWindow(WindowsElement window)
+		public LoginWindow(WindowDetails window)
+			: base(window)
 		{
-			this.window = window;
 		}
 
 		public void Login(string email, string password)
 		{
-			this.EnterEmail(email);
-			this.ClickContinueButton();
-			this.EnterPassword(password);
-			this.ClickLoginButton();
+			EnterEmail(email);
+			ClickContinueButton();
+			EnterPassword(password);
+			ClickLoginButton();
 		}
 
 		public AppiumWebElement GetEmailEdit()
 		{
-			return this.window.FindEditWithAutomationId("_email");
+			return Element.FindEditWithAutomationId("_email");
 		}
 
 		public AppiumWebElement GetContinueButton()
 		{
-			return this.window.FindButton("Continue");
+			return Element.FindButton("Continue");
 		}
 
 		public AppiumWebElement GetLoginButton()
 		{
-			return this.window.FindElementByAccessibilityId("_login");
+			return Element.FindButtonWithAutomationId("_login");
 		}
 
 		public AppiumWebElement GetPasswordEdit()
 		{
-			return this.window.FindElementByAccessibilityId("_password__password_TextBox");
+			return Element.FindEditWithAutomationId("_password__password_TextBox");
 		}
 
 		public void EnterEmail(string email)
 		{
-			var emailTextBox = this.GetEmailEdit();
+			var emailTextBox = GetEmailEdit();
 			emailTextBox.SendKeys(email);
 		}
 
 		public void ClickContinueButton()
 		{
-			var continueButton = this.GetContinueButton();
+			var continueButton = GetContinueButton();
 			continueButton.Click();
 		}
 
 		public void ClickLoginButton()
 		{
-			var loginButton = this.window.FindElementByAccessibilityId("_login");
+			var loginButton = GetLoginButton();
 			loginButton.Click();
 		}
 
 		public void EnterPassword(string password)
 		{
-			var passwordTextBox = this.GetPasswordEdit();
+			var passwordTextBox = GetPasswordEdit();
 			passwordTextBox.SendKeys(password);
 		}
 	}

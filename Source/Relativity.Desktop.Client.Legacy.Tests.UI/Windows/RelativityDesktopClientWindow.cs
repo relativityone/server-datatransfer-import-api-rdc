@@ -1,29 +1,31 @@
-﻿namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
+﻿using OpenQA.Selenium.Appium;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
+
+namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	using OpenQA.Selenium.Appium;
-	using OpenQA.Selenium.Appium.Windows;
-
-	using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
-
-	public class RelativityDesktopClientWindow
+	internal class RelativityDesktopClientWindow : WindowBase
 	{
-		private readonly WindowsElement window;
-
-		public RelativityDesktopClientWindow(WindowsElement window)
+		public RelativityDesktopClientWindow(WindowDetails window)
+			: base(window)
 		{
-			this.window = window;
+		}
+
+		public AppiumWebElement SelectRootFolder()
+		{
+			var rootFolder = GetRootFolder();
+			rootFolder.Click();
+			return rootFolder;
 		}
 
 		public AppiumWebElement GetRootFolder()
 		{
-			return this.window.FindTreeWithAutomationId("_treeView").FindTree();
+			return Element.FindTreeWithAutomationId("_treeView").FindTree();
 		}
 
 		public void ClickDocumentLoadFileMenuItem()
 		{
-			this.window.FindMenuBar("Application")
-				.ClickMenuItem("Tools")
-				.ClickMenuItem("Import")
+			Element.FindMenuBar("Application").ClickMenuItem("Tools").ClickMenuItem("Import")
 				.ClickMenuItem("Document Load File...");
 		}
 	}

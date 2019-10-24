@@ -48,16 +48,27 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Appium\AppiumWebElementExtensions.cs" />
+    <Compile Include="Appium\Extensions\AppiumWebElementExtensions.cs" />
+    <Compile Include="Appium\Extensions\ButtonElementExtensions.cs" />
     <Compile Include="Appium\ElementClass.cs" />
     <Compile Include="Appium\ElementType.cs" />
+    <Compile Include="Appium\Extensions\MenuElementExtensions.cs" />
+    <Compile Include="Appium\Extensions\TabElementExtensions.cs" />
+    <Compile Include="Appium\Extensions\TextElementExtensions.cs" />
+    <Compile Include="Appium\Extensions\WindowElementExtensions.cs" />
+    <Compile Include="Appium\Wait.cs" />
+    <Compile Include="Appium\Extensions\WaitForElementExtensions.cs" />
+    <Compile Include="Appium\WindowDetails.cs" />
+    <Compile Include="WinAppDriverRunner.cs" />
     <Compile Include="Windows\ImportDocumentLoadFileWindow.cs" />
-    <Compile Include="Appium\ListElementExtensions.cs" />
+    <Compile Include="Appium\Extensions\ListElementExtensions.cs" />
     <Compile Include="ImportTests.cs" />
+    <Compile Include="Windows\ImportLoadFileProgressWindow.cs" />
     <Compile Include="Windows\LoginWindow.cs" />
+    <Compile Include="Windows\RdcWindowsManager.cs" />
     <Compile Include="Windows\RelativityDesktopClientWindow.cs" />
     <Compile Include="Appium\WindowsDriverSessionFactory.cs" />
-    <Compile Include="Appium\Wait.cs" />
+    <Compile Include="Windows\WindowBase.cs" />
     <Compile Include="Windows\WindowNames.cs" />
     <Compile Include="Appium\WindowsManager.cs" />
     <Compile Include="Windows\SelectWorkspaceWindow.cs" />

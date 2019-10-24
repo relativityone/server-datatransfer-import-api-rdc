@@ -1,81 +1,101 @@
-﻿namespace Relativity.Desktop.Client.Legacy.Tests.UI
+﻿using System;
+using System.IO;
+using System.Reflection;
+using NUnit.Framework;
+using OpenQA.Selenium.Appium.Windows;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Windows;
+
+namespace Relativity.Desktop.Client.Legacy.Tests.UI
 {
-	using System;
-	using System.Threading;
-
-	using NUnit.Framework;
-
-	using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
-	using Relativity.Desktop.Client.Legacy.Tests.UI.Windows;
-
 	[TestFixture]
 	public class ImportTests
 	{
 		private const string WindowsApplicationDriverUrl = "http://127.0.0.1:4723";
+		private const string Login = "relativity.admin@kcura.com";
+		private const string Password = "Test1234!";
 
-		private const string AppId =
-			@"C:\Adrian\Repo\DataTransfer\Import-API-RDC\Source\Relativity.Desktop.Client.Legacy\bin\Relativity.Desktop.Client.exe";
+		private readonly string appId = GetRdcExePath();
+		private readonly string datFile = GetTestFilePath(@"1\Documents_export.dat");
+		private readonly string kweFile = GetTestFilePath(@"1\Documents_export.kwe");
+		private WinAppDriverRunner driverRunner;
+		private RdcWindowsManager rdcWindowsManager;
+		private WindowsDriver<WindowsElement> session;
 
-		private const string KweFile =
-			@"C:\Users\adrian.stanula\Downloads\Post-installation_verification_test_data\Post-installation verification test data\Salt-v-Pepper-kCura-Starter-Template.kwe";
+		[SetUp]
+		public void SetUp()
+		{
+			var sessionFactory = new WindowsDriverSessionFactory(new Uri(WindowsApplicationDriverUrl));
+			session = sessionFactory.CreateExeAppSession(appId);
+			rdcWindowsManager = new RdcWindowsManager(new WindowsManager(session));
+		}
 
-		private const string DatFile =
-			@"C:\Users\adrian.stanula\Downloads\Post-installation_verification_test_data\Post-installation verification test data\Salt-v-Pepper (US date format).dat";
+		[TearDown]
+		public void TearDown()
+		{
+			rdcWindowsManager.SwitchToRelativityDesktopClientWindow();
+			session.Close();
+			session.Quit();
+			session = null;
+		}
+
+		[OneTimeSetUp]
+		public void TestFixtureSetUp()
+		{
+			driverRunner = new WinAppDriverRunner();
+			driverRunner.Run();
+		}
+
+		[OneTimeTearDown]
+		public void TestFixtureTearDown()
+		{
+			driverRunner.Dispose();
+		}
 
 		[Explicit]
 		[Test]
-		public static void LoadFileImport()
+		public void LoadFileImport()
 		{
-			var appDriverUrl = new Uri(WindowsApplicationDriverUrl);
-			var sessionFactory = new WindowsDriverSessionFactory(appDriverUrl);
-			var session = sessionFactory.CreateExeAppSession(AppId);
-			var manager = new WindowsManager(session);
+			var loginWindow = rdcWindowsManager.SwitchToLoginWindow();
+			loginWindow.Login(Login, Password);
 
-			var loginWindowDetails = manager.GetWindow(WindowNames.RelativityLogin);
-			var loginWindow = new LoginWindow(loginWindowDetails.WindowsElement);
+			var workspaceSelectWindow = rdcWindowsManager.SwitchToSelectWorkspaceWindow();
+			workspaceSelectWindow.ChooseWorkspace("Test1");
 
-			loginWindow.Login("relativity.admin@kcura.com", "Test1234!");
-
-			//TODO: Implement a better wait to wait for a window to open
-			Thread.Sleep(7000);
-
-			var selectWorkspaceWindowDetails = manager.GetWindow(WindowNames.SelectWorkspace);
-			var workspaceSelectWindow = new SelectWorkspaceWindow(selectWorkspaceWindowDetails.WindowsElement);
-
-			workspaceSelectWindow.EnterSearchText("Test1");
-			//TODO: Implement a better method to wait for some event to occur
-			Wait.Small();
-			workspaceSelectWindow.ClickWorkspace(0);
-			Wait.Tiny();
-			workspaceSelectWindow.ClickOkButton();
-			Wait.Small();
-
-			var rdcWindowDetails = manager.GetWindow(WindowNames.RelativityDesktopClient);
-			var rdcWindow = new RelativityDesktopClientWindow(rdcWindowDetails.WindowsElement);
-			var workspaceRootFolder = rdcWindow.GetRootFolder();
-			workspaceRootFolder.Click();
-
+			var rdcWindow = rdcWindowsManager.SwitchToRelativityDesktopClientWindow();
+			rdcWindow.SelectRootFolder();
 			rdcWindow.ClickDocumentLoadFileMenuItem();
-			Wait.Second();
 
-			var importWindowsElement = manager.GetWindow(WindowNames.ImportDocumentLoadFile);
-			var importWindow = new ImportDocumentLoadFileWindow(importWindowsElement.WindowsElement);
+			var importWindow = rdcWindowsManager.SwitchToImportDocumentLoadFileWindow();
 			importWindow.ClickLoadImportSettingsMenuItem();
-			Wait.Second();
-
-			importWindow.LoadKweFile(KweFile, DatFile);
+			importWindow.LoadKweFile(kweFile, datFile);
 			importWindow.ClickImportFileMenuItem();
-			Wait.HalfASecond();
 
-			var confirmationDialog = manager.GetWindow(
-				WindowNames.RelativityDesktopClient,
-				x => x.WindowHandle != rdcWindowDetails.WindowHandle).WindowsElement;
+			rdcWindowsManager.GetRdcConfirmationDialog().ClickButton("OK");
 
-			var okButton = confirmationDialog.FindButton("OK");
-			okButton.Click();
+			var progressWindow = rdcWindowsManager.SwitchToImportLoadFileProgressWindow();
+			progressWindow.WaitForAllRecordsToBeProcessed(TimeSpan.FromMinutes(2));
+			var errors = progressWindow.GetErrorsText();
 
-			session.Close();
-			session.Quit();
+			Assert.IsTrue(string.IsNullOrEmpty(errors), $"Export failed with errors: {errors}");
+		}
+
+		private static string GetRdcExePath()
+		{
+			return Path.Combine(GetRootPath(),
+				@"Source\Relativity.Desktop.Client.Legacy\bin\Relativity.Desktop.Client.exe");
+		}
+
+		private static string GetTestFilePath(string relativePath)
+		{
+			return Path.Combine(GetRootPath(), "TestFiles", relativePath);
+		}
+
+		private static string GetRootPath()
+		{
+			return new FileInfo(Assembly.GetExecutingAssembly().Location)
+				.Directory.Parent.Parent.Parent.Parent.FullName;
 		}
 	}
 }

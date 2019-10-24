@@ -17,8 +17,8 @@
 
 		public WindowsDriver<WindowsElement> CreateExeAppSession(string appExePath)
 		{
-			FileInfo file = new FileInfo(appExePath);
-			DesiredCapabilities appCapabilities = new DesiredCapabilities();
+			var file = new FileInfo(appExePath);
+			var appCapabilities = new DesiredCapabilities();
 			appCapabilities.SetCapability("app", file.FullName);
 			appCapabilities.SetCapability("appWorkingDir", file.Directory.FullName);
 			return new WindowsDriver<WindowsElement>(this.winAppDriverAddress, appCapabilities);
@@ -26,7 +26,7 @@
 
 		public WindowsDriver<WindowsElement> CreateDesktopSession()
 		{
-			DesiredCapabilities appCapabilities = new DesiredCapabilities();
+			var appCapabilities = new DesiredCapabilities();
 			appCapabilities.SetCapability("app", "Root");
 			return new WindowsDriver<WindowsElement>(this.winAppDriverAddress, appCapabilities);
 		}

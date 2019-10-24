@@ -1,27 +1,27 @@
-﻿namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
-{
-	using System.Threading;
+﻿using System;
+using System.Threading;
 
+namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
+{
 	internal static class Wait
 	{
-		public static void Tiny()
+		private static readonly TimeSpan GeneralConditionTimeout = TimeSpan.FromSeconds(60);
+
+		public static void For(Func<bool> condition)
 		{
-			Thread.Sleep(50);
+			SpinWait.SpinUntil(condition, GeneralConditionTimeout);
 		}
 
-		public static void Small()
+		public static void For(Func<bool> condition, TimeSpan timeout)
 		{
-			Thread.Sleep(200);
+			SpinWait.SpinUntil(condition, timeout);
 		}
 
-		public static void HalfASecond()
+		public static void For(Func<bool> condition, TimeSpan checkInterval, TimeSpan timeout)
 		{
-			Thread.Sleep(500);
-		}
+			var started = DateTime.Now;
 
-		public static void Second()
-		{
-			Thread.Sleep(1000);
+			while (!condition() && DateTime.Now - started + checkInterval < timeout) Thread.Sleep(checkInterval);
 		}
 	}
 }
