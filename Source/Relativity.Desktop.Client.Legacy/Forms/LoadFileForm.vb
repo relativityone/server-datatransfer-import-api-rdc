@@ -1607,7 +1607,7 @@ Namespace Relativity.Desktop.Client
 		Private Async Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
 			'' This function is invoked when the user clicks import file in the upper menu.
 			'' Since it could be the user has ran an import before, and due to config changes in the workspace on the server, the cached case info might be out of date. That's why you want to refresh it here, so we have a fresh copy.
-			_fileRefreshMenuItem_Click(Nothing,Nothing)
+			Await RefreshServerDataAsync()
 
 			If (Await PopulateLoadFileObject(True)) AndAlso (Await _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LoadFileColumns.LeftSearchableListItems))) AndAlso (Await _application.ReadyToLoad(Me.LoadFile, False)) Then
 				Await _application.ImportLoadFile(Me.LoadFile)
@@ -1949,11 +1949,16 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Async Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
+			Await RefreshServerDataAsync()
+		End Sub
+
+		Private Async Function RefreshServerDataAsync() As Task
+
 			_multiObjectMultiChoiceCache = Nothing
 			_application.ResetFieldsCache()
 			Dim caseFieldsCollection As DocumentFieldCollection = Await _application.CurrentNonFileFields(Me.LoadFile.ArtifactTypeID, refresh:=True)
 			Dim caseFields As String() = caseFieldsCollection.Names()
-			If caseFields Is Nothing Then Exit Sub
+			If caseFields Is Nothing Then Return
 			Await Me.MarkIdentifierField(caseFields)
 			Dim fieldName As String
 			For Each fieldName In caseFields
@@ -2001,7 +2006,7 @@ Namespace Relativity.Desktop.Client
 			End If
 
 			Await InitializeDocumentSpecificComponents()
-		End Sub
+		End Function
 
 		Private Async Function EnsureConnection() As Task(Of Boolean)
 			Dim retval As Boolean = False
