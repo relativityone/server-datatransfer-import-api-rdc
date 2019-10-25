@@ -20,45 +20,45 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public LoginWindow SwitchToLoginWindow()
 		{
-			return SwitchToWindow(WindowNames.RelativityLogin, x => new LoginWindow(x));
+			return SwitchToWindow(WindowNames.RelativityLogin, x => new LoginWindow(this, x));
 		}
 
 		public SelectWorkspaceWindow SwitchToSelectWorkspaceWindow()
 		{
-			return SwitchToWindow(WindowNames.SelectWorkspace, x => new SelectWorkspaceWindow(x));
+			return SwitchToWindow(WindowNames.SelectWorkspace, x => new SelectWorkspaceWindow(this, x));
 		}
 
 		public RelativityDesktopClientWindow SwitchToRelativityDesktopClientWindow()
 		{
-			manager.SwitchToWindow(rdcWindow.Window.Handle);
+			manager.SwitchToWindow(rdcWindow.Handle);
 			return rdcWindow;
 		}
 
 		public ImportDocumentLoadFileWindow SwitchToImportDocumentLoadFileWindow()
 		{
-			return SwitchToWindow(WindowNames.ImportDocumentLoadFile, x => new ImportDocumentLoadFileWindow(x));
+			return SwitchToWindow(WindowNames.ImportDocumentLoadFile, x => new ImportDocumentLoadFileWindow(this, x));
 		}
 
 		public ImportLoadFileProgressWindow SwitchToImportLoadFileProgressWindow()
 		{
-			return SwitchToWindow(WindowNames.ImportLoadFileProgress, x => new ImportLoadFileProgressWindow(x));
+			return SwitchToWindow(WindowNames.ImportLoadFileProgress, x => new ImportLoadFileProgressWindow(this, x));
 		}
 
 		public AppiumWebElement GetRdcConfirmationDialog()
 		{
-			return manager.GetWindow(WindowNames.RelativityDesktopClient, x => x.Handle != rdcWindow.Window.Handle)
+			return manager.GetWindow(WindowNames.RelativityDesktopClient, x => x.Handle != rdcWindow.Handle)
 				.Element;
 		}
 
 		private RelativityDesktopClientWindow CreateRelativityDesktopClientWindow()
 		{
 			var windowDetails = GetWindow(WindowNames.RelativityDesktopClient);
-			var window = new RelativityDesktopClientWindow(windowDetails);
+			var window = new RelativityDesktopClientWindow(this, windowDetails);
 			windows.Add(windowDetails.Handle, window);
 			return window;
 		}
 
-		private T SwitchToWindow<T>(string title, Func<WindowDetails, T> createWindow) where T : WindowBase
+		private T SwitchToWindow<T>(string title, Func<WindowDetails, T> createWindow) where T : RdcWindowBase
 		{
 			ClearClosedWindows();
 
@@ -67,7 +67,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			if (windows.TryGetValue(windowDetails.Handle, out var windowBase)) return (T) windowBase;
 
 			var window = createWindow(windowDetails);
-			windows[window.Window.Handle] = window;
+			windows[window.Handle] = window;
 			return window;
 		}
 

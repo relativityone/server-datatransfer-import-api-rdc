@@ -1,42 +1,32 @@
-﻿using OpenQA.Selenium.Appium;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
+﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal class ImportDocumentLoadFileWindow : WindowBase
+	internal class ImportDocumentLoadFileWindow : RdcWindowBase
 	{
-		public ImportDocumentLoadFileWindow(WindowDetails window)
-			: base(window)
+		private readonly MenuBarUIElement menuBar;
+		private readonly OpenSavedFieldMapDialog openSavedFieldMapDialog;
+
+		public ImportDocumentLoadFileWindow(RdcWindowsManager windowsManager, WindowDetails window)
+			: base(windowsManager, window)
 		{
+			menuBar = new MenuBarUIElement(FindMenuBar("Application"));
+			openSavedFieldMapDialog = new OpenSavedFieldMapDialog(WaitForWindow("Open Saved Field Map"));
 		}
 
-		public void ClickLoadImportSettingsMenuItem()
+		public void LoadImportSettings()
 		{
-			Element.FindMenuBar("Application").ClickMenuItem("File")
-				.ClickMenuItem("Load Import Settings (kwe)\tCtrl+O");
+			menuBar.ClickMenuItem("File").ClickMenuItem("Load Import Settings (kwe)\tCtrl+O");
 		}
 
 		public void ClickImportFileMenuItem()
 		{
-			Element.FindMenuBar("Application").ClickMenuItem("Import").ClickMenuItem("Import File...");
+			menuBar.ClickMenuItem("Import").ClickMenuItem("Import File...");
 		}
 
-		private AppiumWebElement GetOpenSavedFieldMapDialog()
+		public void LoadKweFile(string kweFile, string datFile)
 		{
-			return Element.WaitForWindow("Open Saved Field Map");
-		}
-
-		public void LoadKweFile(string kweFile, string dateFile)
-		{
-			var openDialog = GetOpenSavedFieldMapDialog();
-			openDialog.FindEdit("File name:").SendKeys(kweFile);
-			openDialog.ClickButtonWithClass("Open", ElementClass.Button);
-			openDialog.WaitForWindow("Relativity.Desktop.Client").ClickButton("OK");
-
-			var loadFileDialog = openDialog.WaitForWindow("Choose Load File");
-			loadFileDialog.FindEdit("File name:").SendKeys(dateFile);
-			loadFileDialog.ClickButtonWithClass("Open", ElementClass.Button);
+			openSavedFieldMapDialog.LoadKweFile(kweFile, datFile);
 		}
 	}
 }

@@ -1,18 +1,14 @@
-﻿namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
+﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+
+namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	using OpenQA.Selenium.Appium.Windows;
-
-	using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
-
-	internal abstract class WindowBase
+	internal abstract class WindowBase : UIElement
 	{
-		protected WindowBase(WindowDetails window)
+		protected WindowBase(WindowDetails window) : base(() => window.Element)
 		{
-			Window = window;
+			Handle = window.Handle;
 		}
 
-		public WindowDetails Window { get; }
-
-		protected WindowsElement Element => Window.Element;
+		public string Handle { get; }
 	}
 }

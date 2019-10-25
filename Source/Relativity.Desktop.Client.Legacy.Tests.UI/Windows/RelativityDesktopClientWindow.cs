@@ -1,32 +1,30 @@
-﻿using OpenQA.Selenium.Appium;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
+﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal class RelativityDesktopClientWindow : WindowBase
+	internal class RelativityDesktopClientWindow : RdcWindowBase
 	{
-		public RelativityDesktopClientWindow(WindowDetails window)
-			: base(window)
+		private readonly MenuBarUIElement menuBar;
+		private readonly UIElement treeView;
+
+		public RelativityDesktopClientWindow(RdcWindowsManager windowsManager, WindowDetails window)
+			: base(windowsManager, window)
 		{
+			menuBar = new MenuBarUIElement(FindMenuBar("Application"));
+			treeView = FindTreeWithAutomationId("_treeView");
 		}
 
-		public AppiumWebElement SelectRootFolder()
+		public void SelectRootFolder()
 		{
-			var rootFolder = GetRootFolder();
+			var rootFolder = treeView.FindTree();
 			rootFolder.Click();
-			return rootFolder;
 		}
 
-		public AppiumWebElement GetRootFolder()
+		public ImportDocumentLoadFileWindow ImportDocumentLoadFile()
 		{
-			return Element.FindTreeWithAutomationId("_treeView").FindTree();
-		}
-
-		public void ClickDocumentLoadFileMenuItem()
-		{
-			Element.FindMenuBar("Application").ClickMenuItem("Tools").ClickMenuItem("Import")
+			menuBar.ClickMenuItem("Tools").ClickMenuItem("Import")
 				.ClickMenuItem("Document Load File...");
+			return WindowsManager.SwitchToImportDocumentLoadFileWindow();
 		}
 	}
 }

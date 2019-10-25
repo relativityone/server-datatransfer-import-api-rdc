@@ -1,66 +1,50 @@
-﻿using OpenQA.Selenium.Appium;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
+﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal class LoginWindow : WindowBase
+	internal class LoginWindow : RdcWindowBase
 	{
-		public LoginWindow(WindowDetails window)
-			: base(window)
+		private readonly UIElement continueButton;
+		private readonly UIElement emailEdit;
+		private readonly UIElement loginButton;
+		private readonly UIElement passwordEdit;
+
+		public LoginWindow(RdcWindowsManager windowsManager, WindowDetails window)
+			: base(windowsManager, window)
 		{
+			emailEdit = FindEditWithAutomationId("_email");
+			continueButton = FindButton("Continue");
+			loginButton = FindButtonWithAutomationId("_login");
+			passwordEdit = FindEditWithAutomationId("_password__password_TextBox");
 		}
 
-		public void Login(string email, string password)
+		public SelectWorkspaceWindow Login(string email, string password)
 		{
 			EnterEmail(email);
 			ClickContinueButton();
 			EnterPassword(password);
 			ClickLoginButton();
-		}
-
-		public AppiumWebElement GetEmailEdit()
-		{
-			return Element.FindEditWithAutomationId("_email");
-		}
-
-		public AppiumWebElement GetContinueButton()
-		{
-			return Element.FindButton("Continue");
-		}
-
-		public AppiumWebElement GetLoginButton()
-		{
-			return Element.FindButtonWithAutomationId("_login");
-		}
-
-		public AppiumWebElement GetPasswordEdit()
-		{
-			return Element.FindEditWithAutomationId("_password__password_TextBox");
+			return WindowsManager.SwitchToSelectWorkspaceWindow();
 		}
 
 		public void EnterEmail(string email)
 		{
-			var emailTextBox = GetEmailEdit();
-			emailTextBox.SendKeys(email);
+			emailEdit.SendKeys(email);
 		}
 
 		public void ClickContinueButton()
 		{
-			var continueButton = GetContinueButton();
 			continueButton.Click();
 		}
 
 		public void ClickLoginButton()
 		{
-			var loginButton = GetLoginButton();
 			loginButton.Click();
 		}
 
 		public void EnterPassword(string password)
 		{
-			var passwordTextBox = GetPasswordEdit();
-			passwordTextBox.SendKeys(password);
+			passwordEdit.SendKeys(password);
 		}
 	}
 }

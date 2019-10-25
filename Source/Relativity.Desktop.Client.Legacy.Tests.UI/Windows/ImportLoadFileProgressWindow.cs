@@ -1,33 +1,31 @@
 ﻿using System;
-using OpenQA.Selenium.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal class ImportLoadFileProgressWindow : WindowBase
+	internal class ImportLoadFileProgressWindow : RdcWindowBase
 	{
-		public ImportLoadFileProgressWindow(WindowDetails window) : base(window)
+		private readonly UIElement currentRecordLabel;
+
+		private readonly TabsUIElement tabs;
+
+		public ImportLoadFileProgressWindow(RdcWindowsManager windowsManager, WindowDetails window) : base(
+			windowsManager, window)
 		{
+			currentRecordLabel = FindTextWithAutomationId("_currentRecordLabel");
+			tabs = new TabsUIElement(FindTabWithAutomationId("_Tabs"));
 		}
 
 		public void WaitForAllRecordsToBeProcessed(TimeSpan timeout)
 		{
-			var currentRecordLabel = Element.FindTextWithAutomationId("_currentRecordLabel");
 			Wait.For(() => currentRecordLabel.Text == "All records have been processed", TimeSpan.FromSeconds(2),
 				timeout);
 		}
 
 		public string GetErrorsText()
 		{
-			var tabs = GetTabsElement();
 			tabs.FindTabItem("Errors").Click();
 			return tabs.FindEditWithAutomationId("TextBox").Text;
-		}
-
-		private AppiumWebElement GetTabsElement()
-		{
-			return Element.FindTabWithAutomationId("_Tabs");
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using NUnit.Framework;
 using OpenQA.Selenium.Appium.Windows;
+using OpenQA.Selenium.Support.PageObjects;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Windows;
@@ -21,6 +22,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		private readonly string kweFile = GetTestFilePath(@"1\Documents_export.kwe");
 		private WinAppDriverRunner driverRunner;
 		private RdcWindowsManager rdcWindowsManager;
+
+		[FindsBy(How = How.XPath, Using = "ABX")]
 		private WindowsDriver<WindowsElement> session;
 
 		[SetUp]
@@ -58,17 +61,13 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		public void LoadFileImport()
 		{
 			var loginWindow = rdcWindowsManager.SwitchToLoginWindow();
-			loginWindow.Login(Login, Password);
+			var workspaceSelectWindow = loginWindow.Login(Login, Password);
 
-			var workspaceSelectWindow = rdcWindowsManager.SwitchToSelectWorkspaceWindow();
-			workspaceSelectWindow.ChooseWorkspace("Test1");
-
-			var rdcWindow = rdcWindowsManager.SwitchToRelativityDesktopClientWindow();
+			var rdcWindow = workspaceSelectWindow.ChooseWorkspace("Test1");
 			rdcWindow.SelectRootFolder();
-			rdcWindow.ClickDocumentLoadFileMenuItem();
 
-			var importWindow = rdcWindowsManager.SwitchToImportDocumentLoadFileWindow();
-			importWindow.ClickLoadImportSettingsMenuItem();
+			var importWindow = rdcWindow.ImportDocumentLoadFile();
+			importWindow.LoadImportSettings();
 			importWindow.LoadKweFile(kweFile, datFile);
 			importWindow.ClickImportFileMenuItem();
 

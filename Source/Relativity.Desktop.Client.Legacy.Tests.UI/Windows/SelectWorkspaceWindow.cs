@@ -1,58 +1,45 @@
-﻿using OpenQA.Selenium.Appium;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
+﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal class SelectWorkspaceWindow : WindowBase
+	internal class SelectWorkspaceWindow : RdcWindowBase
 	{
 		private const string WorkspaceListAutomationId = "ItemListView";
 
-		public SelectWorkspaceWindow(WindowDetails window)
-			: base(window)
+		private readonly UIElement okButton;
+		private readonly UIElement searchTextBox;
+		private readonly ListUIElement workspaceList;
+
+		public SelectWorkspaceWindow(RdcWindowsManager windowsManager, WindowDetails window)
+			: base(windowsManager, window)
 		{
+			okButton = FindButtonWithAutomationId("OKButton");
+			searchTextBox = FindEditWithAutomationId("SearchQuery");
+			workspaceList = new ListUIElement(FindListWithAutomationId(WorkspaceListAutomationId));
 		}
 
-		public void ChooseWorkspace(string workspaceName)
+		public RelativityDesktopClientWindow ChooseWorkspace(string workspaceName)
 		{
 			EnterSearchText(workspaceName);
-			Wait.For(() => GetWorkspaceCount() == 1);
-			ClickWorkspace(0);
+			Wait.For(() => workspaceList.ItemsCount == 1);
+			SelectWorkspace(0);
 			ClickOkButton();
+			return WindowsManager.SwitchToRelativityDesktopClientWindow();
 		}
 
 		public void EnterSearchText(string searchText)
 		{
-			var searchTextBox = GetSearchTextBox();
 			searchTextBox.SendKeys(searchText);
 		}
 
 		public void ClickOkButton()
 		{
-			Element.ClickButtonWithAutomationId("OKButton");
+			okButton.Click();
 		}
 
-		private void ClickWorkspace(int index)
+		private void SelectWorkspace(int index)
 		{
-			var list = GetWorkspacesList();
-			var listItemText = list.FindListItemTextByIndex(index);
-			listItemText.Click();
-		}
-
-		private int GetWorkspaceCount()
-		{
-			var list = Element.WaitForChild(x => x.FindListsWithAutomationId(WorkspaceListAutomationId));
-			return list.FindListItems().Count;
-		}
-
-		private AppiumWebElement GetWorkspacesList()
-		{
-			return Element.FindListWithAutomationId(WorkspaceListAutomationId);
-		}
-
-		private AppiumWebElement GetSearchTextBox()
-		{
-			return Element.FindEditWithAutomationId("SearchQuery");
+			workspaceList.ClickListItem(index);
 		}
 	}
 }

@@ -8,10 +8,5 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions
 		{
 			return element.FindChild(ElementType.Text);
 		}
-
-		public static AppiumWebElement FindTextWithAutomationId(this AppiumWebElement element, string automationId)
-		{
-			return element.FindChildWithAutomationId(ElementType.Text, automationId);
-		}
 	}
 }

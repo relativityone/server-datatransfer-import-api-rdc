@@ -40,8 +40,14 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="kCura.Relativity.Client">
+      <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Kepler">
+      <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -52,26 +58,35 @@
     <Compile Include="Appium\Extensions\ButtonElementExtensions.cs" />
     <Compile Include="Appium\ElementClass.cs" />
     <Compile Include="Appium\ElementType.cs" />
-    <Compile Include="Appium\Extensions\MenuElementExtensions.cs" />
-    <Compile Include="Appium\Extensions\TabElementExtensions.cs" />
     <Compile Include="Appium\Extensions\TextElementExtensions.cs" />
-    <Compile Include="Appium\Extensions\WindowElementExtensions.cs" />
+    <Compile Include="Appium\ListUIElement.cs" />
+    <Compile Include="Appium\MenuBarUIElement.cs" />
+    <Compile Include="Appium\TabsUIElement.cs" />
     <Compile Include="Appium\Wait.cs" />
-    <Compile Include="Appium\Extensions\WaitForElementExtensions.cs" />
     <Compile Include="Appium\WindowDetails.cs" />
     <Compile Include="WinAppDriverRunner.cs" />
+    <Compile Include="Appium\UIElement.cs" />
+    <Compile Include="Windows\ChooseLoadFileDialog.cs" />
     <Compile Include="Windows\ImportDocumentLoadFileWindow.cs" />
-    <Compile Include="Appium\Extensions\ListElementExtensions.cs" />
     <Compile Include="ImportTests.cs" />
     <Compile Include="Windows\ImportLoadFileProgressWindow.cs" />
     <Compile Include="Windows\LoginWindow.cs" />
+    <Compile Include="Windows\OpenSavedFieldMapDialog.cs" />
+    <Compile Include="Windows\RdcWindowBase.cs" />
     <Compile Include="Windows\RdcWindowsManager.cs" />
+    <Compile Include="Windows\RelativityConfirmationDialog.cs" />
     <Compile Include="Windows\RelativityDesktopClientWindow.cs" />
     <Compile Include="Appium\WindowsDriverSessionFactory.cs" />
     <Compile Include="Windows\WindowBase.cs" />
     <Compile Include="Windows\WindowNames.cs" />
     <Compile Include="Appium\WindowsManager.cs" />
     <Compile Include="Windows\SelectWorkspaceWindow.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Relativity.DataExchange.TestFramework\Relativity.DataExchange.TestFramework.csproj">
+      <Project>{fed61746-80ec-40cb-998e-9299b804ce7d}</Project>
+      <Name>Relativity.DataExchange.TestFramework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Choose>
