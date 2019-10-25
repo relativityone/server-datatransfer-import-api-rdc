@@ -22,7 +22,7 @@ namespace Relativity.DataExchange.NUnit
 	[TestFixture]
 	public class ArtifactFieldCollectionTests : SerializationTestsBase
 	{
-		private static List<ArtifactField> Artifacts =>
+		private static IReadOnlyList<ArtifactField> Artifacts =>
 			new List<ArtifactField>
 				{
 					new ArtifactField("displayName", 100, FieldType.Varchar, FieldCategory.Generic, 100, 100, 4, true),
