@@ -20,6 +20,7 @@
             Public Const JOB_FAILED_COUNT As String = "RDC.Performance.JobFailedCount"
             Public Const THROUGHPUT As String = "RDC.Performance.Throughput"
             Public Const THROUGHPUT_BYTES As String = "RDC.Performance.ThroughputBytes"
+			Public Const AUTHENTICATION As String = "RDC.IAPI.Authentication"
         End Class
 
         ''' <summary>
