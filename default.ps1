@@ -30,7 +30,7 @@ properties {
     $DotCoverExe = Join-Path $PackagesDir "JetBrains.dotCover.CommandLineTools\tools\dotCover.exe"
     $ReportGeneratorExe = Join-Path $PackagesDir "ReportGenerator\tools\net47\ReportGenerator.exe"
     $PaketExe = Join-Path $PaketDir "paket.exe"
-    $ProgetUrl = "https://proget.kcura.corp/nuget/NuGet"
+    $ProgetUrl = "https://relativity.jfrog.io/relativity/api/nuget/v3/nuget-anthology"
 
     # Installer paths
     $SignToolPath = "${Env:ProgramFiles(x86)}\Windows Kits\8.1\bin\x86\signtool.exe"

@@ -1,6 +1,6 @@
 RESTRICTION: == net462
 NUGET
-  remote: https://www.nuget.org/api/v2
+  remote: https://relativity.jfrog.io/relativity/api/nuget/v3/nuget-anthology
     Castle.Core (3.3.3)
     Castle.Windsor (3.3)
       Castle.Core (>= 3.3)
@@ -35,7 +35,6 @@ NUGET
     System.Reactive (4.0)
     System.ValueTuple (4.5)
     ZetaLongPaths (1.0.0.16)
-  remote: https://relativity.jfrog.io/relativity/api/nuget/nuget-local
     kCura.OutsideIn.FI.Win32 (2019.4.0)
     kCura.Relativity.Client (11.0.79.97-DEV)
     Relativity (11.0.103.16-DEV)

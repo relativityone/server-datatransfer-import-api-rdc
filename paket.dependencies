@@ -1,5 +1,5 @@
 framework: net462
-source https://nuget.org/api/v2
+source https://relativity.jfrog.io/relativity/api/nuget/v3/nuget-anthology
 
 # Note: do NOT change the Castle version due to SOI with RIP and potentially other consumers.
 nuget castle.core = 3.3.3
@@ -45,7 +45,6 @@ nuget System.Reactive = 4.0.0
 nuget EWSoftware.SHFB = 2019.8.24
 
 # The Relativity packages below are required by the SDK projects.
-source https://relativity.jfrog.io/relativity/api/nuget/nuget-local
 nuget kcura.outsidein.fi.win32 = 2019.4.0
 nuget relativity.dataTransfer.messageService = 10.2.0
 nuget relativity.logging.interfaces = 2018.11.8
