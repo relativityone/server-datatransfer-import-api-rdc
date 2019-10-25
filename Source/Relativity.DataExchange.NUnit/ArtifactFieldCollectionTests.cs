@@ -40,9 +40,14 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		public void ArtifactsShouldBeFindableAfterInsert()
 		{
+			// Arrange
 			ArtifactFieldCollection collection = new ArtifactFieldCollection();
+
+			// Act
 			var toInsert = Artifacts.First();
 			collection.Add1(toInsert);
+
+			// Assert
 			Assert.True(collection[toInsert.ArtifactID].Equals(toInsert));
 			Assert.True(collection[toInsert.DisplayName].Equals(toInsert));
 			Assert.True(collection.get_FieldList(FieldType.Varchar)[0].Equals(toInsert));
@@ -52,9 +57,14 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		public void ArtifactsShouldNotBeFindableIfNotInserted()
 		{
+			// Arrange
 			ArtifactFieldCollection collection = new ArtifactFieldCollection();
+
+			// Act
 			var toInsert = Artifacts.Skip(1).First();
 			collection.Add1(toInsert);
+
+			// Assert
 			Assert.IsNull(collection[Artifacts.First().ArtifactID]);
 			Assert.IsNull(collection[Artifacts.First().DisplayName]);
 			Assert.True(collection.get_FieldList(FieldType.LayoutText).Length == 1);
@@ -63,9 +73,14 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		public void ArtifactsShouldNotThrowWhenAdded()
 		{
+			// Arrange
 			ArtifactFieldCollection collection = new ArtifactFieldCollection();
+
+			// Act
 			var toInsert = Artifacts;
 			collection.AddRange(toInsert);
+
+			// Assert
 			Assert.IsNotNull(collection[Artifacts.First().ArtifactID]);
 			Assert.IsNotNull(collection[Artifacts.First().DisplayName]);
 			Assert.True(collection.get_FieldList(FieldType.Varchar).Length == 4);
@@ -74,10 +89,15 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		public void ArtifactsShouldDisappearWhenClear()
 		{
+			// Arrange
 			ArtifactFieldCollection collection = new ArtifactFieldCollection();
+
+			// Act
 			var toInsert = Artifacts;
 			collection.AddRange(toInsert);
 			collection.Clear();
+
+			// Assert
 			Assert.IsNull(collection[Artifacts.First().ArtifactID]);
 			Assert.IsNull(collection[Artifacts.First().DisplayName]);
 			Assert.True(collection.get_FieldList(FieldType.Varchar).Length == 0);
@@ -86,17 +106,27 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		public void ArtifactsShouldBeAddedToCollection()
 		{
+			// Arrange
 			ArtifactFieldCollection collection = new ArtifactFieldCollection();
+
+			// Act
 			var toInsert = Artifacts;
 			collection.AddRange(toInsert);
+
+			// Assert
 			Assert.IsEmpty(toInsert.Except(collection.ToList()));
 		}
 
 		[Test]
 		public void ArtifactsShouldThrowDuplicateKeyWhenInsertingDuplicateKey()
 		{
+			// Arrange
 			ArtifactFieldCollection collection = new ArtifactFieldCollection();
+
+			// Act
 			collection.Add1(Artifacts.First());
+
+			// Assert
 			Assert.Throws<ArgumentException>(() => collection.Add1(Artifacts.First()));
 		}
 	}
