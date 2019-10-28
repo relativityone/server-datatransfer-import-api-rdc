@@ -48,14 +48,13 @@
 			this._logger.LogVerbose("Successfully awaited the long text encoding conversion to complete.");
 		}
 
-		public void SubscribeForDownloadEvents(IFileTransferProducer fileTransferProducer)
+		public void SubscribeForDownloadEvents(IFileTransferProducer fileTransferProducer, CancellationToken token)
 		{
 			fileTransferProducer.ThrowIfNull(nameof(fileTransferProducer));
 
 			this._fileDownloadedSubscriber = fileTransferProducer
 				.FileDownloaded
 				.Subscribe(this.AddForConversion);
-			this._fileDownloadCompletedSubscriber = fileTransferProducer.FileDownloadCompleted.Subscribe(this.CompleteConversion);
 
 			this._conversionTask = Task.Run(() => this.ConvertLongTextFiles(), this._cancellationToken);
 		}

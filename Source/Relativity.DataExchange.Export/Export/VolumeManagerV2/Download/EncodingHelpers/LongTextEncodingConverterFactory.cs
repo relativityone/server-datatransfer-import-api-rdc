@@ -29,7 +29,7 @@
 
 		public IFileDownloadSubscriber Create(CancellationToken cancellationToken)
 		{
-			return new LongTextEncodingConverter2(_longTextRepository, _fileEncodingConverter, _errorFileWriter, _logger, cancellationToken);
+			return new LongTextEncodingConverter2(_longTextRepository, _fileEncodingConverter, _errorFileWriter, _logger);
 		}
 	}
 }

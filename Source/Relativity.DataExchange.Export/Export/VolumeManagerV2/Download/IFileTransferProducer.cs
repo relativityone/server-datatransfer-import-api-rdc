@@ -7,6 +7,5 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2.Download
 	{
 		IObservable<string> FileDownloaded { get; }
 
-		Subject<bool> FileDownloadCompleted { get; }
 	}
 }

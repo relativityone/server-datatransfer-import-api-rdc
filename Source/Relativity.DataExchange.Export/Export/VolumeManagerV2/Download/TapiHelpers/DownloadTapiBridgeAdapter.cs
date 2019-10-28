@@ -36,8 +36,6 @@
 			_messageHandler.Subscribe(this.TapiBridge);
 			_progressHandler.Subscribe(this.TapiBridge);
 			_transferStatistics.Subscribe(this.TapiBridge);
-
-			this.FileDownloadCompleted = new Subject<bool>();
 		}
 
 		public TapiClient Client => this.TapiBridge.Client;
@@ -53,11 +51,6 @@
 			_transferStatistics.Unsubscribe(this.TapiBridge);
 			this.TapiBridge.Dispose();
 		}
-
-		/// <summary>
-		/// Represents file download complete event. Returns file if there was any file that was processed
-		/// </summary>
-		public Subject<bool> FileDownloadCompleted { get; protected set; }
 
 		public IObservable<string> FileDownloaded
 		{

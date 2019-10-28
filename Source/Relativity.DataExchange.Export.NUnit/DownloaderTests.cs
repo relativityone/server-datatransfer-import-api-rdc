@@ -33,6 +33,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		private Mock<IErrorFileWriter> _errorFileWriter;
 		private Mock<IPhysicalFilesDownloader> _physicalFilesDownloader;
 		private Mock<ILongTextDownloader> _longTextDownloader;
+		private Mock<IFileDownloadSubscriber> _fileDownloadSubscriber;
 
 		[SetUp]
 		public void SetUp()
@@ -44,9 +45,10 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._physicalFilesDownloader = new Mock<IPhysicalFilesDownloader>();
 			this._longTextDownloader = new Mock<ILongTextDownloader>();
+			this._fileDownloadSubscriber = new Mock<IFileDownloadSubscriber>();
 
 			this._errorFileWriter = new Mock<IErrorFileWriter>();
-			this._instance = new Downloader(this._exportRequestRetriever, this._physicalFilesDownloader.Object, this._longTextDownloader.Object, this._errorFileWriter.Object, new NullLogger());
+			this._instance = new Downloader(this._exportRequestRetriever, this._physicalFilesDownloader.Object, this._longTextDownloader.Object, this._errorFileWriter.Object, this._fileDownloadSubscriber.Object, new NullLogger());
 		}
 
 		[Test]

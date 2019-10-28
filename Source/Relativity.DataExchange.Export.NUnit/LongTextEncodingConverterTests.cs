@@ -60,9 +60,6 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileDownloadSubject = new Subject<string>();
 
 			this._fileTransferProducerMock.SetupGet(item => item.FileDownloaded).Returns(this._fileDownloadSubject.AsObservable());
-			this._fileTransferProducerMock.SetupGet(item => item.FileDownloadCompleted).Returns(this._fileDownloadCompletedSubject);
-
-			this._instance.SubscribeForDownloadEvents(this._fileTransferProducerMock.Object);
 		}
 
 		[Test]

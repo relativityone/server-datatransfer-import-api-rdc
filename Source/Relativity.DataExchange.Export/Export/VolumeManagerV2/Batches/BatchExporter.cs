@@ -18,7 +18,6 @@
 		private readonly IMessenger _messenger;
 		private readonly IImageLoadFile _imageLoadFile;
 		private readonly ILoadFile _loadFile;
-		private readonly ILongTextEncodingConverterFactory _longTextEncodingConverterFactory;
 
 		public BatchExporter(IDownloader downloader, IImagesRollupManager imagesRollupManager,
 			IMessenger messenger, IImageLoadFile imageLoadFile, ILoadFile loadFile, ILongTextEncodingConverterFactory longTextEncodingConverterFactory)
@@ -28,54 +27,40 @@
 			_messenger = messenger;
 			_imageLoadFile = imageLoadFile;
 			_loadFile = loadFile;
-			_longTextEncodingConverterFactory = longTextEncodingConverterFactory;
 		}
 
 		public void Export(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
-			using (var fileDownloadSubscriber = this.RegisterDownloadEventSubscriber(cancellationToken))
+			this._downloader.DownloadFilesForArtifacts(cancellationToken);
+
+			_messenger.FilesDownloadCompleted();
+
+			if (cancellationToken.IsCancellationRequested)
 			{
-				this._downloader.DownloadFilesForArtifacts(cancellationToken);
-
-				fileDownloadSubscriber?.WaitForConversionCompletion().ConfigureAwait(false).GetAwaiter().GetResult();
-
-				_messenger.FilesDownloadCompleted();
-
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return;
-				}
-
-				_messenger.StartingRollupImages();
-
-				_imagesRollupManager.RollupImagesForArtifacts(artifacts, cancellationToken);
-
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return;
-				}
-
-				_messenger.CreatingImageLoadFileMetadata();
-
-				_imageLoadFile.Create(artifacts, cancellationToken);
-
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return;
-				}
-
-				_messenger.CreatingLoadFileMetadata();
-
-				_loadFile.Create(artifacts, cancellationToken);
+				return;
 			}
-		}
 
-		private IFileDownloadSubscriber RegisterDownloadEventSubscriber(CancellationToken token)
-		{
-			var fileDownloadSubscriber = this._longTextEncodingConverterFactory.Create(token);
+			_messenger.StartingRollupImages();
 
-			this._downloader.RegisterLongTextFileSubscriber(fileDownloadSubscriber);
-			return fileDownloadSubscriber;
+			_imagesRollupManager.RollupImagesForArtifacts(artifacts, cancellationToken);
+
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return;
+			}
+
+			_messenger.CreatingImageLoadFileMetadata();
+
+			_imageLoadFile.Create(artifacts, cancellationToken);
+
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return;
+			}
+
+			_messenger.CreatingLoadFileMetadata();
+
+			_loadFile.Create(artifacts, cancellationToken);
 		}
 	}
 }

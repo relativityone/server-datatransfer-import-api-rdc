@@ -62,9 +62,6 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._imagesRollupManager.Verify(x => x.RollupImagesForArtifacts(artifacts, CancellationToken.None), Times.Once);
 			this._imageLoadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
 			this._loadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
-			this._downloader.Verify(x => x.RegisterLongTextFileSubscriber(fileDownloadSubscriber.Object));
-
-			fileDownloadSubscriber.Verify(x => x.WaitForConversionCompletion(), Times.Once);
 		}
 	}
 }
