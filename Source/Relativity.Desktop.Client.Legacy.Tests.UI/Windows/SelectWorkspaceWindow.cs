@@ -15,7 +15,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		{
 			okButton = FindButtonWithAutomationId("OKButton");
 			searchTextBox = FindEditWithAutomationId("SearchQuery");
-			workspaceList = new ListUIElement(FindListWithAutomationId(WorkspaceListAutomationId));
+			workspaceList = new ListUIElement(WaitForListWithAutomationId(WorkspaceListAutomationId));
 		}
 
 		public RelativityDesktopClientWindow ChooseWorkspace(string workspaceName)

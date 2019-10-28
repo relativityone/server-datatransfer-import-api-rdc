@@ -129,6 +129,11 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			return () => Element.FindChildWithAutomationId(ElementType.List, automationId);
 		}
 
+		protected Func<AppiumWebElement> WaitForListWithAutomationId(string automationId)
+		{
+			return () => WaitForChild(x => x.FindChildrenWithAutomationId(ElementType.List, automationId));
+		}
+
 		protected Func<AppiumWebElement> WaitForWindow(string name)
 		{
 			return () => WaitForChild(x => x.FindChildren(ElementType.Window, name));

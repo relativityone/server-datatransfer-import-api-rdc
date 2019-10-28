@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using NUnit.Framework;
 using OpenQA.Selenium.Appium.Windows;
-using OpenQA.Selenium.Support.PageObjects;
+using Relativity.DataExchange.TestFramework;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Windows;
@@ -22,13 +22,14 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		private readonly string kweFile = GetTestFilePath(@"1\Documents_export.kwe");
 		private WinAppDriverRunner driverRunner;
 		private RdcWindowsManager rdcWindowsManager;
-
-		[FindsBy(How = How.XPath, Using = "ABX")]
 		private WindowsDriver<WindowsElement> session;
+		private IntegrationTestParameters testParameters;
 
 		[SetUp]
 		public void SetUp()
 		{
+			CreateWorkspace();
+
 			var sessionFactory = new WindowsDriverSessionFactory(new Uri(WindowsApplicationDriverUrl));
 			session = sessionFactory.CreateExeAppSession(appId);
 			rdcWindowsManager = new RdcWindowsManager(new WindowsManager(session));
@@ -41,6 +42,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			session.Close();
 			session.Quit();
 			session = null;
+
+			RemoveWorkspace();
 		}
 
 		[OneTimeSetUp]
@@ -63,7 +66,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			var loginWindow = rdcWindowsManager.SwitchToLoginWindow();
 			var workspaceSelectWindow = loginWindow.Login(Login, Password);
 
-			var rdcWindow = workspaceSelectWindow.ChooseWorkspace("Test1");
+			var rdcWindow = workspaceSelectWindow.ChooseWorkspace(testParameters.WorkspaceName);
 			rdcWindow.SelectRootFolder();
 
 			var importWindow = rdcWindow.ImportDocumentLoadFile();
@@ -78,6 +81,20 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			var errors = progressWindow.GetErrorsText();
 
 			Assert.IsTrue(string.IsNullOrEmpty(errors), $"Export failed with errors: {errors}");
+		}
+
+		private void CreateWorkspace()
+		{
+			testParameters = IntegrationTestHelper.Create();
+		}
+
+		private void RemoveWorkspace()
+		{
+			if (testParameters != null)
+			{
+				IntegrationTestHelper.Destroy(testParameters);
+				testParameters = null;
+			}
 		}
 
 		private static string GetRdcExePath()
