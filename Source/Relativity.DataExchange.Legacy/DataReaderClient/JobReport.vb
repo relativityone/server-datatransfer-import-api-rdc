@@ -23,7 +23,7 @@ Public Class JobReport
 	Private _endTime As DateTime
 
 	''' <summary>
-	''' Import start time.;
+	''' Import start time.
 	''' </summary>
 	Public Property StartTime As DateTime
 		Get

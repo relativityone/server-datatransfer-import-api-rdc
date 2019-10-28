@@ -1012,8 +1012,8 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		''' <summary>
-		''' Prompts the user to Allow or Deny the untrusted connection.
-		''' </summary>;
+		''' Prompts the user to Allow or Deny the untrusted connection. 
+		''' </summary>
 		''' <remarks></remarks>
 		Public Sub CertificateCheckPrompt()
 			CursorWait()
