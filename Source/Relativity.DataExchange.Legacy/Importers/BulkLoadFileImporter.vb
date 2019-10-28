@@ -744,8 +744,11 @@ Namespace kCura.WinEDDS
 					DestroyTapiBridges()
 					CleanupTempTables()
 
-					' Deletes all temp load files too.
 					If Not Me.OutputFileWriter Is Nothing Then
+						Dim numberOfNotDeletedFiles As Integer = Me.OutputFileWriter.TryCloseAndDeleteAllTempFiles()
+						If numberOfNotDeletedFiles > 0
+							WriteStatusLine(EventType2.Warning, $"Process was not able to delete {numberOfNotDeletedFiles} temporary file(s).", lineNumber := 0)
+						End If
 						Me.OutputFileWriter.Dispose()
 						Me.OutputFileWriter = Nothing
 					End If
@@ -1447,7 +1450,7 @@ Namespace kCura.WinEDDS
 
 		Protected Sub OpenFileWriters()
 			If Me.OutputFileWriter Is Nothing Then
-				Me.OutputFileWriter = New OutputFileWriter(Me.FileSystem)
+				Me.OutputFileWriter = New OutputFileWriter(Me.Logger, Me.FileSystem)
 			End If
 
 			Me.OutputFileWriter.Open()
