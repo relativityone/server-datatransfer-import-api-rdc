@@ -23,6 +23,11 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			return SwitchToWindow(WindowNames.RelativityLogin, x => new LoginWindow(this, x));
 		}
 
+		public UntrustedCertificateWindow SwitchToUntrustedCertificateWindow()
+		{
+			return SwitchToWindow(WindowNames.UntrustedCertificate, x => new UntrustedCertificateWindow(this, x));
+		}
+
 		public SelectWorkspaceWindow SwitchToSelectWorkspaceWindow()
 		{
 			return SwitchToWindow(WindowNames.SelectWorkspace, x => new SelectWorkspaceWindow(this, x));
@@ -39,15 +44,31 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			return SwitchToWindow(WindowNames.ImportDocumentLoadFile, x => new ImportDocumentLoadFileWindow(this, x));
 		}
 
-		public ImportLoadFileProgressWindow SwitchToImportLoadFileProgressWindow()
+		public ProgressWindow SwitchToImportLoadFileProgressWindow()
 		{
-			return SwitchToWindow(WindowNames.ImportLoadFileProgress, x => new ImportLoadFileProgressWindow(this, x));
+			return SwitchToProgressWindow(WindowNames.ImportLoadFileProgress);
+		}
+
+		public ProgressWindow SwitchToExportFoldersAndSubfoldersProgress()
+		{
+			return SwitchToProgressWindow(WindowNames.ExportFoldersAndSubfoldersProgress);
+		}
+
+		public ExportFolderAndSubfoldersWindow SwitchToExportFolderAndSubfoldersWindow()
+		{
+			return SwitchToWindow(WindowNames.ExportFolderAndSubfolders,
+				x => new ExportFolderAndSubfoldersWindow(this, x));
 		}
 
 		public AppiumWebElement GetRdcConfirmationDialog()
 		{
 			return manager.GetWindow(WindowNames.RelativityDesktopClient, x => x.Handle != rdcWindow.Handle)
 				.Element;
+		}
+
+		private ProgressWindow SwitchToProgressWindow(string title)
+		{
+			return SwitchToWindow(title, x => new ProgressWindow(this, x));
 		}
 
 		private RelativityDesktopClientWindow CreateRelativityDesktopClientWindow()

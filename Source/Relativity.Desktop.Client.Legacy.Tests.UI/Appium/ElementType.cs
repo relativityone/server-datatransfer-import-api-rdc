@@ -27,5 +27,11 @@
 		public const string Tab = "Tab";
 
 		public const string TitleBar = "TitleBar";
+
+		public const string Group = "Group";
+
+		public const string CheckBox = "CheckBox";
+
+		public const string Pane = "Pane";
 	}
 }

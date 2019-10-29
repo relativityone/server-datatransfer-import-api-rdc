@@ -4,19 +4,14 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
 	internal class ImportDocumentLoadFileWindow : RdcWindowBase
 	{
-		private readonly MenuBarUIElement menuBar;
+		private readonly MenuItemUIElement menuBar;
 		private readonly OpenSavedFieldMapDialog openSavedFieldMapDialog;
 
 		public ImportDocumentLoadFileWindow(RdcWindowsManager windowsManager, WindowDetails window)
 			: base(windowsManager, window)
 		{
-			menuBar = new MenuBarUIElement(FindMenuBar("Application"));
+			menuBar = new MenuItemUIElement(FindMenuBar("Application"));
 			openSavedFieldMapDialog = new OpenSavedFieldMapDialog(WaitForWindow("Open Saved Field Map"));
-		}
-
-		public void LoadImportSettings()
-		{
-			menuBar.ClickMenuItem("File").ClickMenuItem("Load Import Settings (kwe)\tCtrl+O");
 		}
 
 		public void ClickImportFileMenuItem()
@@ -26,6 +21,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public void LoadKweFile(string kweFile, string datFile)
 		{
+			menuBar.ClickMenuItem("File").ClickMenuItem("Load Import Settings (kwe)\tCtrl+O");
 			openSavedFieldMapDialog.LoadKweFile(kweFile, datFile);
 		}
 	}

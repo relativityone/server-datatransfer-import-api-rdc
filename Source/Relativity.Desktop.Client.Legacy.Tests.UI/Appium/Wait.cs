@@ -9,7 +9,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		public static void For(Func<bool> condition)
 		{
-			SpinWait.SpinUntil(condition, GeneralConditionTimeout);
+			For(condition, GeneralConditionTimeout);
 		}
 
 		public static void For(Func<bool> condition, TimeSpan timeout)

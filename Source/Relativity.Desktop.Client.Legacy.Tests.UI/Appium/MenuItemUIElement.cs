@@ -3,16 +3,9 @@ using OpenQA.Selenium.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
-	public class MenuBarUIElement : MenuItemUIElement
-	{
-		public MenuBarUIElement(Func<AppiumWebElement> create) : base(create)
-		{
-		}
-	}
-
 	public class MenuItemUIElement : UIElement
 	{
-		protected MenuItemUIElement(Func<AppiumWebElement> create) : base(create)
+		public MenuItemUIElement(Func<AppiumWebElement> create) : base(create)
 		{
 		}
 

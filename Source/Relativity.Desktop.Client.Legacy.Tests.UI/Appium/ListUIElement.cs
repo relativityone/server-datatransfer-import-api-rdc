@@ -29,5 +29,16 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 		{
 			return Element.FindElementByAccessibilityId($"ListViewItem-{index}");
 		}
+
+		public void SelectListItem(string name)
+		{
+			var item = FindListItemByName(name);
+			item.Click();
+		}
+
+		private AppiumWebElement FindListItemByName(string name)
+		{
+			return Element.FindChild(ElementType.ListItem, name);
+		}
 	}
 }

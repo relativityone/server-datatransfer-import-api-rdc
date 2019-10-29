@@ -76,7 +76,12 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		protected UIElement FindEdit(string name)
 		{
-			return Create(() => Element.FindEdit(name));
+			return Create(() => Element.FindChild(ElementType.Edit, name));
+		}
+
+		protected Func<AppiumWebElement> FindEdit()
+		{
+			return () => Element.FindChild(ElementType.Edit);
 		}
 
 		public UIElement FindEditWithAutomationId(string automationId)
@@ -84,9 +89,19 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			return Create(() => Element.FindEditWithAutomationId(automationId));
 		}
 
+		protected Func<AppiumWebElement> FindEditWithAutomationId2(string automationId)
+		{
+			return () => Element.FindEditWithAutomationId(automationId);
+		}
+
 		protected UIElement FindButton(string name)
 		{
 			return Create(() => Element.FindButton(name));
+		}
+
+		protected UIElement FindButton()
+		{
+			return Create(() => Element.FindChild(ElementType.Button));
 		}
 
 		public UIElement FindButtonWithAutomationId(string automationId)
@@ -99,9 +114,29 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			return Create(() => Element.FindButtonWithClass(name, className));
 		}
 
+		public Func<AppiumWebElement> FindCheckBoxWithAutomationId(string automationId)
+		{
+			return () => Element.FindChildWithAutomationId(ElementType.CheckBox, automationId);
+		}
+
+		protected UIElement FindText()
+		{
+			return Create(() => Element.FindChild(ElementType.Text));
+		}
+
 		protected UIElement FindTextWithAutomationId(string automationId)
 		{
 			return Create(() => Element.FindChildWithAutomationId(ElementType.Text, automationId));
+		}
+
+		public Func<AppiumWebElement> FindComboBoxWithAutomationId(string automationId)
+		{
+			return () => Element.FindChildWithAutomationId(ElementType.ComboBox, automationId);
+		}
+
+		public Func<AppiumWebElement> FindComboBox()
+		{
+			return () => Element.FindChild(ElementType.ComboBox);
 		}
 
 		protected Func<AppiumWebElement> FindTabWithAutomationId(string automationId)
@@ -109,9 +144,19 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			return () => Element.FindChildWithAutomationId(ElementType.Tab, automationId);
 		}
 
+		protected UIElement FindPaneWithAutomationId(string automationId)
+		{
+			return Create(() => Element.FindChildWithAutomationId(ElementType.Pane, automationId));
+		}
+
 		protected Func<AppiumWebElement> FindMenuBar(string name)
 		{
 			return () => Element.FindChild(ElementType.MenuBar, name);
+		}
+
+		public UIElement FindGroupWithAutomationId(string automationId)
+		{
+			return Create(() => Element.FindChildWithAutomationId(ElementType.Group, automationId));
 		}
 
 		public UIElement FindTree()
@@ -124,9 +169,14 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			return Create(() => Element.FindTreeWithAutomationId(automationId));
 		}
 
-		protected Func<AppiumWebElement> FindListWithAutomationId(string automationId)
+		public Func<AppiumWebElement> FindListWithAutomationId(string automationId)
 		{
 			return () => Element.FindChildWithAutomationId(ElementType.List, automationId);
+		}
+
+		public Func<AppiumWebElement> FindList()
+		{
+			return () => Element.FindChild(ElementType.List);
 		}
 
 		protected Func<AppiumWebElement> WaitForListWithAutomationId(string automationId)
@@ -167,7 +217,11 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 				return children.Any();
 			}, timeout);
 
-			return children.FirstOrDefault();
+			var child = children.FirstOrDefault();
+
+			if (child != null) return child;
+
+			throw new Exception($"Child cannot be found in given timeout: {timeout}");
 		}
 	}
 }

@@ -4,13 +4,13 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
 	internal class RelativityDesktopClientWindow : RdcWindowBase
 	{
-		private readonly MenuBarUIElement menuBar;
+		private readonly MenuItemUIElement menuBar;
 		private readonly UIElement treeView;
 
 		public RelativityDesktopClientWindow(RdcWindowsManager windowsManager, WindowDetails window)
 			: base(windowsManager, window)
 		{
-			menuBar = new MenuBarUIElement(FindMenuBar("Application"));
+			menuBar = new MenuItemUIElement(FindMenuBar("Application"));
 			treeView = FindTreeWithAutomationId("_treeView");
 		}
 
@@ -25,6 +25,13 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			menuBar.ClickMenuItem("Tools").ClickMenuItem("Import")
 				.ClickMenuItem("Document Load File...");
 			return WindowsManager.SwitchToImportDocumentLoadFileWindow();
+		}
+
+		public ExportFolderAndSubfoldersWindow ExportFolderAndSubfolders()
+		{
+			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export")
+				.ClickMenuItem("Folder and Subfolders...");
+			return WindowsManager.SwitchToExportFolderAndSubfoldersWindow();
 		}
 	}
 }
