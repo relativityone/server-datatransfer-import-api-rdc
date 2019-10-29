@@ -40,7 +40,7 @@ Namespace Monitoring.Sinks
 
         Private Function GenerateSumMetricAuthenticationType(metric As MetricAuthenticationType) As List(Of MetricRef)
 	        Return New List(Of MetricRef) From {
-		        New MetricRef($"{TelemetryConstants.SumBucketPrefix.AUTHENTICATION}.{metric.AuthenticationMethod}", Guid.Empty, metric.CorrelationID, MetricTypes.Counter, 1)
+		        New MetricRef($"{TelemetryConstants.SumBucketPrefix.AUTHENTICATION}.{metric.SystemType}.{metric.AuthenticationMethod}", Guid.Empty, metric.CorrelationID, MetricTypes.Counter, 1)
 		        }
         End Function
 
