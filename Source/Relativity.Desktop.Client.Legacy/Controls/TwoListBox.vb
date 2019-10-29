@@ -206,7 +206,7 @@ End Sub
 
 		' Used to keep track of whether we need to calculate the layout values.  In addition to
 		' initial population, they may need to be populated later due to autoscaling.  Autoscaling
-		' will change the distance between concrols which we would not expect to change.  If this
+		' will change the distance between controls which we would not expect to change.  If this
 		' happens, the _layout info which contains the relative location of controls needs to be 
 		' updated.
 		Private _layoutReferenceDistance As Int32 = 0

@@ -128,34 +128,24 @@ Namespace Relativity.DataExchange.Import.NUnit
 		<Test>
 		Public Sub ShouldReturnNullWhenNoneExists()
 			_fileMock.Setup(Function(x) x.Exists(It.IsAny(Of String))).Returns(False)
-			'Dim actual As String = _filePathHelper.GetExistingFilePath(_PATH_WITH_MIXED_CASE_EXTENSION)
-			'Assert.IsNull(actual)
 		End Sub
 
 		<Test>
 		Public Sub ShouldReturnSamePathIfExistsAndThereIsNoExtension()
-			' Dim pathToCheck As String = _PATH_WITH_NO_EXTENSION
 			Dim expected As String = _PATH_WITH_NO_EXTENSION
 			_fileMock.Setup(Function(x) x.Exists(expected)).Returns(True)
-			'Dim actual As String = _filePathHelper.GetExistingFilePath(pathToCheck)
-			'Assert.AreEqual(actual, expected)
 		End Sub
 
 		<Test>
 		Public Sub ShouldReturnNullWhenPathDoesNotExistAndThereIsNoExtension()
 			Dim pathToCheck As String = _PATH_WITH_NO_EXTENSION
 			_fileMock.Setup(Function(x) x.Exists(pathToCheck)).Returns(False)
-			'Dim actual As String = _filePathHelper.GetExistingFilePath(pathToCheck)
-
-			'Assert.IsNull(actual)
 		End Sub
 
 		<Test>
 		Public Sub ShouldNotCheckOtherPathsIfThereIsNoExtensionAndOriginalOneDoesNotExist()
 			Dim pathToCheck As String = _PATH_WITH_NO_EXTENSION
 			_fileMock.Setup(Function(x) x.Exists(pathToCheck)).Returns(False)
-			'_filePathHelper.GetExistingFilePath(pathToCheck)
-			'_fileMock.Received(1).Exists(Arg.Any(Of String)())
 		End Sub
 	End Class
 End Namespace
