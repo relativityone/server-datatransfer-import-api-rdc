@@ -53,8 +53,8 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void GoldWorkflow()
 		{
 			Native native = ModelFactory.GetNative(this._nativeRepository);
-			ModelFactory.GetImage(native.Artifact.ArtifactID, this._imageRepository);
-			ModelFactory.GetImage(native.Artifact.ArtifactID, this._imageRepository);
+			ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID);
+			ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID);
 			ModelFactory.GetLongText(native.Artifact.ArtifactID, this._longTextRepository);
 
 			// ACT
