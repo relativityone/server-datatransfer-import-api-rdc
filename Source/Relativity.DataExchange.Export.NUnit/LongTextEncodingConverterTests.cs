@@ -15,6 +15,8 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using global::NUnit.Framework;
 
+	using kCura.WinEDDS;
+
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
@@ -33,13 +35,13 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		private LongTextRepository _longTextRepository;
 
+		private Mock<IStatus> _status;
+
 		private Mock<IFileEncodingConverter> _fileEncodingConverter;
 
 		private Mock<IFileTransferProducer> _fileTransferProducerMock;
 
 		private Mock<ILog> _logger;
-
-		private Mock<IErrorFileWriter> _fileErrorWriter;
 
 		private Subject<string> _fileDownloadSubject;
 
@@ -51,12 +53,13 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._longTextRepository = new LongTextRepository(null, this._logger.Object);
 			this._fileEncodingConverter = new Mock<IFileEncodingConverter>();
 			this._fileTransferProducerMock = new Mock<IFileTransferProducer>();
-			this._fileErrorWriter = new Mock<IErrorFileWriter>();
+
+			this._status = new Mock<IStatus>();
 
 			this._instance = new LongTextEncodingConverter2(
 				this._longTextRepository,
 				this._fileEncodingConverter.Object,
-				this._fileErrorWriter.Object,
+				this._status.Object,
 				this._logger.Object);
 
 			this._fileDownloadSubject = new Subject<string>();
