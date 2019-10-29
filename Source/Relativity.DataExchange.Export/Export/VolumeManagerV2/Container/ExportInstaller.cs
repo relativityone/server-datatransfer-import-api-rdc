@@ -154,7 +154,7 @@
 		{
 			container.Register(Component.For<IStateful, IFileProcessingStatistics, FilesStatistics>().ImplementedBy<FilesStatistics>());
 			container.Register(Component.For<IStateful, IMetadataProcessingStatistics, MetadataStatistics>().ImplementedBy<MetadataStatistics>());
-			container.Register(Component.For<IStateful, IDownloadProgress, IDownloadProgressManager, DownloadProgressManager>().ImplementedBy<DownloadProgressManager>());
+			container.Register(Component.For<IDownloadProgress, IDownloadProgressManager, DownloadProgressManager>().ImplementedBy<DownloadProgressManager>());
 		}
 	}
 }

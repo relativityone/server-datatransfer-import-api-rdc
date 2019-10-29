@@ -3,7 +3,7 @@
 	public interface IDownloadProgressManager
 	{
 		void MarkArtifactAsError(int artifactId, string message);
-		void MarkLongTextAsCompleted(string id, int lineNumber);
-		void MarkFileAsCompleted(string id, int lineNumber);
+		void MarkLongTextAsCompleted(string targetFile, int lineNumber, bool transferResult);
+		void MarkFileAsCompleted(string targetFile, int lineNumber, bool transferResult);
 	}
 }

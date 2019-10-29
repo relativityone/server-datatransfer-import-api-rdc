@@ -7,6 +7,7 @@
 namespace Relativity.DataExchange.Export.NUnit
 {
 	using System;
+	using System.IO;
 	using System.Linq;
 	using System.Threading;
 
@@ -65,12 +66,12 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT
 			this.TapiBridge.Raise(
 				x => x.TapiProgress += null,
-				new TapiProgressEventArgs(firstFile, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+				new TapiProgressEventArgs(firstFile, Path.Combine(@"C:\temp", firstFile), true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
 			// subscriber should not be notified on failed transfer
 			this.TapiBridge.Raise(
 				x => x.TapiProgress += null,
-				new TapiProgressEventArgs(secondFile, true, false, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+				new TapiProgressEventArgs(secondFile, Path.Combine(@"C:\temp", secondFile), true, false, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
 			// ASSERT
 

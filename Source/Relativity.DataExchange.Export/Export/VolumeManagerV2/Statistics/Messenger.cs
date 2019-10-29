@@ -76,14 +76,13 @@
 		public void DownloadingBatch()
 		{
 			_logger.LogVerbose("Downloading files for batch.");
-			_downloadProgress.UpdateCompletedCount();
 			_status.WriteStatusLine(EventType2.Status, "Downloading files for batch.", true);
 		}
 
 		public void FilesDownloadCompleted()
 		{
 			_logger.LogVerbose("Documents for batch downloaded.");
-			_downloadProgress.UpdateCompletedCount();
+			_downloadProgress.FinalizeBatchProcessedCount();
 			_status.WriteStatusLine(EventType2.Progress, "Documents for batch downloaded.", true);
 		}
 
