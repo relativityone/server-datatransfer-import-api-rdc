@@ -14,7 +14,6 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Moq;
 
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
@@ -83,7 +82,6 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		[Ignore("Need to work on it")]
 		public void ItShouldAlwaysStopConverterAfterDownloadFinished()
 		{
 			// ARRANGE
@@ -101,7 +99,6 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		[Ignore("Need to work on it")]
 		public void ItShouldNotWaitForTapiTransfer()
 		{
 			// ARRANGE

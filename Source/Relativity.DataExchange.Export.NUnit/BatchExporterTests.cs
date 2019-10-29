@@ -32,7 +32,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		private Mock<IImageLoadFile> _imageLoadFile;
 		private Mock<ILoadFile> _loadFile;
 
-		private Mock<ILongTextEncodingConverterFactory> _longTextEncodingConverterFactory;
+		private Mock<IFileDownloadSubscriber> _fileDownloadSubscriber;
 
 		[SetUp]
 		public void SetUp()
@@ -41,18 +41,15 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._imagesRollupManager = new Mock<IImagesRollupManager>();
 			this._imageLoadFile = new Mock<IImageLoadFile>();
 			this._loadFile = new Mock<ILoadFile>();
-			this._longTextEncodingConverterFactory = new Mock<ILongTextEncodingConverterFactory>();
-			this._instance = new BatchExporter(this._downloader.Object, this._imagesRollupManager.Object, new Mock<IMessenger>().Object, this._imageLoadFile.Object, this._loadFile.Object, this._longTextEncodingConverterFactory.Object);
+			this._fileDownloadSubscriber = new Mock<IFileDownloadSubscriber>();
+			this._instance = new BatchExporter(
+				this._downloader.Object, this._imagesRollupManager.Object, new Mock<IMessenger>().Object, this._imageLoadFile.Object, this._loadFile.Object, this._fileDownloadSubscriber.Object);
 		}
 
 		[Test]
 		public void GoldWorkflow()
 		{
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
-
-			Mock<IFileDownloadSubscriber> fileDownloadSubscriber = new Mock<IFileDownloadSubscriber>();
-
-			_longTextEncodingConverterFactory.Setup(item => item.Create(It.IsAny<CancellationToken>())).Returns(fileDownloadSubscriber.Object);
 
 			// ACT
 			this._instance.Export(artifacts, CancellationToken.None);
@@ -62,6 +59,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._imagesRollupManager.Verify(x => x.RollupImagesForArtifacts(artifacts, CancellationToken.None), Times.Once);
 			this._imageLoadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
 			this._loadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
+			this._fileDownloadSubscriber.Verify(x => x.WaitForConversionCompletion(), Times.Once);
 		}
 	}
 }

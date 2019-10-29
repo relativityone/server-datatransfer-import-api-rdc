@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Concurrent;
+	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -13,7 +14,8 @@
 
 	public class LongTextEncodingConverter2 : IFileDownloadSubscriber
 	{
-		private readonly BlockingCollection<string> _longTextFilesToConvert;
+		private List<Task> _conversionTasks = new List<Task>();
+
 		private readonly LongTextRepository _longTextRepository;
 		private readonly IFileEncodingConverter _fileEncodingConverter;
 		private readonly ILog _logger;
@@ -44,19 +46,17 @@
 			this._fileDownloadedSubscriber = fileTransferProducer.FileDownloaded.Subscribe(this.AddForConversion);
 		}
 
-		private void CompleteConversion(bool anyFileToConvert)
+		public async Task WaitForConversionCompletion()
 		{
-			_logger.LogVerbose("Preparing to mark the long text encoding conversion queue complete...");
-			_logger.LogVerbose("Any files to convert: {anyFileToConvert} ", anyFileToConvert);
-			_longTextFilesToConvert.CompleteAdding();
-			_logger.LogVerbose("Successfully marked the long text encoding conversion queue complete.");
+			await Task.WhenAll(_conversionTasks);
+			_conversionTasks.Clear();
 		}
 
 		private void AddForConversion(string fileName)
 		{
 			try
 			{
-				Task.Run(() => ConvertLongText(fileName), this._cancellationToken);
+				_conversionTasks.Add(Task.Run(() => ConvertLongText(fileName), this._cancellationToken));
 			}
 			catch (OperationCanceledException ex)
 			{
@@ -94,10 +94,6 @@
 						"Long text encoding conversion NOT required for file {LongTextFileName}.",
 						longTextFileName);
 				}
-			}
-			catch (OperationCanceledException ex)
-			{
-				this._logger.LogInformation(ex, "The cancellation operation has been requested by the user");
 			}
 			catch (Exception ex)
 			{

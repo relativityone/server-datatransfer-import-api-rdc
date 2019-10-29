@@ -65,6 +65,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ASSERT
 			this._physicalFilesDownloader.Verify(x => x.DownloadFilesAsync(It.Is<List<ExportRequest>>(list => list.Count == 3), CancellationToken.None));
 			this._longTextDownloader.Verify(x => x.DownloadAsync(It.Is<List<LongTextExportRequest>>(list => list.Count == 1), CancellationToken.None), Times.Once);
+			this._longTextDownloader.Verify(x => x.RegisterSubscriber(this._fileDownloadSubscriber.Object));
 		}
 
 		[Test]

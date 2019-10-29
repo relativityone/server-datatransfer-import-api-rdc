@@ -19,14 +19,17 @@
 		private readonly IImageLoadFile _imageLoadFile;
 		private readonly ILoadFile _loadFile;
 
+		private readonly IFileDownloadSubscriber _fileDownloadSubscriber;
+
 		public BatchExporter(IDownloader downloader, IImagesRollupManager imagesRollupManager,
-			IMessenger messenger, IImageLoadFile imageLoadFile, ILoadFile loadFile, ILongTextEncodingConverterFactory longTextEncodingConverterFactory)
+			IMessenger messenger, IImageLoadFile imageLoadFile, ILoadFile loadFile, IFileDownloadSubscriber fileDownloadSubscriber)
 		{
 			_downloader = downloader;
 			_imagesRollupManager = imagesRollupManager;
 			_messenger = messenger;
 			_imageLoadFile = imageLoadFile;
 			_loadFile = loadFile;
+			_fileDownloadSubscriber = fileDownloadSubscriber;
 		}
 
 		public void Export(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
@@ -34,6 +37,8 @@
 			this._downloader.DownloadFilesForArtifacts(cancellationToken);
 
 			_messenger.FilesDownloadCompleted();
+
+			_fileDownloadSubscriber.WaitForConversionCompletion().ConfigureAwait(false).GetAwaiter().GetResult();
 
 			if (cancellationToken.IsCancellationRequested)
 			{
