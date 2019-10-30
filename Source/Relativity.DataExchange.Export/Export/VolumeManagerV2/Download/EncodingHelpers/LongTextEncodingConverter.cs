@@ -28,31 +28,31 @@
 		public LongTextEncodingConverter(
 			LongTextRepository longTextRepository,
 			IFileEncodingConverter fileEncodingConverter,
-			IStatus staus,
+			IStatus status,
 			ILog logger)
 		{
-			_longTextRepository = longTextRepository.ThrowIfNull(nameof(longTextRepository));
-			_fileEncodingConverter = fileEncodingConverter.ThrowIfNull(nameof(fileEncodingConverter));
-			_logger = logger.ThrowIfNull(nameof(logger));
-			_status = staus.ThrowIfNull(nameof(staus));
+			this._longTextRepository = longTextRepository.ThrowIfNull(nameof(longTextRepository));
+			this._fileEncodingConverter = fileEncodingConverter.ThrowIfNull(nameof(fileEncodingConverter));
+			this._logger = logger.ThrowIfNull(nameof(logger));
+			this._status = status.ThrowIfNull(nameof(status));
 		}
 
 		public void SubscribeForDownloadEvents(IFileTransferProducer fileTransferProducer, CancellationToken token)
 		{
 			fileTransferProducer.ThrowIfNull(nameof(fileTransferProducer));
 
-			_cancellationToken = token;
+			this._cancellationToken = token;
 
 			this._fileDownloadedSubscriber = fileTransferProducer.FileDownloaded.Subscribe(this.AddForConversion);
 		}
 
 		public async Task WaitForConversionCompletion()
 		{
-			_logger.LogVerbose("Waiting on large text conversion tasks to complete...");
-			await Task.WhenAll(_conversionTasks).ConfigureAwait(false);
-			_logger.LogVerbose("Clearing conversion tasks list...");
+			this._logger.LogVerbose("Waiting on large text conversion tasks to complete...");
+			await Task.WhenAll(this._conversionTasks).ConfigureAwait(false);
+			this._logger.LogVerbose("Clearing conversion tasks list...");
 
-			CleanupTaskList(_conversionTasks);
+			CleanupTaskList(this._conversionTasks);
 		}
 
 		private void CleanupTaskList(ConcurrentBag<Task> concurrentBag)
@@ -68,7 +68,18 @@
 		{
 			try
 			{
-				_conversionTasks.Add(Task.Run(() => ConvertLongText(longTextFileName), this._cancellationToken));
+				this._logger.LogVerbose(
+					"Preparing to check whether the '{LongTextFileName}' file requires an encoding conversion...", longTextFileName);
+				LongText longText = this.GetLongTextForFile(longTextFileName);
+				if (this.ConversionRequired(longText))
+				{
+					this._logger.LogVerbose("Long text encoding conversion required for file {longTextFileName}.", longTextFileName);
+					this._conversionTasks.Add(Task.Run(() => ConvertLongText(longText), this._cancellationToken));
+				}
+				else
+				{
+					this._logger.LogVerbose("Long text encoding conversion NOT required for file {longTextFileName}.", longTextFileName);
+				}
 			}
 			catch (OperationCanceledException ex)
 			{
@@ -76,36 +87,21 @@
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Encoding conversion task creation issue for {longTextFileName} file", longTextFileName);
-				_status.WriteError($"Encoding conversion task creation issue for {longTextFileName} file");
+				this._logger.LogError(ex, "Encoding conversion task creation issue for {longTextFileName} file", longTextFileName);
+				this._status.WriteError($"Encoding conversion task creation issue for {longTextFileName} file");
 			}
 		}
 
-		private void ConvertLongText(string longTextFileName)
+		private void ConvertLongText(LongText longText)
 		{
 			try
 			{
-				this._logger.LogVerbose(
-					"Preparing to check whether the '{LongTextFileName}' file requires an encoding conversion...", longTextFileName);
-				LongText longText = this.GetLongTextForFile(longTextFileName);
-				if (this.ConversionRequired(longText))
-				{
-					this._logger.LogVerbose(
-						"Long text encoding conversion required for file {LongTextFileName}.",
-						longTextFileName);
-					this.ConvertLongTextFile(longText);
-				}
-				else
-				{
-					this._logger.LogVerbose(
-						"Long text encoding conversion NOT required for file {LongTextFileName}.",
-						longTextFileName);
-				}
+				this.ConvertLongTextFile(longText);
 			}
 			catch (Exception ex)
 			{
-				_status.WriteError($"Encoding conversion task creation issue for {longTextFileName} file");
-				this._logger.LogError(ex, "The error happened when converting {longTextFileName} file", longTextFileName);
+				this._status.WriteError($"Encoding conversion task creation issue for {longText.Location} file");
+				this._logger.LogError(ex, "The error happened when converting {longTextFileName} file", longText.Location);
 			}
 		}
 
@@ -121,7 +117,7 @@
 				}
 			}
 
-			_logger.LogError("Failed to find the LongText file {LongTextFileName} in the repository.", longTextFileName);
+			this._logger.LogError("Failed to find the LongText file {LongTextFileName} in the repository.", longTextFileName);
 			throw new ArgumentException($"The long text file {longTextFileName} cannot be converted because it doesn't exist within the export request.");
 		}
 
@@ -132,17 +128,17 @@
 
 		private void ConvertLongTextFile(LongText longText)
 		{
-			_logger.LogVerbose(
+			this._logger.LogVerbose(
 				"Preparing to convert LongText file {LongTextFile} from {SourceEncoding} to {DestinationEncoding}.",
 				longText.Location,
 				longText.SourceEncoding,
 				longText.DestinationEncoding);
-			_fileEncodingConverter.Convert(
+			this._fileEncodingConverter.Convert(
 				longText.Location,
 				longText.SourceEncoding,
 				longText.DestinationEncoding,
 				_cancellationToken);
-			_logger.LogVerbose(
+			this._logger.LogVerbose(
 				"Successfully converted LongText file {LongTextFile} from {SourceEncoding} to {DestinationEncoding}.",
 				longText.Location,
 				longText.SourceEncoding,
