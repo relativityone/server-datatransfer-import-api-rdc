@@ -132,7 +132,7 @@
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\SubdirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\VolumeManager.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverter2.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IFileTransferProducer.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\Downloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EmptyExportRequestBuilder.cs" />

@@ -31,7 +31,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	{
 		private CancellationTokenSource _cancellationTokenSource;
 
-		private LongTextEncodingConverter2 _instance;
+		private LongTextEncodingConverter _instance;
 
 		private LongTextRepository _longTextRepository;
 
@@ -56,7 +56,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._status = new Mock<IStatus>();
 
-			this._instance = new LongTextEncodingConverter2(
+			this._instance = new LongTextEncodingConverter(
 				this._longTextRepository,
 				this._fileEncodingConverter.Object,
 				this._status.Object,
