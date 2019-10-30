@@ -39,7 +39,7 @@ dependencies
   framework: net462
 	Newtonsoft.Json >= 6.0.8
 	Polly >= 5.3.1
-	kCura.OutsideIn.FI.Win32 >= 2019.4.0
+	kCura.OutsideIn.FI.Win32 >= 2019.4.1
 	Relativity.DataTransfer.MessageService >= 10.2.0
 	Relativity.Kepler.Client >= 1.0.1.627
 	Relativity.Logging.Interfaces >= 2018.11.8
