@@ -46,7 +46,7 @@ nuget EWSoftware.SHFB = 2019.8.24
 
 # The Relativity packages below are required by the SDK projects.
 source https://proget.kcura.corp/NuGet/NuGet
-nuget kcura.outsidein.fi.win32 = 2019.4.0
+nuget kcura.outsidein.fi.win32 = 2019.4.1
 nuget relativity.dataTransfer.messageService = 10.2.0
 nuget relativity.logging.interfaces = 2018.11.8
 nuget relativity.kepler.client = 1.0.1.627
