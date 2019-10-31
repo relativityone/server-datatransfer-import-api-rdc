@@ -70,6 +70,8 @@
     <Compile Include="Appium\WindowDetails.cs" />
     <Compile Include="ExportTests.cs" />
     <Compile Include="RdcTestBase.cs" />
+    <Compile Include="SetupAllTests.cs" />
+    <Compile Include="TestPathsProvider.cs" />
     <Compile Include="Windows\UntrustedCertificateWindow.cs" />
     <Compile Include="WinAppDriverRunner.cs" />
     <Compile Include="Appium\UIElement.cs" />

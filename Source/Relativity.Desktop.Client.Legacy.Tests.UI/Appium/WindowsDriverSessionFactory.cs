@@ -1,11 +1,10 @@
-﻿namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
+﻿using System;
+using System.IO;
+using OpenQA.Selenium.Appium.Windows;
+using OpenQA.Selenium.Remote;
+
+namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
-	using System;
-	using System.IO;
-
-	using OpenQA.Selenium.Appium.Windows;
-	using OpenQA.Selenium.Remote;
-
 	public class WindowsDriverSessionFactory
 	{
 		private readonly Uri winAppDriverAddress;
@@ -21,14 +20,21 @@
 			var appCapabilities = new DesiredCapabilities();
 			appCapabilities.SetCapability("app", file.FullName);
 			appCapabilities.SetCapability("appWorkingDir", file.Directory.FullName);
-			return new WindowsDriver<WindowsElement>(this.winAppDriverAddress, appCapabilities);
+			return CreateSession(appCapabilities);
 		}
 
 		public WindowsDriver<WindowsElement> CreateDesktopSession()
 		{
 			var appCapabilities = new DesiredCapabilities();
 			appCapabilities.SetCapability("app", "Root");
-			return new WindowsDriver<WindowsElement>(this.winAppDriverAddress, appCapabilities);
+			return CreateSession(appCapabilities);
+		}
+
+		private WindowsDriver<WindowsElement> CreateSession(DesiredCapabilities appCapabilities)
+		{
+			var session = new WindowsDriver<WindowsElement>(winAppDriverAddress, appCapabilities);
+			session.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(1.5);
+			return session;
 		}
 	}
 }

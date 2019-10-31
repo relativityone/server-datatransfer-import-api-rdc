@@ -75,18 +75,14 @@
 		private WindowDetails WaitAndGetWindow(string title, Func<WindowDetails, bool> predicate, TimeSpan timeout)
 		{
 			WindowDetails window = null;
-			StringBuilder sb = new StringBuilder();
 
-			Wait.For(
-				() =>
-					{
-						sb.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + " Checking for: " + title);
-						window = GetOrCreateWindow(title, predicate);
-						return window != null;
-					},
+			Wait.For(() =>
+				{
+					window = GetOrCreateWindow(title, predicate);
+					return window != null;
+				},
 				timeout);
 
-			File.AppendAllText(@"C:\Adrian\Temp\spin.log", sb.ToString());
 			return window;
 		}
 

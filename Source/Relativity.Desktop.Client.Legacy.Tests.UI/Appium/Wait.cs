@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Configuration;
 using System.Threading;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
 	internal static class Wait
 	{
-		private static readonly TimeSpan GeneralConditionTimeout = TimeSpan.FromSeconds(60);
+		private static readonly TimeSpan DefaultWaitTimeout =
+			TimeSpan.FromMilliseconds(
+				double.Parse(ConfigurationManager.AppSettings["DefaultWaitTimeoutInMilliseconds"]));
 
 		public static void For(Func<bool> condition)
 		{
-			For(condition, GeneralConditionTimeout);
+			For(condition, DefaultWaitTimeout);
 		}
 
 		public static void For(Func<bool> condition, TimeSpan timeout)

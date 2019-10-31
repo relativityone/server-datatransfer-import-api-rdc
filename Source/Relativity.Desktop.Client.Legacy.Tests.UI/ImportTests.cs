@@ -8,11 +8,11 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 	[TestFixture]
 	internal class ImportTests : RdcTestBase
 	{
-		private readonly string datFile = GetTestFilePath(@"1\Documents_export.dat");
-		private readonly string kweFile = GetTestFilePath(@"1\Documents_export.kwe");
+		private readonly string datFile = PathsProvider.GetTestInputFilePath(@"ImportTests\Documents_export.dat");
+		private readonly string kweFile = PathsProvider.GetTestInputFilePath(@"ImportTests\Documents_export.kwe");
 
 		[Test]
-		public void LoadFileImport()
+		public void ImportDatLoadFileUsingSavedKweSettings()
 		{
 			AllowUntrustedCertificate();
 
@@ -31,6 +31,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			progressWindow.WaitForAllRecordsToBeProcessed(TimeSpan.FromMinutes(2));
 			var errors = progressWindow.GetErrorsText();
 
+			// Assert
 			Assert.IsTrue(string.IsNullOrEmpty(errors), $"Import failed with errors: {errors}");
 		}
 
