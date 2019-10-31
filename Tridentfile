@@ -1,7 +1,5 @@
 #!groovy
 
-library 'PipelineTools@RMT-9.3.2'
-
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30']],
     parameters([
@@ -19,7 +17,6 @@ properties([
 ])
 
 // Do not modify.
-def profile = createProfile(true, false, false, false)
 def knife = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
 def sessionID = System.currentTimeMillis().toString()
 def eventHash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
