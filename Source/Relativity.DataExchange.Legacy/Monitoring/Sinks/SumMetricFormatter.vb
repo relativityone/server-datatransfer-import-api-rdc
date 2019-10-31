@@ -14,6 +14,8 @@ Namespace Monitoring.Sinks
                     Return GenerateSumMetricJobStarted(CType(metric, MetricJobStarted))
                 Case GetType(MetricJobEndReport)
                     Return GenerateSumMetricJobEndReport(CType(metric, MetricJobEndReport))
+                Case GetType(MetricAuthenticationType)
+					Return GenerateSumMetricAuthenticationType(CType(metric, MetricAuthenticationType))
                 Case Else
                     Return New List(Of MetricRef)()
             End Select
@@ -34,6 +36,12 @@ Namespace Monitoring.Sinks
                 New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.THROUGHPUT_BYTES, metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.PointInTimeDouble, metric.ThroughputBytesPerSecond),
                 New MetricRef(FormatSumBucketName(CStr(IIf(metric.JobStatus = TelemetryConstants.JobStatus.COMPLETED, TelemetryConstants.SumBucketPrefix.JOB_COMPLETED_COUNT, TelemetryConstants.SumBucketPrefix.JOB_FAILED_COUNT)), metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.Counter, 1)
                 }
+        End Function
+
+        Private Function GenerateSumMetricAuthenticationType(metric As MetricAuthenticationType) As List(Of MetricRef)
+	        Return New List(Of MetricRef) From {
+		        New MetricRef($"{TelemetryConstants.SumBucketPrefix.AUTHENTICATION}.{metric.SystemType}.{metric.AuthenticationMethod}", Guid.Empty, metric.CorrelationID, MetricTypes.Counter, 1)
+		        }
         End Function
 
         ''' <summary>
