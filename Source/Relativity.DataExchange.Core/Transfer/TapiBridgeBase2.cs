@@ -643,6 +643,13 @@ namespace Relativity.DataExchange.Transfer
 					                    ValidateSourcePaths = ValidateSourcePaths,
 				                    };
 
+			// TODO This is temporary change to confirm root cause of the REL-369130
+			// Unarmed Tapir advise us to change that value, because it was causing similar issues in ROSE before
+			// for a long-term solution, we should add that option to RDC config file and IAPI configuration
+			const int RecomendedAsperaDatagramSizeOnUvm = 1350;
+			configuration[Relativity.Transfer.Aspera.AsperaClientConfigurationKeys.DatagramSize] = RecomendedAsperaDatagramSizeOnUvm;
+
+
 			return configuration;
 		}
 
