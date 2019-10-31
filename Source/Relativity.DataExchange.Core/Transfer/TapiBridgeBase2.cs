@@ -649,7 +649,6 @@ namespace Relativity.DataExchange.Transfer
 			const int RecomendedAsperaDatagramSizeOnUvm = 1350;
 			configuration[Relativity.Transfer.Aspera.AsperaClientConfigurationKeys.DatagramSize] = RecomendedAsperaDatagramSizeOnUvm;
 
-
 			return configuration;
 		}
 
