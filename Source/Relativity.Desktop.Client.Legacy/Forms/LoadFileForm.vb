@@ -1581,10 +1581,6 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Async Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
-			'' This function is invoked when the user clicks import file in the upper menu.
-			'' Since it could be the user has ran an import before, and due to config changes in the workspace on the server, the cached case info might be out of date. That's why you want to refresh it here, so we have a fresh copy.
-			Await RefreshServerDataAsync()
-
 			If (Await PopulateLoadFileObject(True)) AndAlso (Await _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LoadFileColumns.LeftSearchableListItems))) AndAlso (Await _application.ReadyToLoad(Me.LoadFile, False)) Then
 				Await _application.ImportLoadFile(Me.LoadFile)
 			End If
