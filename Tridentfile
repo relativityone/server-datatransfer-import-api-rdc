@@ -1,7 +1,5 @@
 #!groovy
 
-library 'PipelineTools@RMT-9.3.2'
-
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30']],
     parameters([
