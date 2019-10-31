@@ -58,10 +58,7 @@
 
 				_logger.LogDebug("Subscribing '{_fileDownloadSubscriber}' for the download event", this._fileDownloadSubscriber);
 
-				if (longTextExportRequests.Any())
-				{
-					this._fileDownloadSubscriber?.SubscribeForDownloadEvents(bridge);
-				}
+				this._fileDownloadSubscriber?.SubscribeForDownloadEvents(bridge, cancellationToken);
 
 				foreach (LongTextExportRequest textExportRequest in longTextExportRequests)
 				{
@@ -100,6 +97,7 @@
 			{
 				if (bridge != null)
 				{
+					_fileDownloadSubscriber?.Dispose();
 					_longTextTapiBridgePool.Release(bridge);
 				}
 			}

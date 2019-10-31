@@ -365,7 +365,6 @@ Namespace kCura.WinEDDS
 			AddHandler _bulkLoadTapiBridge.TapiStatusMessage, AddressOf OnTapiStatusEvent
 			AddHandler _bulkLoadTapiBridge.TapiErrorMessage, AddressOf OnTapiErrorMessage
 			AddHandler _bulkLoadTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
-			AddHandler _bulkLoadTapiBridge.TapiProgress, AddressOf BulkLoadOnTapiProgress
 
 			' Dump native and bcp upload bridge
 			Me.LogInformation("Begin dumping native parameters.")
@@ -395,7 +394,6 @@ Namespace kCura.WinEDDS
 				RemoveHandler _bulkLoadTapiBridge.TapiStatusMessage, AddressOf OnTapiStatusEvent
 				RemoveHandler _bulkLoadTapiBridge.TapiErrorMessage, AddressOf OnTapiErrorMessage
 				RemoveHandler _bulkLoadTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
-				RemoveHandler _bulkLoadTapiBridge.TapiProgress, AddressOf BulkLoadOnTapiProgress
 				_bulkLoadTapiBridge.Dispose()
 				_bulkLoadTapiBridge = Nothing
 			End If
@@ -511,14 +509,6 @@ Namespace kCura.WinEDDS
 					Me.FileTapiProgressCount += 1
 					_statistics.NativeFilesTransferredCount += 1
 					WriteTapiProgressMessage($"End upload '{e.FileName}' file. ({System.DateTime.op_Subtraction(e.EndTime, e.StartTime).Milliseconds}ms)", e.LineNumber)
-				End If
-			End SyncLock
-		End Sub
-
-		Private Sub BulkLoadOnTapiProgress(ByVal sender As Object, ByVal e As TapiProgressEventArgs)
-			SyncLock _syncRoot
-				If ShouldImport AndAlso e.Successful Then
-					_statistics.MetadataFilesTransferredCount += 1
 				End If
 			End SyncLock
 		End Sub
