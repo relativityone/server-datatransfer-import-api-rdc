@@ -54,7 +54,7 @@ nuget relativity.oauth2client.interfaces = 1.0.27
 nuget relativity.telemetry.apm = 2019.1.0
 nuget relativity.telemetry.datacontracts.shared = 2019.1.0
 nuget relativity.telemetry.services.interface = 2019.1.0
-nuget relativity.transfer.client = 6.2.3-dev000002
+nuget relativity.transfer.client = 6.2.3-dev000004
 
 # The Relativity packages below are ONLY used for testing!
 nuget kcura.relativity.client = 10.3.142.22
