@@ -45,7 +45,7 @@ nuget EWSoftware.SHFB = 2019.8.24
 
 # The Relativity packages below are required by the SDK projects.
 source https://proget.kcura.corp/NuGet/NuGet
-nuget kcura.outsidein.fi.win32 = 2019.4.0
+nuget kcura.outsidein.fi.win32 = 2019.4.1
 nuget relativity.dataTransfer.messageService = 10.2.0
 nuget relativity.logging.interfaces = 2018.11.8
 nuget relativity.kepler.client = 1.0.1.627
@@ -55,7 +55,7 @@ nuget relativity.oauth2client.interfaces = 1.0.27
 nuget relativity.telemetry.apm = 2019.1.0
 nuget relativity.telemetry.datacontracts.shared = 2019.1.0
 nuget relativity.telemetry.services.interface = 2019.1.0
-nuget relativity.transfer.client ~> 6.3.2
+nuget relativity.transfer.client ~> 6.3.4
 
 # The Relativity packages below are required ONLY for test projects!
 nuget kcura.relativity.client = 11.0.79.97-DEV

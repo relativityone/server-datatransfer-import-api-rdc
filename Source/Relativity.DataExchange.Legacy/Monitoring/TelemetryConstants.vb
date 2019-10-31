@@ -8,6 +8,8 @@
             Public Const METRIC_JOB_STARTED As String = "RDC.MetricJobStarted"
             Public Const METRIC_JOB_PROGRESS As String = "RDC.MetricJobProgress"
             Public Const METRIC_JOB_END_REPORT As String = "RDC.MetricJobEndReport"
+            ' This bucket name starts with "RDC" because that's registered prefix for our metrics. Authentication metrics are only send from ImportAPI class.
+            Public Const METRIC_AUTHENTICATION_TYPE As String = "RDC.MetricImportAPIAuthenticationType"
         End Class
 
         class SumBucketPrefix
@@ -19,6 +21,8 @@
             Public Const JOB_FAILED_COUNT As String = "RDC.Performance.JobFailedCount"
             Public Const THROUGHPUT As String = "RDC.Performance.Throughput"
             Public Const THROUGHPUT_BYTES As String = "RDC.Performance.ThroughputBytes"
+            ' This bucket name starts with "RDC" because that's registered prefix for our metrics. Authentication metrics are only send from ImportAPI class.
+            Public Const AUTHENTICATION As String = "RDC.IAPI.Authentication"
         End Class
 
         ''' <summary>
@@ -43,6 +47,9 @@
             Public Const COMPLETED_RECORDS As String = "CompletedRecords"
             Public Const THROUGHPUT_BYTES_PER_SECOND As String = "ThroughputBytesPerSecond"
             Public Const THROUGHPUT_RECORDS_PER_SECOND As String = "ThroughputRecordsPerSecond"
+            Public Const AUTHENTICATION_METHOD As String = "AuthenticationMethod"
+            Public Const SYSTEM_TYPE As String = "SystemType"
+            Public Const SUB_SYSTEM_TYPE As String = "SubSystemType"
         End Class
 
         ''' <summary>
@@ -59,5 +66,14 @@
             Public Const COMPLETED As String = "Completed"
             Public Const FAILED As String = "Failed"
         End Class
+
+        ''' <summary>
+        ''' Contain values for <see cref="MetricAuthenticationType.AuthenticationMethod"/> property.
+        ''' </summary>
+        Enum AuthenticationMethod
+            UsernamePassword
+            BearerToken
+            Windows
+        End Enum
     End Class
 End Namespace

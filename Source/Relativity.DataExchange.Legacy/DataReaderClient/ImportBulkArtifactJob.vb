@@ -613,7 +613,7 @@ Namespace kCura.Relativity.DataReaderClient
 			End Set
 		End Property
 
-		'TODO: Because these were public fields before (vs properties), no exception was thrown if value = Nothing;
+		'TODO: Because these were public fields before (vs properties), no exception was thrown if value = Nothing
 		' for compatibility, that is still the case here
 		''' <summary>
 		''' Gets or sets the current settings for the import job.

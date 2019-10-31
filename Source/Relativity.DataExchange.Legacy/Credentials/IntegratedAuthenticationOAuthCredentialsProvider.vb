@@ -49,12 +49,8 @@ Namespace kCura.WinEDDS.Credentials
 			Dim oAuth2ImplicitCredentialsHelper As OAuth2ImplicitCredentialsHelper = New OAuth2ImplicitCredentialsHelper(AddressOf GetIdentityServerLocation, AddressOf OnOAuth2ImplicitAccessTokenRetrieved)
 
 			Dim cancellationTokenSource As CancellationTokenSource = New CancellationTokenSource(TimeSpan.FromSeconds(_TOKEN_TIMEOUT_IN_SECONDS))
-			Dim awaiter As Runtime.CompilerServices.TaskAwaiter(Of NetworkCredential) = oAuth2ImplicitCredentialsHelper.GetCredentialsAsync().GetAwaiter()
+			Dim awaiter As Runtime.CompilerServices.TaskAwaiter(Of NetworkCredential) = oAuth2ImplicitCredentialsHelper.GetCredentialsAsync(cancellationTokenSource.Token).GetAwaiter()
 			While Not awaiter.IsCompleted
-				If cancellationTokenSource.IsCancellationRequested Then
-					Throw New kCura.WinEDDS.Exceptions.InvalidLoginException($"Failed to retrieve the authentication token within the {_TOKEN_TIMEOUT_IN_SECONDS} second timeout. Resubmit the import request or contact your system administrator for assistance if this problem persists.")
-				End If
-
 				Application.DoEvents()
 				Thread.Sleep(TimeSpan.FromMilliseconds(50))
 			End While

@@ -62,7 +62,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;WINDOWS64</DefineConstants>
     <DocumentationFile>bin\Relativity.DataExchange.NUnit.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
@@ -71,6 +71,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>..\..\buildtools\Tests.ruleset</CodeAnalysisRuleSet>
+    <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FreeImageNET">
@@ -152,6 +153,7 @@
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
     <Compile Include="AppSettingsTests.cs" />
+    <Compile Include="ArtifactFieldCollectionTests.cs" />
     <Compile Include="ChoiceInfoTests.cs" />
     <Compile Include="FreeImageServiceTests.cs" />
     <Compile Include="HttpServiceExceptionTests.cs" />

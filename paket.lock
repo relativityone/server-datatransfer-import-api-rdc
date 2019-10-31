@@ -35,7 +35,7 @@ NUGET
     System.Reactive (4.0)
     System.ValueTuple (4.5)
   remote: https://proget.kcura.corp/NuGet/NuGet
-    kCura.OutsideIn.FI.Win32 (2019.4.0)
+    kCura.OutsideIn.FI.Win32 (2019.4.1)
     kCura.Relativity.Client (11.0.79.97-DEV)
     Relativity (11.0.103.16-DEV)
     Relativity.DataTransfer.MessageService (10.2.0)
@@ -80,7 +80,7 @@ NUGET
     Relativity.Testing.Identification (1.6.0)
       NUnit (>= 3.11)
       NUnitExtras.HierarchicalCategories (>= 1.1)
-    relativity.transfer.client (6.3.2)
+    relativity.transfer.client (6.3.4)
       Newtonsoft.Json (>= 6.0.8)
       Polly (>= 5.3.1)
       relativity.faspmanager (3.7.2)
