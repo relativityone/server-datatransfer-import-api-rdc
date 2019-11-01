@@ -27,6 +27,8 @@
 	using kCura.WinEDDS.Service.Export;
 
 	using Relativity.DataExchange;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Media;
 	using Relativity.DataExchange.Transfer;
@@ -142,6 +144,7 @@
 			container.Register(Component.For<ILongTextHandler>().UsingFactoryMethod(k => k.Resolve<LongTextHandlerFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IDelimiter>().UsingFactoryMethod(k => k.Resolve<DelimiterFactory>().Create(ExportSettings)));
 			container.Register(Component.For<ILongTextStreamFormatterFactory>().UsingFactoryMethod(k => k.Resolve<LongTextStreamFormatterFactoryFactory>().Create(ExportSettings)));
+			container.Register(Component.For<IFileDownloadSubscriber>().ImplementedBy<LongTextEncodingConverter>());
 		}
 
 		private void InstallStatefulComponents(IWindsorContainer container)
