@@ -38,8 +38,6 @@
 			{
 				_logger.LogVerbose(
 					"Long text transfer bridge hasn't been initialized or there is no request for long text download in the batch, so skipping waiting.");
-
-				this.FileDownloadCompleted.OnNext(true);
 				return;
 			}
 			try
@@ -53,11 +51,9 @@
 			}
 			catch(Exception ex)
 			{
-				this.FileDownloadCompleted.OnNext(false);
 				_logger.LogError(ex, "Error occurred when trying to stop LongText encoding conversion after TAPI client failure.");
 				throw;
 			}
-			this.FileDownloadCompleted.OnNext(true);
 		}
 
 	}
