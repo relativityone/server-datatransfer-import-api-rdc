@@ -15,7 +15,6 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Moq;
 
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
@@ -87,10 +86,6 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldAlwaysStopConverterAfterDownloadFinished()
 		{
 			// ARRANGE
-			bool currentStatus = true;
-
-			this.Instance.FileDownloadCompleted.Subscribe(status => currentStatus = status);
-
 			this.TapiBridge
 				.Setup(
 					x => x.WaitForTransfers(
@@ -102,24 +97,17 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT
 			this.Instance.QueueDownload(new TransferPath());
 			Assert.Throws<Exception>(() => this.Instance.WaitForTransfers());
-
-			// ASSERT
-			Assert.That(currentStatus, Is.False);
 		}
 
 		[Test]
 		public void ItShouldNotWaitForTapiTransfer()
 		{
 			// ARRANGE
-			bool currentStatus = true;
-
-			this.Instance.FileDownloadCompleted.Subscribe(status => currentStatus = status);
 
 			// ACT
 			this.Instance.WaitForTransfers();
 
 			// ASSERT
-			Assert.That(currentStatus);
 			this.TapiBridge.Verify(item => item.WaitForTransfers(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
 		}
 	}

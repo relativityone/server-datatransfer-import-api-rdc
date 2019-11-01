@@ -7,7 +7,6 @@
 	using System.Threading.Tasks;
 
 	using Relativity.DataExchange;
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.Logging;
 	using Relativity.Transfer;
@@ -21,17 +20,22 @@
 		private readonly ILongTextDownloader _longTextDownloader;
 		private readonly IErrorFileWriter _errorFileWriter;
 
+		private readonly IFileDownloadSubscriber _fileSubscriber;
+
 		private readonly ILog _logger;
 		private readonly IExportRequestRetriever _exportRequestRetriever;
 
 		public Downloader(IExportRequestRetriever exportRequestRetriever, IPhysicalFilesDownloader physicalFilesDownloader, ILongTextDownloader longTextDownloader,
-			IErrorFileWriter errorFileWriter, ILog logger)
+			IErrorFileWriter errorFileWriter, IFileDownloadSubscriber fileSubscriber, ILog logger)
 		{
 			_physicalFilesDownloader = physicalFilesDownloader;
 			_longTextDownloader = longTextDownloader;
 			_logger = logger;
 			_exportRequestRetriever = exportRequestRetriever;
 			_errorFileWriter = errorFileWriter;
+			_fileSubscriber = fileSubscriber;
+
+			this._longTextDownloader.RegisterSubscriber(_fileSubscriber);
 
 			if (AppSettings.Instance.SuppressServerCertificateValidation)
 			{
@@ -56,11 +60,6 @@
 
 			_logger.LogVerbose("Attempting to download files.");
 			DownloadRequests(cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
-		}
-
-		public void RegisterLongTextFileSubscriber(IFileDownloadSubscriber fileSubscriber)
-		{
-			this._longTextDownloader.RegisterSubscriber(fileSubscriber);
 		}
 
 		private void RetrieveExportRequests()
@@ -101,8 +100,7 @@
 				if (cancellationToken.IsCancellationRequested)
 				{
 					//this is needed, because TAPI in Web mode throws TransferException after canceling
-					_logger.LogWarning(ex,
-						"TransferException occurred during transfer, but cancellation has been requested.");
+					_logger.LogWarning(ex, "TransferException occurred during transfer, but cancellation has been requested.");
 					return;
 				}
 
