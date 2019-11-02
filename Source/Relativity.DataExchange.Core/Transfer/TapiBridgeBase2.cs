@@ -500,6 +500,12 @@ namespace Relativity.DataExchange.Transfer
 			GC.SuppressFinalize(this);
 		}
 
+		/// <inheritdoc />
+		public virtual void ForceSelectTransferMode()
+		{
+			this.CreateTransferClient();
+		}
+
 		/// <summary>
 		/// Logs all transfer bridge parameters.
 		/// </summary>

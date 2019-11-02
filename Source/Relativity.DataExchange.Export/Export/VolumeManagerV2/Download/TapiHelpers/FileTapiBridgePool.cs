@@ -26,6 +26,7 @@
 		private readonly IMessagesHandler _messageHandler;
 		private readonly ITransferClientHandler _transferClientHandler;
 		private readonly ILog _logger;
+		private readonly bool _forceSelectTransferMode;
 		private IDownloadTapiBridge _nullSettingsTapiBridge;
 		private bool _disposed;
 
@@ -37,7 +38,29 @@
 			IMessagesHandler messageHandler,
 			ITransferClientHandler transferClientHandler,
 			ILog logger)
+			: this(
+				factory,
+				tapiObjectService,
+				downloadProgressManager,
+				filesStatistics,
+				messageHandler,
+				transferClientHandler,
+				logger,
+				true)
 		{
+		}
+
+		internal FileTapiBridgePool(
+			TapiBridgeParametersFactory factory,
+			ITapiObjectService tapiObjectService,
+			DownloadProgressManager downloadProgressManager,
+			FilesStatistics filesStatistics,
+			IMessagesHandler messageHandler,
+			ITransferClientHandler transferClientHandler,
+			ILog logger,
+			bool forceSelectTransferMode)
+		{
+			// This constructor is used exclusively for testing.
 			_tapiBridgeParametersFactory = factory.ThrowIfNull(nameof(factory));
 			_tapiObjectService = tapiObjectService.ThrowIfNull(nameof(tapiObjectService));
 			_downloadProgressManager = downloadProgressManager.ThrowIfNull(nameof(downloadProgressManager));
@@ -45,6 +68,7 @@
 			_messageHandler = messageHandler.ThrowIfNull(nameof(messageHandler));
 			_transferClientHandler = transferClientHandler.ThrowIfNull(nameof(transferClientHandler));
 			_logger = logger.ThrowIfNull(nameof(logger));
+			_forceSelectTransferMode = forceSelectTransferMode;
 		}
 
 		public int Count
@@ -105,6 +129,13 @@
 				_filesStatistics,
 				_transferClientHandler,
 				_logger);
+
+			// Only bypassed for unit tests because the bridge isn't mocked.
+			if (_forceSelectTransferMode)
+			{
+				bridge.ForceSelectTransferMode();
+			}
+
 			return downloadTapiBridgeForFiles;
 		}
 
