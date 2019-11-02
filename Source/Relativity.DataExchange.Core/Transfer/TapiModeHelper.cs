@@ -101,19 +101,23 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Builds the import file transfer mode status text from th list of native transfer clients.
 		/// </summary>
+		/// <param name="nativeFilesCopied">
+		/// <see langword="true" /> to copy all natives; otherwise, <see langword="false" /> skips copying natives.
+		/// </param>
 		/// <param name="natives">
 		/// The list of native transfer clients.
 		/// </param>
 		/// <returns>
 		/// The status text.
 		/// </returns>
-		public static string BuildExportStatusText(IEnumerable<TapiClient> natives)
+		public static string BuildExportStatusText(bool nativeFilesCopied, IEnumerable<TapiClient> natives)
 		{
 			ITapiObjectService tapiObjectService = new TapiObjectService();
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			string nativeFilesMode = GetFileTransferModeText(tapiObjectService, natives);
 			sb.AppendFormat(
 				Strings.FileTransferStatusTextModePrefix,
-				GetFileTransferModeText(tapiObjectService, natives));
+				nativeFilesCopied ? nativeFilesMode : Strings.FileTransferModeDisabled);
 			return sb.ToString();
 		}
 
