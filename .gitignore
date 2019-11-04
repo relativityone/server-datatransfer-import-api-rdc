@@ -304,4 +304,5 @@ errors.xml
 /.vscode/*
 
 # Test files
-TestFiles/
+TestInput/
+TestOutput/

@@ -9,7 +9,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		public SpinnerComboBoxUIElement(Func<AppiumWebElement> create) : base(create)
 		{
-			edit = new EditUIElement(FindEdit());
+			edit = FindEdit();
 		}
 
 		public void SetValue<T>(T value)

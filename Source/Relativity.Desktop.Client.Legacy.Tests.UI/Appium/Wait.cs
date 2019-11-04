@@ -10,21 +10,28 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			TimeSpan.FromMilliseconds(
 				double.Parse(ConfigurationManager.AppSettings["DefaultWaitTimeoutInMilliseconds"]));
 
-		public static void For(Func<bool> condition)
+		public static bool For(Func<bool> condition)
 		{
-			For(condition, DefaultWaitTimeout);
+			return For(condition, DefaultWaitTimeout);
 		}
 
-		public static void For(Func<bool> condition, TimeSpan timeout)
+		public static bool For(Func<bool> condition, TimeSpan timeout)
 		{
-			SpinWait.SpinUntil(condition, timeout);
+			return SpinWait.SpinUntil(condition, timeout);
 		}
 
-		public static void For(Func<bool> condition, TimeSpan checkInterval, TimeSpan timeout)
+		public static bool For(Func<bool> condition, TimeSpan checkInterval, TimeSpan timeout)
 		{
+			var isConditionSatisfied = condition();
 			var started = DateTime.Now;
 
-			while (!condition() && DateTime.Now - started + checkInterval < timeout) Thread.Sleep(checkInterval);
+			while (!isConditionSatisfied && DateTime.Now - started + checkInterval < timeout)
+			{
+				Thread.Sleep(checkInterval);
+				isConditionSatisfied = condition();
+			}
+
+			return isConditionSatisfied;
 		}
 	}
 }

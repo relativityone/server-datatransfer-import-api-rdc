@@ -29,6 +29,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			var sessionFactory = new WindowsDriverSessionFactory(new Uri(WindowsApplicationDriverUrl));
 			session = sessionFactory.CreateExeAppSession(PathsProvider.RdcPath);
 			RdcWindowsManager = new RdcWindowsManager(new WindowsManager(session));
+
+			AllowUntrustedCertificate();
 		}
 
 		[TearDown]
@@ -50,11 +52,12 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		{
 		}
 
-		protected void AllowUntrustedCertificate()
+		private void AllowUntrustedCertificate()
 		{
-			//TODO: do this conditionally if window exists
-			var untrustedCertificateWindow = RdcWindowsManager.SwitchToUntrustedCertificateWindow();
-			untrustedCertificateWindow.ClickAllowButton();
+			if (RdcWindowsManager.TryGetUntrustedCertificateWindow(out var untrustedCertificateWindow))
+			{
+				untrustedCertificateWindow.ClickAllowButton();
+			}
 		}
 
 		protected SelectWorkspaceWindow Login()

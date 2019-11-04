@@ -30,7 +30,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			dataSourceTab = tabs.FindTabItem("Data Source");
 			destinationFilesTab = tabs.FindTabItem("Destination Files");
 			selectViewButton = FindButtonWithAutomationId("_selectFromListButton");
-			folderPathTextBox = new EditUIElement(FindEditWithAutomationId2("_folderPath"));
+			folderPathTextBox = FindEditWithAutomationId("_folderPath");
 			browseForFolderDialog = new BrowseForFolderDialog(WaitForWindow("Browse For Folder"));
 			selectViewDialog = new SelectViewDialog(WaitForWindow("Select View"));
 			pickTextPrecedenceDialog = new PickTextPrecedenceDialog(WaitForWindow("Pick Text Precedence"));

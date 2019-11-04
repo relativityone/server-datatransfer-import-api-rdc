@@ -5,9 +5,9 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 	internal class LoginWindow : RdcWindowBase
 	{
 		private readonly UIElement continueButton;
-		private readonly UIElement emailEdit;
+		private readonly EditUIElement emailEdit;
 		private readonly UIElement loginButton;
-		private readonly UIElement passwordEdit;
+		private readonly EditUIElement passwordEdit;
 		private readonly SecurityAlertDialog securityAlertDialog;
 
 		public LoginWindow(RdcWindowsManager windowsManager, WindowDetails window)
@@ -22,8 +22,10 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public SelectWorkspaceWindow Login(string email, string password)
 		{
-			//TODO: Do this conditionally if dialog exists
-			securityAlertDialog.ClickYesButton();
+			if (securityAlertDialog.Exists)
+			{
+				securityAlertDialog.ClickYesButton();
+			}
 
 			EnterEmail(email);
 			ClickContinueButton();

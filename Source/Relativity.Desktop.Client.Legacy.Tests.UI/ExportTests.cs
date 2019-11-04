@@ -16,8 +16,6 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		{
 			EnsureExportPathExists();
 
-			AllowUntrustedCertificate();
-
 			var workspaceSelectWindow = Login();
 
 			var rdcWindow = workspaceSelectWindow.ChooseWorkspace("Workspace-For-Export-Tests");

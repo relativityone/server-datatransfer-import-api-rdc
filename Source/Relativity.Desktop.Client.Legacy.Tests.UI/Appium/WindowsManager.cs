@@ -1,19 +1,13 @@
-﻿namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using OpenQA.Selenium.Appium.Windows;
+
+namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
-	using System;
-	using System.Collections.Generic;
-	using System.IO;
-	using System.Linq;
-	using System.Text;
-
-	using OpenQA.Selenium.Appium.Windows;
-
 	internal class WindowsManager
 	{
-		private static readonly TimeSpan DefaultWindowTimeout = TimeSpan.FromSeconds(30);
-
 		private readonly WindowsDriver<WindowsElement> session;
-
 		private readonly List<WindowDetails> windows = new List<WindowDetails>();
 
 		public WindowsManager(WindowsDriver<WindowsElement> session)
@@ -21,26 +15,28 @@
 			this.session = session;
 		}
 
-		public WindowDetails GetWindow(string title)
+		public bool TryGetWindow(string title, out WindowDetails window)
 		{
-			return GetWindow(title, x => true);
+			return TryGetWindow(title, x => true, out window);
 		}
 
-		public WindowDetails GetWindow(string title, Func<WindowDetails, bool> predicate)
+		public bool TryGetWindow(string title, Func<WindowDetails, bool> predicate, out WindowDetails window)
 		{
-			return GetWindow(title, predicate, DefaultWindowTimeout);
+			return TryFindOrCreateWindow(title, predicate, out window);
 		}
 
-		public WindowDetails GetWindow(string title, Func<WindowDetails, bool> predicate, TimeSpan timeout)
+		public bool TryGetWindow(string title, TimeSpan timeout, out WindowDetails window)
 		{
-			var window = GetOrCreateWindow(title, predicate);
+			return TryGetWindow(title, x => true, timeout, out window);
+		}
 
-			if (window == null && (window = WaitAndGetWindow(title, predicate, timeout)) == null)
-			{
-				throw new Exception($"Waiting for window: \"{title}\" timed out.");
-			}
-
-			return window;
+		public bool TryGetWindow(string title, Func<WindowDetails, bool> predicate, TimeSpan timeout,
+			out WindowDetails window)
+		{
+			WindowDetails foundWindow = null;
+			var found = Wait.For(() => TryGetWindow(title, predicate, out foundWindow), timeout);
+			window = foundWindow;
+			return found;
 		}
 
 		public void SwitchToWindow(string windowHandle)
@@ -53,18 +49,18 @@
 			return session.WindowHandles.Any(x => x == windowHandle);
 		}
 
-		private WindowDetails GetOrCreateWindow(string title, Func<WindowDetails, bool> predicate)
+		private bool TryFindOrCreateWindow(string title, Func<WindowDetails, bool> predicate, out WindowDetails window)
 		{
 			RefreshSessionWindows();
 
-			WindowDetails window;
-			if ((window = FindWindow(title, predicate)) == null)
+			window = FindWindow(title, predicate);
+			if (window == null)
 			{
-				return CreateWindow(title, predicate);
+				return TryCreateWindow(title, predicate, out window);
 			}
 
 			SwitchToWindow(window);
-			return window;
+			return true;
 		}
 
 		private WindowDetails FindWindow(string title, Func<WindowDetails, bool> predicate)
@@ -72,37 +68,25 @@
 			return windows.FirstOrDefault(x => string.Equals(x.Title, title) && predicate(x));
 		}
 
-		private WindowDetails WaitAndGetWindow(string title, Func<WindowDetails, bool> predicate, TimeSpan timeout)
+		private bool TryCreateWindow(string name, Func<WindowDetails, bool> predicate, out WindowDetails window)
 		{
-			WindowDetails window = null;
-
-			Wait.For(() =>
-				{
-					window = GetOrCreateWindow(title, predicate);
-					return window != null;
-				},
-				timeout);
-
-			return window;
-		}
-
-		private WindowDetails CreateWindow(string name, Func<WindowDetails, bool> predicate)
-		{
-			for (int i = 0; i < this.windows.Count; i++)
+			for (var i = 0; i < windows.Count; i++)
 			{
 				if (windows[i].Element == null)
 				{
-					SwitchToWindow(this.windows[i]);
-					windows[i] = this.CreateWindowFromSession();
+					SwitchToWindow(windows[i]);
+					windows[i] = CreateWindowFromSession();
 
-					if (string.Equals(this.windows[i].Title, name) && predicate(this.windows[i]))
+					if (string.Equals(windows[i].Title, name) && predicate(windows[i]))
 					{
-						return windows[i];
+						window = windows[i];
+						return true;
 					}
 				}
 			}
 
-			return null;
+			window = null;
+			return false;
 		}
 
 		private void SwitchToWindow(WindowDetails window)
@@ -112,7 +96,7 @@
 
 		private void RefreshSessionWindows()
 		{
-			var currentHandles = this.session.WindowHandles.ToList();
+			var currentHandles = session.WindowHandles.ToList();
 
 			RemoveNonExistingWindows(currentHandles);
 
@@ -127,9 +111,9 @@
 			{
 				if (!windows.Any(x => string.Equals(x.Handle, windowHandle)))
 				{
-					var window = this.session.CurrentWindowHandle == windowHandle
-						             ? this.CreateWindowFromSession()
-						             : new WindowDetails(windowHandle);
+					var window = session.CurrentWindowHandle == windowHandle
+						? CreateWindowFromSession()
+						: new WindowDetails(windowHandle);
 					yield return window;
 				}
 			}
@@ -140,12 +124,12 @@
 			return new WindowDetails(
 				session.CurrentWindowHandle,
 				session.Title,
-				session.FindElementByName(this.session.Title));
+				session.FindElementByName(session.Title));
 		}
 
 		private void RemoveNonExistingWindows(List<string> currentHandles)
 		{
-			for (int i = this.windows.Count - 1; i >= 0; i--)
+			for (var i = windows.Count - 1; i >= 0; i--)
 			{
 				var windowData = windows[i];
 				if (!currentHandles.Contains(windowData.Handle))

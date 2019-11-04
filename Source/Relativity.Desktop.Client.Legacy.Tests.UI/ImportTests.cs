@@ -14,8 +14,6 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		[Test]
 		public void ImportDatLoadFileUsingSavedKweSettings()
 		{
-			AllowUntrustedCertificate();
-
 			var workspaceSelectWindow = Login();
 
 			var rdcWindow = workspaceSelectWindow.ChooseWorkspace(TestParameters.WorkspaceName);

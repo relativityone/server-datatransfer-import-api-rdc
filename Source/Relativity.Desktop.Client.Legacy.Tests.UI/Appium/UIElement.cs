@@ -22,6 +22,21 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		public string Text => Element.Text;
 
+		public bool Exists
+		{
+			get
+			{
+				try
+				{
+					return Element != null;
+				}
+				catch
+				{
+					return false;
+				}
+			}
+		}
+
 		public UIElement Refresh()
 		{
 			appiumWebElement = null;
@@ -79,19 +94,14 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			return Create(() => Element.FindChild(ElementType.Edit, name));
 		}
 
-		protected Func<AppiumWebElement> FindEdit()
+		protected EditUIElement FindEdit()
 		{
-			return () => Element.FindChild(ElementType.Edit);
+			return new EditUIElement(() => Element.FindChild(ElementType.Edit));
 		}
 
-		public UIElement FindEditWithAutomationId(string automationId)
+		public EditUIElement FindEditWithAutomationId(string automationId)
 		{
-			return Create(() => Element.FindEditWithAutomationId(automationId));
-		}
-
-		protected Func<AppiumWebElement> FindEditWithAutomationId2(string automationId)
-		{
-			return () => Element.FindEditWithAutomationId(automationId);
+			return new EditUIElement(() => Element.FindEditWithAutomationId(automationId));
 		}
 
 		protected UIElement FindButton(string name)
