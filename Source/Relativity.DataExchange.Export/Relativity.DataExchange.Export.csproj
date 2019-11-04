@@ -332,8 +332,6 @@
     <Compile Include="Export\VolumeManagerV2\Validation\ExportValidation.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\VolumeAndSubdirectoryValidator.cs" />
-    <Compile Include="IO\LongPathDirectoryHelper.cs" />
-    <Compile Include="IO\LongPathFileHelper.cs" />
     <Compile Include="LogMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -376,7 +374,6 @@
       <Name>Relativity.DataExchange.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
@@ -509,17 +506,6 @@
         </Reference>
         <Reference Include="System.Reactive">
           <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="ZetaLongPaths">
-          <HintPath>..\..\packages\ZetaLongPaths\lib\net40-full\ZetaLongPaths.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

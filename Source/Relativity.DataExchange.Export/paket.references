@@ -3,5 +3,4 @@ castle.windsor
 newtonsoft.json
 relativity.logging.interfaces
 relativity.transfer.client
-zetalongpaths
 system.reactive
