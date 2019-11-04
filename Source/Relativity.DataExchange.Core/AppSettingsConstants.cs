@@ -108,6 +108,10 @@ namespace Relativity.DataExchange
 		public const string TapiAsperaBcpRootFolderDefaultValue = "";
 		public const string TapiAsperaNativeDocRootLevelsKey = "TapiAsperaNativeDocRootLevels";
 		public const int TapiAsperaNativeDocRootLevelsDefaultValue = 1;
+		public const string TapiAsperaDatagramSizeKey = "TapiAsperaDatagramSize";
+		public const int TapiAsperaDatagramSizeDefaultValue = 0;
+		public const int TapiAsperaDatagramSizeMinimumValue = 296;
+		public const int TapiAsperaDatagramSizeMaximumValue = 10000;
 		public const string TapiBadPathErrorsRetryKey = "BadPathErrorsRetry";
 		public const bool TapiBadPathErrorsRetryDefaultValue = false;
 		public const string TapiFileNotFoundErrorsDisabledKey = "TapiFileNotFoundErrorsDisabled";

@@ -567,6 +567,18 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets the size of the largest datagram size that will be used by Aspera.
+		/// </summary>
+		/// <value>Minimum value is <see cref="AppSettingsConstants.TapiAsperaDatagramSizeMinimumValue"/>,
+		/// maximum  value is <see cref="AppSettingsConstants.TapiAsperaDatagramSizeMaximumValue"/>.
+		/// When invalid value is passed to setter, then <see cref="AppSettingsConstants.TapiAsperaDatagramSizeDefaultValue"/> is used.</value>
+		int TapiAsperaDatagramSize
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether Transfer API retries files that fail due to invalid paths. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>

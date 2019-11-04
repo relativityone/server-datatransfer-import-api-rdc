@@ -27,6 +27,7 @@ namespace Relativity.DataExchange.Transfer
 			this.Application = null;
 			this.AsperaBcpRootFolder = AppSettingsConstants.TapiAsperaBcpRootFolderDefaultValue;
 			this.AsperaDocRootLevels = AppSettingsConstants.TapiAsperaNativeDocRootLevelsDefaultValue;
+			this.AsperaDatagramSize = AppSettingsConstants.TapiAsperaDatagramSizeDefaultValue;
 			this.BadPathErrorsRetry = AppSettingsConstants.TapiBadPathErrorsRetryDefaultValue;
 			this.ClientRequestId = Guid.NewGuid();
 			this.Credentials = null;
@@ -74,6 +75,7 @@ namespace Relativity.DataExchange.Transfer
 			this.Application = copy.Application;
 			this.AsperaBcpRootFolder = copy.AsperaBcpRootFolder;
 			this.AsperaDocRootLevels = copy.AsperaDocRootLevels;
+			this.AsperaDatagramSize = copy.AsperaDatagramSize;
 			this.BadPathErrorsRetry = copy.BadPathErrorsRetry;
 			this.ClientRequestId = copy.ClientRequestId;
 			this.Credentials = copy.Credentials;
@@ -136,6 +138,15 @@ namespace Relativity.DataExchange.Transfer
 		/// The number of levels.
 		/// </value>
 		public int AsperaDocRootLevels
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the size of the largest datagram size that will be used by Aspera.
+		/// </summary>
+		public int AsperaDatagramSize
 		{
 			get;
 			set;

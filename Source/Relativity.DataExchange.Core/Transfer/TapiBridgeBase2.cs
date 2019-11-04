@@ -298,7 +298,7 @@ namespace Relativity.DataExchange.Transfer
 		/// The RequestTransferPathCount property was added to avoid costly hits to the repository.
 		/// </remarks>
 		public bool TransfersPending => this.TransferJob != null
-		                                && this.TransferJob.JobService.RequestTransferPathCount > 0;
+										&& this.TransferJob.JobService.RequestTransferPathCount > 0;
 
 		/// <summary>
 		/// Gets the workspace artifact unique identifier.
@@ -488,8 +488,8 @@ namespace Relativity.DataExchange.Transfer
 			{
 				this.LogCancelRequest();
 				return !string.IsNullOrEmpty(path.TargetFileName)
-					       ? path.TargetFileName
-					       : Relativity.DataExchange.Io.FileSystem.Instance.Path.GetFileName(path.SourcePath);
+						   ? path.TargetFileName
+						   : Relativity.DataExchange.Io.FileSystem.Instance.Path.GetFileName(path.SourcePath);
 			}
 		}
 
@@ -547,7 +547,7 @@ namespace Relativity.DataExchange.Transfer
 				TapiTotals totals;
 				this.LogTransferTotals("Pre", false);
 				if (this.TransferJob == null || (this.batchTotals.TotalFileTransferRequests == 0
-				                                 && this.jobTotals.TotalFileTransferRequests == 0))
+												 && this.jobTotals.TotalFileTransferRequests == 0))
 				{
 					totals = keepJobAlive ? this.batchTotals.DeepCopy() : this.jobTotals.DeepCopy();
 				}
@@ -599,11 +599,11 @@ namespace Relativity.DataExchange.Transfer
 
 			// Note: large file progress is always enabled.
 			return new TransferContext
-				       {
-					       StatisticsRateSeconds = 1.0,
-					       LargeFileProgressEnabled = true,
-					       LargeFileProgressRateSeconds = 1.0,
-				       };
+			{
+				StatisticsRateSeconds = 1.0,
+				LargeFileProgressEnabled = true,
+				LargeFileProgressRateSeconds = 1.0,
+			};
 		}
 
 		/// <summary>
@@ -620,35 +620,30 @@ namespace Relativity.DataExchange.Transfer
 			// Intentionally limiting resiliency here; otherwise, status messages don't make it to IAPI.
 			const int MaxHttpRetryAttempts = 1;
 			var configuration = new ClientConfiguration
-				                    {
-					                    BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
-					                    BcpRootFolder = this.parameters.AsperaBcpRootFolder,
-					                    CookieContainer = this.parameters.WebCookieContainer,
-					                    Credential = this.parameters.TransferCredential,
-					                    FileTransferHint = FileTransferHint.Natives,
-					                    FileNotFoundErrorsDisabled = this.parameters.FileNotFoundErrorsDisabled,
-					                    FileNotFoundErrorsRetry = this.parameters.FileNotFoundErrorsRetry,
-					                    HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
-					                    MaxJobParallelism = this.parameters.MaxJobParallelism,
-					                    MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
-					                    MaxHttpRetryAttempts = MaxHttpRetryAttempts,
-					                    MinDataRateMbps = this.parameters.MinDataRateMbps,
-					                    PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
+			{
+				BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
+				BcpRootFolder = this.parameters.AsperaBcpRootFolder,
+				CookieContainer = this.parameters.WebCookieContainer,
+				Credential = this.parameters.TransferCredential,
+				FileTransferHint = FileTransferHint.Natives,
+				FileNotFoundErrorsDisabled = this.parameters.FileNotFoundErrorsDisabled,
+				FileNotFoundErrorsRetry = this.parameters.FileNotFoundErrorsRetry,
+				HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
+				MaxJobParallelism = this.parameters.MaxJobParallelism,
+				MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
+				MaxHttpRetryAttempts = MaxHttpRetryAttempts,
+				MinDataRateMbps = this.parameters.MinDataRateMbps,
+				PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
 
-					                    // REL-298418: preserving file timestamps are now driven by a configurable setting.
-					                    PreserveDates = this.parameters.PreserveFileTimestamps,
-					                    SupportCheckPath = this.parameters.SupportCheckPath,
-					                    TargetDataRateMbps = this.parameters.TargetDataRateMbps,
-					                    TransferLogDirectory = this.parameters.TransferLogDirectory,
-					                    ValidateSourcePaths = ValidateSourcePaths,
-				                    };
+				// REL-298418: preserving file timestamps are now driven by a configurable setting.
+				PreserveDates = this.parameters.PreserveFileTimestamps,
+				SupportCheckPath = this.parameters.SupportCheckPath,
+				TargetDataRateMbps = this.parameters.TargetDataRateMbps,
+				TransferLogDirectory = this.parameters.TransferLogDirectory,
+				ValidateSourcePaths = ValidateSourcePaths,
+			};
 
-			// TODO This is temporary change to confirm root cause of the REL-369130
-			// Unarmed Tapir advise us to change that value, because it was causing similar issues in ROSE before
-			// for a long-term solution, we should add that option to RDC config file and IAPI configuration
-			const int RecomendedAsperaDatagramSizeOnUvm = 1350;
-			configuration[Relativity.Transfer.Aspera.AsperaClientConfigurationKeys.DatagramSize] = RecomendedAsperaDatagramSizeOnUvm;
-
+			configuration[Relativity.Transfer.Aspera.AsperaClientConfigurationKeys.DatagramSize] = this.parameters.AsperaDatagramSize;
 			return configuration;
 		}
 
@@ -820,8 +815,8 @@ namespace Relativity.DataExchange.Transfer
 
 			TransferJobStatus status = this.TransferJob.Status;
 			bool result = status == TransferJobStatus.RetryPending || status == TransferJobStatus.Retrying
-			                                                       || status == TransferJobStatus.Running
-			                                                       || status == TransferJobStatus.Canceled;
+																   || status == TransferJobStatus.Running
+																   || status == TransferJobStatus.Canceled;
 			if (!result)
 			{
 				this.TransferLog.LogWarning2(
@@ -854,7 +849,7 @@ namespace Relativity.DataExchange.Transfer
 			if (this.maxInactivitySeconds < 0)
 			{
 				this.maxInactivitySeconds = 1.25 * (this.parameters.WaitTimeBetweenRetryAttempts
-				                                    * (this.parameters.MaxJobRetryAttempts + 1));
+													* (this.parameters.MaxJobRetryAttempts + 1));
 			}
 
 			try
@@ -1573,7 +1568,7 @@ namespace Relativity.DataExchange.Transfer
 		private void ValidateTransferPath(TransferPath path)
 		{
 			if (string.IsNullOrWhiteSpace(path.SourcePath)
-			    && (!path.SourcePathId.HasValue || path.SourcePathId.Value < 1))
+				&& (!path.SourcePathId.HasValue || path.SourcePathId.Value < 1))
 			{
 				throw new ArgumentException(
 					this.currentDirection == TransferDirection.Download || path.Direction == TransferDirection.Download
@@ -1628,8 +1623,8 @@ namespace Relativity.DataExchange.Transfer
 
 								this.cancellationToken.ThrowIfCancellationRequested();
 								bool terminateWait = this.CheckCompletedTransfers()
-								                     || this.CheckDataInactivityTimeExceeded()
-								                     || this.CheckAbortOnRaisedPermissionIssues();
+													 || this.CheckDataInactivityTimeExceeded()
+													 || this.CheckAbortOnRaisedPermissionIssues();
 								return terminateWait;
 							}
 							catch (OperationCanceledException)
