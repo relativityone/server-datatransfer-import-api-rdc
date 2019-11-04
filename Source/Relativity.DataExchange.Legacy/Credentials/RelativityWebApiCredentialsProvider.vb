@@ -1,4 +1,5 @@
-﻿Imports System.Threading.Tasks
+﻿Imports System.Threading
+Imports System.Threading.Tasks
 
 Namespace kCura.WinEDDS.Credentials
 
@@ -39,12 +40,12 @@ Namespace kCura.WinEDDS.Credentials
 			return _provider.GetCredentials()
 		End Function
 
-		Public Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential) Implements ICredentialsProvider.GetCredentialsAsync
+		Public Function GetCredentialsAsync(Optional cancellationToken As CancellationToken = Nothing) As Task(Of System.Net.NetworkCredential) Implements ICredentialsProvider.GetCredentialsAsync
 			If _provider Is Nothing
 				Throw new CredentialsNotSetException()
 			End If
 
-			return _provider.GetCredentialsAsync()
+			return _provider.GetCredentialsAsync(cancellationToken)
 		End Function
 
 	End Class

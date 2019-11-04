@@ -62,7 +62,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;WINDOWS64</DefineConstants>
     <DocumentationFile>bin\Relativity.DataExchange.NUnit.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
@@ -71,6 +71,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>..\..\buildtools\Tests.ruleset</CodeAnalysisRuleSet>
+    <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FreeImageNET">
@@ -152,17 +153,20 @@
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
     <Compile Include="AppSettingsTests.cs" />
+    <Compile Include="ArtifactFieldCollectionTests.cs" />
     <Compile Include="ChoiceInfoTests.cs" />
     <Compile Include="FreeImageServiceTests.cs" />
     <Compile Include="HttpServiceExceptionTests.cs" />
     <Compile Include="ImageConverterServiceTests.cs" />
     <Compile Include="ImageLoadFileDeserializationTests.cs" />
+    <Compile Include="LogExtensionsTests.cs" />
     <Compile Include="Monitoring\Sinks\ImportApiMetricSinkConfigTest.cs" />
     <Compile Include="LoadFileDeserializationTests.cs" />
     <Compile Include="Monitoring\Sinks\MetricServiceTest.cs" />
     <Compile Include="Monitoring\Sinks\MetricSinkApmTest.cs" />
     <Compile Include="Monitoring\Sinks\MetricSinkSumTest.cs" />
     <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
+    <Compile Include="UrlHelperTests.cs" />
     <Compile Include="SerializationTests.cs" />
     <Compile Include="SoapExceptionDetailTests.cs" />
     <Compile Include="SerializationTestsBase.cs" />

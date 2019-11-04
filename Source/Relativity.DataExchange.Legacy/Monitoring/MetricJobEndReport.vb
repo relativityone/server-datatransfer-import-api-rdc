@@ -1,6 +1,6 @@
 ﻿Namespace Monitoring
     Public Class MetricJobEndReport
-        Inherits MetricBase
+        Inherits MetricJobBase
 
         ''' <inheritdoc/>
         Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.METRIC_JOB_END_REPORT
@@ -108,5 +108,18 @@
                 CustomData.Item(TelemetryConstants.KeyName.THROUGHPUT_RECORDS_PER_SECOND) = Value
             End Set
         End Property
+
+		''' <summary>
+		''' Gets or sets sql bulk load throughput in records per second.
+		''' </summary>
+		''' <returns>Sql bulk load throughput in records per second.</returns>
+		Public Property SqlBulkLoadThroughputRecordsPerSecond As Double
+			Get
+				Return GetValueOrDefault (Of Double)(TelemetryConstants.KeyName.SQL_THROUGHPUT)
+			End Get
+		    Set
+				CustomData.Item(TelemetryConstants.KeyName.SQL_THROUGHPUT) = Value
+		    End Set
+		End Property
     End Class
 End NameSpace

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\NUnit\build\NUnit.props" Condition="Exists('..\..\packages\NUnit\build\NUnit.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -61,7 +62,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;WINDOWS64</DefineConstants>
     <DocumentationFile>bin\Relativity.DataExchange.TestFramework.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
@@ -70,6 +71,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
+    <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -79,20 +81,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CryptoHelper.cs" />
+    <Compile Include="DummyTest.cs" />
     <Compile Include="FileDto.cs" />
     <Compile Include="IntegrationTestHelper.cs" />
-    <Compile Include="FieldHelper.cs" />
+    <Compile Include="RelativityHelpers\FieldHelper.cs" />
     <Compile Include="IntegrationTestParameterAttribute.cs" />
     <Compile Include="RelativityTestLogger.cs" />
+    <Compile Include="TapiClientModeAvailabilityChecker.cs" />
     <Compile Include="TestDirectory.cs" />
+    <Compile Include="RelativityHelpers\InstanceSettingsHelper.cs" />
+    <Compile Include="RelativityHelpers\UsersHelper.cs" />
     <Compile Include="TestStrings.cs" />
     <Compile Include="ServiceHelper.cs" />
-    <Compile Include="ProductionHelper.cs" />
+    <Compile Include="RelativityHelpers\ProductionHelper.cs" />
     <Compile Include="RandomHelper.cs" />
     <Compile Include="ResourceFileHelper.cs" />
     <Compile Include="TestCategories.cs" />
-    <Compile Include="RdoHelper.cs" />
-    <Compile Include="WorkspaceHelper.cs" />
+    <Compile Include="RelativityHelpers\RdoHelper.cs" />
+    <Compile Include="RelativityHelpers\WorkspaceHelper.cs" />
     <Compile Include="WellKnownArtifactTypes.cs" />
     <Compile Include="WellKnownFields.cs" />
     <Compile Include="IntegrationTestParameters.cs" />
@@ -196,8 +202,30 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="nunit.framework">
+          <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Polly">
           <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity">
+          <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -274,12 +302,23 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Relativity.Productions.Services.Interfaces">
-          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net462\Relativity.Productions.Services.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Productions.Services.Interfaces.Private">
-          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net462\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.SecretCatalog">
+          <HintPath>..\..\packages\Relativity.SecretCatalog\lib\Relativity.SecretCatalog.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -302,6 +341,33 @@
       <ItemGroup>
         <Reference Include="Relativity.Services.Interfaces">
           <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.Interfaces.Private">
+          <HintPath>..\..\packages\Relativity.Services.Interfaces.Private\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.Layout.DataContracts">
+          <HintPath>..\..\packages\Relativity.Services.Layout.Interfaces\lib\Relativity.Services.Layout.DataContracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Services.Layout.Interfaces">
+          <HintPath>..\..\packages\Relativity.Services.Layout.Interfaces\lib\Relativity.Services.Layout.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

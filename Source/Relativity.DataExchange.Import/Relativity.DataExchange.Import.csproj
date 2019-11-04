@@ -62,6 +62,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FreeImageNET">
@@ -246,17 +247,6 @@ powershell.exe -ExecutionPolicy Bypass -NonInteractive -file "$(SolutionDir)..\S
       <ItemGroup>
         <Reference Include="Relativity.Services.ServiceProxy">
           <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Logging">
-          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

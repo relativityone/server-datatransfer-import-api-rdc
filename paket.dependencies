@@ -23,7 +23,7 @@ nuget nunit = 3.11.0
 nuget nunit.consolerunner = 3.10.0
 nuget nunit.extension.vsprojectloader = 3.8.0
 
-# Polly is explicitly listed to avoid conflicts between TAPI and Relatativity.
+# Polly is explicitly listed to avoid conflicts between TAPI and Relativity.
 nuget polly = 5.7.0.0
 nuget psake = 4.7.4
 nuget reportgenerator = 4.1.2
@@ -44,11 +44,10 @@ nuget System.Reactive = 4.0.0
 # For building Sandcastle docs.
 nuget EWSoftware.SHFB = 2019.8.24
 
-# Proget packages are below.
+# The Relativity packages below are required by the SDK projects.
 source https://proget.kcura.corp/NuGet/NuGet
-nuget kcura.outsidein.fi.win32 = 2019.3.0
+nuget kcura.outsidein.fi.win32 = 2019.4.1
 nuget relativity.dataTransfer.messageService = 10.2.0
-nuget relativity.logging = 2018.11.8
 nuget relativity.logging.interfaces = 2018.11.8
 nuget relativity.kepler.client = 1.0.1.627
 nuget relativity.oauth2client = 1.0.27
@@ -57,13 +56,15 @@ nuget relativity.oauth2client.interfaces = 1.0.27
 nuget relativity.telemetry.apm = 2019.1.0
 nuget relativity.telemetry.datacontracts.shared = 2019.1.0
 nuget relativity.telemetry.services.interface = 2019.1.0
-nuget relativity.transfer.client = 6.2.1
+nuget relativity.transfer.client ~> 6.3.4
 
-# The Relativity packages below are ONLY used for testing!
-nuget kcura.relativity.client = 10.3.142.22
-nuget relativity.productions.services.interfaces = 10.3.37
-nuget relativity.services.datacontracts = 10.3.142.22
-nuget relativity.services.interfaces = 10.3.142.22
+# The Relativity packages below are required ONLY for test projects!
+nuget kcura.relativity.client = 11.0.79.97-DEV
+nuget relativity.logging = 2018.11.8
+nuget relativity.productions.services.interfaces = 11.0.4
+nuget relativity.services.datacontracts = 11.0.79.97-DEV
+nuget relativity.services.interfaces = 11.0.79.97-DEV
+nuget relativity.services.interfaces.private = 11.0.79.97-DEV
 nuget relativity.testing.identification ~> 1.6.0
 
 # A group is used to address dependency conflicts and only required by UI automation tests.

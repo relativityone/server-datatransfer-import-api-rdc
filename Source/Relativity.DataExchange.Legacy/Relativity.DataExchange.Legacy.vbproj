@@ -134,6 +134,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -180,6 +181,9 @@
     <Compile Include="API\IImageReader.vb" />
     <Compile Include="API\ImageRecord.vb" />
     <Compile Include="API\LoginHelper.vb" />
+    <Compile Include="Monitoring\MetricAuthenticationType.vb" />
+    <Compile Include="Monitoring\MetricJobBase.vb" />
+    <Compile Include="RsaBearerTokenAuthenticationProvider.vb" />
     <Compile Include="Config.vb" />
     <Compile Include="Credentials\Constants.vb" />
     <Compile Include="Credentials\CredentialsNotSetException.vb" />
@@ -1212,17 +1216,6 @@
       <ItemGroup>
         <Reference Include="Relativity.Services.ServiceProxy">
           <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Logging">
-          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

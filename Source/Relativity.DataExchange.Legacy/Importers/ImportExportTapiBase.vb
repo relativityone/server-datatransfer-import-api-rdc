@@ -4,11 +4,10 @@
 ' </copyright>
 ' ----------------------------------------------------------------------------
 
-Imports System.Globalization
+Imports System.Net
 Imports System.Threading
 
 Imports kCura.WinEDDS.Helpers
-
 Imports Polly
 
 Imports Relativity.DataExchange
@@ -16,6 +15,7 @@ Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Transfer
 Imports Relativity.Logging
+Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
 
@@ -25,7 +25,6 @@ Namespace kCura.WinEDDS
 	Public MustInherit Class ImportExportTapiBase
 
 #Region "Members"
-		Private Const _metadataFileCheckRetryCount As Int32 = 60000
 		Private Const _fileCheckRetryCount As Int32 = 6000
 		Private Const _fileCheckWaitBetweenRetriesMilliseconds As Int32 = 10
 		Private ReadOnly _ioReporter As IIoReporter
@@ -35,12 +34,12 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _statistics As New Statistics
 		Private WithEvents _bulkLoadTapiBridge As UploadTapiBridge2
 		Private WithEvents _fileTapiBridge As UploadTapiBridge2
+		Private _bulkLoadTapiClient As TapiClient = TapiClient.None
 		Private _bulkLoadTapiClientName As String
 		Private _fileTapiClient As TapiClient = TapiClient.None
 		Private _fileTapiClientName As String
 		Private _statisticsLastUpdated As DateTime = DateTime.Now
 		Private _batchFileTapiProgressCount As Int32 = 0
-		Private _batchMetadataTapiProgressCount As Int32 = 0
 		Private ReadOnly _logger As ILog
 		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 		Private _waitAndRetryPolicy As IWaitAndRetryPolicy
@@ -85,6 +84,12 @@ Namespace kCura.WinEDDS
 		Protected ReadOnly Property BulkLoadTapiBridge As UploadTapiBridge2
 			Get
 				Return _bulkLoadTapiBridge
+			End Get
+		End Property
+
+		Protected ReadOnly Property BulkLoadTapiClient As TapiClient
+			Get
+				Return _bulkLoadTapiClient
 			End Get
 		End Property
 
@@ -134,6 +139,17 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public ReadOnly Property TapiClient As TapiClient
+			Get
+				If Not FileTapiClient = TapiClient.None
+					Return FileTapiClient
+				ElseIf Not BulkLoadTapiClient = TapiClient.None
+					Return BulkLoadTapiClient
+				End If
+				Return TapiClient.None
+			End Get
+		End Property
+
 		Public Property DisableNativeLocationValidation As Boolean = AppSettings.Instance.DisableThrowOnIllegalCharacters
 
 		Protected Property FileTapiProgressCount As Int32
@@ -171,13 +187,11 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Protected Shared Function IsTimeoutException(ByVal ex As Exception) As Boolean
-			If ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlTimeoutException) Then
+			If TypeOf ex Is Service.BulkImportManager.BulkImportSqlTimeoutException Then
 				Return True
-			ElseIf TypeOf ex Is System.Net.WebException AndAlso ex.Message.ToString.Contains("timed out") Then
-				Return True
-			Else
-				Return False
 			End If
+			Dim webException As System.Net.WebException = TryCast(ex, System.Net.WebException) 
+			return Not webException Is Nothing AndAlso webException.Status = WebExceptionStatus.Timeout
 		End Function
 
 		Protected Shared Function IsBulkImportSqlException(ByVal ex As Exception) As Boolean
@@ -350,29 +364,8 @@ Namespace kCura.WinEDDS
 			_ioReporter.PublishWarningMessage(args)
 		End Sub
 
-		Protected Sub CompletePendingPhysicalFileTransfers(waitMessage As String, completedMessage As String, errorMessage As String)
-			' TODO: Invert this flag after RDC Export hardening is completed.
-			Const KeepJobAlive As Boolean = False
-			Me.FileTapiBridge.WaitForTransfers(
-				waitMessage,
-				completedMessage,
-				errorMessage,
-				KeepJobAlive)
-		End Sub
-
-		Protected Sub CompletePendingBulkLoadFileTransfers()
-			' TODO: Invert this flag after RDC Export hardening is completed.
-			Const KeepJobAlive As Boolean = False
-			Me.BulkLoadTapiBridge.WaitForTransfers(
-				"Waiting for all metadata files to upload...",
-				"Metadata file uploads completed.",
-				"Failed to complete all pending metadata file uploads.",
-				KeepJobAlive)
-		End Sub
-
-
-		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters2, ByVal bulkLoadParameters As UploadTapiBridgeParameters2)
-			_fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, Me.CancellationToken)
+		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters2, ByVal bulkLoadParameters As UploadTapiBridgeParameters2, authTokenProvider As IAuthenticationTokenProvider)
+			_fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, authTokenProvider, Me.CancellationToken)
 			AddHandler _fileTapiBridge.TapiClientChanged, AddressOf FileOnTapiClientChanged
 			AddHandler _fileTapiBridge.TapiFatalError, AddressOf OnTapiFatalError
 			AddHandler _fileTapiBridge.TapiProgress, AddressOf FileOnTapiProgress
@@ -381,7 +374,7 @@ Namespace kCura.WinEDDS
 			AddHandler _fileTapiBridge.TapiErrorMessage, AddressOf OnTapiErrorMessage
 			AddHandler _fileTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
 
-			_bulkLoadTapiBridge = TapiBridgeFactory.CreateUploadBridge(bulkLoadParameters, Me.Logger, Me.CancellationToken)
+			_bulkLoadTapiBridge = TapiBridgeFactory.CreateUploadBridge(bulkLoadParameters, Me.Logger, authTokenProvider, Me.CancellationToken)
 			_bulkLoadTapiBridge.TargetPath = bulkLoadParameters.FileShare
 			AddHandler _bulkLoadTapiBridge.TapiClientChanged, AddressOf BulkLoadOnTapiClientChanged
 			AddHandler _bulkLoadTapiBridge.TapiStatistics, AddressOf BulkLoadOnTapiStatistics
@@ -426,19 +419,11 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		''' <summary>
-		''' Dump the statistic object.
+		''' Logs the statistics object.
 		''' </summary>
-		Protected Sub DumpStatisticsInfo()
-			Me.LogInformation("Statistics info:")
-			Me.LogInformation("Document count: {DocCount}", _statistics.DocCount)
-			Me.LogInformation("Documents created: {DocsCreated}", _statistics.DocumentsCreated)
-			Me.LogInformation("Documents updated: {DocsUpdated}", _statistics.DocumentsUpdated)
-			Me.LogInformation("Files processed: {FilesProcessed}", _statistics.FilesProcessed)
-
-			Dim pair As DictionaryEntry
-			For Each pair In _statistics.ToDictionary()
-				Me.LogInformation("{StatsKey}: {StatsValue}", pair.Key, pair.Value)
-			Next
+		Protected Sub LogStatistics()
+			Dim statisticsDict As System.Collections.Generic.IDictionary(Of String, Object) = _statistics.ToDictionaryForLogs()
+			Me.LogInformation("Import statistics: {@Statistics}", statisticsDict)
 		End Sub
 
 		Protected Sub LogInformation(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
@@ -514,6 +499,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub BulkLoadOnTapiClientChanged(ByVal sender As Object, ByVal e As TapiClientEventArgs)
+			Me._bulkLoadTapiClient = e.Client
 			Me._bulkLoadTapiClientName = e.Name
 			Me.OnTapiClientChanged()
 		End Sub
@@ -541,15 +527,16 @@ Namespace kCura.WinEDDS
 
 				If ShouldImport AndAlso e.Successful Then
 					Me.FileTapiProgressCount += 1
+					_statistics.NativeFilesTransferredCount += 1
 					WriteTapiProgressMessage($"End upload '{e.FileName}' file. ({System.DateTime.op_Subtraction(e.EndTime, e.StartTime).Milliseconds}ms)", e.LineNumber)
 				End If
 			End SyncLock
 		End Sub
-
+		
 		Private Sub BulkLoadOnTapiProgress(ByVal sender As Object, ByVal e As TapiProgressEventArgs)
 			SyncLock _syncRoot
-				If e.Completed Then
-					_batchMetadataTapiProgressCount += 1
+				If ShouldImport AndAlso e.Successful Then
+					_statistics.MetadataFilesTransferredCount += 1
 				End If
 			End SyncLock
 		End Sub
@@ -627,45 +614,62 @@ Namespace kCura.WinEDDS
 			RaiseEvent UploadModeChangeEvent(statusBarText)
 		End Sub
 
-		Public Sub WaitForPendingMetadataUploads()
-			Dim waitResult As Boolean = WaitForRetry(
-				Function()
-					Return _batchMetadataTapiProgressCount >= Me.MetadataFilesCount
-				End Function,
-				"Waiting for all metadata files to upload...",
-				"Metadata file uploads completed.",
-				"Failed to wait for all pending metadata file uploads.",
-				_metadataFileCheckRetryCount,
-				_fileCheckWaitBetweenRetriesMilliseconds)
-
-			_batchMetadataTapiProgressCount = 0
+		''' <summary>
+		''' Awaits completion of all pending metadata uploads for the current batch and optimize file transfers by not disposing the transfer job. This should be executed before the mass import API service call.
+		''' </summary>
+		Protected Sub AwaitPendingBulkLoadFileUploadsForBatch()
+			Const KeepJobAlive As Boolean = True
+			Me.BulkLoadTapiBridge.WaitForTransfers(
+				My.Resources.Strings.BulkLoadFileUploadsWaitMessage,
+				My.Resources.Strings.BulkLoadFileUploadsSuccessMessage,
+				My.Resources.Strings.BulkLoadFileUploadsErrorMessage,
+				KeepJobAlive)
 			Me.MetadataFilesCount = 0
-
-			' REL-317973: Design expectations require ALL BCP load files to transfer successfully!
-			'             Otherwise, subsequent exceptions are virtually guaranteed.
-			If Not waitResult And Me.ShouldImport
-				Dim maxWaitPeriod As TimeSpan = TimeSpan.FromMilliseconds(_metadataFileCheckRetryCount * _fileCheckWaitBetweenRetriesMilliseconds)
-				Dim errorMessage As String = String.Format(
-					CultureInfo.CurrentCulture,
-					My.Resources.Strings.MetadataTransferExceptionMessage,
-					maxWaitPeriod.TotalMinutes)
-				Throw New MetadataTransferException(errorMessage)
-			End If
 		End Sub
 
-		Public Sub WaitForPendingFileUploads()
+		''' <summary>
+		''' Awaits completion of all pending metadata uploads for the import job and dispose all transfer related objects. This should be called before the mass import API service call.
+		''' </summary>
+		Protected Sub AwaitPendingBulkLoadFileUploadsForJob()
+			Const KeepJobAlive As Boolean = False
+			Me.BulkLoadTapiBridge.WaitForTransfers(
+				My.Resources.Strings.BulkLoadFileUploadsWaitMessage,
+				My.Resources.Strings.BulkLoadFileUploadsSuccessMessage,
+				My.Resources.Strings.BulkLoadFileUploadsErrorMessage,
+				KeepJobAlive)
+		End Sub
+
+		''' <summary>
+		''' Awaits completion of all pending physical file uploads for the current batch and optimize file transfers by not disposing the transfer job.
+		''' </summary>
+		''' <remarks>
+		''' Migrating to WaitForTransfers was avoided to address risk/SOI concerns but should be done in a future release.
+		''' </remarks>
+		Protected Sub AwaitPendingPhysicalFileUploadsForBatch()
 			WaitForRetry(
 				Function()
 					Return _batchFileTapiProgressCount >= Me.ImportFilesCount
 				End Function,
-				"Waiting for all native files to upload...",
-				"Native file uploads completed.",
-				"Failed to wait for all pending native file uploads.",
+				My.Resources.Strings.PhysicalFileUploadsWaitMessage,
+				My.Resources.Strings.PhysicalFileUploadsSuccessMessage,
+				My.Resources.Strings.PhysicalFileUploadsErrorMessage,
 				_fileCheckRetryCount,
 				_fileCheckWaitBetweenRetriesMilliseconds)
 
 			_batchFileTapiProgressCount = 0
 			Me.ImportFilesCount = 0
+		End Sub
+
+		''' <summary>
+		''' Awaits completion of all pending physical file uploads for the import job and dispose all transfer related objects.
+		''' </summary>
+		Protected Sub AwaitPendingPhysicalFileUploadsForJob()
+			Const KeepJobAlive As Boolean = False
+			Me.FileTapiBridge.WaitForTransfers(
+				My.Resources.Strings.PhysicalFileUploadsWaitMessage,
+				My.Resources.Strings.PhysicalFileUploadsSuccessMessage,
+				My.Resources.Strings.PhysicalFileUploadsErrorMessage,
+				KeepJobAlive)
 		End Sub
 
 		Public Function WaitForRetry(ByVal retryFunction As Func(Of Boolean),

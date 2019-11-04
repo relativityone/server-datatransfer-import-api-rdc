@@ -14,6 +14,7 @@ namespace Relativity.DataExchange.Transfer
 
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Resources;
+	using Relativity.Logging;
 	using Relativity.Transfer;
 	using Relativity.Transfer.Aspera;
 
@@ -38,14 +39,15 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="parameters">
 		/// The native file transfer parameters.
 		/// </param>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
+		/// <param name="authTokenProvider">Authentication token provider.</param>
 		/// <param name="token">
 		/// The cancellation token.
 		/// </param>
-		public UploadTapiBridge2(UploadTapiBridgeParameters2 parameters, ITransferLog log, CancellationToken token)
-			: this(new TapiObjectService(), parameters, log, token)
+		public UploadTapiBridge2(UploadTapiBridgeParameters2 parameters, ILog logger, IAuthenticationTokenProvider authTokenProvider, CancellationToken token)
+			: this(new TapiObjectService(authTokenProvider), parameters, logger, token)
 		{
 		}
 
@@ -58,8 +60,8 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="parameters">
 		/// The native file transfer parameters.
 		/// </param>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <param name="token">
 		/// The cancellation token.
@@ -67,9 +69,9 @@ namespace Relativity.DataExchange.Transfer
 		public UploadTapiBridge2(
 			ITapiObjectService factory,
 			UploadTapiBridgeParameters2 parameters,
-			ITransferLog log,
+			ILog logger,
 			CancellationToken token)
-			: this(factory, parameters, null, log, token)
+			: this(factory, parameters, null, logger, token)
 		{
 		}
 
@@ -85,8 +87,8 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="context">
 		/// The transfer context.
 		/// </param>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <param name="token">
 		/// The cancellation token.
@@ -95,9 +97,9 @@ namespace Relativity.DataExchange.Transfer
 			ITapiObjectService factory,
 			UploadTapiBridgeParameters2 parameters,
 			TransferContext context,
-			ITransferLog log,
+			ILog logger,
 			CancellationToken token)
-			: base(factory, parameters, TransferDirection.Upload, context, log, token)
+			: base(factory, parameters, TransferDirection.Upload, context, logger, token)
 		{
 			if (parameters == null)
 			{
@@ -161,10 +163,10 @@ namespace Relativity.DataExchange.Transfer
 		public override void LogTransferParameters()
 		{
 			base.LogTransferParameters();
-			this.TransferLog.LogInformation("BCP file transfer: {BcpFileTransfer}", this.parameters.BcpFileTransfer);
-			this.TransferLog.LogInformation("Aspera BCP root folder: {AsperaBcpRootFolder}", this.parameters.AsperaBcpRootFolder);
-			this.TransferLog.LogInformation("Sort into volume: {SortIntoVolumes}", this.parameters.SortIntoVolumes);
-			this.TransferLog.LogInformation("Max file per folder: {MaxFilesPerFolder}", this.parameters.MaxFilesPerFolder);
+			this.Logger.LogInformation("BCP file transfer: {BcpFileTransfer}", this.parameters.BcpFileTransfer);
+			this.Logger.LogInformation("Aspera BCP root folder: {AsperaBcpRootFolder}", this.parameters.AsperaBcpRootFolder);
+			this.Logger.LogInformation("Sort into volume: {SortIntoVolumes}", this.parameters.SortIntoVolumes);
+			this.Logger.LogInformation("Max file per folder: {MaxFilesPerFolder}", this.parameters.MaxFilesPerFolder);
 		}
 
 		/// <summary>

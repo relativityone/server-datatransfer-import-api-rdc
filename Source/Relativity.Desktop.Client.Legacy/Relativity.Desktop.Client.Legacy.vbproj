@@ -96,6 +96,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+    <Optimize>true</Optimize>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -381,6 +382,7 @@
     <Compile Include="Startup.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="WebApiCredentialSetter.vb" />
     <Compile Include="WebHelpUrls.vb" />
     <Compile Include="TaskDialogs.vb" />
     <Compile Include="ThreadExceptionHandler.vb" />

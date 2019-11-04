@@ -492,7 +492,7 @@ Namespace kCura.WinEDDS
 
 			' This will tie both native and BCP to a single unique identifier.
 			nativeParameters.ClientRequestId = Guid.NewGuid()
-			nativeParameters.Credentials = If(args.TapiCredentials, args.Credentials)
+			nativeParameters.Credentials = If(args.WebApiCredential.Credential, args.Credentials)
 			nativeParameters.AsperaDocRootLevels = AppSettings.Instance.TapiAsperaNativeDocRootLevels
 			nativeParameters.FileShare = args.CaseInfo.DocumentPath
 			nativeParameters.ForceAsperaClient = AppSettings.Instance.TapiForceAsperaClient
@@ -530,7 +530,7 @@ Namespace kCura.WinEDDS
 
 			' Never preserve timestamps for BCP load files.
 			bcpParameters.PreserveFileTimestamps = false
-			CreateTapiBridges(nativeParameters, bcpParameters)
+			CreateTapiBridges(nativeParameters, bcpParameters, args.WebApiCredential.TokenProvider)
 		End Sub
 
 #End Region
@@ -733,12 +733,12 @@ Namespace kCura.WinEDDS
 				End Using
 				Timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
 				Me.LogInformation("Successfully imported {ImportCount} documents via WinEDDS.", Me.FileTapiProgressCount)
-				Me.DumpStatisticsInfo()
+				Me.LogStatistics()
 				Return True
 			Catch ex As System.Exception
 				Me.WriteFatalError(Me.CurrentLineNumber, ex)
 				Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
-				Me.DumpStatisticsInfo()
+				Me.LogStatistics()
 			Finally
 				Using Timekeeper.CaptureTime("ReadFile_CleanupTempTables")
 					DestroyTapiBridges()
@@ -1208,14 +1208,14 @@ Namespace kCura.WinEDDS
 
 			If (shouldCompleteNativeJob Or lastRun) And _jobCompleteNativeCount > 0 Then
 				_jobCompleteNativeCount = 0
-				CompletePendingPhysicalFileTransfers("Waiting for the native file job to complete...", "Native file job completed.", "Failed to complete all pending native file transfers.")
+				Me.AwaitPendingPhysicalFileUploadsForJob()
 			End If
 
 			' REL-157042: Prevent importing bad data into Relativity or honor stoppage.
 			If ShouldImport Then
 				Try
 					If ShouldImport AndAlso _copyFileToRepository AndAlso FileTapiBridge.TransfersPending Then
-						WaitForPendingFileUploads()
+						Me.AwaitPendingPhysicalFileUploadsForBatch()
 						JobCounter += 1
 
 						' The sync progress addresses an issue with TAPI clients that fail to raise progress when a failure occurs but successfully transfer all files via job retry (Aspera).
@@ -1227,7 +1227,6 @@ Namespace kCura.WinEDDS
 					End If
 
 					Dim start As Int64 = System.DateTime.Now.Ticks
-
 					If ShouldImport Then
 						Me.PushNativeBatch(outputNativePath, shouldCompleteMetadataJob, lastRun)
 					End If
@@ -1329,7 +1328,7 @@ Namespace kCura.WinEDDS
 			If _batchCounter = 0 OrElse Not ShouldImport Then
 				If _jobCompleteMetadataCount > 0 Then
 					_jobCompleteMetadataCount = 0
-					CompletePendingBulkLoadFileTransfers()
+					Me.AwaitPendingBulkLoadFileUploadsForJob()
 				End If
 				Exit Sub
 			End If
@@ -1337,7 +1336,7 @@ Namespace kCura.WinEDDS
 
 			If shouldCompleteJob And _jobCompleteMetadataCount > 0 Then
 				_jobCompleteMetadataCount = 0
-				CompletePendingBulkLoadFileTransfers()
+				Me.AwaitPendingBulkLoadFileUploadsForJob()
 			End If
 
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
@@ -1352,9 +1351,9 @@ Namespace kCura.WinEDDS
 			_jobCompleteMetadataCount += 4
 
 			If lastRun Then
-				CompletePendingBulkLoadFileTransfers()
+				Me.AwaitPendingBulkLoadFileUploadsForJob()
 			Else
-				WaitForPendingMetadataUploads()
+				Me.AwaitPendingBulkLoadFileUploadsForBatch()
 			End If
 
 			_lastRunMetadataImport = System.DateTime.Now.Ticks
@@ -1393,21 +1392,22 @@ Namespace kCura.WinEDDS
 			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 			settings.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
 			settings.Billable = _settings.Billable
-			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing Then
+			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing AndAlso Not _Task.IsFaulted AndAlso Not _Task.IsCanceled Then
 				WaitOnPushBatchTask()
 				_task = Nothing
 			End If
 			Dim makeServiceCalls As Action =
-					Sub()
-						Dim start As Int64 = DateTime.Now.Ticks
-						Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
+				    Sub()
+					    Dim start As Int64 = DateTime.Now.Ticks
+					    Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
-						Statistics.ProcessRunResults(runResults)
-						Statistics.SqlTime += (DateTime.Now.Ticks - start)
+					    Statistics.ProcessRunResults(runResults)
+					    Statistics.SqlTime += (DateTime.Now.Ticks - start)
+					    Statistics.BatchCount += 1
 
-						UpdateStatisticsSnapshot(DateTime.Now)
-						Me.ManageErrors(_artifactTypeID)
-					End Sub
+					    UpdateStatisticsSnapshot(DateTime.Now)
+					    Me.ManageErrors(_artifactTypeID)
+				    End Sub
 			If _usePipeliningForNativeAndObjectImports Then
 				Dim f As New System.Threading.Tasks.TaskFactory()
 				_task = f.StartNew(makeServiceCalls)
@@ -2173,7 +2173,7 @@ Namespace kCura.WinEDDS
 
 		''' <summary>
 		''' The exception thrown when the extracted text file length exceeds the max extracted text length.
-		''' When the encoding is not specified or is <see cref="System.Text.Encoding.UTF8"/>, the max length is 1GB;
+		''' When the encoding is not specified or is <see cref="System.Text.Encoding.UTF8"/>, the max length is 1GB
 		''' otherwise, the max length is <see cref="System.Int32.MaxValue"/>.
 		''' </summary>
 		<Serializable>

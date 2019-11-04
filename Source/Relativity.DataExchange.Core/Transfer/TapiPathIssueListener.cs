@@ -10,6 +10,7 @@ namespace Relativity.DataExchange.Transfer
 	using System.Text;
 
 	using Relativity.DataExchange.Resources;
+	using Relativity.Logging;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -25,8 +26,8 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TapiPathIssueListener"/> class.
 		/// </summary>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <param name="direction">
 		/// The transfer direction.
@@ -34,8 +35,8 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="context">
 		/// The transfer context.
 		/// </param>
-		public TapiPathIssueListener(ITransferLog log, TransferDirection direction, TransferContext context)
-			: base(log, context)
+		public TapiPathIssueListener(ILog logger, TransferDirection direction, TransferContext context)
+			: base(logger, context)
 		{
 			this.transferDirection = direction;
 		}
@@ -167,7 +168,7 @@ namespace Relativity.DataExchange.Transfer
 		{
 			if (issue.Attributes.HasFlag(IssueAttributes.Error))
 			{
-				this.TransferLog.LogError(
+				this.Logger.LogError(
 					"A serious transfer job-level error has occurred. Message={Message}, Code={Code}, Attributes={Attributes}, IsRetryable={IsRetryable}",
 					issue.Message,
 					issue.Code,
@@ -186,7 +187,7 @@ namespace Relativity.DataExchange.Transfer
 					triesLeft,
 					retryTimeSpan);
 				this.PublishWarningMessage(message, TapiConstants.NoLineNumber);
-				this.TransferLog.LogWarning(
+				this.Logger.LogWarning(
 					"A transfer job-level warning has occurred. Message={Message}, Code={Code}, Attributes={Attributes}, IsRetryable={IsRetryable}.",
 					issue.Message,
 					issue.Code,
@@ -202,7 +203,7 @@ namespace Relativity.DataExchange.Transfer
 			{
 				// Note: paths containing fatal errors force the transfer to terminate
 				//       and error handling is already addressed. Log it here just in case.
-				this.TransferLog.LogError(
+				this.Logger.LogError(
 					"A serious transfer file-level error has occurred on line {LineNumber}. Message={Message}, Code={Code}, SourcePath={SourcePath}, Attributes={Attributes}, IsRetryable={IsRetryable}",
 					lineNumber,
 					issue.Message,
@@ -223,7 +224,7 @@ namespace Relativity.DataExchange.Transfer
 					triesLeft,
 					retryTimeSpan);
 				this.PublishWarningMessage(message, issue.Path.Order);
-				this.TransferLog.LogWarning(
+				this.Logger.LogWarning(
 					"A transfer file-level warning has occurred on line {LineNumber}. Message={Message}, Code={Code}, SourcePath={SourcePath}, Attributes={Attributes}, IsRetryable={IsRetryable}",
 					lineNumber,
 					issue.Message,

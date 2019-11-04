@@ -17,7 +17,8 @@ namespace kCura.Relativity.ImportAPI
 {
 	using global::Relativity.DataExchange;
 
-	using Monitoring.Sinks;
+	using IAuthenticationTokenProvider = global::Relativity.Transfer.IAuthenticationTokenProvider;
+	using Monitoring;
 
 	/// <summary>
 	/// Provides methods for developing custom import utilities for documents, images, production sets, and Dynamic Objects.
@@ -35,7 +36,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <summary>
 		/// The current Transfer API credentials.
 		/// </summary>
-		private NetworkCredential _tapiCredentials;
+		private WebApiCredential webApiCredential;
 
 		/// <summary>
 		/// The lazy-loaded object type manager instance.
@@ -46,6 +47,11 @@ namespace kCura.Relativity.ImportAPI
 		/// The lazy-loaded production manager instance.
 		/// </summary>
 		private ProductionManager _productionManager;
+
+		/// <summary>
+		/// Authentication token provider
+		/// </summary>
+		private IAuthenticationTokenProvider _authenticationTokenProvider = new NullAuthTokenProvider();
 
 		/// <summary>
 		/// Holds cookies for the current session.
@@ -170,7 +176,12 @@ namespace kCura.Relativity.ImportAPI
 				throw new InvalidLoginException("The current claims principal does not have a bearer token.");
 			}
 
-			return CreateByBearerToken(webServiceUrl, token);
+
+			ImportAPI importApi = CreateByBearerToken(webServiceUrl, token);
+			
+			// Here we override token provider so Tapi can refresh credentials on token expiration event
+			importApi.webApiCredential.TokenProvider = new RsaBearerTokenAuthenticationProvider();
+			return importApi;
 		}
 
 		/// <summary>
@@ -337,7 +348,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
-			return new ImageImportBulkArtifactJob(_credentials, this._tapiCredentials, _cookieMonster, (int)ExecutionSource);
+			return new ImageImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, (int)ExecutionSource);
 		}
 
 		/// <summary>
@@ -386,7 +397,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </returns>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId)
 		{
-			var returnJob = new ImportBulkArtifactJob(_credentials, _tapiCredentials, _cookieMonster, (int)ExecutionSource);
+			var returnJob = new ImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, (int)ExecutionSource);
 			returnJob.Settings.ArtifactTypeId = artifactTypeId;
 			return returnJob;
 		}
@@ -462,12 +473,42 @@ namespace kCura.Relativity.ImportAPI
 			}
 
 			_credentials = credentials.Credentials;
-			_tapiCredentials = credentials.TapiCredential;
+			this.webApiCredential = new WebApiCredential()
+			{
+				Credential = credentials.Credentials,
+				TokenProvider = this._authenticationTokenProvider
+			};
 			_cookieMonster = credentials.CookieMonster;
 			if (_credentials == null)
 			{
 				throw new kCura.WinEDDS.Exceptions.InvalidLoginException("Login failed.");
 			}
+
+			this.SendAuthenticationTypeMetric(credentials.Credentials, this.GetAuthenticationMethod(userName));
+		}
+
+		private TelemetryConstants.AuthenticationMethod GetAuthenticationMethod(string username)
+		{
+			return (string.IsNullOrEmpty(username)
+				        ? TelemetryConstants.AuthenticationMethod.Windows
+				        : (username == kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName
+					           ? TelemetryConstants.AuthenticationMethod.BearerToken
+					           : TelemetryConstants.AuthenticationMethod.UsernamePassword));
+		}
+
+		private void SendAuthenticationTypeMetric(NetworkCredential credentials, TelemetryConstants.AuthenticationMethod authenticationMethod)
+		{
+			Monitoring.Sinks.IMetricService metricService = new Monitoring.Sinks.MetricService(new Monitoring.Sinks.ImportApiMetricSinkConfig(), ServiceFactoryFactory.Create(credentials));
+			var logger = RelativityLogger.Instance;
+			var metric = new MetricAuthenticationType()
+				             {
+					             CorrelationID = Guid.NewGuid().ToString(),
+					             UnitOfMeasure = "login(s)",
+					             AuthenticationMethod = authenticationMethod,
+					             SystemType = logger.System,
+					             SubSystemType = logger.SubSystem
+				             };
+			metricService.Log(metric);
 		}
 
 		/// <summary>
@@ -548,7 +589,7 @@ namespace kCura.Relativity.ImportAPI
 				//If the destination folder path is empty, we only need to test file Read/Write permissions
 				if (!String.IsNullOrEmpty(destFolderPath))
 				{
-						System.IO.Directory.CreateDirectory(destFolderPath);
+					System.IO.Directory.CreateDirectory(destFolderPath);
 				}
 
 				System.IO.File.Create(destFolderPath + dummyText).Close();

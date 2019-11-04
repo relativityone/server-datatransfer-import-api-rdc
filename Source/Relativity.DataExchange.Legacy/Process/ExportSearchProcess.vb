@@ -3,8 +3,10 @@ Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Service.Export
 Imports Monitoring
 Imports Monitoring.Sinks
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Transfer
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public Class ExportSearchProcess
@@ -18,25 +20,35 @@ Namespace kCura.WinEDDS
 		Private _warningCount As Int32
 		Private _uploadModeText As String = Nothing
 		Private _hasErrors As Boolean
+		Private _tapiClient As TapiClient = TapiClient.None
+
 		Protected Overrides ReadOnly Property JobType As String = "Export"
 
-		Protected Overrides ReadOnly Property TapiClientName As String
+		Protected Overrides ReadOnly Property TapiClient As TapiClient
 			Get
-				Return _tapiClientName
+				Return _tapiClient
 			End Get
 		End Property
 
 		Public Property UserNotification As Exporters.IUserNotification
 		Public Property UserNotificationFactory As Func(Of Exporter, IUserNotification)
 
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
-			MyBase.New(New MetricService(New ImportApiMetricSinkConfig))
-			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
-			_exportConfig = exportConfig
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, RelativityLogger.Instance)
 		End Sub
 
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog)
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, New MetricService(New ImportApiMetricSinkConfig), logger)
+		End Sub
+
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService)
-			MyBase.New(metricService)
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, metricService, RelativityLogger.Instance)
+		End Sub
+
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService, logger As ILog)
+			MyBase.New(metricService, logger)
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
 			_exportConfig = exportConfig
 		End Sub
@@ -54,6 +66,8 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
+			' This is to ensure we send non-zero JobProgressMessage even with small job
+			SendMetricJobProgress(_searchExporter.Statistics, checkThrottling := False)
 			Me.Context.PublishStatusEvent("", "Export completed")
 			Me.Context.PublishProcessCompleted()
 		End Sub
@@ -61,11 +75,15 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub OnFatalError()
 			MyBase.OnFatalError()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _searchExporter.Statistics)
+			' This is to ensure we send non-zero JobProgressMessage even with small job
+			SendMetricJobProgress(_searchExporter.Statistics, checkThrottling := False)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
 			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
+			' This is to ensure we send non-zero JobProgressMessage even with small job
+			SendMetricJobProgress(_searchExporter.Statistics, checkThrottling := False)
 			Me.Context.PublishProcessCompleted(False, _searchExporter.ErrorLogFileName, True)
 		End Sub
 
@@ -78,12 +96,12 @@ Namespace kCura.WinEDDS
 				Return _
 					New ExtendedExporter(TryCast(Me.ExportFile, ExtendedExportFile), Me.Context,
 										 New WebApiServiceFactory(Me.ExportFile),
-										 _loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
+										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger, Me.CancellationTokenSource.Token) With {.InteractionManager = UserNotification}
 			Else
 				Return _
 					New Exporter(Me.ExportFile, Me.Context,
 										 New WebApiServiceFactory(Me.ExportFile),
-										 _loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
+										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger, Me.CancellationTokenSource.Token) With {.InteractionManager = UserNotification}
 
 			End If
 		End Function
@@ -113,9 +131,11 @@ Namespace kCura.WinEDDS
 			End If
 
 			Dim statusBarText As String = TapiModeHelper.BuildExportStatusText(args.TransferClients)
-			_tapiClientName = statusBarText
+			_tapiClient = TapiModeHelper.GetTapiClient(args.TransferClients)
+			
 			SendMetricJobStarted()
 			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)
+			Me.Logger.LogInformation("Export transfer mode changed: {@TransferClients}", args.TransferClients)
 		End Sub
 
 		Private Sub _productionExporter_StatusMessage(ByVal e As ExportEventArgs) Handles _searchExporter.StatusMessage
@@ -124,10 +144,10 @@ Namespace kCura.WinEDDS
 					Interlocked.Increment(_errorCount)
 					Me.Context.PublishErrorEvent(e.DocumentsExported.ToString, e.Message)
 				Case EventType2.Progress
-					SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+					SendMetricJobProgress(e.Statistics, checkThrottling := True)
 					Me.Context.PublishStatusEvent("", e.Message)
 				Case EventType2.Statistics
-					SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+					SendMetricJobProgress(e.Statistics, checkThrottling := True)
 				Case EventType2.Status
 					Me.Context.PublishStatusEvent(e.DocumentsExported.ToString, e.Message)
 				Case EventType2.Warning

@@ -11,6 +11,7 @@ namespace Relativity.DataExchange.Transfer
 	using System.Globalization;
 	using System.Linq;
 
+	using Relativity.Logging;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -42,14 +43,14 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TapiStatisticsListener"/> class.
 		/// </summary>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <param name="context">
 		/// The transfer context.
 		/// </param>
-		public TapiStatisticsListener(ITransferLog log, TransferContext context)
-			: base(log, context)
+		public TapiStatisticsListener(ILog logger, TransferContext context)
+			: base(logger, context)
 		{
 		}
 
@@ -123,22 +124,21 @@ namespace Relativity.DataExchange.Transfer
 			if (totalSeconds > 0)
 			{
 				var aggregateDataRate = totalTransferredBytes / totalSeconds;
-				var aggregateMessage = string.Format(
-					CultureInfo.CurrentCulture,
-					"WinEDDS aggregate statistics: {0}/sec",
+				this.Logger.LogInformation(
+					"Aggregate job {TransferJobId} statistics: {TransferDataRate}/sec",
+					e.Request?.JobId,
 					ToFileSize(aggregateDataRate));
-				this.TransferLog.LogInformation2(e.Request, aggregateMessage);
 			}
 
 			var jobMessage = string.Format(
 				CultureInfo.CurrentCulture,
-				"WinEDDS job {0} statistics - Files: {1}/{2} - Progress: {3:0.00}% - Rate: {4:0.00}/sec",
+				"Job {0} statistics - Files: {1}/{2} - Progress: {3:0.00}% - Rate: {4:0.00}/sec",
 				e.Request.JobId,
 				e.Statistics.TotalTransferredFiles,
 				e.Statistics.TotalRequestFiles,
 				e.Statistics.Progress,
 				ToFileSize(transferRateBytesPerSecond));
-			this.TransferLog.LogInformation2(e.Request, jobMessage);
+			this.Logger.LogInformation(jobMessage);
 			this.LogTimestamp = DateTime.Now;
 		}
 
