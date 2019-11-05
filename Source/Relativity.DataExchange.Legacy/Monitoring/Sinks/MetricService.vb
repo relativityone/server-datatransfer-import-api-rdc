@@ -1,5 +1,6 @@
 ﻿
 Imports System.Collections.Generic
+Imports Relativity.DataExchange
 Imports Relativity.Services.ServiceProxy
 
 Namespace Monitoring.Sinks
@@ -31,7 +32,13 @@ Namespace Monitoring.Sinks
         ''' <inheritdoc/>
         Public Sub Log(metric As MetricBase) Implements IMetricService.Log
             For Each sink As IMetricSink In _sinks
-                If sink.IsEnabled Then sink.Log(metric)
+                If sink.IsEnabled Then
+                    Try
+                        sink.Log(metric)
+                    Catch ex As Exception
+                        RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem).LogWarning(ex, "Failed to submit {metricType}", metric.GetType())
+                    End Try
+                End If
             Next
         End Sub
 
