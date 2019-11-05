@@ -706,7 +706,7 @@ namespace Relativity.DataExchange
 
 		/// <inheritdoc />
 		[AppSetting(
-			AppSettingsConstants.SectionLegacyWinEdds,
+			AppSettingsConstants.SectionDataExchange,
 			AppSettingsConstants.TapiAsperaDatagramSizeKey,
 			AppSettingsConstants.TapiAsperaDatagramSizeDefaultValue)]
 		int IAppSettings.TapiAsperaDatagramSize
