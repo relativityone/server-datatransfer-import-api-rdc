@@ -100,7 +100,7 @@ Public MustInherit Class MonitoredProcessBase
 		End If
 	End Sub
 
-	Protected Sub SendMetricJobEndReport(jobStatus As String, statistics As Statistics)
+	Protected Sub SendMetricJobEndReport(jobStatus As TelemetryConstants.JobStatus, statistics As Statistics)
 		Dim totalRecordsCount As Long = GetTotalRecordsCount()
 		Dim completedRecordsCount As Long = GetCompletedRecordsCount()
 		Dim jobDuration As Double = (EndTime - StartTime).TotalSeconds

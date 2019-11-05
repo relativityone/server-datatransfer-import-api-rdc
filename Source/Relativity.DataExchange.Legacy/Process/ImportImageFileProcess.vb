@@ -101,14 +101,14 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnFatalError()
 			MyBase.OnFatalError()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _imageFileImporter.Statistics)
+			SendMetricJobEndReport(TelemetryConstants.JobStatus.Failed, _imageFileImporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
 			SendMetricJobProgress(_imageFileImporter.Statistics, checkThrottling := False)
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendMetricJobEndReport(CStr(IIf(_imageFileImporter.IsCancelledByUser, TelemetryConstants.JobStatus.CANCELLED, TelemetryConstants.JobStatus.COMPLETED)), _imageFileImporter.Statistics)
+			SendMetricJobEndReport(CType(IIf(_imageFileImporter.IsCancelledByUser, TelemetryConstants.JobStatus.Cancelled, TelemetryConstants.JobStatus.Completed), TelemetryConstants.JobStatus), _imageFileImporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
 			SendMetricJobProgress(_imageFileImporter.Statistics, checkThrottling := False)
 			Me.Context.PublishProcessCompleted(False, "", True)
@@ -116,7 +116,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendMetricJobEndReport(CStr(IIf(_imageFileImporter.IsCancelledByUser, TelemetryConstants.JobStatus.CANCELLED, TelemetryConstants.JobStatus.COMPLETED)), _imageFileImporter.Statistics)
+			SendMetricJobEndReport(CType(IIf(_imageFileImporter.IsCancelledByUser, TelemetryConstants.JobStatus.Cancelled, TelemetryConstants.JobStatus.Completed), TelemetryConstants.JobStatus), _imageFileImporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
 			SendMetricJobProgress(_imageFileImporter.Statistics, checkThrottling := False)
 			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)

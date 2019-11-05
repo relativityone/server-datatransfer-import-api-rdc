@@ -65,7 +65,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendMetricJobEndReport(CStr(IIf(_searchExporter.IsCancelledByUser, TelemetryConstants.JobStatus.CANCELLED, TelemetryConstants.JobStatus.COMPLETED)), _searchExporter.Statistics)
+			SendMetricJobEndReport(CType(IIf(_searchExporter.IsCancelledByUser, TelemetryConstants.JobStatus.Cancelled, TelemetryConstants.JobStatus.Completed), TelemetryConstants.JobStatus), _searchExporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
 			SendMetricJobProgress(_searchExporter.Statistics, checkThrottling := False)
 			Me.Context.PublishStatusEvent("", "Export completed")
@@ -74,14 +74,14 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnFatalError()
 			MyBase.OnFatalError()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _searchExporter.Statistics)
+			SendMetricJobEndReport(TelemetryConstants.JobStatus.Failed, _searchExporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
 			SendMetricJobProgress(_searchExporter.Statistics, checkThrottling := False)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendMetricJobEndReport(CStr(IIf(_searchExporter.IsCancelledByUser, TelemetryConstants.JobStatus.CANCELLED, TelemetryConstants.JobStatus.COMPLETED)), _searchExporter.Statistics)
+			SendMetricJobEndReport(CType(IIf(_searchExporter.IsCancelledByUser, TelemetryConstants.JobStatus.Cancelled, TelemetryConstants.JobStatus.Completed), TelemetryConstants.JobStatus), _searchExporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
 			SendMetricJobProgress(_searchExporter.Statistics, checkThrottling := False)
 			Me.Context.PublishProcessCompleted(False, _searchExporter.ErrorLogFileName, True)
