@@ -83,7 +83,6 @@ namespace Relativity.DataExchange.Export.NUnit
 				this._nativeRepository,
 				this._imageRepository,
 				this._longTextRepository,
-				this._fileHelper.Object,
 				this._status.Object,
 				this._logger.Object);
 

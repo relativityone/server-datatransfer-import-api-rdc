@@ -94,17 +94,23 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldGetImageByUniqueId()
+		public void ItShouldGetImageByTargetFile()
 		{
 			// ACT
-			Image image1 = this._instance.GetByLineNumber(1);
-			Image image2 = this._instance.GetByLineNumber(2);
-			Image image3 = this._instance.GetByLineNumber(3);
+			IList<Image> image1 = this._instance.GetImagesByTargetFile("a.txt");
+			IList<Image> image2 = this._instance.GetImagesByTargetFile("b.txt");
+			IList<Image> image3 = this._instance.GetImagesByTargetFile("c.txt");
+			IList<Image> image4 = this._instance.GetImagesByTargetFile(null);
+			IList<Image> image5 = this._instance.GetImagesByTargetFile(string.Empty);
 
 			// ASSERT
-			Assert.That(image1, Is.EqualTo(this._images[0]));
-			Assert.That(image2, Is.Null);
-			Assert.That(image3, Is.EqualTo(this._images[2]));
+			Assert.That(image1.Count, Is.EqualTo(1));
+			Assert.That(image1[0], Is.EqualTo(this._images[0]));
+			Assert.That(image2.Count, Is.Zero);
+			Assert.That(image3.Count, Is.EqualTo(1));
+			Assert.That(image3[0], Is.EqualTo(this._images[2]));
+			Assert.That(image4.Count, Is.Zero);
+			Assert.That(image5.Count, Is.Zero);
 		}
 
 		[Test]
@@ -154,7 +160,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			var image3 = new Image(artifact3)
 			{
 				TransferCompleted = false,
-				ExportRequest = new PhysicalFileExportRequest(artifact3, "a.txt")
+				ExportRequest = new PhysicalFileExportRequest(artifact3, "c.txt")
 				{
 					FileName = "filename_3",
 					Order = 3

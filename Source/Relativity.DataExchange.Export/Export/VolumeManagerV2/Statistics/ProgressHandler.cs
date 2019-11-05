@@ -31,7 +31,7 @@
 			tapiBridge.TapiProgress -= this.OnFileProgress;
 		}
 
-		protected abstract void MarkAsTransferCompleted(string id, int lineNumber);
+		protected abstract void MarkAsTransferCompleted(string targetFile, int lineNumber, bool transferResult);
 
 		private void OnFileProgress(object sender, TapiProgressEventArgs e)
 		{
@@ -40,7 +40,7 @@
 			{
 				try
 				{
-					this.MarkAsTransferCompleted(e.FileName, e.LineNumber);
+					this.MarkAsTransferCompleted(e.TargetFile, e.LineNumber, e.Successful);
 				}
 				catch (Exception ex)
 				{
