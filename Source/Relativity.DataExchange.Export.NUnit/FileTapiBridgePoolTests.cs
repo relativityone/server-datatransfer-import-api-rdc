@@ -93,6 +93,8 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._transferClientHandler = new Mock<ITransferClientHandler>();
 
+			// Note: bypassed because the pool design doesn't mock transfer bridge objects.
+			const bool ForceCreatesTransferClient = false;
 			this._uut = new FileTapiBridgePool(
 				this._tapiBridgeParametersFactory,
 				this._tapiObjectService.Object,
@@ -100,7 +102,8 @@ namespace Relativity.DataExchange.Export.NUnit
 				this._filesStatistics,
 				this._messageHandler.Object,
 				this._transferClientHandler.Object,
-				this._logger.Object);
+				this._logger.Object,
+				ForceCreatesTransferClient);
 		}
 
 		[Test]
