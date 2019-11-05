@@ -4,13 +4,14 @@
 
 	public class FileDownloadProgressHandler : ProgressHandler
 	{
-		public FileDownloadProgressHandler(IDownloadProgressManager downloadProgressManager, ILog logger) : base(downloadProgressManager, logger)
+		public FileDownloadProgressHandler(IDownloadProgressManager downloadProgressManager, ILog logger)
+			: base(downloadProgressManager, logger)
 		{
 		}
 
-		protected override void MarkAsTransferCompleted(string id, int lineNumber)
+		protected override void MarkAsTransferCompleted(string targetFile, int lineNumber, bool transferResult)
 		{
-			DownloadProgressManager.MarkFileAsCompleted(id, lineNumber);
+			this.DownloadProgressManager.MarkFileAsCompleted(targetFile, lineNumber, transferResult);
 		}
 	}
 }
