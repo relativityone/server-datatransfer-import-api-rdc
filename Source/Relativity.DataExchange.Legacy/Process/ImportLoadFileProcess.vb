@@ -148,7 +148,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _loadFileImporter.Statistics)
+			SendMetricJobEndReport(CStr(IIf(_loadFileImporter.IsCancelledByUser, TelemetryConstants.JobStatus.CANCELLED, TelemetryConstants.JobStatus.COMPLETED)), _loadFileImporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
 			SendMetricJobProgress(_loadFileImporter.Statistics, checkThrottling := False)
 			Me.Context.PublishProcessCompleted(False, "", True)
@@ -156,7 +156,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _loadFileImporter.Statistics)
+			SendMetricJobEndReport(CStr(IIf(_loadFileImporter.IsCancelledByUser, TelemetryConstants.JobStatus.CANCELLED, TelemetryConstants.JobStatus.COMPLETED)), _loadFileImporter.Statistics)
 			' This is to ensure we send non-zero JobProgressMessage even with small job
 			SendMetricJobProgress(_loadFileImporter.Statistics, checkThrottling := False)
 			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
