@@ -132,9 +132,9 @@ namespace Relativity.DataExchange.Transfer
 		string AddPath(TransferPath path);
 
 		/// <summary>
-		/// Optionally force transfer mode selection instead of the default deferred behavior. Once the transfer mode is determined, <see cref="TapiClientChanged"/> is published immediately.
+		/// Optionally force creating the transfer client instead of the default behavior where construction is deferred until a transfer request is made. Once the transfer mode is determined, <see cref="TapiClientChanged"/> is published immediately.
 		/// </summary>
-		void ForceSelectTransferMode();
+		void CreateTransferClient();
 
 		/// <summary>
 		/// Waits for all pending transfers in the queue to complete and returns the transfer totals. This method returns immediately if transfer paths haven't been added to the queue.

@@ -6,7 +6,6 @@
 
 namespace Relativity.DataExchange.Export.NUnit
 {
-	using System.CodeDom;
 	using System.Net;
 	using System.Threading;
 
@@ -96,7 +95,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._transferClientHandler = new Mock<ITransferClientHandler>();
 
 			// Note: bypassed because the pool design doesn't mock transfer bridge objects.
-			const bool ForceSelectTransferMode = false;
+			const bool ForceCreatesTransferClient = false;
 			this._uut = new FileTapiBridgePool(
 				this._tapiBridgeParametersFactory,
 				this._tapiObjectService.Object,
@@ -105,7 +104,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				this._messageHandler.Object,
 				this._transferClientHandler.Object,
 				this._logger.Object,
-				ForceSelectTransferMode);
+				ForceCreatesTransferClient);
 		}
 
 		[Test]

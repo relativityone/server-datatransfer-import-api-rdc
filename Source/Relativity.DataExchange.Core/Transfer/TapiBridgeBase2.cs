@@ -494,16 +494,84 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <inheritdoc />
+		public virtual void CreateTransferClient()
+		{
+			this.CheckDispose();
+			if (this.transferClient != null)
+			{
+				return;
+			}
+
+			ClientConfiguration configuration = this.CreateClientConfiguration();
+			this.parameters.FileNotFoundErrorsDisabled = configuration.FileNotFoundErrorsDisabled;
+			this.parameters.FileNotFoundErrorsRetry = configuration.FileNotFoundErrorsRetry;
+			this.parameters.PermissionErrorsRetry = configuration.PermissionErrorsRetry;
+
+			// Note: allow zero for improved testability.
+			this.maxInactivitySeconds = this.parameters.MaxInactivitySeconds;
+			if (this.maxInactivitySeconds < 0)
+			{
+				this.maxInactivitySeconds = 1.25 * (this.parameters.WaitTimeBetweenRetryAttempts
+													* (this.parameters.MaxJobRetryAttempts + 1));
+			}
+
+			try
+			{
+				var clientId = this.tapiObjectService.GetClientId(this.parameters);
+				if (clientId != Guid.Empty)
+				{
+					configuration.ClientId = clientId;
+					this.CreateTransferClient(configuration);
+					this.PublishClientChanged(ClientChangeReason.ForceConfig);
+				}
+				else
+				{
+					configuration.ClientId = Guid.Empty;
+
+					// The configuration parameters may want to change order or restrict certain clients.
+					TransferClientStrategy clientStrategy;
+					if (!string.IsNullOrEmpty(this.parameters.ForceClientCandidates))
+					{
+						clientStrategy = new TransferClientStrategy(this.parameters.ForceClientCandidates);
+						this.TransferLog.LogInformation(
+							"Override the default transfer client strategy. Candidates={ForceClientCandidates}",
+							this.parameters.ForceClientCandidates);
+					}
+					else
+					{
+						clientStrategy = new TransferClientStrategy();
+						this.TransferLog.LogInformation("Using the default default transfer client strategy.");
+					}
+
+					var transferHost = this.CreateTransferHost();
+					this.transferClient = transferHost
+						.CreateClientAsync(configuration, clientStrategy, this.cancellationToken)
+						.GetAwaiter()
+						.GetResult();
+					this.TransferLog.LogInformation(
+						"TAPI created the {Client} client via best-fit strategy.",
+						this.transferClient.DisplayName);
+					this.PublishClientChanged(ClientChangeReason.BestFit);
+				}
+			}
+			catch (Exception e)
+			{
+				this.TransferLog.LogError(e, "The transfer client construction failed.");
+				configuration.ClientId = new Guid(TransferClientConstants.HttpClientId);
+				this.CreateTransferClient(configuration);
+				this.PublishClientChanged(ClientChangeReason.HttpFallback);
+			}
+			finally
+			{
+				this.OptimizeClient();
+			}
+		}
+
+		/// <inheritdoc />
 		public void Dispose()
 		{
 			this.Dispose(true);
 			GC.SuppressFinalize(this);
-		}
-
-		/// <inheritdoc />
-		public virtual void ForceSelectTransferMode()
-		{
-			this.CreateTransferClient();
 		}
 
 		/// <summary>
@@ -833,82 +901,6 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			return result;
-		}
-
-		/// <summary>
-		/// Creates the best transfer client.
-		/// </summary>
-		private void CreateTransferClient()
-		{
-			this.CheckDispose();
-			if (this.transferClient != null)
-			{
-				return;
-			}
-
-			ClientConfiguration configuration = this.CreateClientConfiguration();
-			this.parameters.FileNotFoundErrorsDisabled = configuration.FileNotFoundErrorsDisabled;
-			this.parameters.FileNotFoundErrorsRetry = configuration.FileNotFoundErrorsRetry;
-			this.parameters.PermissionErrorsRetry = configuration.PermissionErrorsRetry;
-
-			// Note: allow zero for improved testability.
-			this.maxInactivitySeconds = this.parameters.MaxInactivitySeconds;
-			if (this.maxInactivitySeconds < 0)
-			{
-				this.maxInactivitySeconds = 1.25 * (this.parameters.WaitTimeBetweenRetryAttempts
-				                                    * (this.parameters.MaxJobRetryAttempts + 1));
-			}
-
-			try
-			{
-				var clientId = this.tapiObjectService.GetClientId(this.parameters);
-				if (clientId != Guid.Empty)
-				{
-					configuration.ClientId = clientId;
-					this.CreateTransferClient(configuration);
-					this.PublishClientChanged(ClientChangeReason.ForceConfig);
-				}
-				else
-				{
-					configuration.ClientId = Guid.Empty;
-
-					// The configuration parameters may want to change order or restrict certain clients.
-					TransferClientStrategy clientStrategy;
-					if (!string.IsNullOrEmpty(this.parameters.ForceClientCandidates))
-					{
-						clientStrategy = new TransferClientStrategy(this.parameters.ForceClientCandidates);
-						this.TransferLog.LogInformation(
-							"Override the default transfer client strategy. Candidates={ForceClientCandidates}",
-							this.parameters.ForceClientCandidates);
-					}
-					else
-					{
-						clientStrategy = new TransferClientStrategy();
-						this.TransferLog.LogInformation("Using the default default transfer client strategy.");
-					}
-
-					var transferHost = this.CreateTransferHost();
-					this.transferClient = transferHost
-						.CreateClientAsync(configuration, clientStrategy, this.cancellationToken)
-						.GetAwaiter()
-						.GetResult();
-					this.TransferLog.LogInformation(
-						"TAPI created the {Client} client via best-fit strategy.",
-						this.transferClient.DisplayName);
-					this.PublishClientChanged(ClientChangeReason.BestFit);
-				}
-			}
-			catch (Exception e)
-			{
-				this.TransferLog.LogError(e, "The transfer client construction failed.");
-				configuration.ClientId = new Guid(TransferClientConstants.HttpClientId);
-				this.CreateTransferClient(configuration);
-				this.PublishClientChanged(ClientChangeReason.HttpFallback);
-			}
-			finally
-			{
-				this.OptimizeClient();
-			}
 		}
 
 		/// <summary>
