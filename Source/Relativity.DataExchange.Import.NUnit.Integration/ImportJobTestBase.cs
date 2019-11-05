@@ -11,11 +11,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
 	using System.Collections;
+	using System.Collections.Generic;
 	using System.Data;
 	using System.Diagnostics;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
+	using System.Net;
+	using System.Security.AccessControl;
+	using System.Security.Principal;
 	using System.Text;
 
 	using global::NUnit.Framework;
@@ -24,75 +28,61 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using kCura.Relativity.ImportAPI;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.Transfer;
 
-	/// <summary>
-	/// Represents an abstract load-file base class.
-	/// </summary>
-	public abstract class ImportJobTestBase : TestBase
+	public abstract class ImportJobTestBase : IDisposable
 	{
-		/// <summary>
-		/// The minimum test file length [1KB].
-		/// </summary>
 		internal const int MinTestFileLength = 1024;
 
-		/// <summary>
-		/// The maximum test file length [10KB].
-		/// </summary>
 		internal const int MaxTestFileLength = 10 * MinTestFileLength;
 
-		/// <summary>
-		/// The thread synchronization backing.
-		/// </summary>
 		private static readonly object SyncRoot = new object();
 
-		/// <summary>
-		/// The job messages.
-		/// </summary>
-		private readonly System.Collections.Generic.List<string> jobMessages = new global::System.Collections.Generic.List<string>();
+		private readonly List<string> jobMessages = new List<string>();
 
-		/// <summary>
-		/// The job fatal exceptions.
-		/// </summary>
-		private readonly System.Collections.Generic.List<Exception> jobFatalExceptions = new global::System.Collections.Generic.List<Exception>();
+		private readonly List<Exception> jobFatalExceptions = new List<Exception>();
 
-		/// <summary>
-		/// The error rows.
-		/// </summary>
-		private readonly System.Collections.Generic.List<IDictionary> errorRows = new global::System.Collections.Generic.List<IDictionary>();
+		private readonly List<IDictionary> errorRows = new List<IDictionary>();
 
-		/// <summary>
-		/// The progress completed rows.
-		/// </summary>
-		private readonly System.Collections.Generic.List<long> progressCompletedRows = new global::System.Collections.Generic.List<long>();
+		private readonly List<long> progressCompletedRows = new List<long>();
 
-		/// <summary>
-		/// The import job.
-		/// </summary>
 		private ImportBulkArtifactJob importJob;
 
-		/// <summary>
-		/// The completed job report.
-		/// </summary>
 		private JobReport completedJobReport;
 
-		/// <summary>
-		/// Gets or sets source data.
-		/// </summary>
-		/// <value>
-		/// The <see cref="DataTable"/> instance.
-		/// </value>
+		protected ImportJobTestBase()
+		{
+			Assume.That(AssemblySetup.TestParameters.WorkspaceId, Is.Positive, "The test workspace must be created or specified in order to run this integration test.");
+
+			ServicePointManager.SecurityProtocol =
+				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
+				| SecurityProtocolType.Tls12;
+		}
+
+		protected TempDirectory2 TempDirectory
+		{
+			get;
+			private set;
+		}
+
+		protected DateTime Timestamp
+		{
+			get;
+			private set;
+		}
+
 		protected DataTable SourceData
 		{
 			get;
 			set;
 		}
 
-		/// <summary>
-		/// The test setup.
-		/// </summary>
-		protected override void OnSetup()
+		[SetUp]
+		public void Setup()
 		{
-			base.OnSetup();
+			this.Timestamp = DateTime.Now;
+			this.TempDirectory = new TempDirectory2();
+			this.TempDirectory.Create();
 			this.SourceData = new DataTable { Locale = CultureInfo.InvariantCulture };
 			this.SourceData.Columns.Add(WellKnownFields.ControlNumber, typeof(string));
 			this.SourceData.Columns.Add(WellKnownFields.FilePath, typeof(string));
@@ -104,11 +94,27 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.completedJobReport = null;
 		}
 
-		/// <summary>
-		/// The test tear down.
-		/// </summary>
-		protected override void OnTearDown()
+		[TearDown]
+		public void Teardown()
 		{
+			if (this.TempDirectory != null)
+			{
+				try
+				{
+					string[] files = Directory.GetFiles(this.TempDirectory.Directory, "*");
+					foreach (var file in files)
+					{
+						RestoreFileFullPermissions(file);
+					}
+				}
+				finally
+				{
+					this.TempDirectory.ClearReadOnlyAttributes = true;
+					this.TempDirectory.Dispose();
+					this.TempDirectory = null;
+				}
+			}
+
 			this.SourceData?.Dispose();
 			if (this.importJob != null)
 			{
@@ -118,8 +124,77 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				this.importJob.OnComplete -= this.ImportJob_OnComplete;
 				this.importJob.OnProgress -= this.ImportJob_OnProgress;
 			}
+		}
 
-			base.OnTearDown();
+		public void Dispose()
+		{
+			this.Dispose(true);
+		}
+
+		protected static void ChangeFileFullPermissions(string path, bool grant)
+		{
+			var accessControl = File.GetAccessControl(path);
+			var sid = new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null);
+			accessControl.AddAccessRule(
+				new FileSystemAccessRule(
+					sid,
+					FileSystemRights.FullControl,
+					grant ? AccessControlType.Allow : AccessControlType.Deny));
+			File.SetAccessControl(path, accessControl);
+		}
+
+		protected static void RestoreFileFullPermissions(string path)
+		{
+			var accessControl = File.GetAccessControl(path);
+			var sid = new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null);
+			foreach (FileSystemAccessRule rule in accessControl.GetAccessRules(true, true, typeof(System.Security.Principal.NTAccount)))
+			{
+				if (rule.AccessControlType == AccessControlType.Deny)
+				{
+					accessControl.RemoveAccessRule(rule);
+				}
+			}
+
+			accessControl.AddAccessRule(
+				new FileSystemAccessRule(
+					sid,
+					FileSystemRights.FullControl,
+					AccessControlType.Allow));
+			File.SetAccessControl(path, accessControl);
+		}
+
+		protected static void GivenTheStandardConfigSettings(
+			TapiClient forceClient,
+			bool disableNativeLocationValidation,
+			bool disableNativeValidation)
+		{
+			kCura.WinEDDS.Config.ConfigSettings["BadPathErrorsRetry"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["ForceWebUpload"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["PermissionErrorsRetry"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["TapiForceAsperaClient"] = (forceClient == TapiClient.Aspera).ToString();
+			kCura.WinEDDS.Config.ConfigSettings["TapiForceFileShareClient"] = (forceClient == TapiClient.Direct).ToString();
+			kCura.WinEDDS.Config.ConfigSettings["TapiForceHttpClient"] = (forceClient == TapiClient.Web).ToString();
+			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobRetryAttempts"] = 1;
+			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobParallelism"] = 1;
+			kCura.WinEDDS.Config.ConfigSettings["TapiLogEnabled"] = true;
+			kCura.WinEDDS.Config.ConfigSettings["TapiSubmitApmMetrics"] = false;
+			AppSettings.Instance.IoErrorWaitTimeInSeconds = 0;
+			AppSettings.Instance.IoErrorNumberOfRetries = 0;
+			kCura.WinEDDS.Config.ConfigSettings["UsePipeliningForFileIdAndCopy"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
+			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
+
+			// Note: there's no longer a BCP sub-folder.
+			kCura.WinEDDS.Config.ConfigSettings["TapiAsperaBcpRootFolder"] = string.Empty;
+			kCura.WinEDDS.Config.ConfigSettings["TapiAsperaNativeDocRootLevels"] = 1;
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				this.Teardown();
+			}
 		}
 
 		/// <summary>
@@ -152,9 +227,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		protected void GivenTheImportJob()
 		{
 			var iapi = new ImportAPI(
-				this.TestParameters.RelativityUserName,
-				this.TestParameters.RelativityPassword,
-				this.TestParameters.RelativityWebApiUrl.ToString());
+				AssemblySetup.TestParameters.RelativityUserName,
+				AssemblySetup.TestParameters.RelativityPassword,
+				AssemblySetup.TestParameters.RelativityWebApiUrl.ToString());
 			this.InitializeDefaultImportJob(iapi);
 		}
 
@@ -163,13 +238,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		/// </summary>
 		protected void GivenTheImportJobWithIntegratedAuthentication()
 		{
-			var iapi = new ImportAPI(this.TestParameters.RelativityWebApiUrl.ToString());
+			var iapi = new ImportAPI(AssemblySetup.TestParameters.RelativityWebApiUrl.ToString());
 			this.InitializeDefaultImportJob(iapi);
 		}
 
-		/// <summary>
-		/// When executing the import job.
-		/// </summary>
 		protected void WhenExecutingTheJob()
 		{
 			var sw = Stopwatch.StartNew();
@@ -178,9 +250,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Console.WriteLine("Import API elapsed time: {0}", sw.Elapsed);
 		}
 
-		/// <summary>
-		/// Then the import job is successful.
-		/// </summary>
 		protected void ThenTheImportJobIsSuccessful()
 		{
 			Assert.That(this.errorRows.Count, Is.EqualTo(0));
@@ -244,9 +313,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(this.progressCompletedRows.Count, Is.EqualTo(expected));
 		}
 
-		/// <summary>
-		/// Then the import progress events count should be greater than zero.
-		/// </summary>
 		protected void ThenTheImportProgressEventsCountIsNonZero()
 		{
 			Assert.That(this.progressCompletedRows.Count, Is.GreaterThan(0));
@@ -423,8 +489,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private void InitializeDefaultImportJob(ImportAPI importApi)
 		{
 			this.importJob = importApi.NewNativeDocumentImportJob();
-			this.importJob.Settings.WebServiceURL = this.TestParameters.RelativityWebApiUrl.ToString();
-			this.importJob.Settings.CaseArtifactId = this.TestParameters.WorkspaceId;
+			this.importJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();
+			this.importJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
 			this.importJob.Settings.ArtifactTypeId = 10;
 			this.importJob.Settings.ExtractedTextFieldContainsFilePath = false;
 			this.importJob.Settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;

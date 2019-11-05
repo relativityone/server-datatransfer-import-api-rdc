@@ -143,7 +143,6 @@
     <Compile Include="FileLockedImportJobTests.cs" />
     <Compile Include="FileNotFoundImportJobTests.cs" />
     <Compile Include="ImportJobTest.cs" />
-    <Compile Include="TestBase.cs" />
     <Compile Include="ImportJobTestBase.cs" />
     <Compile Include="PositiveImportJobTests.cs" />
     <Content Include="LogConfig.xml">
