@@ -18,6 +18,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Property StartTime As System.DateTime
 	Protected Property EndTime As System.DateTime
 	Protected MustOverride ReadOnly Property JobType As String
+	Protected MustOverride ReadOnly Property Statistics As Statistics
 	Protected ReadOnly Property MetricService() As IMetricService
 	Protected _hasFatalErrorOccured As Boolean
 	Private _jobStartedMetricSent As Boolean = False
@@ -71,19 +72,23 @@ Public MustInherit Class MonitoredProcessBase
 	End Sub
 
 	Protected Overridable Sub OnFatalError()
-		SetEndTime()
+		OnJobEndWithStatus(TelemetryConstants.JobStatus.Failed)
 		Me.Context.PublishStatusEvent("", $"{JobType} aborted")
 	End Sub
 
 	Protected Overridable Sub OnSuccess()
-		SetEndTime()
+		Dim jobStatus As TelemetryConstants.JobStatus = CType(IIf(IsCancelled, TelemetryConstants.JobStatus.Cancelled, TelemetryConstants.JobStatus.Completed), TelemetryConstants.JobStatus)
+		OnJobEndWithStatus(jobStatus)
 	End Sub
 
 	Protected Overridable Sub OnHasErrors()
-		SetEndTime()
+		Dim jobStatus As TelemetryConstants.JobStatus = CType(IIf(IsCancelled, TelemetryConstants.JobStatus.Cancelled, TelemetryConstants.JobStatus.Completed), TelemetryConstants.JobStatus)
+		OnJobEndWithStatus(jobStatus)
 	End Sub
 
 	Protected MustOverride Function HasErrors() As Boolean
+
+	Protected MustOverride Function IsCancelled() As Boolean
 
 	Protected Overridable Sub Initialize()
 		SetStartTime()
@@ -100,20 +105,20 @@ Public MustInherit Class MonitoredProcessBase
 		End If
 	End Sub
 
-	Protected Sub SendMetricJobEndReport(jobStatus As TelemetryConstants.JobStatus, statistics As Statistics)
+	Protected Sub SendMetricJobEndReport(jobStatus As TelemetryConstants.JobStatus)
 		Dim totalRecordsCount As Long = GetTotalRecordsCount()
 		Dim completedRecordsCount As Long = GetCompletedRecordsCount()
 		Dim jobDuration As Double = (EndTime - StartTime).TotalSeconds
 		Dim metric As MetricJobEndReport = New MetricJobEndReport() With {
 				.JobStatus = jobStatus,
-				.TotalSizeBytes = (statistics.TotalBytes),
-				.FileSizeBytes = statistics.FileBytes,
-				.MetadataSizeBytes = statistics.MetadataBytes,
+				.TotalSizeBytes = (Statistics.TotalBytes),
+				.FileSizeBytes = Statistics.FileBytes,
+				.MetadataSizeBytes = Statistics.MetadataBytes,
 				.TotalRecords = totalRecordsCount,
 				.CompletedRecords = completedRecordsCount,
-				.ThroughputBytesPerSecond = Statistics.CalculateThroughput(statistics.TotalBytes, jobDuration),
+				.ThroughputBytesPerSecond = Statistics.CalculateThroughput(Statistics.TotalBytes, jobDuration),
 				.ThroughputRecordsPerSecond = Statistics.CalculateThroughput(completedRecordsCount, jobDuration),
-				.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.SqlTime/TimeSpan.TicksPerSecond)}
+				.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(Statistics.DocumentsCreated + Statistics.DocumentsUpdated, Statistics.SqlTime/TimeSpan.TicksPerSecond)}
 		BuildMetricBase(metric)
 		MetricService.Log(metric)
 	End Sub
@@ -145,6 +150,13 @@ Public MustInherit Class MonitoredProcessBase
 	''' </summary>
 	''' <returns>Number of completed records.</returns>
 	Protected MustOverride Function GetCompletedRecordsCount() As Long
+
+	Private Sub OnJobEndWithStatus(jobStatus As TelemetryConstants.JobStatus)
+		SetEndTime()
+		SendMetricJobEndReport(jobStatus)
+		' This is to ensure we send non-zero JobProgressMessage even with small job
+		SendMetricJobProgress(Statistics, checkThrottling := False)
+	End Sub
 
 	Private Sub BuildMetricBase(metric As MetricJobBase)
 		metric.JobType = JobType

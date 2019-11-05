@@ -63,6 +63,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected Overrides ReadOnly Property Statistics As Statistics
+			Get
+				Return _loadFileImporter.Statistics
+			End Get
+		End Property
+
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String
 		Public Property OIFileTypeColumnName As String
@@ -139,32 +145,22 @@ Namespace kCura.WinEDDS
 			Return _loadFileImporter.CompletedRecords
 		End Function
 
-		Protected Overrides Sub OnFatalError()
-			MyBase.OnFatalError()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.Failed, _loadFileImporter.Statistics)
-			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_loadFileImporter.Statistics, checkThrottling := False)
-		End Sub
-
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendMetricJobEndReport(CType(IIf(_loadFileImporter.IsCancelledByUser, TelemetryConstants.JobStatus.Cancelled, TelemetryConstants.JobStatus.Completed), TelemetryConstants.JobStatus), _loadFileImporter.Statistics)
-			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_loadFileImporter.Statistics, checkThrottling := False)
 			Me.Context.PublishProcessCompleted(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendMetricJobEndReport(CType(IIf(_loadFileImporter.IsCancelledByUser, TelemetryConstants.JobStatus.Cancelled, TelemetryConstants.JobStatus.Completed), TelemetryConstants.JobStatus), _loadFileImporter.Statistics)
-			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_loadFileImporter.Statistics, checkThrottling := False)
 			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
 		Protected Overrides Function HasErrors() As Boolean
-
 			Return _loadFileImporter.HasErrors
+		End Function
+
+		Protected Overrides Function IsCancelled() As Boolean
+			Return _loadFileImporter.IsCancelledByUser
 		End Function
 
 		Protected Overrides Function Run() As Boolean

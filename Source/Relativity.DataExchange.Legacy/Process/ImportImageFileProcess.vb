@@ -72,6 +72,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected Overrides ReadOnly Property Statistics As Statistics
+			Get
+				Return _imageFileImporter.Statistics
+			End Get
+		End Property
+
 		Public Property MaximumErrorCount As Int32?
 
 		Public Property SkipExtractedTextEncodingCheck As Boolean?
@@ -89,6 +95,10 @@ Namespace kCura.WinEDDS
 			Return _imageFileImporter.HasErrors
 		End Function
 
+		Protected Overrides Function IsCancelled() As Boolean
+			Return _imageFileImporter.IsCancelledByUser
+		End Function
+
 		''' <inheritdoc/>
 		Protected Overrides Function GetTotalRecordsCount() As Long
 			Return _imageFileImporter.TotalRecords
@@ -99,26 +109,13 @@ Namespace kCura.WinEDDS
 			Return __imageFileImporter.CompletedRecords
 		End Function
 
-		Protected Overrides Sub OnFatalError()
-			MyBase.OnFatalError()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.Failed, _imageFileImporter.Statistics)
-			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_imageFileImporter.Statistics, checkThrottling := False)
-		End Sub
-
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendMetricJobEndReport(CType(IIf(_imageFileImporter.IsCancelledByUser, TelemetryConstants.JobStatus.Cancelled, TelemetryConstants.JobStatus.Completed), TelemetryConstants.JobStatus), _imageFileImporter.Statistics)
-			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_imageFileImporter.Statistics, checkThrottling := False)
 			Me.Context.PublishProcessCompleted(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendMetricJobEndReport(CType(IIf(_imageFileImporter.IsCancelledByUser, TelemetryConstants.JobStatus.Cancelled, TelemetryConstants.JobStatus.Completed), TelemetryConstants.JobStatus), _imageFileImporter.Statistics)
-			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_imageFileImporter.Statistics, checkThrottling := False)
 			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
