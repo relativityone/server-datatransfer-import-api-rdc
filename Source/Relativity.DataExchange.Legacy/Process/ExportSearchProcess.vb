@@ -63,7 +63,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
+			SendMetricJobEndReport(CStr(IIf(_searchExporter.IsCancelledByUser, TelemetryConstants.JobStatus.CANCELLED, TelemetryConstants.JobStatus.COMPLETED)), _searchExporter.Statistics)
 			Me.Context.PublishStatusEvent("", "Export completed")
 			Me.Context.PublishProcessCompleted()
 		End Sub
@@ -75,7 +75,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
+			SendMetricJobEndReport(CStr(IIf(_searchExporter.IsCancelledByUser, TelemetryConstants.JobStatus.CANCELLED, TelemetryConstants.JobStatus.COMPLETED)), _searchExporter.Statistics)
 			Me.Context.PublishProcessCompleted(False, _searchExporter.ErrorLogFileName, True)
 		End Sub
 

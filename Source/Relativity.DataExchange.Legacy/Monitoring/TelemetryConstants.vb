@@ -57,6 +57,7 @@
         Class JobStatus
             Public Const COMPLETED As String = "Completed"
             Public Const FAILED As String = "Failed"
+            Public Const CANCELLED As String = "Cancelled"
         End Class
     End Class
 End Namespace

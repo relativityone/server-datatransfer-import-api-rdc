@@ -63,6 +63,7 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _cancellationTokenSource As CancellationTokenSource
 		Private _syncLock As Object = New Object
 		Private _originalFileNameProvider As OriginalFileNameProvider
+		Private _cancelledByUser As Boolean
 
 #End Region
 
@@ -115,6 +116,12 @@ Namespace kCura.WinEDDS
 				Else
 					Return Nothing
 				End If
+			End Get
+		End Property
+
+		Friend ReadOnly Property IsCancelledByUser As Boolean
+			Get
+				Return _cancelledByUser
 			End Get
 		End Property
 
@@ -1389,6 +1396,7 @@ Namespace kCura.WinEDDS
 
         Private Sub _processContext_OnCancellationRequest(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles _processContext.CancellationRequest
 			_cancellationTokenSource.Cancel()
+	        _cancelledByUser = e.RequestByUser
 			If e.RequestByUser Then
 				_logger.LogInformation("The export cancellation request event has been raised by the user.")
 			Else

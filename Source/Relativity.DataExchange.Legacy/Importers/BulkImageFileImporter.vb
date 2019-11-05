@@ -68,6 +68,7 @@ Namespace kCura.WinEDDS
 		Private _timekeeper As New Timekeeper2
 		Private _doRetryLogic As Boolean
 		Private _verboseErrorCollection As New ClientSideErrorCollection
+		Private _cancelledByUser As Boolean = False
 
 		Protected ReadOnly FilePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 		Public Property SkipExtractedTextEncodingCheck As Boolean
@@ -116,6 +117,11 @@ Namespace kCura.WinEDDS
 			Set(ByVal value As String)
 				_filePath = value
 			End Set
+		End Property
+		Friend ReadOnly Property IsCancelledByUser As Boolean
+			Get
+				Return _cancelledByUser
+			End Get
 		End Property
 
 		Public ReadOnly Property HasErrors() As Boolean
@@ -1064,6 +1070,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub _processObserver_CancelImport(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles _processContext.CancellationRequest
 			If e.ProcessId.ToString = _processID.ToString Then
+				_cancelledByUser = e.RequestByUser
 				StopImport()
 			End If
 		End Sub

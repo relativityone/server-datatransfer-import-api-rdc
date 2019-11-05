@@ -105,13 +105,13 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _imageFileImporter.Statistics)
+			SendMetricJobEndReport(CStr(IIf(_imageFileImporter.IsCancelledByUser, TelemetryConstants.JobStatus.CANCELLED, TelemetryConstants.JobStatus.COMPLETED)), _imageFileImporter.Statistics)
 			Me.Context.PublishProcessCompleted(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _imageFileImporter.Statistics)
+			SendMetricJobEndReport(CStr(IIf(_imageFileImporter.IsCancelledByUser, TelemetryConstants.JobStatus.CANCELLED, TelemetryConstants.JobStatus.COMPLETED)), _imageFileImporter.Statistics)
 			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
