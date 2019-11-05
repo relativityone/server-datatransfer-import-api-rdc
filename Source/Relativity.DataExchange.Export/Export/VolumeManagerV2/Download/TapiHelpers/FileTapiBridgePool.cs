@@ -26,6 +26,7 @@
 		private readonly IMessagesHandler _messageHandler;
 		private readonly ITransferClientHandler _transferClientHandler;
 		private readonly ILog _logger;
+		private readonly bool _forceCreateTransferClient;
 		private IDownloadTapiBridge _nullSettingsTapiBridge;
 		private bool _disposed;
 
@@ -37,6 +38,54 @@
 			IMessagesHandler messageHandler,
 			ITransferClientHandler transferClientHandler,
 			ILog logger)
+			: this(
+				factory,
+				tapiObjectService,
+				downloadProgressManager,
+				filesStatistics,
+				messageHandler,
+				transferClientHandler,
+				logger,
+				forceCreateTransferClient: true)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FileTapiBridgePool"/> class. This is used exclusively for testing.
+		/// </summary>
+		/// <param name="factory">
+		/// The factory used to create transfer bridge parameters.
+		/// </param>
+		/// <param name="tapiObjectService">
+		/// The transfer object service.
+		/// </param>
+		/// <param name="downloadProgressManager">
+		/// The object that manages download progress.
+		/// </param>
+		/// <param name="filesStatistics">
+		/// The files statistics instance.
+		/// </param>
+		/// <param name="messageHandler">
+		/// The object that handles common export messages.
+		/// </param>
+		/// <param name="transferClientHandler">
+		/// The object that handles transfer client changes.
+		/// </param>
+		/// <param name="logger">
+		/// The logger instance.
+		/// </param>
+		/// <param name="forceCreateTransferClient">
+		/// <see langword="true" /> to force create the transfer client and raise the client change event immediately ; otherwise, <see langword="false" /> for deferred construction.
+		/// </param>
+		internal FileTapiBridgePool(
+			TapiBridgeParametersFactory factory,
+			ITapiObjectService tapiObjectService,
+			DownloadProgressManager downloadProgressManager,
+			FilesStatistics filesStatistics,
+			IMessagesHandler messageHandler,
+			ITransferClientHandler transferClientHandler,
+			ILog logger,
+			bool forceCreateTransferClient)
 		{
 			_tapiBridgeParametersFactory = factory.ThrowIfNull(nameof(factory));
 			_tapiObjectService = tapiObjectService.ThrowIfNull(nameof(tapiObjectService));
@@ -45,6 +94,7 @@
 			_messageHandler = messageHandler.ThrowIfNull(nameof(messageHandler));
 			_transferClientHandler = transferClientHandler.ThrowIfNull(nameof(transferClientHandler));
 			_logger = logger.ThrowIfNull(nameof(logger));
+			_forceCreateTransferClient = forceCreateTransferClient;
 		}
 
 		public int Count
@@ -105,6 +155,13 @@
 				_filesStatistics,
 				_transferClientHandler,
 				_logger);
+
+			// Only bypassed for unit tests because the bridge isn't mocked.
+			if (_forceCreateTransferClient)
+			{
+				bridge.CreateTransferClient();
+			}
+
 			return downloadTapiBridgeForFiles;
 		}
 
