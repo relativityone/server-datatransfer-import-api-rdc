@@ -68,7 +68,7 @@ NUGET
     Relativity.Testing.Identification (1.6.0)
       NUnit (>= 3.11)
       NUnitExtras.HierarchicalCategories (>= 1.1)
-    relativity.transfer.client (6.3.5-dev000037)
+    relativity.transfer.client (6.3.5)
       Newtonsoft.Json (>= 6.0.8)
       Polly (>= 5.3.1)
       relativity.faspmanager (3.7.2)
