@@ -795,10 +795,10 @@ namespace Relativity.DataExchange.NUnit
 
 		[Test]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldForceSelectTheTransferMode([Values]WellKnownTransferClient client)
+		public void ShouldForceCreatTheTransferClient([Values]WellKnownTransferClient client)
 		{
 			this.CreateTapiBridge(client);
-			this.TapiBridgeInstance.ForceSelectTransferMode();
+			this.TapiBridgeInstance.CreateTransferClient();
 			Assert.That(this.ChangedTapiClient, Is.Not.EqualTo(TapiClient.None));
 		}
 

@@ -22,6 +22,11 @@ namespace Relativity.DataExchange.Transfer
 	internal static class TapiModeHelper
 	{
 		/// <summary>
+		/// The singleton instance.
+		/// </summary>
+		private static readonly ITapiObjectService Instance = new TapiObjectService();
+
+		/// <summary>
 		/// Gets the dictionary that orders the Transfer API clients.
 		/// </summary>
 		private static IDictionary<TapiClient, int> TapiClientOrderMap =>
@@ -82,17 +87,14 @@ namespace Relativity.DataExchange.Transfer
 			TapiClient? native,
 			TapiClient? metadata)
 		{
-			ITapiObjectService tapiObjectService = new TapiObjectService();
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
 			string nativeFilesMode = GetFileTransferModeText(
-				tapiObjectService,
 				native != null ? new[] { native.Value } : new TapiClient[] { });
 			sb.AppendFormat(
 				Strings.FileTransferStatusTextModePrefix,
 				nativeFilesCopied ? nativeFilesMode : Strings.FileTransferModeDisabled);
 			sb.Append(", ");
 			string metadataFilesMode = GetFileTransferModeText(
-				tapiObjectService,
 				metadata != null ? new[] { metadata.Value } : new TapiClient[] { });
 			sb.AppendFormat(Strings.FileTransferStatusTextMetadataPrefix, metadataFilesMode);
 			return sb.ToString();
@@ -112,9 +114,8 @@ namespace Relativity.DataExchange.Transfer
 		/// </returns>
 		public static string BuildExportStatusText(bool nativeFilesCopied, IEnumerable<TapiClient> natives)
 		{
-			ITapiObjectService tapiObjectService = new TapiObjectService();
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			string nativeFilesMode = GetFileTransferModeText(tapiObjectService, natives);
+			string nativeFilesMode = GetFileTransferModeText(natives);
 			sb.AppendFormat(
 				Strings.FileTransferStatusTextModePrefix,
 				nativeFilesCopied ? nativeFilesMode : Strings.FileTransferModeDisabled);
@@ -151,16 +152,13 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Gets the file transfer mode text for the specified client.
 		/// </summary>
-		/// <param name="service">
-		/// The Transfer API object service.
-		/// </param>
 		/// <param name="clients">
 		/// The list of clients.
 		/// </param>
 		/// <returns>
 		/// The text.
 		/// </returns>
-		private static string GetFileTransferModeText(ITapiObjectService service, IEnumerable<TapiClient> clients)
+		private static string GetFileTransferModeText(IEnumerable<TapiClient> clients)
 		{
 			StringBuilder sb = new StringBuilder();
 			foreach (TapiClient flaggedClient in clients.Distinct().Except(new[] { TapiClient.None })
@@ -171,7 +169,7 @@ namespace Relativity.DataExchange.Transfer
 					sb.Append("/");
 				}
 
-				sb.Append(service.GetClientDisplayName(GetClientId(flaggedClient)));
+				sb.Append(Instance.GetClientDisplayName(GetClientId(flaggedClient)));
 			}
 
 			if (sb.Length == 0)
