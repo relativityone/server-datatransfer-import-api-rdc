@@ -512,6 +512,7 @@ namespace Relativity.DataExchange.Transfer
 			this.TransferLog.LogInformation("Application: {Application}", this.parameters.Application);
 			this.TransferLog.LogInformation("Client request id: {ClientRequestId}", this.parameters.ClientRequestId);
 			this.TransferLog.LogInformation("Aspera doc root level: {AsperaDocRootLevels}", this.parameters.AsperaDocRootLevels);
+			this.TransferLog.LogInformation("Aspera datagram size: {AsperaDatagramSize}", this.parameters.AsperaDatagramSize);
 			this.TransferLog.LogInformation("File share: {FileShare}", this.parameters.FileShare);
 			this.TransferLog.LogInformation("Force Aspera client: {ForceAsperaClient}", this.parameters.ForceAsperaClient);
 			this.TransferLog.LogInformation("Force Fileshare client: {ForceFileShareClient}", this.parameters.ForceFileShareClient);
