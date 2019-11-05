@@ -54,10 +54,10 @@
         ''' <summary>
         ''' Contain values for <see cref="MetricJobEndReport.JobStatus"/> property.
         ''' </summary>
-        Class JobStatus
-            Public Const COMPLETED As String = "Completed"
-            Public Const FAILED As String = "Failed"
-            Public Const CANCELLED As String = "Cancelled"
-        End Class
+        Enum JobStatus
+            Completed
+            Failed
+            Cancelled
+        End Enum
     End Class
 End Namespace

@@ -101,7 +101,7 @@ Public MustInherit Class MonitoredProcessBase
 		End If
 	End Sub
 
-	Protected Sub SendMetricJobEndReport(jobStatus As String, statistics As Statistics)
+	Protected Sub SendMetricJobEndReport(jobStatus As TelemetryConstants.JobStatus, statistics As Statistics)
 		Dim totalRecordsCount As Long = GetTotalRecordsCount()
 		Dim completedRecordsCount As Long = GetCompletedRecordsCount()
 		Dim metric As MetricJobEndReport = New MetricJobEndReport() With {.JobStatus = jobStatus, .TotalSizeBytes = (statistics.MetadataBytes + statistics.FileBytes),
