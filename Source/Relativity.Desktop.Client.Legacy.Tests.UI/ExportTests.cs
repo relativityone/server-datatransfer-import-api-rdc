@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Windows;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Windows.SetupParameters;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI
 {
@@ -21,7 +21,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			var rdcWindow = workspaceSelectWindow.ChooseWorkspace("Workspace-For-Export-Tests");
 			rdcWindow.SelectRootFolder();
 
-			var exportParameters = new ExportParameters
+			var exportParameters = new ExportWindowSetupParameters
 			{
 				View = "Documents - All Metadata",
 				ExportPath = exportPath,

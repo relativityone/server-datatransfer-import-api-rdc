@@ -22,7 +22,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		{
 			EnterSearchText(workspaceName);
 			Wait.For(() => workspaceList.ItemsCount == 1);
-			SelectWorkspace(0);
+			SelectWorkspace(workspaceName);
 			ClickOkButton();
 			return WindowsManager.SwitchToRelativityDesktopClientWindow();
 		}
@@ -37,9 +37,9 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			okButton.Click();
 		}
 
-		private void SelectWorkspace(int index)
+		private void SelectWorkspace(string workspaceName)
 		{
-			workspaceList.ClickListItem(index);
+			workspaceList.SelectListItem(workspaceName);
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Windows.SetupParameters;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -50,7 +51,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			pickTextFieldPrecedenceButton = FindButtonWithAutomationId("_pickTextFieldPrecedenceButton");
 		}
 
-		public void SetupExport(ExportParameters parameters)
+		public void SetupExport(ExportWindowSetupParameters parameters)
 		{
 			dataSourceTab.Click();
 			SelectView(parameters);
@@ -81,46 +82,46 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			folderPathTextBox.SetText(path);
 		}
 
-		private void SetExportImages(ExportParameters parameters)
+		private void SetExportImages(ExportWindowSetupParameters parameters)
 		{
 			exportImagesCheckBox.SetValue(parameters.ExportImages);
 		}
 
-		private void SetExportNativeFiles(ExportParameters parameters)
+		private void SetExportNativeFiles(ExportWindowSetupParameters parameters)
 		{
 			exportNativeFilesCheckBox.SetValue(parameters.ExportNativeFiles);
 		}
 
-		private void SetExportFullTextAsFile(ExportParameters parameters)
+		private void SetExportFullTextAsFile(ExportWindowSetupParameters parameters)
 		{
 			exportFullTextAsFileCheckBox.SetValue(parameters.ExportFullTextAsFile);
 		}
 
-		private void SetNativeFileFormat(ExportParameters parameters)
+		private void SetNativeFileFormat(ExportWindowSetupParameters parameters)
 		{
 			if (!string.IsNullOrEmpty(parameters.NativeFileFormat))
 				nativeFileFormatComboBox.SelectComboBoxItem(parameters.NativeFileFormat);
 		}
 
-		private void SetDataFileEncoding(ExportParameters parameters)
+		private void SetDataFileEncoding(ExportWindowSetupParameters parameters)
 		{
 			if (!string.IsNullOrEmpty(parameters.DataFileEncoding))
 				dataFileEncodingComboBox.SelectComboBoxItem(parameters.DataFileEncoding);
 		}
 
-		private void SetFilesNamedAfter(ExportParameters parameters)
+		private void SetFilesNamedAfter(ExportWindowSetupParameters parameters)
 		{
 			if (!string.IsNullOrEmpty(parameters.FilesNamedAfter))
 				textAndNativeComboBox.SelectComboBoxItem(parameters.FilesNamedAfter);
 		}
 
-		private void SetTextFileEncoding(ExportParameters parameters)
+		private void SetTextFileEncoding(ExportWindowSetupParameters parameters)
 		{
 			if (!string.IsNullOrEmpty(parameters.TextFileEncoding))
 				textFileEncodingComboBox.SelectComboBoxItem(parameters.TextFileEncoding);
 		}
 
-		private void SetTextFieldPrecedence(ExportParameters parameters)
+		private void SetTextFieldPrecedence(ExportWindowSetupParameters parameters)
 		{
 			if (!string.IsNullOrEmpty(parameters.TextFieldPrecedence))
 			{
@@ -129,13 +130,13 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			}
 		}
 
-		private void SetVolumeInformationDigitPadding(ExportParameters parameters)
+		private void SetVolumeInformationDigitPadding(ExportWindowSetupParameters parameters)
 		{
 			if (parameters.VolumeInformationDigitPadding > 0)
 				volumeDigitPaddingComboBox.SetValue(parameters.VolumeInformationDigitPadding);
 		}
 
-		private void SelectView(ExportParameters parameters)
+		private void SelectView(ExportWindowSetupParameters parameters)
 		{
 			if (!string.IsNullOrEmpty(parameters.View))
 			{

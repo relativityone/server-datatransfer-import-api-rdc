@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	public static class WindowNames
+	public static class WindowNameConstants
 	{
 		public const string RelativityDesktopClient = "Relativity Desktop Client";
 

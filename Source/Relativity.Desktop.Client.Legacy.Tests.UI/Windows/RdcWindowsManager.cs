@@ -25,18 +25,18 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public LoginWindow SwitchToLoginWindow()
 		{
-			return SwitchToWindow(WindowNames.RelativityLogin, x => new LoginWindow(this, x));
+			return SwitchToWindow(WindowNameConstants.RelativityLogin, x => new LoginWindow(this, x));
 		}
 
 		public bool TryGetUntrustedCertificateWindow(out UntrustedCertificateWindow window)
 		{
-			return TrySwitchToWindow(WindowNames.UntrustedCertificate, TimeSpan.FromSeconds(1),
+			return TrySwitchToWindow(WindowNameConstants.UntrustedCertificate, TimeSpan.FromSeconds(1),
 				x => new UntrustedCertificateWindow(this, x), out window);
 		}
 
 		public SelectWorkspaceWindow SwitchToSelectWorkspaceWindow()
 		{
-			return SwitchToWindow(WindowNames.SelectWorkspace, x => new SelectWorkspaceWindow(this, x));
+			return SwitchToWindow(WindowNameConstants.SelectWorkspace, x => new SelectWorkspaceWindow(this, x));
 		}
 
 		public RelativityDesktopClientWindow SwitchToRelativityDesktopClientWindow()
@@ -47,28 +47,28 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public ImportDocumentLoadFileWindow SwitchToImportDocumentLoadFileWindow()
 		{
-			return SwitchToWindow(WindowNames.ImportDocumentLoadFile, x => new ImportDocumentLoadFileWindow(this, x));
+			return SwitchToWindow(WindowNameConstants.ImportDocumentLoadFile, x => new ImportDocumentLoadFileWindow(this, x));
 		}
 
 		public ProgressWindow SwitchToImportLoadFileProgressWindow()
 		{
-			return SwitchToProgressWindow(WindowNames.ImportLoadFileProgress);
+			return SwitchToProgressWindow(WindowNameConstants.ImportLoadFileProgress);
 		}
 
 		public ProgressWindow SwitchToExportFoldersAndSubfoldersProgress()
 		{
-			return SwitchToProgressWindow(WindowNames.ExportFoldersAndSubfoldersProgress);
+			return SwitchToProgressWindow(WindowNameConstants.ExportFoldersAndSubfoldersProgress);
 		}
 
 		public ExportFolderAndSubfoldersWindow SwitchToExportFolderAndSubfoldersWindow()
 		{
-			return SwitchToWindow(WindowNames.ExportFolderAndSubfolders,
+			return SwitchToWindow(WindowNameConstants.ExportFolderAndSubfolders,
 				x => new ExportFolderAndSubfoldersWindow(this, x));
 		}
 
 		public AppiumWebElement GetRdcConfirmationDialog()
 		{
-			return GetWindow(WindowNames.RelativityDesktopClient, x => x.Handle != rdcWindow.Handle).Element;
+			return GetWindow(WindowNameConstants.RelativityDesktopClient, x => x.Handle != rdcWindow.Handle).Element;
 		}
 
 		private ProgressWindow SwitchToProgressWindow(string title)
@@ -78,7 +78,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		private RelativityDesktopClientWindow CreateRelativityDesktopClientWindow()
 		{
-			return SwitchToWindow(WindowNames.RelativityDesktopClient, x => new RelativityDesktopClientWindow(this, x));
+			return SwitchToWindow(WindowNameConstants.RelativityDesktopClient, x => new RelativityDesktopClientWindow(this, x));
 		}
 
 		private T SwitchToWindow<T>(string title, Func<WindowDetails, T> createWindow) where T : RdcWindowBase

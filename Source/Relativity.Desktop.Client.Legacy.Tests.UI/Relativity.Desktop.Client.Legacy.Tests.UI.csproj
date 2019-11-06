@@ -49,6 +49,9 @@
     <Reference Include="Relativity.Kepler">
       <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Drawing" />
@@ -78,7 +81,7 @@
     <Compile Include="Windows\BrowseForFolderDialog.cs" />
     <Compile Include="Windows\ChooseLoadFileDialog.cs" />
     <Compile Include="Windows\ExportFolderAndSubfoldersWindow.cs" />
-    <Compile Include="Windows\ExportParameters.cs" />
+    <Compile Include="Windows\SetupParameters\ExportWindowSetupParameters.cs" />
     <Compile Include="Windows\ImportDocumentLoadFileWindow.cs" />
     <Compile Include="ImportTests.cs" />
     <Compile Include="Windows\ProgressWindow.cs" />
@@ -93,7 +96,7 @@
     <Compile Include="Windows\SecurityAlertDialog.cs" />
     <Compile Include="Windows\SelectViewDialog.cs" />
     <Compile Include="Windows\WindowBase.cs" />
-    <Compile Include="Windows\WindowNames.cs" />
+    <Compile Include="Windows\WindowNameConstants.cs" />
     <Compile Include="Appium\WindowsManager.cs" />
     <Compile Include="Windows\SelectWorkspaceWindow.cs" />
   </ItemGroup>

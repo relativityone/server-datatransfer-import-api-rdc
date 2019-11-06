@@ -1,6 +1,6 @@
-﻿namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
+﻿namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows.SetupParameters
 {
-	public class ExportParameters
+	public class ExportWindowSetupParameters
 	{
 		public string View { get; set; }
 		public string ExportPath { get; set; }
