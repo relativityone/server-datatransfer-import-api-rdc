@@ -19,16 +19,6 @@ Namespace kCura.WinEDDS
 		Private _dataGridFileWriterRollbackPos As Long
 		Private _disposed As Boolean
 
-		Private _outputNativeFilePath As String
-		Private _outputDataGridFilePath As String
-		Private _outputCodeFilePath As String
-		Private _outputObjectFilePath As String
-
-		Private _outputNativeFileWriter As Global.Relativity.DataExchange.Io.IStreamWriter
-		Private _outputDataGridFileWriter As Global.Relativity.DataExchange.Io.IStreamWriter
-		Private _outputCodeFileWriter As Global.Relativity.DataExchange.Io.IStreamWriter
-		Private _outputObjectFileWriter As Global.Relativity.DataExchange.Io.IStreamWriter
-
 		''' <summary>
 		''' Initializes a new instance of the <see cref="OutputFileWriter"/> class.
 		''' </summary>
@@ -53,119 +43,68 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		''' <summary>
-		''' Gets or sets the full path for the output native file.
+		''' Gets the full path for the output native file.
 		''' </summary>
 		''' <value>
 		''' The full path.
 		''' </value>
-		Public Property OutputNativeFilePath As String
-			Get
-				SyncLock _syncRoot
-					Return _outputNativeFilePath
-				End SyncLock
-			End Get
-			Set(value As String)
-				_outputNativeFilePath = value
-			End Set
-		End Property
+		Public ReadOnly Property OutputNativeFilePath As String
 
 		''' <summary>
-		''' Gets or sets the full path for the output data grid file.
+		''' Gets the full path for the output data grid file.
 		''' </summary>
 		''' <value>
 		''' The full path.
 		''' </value>
 		Public ReadOnly Property OutputDataGridFilePath As String
-			Get
-				SyncLock _syncRoot
-					Return _outputDataGridFilePath
-				End SyncLock
-			End Get
-		End Property
 
 		''' <summary>
-		''' Gets or sets the full path for the output code file.
+		''' Gets the full path for the output code file.
 		''' </summary>
 		''' <value>
 		''' The full path.
 		''' </value>
 		Public ReadOnly Property OutputCodeFilePath As String
-			Get
-				SyncLock _syncRoot
-					Return _outputCodeFilePath
-				End SyncLock
-			End Get
-		End Property
 
 		''' <summary>
-		''' Gets or sets the full path for the output object file.
+		''' Gets the full path for the output object file.
 		''' </summary>
 		''' <value>
 		''' The full path.
 		''' </value>
 		Public ReadOnly Property OutputObjectFilePath As String
-			Get
-				SyncLock _syncRoot
-					Return _outputObjectFilePath
-				End SyncLock
-			End Get
-		End Property
 
 		''' <summary>
-		''' Gets or sets the stream writer that writes to the native load file.
+		''' Gets the stream writer that writes to the native load file.
 		''' </summary>
 		''' <value>
 		''' The <see cref="System.IO.StreamWriter"/> instance.
 		''' </value>
 		Public ReadOnly Property OutputNativeFileWriter As Global.Relativity.DataExchange.Io.IStreamWriter
-			Get
-				SyncLock _syncRoot
-					Return _outputNativeFileWriter
-				End SyncLock
-			End Get
-		End Property
 
 		''' <summary>
-		''' Gets or sets the stream writer that writes to the data grid load file.
+		''' Gets the stream writer that writes to the data grid load file.
 		''' </summary>
 		''' <value>
 		''' The <see cref="System.IO.StreamWriter"/> instance.
 		''' </value>
 		Public ReadOnly Property OutputDataGridFileWriter As Global.Relativity.DataExchange.Io.IStreamWriter
-			Get
-				SyncLock _syncRoot
-					Return _outputDataGridFileWriter
-				End SyncLock
-			End Get
-		End Property
 
 		''' <summary>
-		''' Gets or sets the stream writer that writes to the code load file.
+		''' Gets the stream writer that writes to the code load file.
 		''' </summary>
 		''' <value>
 		''' The <see cref="System.IO.StreamWriter"/> instance.
 		''' </value>
 		Public ReadOnly Property OutputCodeFileWriter As Global.Relativity.DataExchange.Io.IStreamWriter
-			Get
-				SyncLock _syncRoot
-					Return _outputCodeFileWriter
-				End SyncLock
-			End Get
-		End Property
 
 		''' <summary>
-		''' Gets or sets the stream writer that writes to the object load file.
+		''' Gets the stream writer that writes to the object load file.
 		''' </summary>
 		''' <value>
 		''' The <see cref="System.IO.StreamWriter"/> instance.
 		''' </value>
 		Public ReadOnly Property OutputObjectFileWriter As Global.Relativity.DataExchange.Io.IStreamWriter
-			Get
-				SyncLock _syncRoot
-					Return _outputObjectFileWriter
-				End SyncLock
-			End Get
-		End Property
 
 		''' <summary>
 		''' Deletes all load files and resets theirs names, so subsequent calls to <see cref="Open"/> will create files with different names.
@@ -211,14 +150,14 @@ Namespace kCura.WinEDDS
 			SyncLock _syncRoot
 				Me.CheckDispose()
 
-				If Not Me._outputNativeFileWriter Is Nothing AndAlso Not Me._outputNativeFileWriter.BaseStream Is Nothing Then
-					Me._outputNativeFileWriter.Flush()
-					_nativeFileWriterRollbackPos = Me._outputNativeFileWriter.BaseStream.Length
+				If Not Me.OutputNativeFileWriter Is Nothing AndAlso Not Me.OutputNativeFileWriter.BaseStream Is Nothing Then
+					Me.OutputNativeFileWriter.Flush()
+					_nativeFileWriterRollbackPos = Me.OutputNativeFileWriter.BaseStream.Length
 				End If
 
-				If Not Me._outputDataGridFileWriter Is Nothing AndAlso Not Me._outputDataGridFileWriter.BaseStream Is Nothing Then
-					Me._outputDataGridFileWriter.Flush()
-					_dataGridFileWriterRollbackPos = Me._outputDataGridFileWriter.BaseStream.Length
+				If Not Me.OutputDataGridFileWriter Is Nothing AndAlso Not Me.OutputDataGridFileWriter.BaseStream Is Nothing Then
+					Me.OutputDataGridFileWriter.Flush()
+					_dataGridFileWriterRollbackPos = Me.OutputDataGridFileWriter.BaseStream.Length
 				End If
 			End SyncLock
 		End Sub
@@ -227,15 +166,15 @@ Namespace kCura.WinEDDS
 			Get
 				' Never throw exceptions from a property.
 				SyncLock _syncRoot
-					If Me._outputNativeFileWriter Is Nothing OrElse Me._outputDataGridFileWriter Is Nothing Then
+					If Me.OutputNativeFileWriter Is Nothing OrElse Me.OutputDataGridFileWriter Is Nothing Then
 						Return 0
 					End If
 
-					If Me._outputNativeFileWriter.BaseStream Is Nothing OrElse Me._outputDataGridFileWriter.BaseStream Is Nothing Then
+					If Me.OutputNativeFileWriter.BaseStream Is Nothing OrElse Me.OutputDataGridFileWriter.BaseStream Is Nothing Then
 						Return 0
 					End If
 
-					Return Me._outputNativeFileWriter.BaseStream.Length + Me._outputDataGridFileWriter.BaseStream.Length
+					Return Me.OutputNativeFileWriter.BaseStream.Length + Me.OutputDataGridFileWriter.BaseStream.Length
 				End SyncLock
 			End Get
 		End Property
@@ -269,10 +208,10 @@ Namespace kCura.WinEDDS
 				Me.CreateTempFiles()
 			End If
 
-			Me._outputNativeFileWriter = _fileSystem.CreateStreamWriter(Me._outputNativeFilePath, append, System.Text.Encoding.Unicode)
-			Me._outputDataGridFileWriter = _fileSystem.CreateStreamWriter(Me._outputDataGridFilePath, append, System.Text.Encoding.Unicode)
-			Me._outputCodeFileWriter = _fileSystem.CreateStreamWriter(Me._outputCodeFilePath, append, System.Text.Encoding.Unicode)
-			Me._outputObjectFileWriter = _fileSystem.CreateStreamWriter(Me._outputObjectFilePath, append, System.Text.Encoding.Unicode)
+			Me._outputNativeFileWriter = _fileSystem.CreateStreamWriter(Me.OutputNativeFilePath, append, System.Text.Encoding.Unicode)
+			Me._outputDataGridFileWriter = _fileSystem.CreateStreamWriter(Me.OutputDataGridFilePath, append, System.Text.Encoding.Unicode)
+			Me._outputCodeFileWriter = _fileSystem.CreateStreamWriter(Me.OutputCodeFilePath, append, System.Text.Encoding.Unicode)
+			Me._outputObjectFileWriter = _fileSystem.CreateStreamWriter(Me.OutputObjectFilePath, append, System.Text.Encoding.Unicode)
 
 			Me._filesOpened = True
 		End Sub
@@ -282,13 +221,13 @@ Namespace kCura.WinEDDS
 				Return
 			End If
 
-			Me.TryCloseWriter(Me._outputNativeFileWriter)
+			Me.TryCloseWriter(Me.OutputNativeFileWriter)
 			Me._outputNativeFileWriter = Nothing
-			Me.TryCloseWriter(Me._outputDataGridFileWriter)
+			Me.TryCloseWriter(Me.OutputDataGridFileWriter)
 			Me._outputDataGridFileWriter = Nothing
-			Me.TryCloseWriter(Me._outputCodeFileWriter)
+			Me.TryCloseWriter(Me.OutputCodeFileWriter)
 			Me._outputCodeFileWriter = Nothing
-			Me.TryCloseWriter(Me._outputObjectFileWriter)
+			Me.TryCloseWriter(Me.OutputObjectFileWriter)
 			Me._outputObjectFileWriter = Nothing
 
 			Me._filesOpened = False
@@ -321,12 +260,12 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub SetStreamLengths()
-			Using fs As New System.IO.FileStream(Me._outputNativeFilePath, System.IO.FileMode.Open, System.IO.FileAccess.ReadWrite)
+			Using fs As New System.IO.FileStream(Me.OutputNativeFilePath, System.IO.FileMode.Open, System.IO.FileAccess.ReadWrite)
 				fs.SetLength(_nativeFileWriterRollbackPos)
 				fs.Close()
 			End Using
 
-			Using fs As New System.IO.FileStream(Me._outputDataGridFilePath, System.IO.FileMode.Open, System.IO.FileAccess.ReadWrite)
+			Using fs As New System.IO.FileStream(Me.OutputDataGridFilePath, System.IO.FileMode.Open, System.IO.FileAccess.ReadWrite)
 				fs.SetLength(_dataGridFileWriterRollbackPos)
 				fs.Close()
 			End Using
