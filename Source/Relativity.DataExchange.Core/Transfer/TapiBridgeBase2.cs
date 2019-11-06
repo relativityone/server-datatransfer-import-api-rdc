@@ -911,7 +911,6 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
-
 		/// Creates the <see cref="RelativityTransferHost"/> instance if not already constructed.
 		/// </summary>
 		/// <returns>
