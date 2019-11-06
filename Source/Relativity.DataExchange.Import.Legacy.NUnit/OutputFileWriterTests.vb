@@ -31,7 +31,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Shared Sub Constructor_ShouldThrowWhenTheFileSystemIsNull()
+		Public Shared Sub ConstructorShouldThrowWhenTheFileSystemIsNull()
 			Assert.Throws(Of System.ArgumentNullException)(
 				Sub()
 					Using writer As New OutputFileWriter(New NullLogger(), Nothing)
@@ -41,7 +41,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Shared Sub Constructor_ShouldThrowWhenTheLoggerIsNull()
+		Public Shared Sub ConstructorShouldThrowWhenTheLoggerIsNull()
 			Assert.Throws(Of System.ArgumentNullException)(
 				Sub()
 					Using writer As New OutputFileWriter(Nothing, Io.FileSystem.Instance)
@@ -51,7 +51,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Sub AllPublicMethods_ShouldThrowWhenDisposed()
+		Public Sub AllPublicMethodsShouldThrowWhenDisposed()
 			' Arrange
 			_sut.Dispose()
 
@@ -65,7 +65,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Sub Dispose_ShouldDeleteTheFiles()
+		Public Sub DisposeShouldDeleteTheFiles()
 			' Arrange
 			_sut.Open()
 			Dim outputDataGridFilePath = _sut.OutputDataGridFilePath
@@ -91,7 +91,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Sub Dispose_ShouldNotThrowWhenCalledTwice()
+		Public Sub DisposeShouldNotThrowWhenCalledTwice()
 			' Arrange
 			_sut.Dispose()
 
@@ -100,7 +100,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 		
 		<Test()>
-		Public Sub Close_ShouldCloseAllWriters()
+		Public Sub CloseShouldCloseAllWriters()
 			' Arrange
 			_sut.Open()
 
@@ -122,7 +122,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Sub RollbackDocumentLineWrites_ShouldRollbackToTheCorrectPosition()
+		Public Sub RollbackDocumentLineWritesShouldRollbackToTheCorrectPosition()
 			' Arrange
 			_sut.Open()
 			_sut.OutputNativeFileWriter.Write("Test 1")
@@ -140,7 +140,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Sub Open_ShouldCreateTheTempFiles()
+		Public Sub OpenShouldCreateTheTempFiles()
 			' Act
 			_sut.Open()
 
@@ -156,7 +156,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Sub Open_ShouldOpenStreamWriters()
+		Public Sub OpenShouldOpenStreamWriters()
 			_sut.Open()
 			Assert.IsNotNull(_sut.OutputNativeFileWriter.BaseStream)
 			Assert.IsNotNull(_sut.OutputDataGridFileWriter.BaseStream)
@@ -166,7 +166,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Sub Open_ShouldNotReuseOldTempFilesNamesWhenAllPreviousFilesDeletedSuccessfully()
+		Public Sub OpenShouldNotReuseOldTempFilesNamesWhenAllPreviousFilesDeletedSuccessfully()
 			' Arrange
 			_sut.Open()
 			Dim firstOutputDataGridFilePath = _sut.OutputDataGridFilePath
@@ -187,7 +187,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Sub Open_ShouldNotReuseOldTempFilesNamesWhenOldFilesWereLockedWhileDeleting()
+		Public Sub OpenShouldNotReuseOldTempFilesNamesWhenOldFilesWereLockedWhileDeleting()
 			' Arrange
 			_sut.Open()
 			Dim firstOutputDataGridFilePath = _sut.OutputDataGridFilePath
@@ -211,7 +211,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Sub Open_ShouldReuseClosedFilesWhenTheyWereNotDeleted()
+		Public Sub OpenShouldReuseClosedFilesWhenTheyWereNotDeleted()
 			' Arrange
 			_sut.Open()
 			Dim firstOutputCodeFilePath = _sut.OutputCodeFilePath
@@ -232,7 +232,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Sub DeleteFiles_ShouldLogWarningAndCloseFilesWhenTheyWereNotClosed()
+		Public Sub DeleteFilesShouldLogWarningAndCloseFilesWhenTheyWereNotClosed()
 			' Arrange
 			Const expectedWarning = "An attempt was made to delete temp files while they were still open. Trying to close."
 			_sut.Open()
@@ -253,7 +253,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Sub DeleteFiles_ShouldDeletePreviouslyLockedFilesWhenTheyGetUnlocked()
+		Public Sub DeleteFilesShouldDeletePreviouslyLockedFilesWhenTheyGetUnlocked()
 			' Arrange
 			_sut.Open()
 			_sut.Close()
@@ -280,7 +280,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Sub DeleteFiles_ShouldLogWarningWhenFileWasLocked()
+		Public Sub DeleteFilesShouldLogWarningWhenFileWasLocked()
 			' Arrange
 			Const expectedWarning = "Unable to delete file because it was locked. Adding to queue for retry."
 			_sut.Open()
@@ -297,7 +297,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		End Sub
 
 		<Test()>
-		Public Sub TryCloseAndDeleteAllTempFiles_ShouldReturnNumberOfTempFilesNotDeleted()
+		Public Sub TryCloseAndDeleteAllTempFilesShouldReturnNumberOfTempFilesNotDeleted()
 			' Arrange
 			_sut.Open()
 			_sut.Close()
