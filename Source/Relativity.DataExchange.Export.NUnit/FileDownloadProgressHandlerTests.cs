@@ -18,14 +18,14 @@ namespace Relativity.DataExchange.Export.NUnit
 			return new FileDownloadProgressHandler(downloadProgressManager, new NullLogger());
 		}
 
-		protected override void VerifyFileMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id, int lineNumber)
+		protected override void VerifyFileMarkedAsCompleted(Mock<IDownloadProgressManager> downloadProgressManager, string targetFile, int lineNumber, bool transferResult)
 		{
-			downloadProgressManager.Verify(x => x.MarkFileAsCompleted(id, lineNumber), Times.Once);
+			downloadProgressManager.Verify(x => x.MarkFileAsCompleted(targetFile, lineNumber, transferResult), Times.Once);
 		}
 
-		protected override void VerifyFileNotMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id, int lineNumber)
+		protected override void VerifyFileNotMarkedAsCompleted(Mock<IDownloadProgressManager> downloadProgressManager, string targetFile, int lineNumber, bool transferResult)
 		{
-			downloadProgressManager.Verify(x => x.MarkFileAsCompleted(id, lineNumber), Times.Never);
+			downloadProgressManager.Verify(x => x.MarkFileAsCompleted(targetFile, lineNumber, transferResult), Times.Never);
 		}
 	}
 }

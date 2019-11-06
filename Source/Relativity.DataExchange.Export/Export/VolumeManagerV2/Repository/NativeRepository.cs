@@ -39,6 +39,20 @@
 			}
 		}
 
+		public IList<Native> GetNativesByTargetFile(string targetFile)
+		{
+			lock (_syncLock)
+			{
+				string trimmedTargetFile = targetFile != null ? targetFile.TrimEnd() : string.Empty;
+				List<Native> natives = _natives.Where(
+					x => x.ExportRequest?.DestinationLocation != null && string.Compare(
+						     x.ExportRequest.DestinationLocation.TrimEnd(),
+						     trimmedTargetFile,
+						     StringComparison.OrdinalIgnoreCase) == 0).ToList();
+				return natives;
+			}
+		}
+
 		public IList<Native> GetNatives()
 		{
 			lock (_syncLock)
@@ -68,14 +82,6 @@
 				return GetExportRequests().Any(
 					x => string.Compare(x.DestinationLocation, destinationLocation, StringComparison.OrdinalIgnoreCase)
 					     == 0);
-			}
-		}
-
-		public Native GetByLineNumber(int lineNumber)
-		{
-			lock (_syncLock)
-			{
-				return _natives.FirstOrDefault(x => x.ExportRequest?.Order == lineNumber);
 			}
 		}
 

@@ -77,17 +77,23 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldGetNativeByUniqueId()
+		public void ItShouldGetNativeByTargetFile()
 		{
 			// ACT
-			Native native1 = this._instance.GetByLineNumber(1);
-			Native native2 = this._instance.GetByLineNumber(2);
-			Native native3 = this._instance.GetByLineNumber(3);
+			IList<Native> native1 = this._instance.GetNativesByTargetFile(@"C:\temp\native1.docx");
+			IList<Native> native2 = this._instance.GetNativesByTargetFile(@"C:\temp\native2.docx");
+			IList<Native> native3 = this._instance.GetNativesByTargetFile(@"C:\temp\native3.docx");
+			IList<Native> native4 = this._instance.GetNativesByTargetFile(null);
+			IList<Native> native5 = this._instance.GetNativesByTargetFile(string.Empty);
 
 			// ASSERT
-			Assert.That(native1, Is.EqualTo(this._natives[0]));
-			Assert.That(native2, Is.Null);
-			Assert.That(native3, Is.EqualTo(this._natives[2]));
+			Assert.That(native1.Count, Is.EqualTo(1));
+			Assert.That(native1[0], Is.EqualTo(this._natives[0]));
+			Assert.That(native2.Count, Is.Zero);
+			Assert.That(native3.Count, Is.EqualTo(1));
+			Assert.That(native3[0], Is.EqualTo(this._natives[2]));
+			Assert.That(native4.Count, Is.Zero);
+			Assert.That(native5.Count, Is.Zero);
 		}
 
 		[Test]
