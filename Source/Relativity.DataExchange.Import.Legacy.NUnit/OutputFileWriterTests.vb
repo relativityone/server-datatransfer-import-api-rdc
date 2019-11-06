@@ -98,7 +98,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 			' Act & Assert
 			Assert.DoesNotThrow(Sub() _sut.Dispose(), "because it should be safe to call dispose more than once")
 		End Sub
-		
+
 		<Test()>
 		Public Sub CloseShouldCloseAllWriters()
 			' Arrange
@@ -277,6 +277,52 @@ Namespace Relativity.DataExchange.Import.NUnit
 			' Assert
 			Assert.That(firstLockedFilePath, Does.Not.Exist)
 			Assert.That(secondLockedFilePath, Does.Not.Exist)
+		End Sub
+
+		<CodeAnalysis.SuppressMessage(
+			"Microsoft.Reliability",
+			"CA2000:Dispose objects before losing scope",
+			Justification:="We do want to test what happens when fileStream is not disposed")>
+		<Test()>
+		Public Sub DeleteFilesShouldHaveAtMostTwelveFilesInTheQueue()
+			Const maximumNumberOfFilesInQueue = 12
+
+			' Arrange
+			Dim lockedFilesPaths = New List(Of String)
+			Dim lockedFiles = New List(Of FileStream)
+
+			_sut.Open()
+			_sut.Close()
+			Dim firstLockedFilePath = _sut.OutputCodeFilePath
+
+			Using New FileStream(firstLockedFilePath, FileMode.Open)
+				_sut.DeleteFiles()
+
+				For i = 1 To maximumNumberOfFilesInQueue
+					_sut.Open()
+					_sut.Close()
+
+					Dim lockedFilePath = _sut.OutputCodeFilePath
+					Dim lockedFile = New FileStream(lockedFilePath, FileMode.Open)
+					lockedFilesPaths.Add(lockedFilePath)
+					lockedFiles.Add(lockedFile)
+
+					_sut.DeleteFiles()
+				Next
+			End Using
+			For Each lockedFile In lockedFiles
+				lockedFile.Dispose()
+			Next
+			' Act
+			_sut.DeleteFiles()
+
+			' Assert
+			For Each lockedFilePath In lockedFilesPaths
+				Assert.That(lockedFilePath, Does.Not.Exist)
+			Next
+
+			Assert.That(firstLockedFilePath, Does.Exist)
+			File.Delete(firstLockedFilePath)
 		End Sub
 
 		<Test()>

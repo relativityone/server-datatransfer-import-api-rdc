@@ -6,6 +6,7 @@ Imports Relativity.Logging
 Namespace kCura.WinEDDS
 	Public Class OutputFileWriter
 		Implements IDisposable
+		Private Const _MAXIMUM_NUMBER_OF_ITEMS_IN_QUEUE As Integer = 12
 
 		Private ReadOnly _createdFilesPaths As Queue(Of String) = New Queue(Of String)
 		Private ReadOnly _syncRoot As Object = New Object
@@ -249,6 +250,15 @@ Namespace kCura.WinEDDS
 					Me._logger.LogWarning(ex, "Unable to delete file because it was locked. Adding to queue for retry.")
 					_createdFilesPaths.Enqueue(fileToDelete)
 				End Try
+			Next
+
+			EnsureCreatedFilesQueueSizeLimit()
+		End Sub
+
+		Private Sub EnsureCreatedFilesQueueSizeLimit()
+			Dim numberOfItemsToRemove As Integer = Math.Max(0, _createdFilesPaths.Count - _MAXIMUM_NUMBER_OF_ITEMS_IN_QUEUE)
+			For i As Integer = 1 To numberOfItemsToRemove
+				_createdFilesPaths.Dequeue()
 			Next
 		End Sub
 
