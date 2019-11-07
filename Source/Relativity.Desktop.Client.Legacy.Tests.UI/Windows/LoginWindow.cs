@@ -2,11 +2,11 @@
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal class LoginWindow : RdcWindowBase
+	internal sealed class LoginWindow : RdcWindowBase<LoginWindow>
 	{
-		private readonly UIElement continueButton;
+		private readonly ButtonUIElement continueButton;
 		private readonly EditUIElement emailEdit;
-		private readonly UIElement loginButton;
+		private readonly ButtonUIElement loginButton;
 		private readonly EditUIElement passwordEdit;
 		private readonly SecurityAlertDialog securityAlertDialog;
 
@@ -17,7 +17,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			continueButton = FindButton("Continue");
 			loginButton = FindButtonWithAutomationId("_login");
 			passwordEdit = FindEditWithAutomationId("_password__password_TextBox");
-			securityAlertDialog = new SecurityAlertDialog(WaitForWindow("Security Alert"));
+			securityAlertDialog = new SecurityAlertDialog(FindWindow("Security Alert")).WaitFor();
 		}
 
 		public SelectWorkspaceWindow Login(string email, string password)

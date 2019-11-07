@@ -3,7 +3,7 @@ using OpenQA.Selenium.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
-	public class CheckBoxUIElement : UIElement
+	internal sealed class CheckBoxUIElement : UIElement<CheckBoxUIElement>
 	{
 		public CheckBoxUIElement(Func<AppiumWebElement> create) : base(create)
 		{
@@ -21,7 +21,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		public void SetValue(bool check)
 		{
-			if (check && !Element.Selected || !check && Element.Selected)
+			if (check && !Selected || !check && Selected)
 			{
 				Toggle();
 			}

@@ -1,18 +1,17 @@
 ﻿using System;
 using OpenQA.Selenium.Appium;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
-	public class TabsUIElement : UIElement
+	internal sealed class TabsUIElement : UIElement<TabsUIElement>
 	{
 		public TabsUIElement(Func<AppiumWebElement> create) : base(create)
 		{
 		}
 
-		public UIElement FindTabItem(string name)
+		public TabItemUIElement FindTabItem(string name)
 		{
-			return Create(() => Element.FindChild(ElementType.TabItem, name));
+			return new TabItemUIElement(FindChild(ElementType.TabItem, name));
 		}
 	}
 }

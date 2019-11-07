@@ -4,9 +4,9 @@ using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	public class BrowseForFolderDialog : UIElement
+	internal sealed class BrowseForFolderDialog : UIElement<BrowseForFolderDialog>
 	{
-		private readonly UIElement cancelButton;
+		private readonly ButtonUIElement cancelButton;
 
 		public BrowseForFolderDialog(Func<AppiumWebElement> create) : base(create)
 		{

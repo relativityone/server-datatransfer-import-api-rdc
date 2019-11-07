@@ -2,15 +2,15 @@
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal class RelativityDesktopClientWindow : RdcWindowBase
+	internal sealed class RelativityDesktopClientWindow : RdcWindowBase<RelativityDesktopClientWindow>
 	{
 		private readonly MenuItemUIElement menuBar;
-		private readonly UIElement treeView;
+		private readonly TreeUIElement treeView;
 
 		public RelativityDesktopClientWindow(RdcWindowsManager windowsManager, WindowDetails window)
 			: base(windowsManager, window)
 		{
-			menuBar = new MenuItemUIElement(FindMenuBar("Application"));
+			menuBar = FindMenuBar("Application");
 			treeView = FindTreeWithAutomationId("_treeView");
 		}
 

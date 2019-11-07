@@ -2,7 +2,7 @@
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal abstract class WindowBase : UIElement
+	internal abstract class WindowBase<T> : UIElement<T>, IWindow where T : UIElement<T>
 	{
 		protected WindowBase(WindowDetails window) : base(() => window.Element)
 		{

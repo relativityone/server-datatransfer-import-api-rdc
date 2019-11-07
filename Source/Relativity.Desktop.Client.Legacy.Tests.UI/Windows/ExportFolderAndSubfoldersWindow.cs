@@ -3,21 +3,21 @@ using Relativity.Desktop.Client.Legacy.Tests.UI.Windows.SetupParameters;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal class ExportFolderAndSubfoldersWindow : RdcWindowBase
+	internal sealed class ExportFolderAndSubfoldersWindow : RdcWindowBase<ExportFolderAndSubfoldersWindow>
 	{
 		private readonly BrowseForFolderDialog browseForFolderDialog;
 		private readonly ComboBoxUIElement dataFileEncodingComboBox;
-		private readonly UIElement dataSourceTab;
-		private readonly UIElement destinationFilesTab;
+		private readonly TabItemUIElement dataSourceTab;
+		private readonly TabItemUIElement destinationFilesTab;
 		private readonly CheckBoxUIElement exportFullTextAsFileCheckBox;
 		private readonly CheckBoxUIElement exportImagesCheckBox;
 		private readonly CheckBoxUIElement exportNativeFilesCheckBox;
 		private readonly EditUIElement folderPathTextBox;
 		private readonly MenuItemUIElement menuBar;
 		private readonly ComboBoxUIElement nativeFileFormatComboBox;
-		private readonly UIElement pickTextFieldPrecedenceButton;
+		private readonly ButtonUIElement pickTextFieldPrecedenceButton;
 		private readonly PickTextPrecedenceDialog pickTextPrecedenceDialog;
-		private readonly UIElement selectViewButton;
+		private readonly ButtonUIElement selectViewButton;
 		private readonly SelectViewDialog selectViewDialog;
 		private readonly ComboBoxUIElement textAndNativeComboBox;
 		private readonly ComboBoxUIElement textFileEncodingComboBox;
@@ -26,28 +26,25 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		public ExportFolderAndSubfoldersWindow(RdcWindowsManager windowsManager, WindowDetails window)
 			: base(windowsManager, window)
 		{
-			menuBar = new MenuItemUIElement(FindMenuBar("Application"));
-			var tabs = new TabsUIElement(FindTabWithAutomationId("TabControl1"));
+			menuBar = FindMenuBar("Application");
+			var tabs = FindTabsWithAutomationId("TabControl1");
 			dataSourceTab = tabs.FindTabItem("Data Source");
 			destinationFilesTab = tabs.FindTabItem("Destination Files");
 			selectViewButton = FindButtonWithAutomationId("_selectFromListButton");
 			folderPathTextBox = FindEditWithAutomationId("_folderPath");
-			browseForFolderDialog = new BrowseForFolderDialog(WaitForWindow("Browse For Folder"));
-			selectViewDialog = new SelectViewDialog(WaitForWindow("Select View"));
-			pickTextPrecedenceDialog = new PickTextPrecedenceDialog(WaitForWindow("Pick Text Precedence"));
+			browseForFolderDialog = new BrowseForFolderDialog(FindWindow("Browse For Folder"));
+			selectViewDialog = new SelectViewDialog(FindWindow("Select View"));
+			pickTextPrecedenceDialog = new PickTextPrecedenceDialog(FindWindow("Pick Text Precedence"));
 			var textAndNativeFileNamesGroup = FindGroupWithAutomationId("GroupBoxTextAndNativeFileNames");
-			textAndNativeComboBox =
-				new ComboBoxUIElement(textAndNativeFileNamesGroup.FindComboBoxWithAutomationId("_comboBox"));
-			exportImagesCheckBox = new CheckBoxUIElement(FindCheckBoxWithAutomationId("_exportImages"));
-			exportNativeFilesCheckBox = new CheckBoxUIElement(FindCheckBoxWithAutomationId("_exportNativeFiles"));
-			nativeFileFormatComboBox = new ComboBoxUIElement(FindComboBoxWithAutomationId("_nativeFileFormat"));
-			dataFileEncodingComboBox =
-				new ComboBoxUIElement(FindPaneWithAutomationId("_dataFileEncoding").FindComboBox());
-			exportFullTextAsFileCheckBox = new CheckBoxUIElement(FindCheckBoxWithAutomationId("_exportFullTextAsFile"));
-			textFileEncodingComboBox =
-				new ComboBoxUIElement(FindPaneWithAutomationId("_textFileEncoding").FindComboBox());
-			volumeDigitPaddingComboBox =
-				new SpinnerComboBoxUIElement(FindComboBoxWithAutomationId("_volumeDigitPadding"));
+			textAndNativeComboBox = textAndNativeFileNamesGroup.FindComboBoxWithAutomationId("_comboBox");
+
+			exportImagesCheckBox = FindCheckBoxWithAutomationId("_exportImages");
+			exportNativeFilesCheckBox = FindCheckBoxWithAutomationId("_exportNativeFiles");
+			nativeFileFormatComboBox = FindComboBoxWithAutomationId("_nativeFileFormat");
+			dataFileEncodingComboBox = FindPaneWithAutomationId("_dataFileEncoding").FindComboBox();
+			exportFullTextAsFileCheckBox = FindCheckBoxWithAutomationId("_exportFullTextAsFile");
+			textFileEncodingComboBox = FindPaneWithAutomationId("_textFileEncoding").FindComboBox();
+			volumeDigitPaddingComboBox = FindSpinnerComboBoxWithAutomationId("_volumeDigitPadding");
 			pickTextFieldPrecedenceButton = FindButtonWithAutomationId("_pickTextFieldPrecedenceButton");
 		}
 

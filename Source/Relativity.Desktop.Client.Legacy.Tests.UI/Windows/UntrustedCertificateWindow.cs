@@ -2,9 +2,9 @@
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal class UntrustedCertificateWindow : RdcWindowBase
+	internal sealed class UntrustedCertificateWindow : RdcWindowBase<UntrustedCertificateWindow>
 	{
-		private readonly UIElement allowButton;
+		private readonly ButtonUIElement allowButton;
 
 		public UntrustedCertificateWindow(RdcWindowsManager windowsManager, WindowDetails window)
 			: base(windowsManager, window)

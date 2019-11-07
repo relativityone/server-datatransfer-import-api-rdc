@@ -1,13 +1,14 @@
-﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+﻿using System;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal class SelectWorkspaceWindow : RdcWindowBase
+	internal sealed class SelectWorkspaceWindow : RdcWindowBase<SelectWorkspaceWindow>
 	{
 		private const string WorkspaceListAutomationId = "ItemListView";
 
-		private readonly UIElement okButton;
-		private readonly UIElement searchTextBox;
+		private readonly ButtonUIElement okButton;
+		private readonly EditUIElement searchTextBox;
 		private readonly ListUIElement workspaceList;
 
 		public SelectWorkspaceWindow(RdcWindowsManager windowsManager, WindowDetails window)
@@ -15,7 +16,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		{
 			okButton = FindButtonWithAutomationId("OKButton");
 			searchTextBox = FindEditWithAutomationId("SearchQuery");
-			workspaceList = new ListUIElement(WaitForListWithAutomationId(WorkspaceListAutomationId));
+			workspaceList = FindListWithAutomationId(WorkspaceListAutomationId).WaitFor(TimeSpan.FromMilliseconds(500));
 		}
 
 		public RelativityDesktopClientWindow ChooseWorkspace(string workspaceName)

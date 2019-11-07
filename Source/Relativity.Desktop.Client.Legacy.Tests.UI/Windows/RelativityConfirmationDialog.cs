@@ -4,9 +4,9 @@ using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	public class RelativityConfirmationDialog : UIElement
+	internal sealed class RelativityConfirmationDialog : UIElement<RelativityConfirmationDialog>
 	{
-		private readonly UIElement okButton;
+		private readonly ButtonUIElement okButton;
 
 		public RelativityConfirmationDialog(Func<AppiumWebElement> create) : base(create)
 		{

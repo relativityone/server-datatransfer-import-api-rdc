@@ -1,7 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
 using Relativity.DataExchange.TestFramework;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI
 {
