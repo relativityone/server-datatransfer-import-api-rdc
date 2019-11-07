@@ -46,6 +46,10 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Polly, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Kepler">
       <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
@@ -83,12 +87,14 @@
     <Compile Include="TestPathsProvider.cs" />
     <Compile Include="Windows\DialogWindow.cs" />
     <Compile Include="Windows\IWindow.cs" />
+    <Compile Include="Windows\ExportType.cs" />
+    <Compile Include="Windows\ExportWindowSettings.cs" />
     <Compile Include="Windows\UntrustedCertificateWindow.cs" />
     <Compile Include="WinAppDriverRunner.cs" />
     <Compile Include="Appium\UIElement.cs" />
     <Compile Include="Windows\BrowseForFolderDialog.cs" />
     <Compile Include="Windows\ChooseLoadFileDialog.cs" />
-    <Compile Include="Windows\ExportFolderAndSubfoldersWindow.cs" />
+    <Compile Include="Windows\ExportWindow.cs" />
     <Compile Include="Windows\SetupParameters\ExportWindowSetupParameters.cs" />
     <Compile Include="Windows\ImportDocumentLoadFileWindow.cs" />
     <Compile Include="ImportTests.cs" />

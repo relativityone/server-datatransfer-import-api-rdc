@@ -27,11 +27,25 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			return WindowsManager.SwitchToImportDocumentLoadFileWindow();
 		}
 
-		public ExportFolderAndSubfoldersWindow ExportFolderAndSubfolders()
+		public ExportWindow ExportFolderAndSubfolders()
 		{
 			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export")
 				.ClickMenuItem("Folder and Subfolders...");
 			return WindowsManager.SwitchToExportFolderAndSubfoldersWindow();
+		}
+
+		public ExportWindow ExportSavedSearch()
+		{
+			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export")
+				.ClickMenuItem("Saved Search...");
+			return WindowsManager.SwitchToExportSavedSearchWindow();
+		}
+
+		public ExportWindow ExportProductionSet()
+		{
+			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export")
+				.ClickMenuItem("Production Set...");
+			return WindowsManager.SwitchToExportProductionSetWindow();
 		}
 	}
 }

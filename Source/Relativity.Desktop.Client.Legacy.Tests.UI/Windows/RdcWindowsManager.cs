@@ -56,10 +56,37 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			return SwitchToProgressWindow(WindowNameConstants.ExportFoldersAndSubfoldersProgress);
 		}
 
-		public ExportFolderAndSubfoldersWindow SwitchToExportFolderAndSubfoldersWindow()
+		public ProgressWindow SwitchToExportProductionSetProgress()
 		{
-			return SwitchToWindow(WindowNameConstants.ExportFolderAndSubfolders,
-				x => new ExportFolderAndSubfoldersWindow(this, x));
+			return SwitchToProgressWindow(WindowNameConstants.ExportProductionSetProgress);
+		}
+
+		public ProgressWindow SwitchToExportSavedSearchProgress()
+		{
+			return SwitchToProgressWindow(WindowNameConstants.ExportSavedSearchProgress);
+		}
+
+		public ExportWindow SwitchToExportFolderAndSubfoldersWindow()
+		{
+			var settings = new ExportWindowSettings() { ExportType = ExportType.FoldersAndSubfolders };
+			return SwitchToExportWindow(WindowNameConstants.ExportFolderAndSubfolders, settings);
+		}
+
+		public ExportWindow SwitchToExportSavedSearchWindow()
+		{
+			var settings = new ExportWindowSettings() { ExportType = ExportType.SavedSearch };
+			return SwitchToExportWindow(WindowNameConstants.ExportExportSavedSearch, settings);
+		}
+
+		public ExportWindow SwitchToExportProductionSetWindow()
+		{
+			var settings = new ExportWindowSettings(){ ExportType = ExportType.ProductionSet };
+			return SwitchToExportWindow(WindowNameConstants.ExportProductionSet, settings);
+		}
+
+		private ExportWindow SwitchToExportWindow(string title, ExportWindowSettings settings)
+		{
+			return SwitchToWindow(title,x => new ExportWindow(this, x, settings));
 		}
 
 		public DialogWindow GetRdcConfirmationDialog()
