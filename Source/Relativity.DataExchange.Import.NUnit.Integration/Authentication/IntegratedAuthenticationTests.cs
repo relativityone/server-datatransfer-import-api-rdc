@@ -20,17 +20,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
-	/// <summary>
-	/// Represents tests for integrated authentication.
-	/// </summary>
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Authentication]
 	[Explicit("These tests don't work on Trident, because they are executed there in an non-interactive process.")]
 	public class IntegratedAuthenticationTests : ImportJobTestBase
 	{
-		/// <summary>
-		/// instance settings cache is 30 seconds.
-		/// </summary>
 		private const int _WAIT_TIME_FOR_INSTANCE_SETTING_CHANGE_IN_MS = 30 * 1000;
 
 		/// <summary>
@@ -71,8 +65,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 
 			// assert
 			this.ThenTheImportJobIsSuccessful();
-			this.ThenTheImportMessageCountIsNonZero();
-			this.ThenTheImportProgressEventsAreRaised();
+			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
+			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(this.SourceData.Rows.Count));
 		}
 
 		[Category(TestCategories.ImportDoc)]

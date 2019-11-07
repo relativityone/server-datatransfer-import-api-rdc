@@ -15,25 +15,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
-	/// <summary>
-	/// Represents positive import job tests.
-	/// </summary>
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	public class PositiveImportJobTests : ImportJobTestBase
 	{
-		/// <summary>
-		/// Should import the files.
-		/// </summary>
-		/// <param name="client">
-		/// The transfer client to force.
-		/// </param>
-		/// <param name="disableNativeLocationValidation">
-		/// Specify whether to disable native location validation.
-		/// </param>
-		/// <param name="disableNativeValidation">
-		/// Specify whether to disable native validation.
-		/// </param>
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
@@ -52,8 +37,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			GivenTheStandardConfigSettings(client, disableNativeLocationValidation, disableNativeValidation);
 			this.WhenExecutingTheJob();
 			this.ThenTheImportJobIsSuccessful();
-			this.ThenTheImportMessageCountIsNonZero();
-			this.ThenTheImportProgressEventsAreRaised();
+			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
+			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(this.SourceData.Rows.Count));
 		}
 	}
 }
