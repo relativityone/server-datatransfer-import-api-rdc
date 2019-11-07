@@ -134,6 +134,14 @@ The integration tests, by their very nature, perform "deeper" operations and tak
 .\build.ps1 IntegrationTests,TestReports
 ```
 
+### UI automation tests
+[How to run RDC UI Automation](https://einstein.kcura.com/display/DTV/How+to+run+RDC+UI+Automation)
+
+```bash
+# Run the UI automation tests using either environment variables or modified app.config setting for all UI test parameters.
+.\build.ps1 UIAutomationTests
+```
+
 ### TestVM support
 The build scripts make it very easy to run *all* integration tests with a TestVM.
 
