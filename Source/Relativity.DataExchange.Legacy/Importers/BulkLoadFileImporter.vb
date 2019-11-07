@@ -78,6 +78,7 @@ Namespace kCura.WinEDDS
 		Private _processId As Guid
 		Private _parentArtifactTypeId As Int32?
 		Private _unmappedRelationalFields As System.Collections.ArrayList
+		Private _cancelledByUser As Boolean
 
 		Protected BulkLoadFileFieldDelimiter As String
 
@@ -117,6 +118,12 @@ Namespace kCura.WinEDDS
 		Friend ReadOnly Property CompletedRecords As Long
 			Get
 				Return TotalTransferredFilesCount
+			End Get
+		End Property
+
+		Friend ReadOnly Property IsCancelledByUser As Boolean
+			Get
+				Return _cancelledByUser
 			End Get
 		End Property
 
@@ -2064,6 +2071,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Sub _processContext_HaltProcessEvent(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles Context.CancellationRequest
 			If e.ProcessId.ToString = _processId.ToString Then
+				_cancelledByUser = e.RequestByUser
 				StopImport()
 			End If
 		End Sub
