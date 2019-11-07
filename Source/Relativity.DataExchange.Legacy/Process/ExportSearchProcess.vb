@@ -30,6 +30,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Protected Overrides ReadOnly Property Statistics As Statistics
+			Get
+				Return _searchExporter.Statistics
+			End Get
+		End Property
+
 		Public Property UserNotification As Exporters.IUserNotification
 		Public Property UserNotificationFactory As Func(Of Exporter, IUserNotification)
 
@@ -65,30 +71,21 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
-			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_searchExporter.Statistics, checkThrottling := False)
 			Me.Context.PublishStatusEvent("", "Export completed")
 			Me.Context.PublishProcessCompleted()
 		End Sub
 
-		Protected Overrides Sub OnFatalError()
-			MyBase.OnFatalError()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _searchExporter.Statistics)
-			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_searchExporter.Statistics, checkThrottling := False)
-		End Sub
-
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _searchExporter.Statistics)
-			' This is to ensure we send non-zero JobProgressMessage even with small job
-			SendMetricJobProgress(_searchExporter.Statistics, checkThrottling := False)
 			Me.Context.PublishProcessCompleted(False, _searchExporter.ErrorLogFileName, True)
 		End Sub
 
 		Protected Overrides Function HasErrors() As Boolean
 			Return _hasErrors
+		End Function
+
+		Protected Overrides Function IsCancelled() As Boolean
+			Return _searchExporter.IsCancelledByUser
 		End Function
 
 		Private Function GetExporter() As Exporter

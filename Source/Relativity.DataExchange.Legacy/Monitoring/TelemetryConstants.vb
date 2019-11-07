@@ -19,6 +19,7 @@
             Public Const JOB_SIZE As String = "RDC.Usage.JobSize"
             Public Const JOB_COMPLETED_COUNT As String = "RDC.Performance.JobCompletedCount"
             Public Const JOB_FAILED_COUNT As String = "RDC.Performance.JobFailedCount"
+            Public Const JOB_CANCELLED_COUNT As String = "RDC.Performance.JobCancelledCount"
             Public Const THROUGHPUT As String = "RDC.Performance.Throughput"
             Public Const THROUGHPUT_BYTES As String = "RDC.Performance.ThroughputBytes"
             ' This bucket name starts with "RDC" because that's registered prefix for our metrics. Authentication metrics are only send from ImportAPI class.
@@ -62,10 +63,11 @@
         ''' <summary>
         ''' Contain values for <see cref="MetricJobEndReport.JobStatus"/> property.
         ''' </summary>
-        Class JobStatus
-            Public Const COMPLETED As String = "Completed"
-            Public Const FAILED As String = "Failed"
-        End Class
+        Enum JobStatus
+            Completed
+            Failed
+            Cancelled
+        End Enum
 
         ''' <summary>
         ''' Contain values for <see cref="MetricAuthenticationType.AuthenticationMethod"/> property.
