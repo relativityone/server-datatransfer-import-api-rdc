@@ -22,7 +22,9 @@ properties {
     $DotCoverConfigFile = Join-Path $ScriptsDir "code-coverage-report.xml"
     $DotCoverReportXmlFile = Join-Path $CodeCoverageReportDir "code-coverage-report.xml"
     $IntegrationTestsReportDir = Join-Path $TestReportsDir "integration-tests"
+    $UIAutomationTestsReportDir = Join-Path $TestReportsDir "ui-automation-tests"
     $IntegrationTestsResultXmlFile = Join-Path $IntegrationTestsReportDir "test-results-integration.xml"
+    $UIAutomationTestsResultXmlFile = Join-Path $UIAutomationTestsReportDir "test-results-ui-automation.xml"
     $UnitTestsReportDir = Join-Path $TestReportsDir "unit-tests"
     $UnitTestsResultXmlFile = Join-Path $UnitTestsReportDir "test-results-unit.xml"
     $ExtentCliExe = Join-Path $PackagesDir "extent\tools\extent.exe"
@@ -406,6 +408,23 @@ task IntegrationTests -Description "Run all integration tests" {
             "--out=$OutputFile" `
             $testCategoryFilter `
     } -errorMessage "There was an error running the integration tests."
+}
+
+task UIAutomationTests -Description "Runs all UI tests" {
+    Initialize-Folder $TestReportsDir -Safe
+    Initialize-Folder $UIAutomationTestsReportDir
+
+    $testDllPath = Join-Path $SourceDir "\Relativity.Desktop.Client.Legacy.Tests.UI\bin\Release\Relativity.Desktop.Client.Legacy.Tests.UI.dll"
+    $OutputFile = Join-Path $UIAutomationTestsReportDir "ui-automation-test-output.txt"
+    
+    exec { & $NunitExe $testDllPath `
+        "--labels=All" `
+        "--agents=$NumberOfProcessors" `
+        "--skipnontestassemblies" `
+        "--timeout=$TestTimeoutInMS" `
+        "--result=$UIAutomationTestsResultXmlFile" `
+        "--out=$OutputFile"
+    } -errorMessage "There was an error running the UI tests."
 }
 
 task IntegrationTestResults -Description "Retrieve the integration test results from the Xml file" {

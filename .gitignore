@@ -302,3 +302,7 @@ errors.xml
 
 # Visual Studio Code
 /.vscode/*
+
+# Test files
+TestInput/
+TestOutput/

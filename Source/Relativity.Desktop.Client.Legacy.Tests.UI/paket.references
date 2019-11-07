@@ -1,0 +1,4 @@
+group ui-automation	
+	Appium.WebDriver
+	selenium.support
+	selenium.webdriver

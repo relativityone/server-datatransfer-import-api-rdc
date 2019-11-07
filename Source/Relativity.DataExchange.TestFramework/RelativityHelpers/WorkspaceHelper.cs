@@ -72,17 +72,14 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 								"Retrieved the {TemplateName} workspace template. TemplateWorkspaceId={TemplateWorkspaceId}.",
 								parameters.WorkspaceTemplate,
 								templateWorkspaceId);
-							Workspace workspace = new Workspace
-								                      {
-									                      Name =
-										                      $"Import API Sample Workspace ({DateTime.Now:MM-dd HH.mm.ss.fff})",
-									                      DownloadHandlerApplicationPath = "Relativity.Distributed",
-								                      };
+
+							var workspace = GetWorkspaceToCreate(parameters);
 
 							logger.LogInformation("Creating the {WorkspaceName} workspace...", workspace.Name);
 							ProcessOperationResult result =
 								client.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspace);
 							parameters.WorkspaceId = QueryWorkspaceArtifactId(client, result, logger);
+							parameters.WorkspaceName = workspace.Name;
 							logger.LogInformation(
 								"Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
 								workspace.Name,
@@ -201,6 +198,22 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			logger.LogError("The create process failed. Message: {Message}", processResult.Message);
 			throw new InvalidOperationException(processResult.Message);
+		}
+
+		private static string GetWorkspaceName(IntegrationTestParameters parameters)
+		{
+			return string.IsNullOrEmpty(parameters.WorkspaceName)
+				? $"Import API Sample Workspace ({DateTime.Now:MM-dd HH.mm.ss.fff})"
+				: parameters.WorkspaceName;
+		}
+
+		private static Workspace GetWorkspaceToCreate(IntegrationTestParameters parameters)
+		{
+			return new Workspace
+			{
+				Name = GetWorkspaceName(parameters),
+				DownloadHandlerApplicationPath = "Relativity.Distributed",
+			};
 		}
 	}
 }

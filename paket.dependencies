@@ -65,3 +65,10 @@ nuget relativity.services.datacontracts = 11.0.79.97-DEV
 nuget relativity.services.interfaces = 11.0.79.97-DEV
 nuget relativity.services.interfaces.private = 11.0.79.97-DEV
 nuget relativity.testing.identification ~> 1.6.0
+
+# A group is used to address dependency conflicts and only required by UI automation tests.
+group ui-automation
+	source https://nuget.org/api/v2	
+	nuget Appium.WebDriver = 3.0.0.2
+	nuget selenium.support = 3.8.0
+	nuget selenium.webdriver = 3.8.0	
