@@ -36,6 +36,7 @@ namespace Relativity.DataExchange
 		private int tapiMaxJobParallelism;
 		private int iApiMetricsThrottlingSeconds;
 		private int tapiTargetDataRateMbps;
+		private int tapiAsperaDatagramSize;
 		private int webBasedFileDownloadChunkSize;
 		private string webApiServiceMappedUrl;
 		private string programmaticWebApiServiceUrl;
@@ -702,6 +703,22 @@ namespace Relativity.DataExchange
 		{
 			get;
 			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.TapiAsperaDatagramSizeKey,
+			AppSettingsConstants.TapiAsperaDatagramSizeDefaultValue)]
+		int IAppSettings.TapiAsperaDatagramSize
+		{
+			get => this.tapiAsperaDatagramSize;
+			set
+			{
+				bool isValueInRange = value >= AppSettingsConstants.TapiAsperaDatagramSizeMinimumValue
+				                      && value <= AppSettingsConstants.TapiAsperaDatagramSizeMaximumValue;
+				this.tapiAsperaDatagramSize = isValueInRange ? value : AppSettingsConstants.TapiAsperaDatagramSizeDefaultValue;
+			}
 		}
 
 		/// <inheritdoc />
