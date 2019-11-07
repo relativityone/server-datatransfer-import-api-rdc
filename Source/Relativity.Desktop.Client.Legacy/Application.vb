@@ -533,6 +533,7 @@ Namespace Relativity.Desktop.Client
 			Dim parameters = New TapiBridgeParameters2
 			parameters.Credentials = credentials
 			parameters.AsperaDocRootLevels = AppSettings.Instance.TapiAsperaNativeDocRootLevels
+			parameters.AsperaDatagramSize = AppSettings.Instance.TapiAsperaDatagramSize
 			parameters.FileShare = Me.SelectedCaseInfo.DocumentPath
 			parameters.ForceAsperaClient = AppSettings.Instance.TapiForceAsperaClient
 			parameters.ForceClientCandidates = AppSettings.Instance.TapiForceClientCandidates
