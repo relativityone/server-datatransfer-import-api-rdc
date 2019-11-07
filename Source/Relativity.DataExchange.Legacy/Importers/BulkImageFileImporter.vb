@@ -276,6 +276,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.ClientRequestId = Guid.NewGuid()
 			nativeParameters.Credentials = args.Credential
 			nativeParameters.AsperaDocRootLevels = AppSettings.Instance.TapiAsperaNativeDocRootLevels
+			nativeParameters.AsperaDatagramSize = AppSettings.Instance.TapiAsperaDatagramSize
 			nativeParameters.FileShare = args.CaseInfo.DocumentPath
 			nativeParameters.ForceAsperaClient = AppSettings.Instance.TapiForceAsperaClient
 			nativeParameters.ForceClientCandidates = AppSettings.Instance.TapiForceClientCandidates

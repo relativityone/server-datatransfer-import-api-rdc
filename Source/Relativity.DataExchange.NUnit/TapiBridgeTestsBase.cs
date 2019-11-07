@@ -793,6 +793,15 @@ namespace Relativity.DataExchange.NUnit
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Once);
 		}
 
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldForceCreatTheTransferClient([Values]WellKnownTransferClient client)
+		{
+			this.CreateTapiBridge(client);
+			this.TapiBridgeInstance.CreateTransferClient();
+			Assert.That(this.ChangedTapiClient, Is.Not.EqualTo(TapiClient.None));
+		}
+
 		protected abstract void CreateTapiBridge(WellKnownTransferClient client);
 
 		protected virtual void OnTapiBridgeCreated()

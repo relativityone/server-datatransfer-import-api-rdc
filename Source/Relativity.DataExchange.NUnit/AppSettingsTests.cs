@@ -1001,6 +1001,26 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheTapiAsperaDatagramSizeSetting()
+		{
+			Assert.That(
+				this.settings.TapiAsperaDatagramSize,
+				Is.EqualTo(AppSettingsConstants.TapiAsperaDatagramSizeDefaultValue));
+
+			int correctValue = 1350;
+			this.settings.TapiAsperaDatagramSize = correctValue;
+			Assert.That(this.settings.TapiAsperaDatagramSize, Is.EqualTo(correctValue));
+
+			int tooLowValue = 100;
+			this.settings.TapiAsperaDatagramSize = tooLowValue;
+			Assert.That(this.settings.TapiAsperaDatagramSize, Is.EqualTo(AppSettingsConstants.TapiAsperaDatagramSizeDefaultValue));
+
+			int tooHighValue = int.MaxValue;
+			this.settings.TapiAsperaDatagramSize = tooHighValue;
+			Assert.That(this.settings.TapiAsperaDatagramSize, Is.EqualTo(AppSettingsConstants.TapiAsperaDatagramSizeDefaultValue));
+		}
+
+		[Test]
 		public void ShouldMakeSettingsDeepCopy()
 		{
 			AssignRandomValues(this.settings);
@@ -1064,6 +1084,7 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.PreviewThreshold, Is.EqualTo(49));
 				Assert.That(this.settings.SuppressServerCertificateValidation, Is.True);
 				Assert.That(this.settings.TapiAsperaBcpRootFolder, Is.EqualTo("Root"));
+				Assert.That(this.settings.TapiAsperaDatagramSize, Is.EqualTo(0));
 				Assert.That(this.settings.TapiForceAsperaClient, Is.True);
 				Assert.That(this.settings.TapiForceBcpHttpClient, Is.True);
 				Assert.That(this.settings.TapiForceFileShareClient, Is.True);
@@ -1135,6 +1156,7 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.PreviewThresholdKey], Is.EqualTo(49));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.SuppressServerCertificateValidationKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiAsperaBcpRootFolderKey], Is.EqualTo("Root"));
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiAsperaDatagramSizeKey], Is.EqualTo(0));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiBadPathErrorsRetryKey], Is.False);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiForceAsperaClientKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiForceBcpHttpClientKey], Is.True);
@@ -1239,6 +1261,8 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.SuppressServerCertificateValidation, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.TapiAsperaBcpRootFolderKey] = "def";
 				Assert.That(this.settings.TapiAsperaBcpRootFolder, Is.EqualTo("def"));
+				dictionary[DataExchange.AppSettingsConstants.TapiAsperaDatagramSizeKey] = 432;
+				Assert.That(this.settings.TapiAsperaDatagramSize, Is.EqualTo(432));
 				dictionary[DataExchange.AppSettingsConstants.TapiBadPathErrorsRetryKey] = true;
 				Assert.That(this.settings.TapiBadPathErrorsRetry, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsRetryKey] = true;

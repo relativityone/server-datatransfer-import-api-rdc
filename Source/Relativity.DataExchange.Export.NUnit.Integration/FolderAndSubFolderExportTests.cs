@@ -148,8 +148,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			const int ExpectedProcessedCount = 2;
-			this.ThenTheExportJobIsNotSuccessful(ExpectedProcessedCount);
+			// Note: the Exporter artifact search doesn't support dependency injection and the DownloadProgressManage now performs a finalization that counts all search/DI artifacts.
+			this.ThenTheExportJobIsNotSuccessful(ExporterTestData.AllSampleFiles.Count() + fileExportRequests.Count);
 		}
 
 		[IdentifiedTest("76FB096D-7948-4BFE-8CED-7E509505CA95")]
@@ -207,8 +207,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			const int ExpectedProcessedCount = 3;
-			this.ThenTheExportJobIsNotSuccessful(ExpectedProcessedCount);
+			// Note: the Exporter artifact search doesn't support dependency injection and the DownloadProgressManage now performs a finalization that counts all search/DI artifacts.
+			this.ThenTheExportJobIsNotSuccessful(ExporterTestData.AllSampleFiles.Count() + fileExportRequests.Count + longTextExportRequests.Count);
 		}
 	}
 }
