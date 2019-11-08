@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using OpenQA.Selenium.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Windows.Names;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -20,18 +21,18 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public LoginWindow SwitchToLoginWindow()
 		{
-			return SwitchToWindow(WindowNameConstants.RelativityLogin, x => new LoginWindow(this, x));
+			return SwitchToWindow(RdcWindowName.RelativityLogin, x => new LoginWindow(this, x));
 		}
 
 		public bool TryGetUntrustedCertificateWindow(out UntrustedCertificateWindow window)
 		{
-			return TrySwitchToWindow(WindowNameConstants.UntrustedCertificate, TimeSpan.FromSeconds(1),
+			return TrySwitchToWindow(RdcWindowName.UntrustedCertificate, TimeSpan.FromSeconds(1),
 				x => new UntrustedCertificateWindow(this, x), out window);
 		}
 
 		public SelectWorkspaceWindow SwitchToSelectWorkspaceWindow()
 		{
-			return SwitchToWindow(WindowNameConstants.SelectWorkspace, x => new SelectWorkspaceWindow(this, x));
+			return SwitchToWindow(RdcWindowName.SelectWorkspace, x => new SelectWorkspaceWindow(this, x));
 		}
 
 		public RelativityDesktopClientWindow SwitchToRelativityDesktopClientWindow()
@@ -42,94 +43,56 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public ImportDocumentLoadFileWindow SwitchToImportDocumentLoadFileWindow()
 		{
-			return SwitchToWindow(WindowNameConstants.ImportDocumentLoadFile,
+			return SwitchToWindow(RdcWindowName.ImportDocumentLoadFile,
 				x => new ImportDocumentLoadFileWindow(this, x));
 		}
 
-		public ProgressWindow SwitchToImportLoadFileProgressWindow()
+		public ExportWindow SwitchToExportWindow(ExportProfile profile)
 		{
-			return SwitchToProgressWindow(WindowNameConstants.ImportLoadFileProgress);
-		}
-
-		public ProgressWindow SwitchToExportFoldersAndSubfoldersProgress()
-		{
-			return SwitchToProgressWindow(WindowNameConstants.ExportFoldersAndSubfoldersProgress);
-		}
-
-		public ProgressWindow SwitchToExportProductionSetProgress()
-		{
-			return SwitchToProgressWindow(WindowNameConstants.ExportProductionSetProgress);
-		}
-
-		public ProgressWindow SwitchToExportSavedSearchProgress()
-		{
-			return SwitchToProgressWindow(WindowNameConstants.ExportSavedSearchProgress);
-		}
-
-		public ExportWindow SwitchToExportFolderAndSubfoldersWindow()
-		{
-			var settings = new ExportWindowSettings() { ExportType = ExportType.FoldersAndSubfolders };
-			return SwitchToExportWindow(WindowNameConstants.ExportFolderAndSubfolders, settings);
-		}
-
-		public ExportWindow SwitchToExportSavedSearchWindow()
-		{
-			var settings = new ExportWindowSettings() { ExportType = ExportType.SavedSearch };
-			return SwitchToExportWindow(WindowNameConstants.ExportExportSavedSearch, settings);
-		}
-
-		public ExportWindow SwitchToExportProductionSetWindow()
-		{
-			var settings = new ExportWindowSettings(){ ExportType = ExportType.ProductionSet };
-			return SwitchToExportWindow(WindowNameConstants.ExportProductionSet, settings);
-		}
-
-		private ExportWindow SwitchToExportWindow(string title, ExportWindowSettings settings)
-		{
-			return SwitchToWindow(title,x => new ExportWindow(this, x, settings));
+			return SwitchToWindow(profile.ExportWindow, x => new ExportWindow(this, x, profile));
 		}
 
 		public DialogWindow GetRdcConfirmationDialog()
 		{
-			var windowDetails = GetWindow(WindowNameConstants.RelativityDesktopClient,
+			var windowDetails = GetWindow(RdcWindowName.RelativityDesktopClient,
 				x => x.Handle != rdcWindow.Handle);
 			return new DialogWindow(this, windowDetails);
 		}
 
-		private ProgressWindow SwitchToProgressWindow(string title)
+		public ProgressWindow SwitchToProgressWindow(ProgressWindowName name)
 		{
-			return SwitchToWindow(title, x => new ProgressWindow(this, x));
+			return SwitchToWindow(name, x => new ProgressWindow(this, x));
 		}
 
 		private RelativityDesktopClientWindow CreateRelativityDesktopClientWindow()
 		{
-			return SwitchToWindow(WindowNameConstants.RelativityDesktopClient,
+			return SwitchToWindow(RdcWindowName.RelativityDesktopClient,
 				x => new RelativityDesktopClientWindow(this, x));
 		}
 
-		private T SwitchToWindow<T>(string title, Func<WindowDetails, T> createWindow) where T : RdcWindowBase<T>
+		private T SwitchToWindow<T>(RdcWindowName name, Func<WindowDetails, T> createWindow) where T : RdcWindowBase<T>
 		{
-			if (!TrySwitchToWindow(title, createWindow, out var window))
+			if (!TrySwitchToWindow(name, createWindow, out var window))
 			{
-				throw new Exception($"'{title}' window was not found.");
+				throw new Exception($"'{name}' window was not found.");
 			}
 
 			return window;
 		}
 
-		private bool TrySwitchToWindow<T>(string title, Func<WindowDetails, T> createWindow, out T window)
+		private bool TrySwitchToWindow<T>(RdcWindowName name, Func<WindowDetails, T> createWindow, out T window)
 			where T : RdcWindowBase<T>
 		{
-			return TrySwitchToWindow(title, DefaultTimeouts.WaitForWindow, createWindow, out window);
+			return TrySwitchToWindow(name, DefaultTimeouts.WaitForWindow, createWindow, out window);
 		}
 
-		private bool TrySwitchToWindow<T>(string title, TimeSpan waitForWindowTimeout,
+		private bool TrySwitchToWindow<T>(RdcWindowName name, TimeSpan waitForWindowTimeout,
 			Func<WindowDetails, T> createWindow, out T window)
 			where T : RdcWindowBase<T>
 		{
 			ClearClosedWindows();
 
-			if (!manager.TryGetWindow(title, waitForWindowTimeout, out var windowDetails))
+			if (!manager.TryGetWindow(name, waitForWindowTimeout, out var windowDetails))
 			{
 				window = null;
 				return false;
@@ -153,11 +116,11 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			windows.Keys.Where(x => !manager.IsOpen(x)).ToList().ForEach(x => windows.Remove(x));
 		}
 
-		private WindowDetails GetWindow(string title, Func<WindowDetails, bool> predicate)
+		private WindowDetails GetWindow(RdcWindowName name, Func<WindowDetails, bool> predicate)
 		{
-			if (!manager.TryGetWindow(title, predicate, DefaultTimeouts.WaitForWindow, out var window))
+			if (!manager.TryGetWindow(name, predicate, DefaultTimeouts.WaitForWindow, out var window))
 			{
-				throw new Exception($"'{title}' window was not found.");
+				throw new Exception($"'{name}' window was not found.");
 			}
 
 			return window;

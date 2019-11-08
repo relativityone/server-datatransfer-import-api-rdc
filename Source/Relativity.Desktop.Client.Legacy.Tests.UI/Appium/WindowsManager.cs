@@ -15,26 +15,26 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			this.session = session;
 		}
 
-		public bool TryGetWindow(string title, out WindowDetails window)
+		public bool TryGetWindow(WindowName name, out WindowDetails window)
 		{
-			return TryGetWindow(title, x => true, out window);
+			return TryGetWindow(name, x => true, out window);
 		}
 
-		public bool TryGetWindow(string title, Func<WindowDetails, bool> predicate, out WindowDetails window)
+		public bool TryGetWindow(WindowName name, Func<WindowDetails, bool> predicate, out WindowDetails window)
 		{
-			return TryFindOrCreateWindow(title, predicate, out window);
+			return TryFindOrCreateWindow(name, predicate, out window);
 		}
 
-		public bool TryGetWindow(string title, TimeSpan timeout, out WindowDetails window)
+		public bool TryGetWindow(WindowName name, TimeSpan timeout, out WindowDetails window)
 		{
-			return TryGetWindow(title, x => true, timeout, out window);
+			return TryGetWindow(name, x => true, timeout, out window);
 		}
 
-		public bool TryGetWindow(string title, Func<WindowDetails, bool> predicate, TimeSpan timeout,
+		public bool TryGetWindow(WindowName name, Func<WindowDetails, bool> predicate, TimeSpan timeout,
 			out WindowDetails window)
 		{
 			WindowDetails foundWindow = null;
-			var found = Wait.For(() => TryGetWindow(title, predicate, out foundWindow), timeout);
+			var found = Wait.For(() => TryGetWindow(name, predicate, out foundWindow), timeout);
 			window = foundWindow;
 			return found;
 		}
@@ -49,26 +49,26 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			return session.WindowHandles.Any(x => x == windowHandle);
 		}
 
-		private bool TryFindOrCreateWindow(string title, Func<WindowDetails, bool> predicate, out WindowDetails window)
+		private bool TryFindOrCreateWindow(WindowName name, Func<WindowDetails, bool> predicate, out WindowDetails window)
 		{
 			RefreshSessionWindows();
 
-			window = FindWindow(title, predicate);
+			window = FindWindow(name, predicate);
 			if (window == null)
 			{
-				return TryCreateWindow(title, predicate, out window);
+				return TryCreateWindow(name, predicate, out window);
 			}
 
 			SwitchToWindow(window);
 			return true;
 		}
 
-		private WindowDetails FindWindow(string title, Func<WindowDetails, bool> predicate)
+		private WindowDetails FindWindow(WindowName name, Func<WindowDetails, bool> predicate)
 		{
-			return windows.FirstOrDefault(x => string.Equals(x.Title, title) && predicate(x));
+			return windows.FirstOrDefault(x => string.Equals(x.Title, name) && predicate(x));
 		}
 
-		private bool TryCreateWindow(string name, Func<WindowDetails, bool> predicate, out WindowDetails window)
+		private bool TryCreateWindow(WindowName name, Func<WindowDetails, bool> predicate, out WindowDetails window)
 		{
 			for (var i = 0; i < windows.Count; i++)
 			{

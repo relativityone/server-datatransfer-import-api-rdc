@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Windows;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Windows.SetupParameters;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI
 {
@@ -98,6 +98,22 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			};
 
 			RunExportTest(exportParameters, x => x.ExportSavedSearch(), 2055, 209507);
+		}
+
+		[Test]
+		public void ExportImagingProfiles()
+		{
+			var exportParameters = new ExportWindowSetupParameters
+			{
+				FieldSourceName = "All Imaging Profiles",
+				ExportPath = exportPath,
+				VolumeInformationDigitPadding = 3,
+				FilesNamedAfter = "Identifier",
+				MetadataFileFormat = "Concordance (.dat)",
+				MetadataFileEncoding = "Unicode (UTF-8)"
+			};
+
+			RunExportTest(exportParameters, x => x.ExportImagingProfileObjects(), 1, 92);
 		}
 
 		private void RunExportTest(ExportWindowSetupParameters exportParameters,

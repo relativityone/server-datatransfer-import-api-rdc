@@ -1,6 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 using Relativity.DataExchange.TestFramework;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Windows.Names;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI
 {
@@ -24,7 +25,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 
 			RdcWindowsManager.GetRdcConfirmationDialog().ClickButton("OK");
 
-			var progressWindow = RdcWindowsManager.SwitchToImportLoadFileProgressWindow();
+			var progressWindow = RdcWindowsManager.SwitchToProgressWindow(ProgressWindowName.ImportLoadFileProgress);
 			progressWindow.WaitForAllRecordsToBeProcessed(TimeSpan.FromMinutes(2));
 			var errors = progressWindow.GetErrorsText();
 

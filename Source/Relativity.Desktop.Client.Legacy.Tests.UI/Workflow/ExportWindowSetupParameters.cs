@@ -1,4 +1,4 @@
-﻿namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows.SetupParameters
+﻿namespace Relativity.Desktop.Client.Legacy.Tests.UI.Workflow
 {
 	public class ExportWindowSetupParameters
 	{
