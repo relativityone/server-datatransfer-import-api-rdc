@@ -66,6 +66,26 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.SourceData.Columns.Add(WellKnownFields.FilePath, typeof(string));
 			this.TestJobResult = new ImportTestJobResult();
 			this.importJob = null;
+
+			kCura.WinEDDS.Config.ConfigSettings["BadPathErrorsRetry"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["ForceWebUpload"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["PermissionErrorsRetry"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobRetryAttempts"] = 1;
+			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobParallelism"] = 1;
+			kCura.WinEDDS.Config.ConfigSettings["TapiLogEnabled"] = true;
+			kCura.WinEDDS.Config.ConfigSettings["TapiSubmitApmMetrics"] = false;
+			AppSettings.Instance.IoErrorWaitTimeInSeconds = 0;
+			AppSettings.Instance.IoErrorNumberOfRetries = 0;
+			kCura.WinEDDS.Config.ConfigSettings["UsePipeliningForFileIdAndCopy"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["TapiForceAsperaClient"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["TapiForceFileShareClient"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["TapiForceHttpClient"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = false;
+
+			// Note: there's no longer a BCP sub-folder.
+			kCura.WinEDDS.Config.ConfigSettings["TapiAsperaBcpRootFolder"] = string.Empty;
+			kCura.WinEDDS.Config.ConfigSettings["TapiAsperaNativeDocRootLevels"] = 1;
 		}
 
 		[TearDown]
@@ -73,20 +93,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			if (this.TempDirectory != null)
 			{
-				try
-				{
-					string[] files = Directory.GetFiles(this.TempDirectory.Directory, "*");
-					foreach (var file in files)
-					{
-						RestoreFileFullPermissions(file);
-					}
-				}
-				finally
-				{
-					this.TempDirectory.ClearReadOnlyAttributes = true;
-					this.TempDirectory.Dispose();
-					this.TempDirectory = null;
-				}
+				this.TempDirectory.ClearReadOnlyAttributes = true;
+				this.TempDirectory.Dispose();
+				this.TempDirectory = null;
 			}
 
 			this.SourceData?.Dispose();
@@ -105,62 +114,16 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.Dispose(true);
 		}
 
-		protected static void ChangeFileFullPermissions(string path, bool grant)
-		{
-			var accessControl = File.GetAccessControl(path);
-			var sid = new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null);
-			accessControl.AddAccessRule(
-				new FileSystemAccessRule(
-					sid,
-					FileSystemRights.FullControl,
-					grant ? AccessControlType.Allow : AccessControlType.Deny));
-			File.SetAccessControl(path, accessControl);
-		}
-
-		protected static void RestoreFileFullPermissions(string path)
-		{
-			FileSecurity accessControl = File.GetAccessControl(path);
-			var sid = new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null);
-			foreach (FileSystemAccessRule rule in accessControl.GetAccessRules(true, true, typeof(NTAccount)))
-			{
-				if (rule.AccessControlType == AccessControlType.Deny)
-				{
-					accessControl.RemoveAccessRule(rule);
-				}
-			}
-
-			accessControl.AddAccessRule(
-				new FileSystemAccessRule(
-					sid,
-					FileSystemRights.FullControl,
-					AccessControlType.Allow));
-			File.SetAccessControl(path, accessControl);
-		}
-
 		protected static void GivenTheStandardConfigSettings(
 			TapiClient forceClient,
 			bool disableNativeLocationValidation,
 			bool disableNativeValidation)
 		{
-			kCura.WinEDDS.Config.ConfigSettings["BadPathErrorsRetry"] = false;
-			kCura.WinEDDS.Config.ConfigSettings["ForceWebUpload"] = false;
-			kCura.WinEDDS.Config.ConfigSettings["PermissionErrorsRetry"] = false;
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceAsperaClient"] = (forceClient == TapiClient.Aspera).ToString();
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceFileShareClient"] = (forceClient == TapiClient.Direct).ToString();
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceHttpClient"] = (forceClient == TapiClient.Web).ToString();
-			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobRetryAttempts"] = 1;
-			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobParallelism"] = 1;
-			kCura.WinEDDS.Config.ConfigSettings["TapiLogEnabled"] = true;
-			kCura.WinEDDS.Config.ConfigSettings["TapiSubmitApmMetrics"] = false;
-			AppSettings.Instance.IoErrorWaitTimeInSeconds = 0;
-			AppSettings.Instance.IoErrorNumberOfRetries = 0;
-			kCura.WinEDDS.Config.ConfigSettings["UsePipeliningForFileIdAndCopy"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["TapiForceAsperaClient"] = forceClient == TapiClient.Aspera;
+			kCura.WinEDDS.Config.ConfigSettings["TapiForceFileShareClient"] = forceClient == TapiClient.Direct;
+			kCura.WinEDDS.Config.ConfigSettings["TapiForceHttpClient"] = forceClient == TapiClient.Web;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
-
-			// Note: there's no longer a BCP sub-folder.
-			kCura.WinEDDS.Config.ConfigSettings["TapiAsperaBcpRootFolder"] = string.Empty;
-			kCura.WinEDDS.Config.ConfigSettings["TapiAsperaNativeDocRootLevels"] = 1;
 		}
 
 		protected virtual void Dispose(bool disposing)
@@ -175,12 +138,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			string uniqueControlId = Path.GetFileName(file) + " - " + this.Timestamp.Ticks;
 			this.SourceData.Rows.Add(uniqueControlId + " " + 1, file);
-		}
-
-		protected void GivenTheSourceFileIsLocked(int index)
-		{
-			var filePath = this.SourceData.Rows[index][1].ToString();
-			ChangeFileFullPermissions(filePath, false);
 		}
 
 		protected void GivenTheImportJob()
@@ -214,26 +171,29 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(this.TestJobResult.CompletedJobReport.TotalRows, Is.EqualTo(this.SourceData.Rows.Count));
 		}
 
-		protected void ThenTheImportJobIsNotSuccessful(int expectedErrorRows, int expectedTotalRows, bool fatalExceptions)
+		protected void ThenTheImportJobFailedWithFatalError(int expectedErrorRows, int expectedTotalRows)
 		{
-			Assert.That(this.TestJobResult.ErrorRows, Has.Count.EqualTo(expectedErrorRows));
-			if (fatalExceptions)
-			{
-				Assert.That(this.TestJobResult.JobFatalExceptions, Has.Count.Positive);
-				Assert.That(this.TestJobResult.CompletedJobReport.FatalException, Is.Not.Null);
-
-				// Note: the exact number of expected rows can vary over a range when expecting an error.
-				Assert.That(this.TestJobResult.CompletedJobReport.TotalRows, Is.AtLeast(1).And.LessThanOrEqualTo(expectedTotalRows));
-			}
-			else
-			{
-				Assert.That(this.TestJobResult.JobFatalExceptions, Has.Count.Zero);
-				Assert.That(this.TestJobResult.CompletedJobReport.FatalException, Is.Null);
-				Assert.That(this.TestJobResult.CompletedJobReport.TotalRows, Is.EqualTo(expectedTotalRows));
-			}
-
+			// Note: the exact number of expected rows can vary over a range when expecting an error.
 			Assert.That(this.TestJobResult.CompletedJobReport, Is.Not.Null);
+			Assert.That(this.TestJobResult.CompletedJobReport.TotalRows, Is.Positive.And.LessThanOrEqualTo(expectedTotalRows));
+
 			Assert.That(this.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(expectedErrorRows));
+			Assert.That(this.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(this.TestJobResult.ErrorRows.Count));
+
+			Assert.That(this.TestJobResult.JobFatalExceptions, Has.Count.Positive);
+			Assert.That(this.TestJobResult.CompletedJobReport.FatalException, Is.Not.Null);
+		}
+
+		protected void ThenTheImportJobCompletedWithErrors(int expectedErrorRows, int expectedTotalRows)
+		{
+			Assert.That(this.TestJobResult.CompletedJobReport, Is.Not.Null);
+			Assert.That(this.TestJobResult.CompletedJobReport.TotalRows, Is.EqualTo(expectedTotalRows));
+
+			Assert.That(this.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(expectedErrorRows));
+			Assert.That(this.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(this.TestJobResult.ErrorRows.Count));
+
+			Assert.That(this.TestJobResult.JobFatalExceptions, Has.Count.Zero);
+			Assert.That(this.TestJobResult.CompletedJobReport.FatalException, Is.Null);
 		}
 
 		protected void GivenTheAutoGeneratedDatasetToImport(int maxFiles, bool includeReadOnlyFiles)
