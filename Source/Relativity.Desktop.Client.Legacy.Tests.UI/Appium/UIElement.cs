@@ -47,12 +47,6 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			return (T) this;
 		}
 
-		public T Refresh()
-		{
-			appiumWebElement = null;
-			return (T)this;
-		}
-
 		public void Click()
 		{
 			Element.Click();
