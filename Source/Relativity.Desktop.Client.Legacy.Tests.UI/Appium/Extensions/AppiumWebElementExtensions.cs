@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Collections.Generic;
 using OpenQA.Selenium.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions
@@ -48,45 +46,6 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions
 			string name)
 		{
 			return element.FindElementsByXPath($"*//{elementType}[@Name=\"{name}\"]");
-		}
-
-		public static Func<AppiumWebElement> WaitFor(this Func<AppiumWebElement> find)
-		{
-			return find.WaitFor(TimeSpan.FromMilliseconds(200), DefaultTimeouts.FindElement);
-		}
-
-		public static Func<AppiumWebElement> WaitFor(this Func<AppiumWebElement> find, 
-			TimeSpan timeout)
-		{
-			return find.WaitFor(TimeSpan.FromMilliseconds(200), timeout);
-		}
-
-		public static Func<AppiumWebElement> WaitFor(this Func<AppiumWebElement> find, TimeSpan checkInterval, TimeSpan timeout)
-		{
-			return () =>
-			{
-				var started = DateTime.Now;
-
-				while (true)
-				{
-					try
-					{
-						AppiumWebElement child = find();
-						return child;
-					}
-					catch (InvalidOperationException)
-					{
-						if (DateTime.Now - started + checkInterval < timeout)
-						{
-							Thread.Sleep(checkInterval);
-						}
-						else
-						{
-							throw;
-						}
-					}
-				}
-			};
 		}
 	}
 }
