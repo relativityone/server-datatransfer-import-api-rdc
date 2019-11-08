@@ -3,7 +3,7 @@ using OpenQA.Selenium.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
-	public class MenuItemUIElement : UIElement
+	internal sealed class MenuItemUIElement : UIElement<MenuItemUIElement>
 	{
 		public MenuItemUIElement(Func<AppiumWebElement> create) : base(create)
 		{
@@ -11,15 +11,14 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		public MenuItemUIElement ClickMenuItem(string name)
 		{
-			var menuItem = WaitForMenuItem(name);
+			var menuItem = FindMenuItem(name).WaitFor(TimeSpan.FromMilliseconds(500));
 			menuItem.Click();
 			return menuItem;
 		}
 
-		private MenuItemUIElement WaitForMenuItem(string name)
+		private MenuItemUIElement FindMenuItem(string name)
 		{
-			var waitForChild = WaitForChild(ElementType.MenuItem, name, TimeSpan.FromMilliseconds(500));
-			return new MenuItemUIElement(waitForChild);
+			return new MenuItemUIElement(FindChild(ElementType.MenuItem, name));
 		}
 	}
 }

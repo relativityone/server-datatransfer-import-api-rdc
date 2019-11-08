@@ -2,7 +2,7 @@
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal abstract class RdcWindowBase : WindowBase
+	internal abstract class RdcWindowBase<T> : WindowBase<T> where T : UIElement<T>
 	{
 		protected readonly RdcWindowsManager WindowsManager;
 

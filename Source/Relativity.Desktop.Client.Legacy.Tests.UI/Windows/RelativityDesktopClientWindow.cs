@@ -2,15 +2,15 @@
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal class RelativityDesktopClientWindow : RdcWindowBase
+	internal sealed class RelativityDesktopClientWindow : RdcWindowBase<RelativityDesktopClientWindow>
 	{
 		private readonly MenuItemUIElement menuBar;
-		private readonly UIElement treeView;
+		private readonly TreeUIElement treeView;
 
 		public RelativityDesktopClientWindow(RdcWindowsManager windowsManager, WindowDetails window)
 			: base(windowsManager, window)
 		{
-			menuBar = new MenuItemUIElement(FindMenuBar("Application"));
+			menuBar = FindMenuBar("Application");
 			treeView = FindTreeWithAutomationId("_treeView");
 		}
 
@@ -27,11 +27,25 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			return WindowsManager.SwitchToImportDocumentLoadFileWindow();
 		}
 
-		public ExportFolderAndSubfoldersWindow ExportFolderAndSubfolders()
+		public ExportWindow ExportFolderAndSubfolders()
 		{
 			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export")
 				.ClickMenuItem("Folder and Subfolders...");
 			return WindowsManager.SwitchToExportFolderAndSubfoldersWindow();
+		}
+
+		public ExportWindow ExportSavedSearch()
+		{
+			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export")
+				.ClickMenuItem("Saved Search...");
+			return WindowsManager.SwitchToExportSavedSearchWindow();
+		}
+
+		public ExportWindow ExportProductionSet()
+		{
+			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export")
+				.ClickMenuItem("Production Set...");
+			return WindowsManager.SwitchToExportProductionSetWindow();
 		}
 	}
 }

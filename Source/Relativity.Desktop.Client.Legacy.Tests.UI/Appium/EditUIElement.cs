@@ -4,7 +4,7 @@ using OpenQA.Selenium.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
-	public class EditUIElement : UIElement
+	internal sealed class EditUIElement : UIElement<EditUIElement>
 	{
 		public EditUIElement(Func<AppiumWebElement> create) : base(create)
 		{
@@ -13,15 +13,15 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 		public void SetText(string text)
 		{
 			Clear();
-			Element.SendKeys(text);
+			SendKeys(text);
 		}
 
 		public void Clear()
 		{
 			while (!string.IsNullOrEmpty(Text))
 			{
-				Element.SendKeys(Keys.Backspace);
-				Element.SendKeys(Keys.Delete);
+				SendKeys(Keys.Backspace);
+				SendKeys(Keys.Delete);
 			}
 		}
 	}

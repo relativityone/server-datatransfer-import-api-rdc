@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Windows;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Windows.SetupParameters;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI
@@ -14,6 +15,96 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		[Test]
 		public void ExportNativesWithFullTextAsFilesFromFolderAndSubfoldersToDatFile()
 		{
+			var exportParameters = new ExportWindowSetupParameters
+			{
+				FieldSourceName = "Documents - All Metadata",
+				ExportPath = exportPath,
+				VolumeInformationDigitPadding = 3,
+				FilesNamedAfter = "Identifier",
+				ExportImages = false,
+				ExportNativeFiles = true,
+				ExportFullTextAsFile = true,
+				MetadataFileFormat = "Concordance (.dat)",
+				MetadataFileEncoding = "Unicode (UTF-8)",
+				TextFileEncoding = "Unicode (UTF-8)",
+				TextFieldPrecedence = "Extracted Text"
+			};
+
+			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 1376, 140973);
+		}
+
+		[Test]
+		public void ExportImagesFromFolderAndSubfoldersToOpticonFile()
+		{
+			var exportParameters = new ExportWindowSetupParameters
+			{
+				FieldSourceName = "Documents - All Metadata",
+				ExportPath = exportPath,
+				VolumeInformationDigitPadding = 3,
+				FilesNamedAfter = "Identifier",
+				ExportImages = true,
+				ExportNativeFiles = false,
+				ExportFullTextAsFile = false,
+				MetadataFileFormat = "Concordance (.dat)",
+				MetadataFileEncoding = "Unicode (UTF-8)",
+				ImageFileFormat = "Opticon",
+				ImageFileType = "Multi-page TIF"
+			};
+
+			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 680, 68641);
+		}
+
+		[Test]
+		public void ExportProductionSetAsNativesAndImagesAndTextFiles()
+		{
+			var exportParameters = new ExportWindowSetupParameters
+			{
+				FieldSourceName = "Production-Set-To-Export",
+				ExportPath = exportPath,
+				VolumeInformationDigitPadding = 3,
+				FilesNamedAfter = "Begin production number",
+				ExportImages = true,
+				ExportNativeFiles = true,
+				ExportFullTextAsFile = true,
+				MetadataFileFormat = "Comma-separated (.csv)",
+				MetadataFileEncoding = "Unicode (UTF-8)",
+				TextFileEncoding = "Unicode (UTF-8)",
+				TextFieldPrecedence = "Extracted Text",
+				ImageFileFormat = "IPRO",
+				ImageFileType = "Single-page TIF/JPG"
+			};
+
+			RunExportTest(exportParameters, x => x.ExportProductionSet(), 2197, 219558);
+		}
+
+		[Test]
+		public void ExportSavedSearchAsNativesAndImagesAndTextFiles()
+		{
+			var exportParameters = new ExportWindowSetupParameters
+			{
+				FieldSourceName = "All Documents",
+				ExportPath = exportPath,
+				VolumeInformationDigitPadding = 3,
+				FilesNamedAfter = "Identifier",
+				ExportImages = true,
+				ExportNativeFiles = true,
+				ExportFullTextAsFile = true,
+				MetadataFileFormat = "HTML (.html)",
+				MetadataFileEncoding = "Unicode (UTF-8)",
+				TextFileEncoding = "Unicode (UTF-8)",
+				TextFieldPrecedence = "Extracted Text",
+				ImageFileFormat = "IPRO (FullText)",
+				ImageFileType = "PDF"
+			};
+
+			RunExportTest(exportParameters, x => x.ExportSavedSearch(), 2055, 209507);
+		}
+
+		private void RunExportTest(ExportWindowSetupParameters exportParameters,
+			Func<RelativityDesktopClientWindow, ExportWindow> getExportWindow,
+			int expectedFilesCount,
+			int expectedFilesSize)
+		{
 			EnsureExportPathExists();
 
 			var workspaceSelectWindow = Login();
@@ -21,22 +112,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			var rdcWindow = workspaceSelectWindow.ChooseWorkspace("Workspace-For-Export-Tests");
 			rdcWindow.SelectRootFolder();
 
-			var exportParameters = new ExportWindowSetupParameters
-			{
-				View = "Documents - All Metadata",
-				ExportPath = exportPath,
-				VolumeInformationDigitPadding = 3,
-				FilesNamedAfter = "Identifier",
-				ExportImages = false,
-				ExportNativeFiles = true,
-				ExportFullTextAsFile = true,
-				NativeFileFormat = "Concordance (.dat)",
-				DataFileEncoding = "Unicode (UTF-8)",
-				TextFileEncoding = "Unicode (UTF-8)",
-				TextFieldPrecedence = "Extracted Text"
-			};
-
-			var exportWindow = rdcWindow.ExportFolderAndSubfolders();
+			var exportWindow = getExportWindow(rdcWindow);
 			exportWindow.SetupExport(exportParameters);
 			var progressWindow = exportWindow.RunExport();
 
@@ -49,8 +125,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			// Assert
 			Assert.IsTrue(allRecordsProcessed, "Failed to process all records");
 			Assert.IsTrue(string.IsNullOrEmpty(errors), $"Export failed with errors: {errors}");
-			Assert.AreEqual(1805, files.Length);
-			Assert.AreEqual(186810, filesSize);
+			Assert.AreEqual(expectedFilesCount, files.Length);
+			Assert.AreEqual(expectedFilesSize, filesSize);
 		}
 
 		private void EnsureExportPathExists()

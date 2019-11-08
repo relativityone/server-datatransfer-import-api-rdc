@@ -4,10 +4,10 @@ using OpenQA.Selenium.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
-	public class ComboBoxUIElement : UIElement
+	internal sealed class ComboBoxUIElement : UIElement<ComboBoxUIElement>
 	{
-		private readonly UIElement button;
-		private readonly UIElement text;
+		private readonly ButtonUIElement button;
+		private readonly TextUIElement text;
 
 		public ComboBoxUIElement(Func<AppiumWebElement> create) : base(create)
 		{

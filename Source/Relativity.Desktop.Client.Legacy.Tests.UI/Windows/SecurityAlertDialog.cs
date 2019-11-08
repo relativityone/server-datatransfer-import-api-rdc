@@ -4,9 +4,9 @@ using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	public class SecurityAlertDialog : UIElement
+	internal sealed class SecurityAlertDialog : UIElement<SecurityAlertDialog>
 	{
-		private readonly UIElement yesButton;
+		private readonly ButtonUIElement yesButton;
 
 		public SecurityAlertDialog(Func<AppiumWebElement> create) : base(create)
 		{

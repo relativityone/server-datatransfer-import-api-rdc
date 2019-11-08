@@ -3,9 +3,9 @@ using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal class ProgressWindow : RdcWindowBase
+	internal sealed class ProgressWindow : RdcWindowBase<ProgressWindow>
 	{
-		private readonly UIElement currentRecordLabel;
+		private readonly TextUIElement currentRecordLabel;
 
 		private readonly TabsUIElement tabs;
 
@@ -13,7 +13,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			windowsManager, window)
 		{
 			currentRecordLabel = FindTextWithAutomationId("_currentRecordLabel");
-			tabs = new TabsUIElement(FindTabWithAutomationId("_Tabs"));
+			tabs = FindTabsWithAutomationId("_Tabs");
 		}
 
 		public bool WaitForAllRecordsToBeProcessed(TimeSpan timeout)

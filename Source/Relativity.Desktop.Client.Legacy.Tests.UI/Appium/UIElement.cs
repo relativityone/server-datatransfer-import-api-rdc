@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using OpenQA.Selenium.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
-	public class UIElement
+	internal abstract class UIElement<T> where T : UIElement<T>
 	{
-		private static readonly TimeSpan WaitForPropertyDefaultTimeout = TimeSpan.FromSeconds(1);
-		private static readonly TimeSpan WaitForChildTimeout = TimeSpan.FromSeconds(1);
 		private readonly Func<AppiumWebElement> create;
 		private AppiumWebElement appiumWebElement;
+		private TimeSpan waitForTimeout = TimeSpan.Zero;
 
 		protected UIElement(Func<AppiumWebElement> create)
 		{
 			this.create = create;
 		}
 
-		protected AppiumWebElement Element => appiumWebElement ?? (appiumWebElement = create());
-
+		private AppiumWebElement Element => appiumWebElement ?? (appiumWebElement = CreateElement());
 		public string Text => Element.Text;
+		public bool Selected => Element.Selected;
 
 		public bool Exists
 		{
@@ -30,17 +28,23 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 				{
 					return Element != null;
 				}
-				catch
+				catch (InvalidOperationException)
 				{
 					return false;
 				}
 			}
 		}
 
-		public UIElement Refresh()
+		public T WaitFor()
 		{
-			appiumWebElement = null;
-			return this;
+			waitForTimeout = DefaultTimeouts.FindElement;
+			return (T)this;
+		}
+
+		public T WaitFor(TimeSpan timeout)
+		{
+			waitForTimeout = timeout;
+			return (T) this;
 		}
 
 		public void Click()
@@ -53,185 +57,185 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			Element.SendKeys(text);
 		}
 
-		public UIElement WaitToBeVisible(TimeSpan timeout)
+		public T WaitToBeVisible(TimeSpan timeout)
 		{
 			return WaitFor(x => x.Displayed, timeout);
 		}
 
-		public UIElement WaitToBeVisible()
+		public T WaitToBeVisible()
 		{
-			return WaitToBeVisible(WaitForPropertyDefaultTimeout);
+			return WaitToBeVisible(DefaultTimeouts.WaitForProperty);
 		}
 
-		public UIElement WaitToBeEnabled(TimeSpan timeout)
+		public T WaitToBeEnabled(TimeSpan timeout)
 		{
 			return WaitFor(x => x.Enabled, timeout);
 		}
 
-		public UIElement WaitToBeEnabled()
+		public T WaitToBeEnabled()
 		{
-			return WaitToBeEnabled(WaitForPropertyDefaultTimeout);
+			return WaitToBeEnabled(DefaultTimeouts.WaitForProperty);
 		}
 
-		public UIElement WaitToBeSelected(TimeSpan timeout)
+		public T WaitToBeSelected(TimeSpan timeout)
 		{
 			return WaitFor(x => x.Selected, timeout);
 		}
 
-		public UIElement WaitToBeSelected()
+		public T WaitToBeSelected()
 		{
-			return WaitToBeSelected(WaitForPropertyDefaultTimeout);
+			return WaitToBeSelected(DefaultTimeouts.WaitForProperty);
 		}
 
-		private UIElement WaitFor(Func<AppiumWebElement, bool> condition, TimeSpan timeout)
+		protected EditUIElement FindEdit(string name)
 		{
-			Wait.For(() => condition(Element), timeout);
-			return this;
-		}
-
-		protected UIElement FindEdit(string name)
-		{
-			return Create(() => Element.FindChild(ElementType.Edit, name));
+			return new EditUIElement(FindChild(ElementType.Edit, name));
 		}
 
 		protected EditUIElement FindEdit()
 		{
-			return new EditUIElement(() => Element.FindChild(ElementType.Edit));
+			return new EditUIElement(FindChild(ElementType.Edit));
 		}
 
 		public EditUIElement FindEditWithAutomationId(string automationId)
 		{
-			return new EditUIElement(() => Element.FindEditWithAutomationId(automationId));
+			return new EditUIElement(FindChildWithAutomationId(ElementType.Edit, automationId));
 		}
 
-		protected UIElement FindButton(string name)
+		protected ButtonUIElement FindButton(string name)
 		{
-			return Create(() => Element.FindButton(name));
+			return new ButtonUIElement(FindChild(ElementType.Button, name));
 		}
 
-		protected UIElement FindButton()
+		protected ButtonUIElement FindButton()
 		{
-			return Create(() => Element.FindChild(ElementType.Button));
+			return new ButtonUIElement(FindChild(ElementType.Button));
 		}
 
-		public UIElement FindButtonWithAutomationId(string automationId)
+		public ButtonUIElement FindButtonWithAutomationId(string automationId)
 		{
-			return Create(() => Element.FindButtonWithAutomationId(automationId));
+			return new ButtonUIElement(FindChildWithAutomationId(ElementType.Button, automationId));
 		}
 
-		protected UIElement FindButtonWithClass(string name, string className)
+		protected ButtonUIElement FindButtonWithClass(string name)
 		{
-			return Create(() => Element.FindButtonWithClass(name, className));
+			return new ButtonUIElement(FindChildWithClass(ElementType.Button, name, ElementClass.Button));
 		}
 
-		public Func<AppiumWebElement> FindCheckBoxWithAutomationId(string automationId)
+		public CheckBoxUIElement FindCheckBoxWithAutomationId(string automationId)
 		{
-			return () => Element.FindChildWithAutomationId(ElementType.CheckBox, automationId);
+			return new CheckBoxUIElement(FindChildWithAutomationId(ElementType.CheckBox, automationId));
 		}
 
-		protected UIElement FindText()
+		protected TextUIElement FindText()
 		{
-			return Create(() => Element.FindChild(ElementType.Text));
+			return new TextUIElement(FindChild(ElementType.Text));
 		}
 
-		protected UIElement FindTextWithAutomationId(string automationId)
+		protected TextUIElement FindTextWithAutomationId(string automationId)
 		{
-			return Create(() => Element.FindChildWithAutomationId(ElementType.Text, automationId));
+			return new TextUIElement(FindChildWithAutomationId(ElementType.Text, automationId));
 		}
 
-		public Func<AppiumWebElement> FindComboBoxWithAutomationId(string automationId)
+		public ComboBoxUIElement FindComboBoxWithAutomationId(string automationId)
 		{
-			return () => Element.FindChildWithAutomationId(ElementType.ComboBox, automationId);
+			return new ComboBoxUIElement(FindChildWithAutomationId(ElementType.ComboBox, automationId));
 		}
 
-		public Func<AppiumWebElement> FindComboBox()
+		public SpinnerComboBoxUIElement FindSpinnerComboBoxWithAutomationId(string automationId)
 		{
-			return () => Element.FindChild(ElementType.ComboBox);
+			return new SpinnerComboBoxUIElement(FindChildWithAutomationId(ElementType.ComboBox, automationId));
 		}
 
-		protected Func<AppiumWebElement> FindTabWithAutomationId(string automationId)
+		public ComboBoxUIElement FindComboBox()
 		{
-			return () => Element.FindChildWithAutomationId(ElementType.Tab, automationId);
+			return new ComboBoxUIElement(FindChild(ElementType.ComboBox));
 		}
 
-		protected UIElement FindPaneWithAutomationId(string automationId)
+		protected TabsUIElement FindTabsWithAutomationId(string automationId)
 		{
-			return Create(() => Element.FindChildWithAutomationId(ElementType.Pane, automationId));
+			return new TabsUIElement(FindChildWithAutomationId(ElementType.Tab, automationId));
 		}
 
-		protected Func<AppiumWebElement> FindMenuBar(string name)
+		protected PaneUIElement FindPaneWithAutomationId(string automationId)
 		{
-			return () => Element.FindChild(ElementType.MenuBar, name);
+			return new PaneUIElement(FindChildWithAutomationId(ElementType.Pane, automationId));
 		}
 
-		public UIElement FindGroupWithAutomationId(string automationId)
+		protected MenuItemUIElement FindMenuBar(string name)
 		{
-			return Create(() => Element.FindChildWithAutomationId(ElementType.Group, automationId));
+			return new MenuItemUIElement(FindChild(ElementType.MenuBar, name));
 		}
 
-		public UIElement FindTree()
+		protected GroupUIElement FindGroupWithAutomationId(string automationId)
 		{
-			return Create(() => Element.FindTree());
+			return new GroupUIElement(FindChildWithAutomationId(ElementType.Group, automationId));
 		}
 
-		protected UIElement FindTreeWithAutomationId(string automationId)
+		public TreeUIElement FindTree()
 		{
-			return Create(() => Element.FindTreeWithAutomationId(automationId));
+			return new TreeUIElement(FindChild(ElementType.Tree));
 		}
 
-		public Func<AppiumWebElement> FindListWithAutomationId(string automationId)
+		protected TreeUIElement FindTreeWithAutomationId(string automationId)
 		{
-			return () => Element.FindChildWithAutomationId(ElementType.List, automationId);
+			return new TreeUIElement(FindChildWithAutomationId(ElementType.Tree, automationId));
 		}
 
-		public Func<AppiumWebElement> FindList()
+		public ListUIElement FindListWithAutomationId(string automationId)
 		{
-			return () => Element.FindChild(ElementType.List);
+			return new ListUIElement(FindChildWithAutomationId(ElementType.List, automationId));
 		}
 
-		protected Func<AppiumWebElement> WaitForListWithAutomationId(string automationId)
+		public ListUIElement FindList()
 		{
-			return () => WaitForChild(x => x.FindChildrenWithAutomationId(ElementType.List, automationId));
+			return new ListUIElement(FindChild(ElementType.List));
 		}
 
-		protected Func<AppiumWebElement> WaitForWindow(string name)
+		protected Func<AppiumWebElement> FindWindow(string name)
 		{
-			return () => WaitForChild(x => x.FindChildren(ElementType.Window, name));
+			return () => Element.FindChild(ElementType.Window, name);
 		}
 
-		protected Func<AppiumWebElement> WaitForChild(string elementType, string name, TimeSpan timeout)
+		protected Func<AppiumWebElement> FindChild(string elementType, string name)
 		{
-			return () => { return WaitForChild(x => x.FindChildren(elementType, name), timeout); };
+			return () => Element.FindChild(elementType, name);
 		}
 
-		protected static UIElement Create(Func<AppiumWebElement> create)
+		private Func<AppiumWebElement> FindChild(string elementType)
 		{
-			return new UIElement(create);
+			return () => Element.FindChild(elementType);
 		}
 
-		private AppiumWebElement WaitForChild(Func<AppiumWebElement, IReadOnlyList<AppiumWebElement>> getChildren)
+		private Func<AppiumWebElement> FindChildWithAutomationId(
+			string elementType,
+			string automationId)
 		{
-			return WaitForChild(getChildren, WaitForChildTimeout);
+			return () => Element.FindChildWithAutomationId(elementType, automationId);
 		}
 
-		private AppiumWebElement WaitForChild(Func<AppiumWebElement, IReadOnlyList<AppiumWebElement>> getChildren,
-			TimeSpan timeout)
+		private Func<AppiumWebElement> FindChildWithClass(
+			string elementType,
+			string name,
+			string className)
 		{
-			var children = getChildren(Element);
+			return () => Element.FindChildWithClass(elementType, name, className);
+		}
 
-			if (children.Any()) return children.First();
+		protected IReadOnlyList<AppiumWebElement> FindChildren(string elementType)
+		{
+			return Element.FindChildren(elementType);
+		}
 
-			Wait.For(() =>
-			{
-				children = getChildren(Element);
-				return children.Any();
-			}, timeout);
+		private AppiumWebElement CreateElement()
+		{
+			return waitForTimeout > TimeSpan.Zero ? create.WaitFor(waitForTimeout)() : create();
+		}
 
-			var child = children.FirstOrDefault();
-
-			if (child != null) return child;
-
-			throw new Exception($"Child cannot be found in given timeout: {timeout}");
+		private T WaitFor(Func<AppiumWebElement, bool> condition, TimeSpan timeout)
+		{
+			Wait.For(() => condition(Element), timeout);
+			return (T)this;
 		}
 	}
 }

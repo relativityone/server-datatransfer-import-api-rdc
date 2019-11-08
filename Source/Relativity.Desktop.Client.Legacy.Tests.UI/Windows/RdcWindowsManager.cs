@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using OpenQA.Selenium.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
@@ -9,13 +8,9 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
 	internal class RdcWindowsManager
 	{
-		private static readonly TimeSpan DefaultWindowWaitTimeout =
-			TimeSpan.FromMilliseconds(
-				double.Parse(ConfigurationManager.AppSettings["DefaultWaitForWindowTimeoutInMilliseconds"]));
-
 		private readonly WindowsManager manager;
 		private readonly RelativityDesktopClientWindow rdcWindow;
-		private readonly Dictionary<string, WindowBase> windows = new Dictionary<string, WindowBase>();
+		private readonly Dictionary<string, IWindow> windows = new Dictionary<string, IWindow>();
 
 		public RdcWindowsManager(WindowsManager manager)
 		{
@@ -47,7 +42,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public ImportDocumentLoadFileWindow SwitchToImportDocumentLoadFileWindow()
 		{
-			return SwitchToWindow(WindowNameConstants.ImportDocumentLoadFile, x => new ImportDocumentLoadFileWindow(this, x));
+			return SwitchToWindow(WindowNameConstants.ImportDocumentLoadFile,
+				x => new ImportDocumentLoadFileWindow(this, x));
 		}
 
 		public ProgressWindow SwitchToImportLoadFileProgressWindow()
@@ -60,15 +56,44 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			return SwitchToProgressWindow(WindowNameConstants.ExportFoldersAndSubfoldersProgress);
 		}
 
-		public ExportFolderAndSubfoldersWindow SwitchToExportFolderAndSubfoldersWindow()
+		public ProgressWindow SwitchToExportProductionSetProgress()
 		{
-			return SwitchToWindow(WindowNameConstants.ExportFolderAndSubfolders,
-				x => new ExportFolderAndSubfoldersWindow(this, x));
+			return SwitchToProgressWindow(WindowNameConstants.ExportProductionSetProgress);
 		}
 
-		public AppiumWebElement GetRdcConfirmationDialog()
+		public ProgressWindow SwitchToExportSavedSearchProgress()
 		{
-			return GetWindow(WindowNameConstants.RelativityDesktopClient, x => x.Handle != rdcWindow.Handle).Element;
+			return SwitchToProgressWindow(WindowNameConstants.ExportSavedSearchProgress);
+		}
+
+		public ExportWindow SwitchToExportFolderAndSubfoldersWindow()
+		{
+			var settings = new ExportWindowSettings() { ExportType = ExportType.FoldersAndSubfolders };
+			return SwitchToExportWindow(WindowNameConstants.ExportFolderAndSubfolders, settings);
+		}
+
+		public ExportWindow SwitchToExportSavedSearchWindow()
+		{
+			var settings = new ExportWindowSettings() { ExportType = ExportType.SavedSearch };
+			return SwitchToExportWindow(WindowNameConstants.ExportExportSavedSearch, settings);
+		}
+
+		public ExportWindow SwitchToExportProductionSetWindow()
+		{
+			var settings = new ExportWindowSettings(){ ExportType = ExportType.ProductionSet };
+			return SwitchToExportWindow(WindowNameConstants.ExportProductionSet, settings);
+		}
+
+		private ExportWindow SwitchToExportWindow(string title, ExportWindowSettings settings)
+		{
+			return SwitchToWindow(title,x => new ExportWindow(this, x, settings));
+		}
+
+		public DialogWindow GetRdcConfirmationDialog()
+		{
+			var windowDetails = GetWindow(WindowNameConstants.RelativityDesktopClient,
+				x => x.Handle != rdcWindow.Handle);
+			return new DialogWindow(this, windowDetails);
 		}
 
 		private ProgressWindow SwitchToProgressWindow(string title)
@@ -78,10 +103,11 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		private RelativityDesktopClientWindow CreateRelativityDesktopClientWindow()
 		{
-			return SwitchToWindow(WindowNameConstants.RelativityDesktopClient, x => new RelativityDesktopClientWindow(this, x));
+			return SwitchToWindow(WindowNameConstants.RelativityDesktopClient,
+				x => new RelativityDesktopClientWindow(this, x));
 		}
 
-		private T SwitchToWindow<T>(string title, Func<WindowDetails, T> createWindow) where T : RdcWindowBase
+		private T SwitchToWindow<T>(string title, Func<WindowDetails, T> createWindow) where T : RdcWindowBase<T>
 		{
 			if (!TrySwitchToWindow(title, createWindow, out var window))
 			{
@@ -92,14 +118,14 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		}
 
 		private bool TrySwitchToWindow<T>(string title, Func<WindowDetails, T> createWindow, out T window)
-			where T : RdcWindowBase
+			where T : RdcWindowBase<T>
 		{
-			return TrySwitchToWindow(title, DefaultWindowWaitTimeout, createWindow, out window);
+			return TrySwitchToWindow(title, DefaultTimeouts.WaitForWindow, createWindow, out window);
 		}
 
 		private bool TrySwitchToWindow<T>(string title, TimeSpan waitForWindowTimeout,
 			Func<WindowDetails, T> createWindow, out T window)
-			where T : RdcWindowBase
+			where T : RdcWindowBase<T>
 		{
 			ClearClosedWindows();
 
@@ -129,7 +155,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		private WindowDetails GetWindow(string title, Func<WindowDetails, bool> predicate)
 		{
-			if (!manager.TryGetWindow(title, predicate, DefaultWindowWaitTimeout, out var window))
+			if (!manager.TryGetWindow(title, predicate, DefaultTimeouts.WaitForWindow, out var window))
 			{
 				throw new Exception($"'{title}' window was not found.");
 			}

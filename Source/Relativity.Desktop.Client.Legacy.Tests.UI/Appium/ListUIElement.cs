@@ -1,16 +1,15 @@
 ﻿using System;
 using OpenQA.Selenium.Appium;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
-	public class ListUIElement : UIElement
+	internal sealed class ListUIElement : UIElement<ListUIElement>
 	{
 		public ListUIElement(Func<AppiumWebElement> create) : base(create)
 		{
 		}
 
-		public int ItemsCount => Element.FindChildren(ElementType.ListItem).Count;
+		public int ItemsCount => FindChildren(ElementType.ListItem).Count;
 
 		public void SelectListItem(string name)
 		{
@@ -20,7 +19,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		private AppiumWebElement FindListItemByName(string name)
 		{
-			return Element.FindChild(ElementType.ListItem, name);
+			return FindChild(ElementType.ListItem, name)();
 		}
 	}
 }

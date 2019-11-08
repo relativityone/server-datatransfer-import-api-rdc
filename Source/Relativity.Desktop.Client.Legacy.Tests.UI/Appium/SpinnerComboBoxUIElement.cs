@@ -3,7 +3,7 @@ using OpenQA.Selenium.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
-	public class SpinnerComboBoxUIElement : UIElement
+	internal sealed class SpinnerComboBoxUIElement : UIElement<SpinnerComboBoxUIElement>
 	{
 		private readonly EditUIElement edit;
 

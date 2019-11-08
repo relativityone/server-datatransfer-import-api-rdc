@@ -4,19 +4,19 @@ using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	public class OpenSavedFieldMapDialog : UIElement
+	internal sealed class OpenSavedFieldMapDialog : UIElement<OpenSavedFieldMapDialog>
 	{
 		private readonly ChooseLoadFileDialog chooseLoadFileDialog;
 		private readonly RelativityConfirmationDialog confirmationDialog;
-		private readonly UIElement fileNameEdit;
-		private readonly UIElement openButton;
+		private readonly EditUIElement fileNameEdit;
+		private readonly ButtonUIElement openButton;
 
 		public OpenSavedFieldMapDialog(Func<AppiumWebElement> create) : base(create)
 		{
 			fileNameEdit = FindEdit("File name:");
-			openButton = FindButtonWithClass("Open", ElementClass.Button);
-			chooseLoadFileDialog = new ChooseLoadFileDialog(WaitForWindow("Choose Load File"));
-			confirmationDialog = new RelativityConfirmationDialog(WaitForWindow("Relativity.Desktop.Client"));
+			openButton = FindButtonWithClass("Open");
+			chooseLoadFileDialog = new ChooseLoadFileDialog(FindWindow("Choose Load File")).WaitFor();
+			confirmationDialog = new RelativityConfirmationDialog(FindWindow("Relativity.Desktop.Client")).WaitFor();
 		}
 
 		public void LoadKweFile(string kweFile, string datFile)

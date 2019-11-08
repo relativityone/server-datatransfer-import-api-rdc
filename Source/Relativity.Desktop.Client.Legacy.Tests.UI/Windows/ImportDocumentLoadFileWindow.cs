@@ -2,7 +2,7 @@
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal class ImportDocumentLoadFileWindow : RdcWindowBase
+	internal sealed class ImportDocumentLoadFileWindow : RdcWindowBase<ImportDocumentLoadFileWindow>
 	{
 		private readonly MenuItemUIElement menuBar;
 		private readonly OpenSavedFieldMapDialog openSavedFieldMapDialog;
@@ -10,8 +10,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		public ImportDocumentLoadFileWindow(RdcWindowsManager windowsManager, WindowDetails window)
 			: base(windowsManager, window)
 		{
-			menuBar = new MenuItemUIElement(FindMenuBar("Application"));
-			openSavedFieldMapDialog = new OpenSavedFieldMapDialog(WaitForWindow("Open Saved Field Map"));
+			menuBar = FindMenuBar("Application");
+			openSavedFieldMapDialog = new OpenSavedFieldMapDialog(FindWindow("Open Saved Field Map"));
 		}
 
 		public void ClickImportFileMenuItem()
