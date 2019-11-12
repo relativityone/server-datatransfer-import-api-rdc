@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Relativity.DataExchange;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
@@ -8,12 +8,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		protected WindowName(string value)
 		{
-			if (string.IsNullOrEmpty(value))
-			{
-				throw new ArgumentException("Argument cannot be null or empty.", nameof(value));
-			}
-
-			this.value = value;
+			
+			this.value = value.ThrowIfNullOrEmpty(nameof(value));
 		}
 
 		public static implicit operator string(WindowName w)

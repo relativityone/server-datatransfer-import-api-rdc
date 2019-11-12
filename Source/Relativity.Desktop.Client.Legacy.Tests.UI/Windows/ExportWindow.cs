@@ -1,4 +1,5 @@
-﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+﻿using System.Threading;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
