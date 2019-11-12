@@ -77,5 +77,13 @@
             BearerToken
             Windows
         End Enum
+
+        Enum BulkImportType
+			NotApplicable
+            Image
+            ProductionImage
+            Native
+            Objects
+        End Enum
     End Class
 End Namespace

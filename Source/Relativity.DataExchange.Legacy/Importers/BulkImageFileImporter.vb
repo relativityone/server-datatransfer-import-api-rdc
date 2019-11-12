@@ -2,6 +2,7 @@ Imports System.Threading
 
 Imports kCura.WinEDDS.Service
 Imports kCura.WinEDDS.Helpers
+Imports Monitoring
 
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Data
@@ -241,6 +242,7 @@ Namespace kCura.WinEDDS
 			InitializeUploaders(args)
 			_folderID = folderID
 			_productionArtifactID = args.ProductionArtifactID
+			Statistics.BulkImportType = CType(IIf(_productionArtifactID = 0, TelemetryConstants.BulkImportType.Image, TelemetryConstants.BulkImportType.ProductionImage), TelemetryConstants.BulkImportType)
 			InitializeDTOs(args)
 			If(args.Overwrite.IsNullOrEmpty)
 				_overwrite = ImportOverwriteType.Append

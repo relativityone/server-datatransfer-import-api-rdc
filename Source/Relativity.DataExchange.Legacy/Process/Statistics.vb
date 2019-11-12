@@ -1,3 +1,5 @@
+Imports Monitoring
+
 Namespace kCura.WinEDDS
 	Public Class Statistics
 		Public Const BatchCountKey As String = "Batches"
@@ -72,6 +74,8 @@ Namespace kCura.WinEDDS
 		Public Property BatchCount As Int32 = 0
 		
 		Public Property BatchSize As Int32 = 0
+
+		Public Property BulkImportType As TelemetryConstants.BulkImportType = TelemetryConstants.BulkImportType.NotApplicable
 
 		''' <summary>
 		'''  Gets or sets transferred metadata bytes.
