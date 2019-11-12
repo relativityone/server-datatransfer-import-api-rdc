@@ -144,6 +144,7 @@
     <Compile Include="FileNotFoundImportJobTests.cs" />
     <Compile Include="ImportJobTestBase.cs" />
     <Compile Include="ImportTestJobResult.cs" />
+    <Compile Include="NativeImportJobTestBase.cs" />
     <Compile Include="PositiveImportJobTests.cs" />
     <Content Include="LogConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

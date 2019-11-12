@@ -10,16 +10,14 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
-	using System.Collections;
+	using System.Collections.Generic;
 	using System.Data;
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
-	using System.Text;
 
 	using global::NUnit.Framework;
 
-	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
 	using Relativity.DataExchange.TestFramework;
@@ -27,8 +25,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	public abstract class ImportJobTestBase : IDisposable
 	{
-		private ImportBulkArtifactJob importJob;
-
 		protected ImportJobTestBase()
 		{
 			Assume.That(AssemblySetup.TestParameters.WorkspaceId, Is.Positive, "The test workspace must be created or specified in order to run this integration test.");
@@ -40,11 +36,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		protected ImportTestJobResult TestJobResult { get; private set; }
 
+		protected ImportAPI ImportAPI { get; set; }
+
 		protected TempDirectory2 TempDirectory { get; private set; }
 
 		protected DateTime Timestamp { get; private set; }
-
-		protected DataTable SourceData { get; set; }
 
 		[SetUp]
 		public void Setup()
@@ -52,11 +48,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.Timestamp = DateTime.Now;
 			this.TempDirectory = new TempDirectory2();
 			this.TempDirectory.Create();
-			this.SourceData = new DataTable { Locale = CultureInfo.InvariantCulture };
-			this.SourceData.Columns.Add(WellKnownFields.ControlNumber, typeof(string));
-			this.SourceData.Columns.Add(WellKnownFields.FilePath, typeof(string));
 			this.TestJobResult = new ImportTestJobResult();
-			this.importJob = null;
 
 			AppSettings.Instance.IoErrorWaitTimeInSeconds = 0;
 			AppSettings.Instance.IoErrorNumberOfRetries = 0;
@@ -90,16 +82,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				this.TempDirectory.Dispose();
 				this.TempDirectory = null;
 			}
-
-			this.SourceData?.Dispose();
-			if (this.importJob != null)
-			{
-				this.importJob.OnError -= this.ImportJob_OnError;
-				this.importJob.OnFatalException -= this.ImportJob_OnFatalException;
-				this.importJob.OnMessage -= this.ImportJob_OnMessage;
-				this.importJob.OnComplete -= this.ImportJob_OnComplete;
-				this.importJob.OnProgress -= this.ImportJob_OnProgress;
-			}
 		}
 
 		public void Dispose()
@@ -107,16 +89,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.Dispose(true);
 		}
 
-		protected static void GivenTheStandardConfigSettings(
-			TapiClient forceClient,
-			bool disableNativeLocationValidation,
-			bool disableNativeValidation)
+		protected static void ForceClient(TapiClient tapiClient)
 		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceAsperaClient"] = forceClient == TapiClient.Aspera;
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceFileShareClient"] = forceClient == TapiClient.Direct;
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceHttpClient"] = forceClient == TapiClient.Web;
-			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
-			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
+			kCura.WinEDDS.Config.ConfigSettings["TapiForceAsperaClient"] = tapiClient == TapiClient.Aspera;
+			kCura.WinEDDS.Config.ConfigSettings["TapiForceFileShareClient"] = tapiClient == TapiClient.Direct;
+			kCura.WinEDDS.Config.ConfigSettings["TapiForceHttpClient"] = tapiClient == TapiClient.Web;
 		}
 
 		protected virtual void Dispose(bool disposing)
@@ -127,41 +104,33 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		protected void GivenTheDatasetPathToImport(string file)
-		{
-			string uniqueControlId = Path.GetFileName(file) + " - " + this.Timestamp.Ticks;
-			this.SourceData.Rows.Add(uniqueControlId + " " + 1, file);
-		}
-
 		protected void GivenTheImportJob()
 		{
-			var iapi = new ImportAPI(
+			this.ImportAPI = new ImportAPI(
 				AssemblySetup.TestParameters.RelativityUserName,
 				AssemblySetup.TestParameters.RelativityPassword,
 				AssemblySetup.TestParameters.RelativityWebApiUrl.ToString());
-			this.InitializeDefaultImportJob(iapi);
 		}
 
 		protected void GivenTheImportJobWithIntegratedAuthentication()
 		{
-			var iapi = new ImportAPI(AssemblySetup.TestParameters.RelativityWebApiUrl.ToString());
-			this.InitializeDefaultImportJob(iapi);
+			this.ImportAPI = new ImportAPI(AssemblySetup.TestParameters.RelativityWebApiUrl.ToString());
 		}
 
-		protected void WhenExecutingTheJob()
+		protected void GivenTheDatasetPathToImport(DataTable table, string file)
 		{
-			this.importJob.Execute();
-			Console.WriteLine("Import API elapsed time: {0}", this.TestJobResult.CompletedJobReport.EndTime - this.TestJobResult.CompletedJobReport.StartTime);
+			string uniqueControlId = $"{Path.GetFileName(file)} - {this.Timestamp.Ticks}";
+			table.Rows.Add(uniqueControlId, file);
 		}
 
-		protected void ThenTheImportJobIsSuccessful()
+		protected void ThenTheImportJobIsSuccessful(int expectedTotalRows)
 		{
 			Assert.That(this.TestJobResult.ErrorRows, Has.Count.Zero);
 			Assert.That(this.TestJobResult.JobFatalExceptions, Has.Count.Zero);
 			Assert.That(this.TestJobResult.CompletedJobReport, Is.Not.Null);
 			Assert.That(this.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.Zero);
 			Assert.That(this.TestJobResult.CompletedJobReport.FatalException, Is.Null);
-			Assert.That(this.TestJobResult.CompletedJobReport.TotalRows, Is.EqualTo(this.SourceData.Rows.Count));
+			Assert.That(this.TestJobResult.CompletedJobReport.TotalRows, Is.EqualTo(expectedTotalRows));
 		}
 
 		protected void ThenTheImportJobFailedWithFatalError(int expectedErrorRows, int expectedTotalRows)
@@ -189,111 +158,23 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(this.TestJobResult.CompletedJobReport.FatalException, Is.Null);
 		}
 
-		protected void GivenTheAutoGeneratedDatasetToImport(int maxFiles, bool includeReadOnlyFiles)
+		protected List<string> GetRandomTextFiles(int maxFiles, bool includeReadOnlyFiles)
 		{
+			var files = new List<string>();
 			const int MinTestFileLength = 1024;
 			const int MaxTestFileLength = 10 * MinTestFileLength;
 			for (var i = 0; i < maxFiles; i++)
 			{
-				RandomHelper.NextTextFile(
+				string file = RandomHelper.NextTextFile(
 					MinTestFileLength,
 					MaxTestFileLength,
 					this.TempDirectory.Directory,
 					includeReadOnlyFiles && i % 2 == 0);
+
+				files.Add(file);
 			}
 
-			this.GivenTheDatasetPathToImport(this.TempDirectory.Directory, "*", SearchOption.AllDirectories);
-		}
-
-		protected void GivenTheDatasetPathToImport(string path, string searchPattern, SearchOption searchOption)
-		{
-			var number = 1;
-			foreach (var file in Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories))
-			{
-				string uniqueControlId = Path.GetFileName(file) + " - " + this.Timestamp.Ticks;
-				this.SourceData.Rows.Add(uniqueControlId + " " + number, file);
-			}
-		}
-
-		private void ImportJob_OnComplete(JobReport jobReport)
-		{
-			lock (this.TestJobResult)
-			{
-				this.TestJobResult.CompletedJobReport = jobReport;
-				Console.WriteLine("[Job Complete]");
-			}
-		}
-
-		private void ImportJob_OnProgress(long completedRow)
-		{
-			lock (this.TestJobResult)
-			{
-				this.TestJobResult.ProgressCompletedRows.Add(completedRow);
-				Console.WriteLine("[Job Progress]: " + completedRow);
-			}
-		}
-
-		private void ImportJob_OnMessage(Status status)
-		{
-			lock (this.TestJobResult)
-			{
-				this.TestJobResult.JobMessages.Add(status.Message);
-				Console.WriteLine("[Job Message]: " + status.Message);
-			}
-		}
-
-		private void ImportJob_OnFatalException(JobReport jobReport)
-		{
-			lock (this.TestJobResult)
-			{
-				this.TestJobResult.JobFatalExceptions.Add(jobReport.FatalException);
-				Console.WriteLine("[Job Fatal Exception]: " + jobReport.FatalException);
-			}
-		}
-
-		private void ImportJob_OnError(IDictionary row)
-		{
-			lock (this.TestJobResult)
-			{
-				this.TestJobResult.ErrorRows.Add(row);
-				StringBuilder rowMetaData = new StringBuilder();
-				foreach (string key in row.Keys)
-				{
-					if (rowMetaData.Length > 0)
-					{
-						rowMetaData.Append(",");
-					}
-
-					rowMetaData.AppendFormat("{0}={1}", key, row[key]);
-				}
-
-				Console.WriteLine("[Job Error Metadata]: " + rowMetaData);
-			}
-		}
-
-		private void InitializeDefaultImportJob(ImportAPI importApi)
-		{
-			this.importJob = importApi.NewNativeDocumentImportJob();
-			this.importJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();
-			this.importJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
-			this.importJob.Settings.ArtifactTypeId = 10;
-			this.importJob.Settings.ExtractedTextFieldContainsFilePath = false;
-			this.importJob.Settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
-			this.importJob.Settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
-			this.importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
-			this.importJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
-			this.importJob.Settings.OIFileIdMapped = true;
-			this.importJob.Settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
-			this.importJob.Settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
-			this.importJob.Settings.ExtractedTextEncoding = Encoding.Unicode;
-			this.importJob.Settings.FileSizeMapped = true;
-			this.importJob.Settings.FileSizeColumn = WellKnownFields.NativeFileSize;
-			this.importJob.SourceData.SourceData = this.SourceData.CreateDataReader();
-			this.importJob.OnError += this.ImportJob_OnError;
-			this.importJob.OnFatalException += this.ImportJob_OnFatalException;
-			this.importJob.OnMessage += this.ImportJob_OnMessage;
-			this.importJob.OnComplete += this.ImportJob_OnComplete;
-			this.importJob.OnProgress += this.ImportJob_OnProgress;
+			return files;
 		}
 	}
 }
