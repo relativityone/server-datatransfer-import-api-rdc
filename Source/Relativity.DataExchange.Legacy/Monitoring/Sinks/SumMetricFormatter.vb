@@ -35,7 +35,7 @@ Namespace Monitoring.Sinks
 				New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.THROUGHPUT, metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.PointInTimeDouble, metric.ThroughputRecordsPerSecond),
 				New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.THROUGHPUT_BYTES, metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.PointInTimeDouble, metric.ThroughputBytesPerSecond),
 				New MetricRef(FormatSumBucketName(GetBucketPrefixFromJobStatus(metric.JobStatus), metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.Counter, 1)}
-			If metric.JobType = "Import" Then metrics.Add(New MetricRef($"{TelemetryConstants.SumBucketPrefix.SQL_THROUGHPUT}.{metric.BulkImportType}", IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.PointInTimeDouble, metric.SqlBulkLoadThroughputRecordsPerSecond))
+			If metric.JobType = TelemetryConstants.JobType.Import Then metrics.Add(New MetricRef($"{TelemetryConstants.SumBucketPrefix.SQL_THROUGHPUT}.{metric.BulkImportType}", IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.PointInTimeDouble, metric.SqlBulkLoadThroughputRecordsPerSecond))
 			Return metrics
 		End Function
 
@@ -52,7 +52,7 @@ Namespace Monitoring.Sinks
 		''' <param name="jobType">Job type - Import or Export</param>
 		''' <param name="transferMode">Transfer mode - <see cref="TapiClient"/></param>
 		''' <returns></returns>
-		Private Function FormatSumBucketName(prefix As String, jobType As String, transferMode As TapiClient) As String
+		Private Function FormatSumBucketName(prefix As String, jobType As TelemetryConstants.JobType, transferMode As TapiClient) As String
 			Return $"{prefix}.{jobType}.{transferMode}"
 		End Function
 

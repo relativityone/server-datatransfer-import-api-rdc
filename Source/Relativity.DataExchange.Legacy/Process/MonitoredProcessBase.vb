@@ -17,7 +17,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Property JobGuid As System.Guid = System.Guid.NewGuid()
 	Protected Property StartTime As System.DateTime
 	Protected Property EndTime As System.DateTime
-	Protected MustOverride ReadOnly Property JobType As String
+	Protected MustOverride ReadOnly Property JobType As TelemetryConstants.JobType
 	Protected MustOverride ReadOnly Property Statistics As Statistics
 	Protected ReadOnly Property MetricService() As IMetricService
 	Protected _hasFatalErrorOccured As Boolean

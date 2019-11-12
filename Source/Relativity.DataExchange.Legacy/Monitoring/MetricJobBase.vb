@@ -8,9 +8,9 @@ Namespace Monitoring
 		''' Gets or sets job type - Import or Export.
 		''' </summary>
 		''' <returns>Job type</returns>
-		Public Property JobType As String
+		Public Property JobType As TelemetryConstants.JobType
 			Get
-				Return GetValueOrDefault(Of String)(TelemetryConstants.KeyName.JOB_TYPE)
+				Return GetValueOrDefault(Of TelemetryConstants.JobType)(TelemetryConstants.KeyName.JOB_TYPE)
 			End Get
 			Set
 				CustomData.Item(TelemetryConstants.KeyName.JOB_TYPE) = Value

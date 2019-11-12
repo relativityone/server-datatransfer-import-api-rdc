@@ -87,5 +87,10 @@
 			Native
 			Objects
 		End Enum
+
+		Enum JobType
+			Import
+			Export
+		End Enum
 	End Class
 End Namespace
