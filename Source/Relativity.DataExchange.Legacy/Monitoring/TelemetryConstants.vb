@@ -24,6 +24,7 @@
 			Public Const THROUGHPUT_BYTES As String = "RDC.Performance.ThroughputBytes"
 			' This bucket name starts with "RDC" because that's registered prefix for our metrics. Authentication metrics are only send from ImportAPI class.
 			Public Const AUTHENTICATION As String = "RDC.IAPI.Authentication"
+			Public Const SQL_THROUGHPUT As String = "RDC.Performance.SqlBulkImportThroughput"
 		End Class
 
 		''' <summary>
