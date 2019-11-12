@@ -1,16 +1,17 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ExporterTestData.cs" company="Relativity ODA LLC">
+// <copyright file="TestData.cs" company="Relativity ODA LLC">
 // © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
-namespace Relativity.DataExchange.Export.NUnit.Integration
+
+namespace Relativity.DataExchange.TestFramework
 {
 	using System.Collections.Generic;
 	using System.Linq;
 
 	using Relativity.DataExchange.TestFramework;
 
-	public static class ExporterTestData
+	public static class TestData
 	{
 		/// <summary>
 		/// The dummy UNC path. This should never be used for positive tests.

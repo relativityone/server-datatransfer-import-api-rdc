@@ -45,11 +45,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[SetUp]
 		public void Setup()
 		{
-			this.Timestamp = DateTime.Now;
-			this.TempDirectory = new TempDirectory2();
-			this.TempDirectory.Create();
-			this.TestJobResult = new ImportTestJobResult();
-
 			AppSettings.Instance.IoErrorWaitTimeInSeconds = 0;
 			AppSettings.Instance.IoErrorNumberOfRetries = 0;
 
@@ -71,6 +66,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// Note: there's no longer a BCP sub-folder.
 			kCura.WinEDDS.Config.ConfigSettings["TapiAsperaBcpRootFolder"] = string.Empty;
 			kCura.WinEDDS.Config.ConfigSettings["TapiAsperaNativeDocRootLevels"] = 1;
+
+			this.Timestamp = DateTime.Now;
+			this.TempDirectory = new TempDirectory2();
+			this.TempDirectory.Create();
+			this.TestJobResult = new ImportTestJobResult();
 		}
 
 		[TearDown]

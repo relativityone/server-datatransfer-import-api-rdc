@@ -123,7 +123,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			// ASSERT
 			// TODO REL-369935 add much better validation for each of the results.
-			this.ThenTheExportJobIsSuccessful(ExporterTestData.AllSampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.AllSampleFiles.Count());
 		}
 	}
 }

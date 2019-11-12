@@ -76,7 +76,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.importJob = this.ImportAPI.NewNativeDocumentImportJob();
 			this.importJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();
 			this.importJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
-			this.importJob.Settings.ArtifactTypeId = (int)ArtifactType.Document;
+
 			this.importJob.Settings.ExtractedTextFieldContainsFilePath = false;
 			this.importJob.Settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
 			this.importJob.Settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;

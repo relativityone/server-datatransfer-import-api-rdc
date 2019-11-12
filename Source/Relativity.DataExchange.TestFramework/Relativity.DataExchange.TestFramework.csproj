@@ -82,6 +82,8 @@
   <ItemGroup>
     <Compile Include="CryptoHelper.cs" />
     <Compile Include="DummyTest.cs" />
+    <Compile Include="RelativityHelpers\ImportHelper.cs" />
+    <Compile Include="TestData.cs" />
     <Compile Include="FileDto.cs" />
     <Compile Include="IntegrationTestHelper.cs" />
     <Compile Include="RelativityHelpers\FieldHelper.cs" />
@@ -121,6 +123,21 @@
     <None Include="paket.references" />
     <EmbeddedResource Include="Resources\test-parameters-hyperv.json" />
     <EmbeddedResource Include="Resources\test-parameters-e2e.json" />
+    <None Include="Resources\Docs\EDRM-Sample1.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Docs\EDRM-Sample2.doc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Docs\EDRM-Sample3.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Docs\EDRM-Sample4.msg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Docs\EDRM-Sample7.ppt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\buildtools\CustomDictionary.xml">
@@ -477,5 +494,35 @@
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\ru-RU\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resources\Docs\EDRM-Sample10.wmf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample5.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample6.emf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample8.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample9.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\EDRM-Sample-000001.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\EDRM-Sample1.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\EDRM-Sample2.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\EDRM-Sample3.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
