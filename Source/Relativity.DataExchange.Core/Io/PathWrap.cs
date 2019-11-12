@@ -39,7 +39,7 @@ namespace Relativity.DataExchange.Io
 		/// <summary>
 		/// Name of the subdirectory with RDC temp files.
 		/// </summary>
-		private const string TempSubdirectoryName = "RDC_temp";
+		private const string TempSubdirectoryName = "RelativityDataExchange";
 
 		/// <summary>
 		/// The primary directory character that's represented as a string.
