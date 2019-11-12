@@ -118,7 +118,8 @@ Public MustInherit Class MonitoredProcessBase
 				.CompletedRecords = completedRecordsCount,
 				.ThroughputBytesPerSecond = Statistics.CalculateThroughput(Statistics.TotalBytes, jobDuration),
 				.ThroughputRecordsPerSecond = Statistics.CalculateThroughput(completedRecordsCount, jobDuration),
-				.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(Statistics.DocumentsCreated + Statistics.DocumentsUpdated, Statistics.SqlTime/TimeSpan.TicksPerSecond)}
+				.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(Statistics.DocumentsCreated + Statistics.DocumentsUpdated, Statistics.SqlTime/TimeSpan.TicksPerSecond),
+				.BulkImportType = Statistics.BulkImportType}
 		BuildMetricBase(metric)
 		MetricService.Log(metric)
 	End Sub
@@ -134,7 +135,8 @@ Public MustInherit Class MonitoredProcessBase
 		Dim message As MetricJobProgress = New MetricJobProgress With {
 			.MetadataThroughputBytesPerSecond = statistics.MetadataThroughput,
 			.FileThroughputBytesPerSecond = statistics.FileThroughput,
-			.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.SqlTime/TimeSpan.TicksPerSecond)}
+			.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.SqlTime/TimeSpan.TicksPerSecond),
+			.BulkImportType = statistics.BulkImportType}
 		BuildMetricBase(message)
 		MetricService.Log(message)
 	End Sub
