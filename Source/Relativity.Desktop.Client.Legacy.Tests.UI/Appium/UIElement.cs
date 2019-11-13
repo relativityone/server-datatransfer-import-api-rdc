@@ -47,7 +47,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			return (T) this;
 		}
 
-		public void Click()
+		public virtual void Click()
 		{
 			Element.Click();
 		}

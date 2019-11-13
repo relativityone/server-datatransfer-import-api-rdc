@@ -7,30 +7,44 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 	internal sealed class ComboBoxUIElement : UIElement<ComboBoxUIElement>
 	{
 		private readonly ButtonUIElement button;
-		private readonly TextUIElement text;
+		private readonly TextUIElement textBox;
 
 		public ComboBoxUIElement(Func<AppiumWebElement> create) : base(create)
 		{
-			text = FindText();
+			textBox = FindText();
 			button = FindButton();
 		}
 
-		public void SelectComboBoxItem(string name)
+		public void SelectComboBoxItem(string value)
 		{
-			if (text.Text == name) return;
+			if (textBox.Text == value) return;
 
 			button.Click();
 
-			string previousText = null;
-			while (text.Text != name && text.Text != previousText)
+			var selected = SelectItemByValueInDirection(value, Keys.Up);
+			if (!selected)
 			{
-				previousText = text.Text;
-				SendKeys(Keys.Down);
+				selected = SelectItemByValueInDirection(value, Keys.Down);
 			}
 
-			if (text.Text != name) throw new Exception($"ComboBoxItem with name: {name} doesn't exists");
+			if (!selected)
+			{
+				throw new Exception($"ComboBoxItem with value: {value} doesn't exists");
+			}
 
 			SendKeys(Keys.Enter);
+		}
+
+		private bool SelectItemByValueInDirection(string value, string directionKey)
+		{
+			string previousText = null;
+			while (textBox.Text != value && textBox.Text != previousText)
+			{
+				previousText = textBox.Text;
+				SendKeys(directionKey);
+			}
+
+			return textBox.Text == value;
 		}
 	}
 }

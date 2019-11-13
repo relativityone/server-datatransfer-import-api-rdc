@@ -13,13 +13,13 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		public void SelectListItem(string name)
 		{
-			var item = FindListItemByName(name);
+			var item = FindListItem(name);
 			item.Click();
 		}
 
-		private AppiumWebElement FindListItemByName(string name)
+		public ListItemUIElement FindListItem(string name)
 		{
-			return FindChild(ElementType.ListItem, name)();
+			return new ListItemUIElement(FindChild(ElementType.ListItem, name));
 		}
 	}
 }

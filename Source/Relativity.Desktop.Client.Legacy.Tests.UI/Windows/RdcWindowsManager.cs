@@ -52,6 +52,11 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			return SwitchToWindow(profile.ExportWindow, x => new ExportWindow(this, x, profile));
 		}
 
+		public ImportLoadFileWindow SwitchToImportWindow(ImportProfile profile)
+		{
+			return SwitchToWindow(profile.ImportWindow, x => new ImportLoadFileWindow(this, x, profile));
+		}
+
 		public DialogWindow GetRdcConfirmationDialog()
 		{
 			var windowDetails = GetWindow(RdcWindowName.RelativityDesktopClient,

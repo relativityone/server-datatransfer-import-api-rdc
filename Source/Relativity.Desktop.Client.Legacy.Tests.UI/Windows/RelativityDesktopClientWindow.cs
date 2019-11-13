@@ -30,6 +30,20 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			return WindowsManager.SwitchToImportDocumentLoadFileWindow();
 		}
 
+		public ImportLoadFileWindow ImportProductionLoadFile()
+		{
+			menuBar.ClickMenuItem("Tools").ClickMenuItem("Import")
+				.ClickMenuItem("Production Load File...");
+			return WindowsManager.SwitchToImportWindow(ImportProfile.ProductionSet);
+		}
+
+		public ImportLoadFileWindow ImportImageLoadFile()
+		{
+			menuBar.ClickMenuItem("Tools").ClickMenuItem("Import")
+				.ClickMenuItem("Image Load File...");
+			return WindowsManager.SwitchToImportWindow(ImportProfile.ImageLoadFile);
+		}
+
 		public ExportWindow ExportFolderAndSubfolders()
 		{
 			ClickExportMenuItem("Folder and Subfolders...");
