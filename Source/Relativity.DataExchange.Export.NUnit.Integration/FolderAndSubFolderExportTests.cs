@@ -25,7 +25,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	[Feature.DataTransfer.RelativityDesktopClient.Export]
 	[Category(TestCategories.Export)]
 	[Category(TestCategories.Integration)]
-	public class FolderAndSubFolderExportTests : ExporterTestBase
+	public class FolderAndSubFolderExportTests : ExportTestBase
 	{
 		[IdentifiedTest("3B50E3A9-0A28-4FA4-9ACD-5FB878DEF97A")]
 		[TestCase(false)]

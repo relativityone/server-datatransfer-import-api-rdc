@@ -87,10 +87,10 @@
   <ItemGroup>
     <Compile Include="Dto\DelimiterDto.cs" />
     <Compile Include="Dto\ExportTypeDto.cs" />
-    <Compile Include="ExporterTestJobResult.cs" />
+    <Compile Include="ExportTestJobResult.cs" />
     <Compile Include="Dto\ExportImageDto.cs" />
     <Compile Include="Dto\ExportNativeDto.cs" />
-    <Compile Include="GoldPathExporterTests.cs" />
+    <Compile Include="PositiveExportTests.cs" />
     <Compile Include="Dto\PaddingDto.cs" />
     <Compile Include="TestContainerFactory.cs" />
     <Compile Include="MockObjectFactory.cs" />
@@ -156,7 +156,7 @@
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
     <Compile Include="FolderAndSubFolderExportTests.cs" />
-    <Compile Include="ExporterTestBase.cs" />
+    <Compile Include="ExportTestBase.cs" />
     <Compile Include="GlobalSuppressions.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
