@@ -12,9 +12,9 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			this.value = value.ThrowIfNullOrEmpty(nameof(value));
 		}
 
-		public static implicit operator string(WindowName w)
+		public static implicit operator string(WindowName windowName)
 		{
-			return w.value;
+			return windowName.value;
 		}
 
 		public override string ToString()

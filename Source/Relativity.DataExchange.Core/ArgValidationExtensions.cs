@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Extension to check null pointer arguments on the function call
+//   Extensions for method arguments validation.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 namespace Relativity.DataExchange
@@ -11,7 +11,7 @@ namespace Relativity.DataExchange
 	using System;
 
 	/// <summary>
-	/// Extension method to check method argument reference is not null.
+	/// Extensions for method arguments validation.
 	/// </summary>
 	internal static class ArgValidationExtensions
 	{
