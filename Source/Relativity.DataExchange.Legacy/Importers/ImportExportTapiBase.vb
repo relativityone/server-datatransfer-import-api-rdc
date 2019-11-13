@@ -532,7 +532,7 @@ Namespace kCura.WinEDDS
 				End If
 			End SyncLock
 		End Sub
-		
+
 		Private Sub BulkLoadOnTapiProgress(ByVal sender As Object, ByVal e As TapiProgressEventArgs)
 			SyncLock _syncRoot
 				If ShouldImport AndAlso e.Successful Then

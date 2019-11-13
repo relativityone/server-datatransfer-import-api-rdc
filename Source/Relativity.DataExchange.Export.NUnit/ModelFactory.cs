@@ -7,7 +7,8 @@
 namespace Relativity.DataExchange.Export.NUnit
 {
 	using System;
-	using System.Text;
+    using System.IO;
+    using System.Text;
 
 	using kCura.WinEDDS.Exporters;
 
@@ -23,42 +24,82 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		public static Native GetNative(NativeRepository nativeRepository)
 		{
+			return GetNative(nativeRepository, "sourceLocation", Path.Combine(@"C:\temp", Guid.NewGuid().ToString()));
+		}
+
+		public static Native GetNative(NativeRepository nativeRepository, string sourceLocation, string targetFile)
+		{
+			return GetNative(nativeRepository, sourceLocation, targetFile, _artifactId++);
+		}
+
+		public static Native GetNative(NativeRepository nativeRepository, string sourceLocation, string targetFile, int artifactId)
+		{
+			if (nativeRepository == null)
+			{
+				throw new ArgumentNullException(nameof(nativeRepository));
+			}
+
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				ArtifactID = _artifactId++,
-				NativeSourceLocation = "location"
+				ArtifactID = artifactId,
+				NativeSourceLocation = sourceLocation
 			};
-			ExportRequest exportRequest = new PhysicalFileExportRequest(artifact, "location")
+
+			ExportRequest exportRequest = new PhysicalFileExportRequest(artifact, targetFile)
 			{
-				FileName = Guid.NewGuid().ToString(),
+				FileName = System.IO.Path.GetFileName(targetFile),
 				Order = _order++
 			};
+
 			Native native = new Native(artifact)
 			{
 				TransferCompleted = false,
 				ExportRequest = exportRequest
 			};
+
 			nativeRepository.Add(native);
 			return native;
 		}
 
-		public static Image GetImage(int artifactId, ImageRepository imageRepository)
+		public static Image GetImage(ImageRepository imageRepository, int artifactId)
 		{
+			return GetImage(imageRepository, artifactId, "sourceLocation", Guid.NewGuid().ToString());
+		}
+
+		public static Image GetImage(ImageRepository imageRepository, int artifactId, string sourceLocation)
+		{
+			return GetImage(
+				imageRepository,
+				artifactId,
+				sourceLocation,
+				Path.Combine(@"C:\temp", Path.Combine(@"C:\temp", Guid.NewGuid().ToString())));
+		}
+
+		public static Image GetImage(ImageRepository imageRepository, int artifactId, string sourceLocation, string targetFile)
+		{
+			if (imageRepository == null)
+			{
+				throw new ArgumentNullException(nameof(imageRepository));
+			}
+
 			ImageExportInfo artifact = new ImageExportInfo
 			{
 				ArtifactID = artifactId,
-				SourceLocation = "sourceLocation"
+				SourceLocation = sourceLocation
 			};
-			ExportRequest exportRequest = new PhysicalFileExportRequest(artifact, "location")
+
+			ExportRequest exportRequest = new PhysicalFileExportRequest(artifact, targetFile)
 			{
-				FileName = Guid.NewGuid().ToString(),
+				FileName = System.IO.Path.GetFileName(targetFile),
 				Order = _order++
 			};
+
 			Image image = new Image(artifact)
 			{
 				TransferCompleted = false,
 				ExportRequest = exportRequest
 			};
+
 			imageRepository.Add(image.InList());
 			return image;
 		}

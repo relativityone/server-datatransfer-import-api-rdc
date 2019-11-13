@@ -73,9 +73,8 @@ namespace Relativity.DataExchange.Transfer
 
 			// Guard against null timestamps.
 			var args = new TapiProgressEventArgs(
-				!string.IsNullOrEmpty(e.Path.TargetFileName)
-					? e.Path.TargetFileName
-					: Path.GetFileName(e.Path.SourcePath),
+				Path.GetFileName(e.TargetFile),
+				e.TargetFile,
 				e.Completed,
 				e.Status == TransferPathStatus.Successful,
 				e.Path.Order,

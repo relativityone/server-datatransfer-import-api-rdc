@@ -4,13 +4,14 @@
 
 	public class LongTextProgressHandler : ProgressHandler
 	{
-		public LongTextProgressHandler(IDownloadProgressManager downloadProgressManager, ILog logger) : base(downloadProgressManager, logger)
+		public LongTextProgressHandler(IDownloadProgressManager downloadProgressManager, ILog logger)
+			: base(downloadProgressManager, logger)
 		{
 		}
 
-		protected override void MarkAsTransferCompleted(string fileName, int lineNumber)
+		protected override void MarkAsTransferCompleted(string targetFile, int lineNumber, bool transferResult)
 		{
-			DownloadProgressManager.MarkLongTextAsCompleted(fileName, lineNumber);
+			this.DownloadProgressManager.MarkLongTextAsCompleted(targetFile, lineNumber, transferResult);
 		}
 	}
 }

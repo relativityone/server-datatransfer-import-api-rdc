@@ -127,7 +127,11 @@ Namespace kCura.WinEDDS
 				_uploadModeText = TapiModeHelper.BuildDocText()
 			End If
 
-			Dim statusBarText As String = TapiModeHelper.BuildExportStatusText(args.TransferClients)
+			Dim nativeFilesCopied As Boolean = (Me.ExportFile.ExportImages AndAlso
+			                                    Me.ExportFile.VolumeInfo.CopyImageFilesFromRepository) OrElse
+			                                   (Me.ExportFile.ExportNative AndAlso
+			                                    Me.ExportFile.VolumeInfo.CopyNativeFilesFromRepository)
+			Dim statusBarText As String = TapiModeHelper.BuildExportStatusText(nativeFilesCopied, args.TransferClients)
 			_tapiClient = TapiModeHelper.GetTapiClient(args.TransferClients)
 			
 			SendMetricJobStarted()

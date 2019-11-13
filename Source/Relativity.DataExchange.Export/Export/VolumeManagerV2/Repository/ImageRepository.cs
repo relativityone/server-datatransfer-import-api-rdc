@@ -37,6 +37,20 @@
 			}
 		}
 
+		public IList<Image> GetImagesByTargetFile(string targetFile)
+		{
+			lock (_syncLock)
+			{
+				string trimmedTargetFile = targetFile != null ? targetFile.TrimEnd() : string.Empty;
+				List<Image> images = _images.Where(
+					x => x.ExportRequest?.DestinationLocation != null && string.Compare(
+						     x.ExportRequest.DestinationLocation.TrimEnd(),
+						     trimmedTargetFile,
+						     StringComparison.OrdinalIgnoreCase) == 0).ToList();
+				return images;
+			}
+		}
+
 		public IList<Image> GetArtifactImages(int artifactId)
 		{
 			lock (_syncLock)
@@ -73,14 +87,6 @@
 				return GetExportRequests().Any(
 					x => string.Compare(x.DestinationLocation, destinationLocation, StringComparison.OrdinalIgnoreCase)
 					     == 0);
-			}
-		}
-
-		public Image GetByLineNumber(int lineNumber)
-		{
-			lock (_syncLock)
-			{
-				return _images.FirstOrDefault(x => x.ExportRequest?.Order == lineNumber);
 			}
 		}
 

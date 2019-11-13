@@ -41,6 +41,7 @@
 				Application = _appSettings.ApplicationName,
 				AsperaBcpRootFolder = _appSettings.TapiAsperaBcpRootFolder,
 				AsperaDocRootLevels = _appSettings.TapiAsperaNativeDocRootLevels,
+				AsperaDatagramSize = _appSettings.TapiAsperaDatagramSize,
 				BadPathErrorsRetry = _appSettings.TapiBadPathErrorsRetry,
 				ClientRequestId = Guid.NewGuid(),
 				Credentials = _exportSettings.Credential,
