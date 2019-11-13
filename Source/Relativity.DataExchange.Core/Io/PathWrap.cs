@@ -37,6 +37,11 @@ namespace Relativity.DataExchange.Io
 		private const int WindowsMaxPathLength = 260;
 
 		/// <summary>
+		/// Name of the subdirectory with RDC temp files.
+		/// </summary>
+		private const string TempSubdirectoryName = "RelativityDataExchange";
+
+		/// <summary>
 		/// The primary directory character that's represented as a string.
 		/// </summary>
 		private static readonly string DirectorySeparatorString = System.IO.Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
@@ -186,12 +191,26 @@ namespace Relativity.DataExchange.Io
 		}
 
 		/// <inheritdoc />
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1031:DoNotCatchGeneralExceptionTypes",
+			Justification = "We want to ignore any exception and fallback to standard temp path.")]
 		public string GetTempPath()
 		{
 			string value = this.CustomTempPath;
 			if (string.IsNullOrEmpty(value))
 			{
-				value = System.IO.Path.GetTempPath();
+				string tempPath = System.IO.Path.GetTempPath();
+				try
+				{
+					string rdcTempPath = System.IO.Path.Combine(tempPath, TempSubdirectoryName);
+					System.IO.Directory.CreateDirectory(rdcTempPath);
+					value = rdcTempPath;
+				}
+				catch (Exception)
+				{
+					value = tempPath;
+				}
 			}
 
 			return value;
@@ -274,9 +293,9 @@ namespace Relativity.DataExchange.Io
 		{
 			// Note: long and relative paths should never be modified.
 			if (!this.SupportLongPaths ||
-			    string.IsNullOrEmpty(path) ||
-			    path.StartsWith(@"\\?\", StringComparison.OrdinalIgnoreCase) ||
-			    !System.IO.Path.IsPathRooted(path))
+				string.IsNullOrEmpty(path) ||
+				path.StartsWith(@"\\?\", StringComparison.OrdinalIgnoreCase) ||
+				!System.IO.Path.IsPathRooted(path))
 			{
 				return path;
 			}
@@ -299,10 +318,10 @@ namespace Relativity.DataExchange.Io
 		public bool PathEndsWithTrailingBackSlash(string path)
 		{
 			var result = !string.IsNullOrEmpty(path)
-			             && (path.EndsWith(DirectorySeparatorString, StringComparison.OrdinalIgnoreCase) ||
-			                 path.EndsWith(
-				                 AltDirectorySeparatorString,
-				                 StringComparison.OrdinalIgnoreCase));
+						 && (path.EndsWith(DirectorySeparatorString, StringComparison.OrdinalIgnoreCase) ||
+							 path.EndsWith(
+								 AltDirectorySeparatorString,
+								 StringComparison.OrdinalIgnoreCase));
 			return result;
 		}
 

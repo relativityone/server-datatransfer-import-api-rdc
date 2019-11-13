@@ -8,7 +8,6 @@ namespace Relativity.DataExchange.Import.NUnit
 {
 	using System;
 	using System.Net;
-	using System.Text;
 	using System.Threading;
 	using kCura.EDDS.WebAPI.BulkImportManagerBase;
 	using kCura.WinEDDS;
@@ -54,7 +53,9 @@ namespace Relativity.DataExchange.Import.NUnit
 			this._bulkImportManager = manager;
 			this.ImportBatchSize = 500;
 			this.ImportBatchVolume = 1000000;
-			this.OutputFileWriter = new OutputFileWriter();
+			this.OutputFileWriter = new OutputFileWriter(
+				new NullLogger(),
+				Relativity.DataExchange.Io.FileSystem.Instance);
 			this.OutputFileWriter.Open(true);
 		}
 
