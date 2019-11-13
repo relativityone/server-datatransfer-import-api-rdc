@@ -1,6 +1,6 @@
-﻿using System;
+﻿using System.Threading;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Windows.SetupParameters;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -22,25 +22,24 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly PickTextPrecedenceDialog pickTextPrecedenceDialog;
 		private readonly ButtonUIElement selectFieldsSourceButton;
 		private readonly SelectViewDialog selectFieldsSourceDialog;
-		private readonly ExportWindowSettings settings;
+		private readonly ExportProfile profile;
 		private readonly ComboBoxUIElement textAndNativeComboBox;
 		private readonly ComboBoxUIElement textFileEncodingComboBox;
 		private readonly SpinnerComboBoxUIElement volumeDigitPaddingComboBox;
 
 		public ExportWindow(RdcWindowsManager windowsManager, WindowDetails window,
-			ExportWindowSettings settings)
+			ExportProfile profile)
 			: base(windowsManager, window)
 		{
-			this.settings = settings;
+			this.profile = profile;
 			menuBar = FindMenuBar("Application");
 			var tabs = FindTabsWithAutomationId("TabControl1");
-			this.settings = settings;
 			dataSourceTab = tabs.FindTabItem("Data Source");
 			destinationFilesTab = tabs.FindTabItem("Destination Files");
 			selectFieldsSourceButton = FindButtonWithAutomationId("_selectFromListButton");
 			folderPathTextBox = FindEditWithAutomationId("_folderPath");
 			browseForFolderDialog = new BrowseForFolderDialog(FindWindow("Browse For Folder"));
-			selectFieldsSourceDialog = new SelectViewDialog(FindWindow(GetFieldsSourceDialogTitle()));
+			selectFieldsSourceDialog = new SelectViewDialog(FindWindow(profile.FieldsSourceDialogName));
 			pickTextPrecedenceDialog = new PickTextPrecedenceDialog(FindWindow("Pick Text Precedence"));
 			var textAndNativeFileNamesGroup = FindGroupWithAutomationId("GroupBoxTextAndNativeFileNames");
 			textAndNativeComboBox = textAndNativeFileNamesGroup.FindComboBoxWithAutomationId("_comboBox");
@@ -79,22 +78,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		public ProgressWindow RunExport()
 		{
 			menuBar.ClickMenuItem("File").ClickMenuItem("Run");
-			return SwitchToProgressWindow();
-		}
-
-		private ProgressWindow SwitchToProgressWindow()
-		{
-			switch (settings.ExportType)
-			{
-				case ExportType.FoldersAndSubfolders:
-					return WindowsManager.SwitchToExportFoldersAndSubfoldersProgress();
-				case ExportType.ProductionSet:
-					return WindowsManager.SwitchToExportProductionSetProgress();
-				case ExportType.SavedSearch:
-					return WindowsManager.SwitchToExportSavedSearchProgress();
-				default:
-					throw new NotImplementedException($"ExportType: {settings.ExportType} is not supported.");
-			}
+			return WindowsManager.SwitchToProgressWindow(profile.ProgressWindow);
 		}
 
 		private void SetExportPath(string path)
@@ -104,29 +88,20 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			folderPathTextBox.SetText(path);
 		}
 
-		private string GetFieldsSourceDialogTitle()
-		{
-			switch (settings.ExportType)
-			{
-				case ExportType.FoldersAndSubfolders:
-					return "Select View";
-				case ExportType.ProductionSet:
-					return "Select Production";
-				case ExportType.SavedSearch:
-					return "Select Saved Search";
-				default:
-					throw new NotImplementedException($"ExportType: {settings.ExportType} is not supported.");
-			}
-		}
-
 		private void SetExportImages(ExportWindowSetupParameters parameters)
 		{
-			exportImagesCheckBox.SetValue(parameters.ExportImages);
+			if (exportImagesCheckBox.Exists)
+			{
+				exportImagesCheckBox.SetValue(parameters.ExportImages);
+			}
 		}
 
 		private void SetExportNativeFiles(ExportWindowSetupParameters parameters)
 		{
-			exportNativeFilesCheckBox.SetValue(parameters.ExportNativeFiles);
+			if (exportNativeFilesCheckBox.Exists)
+			{
+				exportNativeFilesCheckBox.SetValue(parameters.ExportNativeFiles);
+			}
 		}
 
 		private void SetExportFullTextAsFile(ExportWindowSetupParameters parameters)

@@ -1,10 +1,12 @@
 ﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
 	internal sealed class RelativityDesktopClientWindow : RdcWindowBase<RelativityDesktopClientWindow>
 	{
 		private readonly MenuItemUIElement menuBar;
+		private readonly ComboBoxUIElement objectTypeComboBox;
 		private readonly TreeUIElement treeView;
 
 		public RelativityDesktopClientWindow(RdcWindowsManager windowsManager, WindowDetails window)
@@ -12,6 +14,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		{
 			menuBar = FindMenuBar("Application");
 			treeView = FindTreeWithAutomationId("_treeView");
+			objectTypeComboBox = FindComboBoxWithAutomationId("_objectTypeDropDown");
 		}
 
 		public void SelectRootFolder()
@@ -29,23 +32,38 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public ExportWindow ExportFolderAndSubfolders()
 		{
-			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export")
-				.ClickMenuItem("Folder and Subfolders...");
-			return WindowsManager.SwitchToExportFolderAndSubfoldersWindow();
+			ClickExportMenuItem("Folder and Subfolders...");
+			return WindowsManager.SwitchToExportWindow(ExportProfile.FoldersAndSubfolders);
 		}
 
 		public ExportWindow ExportSavedSearch()
 		{
-			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export")
-				.ClickMenuItem("Saved Search...");
-			return WindowsManager.SwitchToExportSavedSearchWindow();
+			ClickExportMenuItem("Saved Search...");
+			return WindowsManager.SwitchToExportWindow(ExportProfile.ExportSavedSearch);
+		}
+
+		public ExportWindow ExportImagingProfileObjects()
+		{
+			SelectObjectType("Imaging Profile");
+			ClickExportMenuItem("Objects");
+			return WindowsManager.SwitchToExportWindow(ExportProfile.ExportImagingProfileObjects);
+		}
+
+		private void SelectObjectType(string objectTypeName)
+		{
+			objectTypeComboBox.SelectComboBoxItem(objectTypeName);
+		}
+
+		private void ClickExportMenuItem(string name)
+		{
+			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export").ClickMenuItem(name);
 		}
 
 		public ExportWindow ExportProductionSet()
 		{
 			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export")
 				.ClickMenuItem("Production Set...");
-			return WindowsManager.SwitchToExportProductionSetWindow();
+			return WindowsManager.SwitchToExportWindow(ExportProfile.ProductionSet);
 		}
 	}
 }

@@ -1,9 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="NullArgValidationExtensions.cs" company="Relativity ODA LLC">
+// <copyright file="ArgValidationExtensions.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Extension to check null pointer arguments on the function call
+//   Extensions for method arguments validation.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 namespace Relativity.DataExchange
@@ -11,9 +11,9 @@ namespace Relativity.DataExchange
 	using System;
 
 	/// <summary>
-	/// Extension method to check method argument reference is not null.
+	/// Extensions for method arguments validation.
 	/// </summary>
-	internal static class NullArgValidationExtensions
+	internal static class ArgValidationExtensions
 	{
 		/// <summary>
 		/// It throws ArgumentNullException when passed argument is null.
@@ -28,6 +28,22 @@ namespace Relativity.DataExchange
 			if (obj == null)
 			{
 				throw new ArgumentNullException(paramName);
+			}
+
+			return obj;
+		}
+
+		/// <summary>
+		/// It throws ArgumentException when passed argument of type string is null or empty.
+		/// </summary>
+		/// <param name="obj">object to be validated.</param>
+		/// <param name="paramName">name of the parameter passed to the method.</param>
+		/// <returns>obj instance when the reference is not null or empty.</returns>
+		public static string ThrowIfNullOrEmpty([ValidatedNotNull]this string obj, string paramName)
+		{
+			if (string.IsNullOrEmpty(obj))
+			{
+				throw new ArgumentException("Parameter should not be null or empty", paramName);
 			}
 
 			return obj;
