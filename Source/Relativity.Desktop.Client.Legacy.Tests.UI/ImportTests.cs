@@ -11,25 +11,20 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 	[TestFixture]
 	internal class ImportTests : RdcTestBase
 	{
-		private readonly string documentsImportDatFile =
-			PathsProvider.GetTestInputFilePath(@"ImportTests\Documents_export.dat");
-
-		private readonly string documentsImportSettingsFile =
-			PathsProvider.GetTestInputFilePath(@"ImportTests\Documents_export.kwe");
-
-		private readonly string imagesImportFile = PathsProvider.GetTestInputFilePath(@"Images\Images.opt");
-		private readonly string imagesImportSettingsFile = PathsProvider.GetTestInputFilePath(@"Images\Images.kwi");
-
-		private readonly string productionImportFile =
-			PathsProvider.GetTestInputFilePath(@"ProductionSet\Production-Set-To-Export_export.opt");
-
 		[Test]
 		public void ImportDatLoadFileUsingSavedKweSettings()
 		{
 			RunImportTest(x =>
 			{
 				var importWindow = x.ImportDocumentLoadFile();
-				importWindow.LoadKweFile(documentsImportSettingsFile, documentsImportDatFile);
+
+				var parameters = new RdoImportWindowSetupParameters
+				{
+					ImportFilePath = PathsProvider.GetTestInputFilePath(@"ImportTests\Documents_export.dat"),
+					SettingsFilePath = PathsProvider.GetTestInputFilePath(@"ImportTests\Documents_export.kwe")
+				};
+
+				importWindow.SetupImport(parameters);
 				importWindow.ClickImportFileMenuItem();
 				RdcWindowsManager.GetRdcConfirmationDialog().ClickButton("OK");
 				return RdcWindowsManager.SwitchToProgressWindow(ProgressWindowName.ImportLoadFileProgress);
@@ -39,9 +34,10 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		[Test]
 		public void ImportProduction()
 		{
-			var parameters = new ImportWindowSetupParameters
+			var parameters = new ImageImportWindowSetupParameters
 			{
-				ImportFilePath = productionImportFile,
+				ImportFilePath =
+					PathsProvider.GetTestInputFilePath(@"ProductionSet\Production-Set-To-Export_export.opt"),
 				ProductionName = "Imported-Production-Set",
 				OverwriteMode = "Append Only"
 			};
@@ -60,10 +56,10 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		[Test]
 		public void ImportImages()
 		{
-			var parameters = new ImportWindowSetupParameters
+			var parameters = new ImageImportWindowSetupParameters
 			{
-				ImportFilePath = imagesImportFile,
-				SettingsFilePath = imagesImportSettingsFile
+				ImportFilePath = PathsProvider.GetTestInputFilePath(@"Images\Images.opt"),
+				SettingsFilePath = PathsProvider.GetTestInputFilePath(@"Images\Images.kwi")
 			};
 
 			RunImportTest(x =>
@@ -71,6 +67,25 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				var importWindow = x.ImportImageLoadFile();
 				importWindow.SetupImport(parameters);
 				return importWindow.RunImport();
+			});
+		}
+
+		[Test]
+		public void ImportImageProfiles()
+		{
+			RunImportTest(x =>
+			{
+				var importWindow = x.ImportImagingProfileObjects();
+
+				var parameters = new RdoImportWindowSetupParameters
+				{
+					ImportFilePath = PathsProvider.GetTestInputFilePath(@"RDO\ImagingProfiles.dat"),
+					AutoMapFields = true
+				};
+
+				importWindow.SetupImport(parameters);
+				var progressWindow = importWindow.RunImport();
+				return progressWindow;
 			});
 		}
 
