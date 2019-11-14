@@ -38,7 +38,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 		public static Func<AppiumWebElement> WaitFor(this Func<AppiumWebElement> find,
 			TimeSpan timeout)
 		{
-			return find.WaitFor(TimeSpan.FromMilliseconds(200), timeout);
+			return find.WaitFor(DefaultTimeouts.DefaultWaitCheckInterval, timeout);
 		}
 
 		public static Func<AppiumWebElement> WaitFor(this Func<AppiumWebElement> find, TimeSpan checkInterval,

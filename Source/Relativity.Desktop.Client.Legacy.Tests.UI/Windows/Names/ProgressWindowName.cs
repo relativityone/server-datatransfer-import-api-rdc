@@ -16,6 +16,11 @@
 
 		public static readonly ProgressWindowName ExportImagingProfileObjects = ExportFoldersAndSubfolders;
 
+		public static readonly ProgressWindowName ImportImageFile =
+			new ProgressWindowName("Import Image File Progress ...");
+
+		public static readonly ProgressWindowName ImportProductionFile = ImportImageFile;
+
 		private ProgressWindowName(string value) : base(value)
 		{
 		}
