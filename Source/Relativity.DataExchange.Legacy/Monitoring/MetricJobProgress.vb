@@ -1,6 +1,6 @@
 Namespace Monitoring
 	Public Class MetricJobProgress
-		Inherits MetricBase
+		Inherits MetricJobBase
 
         ''' <inheritdoc/>
         Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.METRIC_JOB_PROGRESS

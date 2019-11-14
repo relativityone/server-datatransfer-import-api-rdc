@@ -181,6 +181,8 @@
     <Compile Include="API\IImageReader.vb" />
     <Compile Include="API\ImageRecord.vb" />
     <Compile Include="API\LoginHelper.vb" />
+    <Compile Include="Monitoring\MetricAuthenticationType.vb" />
+    <Compile Include="Monitoring\MetricJobBase.vb" />
     <Compile Include="RsaBearerTokenAuthenticationProvider.vb" />
     <Compile Include="Config.vb" />
     <Compile Include="Credentials\Constants.vb" />

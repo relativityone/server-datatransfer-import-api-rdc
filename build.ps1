@@ -46,6 +46,10 @@ Skips building the solution, setup the integration test parameters using the spe
 Skips building the solution, setup the integration test parameters using the hyperv test environment, executes all unit and integration tests, and creates test reports within the ".\Reports" sub-folder.
 
 .EXAMPLE
+.\build.ps1 UIAutomationTests
+Skips building the solution and executes all UI tests.
+
+.EXAMPLE
 .\build.ps1 CodeCoverageReport -TestEnvironment "hyperv"
 Skips building the solution, setup the integration test parameters using the hyperv test environment, executes a code coverage report, and creates the code coverage report within the ".\Reports" sub-folder.
 

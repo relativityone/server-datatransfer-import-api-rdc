@@ -14,6 +14,8 @@ Namespace Monitoring.Sinks
                     Return GenerateSumMetricJobStarted(CType(metric, MetricJobStarted))
                 Case GetType(MetricJobEndReport)
                     Return GenerateSumMetricJobEndReport(CType(metric, MetricJobEndReport))
+                Case GetType(MetricAuthenticationType)
+					Return GenerateSumMetricAuthenticationType(CType(metric, MetricAuthenticationType))
                 Case Else
                     Return New List(Of MetricRef)()
             End Select
@@ -32,12 +34,18 @@ Namespace Monitoring.Sinks
                 New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.JOB_SIZE, metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.PointInTimeLong, metric.TotalSizeBytes),
                 New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.THROUGHPUT, metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.PointInTimeDouble, metric.ThroughputRecordsPerSecond),
                 New MetricRef(FormatSumBucketName(TelemetryConstants.SumBucketPrefix.THROUGHPUT_BYTES, metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.PointInTimeDouble, metric.ThroughputBytesPerSecond),
-                New MetricRef(FormatSumBucketName(CStr(IIf(metric.JobStatus = TelemetryConstants.JobStatus.COMPLETED, TelemetryConstants.SumBucketPrefix.JOB_COMPLETED_COUNT, TelemetryConstants.SumBucketPrefix.JOB_FAILED_COUNT)), metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.Counter, 1)
+                New MetricRef(FormatSumBucketName(GetBucketPrefixFromJobStatus(metric.JobStatus), metric.JobType, metric.TransferMode), IntegerToGuid(metric.WorkspaceID), metric.CorrelationID, MetricTypes.Counter, 1)
                 }
         End Function
 
+        Private Function GenerateSumMetricAuthenticationType(metric As MetricAuthenticationType) As List(Of MetricRef)
+	        Return New List(Of MetricRef) From {
+		        New MetricRef($"{TelemetryConstants.SumBucketPrefix.AUTHENTICATION}.{metric.SystemType}.{metric.AuthenticationMethod}", Guid.Empty, metric.CorrelationID, MetricTypes.Counter, 1)
+		        }
+        End Function
+
         ''' <summary>
-        ''' Formatting SUM bucket name. SUM metrics does not allow to add custom properties so we need to pass <see cref="MetricBase.JobType"/> and <see cref="MetricBase.TransferMode"/> in bucket name.
+        ''' Formatting SUM bucket name. SUM metrics does not allow to add custom properties so we need to pass <see cref="MetricJobBase.JobType"/> and <see cref="MetricJobBase.TransferMode"/> in bucket name.
         ''' </summary>
         ''' <param name="prefix">Bucket name prefix. This values are stored in <see cref="TelemetryConstants.SumBucketPrefix"/>.</param>
         ''' <param name="jobType">Job type - Import or Export</param>
@@ -50,5 +58,18 @@ Namespace Monitoring.Sinks
         Private Function IntegerToGuid(value As Integer) As Guid
             Return New Guid(CUInt(value).ToString().PadRight(32, "f"c).Substring(0, 32))
         End Function
+
+		Private Function GetBucketPrefixFromJobStatus(jobStatus As TelemetryConstants.JobStatus) As String
+			Select jobStatus
+			    Case TelemetryConstants.JobStatus.Completed
+					Return TelemetryConstants.SumBucketPrefix.JOB_COMPLETED_COUNT
+				Case TelemetryConstants.JobStatus.Failed
+					Return TelemetryConstants.SumBucketPrefix.JOB_FAILED_COUNT
+				Case TelemetryConstants.JobStatus.Cancelled
+					Return TelemetryConstants.SumBucketPrefix.JOB_CANCELLED_COUNT
+				Case Else
+					Return jobStatus.ToString()
+			End Select
+		End Function
     End Class
 End NameSpace

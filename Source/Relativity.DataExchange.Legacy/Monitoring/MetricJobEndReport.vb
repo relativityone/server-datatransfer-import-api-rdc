@@ -1,6 +1,6 @@
 ﻿Namespace Monitoring
     Public Class MetricJobEndReport
-        Inherits MetricBase
+        Inherits MetricJobBase
 
         ''' <inheritdoc/>
         Public Overrides ReadOnly Property BucketName As String = TelemetryConstants.BucketName.METRIC_JOB_END_REPORT
@@ -9,9 +9,9 @@
         ''' Gets or sets job status - <see cref="TelemetryConstants.JobStatus"/>
         ''' </summary>
         ''' <returns>Job status</returns>
-        Public Property JobStatus() As String
+        Public Property JobStatus() As TelemetryConstants.JobStatus
             Get
-                Return GetValueOrDefault (Of String)(TelemetryConstants.KeyName.JOB_STATUS)
+                Return GetValueOrDefault (Of TelemetryConstants.JobStatus)(TelemetryConstants.KeyName.JOB_STATUS)
             End Get
             Set
                 CustomData.Item(TelemetryConstants.KeyName.JOB_STATUS) = Value
