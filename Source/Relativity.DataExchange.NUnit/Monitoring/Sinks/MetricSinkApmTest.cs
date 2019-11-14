@@ -24,8 +24,7 @@ namespace Relativity.DataExchange.NUnit
 		[SetUp]
 		public void Setup()
 		{
-			this.lastLoggedMetric = null;
-
+			// Arrange
 			var mockApmManager = new Mock<IAPMManager>();
 			mockApmManager.Setup(foo => foo.LogCountAsync(It.IsAny<APMMetric>(), It.IsAny<long>())).Callback(
 				(APMMetric metric, long count) => this.lastLoggedMetric = metric).Returns(Task.CompletedTask);
@@ -33,12 +32,16 @@ namespace Relativity.DataExchange.NUnit
 			mockServiceFactory.Setup(foo => foo.CreateProxy<IAPMManager>()).Returns(mockApmManager.Object);
 
 			this.apmSink = new MetricSinkApm(mockServiceFactory.Object, true);
+			this.lastLoggedMetric = null;
 		}
 
 		[Test]
 		public void ShouldLogMetricJobStarted()
 		{
+			// Act
 			this.apmSink.Log(new MetricJobStarted());
+
+			// Assert
 			Assert.NotNull(this.lastLoggedMetric);
 			Assert.AreEqual(TelemetryConstants.BucketName.METRIC_JOB_STARTED, this.lastLoggedMetric.Name);
 		}
@@ -46,7 +49,10 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		public void ShouldLogMetricJobProgress()
 		{
+			// Act
 			this.apmSink.Log(new MetricJobProgress());
+
+			// Assert
 			Assert.NotNull(this.lastLoggedMetric);
 			Assert.AreEqual(TelemetryConstants.BucketName.METRIC_JOB_PROGRESS, this.lastLoggedMetric.Name);
 		}
@@ -54,9 +60,23 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		public void ShouldLogMetricJobEndReport()
 		{
+			// Act
 			this.apmSink.Log(new MetricJobEndReport());
+
+			// Assert
 			Assert.NotNull(this.lastLoggedMetric);
 			Assert.AreEqual(TelemetryConstants.BucketName.METRIC_JOB_END_REPORT, this.lastLoggedMetric.Name);
+		}
+
+		[Test]
+		public void ShouldLogMetricAuthenticationType()
+		{
+			// Act
+			this.apmSink.Log(new MetricAuthenticationType());
+
+			// Assert
+			Assert.NotNull(this.lastLoggedMetric);
+			Assert.AreEqual(TelemetryConstants.BucketName.METRIC_AUTHENTICATION_TYPE, this.lastLoggedMetric.Name);
 		}
 	}
 }
