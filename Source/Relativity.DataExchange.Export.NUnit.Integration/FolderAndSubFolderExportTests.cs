@@ -40,7 +40,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(TestData.AllSampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.SampleFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
@@ -57,7 +57,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(TestData.AllSampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.SampleFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
@@ -73,7 +73,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(TestData.AllSampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.SampleFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
@@ -107,7 +107,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(TestData.AllSampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.SampleFiles.Count());
 			this.ThenTheMockFileShareSettingsServiceIsVerified();
 		}
 

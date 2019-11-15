@@ -11,8 +11,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Data;
-	using System.Data.Common;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
@@ -40,11 +38,29 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 		private const int _TIMEOUT_IN_MS = 70 * 1000;
 
 		[OneTimeTearDown]
-		public Task OneTimeTearDown()
+		public static Task OneTimeTearDown()
 		{
 			return Task.WhenAll(
 				UsersHelper.SwitchIntegratedAuthenticationForCurrentUser(AssemblySetup.TestParameters, isEnabled: false),
-				this.ChangeStateOfIntegratedAuthentication(isEnabled: false));
+				ChangeStateOfIntegratedAuthentication(isEnabled: false));
+		}
+
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[IdentifiedTest("9ad67f7d-d2f0-4a32-96ca-ea40c1631c74")]
+		[Timeout(_TIMEOUT_IN_MS)]
+		public static async Task ShouldFailWhenIntegratedAuthenticationIsDisabled()
+		{
+			// ARRANGE
+			await ChangeStateOfIntegratedAuthentication(false).ConfigureAwait(false);
+			await UsersHelper.SwitchIntegratedAuthenticationForCurrentUser(AssemblySetup.TestParameters, isEnabled: true).ConfigureAwait(false);
+
+			// ACT
+			TestDelegate createImportApiUsingIntegratedAuthenticationAction =
+				() => new ImportAPI(AssemblySetup.TestParameters.RelativityWebApiUrl.AbsoluteUri);
+
+			// ASSERT
+			Assert.Throws<InvalidLoginException>(createImportApiUsingIntegratedAuthenticationAction);
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -65,7 +81,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 			this.GivenTheImportJobWithIntegratedAuthentication();
 			this.GivenDefaultNativeDocumentImportJob();
 
-			await this.GivenIntegratedAuthenticationIsEnabled().ConfigureAwait(false);
+			await ChangeStateOfIntegratedAuthentication(true).ConfigureAwait(false);
 			await UsersHelper.SwitchIntegratedAuthenticationForCurrentUser(AssemblySetup.TestParameters, isEnabled: true).ConfigureAwait(false);
 			await RdoHelper.DeleteAllObjectsByType(AssemblySetup.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
 
@@ -81,35 +97,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport));
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
-		[IdentifiedTest("9ad67f7d-d2f0-4a32-96ca-ea40c1631c74")]
-		[Timeout(_TIMEOUT_IN_MS)]
-		public async Task ShouldFailWhenIntegratedAuthenticationIsDisabled()
-		{
-			// ARRANGE
-			await this.GivenIntegratedAuthenticationIsDisabled().ConfigureAwait(false);
-			await UsersHelper.SwitchIntegratedAuthenticationForCurrentUser(AssemblySetup.TestParameters, isEnabled: true).ConfigureAwait(false);
-
-			// ACT
-			TestDelegate createImportApiUsingIntegratedAuthenticationAction =
-				() => new ImportAPI(AssemblySetup.TestParameters.RelativityWebApiUrl.AbsoluteUri);
-
-			// ASSERT
-			Assert.Throws<InvalidLoginException>(createImportApiUsingIntegratedAuthenticationAction);
-		}
-
-		private Task GivenIntegratedAuthenticationIsEnabled()
-		{
-			return this.ChangeStateOfIntegratedAuthentication(isEnabled: true);
-		}
-
-		private Task GivenIntegratedAuthenticationIsDisabled()
-		{
-			return this.ChangeStateOfIntegratedAuthentication(isEnabled: false);
-		}
-
-		private async Task ChangeStateOfIntegratedAuthentication(bool isEnabled)
+		private static async Task ChangeStateOfIntegratedAuthentication(bool isEnabled)
 		{
 			const string section = "Relativity.Authentication";
 			const string setting = "UseWindowsAuthentication";

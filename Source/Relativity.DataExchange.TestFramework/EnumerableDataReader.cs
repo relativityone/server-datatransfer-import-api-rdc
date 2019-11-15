@@ -12,6 +12,13 @@ namespace Relativity.DataExchange.TestFramework
 	using System.Linq;
 	using System.Reflection;
 
+	/// <summary>
+	/// This class is an adapter that converts IEnumerable&lt;T&gt; to IDataReader.
+	/// Properties of T correspond to columns of a table. It uses a reflection
+	/// but we create delegates which have a negligible overhead. Also the IEnumerable
+	/// can be created on the fly.
+	/// </summary>
+	/// <typeparam name="T">The type to convert to a row.</typeparam>
 	public class EnumerableDataReader<T> : DataReaderBase
 	{
 		private readonly IEnumerator<T> enumerator;

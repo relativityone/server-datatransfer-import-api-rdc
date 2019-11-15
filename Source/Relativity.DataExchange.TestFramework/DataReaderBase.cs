@@ -10,6 +10,10 @@ namespace Relativity.DataExchange.TestFramework
 	using System.Data;
 	using System.Globalization;
 
+	/// <summary>
+	/// The IDataReader is very redundant. This class implements all methods
+	/// that can be implemented in terms of other methods in the IDataReader interface.
+	/// </summary>
 	public abstract class DataReaderBase : IDataReader
 	{
 		public abstract int Depth { get; }

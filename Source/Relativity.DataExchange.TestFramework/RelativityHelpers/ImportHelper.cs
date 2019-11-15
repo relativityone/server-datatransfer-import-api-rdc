@@ -58,7 +58,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				dataSource.Columns.Add(WellKnownFields.ControlNumber);
 				dataSource.Columns.Add(WellKnownFields.FilePath);
 				dataSource.Columns.Add(WellKnownFields.FolderName);
-				foreach (var file in TestData.AllSampleFiles)
+				foreach (var file in TestData.SampleFiles)
 				{
 					DataRow dr = dataSource.NewRow();
 					dr[WellKnownFields.ControlNumber] = "REL-" + Guid.NewGuid();

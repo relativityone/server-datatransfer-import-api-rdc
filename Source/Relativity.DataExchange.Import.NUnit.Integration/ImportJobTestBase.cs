@@ -35,8 +35,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		protected TempDirectory2 TempDirectory { get; private set; }
 
-		protected DateTime Timestamp { get; private set; }
-
 		[SetUp]
 		public void Setup()
 		{
@@ -62,7 +60,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["TapiAsperaBcpRootFolder"] = string.Empty;
 			kCura.WinEDDS.Config.ConfigSettings["TapiAsperaNativeDocRootLevels"] = 1;
 
-			this.Timestamp = DateTime.Now;
 			this.TempDirectory = new TempDirectory2();
 			this.TempDirectory.Create();
 			this.TestJobResult = new ImportTestJobResult();
