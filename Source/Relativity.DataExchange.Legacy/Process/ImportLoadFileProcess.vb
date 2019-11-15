@@ -51,7 +51,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Protected Overrides ReadOnly Property JobType As TelemetryConstants.JobType = TelemetryConstants.JobType.Import
+		Protected Overrides ReadOnly Property TransferDirection As TelemetryConstants.TransferDirection = TelemetryConstants.TransferDirection.Import
 
 		Protected Overrides ReadOnly Property TapiClient As TapiClient
 			Get

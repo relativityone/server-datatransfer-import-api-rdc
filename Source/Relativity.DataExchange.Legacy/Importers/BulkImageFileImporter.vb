@@ -242,7 +242,7 @@ Namespace kCura.WinEDDS
 			InitializeUploaders(args)
 			_folderID = folderID
 			_productionArtifactID = args.ProductionArtifactID
-			Statistics.BulkImportType = CType(IIf(_productionArtifactID = 0, TelemetryConstants.BulkImportType.Image, TelemetryConstants.BulkImportType.ProductionImage), TelemetryConstants.BulkImportType)
+			Statistics.ImportObjectType = CType(IIf(_productionArtifactID = 0, TelemetryConstants.ImportObjectType.Image, TelemetryConstants.ImportObjectType.ProductionImage), TelemetryConstants.ImportObjectType)
 			InitializeDTOs(args)
 			If(args.Overwrite.IsNullOrEmpty)
 				_overwrite = ImportOverwriteType.Append

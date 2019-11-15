@@ -30,9 +30,9 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldFormatMetricJobStarted()
 		{
 			// Arrange
-			var jobType = TelemetryConstants.JobType.Import;
+			var jobType = TelemetryConstants.TransferDirection.Import;
 			var transferMode = TapiClient.Aspera;
-			var metric = new MetricJobStarted() { JobType = jobType, TransferMode = transferMode, WorkspaceID = 111111111 };
+			var metric = new MetricJobStarted() { TransferDirection = jobType, TransferMode = transferMode, WorkspaceID = 111111111 };
 
 			// Act
 			var result = this.sumMetricFormatter.GenerateSumMetrics(metric);
@@ -43,12 +43,12 @@ namespace Relativity.DataExchange.NUnit
 			Assert.AreEqual(new Guid("111111111fffffffffffffffffffffff"), result[0].WorkspaceGuid);
 		}
 
-		[TestCase(TelemetryConstants.JobType.Import, 7)]
-		[TestCase(TelemetryConstants.JobType.Export, 6)]
-		public void ShouldFormatMetricJobEndReport(TelemetryConstants.JobType jobType, int numberOfGeneratedMetrics)
+		[TestCase(TelemetryConstants.TransferDirection.Import, 7)]
+		[TestCase(TelemetryConstants.TransferDirection.Export, 6)]
+		public void ShouldFormatMetricJobEndReport(TelemetryConstants.TransferDirection transferDirection, int numberOfGeneratedMetrics)
 		{
 			// Arrange
-			var metric = new MetricJobEndReport() { JobType = jobType };
+			var metric = new MetricJobEndReport() { TransferDirection = transferDirection };
 
 			// Act
 			var result = this.sumMetricFormatter.GenerateSumMetrics(metric);

@@ -75,7 +75,7 @@ Namespace kCura.WinEDDS
 		
 		Public Property BatchSize As Int32 = 0
 
-		Public Property BulkImportType As TelemetryConstants.BulkImportType = TelemetryConstants.BulkImportType.NotApplicable
+		Public Property ImportObjectType As TelemetryConstants.ImportObjectType = TelemetryConstants.ImportObjectType.NotApplicable
 
 		''' <summary>
 		'''  Gets or sets transferred metadata bytes.

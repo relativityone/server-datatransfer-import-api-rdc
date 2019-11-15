@@ -121,18 +121,5 @@
 				CustomData.Item(TelemetryConstants.KeyName.SQL_THROUGHPUT) = Value
 			End Set
 		End Property
-
-		''' <summary>
-		''' Gets or sets type of bulk import.
-		''' </summary>
-		''' <returns>Bulk import type.</returns>
-		Public Property BulkImportType As TelemetryConstants.BulkImportType
-			Get
-				Return GetValueOrDefault (Of TelemetryConstants.BulkImportType)(TelemetryConstants.KeyName.BULK_IMPORT_TYPE)
-			End Get
-			Set
-				CustomData.Item(TelemetryConstants.KeyName.BULK_IMPORT_TYPE) = Value
-			End Set
-		End Property
 	End Class
 End NameSpace

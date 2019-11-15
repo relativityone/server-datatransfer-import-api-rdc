@@ -31,7 +31,7 @@
 		''' Contain key names for <see cref="MetricBase.CustomData"/> dictionary pairs.
 		''' </summary>
 		Class KeyName
-			Public Const JOB_TYPE As String = "JobType"
+			Public Const TRANSFER_DIRECTION As String = "JobType"
 			Public Const WORKSPACE_ID As String = "WorkspaceID"
 			Public Const CORRELATION_ID As String = "CorrelationID"
 			Public Const UNIT_OF_MEASURE As String = "UnitOfMeasure"
@@ -52,7 +52,7 @@
 			Public Const AUTHENTICATION_METHOD As String = "AuthenticationMethod"
 			Public Const SYSTEM_TYPE As String = "SystemType"
 			Public Const SUB_SYSTEM_TYPE As String = "SubSystemType"
-			Public Const BULK_IMPORT_TYPE As String = "BulkImportType"
+			Public Const IMPORT_OBJECT_TYPE As String = "ImportObjectType"
 		End Class
 
 		''' <summary>
@@ -80,7 +80,7 @@
 			Windows
 		End Enum
 
-		Enum BulkImportType
+		Enum ImportObjectType
 			NotApplicable
 			Image
 			ProductionImage
@@ -88,7 +88,7 @@
 			Objects
 		End Enum
 
-		Enum JobType
+		Enum TransferDirection
 			Import
 			Export
 		End Enum
