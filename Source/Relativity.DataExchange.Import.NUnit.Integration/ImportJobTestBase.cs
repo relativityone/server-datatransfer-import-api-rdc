@@ -10,17 +10,12 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
-	using System.Collections.Generic;
-	using System.Data;
-	using System.Globalization;
-	using System.IO;
 	using System.Net;
 
 	using global::NUnit.Framework;
 
 	using kCura.Relativity.ImportAPI;
 
-	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 
 	public abstract class ImportJobTestBase : IDisposable
@@ -117,12 +112,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ImportAPI = new ImportAPI(AssemblySetup.TestParameters.RelativityWebApiUrl.ToString());
 		}
 
-		protected void GivenTheDatasetPathToImport(DataTable table, string file)
-		{
-			string uniqueControlId = $"{Path.GetFileName(file)} - {this.Timestamp.Ticks}";
-			table.Rows.Add(uniqueControlId, file);
-		}
-
 		protected void ThenTheImportJobIsSuccessful(int expectedTotalRows)
 		{
 			Assert.That(this.TestJobResult.ErrorRows, Has.Count.Zero);
@@ -156,25 +145,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			Assert.That(this.TestJobResult.JobFatalExceptions, Has.Count.Zero);
 			Assert.That(this.TestJobResult.CompletedJobReport.FatalException, Is.Null);
-		}
-
-		protected List<string> GetRandomTextFiles(int maxFiles, bool includeReadOnlyFiles)
-		{
-			var files = new List<string>();
-			const int MinTestFileLength = 1024;
-			const int MaxTestFileLength = 10 * MinTestFileLength;
-			for (var i = 0; i < maxFiles; i++)
-			{
-				string file = RandomHelper.NextTextFile(
-					MinTestFileLength,
-					MaxTestFileLength,
-					this.TempDirectory.Directory,
-					includeReadOnlyFiles && i % 2 == 0);
-
-				files.Add(file);
-			}
-
-			return files;
 		}
 	}
 }

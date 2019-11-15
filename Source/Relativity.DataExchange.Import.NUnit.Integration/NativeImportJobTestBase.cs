@@ -12,9 +12,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
-	using System.Data;
-	using System.Data.Common;
-	using System.Globalization;
 	using System.Text;
 
 	using global::NUnit.Framework;
@@ -46,28 +43,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		protected static DataTable GivenDefaultNativeTable()
+		protected void WhenExecutingTheJob<T>(IEnumerable<T> importData)
 		{
-			var table = new DataTable { Locale = CultureInfo.InvariantCulture };
-			table.Columns.Add(WellKnownFields.ControlNumber, typeof(string));
-			table.Columns.Add(WellKnownFields.FilePath, typeof(string));
-			return table;
-		}
-
-		protected DbDataReader GivenDbDataReaderForNativeTable(DataTable table, List<string> files)
-		{
-			foreach (string file in files)
+			using (var dataReader = new EnumerableDataReader<T>(importData))
 			{
-				this.GivenTheDatasetPathToImport(table, file);
+				this.importJob.SourceData.SourceData = dataReader;
+				this.importJob.Execute();
 			}
 
-			return table.CreateDataReader();
-		}
-
-		protected void WhenExecutingTheJob(IDataReader reader)
-		{
-			this.importJob.SourceData.SourceData = reader;
-			this.importJob.Execute();
 			Console.WriteLine("Import API elapsed time: {0}", this.TestJobResult.CompletedJobReport.EndTime - this.TestJobResult.CompletedJobReport.StartTime);
 		}
 

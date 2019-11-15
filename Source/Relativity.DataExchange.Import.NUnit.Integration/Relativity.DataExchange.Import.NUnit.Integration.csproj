@@ -140,6 +140,7 @@
     </Content>
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="Authentication\IntegratedAuthenticationTests.cs" />
+    <Compile Include="Dto\DefaultImportDto.cs" />
     <Compile Include="FileLockedImportJobTests.cs" />
     <Compile Include="FileNotFoundImportJobTests.cs" />
     <Compile Include="ImportJobTestBase.cs" />
