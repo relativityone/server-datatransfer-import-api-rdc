@@ -165,6 +165,7 @@
     <Compile Include="Monitoring\Sinks\MetricServiceTest.cs" />
     <Compile Include="Monitoring\Sinks\MetricSinkApmTest.cs" />
     <Compile Include="Monitoring\Sinks\MetricSinkSumTest.cs" />
+    <Compile Include="Monitoring\Sinks\SumMetricFormatterTest.cs" />
     <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
     <Compile Include="UrlHelperTests.cs" />
     <Compile Include="SerializationTests.cs" />

@@ -3,6 +3,7 @@ Imports System.Threading
 Imports System.Threading.Tasks
 
 Imports kCura.WinEDDS.Api
+Imports Monitoring
 
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Data
@@ -442,6 +443,8 @@ Namespace kCura.WinEDDS
 
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
 			_enforceDocumentLimit = enforceDocumentLimit
+
+			Statistics.ImportObjectType = CType(IIf(args.ArtifactTypeID = ArtifactType.Document, TelemetryConstants.ImportObjectType.Native, TelemetryConstants.ImportObjectType.Objects),TelemetryConstants.ImportObjectType)
 
 			ShouldImport = True
 			If (String.IsNullOrEmpty(args.OverwriteDestination)) Then

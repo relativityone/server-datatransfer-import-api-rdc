@@ -1,4 +1,5 @@
-﻿Imports Relativity.DataExchange.Transfer
+﻿Imports Relativity.DataExchange.Service
+Imports Relativity.DataExchange.Transfer
 
 Namespace Monitoring
 	Public MustInherit Class MetricJobBase
@@ -8,12 +9,12 @@ Namespace Monitoring
 		''' Gets or sets job type - Import or Export.
 		''' </summary>
 		''' <returns>Job type</returns>
-		Public Property JobType As String
+		Public Property TransferDirection As TelemetryConstants.TransferDirection
 			Get
-				Return GetValueOrDefault(Of String)(TelemetryConstants.KeyName.JOB_TYPE)
+				Return GetValueOrDefault(Of TelemetryConstants.TransferDirection)(TelemetryConstants.KeyName.TRANSFER_DIRECTION)
 			End Get
 			Set
-				CustomData.Item(TelemetryConstants.KeyName.JOB_TYPE) = Value
+				CustomData.Item(TelemetryConstants.KeyName.TRANSFER_DIRECTION) = Value
 			End Set
 		End Property
 
@@ -53,6 +54,19 @@ Namespace Monitoring
 			End Get
 			Set
 				CustomData.Item(TelemetryConstants.KeyName.USE_OLD_EXPORT) = Value
+			End Set
+		End Property
+
+		''' <summary>
+		''' Gets or sets type of imported objects.
+		''' </summary>
+		''' <returns>Bulk import objects type.</returns>
+		Public Property ImportObjectType As TelemetryConstants.ImportObjectType
+			Get
+				Return GetValueOrDefault (Of TelemetryConstants.ImportObjectType)(TelemetryConstants.KeyName.IMPORT_OBJECT_TYPE)
+			End Get
+			Set
+				CustomData.Item(TelemetryConstants.KeyName.IMPORT_OBJECT_TYPE) = Value
 			End Set
 		End Property
 	End Class

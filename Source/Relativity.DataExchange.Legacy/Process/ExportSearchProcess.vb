@@ -22,7 +22,7 @@ Namespace kCura.WinEDDS
 		Private _hasErrors As Boolean
 		Private _tapiClient As TapiClient = TapiClient.None
 
-		Protected Overrides ReadOnly Property JobType As String = "Export"
+		Protected Overrides ReadOnly Property TransferDirection As TelemetryConstants.TransferDirection = TelemetryConstants.TransferDirection.Export
 
 		Protected Overrides ReadOnly Property TapiClient As TapiClient
 			Get

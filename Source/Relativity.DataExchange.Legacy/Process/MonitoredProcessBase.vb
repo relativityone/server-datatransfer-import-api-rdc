@@ -17,7 +17,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Property JobGuid As System.Guid = System.Guid.NewGuid()
 	Protected Property StartTime As System.DateTime
 	Protected Property EndTime As System.DateTime
-	Protected MustOverride ReadOnly Property JobType As String
+	Protected MustOverride ReadOnly Property TransferDirection As TelemetryConstants.TransferDirection
 	Protected MustOverride ReadOnly Property Statistics As Statistics
 	Protected ReadOnly Property MetricService() As IMetricService
 	Protected _hasFatalErrorOccured As Boolean
@@ -73,7 +73,7 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected Overridable Sub OnFatalError()
 		OnJobEndWithStatus(TelemetryConstants.JobStatus.Failed)
-		Me.Context.PublishStatusEvent("", $"{JobType} aborted")
+		Me.Context.PublishStatusEvent("", $"{TransferDirection} aborted")
 	End Sub
 
 	Protected Overridable Sub OnSuccess()
@@ -98,9 +98,10 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected Sub SendMetricJobStarted()
 		If Not _jobStartedMetricSent And TapiClient <> TapiClient.None Then
-			Dim message As MetricJobStarted = New MetricJobStarted
-			BuildMetricBase(message)
-			MetricService.Log(message)
+			Dim metric As MetricJobStarted = New MetricJobStarted
+			metric.ImportObjectType = Statistics.ImportObjectType
+			BuildMetricBase(metric)
+			MetricService.Log(metric)
 			_jobStartedMetricSent = True
 		End If
 	End Sub
@@ -118,7 +119,8 @@ Public MustInherit Class MonitoredProcessBase
 				.CompletedRecords = completedRecordsCount,
 				.ThroughputBytesPerSecond = Statistics.CalculateThroughput(Statistics.TotalBytes, jobDuration),
 				.ThroughputRecordsPerSecond = Statistics.CalculateThroughput(completedRecordsCount, jobDuration),
-				.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(Statistics.DocumentsCreated + Statistics.DocumentsUpdated, Statistics.SqlTime/TimeSpan.TicksPerSecond)}
+				.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(Statistics.DocumentsCreated + Statistics.DocumentsUpdated, Statistics.SqlTime/TimeSpan.TicksPerSecond),
+				.ImportObjectType = Statistics.ImportObjectType}
 		BuildMetricBase(metric)
 		MetricService.Log(metric)
 	End Sub
@@ -131,12 +133,13 @@ Public MustInherit Class MonitoredProcessBase
 			If currentTime - _lastSendTime < _metricThrottling And checkThrottling Then Return
 			_lastSendTime = currentTime
 		End SyncLock
-		Dim message As MetricJobProgress = New MetricJobProgress With {
+		Dim metric As MetricJobProgress = New MetricJobProgress With {
 			.MetadataThroughputBytesPerSecond = statistics.MetadataThroughput,
 			.FileThroughputBytesPerSecond = statistics.FileThroughput,
-			.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.SqlTime/TimeSpan.TicksPerSecond)}
-		BuildMetricBase(message)
-		MetricService.Log(message)
+			.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.SqlTime/TimeSpan.TicksPerSecond),
+			.ImportObjectType = statistics.ImportObjectType}
+		BuildMetricBase(metric)
+		MetricService.Log(metric)
 	End Sub
 
 	''' <summary>
@@ -159,7 +162,7 @@ Public MustInherit Class MonitoredProcessBase
 	End Sub
 
 	Private Sub BuildMetricBase(metric As MetricJobBase)
-		metric.JobType = JobType
+		metric.TransferDirection = TransferDirection
 		metric.TransferMode = TapiClient
 		metric.CorrelationID = JobGuid.ToString()
 		metric.UseOldExport = Me.AppSettings.UseOldExport
