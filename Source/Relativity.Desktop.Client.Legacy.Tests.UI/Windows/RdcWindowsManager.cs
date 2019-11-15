@@ -41,10 +41,9 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			return rdcWindow;
 		}
 
-		public ImportDocumentLoadFileWindow SwitchToImportDocumentLoadFileWindow()
+		public RdoImportWindow SwitchToRdoImportWindow(RdoImportProfile profile)
 		{
-			return SwitchToWindow(RdcWindowName.ImportDocumentLoadFile,
-				x => new ImportDocumentLoadFileWindow(this, x));
+			return SwitchToWindow(profile.ImportWindow,x => new RdoImportWindow(this, x, profile));
 		}
 
 		public ExportWindow SwitchToExportWindow(ExportProfile profile)
@@ -52,9 +51,9 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			return SwitchToWindow(profile.ExportWindow, x => new ExportWindow(this, x, profile));
 		}
 
-		public ImportLoadFileWindow SwitchToImportWindow(ImportProfile profile)
+		public ImageImportWindow SwitchToImageImportWindow(ImageImportProfile profile)
 		{
-			return SwitchToWindow(profile.ImportWindow, x => new ImportLoadFileWindow(this, x, profile));
+			return SwitchToWindow(profile.ImportWindow, x => new ImageImportWindow(this, x, profile));
 		}
 
 		public DialogWindow GetRdcConfirmationDialog()

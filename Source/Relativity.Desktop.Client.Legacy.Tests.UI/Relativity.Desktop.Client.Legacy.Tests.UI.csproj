@@ -82,7 +82,7 @@
     <Compile Include="Appium\TreeUIElement.cs" />
     <Compile Include="Appium\Wait.cs" />
     <Compile Include="Appium\WindowDetails.cs" />
-    <Compile Include="Windows\ImportLoadFileWindow.cs" />
+    <Compile Include="Windows\ImageImportWindow.cs" />
     <Compile Include="Windows\Names\ImportWindowName.cs" />
     <Compile Include="Windows\OpenSettingsDialog.cs" />
     <Compile Include="Workflow\ExportProfile.cs" />
@@ -101,7 +101,7 @@
     <Compile Include="Windows\ChooseLoadFileDialog.cs" />
     <Compile Include="Windows\ExportWindow.cs" />
     <Compile Include="Workflow\ExportWindowSetupParameters.cs" />
-    <Compile Include="Windows\ImportDocumentLoadFileWindow.cs" />
+    <Compile Include="Windows\RdoImportWindow.cs" />
     <Compile Include="ImportTests.cs" />
     <Compile Include="Windows\ProgressWindow.cs" />
     <Compile Include="Windows\LoginWindow.cs" />
@@ -119,8 +119,11 @@
     <Compile Include="Windows\Names\RdcWindowName.cs" />
     <Compile Include="Appium\WindowsManager.cs" />
     <Compile Include="Windows\SelectWorkspaceWindow.cs" />
+    <Compile Include="Workflow\ImageImportProfile.cs" />
     <Compile Include="Workflow\ImportProfile.cs" />
-    <Compile Include="Workflow\ImportWindowSetupParameters.cs" />
+    <Compile Include="Workflow\ImageImportWindowSetupParameters.cs" />
+    <Compile Include="Workflow\RdoImportProfile.cs" />
+    <Compile Include="Workflow\RdoImportWindowSetupParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Relativity.DataExchange.Core\Relativity.DataExchange.Core.csproj">

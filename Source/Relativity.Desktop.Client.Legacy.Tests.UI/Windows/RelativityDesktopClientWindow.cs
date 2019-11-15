@@ -23,25 +23,29 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			rootFolder.Click();
 		}
 
-		public ImportDocumentLoadFileWindow ImportDocumentLoadFile()
+		public RdoImportWindow ImportDocumentLoadFile()
 		{
-			menuBar.ClickMenuItem("Tools").ClickMenuItem("Import")
-				.ClickMenuItem("Document Load File...");
-			return WindowsManager.SwitchToImportDocumentLoadFileWindow();
+			ClickImportMenuItem("Document Load File...");
+			return WindowsManager.SwitchToRdoImportWindow(RdoImportProfile.DocumentLoadFile);
 		}
 
-		public ImportLoadFileWindow ImportProductionLoadFile()
+		public ImageImportWindow ImportProductionLoadFile()
 		{
-			menuBar.ClickMenuItem("Tools").ClickMenuItem("Import")
-				.ClickMenuItem("Production Load File...");
-			return WindowsManager.SwitchToImportWindow(ImportProfile.ProductionSet);
+			ClickImportMenuItem("Production Load File...");
+			return WindowsManager.SwitchToImageImportWindow(ImageImportProfile.ProductionLoadFile);
 		}
 
-		public ImportLoadFileWindow ImportImageLoadFile()
+		public ImageImportWindow ImportImageLoadFile()
 		{
-			menuBar.ClickMenuItem("Tools").ClickMenuItem("Import")
-				.ClickMenuItem("Image Load File...");
-			return WindowsManager.SwitchToImportWindow(ImportProfile.ImageLoadFile);
+			ClickImportMenuItem("Image Load File...");
+			return WindowsManager.SwitchToImageImportWindow(ImageImportProfile.ImageLoadFile);
+		}
+
+		public RdoImportWindow ImportImagingProfileObjects()
+		{
+			SelectObjectType("Imaging Profile");
+			ClickImportMenuItem("Imaging Profile Load File...");
+			return WindowsManager.SwitchToRdoImportWindow(RdoImportProfile.ImagingProfileLoadFile);
 		}
 
 		public ExportWindow ExportFolderAndSubfolders()
@@ -54,6 +58,13 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		{
 			ClickExportMenuItem("Saved Search...");
 			return WindowsManager.SwitchToExportWindow(ExportProfile.ExportSavedSearch);
+		}
+
+		public ExportWindow ExportProductionSet()
+		{
+			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export")
+				.ClickMenuItem("Production Set...");
+			return WindowsManager.SwitchToExportWindow(ExportProfile.ProductionSet);
 		}
 
 		public ExportWindow ExportImagingProfileObjects()
@@ -73,11 +84,9 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export").ClickMenuItem(name);
 		}
 
-		public ExportWindow ExportProductionSet()
+		private void ClickImportMenuItem(string name)
 		{
-			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export")
-				.ClickMenuItem("Production Set...");
-			return WindowsManager.SwitchToExportWindow(ExportProfile.ProductionSet);
+			menuBar.ClickMenuItem("Tools").ClickMenuItem("Import").ClickMenuItem(name);
 		}
 	}
 }

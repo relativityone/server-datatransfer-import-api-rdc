@@ -3,18 +3,18 @@ using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
-	internal sealed class ImportLoadFileWindow : RdcWindowBase<ImportLoadFileWindow>
+	internal sealed class ImageImportWindow : RdcWindowBase<ImageImportWindow>
 	{
 		private readonly EditUIElement filePathEdit;
 		private readonly MenuItemUIElement menuBar;
 		private readonly OpenSettingsDialog openSettingsDialog;
 		private readonly ComboBoxUIElement overwriteComboBox;
 		private readonly ComboBoxUIElement productionComboBox;
-		private readonly ImportProfile profile;
+		private readonly ImageImportProfile profile;
 
-		public ImportLoadFileWindow(RdcWindowsManager windowsManager,
+		public ImageImportWindow(RdcWindowsManager windowsManager,
 			WindowDetails window,
-			ImportProfile profile) :
+			ImageImportProfile profile) :
 			base(windowsManager, window)
 		{
 			this.profile = profile;
@@ -26,7 +26,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			openSettingsDialog = new OpenSettingsDialog(FindWindow("Open"));
 		}
 
-		public void SetupImport(ImportWindowSetupParameters parameters)
+		public void SetupImport(ImageImportWindowSetupParameters parameters)
 		{
 			LoadSettings(parameters);
 			SetImportFilePath(parameters.ImportFilePath);
@@ -46,7 +46,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			return WindowsManager.SwitchToProgressWindow(profile.ProgressWindow);
 		}
 
-		private void LoadSettings(ImportWindowSetupParameters parameters)
+		private void LoadSettings(ImageImportWindowSetupParameters parameters)
 		{
 			if (!string.IsNullOrEmpty(parameters.SettingsFilePath))
 			{
@@ -60,7 +60,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			filePathEdit.SetText(path);
 		}
 
-		private void SetOverwriteMode(ImportWindowSetupParameters parameters)
+		private void SetOverwriteMode(ImageImportWindowSetupParameters parameters)
 		{
 			if (!string.IsNullOrEmpty(parameters.OverwriteMode))
 			{
@@ -68,7 +68,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			}
 		}
 
-		private void SetProduction(ImportWindowSetupParameters parameters)
+		private void SetProduction(ImageImportWindowSetupParameters parameters)
 		{
 			if (!string.IsNullOrEmpty(parameters.ProductionName))
 			{
