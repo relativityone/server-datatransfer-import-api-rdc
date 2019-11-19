@@ -1,5 +1,7 @@
+Imports System.ComponentModel
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Process
+Imports Relativity.Logging
 
 Namespace Relativity.Desktop.Client
 	Public Class ProcessForm
@@ -342,8 +344,14 @@ End Sub
 
 #End Region
 
+		Public Sub New(ByRef logger As ILog)
+			Me.New()
+			Me._logger = logger
+		End Sub
+
 		Protected _processId As Guid
 		Protected WithEvents _processContext As ProcessContext
+		Private ReadOnly _logger As ILog = New NullLogger()
 		Private Property FatalException As System.Exception
 		Private _inSafeMode As Boolean
 		Private _errorsDataSource As System.Data.DataTable
@@ -480,19 +488,27 @@ End Sub
 #Region " Process Observer"
 
 		Private Sub _processContext_OnProcessEvent(ByVal sender As Object, ByVal e As ProcessEventArgs) Handles _processContext.ProcessEvent
-			If Not _hasClickedStop Then _currentRecordLabel.Text = e.RecordInfo
-			_currentMessageStatus.Text = e.Message
-			Select Case e.EventType
-				Case ProcessEventType.Status
-					_outputTextBox.WriteLine(e.Message + " " + e.RecordInfo)
-					If e.Message.ToLower = "cancel import" Then _cancelled = True
-				Case ProcessEventType.Error
-					_errorsOutputTextBox.WriteLine(e.Message)
-				Case ProcessEventType.Warning
-					_warningsOutputTextBox.WriteLine(e.Message)
-			End Select
-		End Sub
+			If e.EventType = ProcessEventType.Status AndAlso e.Message.ToLower = "cancel import" Then
+				_cancelled = True
+			End If
 
+			Try
+				If Not _hasClickedStop Then _currentRecordLabel.Text = e.RecordInfo
+				_currentMessageStatus.Text = e.Message
+				Select Case e.EventType
+					Case ProcessEventType.Status
+						_outputTextBox.WriteLine(e.Message + " " + e.RecordInfo)
+					Case ProcessEventType.Error
+						_errorsOutputTextBox.WriteLine(e.Message)
+					Case ProcessEventType.Warning
+						_warningsOutputTextBox.WriteLine(e.Message)
+				End Select
+			Catch ex As Win32Exception ' This exception is most likely caused by cross thread calls to UI elements Win32Exception
+				'We decided to ignore that exception while working on REL-378780
+				_logger.LogError(ex, "Exception occured while handling process event: {@e}", e)
+			End Try
+		End Sub
+		
 		Private Function GetTimeSpanString(ByVal ts As System.TimeSpan) As String
 			Dim retval As String = ts.ToString
 			If retval.IndexOf(".") <> -1 Then
