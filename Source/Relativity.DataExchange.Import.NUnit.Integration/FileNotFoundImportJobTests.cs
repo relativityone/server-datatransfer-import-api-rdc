@@ -45,7 +45,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 
 			this.GivenTheImportJob();
-			this.GivenDefaultNativeDocumentImportJob();
+			this.GiveNativeFilePathSourceDocumentImportJob();
 
 			// Intentionally provide an invalid file before adding valid ones.
 			const int NumberOfFilesToImport = 5;

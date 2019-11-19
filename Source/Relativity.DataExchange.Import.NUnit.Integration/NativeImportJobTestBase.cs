@@ -22,24 +22,24 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	public abstract class NativeImportJobTestBase : ImportJobTestBase
 	{
-		private ImportBulkArtifactJob importJob;
+		protected ImportBulkArtifactJob ImportJob { get; set; }
 
 		[SetUp]
 		public void SetupNative()
 		{
-			this.importJob = null;
+			this.ImportJob = null;
 		}
 
 		[TearDown]
 		public void TeardownNative()
 		{
-			if (this.importJob != null)
+			if (this.ImportJob != null)
 			{
-				this.importJob.OnError -= this.ImportJob_OnError;
-				this.importJob.OnFatalException -= this.ImportJob_OnFatalException;
-				this.importJob.OnMessage -= this.ImportJob_OnMessage;
-				this.importJob.OnComplete -= this.ImportJob_OnComplete;
-				this.importJob.OnProgress -= this.ImportJob_OnProgress;
+				this.ImportJob.OnError -= this.ImportJob_OnError;
+				this.ImportJob.OnFatalException -= this.ImportJob_OnFatalException;
+				this.ImportJob.OnMessage -= this.ImportJob_OnMessage;
+				this.ImportJob.OnComplete -= this.ImportJob_OnComplete;
+				this.ImportJob.OnProgress -= this.ImportJob_OnProgress;
 			}
 		}
 
@@ -47,8 +47,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			using (var dataReader = new EnumerableDataReader<T>(importData))
 			{
-				this.importJob.SourceData.SourceData = dataReader;
-				this.importJob.Execute();
+				this.ImportJob.SourceData.SourceData = dataReader;
+				this.ImportJob.Execute();
 			}
 
 			Console.WriteLine("Import API elapsed time: {0}", this.TestJobResult.CompletedJobReport.EndTime - this.TestJobResult.CompletedJobReport.StartTime);
@@ -56,27 +56,36 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		protected void GivenDefaultNativeDocumentImportJob()
 		{
-			this.importJob = this.ImportAPI.NewNativeDocumentImportJob();
-			this.importJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();
-			this.importJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
+			this.ImportJob = this.ImportAPI.NewNativeDocumentImportJob();
+			this.ImportJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();
+			this.ImportJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
 
-			this.importJob.Settings.ExtractedTextFieldContainsFilePath = false;
-			this.importJob.Settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
-			this.importJob.Settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
-			this.importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
-			this.importJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
-			this.importJob.Settings.OIFileIdMapped = true;
-			this.importJob.Settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
-			this.importJob.Settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
-			this.importJob.Settings.ExtractedTextEncoding = Encoding.Unicode;
-			this.importJob.Settings.FileSizeMapped = true;
-			this.importJob.Settings.FileSizeColumn = WellKnownFields.NativeFileSize;
+			this.ImportJob.Settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
+			this.ImportJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
 
-			this.importJob.OnError += this.ImportJob_OnError;
-			this.importJob.OnFatalException += this.ImportJob_OnFatalException;
-			this.importJob.OnMessage += this.ImportJob_OnMessage;
-			this.importJob.OnComplete += this.ImportJob_OnComplete;
-			this.importJob.OnProgress += this.ImportJob_OnProgress;
+			this.ImportJob.Settings.ExtractedTextFieldContainsFilePath = false;
+			this.ImportJob.Settings.ExtractedTextEncoding = Encoding.Unicode;
+
+			this.ImportJob.OnError += this.ImportJob_OnError;
+			this.ImportJob.OnFatalException += this.ImportJob_OnFatalException;
+			this.ImportJob.OnMessage += this.ImportJob_OnMessage;
+			this.ImportJob.OnComplete += this.ImportJob_OnComplete;
+			this.ImportJob.OnProgress += this.ImportJob_OnProgress;
+		}
+
+		protected void GiveNativeFilePathSourceDocumentImportJob()
+		{
+			this.GivenDefaultNativeDocumentImportJob();
+
+			this.ImportJob.Settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
+			this.ImportJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
+
+			this.ImportJob.Settings.OIFileIdMapped = true;
+			this.ImportJob.Settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
+			this.ImportJob.Settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
+
+			this.ImportJob.Settings.FileSizeMapped = true;
+			this.ImportJob.Settings.FileSizeColumn = WellKnownFields.NativeFileSize;
 		}
 
 		private void ImportJob_OnComplete(JobReport jobReport)

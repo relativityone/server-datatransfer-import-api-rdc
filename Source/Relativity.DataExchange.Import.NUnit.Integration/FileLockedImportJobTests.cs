@@ -45,7 +45,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 
 			this.GivenTheImportJob();
-			this.GivenDefaultNativeDocumentImportJob();
+			this.GiveNativeFilePathSourceDocumentImportJob();
 
 			const int NumberOfFilesToImport = 5;
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport)

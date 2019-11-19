@@ -41,7 +41,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 
 			this.GivenTheImportJob();
-			this.GivenDefaultNativeDocumentImportJob();
+			this.GiveNativeFilePathSourceDocumentImportJob();
 
 			const int NumberOfFilesToImport = 5;
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport);
@@ -53,6 +53,31 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(NumberOfFilesToImport);
 			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
 			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport));
+		}
+
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[Category(TestCategories.TransferApi)]
+		[IdentifiedTest("b9b6897f-ea3f-4694-80d2-db0852938789")]
+		[Test]
+		public void ShouldImportFolders()
+		{
+			ForceClient(TapiClient.Direct);
+
+			this.GivenTheImportJob();
+			this.GivenDefaultNativeDocumentImportJob();
+			this.ImportJob.Settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
+
+			const int NumberOfDocumentsToImport = 2000;
+			IEnumerable<FolderImportDto> importData = FolderImportDto.GetRandomFolders(NumberOfDocumentsToImport, 100, 25, 100, 255, 15);
+
+			// ACT
+			this.WhenExecutingTheJob(importData);
+
+			// ASSERT
+			this.ThenTheImportJobIsSuccessful(NumberOfDocumentsToImport);
+			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
+			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfDocumentsToImport));
 		}
 	}
 }

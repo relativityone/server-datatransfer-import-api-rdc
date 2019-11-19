@@ -79,7 +79,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = true;
 
 			this.GivenTheImportJobWithIntegratedAuthentication();
-			this.GivenDefaultNativeDocumentImportJob();
+			this.GiveNativeFilePathSourceDocumentImportJob();
 
 			await ChangeStateOfIntegratedAuthentication(true).ConfigureAwait(false);
 			await UsersHelper.SwitchIntegratedAuthenticationForCurrentUser(AssemblySetup.TestParameters, isEnabled: true).ConfigureAwait(false);
