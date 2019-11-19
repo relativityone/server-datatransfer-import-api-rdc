@@ -1,4 +1,4 @@
-﻿// <copyright file="ExporterTestJobResult.cs" company="Relativity ODA LLC">
+﻿// <copyright file="ExportTestJobResult.cs" company="Relativity ODA LLC">
 // © Relativity All Rights Reserved.
 // </copyright>
 
@@ -8,7 +8,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 	using Relativity.DataExchange.Transfer;
 
-	public class ExporterTestJobResult
+	public class ExportTestJobResult
 	{
 		public List<string> Alerts { get; } = new List<string>();
 

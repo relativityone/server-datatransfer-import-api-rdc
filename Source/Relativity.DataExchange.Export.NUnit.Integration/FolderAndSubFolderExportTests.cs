@@ -25,7 +25,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	[Feature.DataTransfer.RelativityDesktopClient.Export]
 	[Category(TestCategories.Export)]
 	[Category(TestCategories.Integration)]
-	public class FolderAndSubFolderExportTests : ExporterTestBase
+	public class FolderAndSubFolderExportTests : ExportTestBase
 	{
 		[IdentifiedTest("3B50E3A9-0A28-4FA4-9ACD-5FB878DEF97A")]
 		[TestCase(false)]
@@ -40,7 +40,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(ExporterTestData.AllSampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.SampleFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
@@ -57,7 +57,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(ExporterTestData.AllSampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.SampleFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
@@ -73,7 +73,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(ExporterTestData.AllSampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.SampleFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
@@ -107,7 +107,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(ExporterTestData.AllSampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.SampleFiles.Count());
 			this.ThenTheMockFileShareSettingsServiceIsVerified();
 		}
 
@@ -162,7 +162,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 					new ObjectExportInfo
 						{
 							ArtifactID = 1,
-							NativeSourceLocation = $"{ExporterTestData.DummyUncPath}{Guid.NewGuid()}.doc",
+							NativeSourceLocation = $"{TestData.DummyUncPath}{Guid.NewGuid()}.doc",
 							NativeFileGuid = System.Guid.NewGuid().ToString(),
 						},
 					destinationLocation: null)
@@ -173,7 +173,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 					new ObjectExportInfo
 						{
 							ArtifactID = 2,
-							NativeSourceLocation = $"{ExporterTestData.DummyUncPath}{Guid.NewGuid()}.msg",
+							NativeSourceLocation = $"{TestData.DummyUncPath}{Guid.NewGuid()}.msg",
 							NativeFileGuid = System.Guid.NewGuid().ToString(),
 						},
 					fileFieldArtifactId: 2,
@@ -191,7 +191,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 							new ObjectExportInfo
 								{
 									ArtifactID = 3,
-									NativeSourceLocation = $"{ExporterTestData.DummyUncPath}{Guid.NewGuid()}.txt",
+									NativeSourceLocation = $"{TestData.DummyUncPath}{Guid.NewGuid()}.txt",
 									NativeFileGuid = null,
 								},
 							fieldArtifactId: 3,

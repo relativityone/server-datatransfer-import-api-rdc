@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------
-// <copyright file="GoldPathExporterTests.cs" company="Relativity ODA LLC">
+// <copyright file="PositiveExportTests.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
@@ -24,7 +24,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	[Feature.DataTransfer.RelativityDesktopClient.Export]
 	[Category(TestCategories.Export)]
 	[Category(TestCategories.Integration)]
-	public class GoldPathExporterTests : ExporterTestBase
+	public class PositiveExportTests : ExportTestBase
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
 		private static readonly ExportTypeDto[] ExportTypes =
@@ -123,7 +123,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			// ASSERT
 			// TODO REL-369935 add much better validation for each of the results.
-			this.ThenTheExportJobIsSuccessful(ExporterTestData.AllSampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.SampleFiles.Count());
 		}
 	}
 }

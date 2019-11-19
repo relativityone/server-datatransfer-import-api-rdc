@@ -140,11 +140,12 @@
     </Content>
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="Authentication\IntegratedAuthenticationTests.cs" />
+    <Compile Include="Dto\DefaultImportDto.cs" />
     <Compile Include="FileLockedImportJobTests.cs" />
     <Compile Include="FileNotFoundImportJobTests.cs" />
-    <Compile Include="ImportJobTest.cs" />
-    <Compile Include="TestBase.cs" />
     <Compile Include="ImportJobTestBase.cs" />
+    <Compile Include="ImportTestJobResult.cs" />
+    <Compile Include="NativeImportJobTestBase.cs" />
     <Compile Include="PositiveImportJobTests.cs" />
     <Content Include="LogConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -155,33 +156,6 @@
     <Compile Include="GlobalSuppressions.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="Resources\Docs\EDRM-Sample10.wmf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Docs\EDRM-Sample5.htm">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Docs\EDRM-Sample6.emf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Docs\EDRM-Sample8.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Docs\EDRM-Sample9.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Images\EDRM-Sample-000001.tif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Images\EDRM-Sample1.tif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Images\EDRM-Sample2.tif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Images\EDRM-Sample3.tif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\buildtools\stylecop.json">
@@ -190,21 +164,6 @@
     <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="paket.references" />
-    <None Include="Resources\Docs\EDRM-Sample1.pdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Docs\EDRM-Sample2.doc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Docs\EDRM-Sample3.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Docs\EDRM-Sample4.msg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Docs\EDRM-Sample7.ppt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\buildtools\CustomDictionary.xml">
@@ -595,4 +554,5 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
 </Project>

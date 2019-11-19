@@ -94,10 +94,9 @@ namespace Relativity.DataExchange.TestFramework
 			return folderPath;
 		}
 
-		public static IList<string> GetResourceFolderFiles(string folder)
+		public static IEnumerable<string> GetResourceFolderFiles(string folder)
 		{
-			return Directory.GetFiles(GetResourceFolderDirectory(folder), "*", SearchOption.AllDirectories)
-				.ToList();
+			return Directory.EnumerateFiles(GetResourceFolderDirectory(folder), "*", SearchOption.AllDirectories);
 		}
 
 		public static string GetResourceFilePath(string folder, string fileName)
