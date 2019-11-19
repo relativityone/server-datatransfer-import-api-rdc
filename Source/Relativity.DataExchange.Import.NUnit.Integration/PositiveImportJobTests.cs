@@ -62,6 +62,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Test]
 		public void ShouldImportFolders()
 		{
+			// ARRANGE
 			ForceClient(TapiClient.Direct);
 
 			this.GivenTheImportJob();

@@ -63,9 +63,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ImportJob.Settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
 			this.ImportJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
 
-			this.ImportJob.Settings.ExtractedTextFieldContainsFilePath = false;
-			this.ImportJob.Settings.ExtractedTextEncoding = Encoding.Unicode;
-
 			this.ImportJob.OnError += this.ImportJob_OnError;
 			this.ImportJob.OnFatalException += this.ImportJob_OnFatalException;
 			this.ImportJob.OnMessage += this.ImportJob_OnMessage;
