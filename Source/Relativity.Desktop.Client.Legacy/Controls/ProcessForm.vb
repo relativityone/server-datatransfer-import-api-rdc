@@ -354,12 +354,8 @@ End Sub
 		Private ReadOnly _logger As ILog = New NullLogger()
 		Private Property FatalException As System.Exception
 		Private _inSafeMode As Boolean
-		Private _errorsDataSource As System.Data.DataTable
-		Private _exportErrorFileLocation As String = ""
 		Private _hasReceivedFatalError As Boolean = False
-		Private _hasExportedErrors As Boolean = False
 		Private _statusBarPopupText As String = ""
-		Private _errorFilesExtension As String = "CSV"
 		Private _hasClickedStop As Boolean = False
 		Private _summaryString As System.Text.StringBuilder
 		Private _cancelled As Boolean = False
@@ -375,14 +371,7 @@ End Sub
 			End Set
 		End Property
 
-		Public Property ErrorFileExtension() As String
-			Get
-				Return _errorFilesExtension
-			End Get
-			Set(ByVal value As String)
-				_errorFilesExtension = value
-			End Set
-		End Property
+		Public Property ErrorFileExtension() As String = "CSV"
 		Public Property ProcessID() As Guid
 			Get
 				Return _processId
@@ -623,12 +612,6 @@ End Sub
 				If e.ExportFilePath <> "" Then
 					ShowWarningPopup = False
 					_exportErrorFileButton.Visible = True
-					Try
-						Dim x As New System.Guid(e.ExportFilePath)
-						If System.IO.File.Exists(e.ExportFilePath) Then _exportErrorFileLocation = e.ExportFilePath
-					Catch
-						_exportErrorFileLocation = e.ExportFilePath
-					End Try
 					If MsgBox("Errors have occurred. Export error files?", MsgBoxStyle.OkCancel, "Relativity Desktop Client") = MsgBoxResult.Ok Then
 						If e.ExportLog Then
 							Me.ExportErrorFiles()
@@ -732,7 +715,7 @@ End Sub
 
 		Private Sub _exportErrorFileButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportErrorFileButton.Click
 			_exportErrorsDialog.FileName = ""
-			Dim errorFileExtension As String = _errorFilesExtension.ToLower.TrimStart("."c)
+			Dim errorFileExtension As String = Me.ErrorFileExtension.ToLower.TrimStart("."c)
 			_exportErrorsDialog.Filter = errorFileExtension.ToUpper & " Files|*." & errorFileExtension.ToLower & "|All Files|*.*"
 			_exportErrorsDialog.ShowDialog()
 			If Not _exportErrorsDialog.FileName Is Nothing AndAlso Not _exportErrorsDialog.FileName = "" Then
