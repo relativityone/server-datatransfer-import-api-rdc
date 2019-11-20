@@ -1,6 +1,6 @@
 #!groovy
 
-library 'SlackHelpers@3.0.0'
+library 'SlackHelpers@5.2.0-Trident'
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30']],
     parameters([
