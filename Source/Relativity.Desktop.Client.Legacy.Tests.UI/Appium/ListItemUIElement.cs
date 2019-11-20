@@ -14,7 +14,14 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		public override void Click()
 		{
-			textBox.Click();
+			if (textBox.Exists)
+			{
+				textBox.Click();
+			}
+			else
+			{
+				base.Click();
+			}
 		}
 	}
 }

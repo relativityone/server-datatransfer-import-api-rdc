@@ -75,5 +75,10 @@ namespace Relativity.DataExchange.TestFramework
 		/// The relativity image count.
 		/// </summary>
 		public const string RelativityImageCount = "relativity image count";
+
+		/// <summary>
+		/// The Extracted Text field.
+		/// </summary>
+		public const string ExtractedText = "Extracted Text";
 	}
 }

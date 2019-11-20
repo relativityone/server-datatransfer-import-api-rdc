@@ -16,6 +16,8 @@ namespace Relativity.DataExchange.TestFramework
 	using System.Net;
 	using System.Reflection;
 
+	using kCura.Relativity.ImportAPI;
+
 	using Newtonsoft.Json;
 
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
@@ -65,10 +67,7 @@ namespace Relativity.DataExchange.TestFramework
 
 			Console.WriteLine("Creating a test workspace...");
 			WorkspaceHelper.CreateTestWorkspace(parameters, Logger);
-			kCura.Relativity.ImportAPI.ImportAPI iapi = new kCura.Relativity.ImportAPI.ImportAPI(
-				parameters.RelativityUserName,
-				parameters.RelativityPassword,
-				parameters.RelativityWebApiUrl.ToString());
+			ImportAPI iapi = CreateImportApi(parameters);
 			IEnumerable<kCura.Relativity.ImportAPI.Data.Workspace> workspaces = iapi.Workspaces();
 			kCura.Relativity.ImportAPI.Data.Workspace workspace =
 				workspaces.FirstOrDefault(x => x.ArtifactID == parameters.WorkspaceId);
@@ -81,6 +80,26 @@ namespace Relativity.DataExchange.TestFramework
 			parameters.FileShareUncPath = workspace.DocumentPath;
 			Console.WriteLine($"Created {parameters.WorkspaceId} test workspace.");
 			return parameters;
+		}
+
+		/// <summary>
+		/// Creates ImportApi from the given integration test parameters.
+		/// Creates ImportApi from the given integration test parameters.
+		/// </summary>
+		/// <param name="parameters">
+		/// The integration test parameters.
+		/// </param>
+		/// <returns>
+		/// The <see cref="ImportAPI"/> instance.
+		/// </returns>
+		public static ImportAPI CreateImportApi(IntegrationTestParameters parameters)
+		{
+			parameters.ThrowIfNull(nameof(parameters));
+
+			return new ImportAPI(
+				parameters.RelativityUserName,
+				parameters.RelativityPassword,
+				parameters.RelativityWebApiUrl.ToString());
 		}
 
 		/// <summary>
