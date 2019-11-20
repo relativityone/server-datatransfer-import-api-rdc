@@ -38,27 +38,18 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[SetUp]
 		public void Setup()
 		{
-			AppSettings.Instance.IoErrorWaitTimeInSeconds = 0;
-			AppSettings.Instance.IoErrorNumberOfRetries = 0;
+			AppSettingsManager.Default(AppSettings.Instance);
 
 			kCura.WinEDDS.Config.ConfigSettings["BadPathErrorsRetry"] = false;
-			kCura.WinEDDS.Config.ConfigSettings["ForceWebUpload"] = false;
-			kCura.WinEDDS.Config.ConfigSettings["PermissionErrorsRetry"] = false;
 			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobRetryAttempts"] = 1;
-			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobParallelism"] = 1;
+			AppSettings.Instance.TapiMaxJobParallelism = 1;
 			kCura.WinEDDS.Config.ConfigSettings["TapiLogEnabled"] = true;
-			kCura.WinEDDS.Config.ConfigSettings["TapiSubmitApmMetrics"] = false;
-
+			AppSettings.Instance.TapiSubmitApmMetrics = false;
 			kCura.WinEDDS.Config.ConfigSettings["UsePipeliningForFileIdAndCopy"] = false;
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceAsperaClient"] = false;
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceFileShareClient"] = false;
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceHttpClient"] = false;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = false;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = false;
-
-			// Note: there's no longer a BCP sub-folder.
-			kCura.WinEDDS.Config.ConfigSettings["TapiAsperaBcpRootFolder"] = string.Empty;
-			kCura.WinEDDS.Config.ConfigSettings["TapiAsperaNativeDocRootLevels"] = 1;
+			AppSettings.Instance.IoErrorWaitTimeInSeconds = 0;
+			AppSettings.Instance.IoErrorNumberOfRetries = 0;
 
 			this.TempDirectory = new TempDirectory2();
 			this.TempDirectory.Create();
@@ -83,9 +74,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		protected static void ForceClient(TapiClient tapiClient)
 		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceAsperaClient"] = tapiClient == TapiClient.Aspera;
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceFileShareClient"] = tapiClient == TapiClient.Direct;
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceHttpClient"] = tapiClient == TapiClient.Web;
+			AppSettings.Instance.TapiForceAsperaClient = tapiClient == TapiClient.Aspera;
+			AppSettings.Instance.TapiForceFileShareClient = tapiClient == TapiClient.Direct;
+			AppSettings.Instance.TapiForceHttpClient = tapiClient == TapiClient.Web;
 		}
 
 		protected virtual void Dispose(bool disposing)
