@@ -142,8 +142,6 @@
     <Compile Include="Appium\TreeUIElement.cs" />
     <Compile Include="Appium\Wait.cs" />
     <Compile Include="Appium\WindowDetails.cs" />
-    <Compile Include="DataRowExtensions.cs" />
-    <Compile Include="DataTableExtensions.cs" />
     <Compile Include="Windows\ImageImportWindow.cs" />
     <Compile Include="Windows\Names\ImportWindowName.cs" />
     <Compile Include="Windows\OpenSettingsDialog.cs" />
