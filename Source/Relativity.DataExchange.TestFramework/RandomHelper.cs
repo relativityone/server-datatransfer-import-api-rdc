@@ -7,6 +7,7 @@
 namespace Relativity.DataExchange.TestFramework
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
@@ -376,6 +377,70 @@ namespace Relativity.DataExchange.TestFramework
 			}
 
 			return ret;
+		}
+
+		/// <summary>
+		/// Returns a non-negative random integer. The values are skewed towards the minValue.
+		/// </summary>
+		/// <param name="random">The random instance.</param>
+		/// <param name="minValue">The inclusive lower bound of the random number returned.</param>
+		/// <param name="maxValue">The exclusive upper bound of the random number returned. maxValue must be greater than or equal to minValue.</param>
+		/// <returns>A 32-bit signed integer greater than or equal to minValue and less than maxValue; that is, the range of return values includes minValue but not maxValue. If minValue equals maxValue, minValue is returned.</returns>
+		public static int NextBiased(this Random random, int minValue, int maxValue)
+		{
+			if (random == null)
+			{
+				throw new ArgumentNullException(nameof(random));
+			}
+
+			double biased = random.NextDouble() * random.NextDouble();
+			biased *= maxValue - minValue;
+			biased += minValue;
+
+			return (int)biased;
+		}
+
+		/// <summary>
+		/// Gets a random index of a list.
+		/// </summary>
+		/// <param name="random">The random instance.</param>
+		/// <param name="list">The list instance.</param>
+		/// <returns>Random index for the list.</returns>
+		public static int NextIndex(this Random random, IList list)
+		{
+			if (random == null)
+			{
+				throw new ArgumentNullException(nameof(random));
+			}
+
+			if (list == null)
+			{
+				throw new ArgumentNullException(nameof(list));
+			}
+
+			return random.Next(list.Count);
+		}
+
+		/// <summary>
+		/// Gets a random element of a list.
+		/// </summary>
+		/// <typeparam name="T">The type of elements in the list.</typeparam>
+		/// <param name="random">The random instance.</param>
+		/// <param name="list">The list instance.</param>
+		/// <returns>Random element from the list.</returns>
+		public static T NextElement<T>(this Random random, List<T> list)
+		{
+			if (random == null)
+			{
+				throw new ArgumentNullException(nameof(random));
+			}
+
+			if (list == null)
+			{
+				throw new ArgumentNullException(nameof(list));
+			}
+
+			return list[random.NextIndex(list)];
 		}
 	}
 }
