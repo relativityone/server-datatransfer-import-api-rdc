@@ -7,6 +7,7 @@
 namespace Relativity.DataExchange.Export.NUnit
 {
 	using System;
+	using System.IO;
 	using System.Linq;
 	using System.Threading;
 
@@ -14,7 +15,6 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Moq;
 
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
@@ -65,12 +65,12 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT
 			this.TapiBridge.Raise(
 				x => x.TapiProgress += null,
-				new TapiProgressEventArgs(firstFile, true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+				new TapiProgressEventArgs(firstFile, Path.Combine(@"C:\temp", firstFile), true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
 			// subscriber should not be notified on failed transfer
 			this.TapiBridge.Raise(
 				x => x.TapiProgress += null,
-				new TapiProgressEventArgs(secondFile, true, false, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+				new TapiProgressEventArgs(secondFile, Path.Combine(@"C:\temp", secondFile), true, false, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
 			// ASSERT
 
@@ -86,10 +86,6 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldAlwaysStopConverterAfterDownloadFinished()
 		{
 			// ARRANGE
-			bool currentStatus = true;
-
-			this.Instance.FileDownloadCompleted.Subscribe(status => currentStatus = status);
-
 			this.TapiBridge
 				.Setup(
 					x => x.WaitForTransfers(
@@ -101,24 +97,17 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT
 			this.Instance.QueueDownload(new TransferPath());
 			Assert.Throws<Exception>(() => this.Instance.WaitForTransfers());
-
-			// ASSERT
-			Assert.That(currentStatus, Is.False);
 		}
 
 		[Test]
 		public void ItShouldNotWaitForTapiTransfer()
 		{
 			// ARRANGE
-			bool currentStatus = true;
-
-			this.Instance.FileDownloadCompleted.Subscribe(status => currentStatus = status);
 
 			// ACT
 			this.Instance.WaitForTransfers();
 
 			// ASSERT
-			Assert.That(currentStatus);
 			this.TapiBridge.Verify(item => item.WaitForTransfers(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
 		}
 	}

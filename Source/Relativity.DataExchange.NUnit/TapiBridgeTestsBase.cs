@@ -22,6 +22,7 @@ namespace Relativity.DataExchange.NUnit
 
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
+	using Relativity.Logging;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -66,7 +67,7 @@ namespace Relativity.DataExchange.NUnit
 
 		protected Mock<ITransferJobService> MockTransferJobService { get; private set; }
 
-		protected Mock<ITransferLog> MockTransferLogger { get; private set; }
+		protected Mock<ILog> MockLogger { get; private set; }
 
 		protected Mock<IRelativityTransferHost> MockRelativityTransferHost { get; private set; }
 
@@ -100,7 +101,7 @@ namespace Relativity.DataExchange.NUnit
 			this.CancellationTokenSource = new CancellationTokenSource();
 			this.ChangedTapiClient = TapiClient.None;
 			this.largeFileProgressEvents.Clear();
-			this.MockTransferLogger = new Mock<ITransferLog>();
+			this.MockLogger = new Mock<ILog>();
 			this.progressEvents.Clear();
 			this.TestClientConfiguration = new ClientConfiguration();
 			this.TestTransferContext = new TransferContext();
@@ -144,7 +145,7 @@ namespace Relativity.DataExchange.NUnit
 						It.IsAny<CancellationToken>())).ReturnsAsync(this.MockTransferClient.Object);
 			this.MockTapiObjectService = new Mock<ITapiObjectService>();
 			this.MockTapiObjectService.Setup(
-					x => x.CreateRelativityTransferHost(It.IsAny<Relativity.Transfer.RelativityConnectionInfo>(), It.IsAny<ITransferLog>()))
+					x => x.CreateRelativityTransferHost(It.IsAny<Relativity.Transfer.RelativityConnectionInfo>(), It.IsAny<ILog>()))
 				.Returns(this.MockRelativityTransferHost.Object);
 			this.MockTapiObjectService.Setup(x => x.CreateRelativityConnectionInfo(It.IsAny<TapiBridgeParameters2>()))
 				.Returns(new Relativity.Transfer.RelativityConnectionInfo());
@@ -192,7 +193,7 @@ namespace Relativity.DataExchange.NUnit
 			// Adding a transfer path is expected to construct a transfer host, client, and job.
 			this.TapiBridgeInstance.AddPath(TestTransferPath);
 			this.MockTapiObjectService.Verify(
-				x => x.CreateRelativityTransferHost(It.IsAny<Relativity.Transfer.RelativityConnectionInfo>(), It.IsAny<ITransferLog>()));
+				x => x.CreateRelativityTransferHost(It.IsAny<Relativity.Transfer.RelativityConnectionInfo>(), It.IsAny<ILog>()));
 			this.MockRelativityTransferHost.Verify(
 				x => x.CreateClientAsync(
 					It.IsAny<ClientConfiguration>(),
@@ -218,7 +219,7 @@ namespace Relativity.DataExchange.NUnit
 			// 3. Construct a transfer job
 			this.TapiBridgeInstance.AddPath(TestTransferPath);
 			this.MockTapiObjectService.Verify(
-				x => x.CreateRelativityTransferHost(It.IsAny<Relativity.Transfer.RelativityConnectionInfo>(), It.IsAny<ITransferLog>()));
+				x => x.CreateRelativityTransferHost(It.IsAny<Relativity.Transfer.RelativityConnectionInfo>(), It.IsAny<ILog>()));
 			this.MockRelativityTransferHost.Verify(x => x.CreateClient(It.IsAny<ClientConfiguration>()));
 			this.MockTransferClient.Verify(
 				x => x.CreateJobAsync(It.IsAny<ITransferRequest>(), It.IsAny<CancellationToken>()));
@@ -323,7 +324,7 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(totals.TotalFileTransferRequests, Is.Zero);
 			Assert.That(totals.TotalCompletedFileTransfers, Is.Zero);
 			Assert.That(totals.TotalSuccessfulFileTransfers, Is.Zero);
-			this.MockTransferLogger.Verify(x => x.LogWarning(It.IsAny<string>(), It.IsAny<object[]>()));
+			this.MockLogger.Verify(x => x.LogWarning(It.IsAny<string>(), It.IsAny<object[]>()));
 		}
 
 		[Test]
@@ -790,6 +791,15 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
 			Assert.That(exception.Fatal, Is.True);
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Once);
+		}
+
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldForceCreatTheTransferClient([Values]WellKnownTransferClient client)
+		{
+			this.CreateTapiBridge(client);
+			this.TapiBridgeInstance.CreateTransferClient();
+			Assert.That(this.ChangedTapiClient, Is.Not.EqualTo(TapiClient.None));
 		}
 
 		protected abstract void CreateTapiBridge(WellKnownTransferClient client);

@@ -26,7 +26,7 @@ Namespace Relativity.Desktop.Client
 			_processPool = New ProcessPool2
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_CookieContainer = New System.Net.CookieContainer
-			_logger = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
+			_logger = RelativityLogger.Instance
 		End Sub
 
 		Public Shared ReadOnly Property Instance() As Application
@@ -215,6 +215,7 @@ Namespace Relativity.Desktop.Client
 		Public Sub UpdateWebServiceURL(ByVal relogin As Boolean)
 			If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = String.Empty AndAlso Not Me.TemporaryWebServiceURL.Equals(AppSettings.Instance.WebApiServiceUrl) Then
 				AppSettings.Instance.WebApiServiceUrl = Me.TemporaryWebServiceURL
+				_metricService = Nothing
 				Me.IsCaseFolderSelected = False
 				'' Turn off our trust of bad certificates! This needs to happen here (references need to be added to add it to MainForm - bad practice).
 				ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) sslPolicyErrors.Equals(SslPolicyErrors.None)
@@ -530,6 +531,7 @@ Namespace Relativity.Desktop.Client
 			Dim parameters = New TapiBridgeParameters2
 			parameters.Credentials = credentials
 			parameters.AsperaDocRootLevels = AppSettings.Instance.TapiAsperaNativeDocRootLevels
+			parameters.AsperaDatagramSize = AppSettings.Instance.TapiAsperaDatagramSize
 			parameters.FileShare = Me.SelectedCaseInfo.DocumentPath
 			parameters.ForceAsperaClient = AppSettings.Instance.TapiForceAsperaClient
 			parameters.ForceClientCandidates = AppSettings.Instance.TapiForceClientCandidates
@@ -816,6 +818,7 @@ Namespace Relativity.Desktop.Client
 			loadFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
 			loadFile.CaseInfo = caseInfo
 			loadFile.Credentials = Await Me.GetCredentialsAsync()
+			WebApiCredentialSetter.PopulateNativeLoadFile(loadFile)
 			loadFile.CookieContainer = Me.CookieContainer
 			loadFile.OverwriteDestination = ImportOverwriteType.Append.ToString
 			loadFile.ArtifactTypeID = Me.ArtifactTypeID
@@ -922,6 +925,7 @@ Namespace Relativity.Desktop.Client
 			Try
 				Dim imageFile As New ImageLoadFile
 				imageFile.Credential = Await Me.GetCredentialsAsync()
+				WebApiCredentialSetter.PopulateImageLoadFile(imageFile)
 				imageFile.CaseInfo = caseinfo
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.DestinationFolderID = destinationArtifactID
@@ -950,6 +954,7 @@ Namespace Relativity.Desktop.Client
 			Try
 				Dim imageFile As New ImageLoadFile
 				imageFile.Credential = Await Me.GetCredentialsAsync()
+				WebApiCredentialSetter.PopulateImageLoadFile(imageFile)
 				imageFile.CaseInfo = caseinfo
 				imageFile.DestinationFolderID = destinationArtifactID
 				imageFile.ForProduction = True
@@ -1008,8 +1013,8 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		''' <summary>
-		''' Prompts the user to Allow or Deny the untrusted connection.
-		''' </summary>;
+		''' Prompts the user to Allow or Deny the untrusted connection. 
+		''' </summary>
 		''' <remarks></remarks>
 		Public Sub CertificateCheckPrompt()
 			CursorWait()
@@ -1051,7 +1056,7 @@ Namespace Relativity.Desktop.Client
 				CursorDefault()
 				Return
 			End If
-			Dim proc As New kCura.WinEDDS.ConnectionDetailsProcess(Await Me.GetCredentialsAsync(), Me.CookieContainer, Me.SelectedCaseInfo)
+			Dim proc As New kCura.WinEDDS.ConnectionDetailsProcess(Await Me.GetCredentialsAsync(), Me.CookieContainer, Me.SelectedCaseInfo, _logger)
 			Dim form As New TextDisplayForm
 			form.Context = proc.Context
 			form.Text = "Relativity Desktop Client | Connectivity Tests"
@@ -1071,7 +1076,7 @@ Namespace Relativity.Desktop.Client
 				Return
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
-			Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess(formType)
+			Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess(formType, _logger)
 			loadFileToPreview.PreviewCodeCount.Clear()
 			Dim previewform As New LoadFilePreviewForm(formType, loadFileToPreview.MultiRecordDelimiter, loadFileToPreview.PreviewCodeCount)
 			Dim thrower As New ValueThrower
@@ -1108,7 +1113,7 @@ Namespace Relativity.Desktop.Client
 			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
 					Dim frm As ProcessForm = CreateProcessForm()
-					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await SetupMetricService())
+					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await SetupMetricService(), _logger)
 					importer.CaseInfo = SelectedCaseInfo
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
@@ -1141,7 +1146,7 @@ Namespace Relativity.Desktop.Client
 				Return
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
-			Dim previewer As New kCura.WinEDDS.PreviewImageFileProcess
+			Dim previewer As New kCura.WinEDDS.PreviewImageFileProcess(_logger)
 			previewer.TimeZoneOffset = _timeZoneOffset
 			previewer.LoadFile = loadfile
 			SetWorkingDirectory(loadfile.FileName)
@@ -1159,7 +1164,7 @@ Namespace Relativity.Desktop.Client
 				Return
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
-			Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await SetupMetricService())
+			Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await SetupMetricService(), _logger)
 			ImageLoadFile.CookieContainer = Me.CookieContainer
 			importer.CaseInfo = SelectedCaseInfo
 			importer.ImageLoadFile = ImageLoadFile
@@ -1183,7 +1188,7 @@ Namespace Relativity.Desktop.Client
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
 			frm.StatusRefreshRate = 0
-			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMetricService())
+			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMetricService(), _logger)
 			exporter.UserNotification = New FormsUserNotification()
 			exporter.CaseInfo = SelectedCaseInfo
 			exporter.ExportFile = exportFile
@@ -1280,6 +1285,7 @@ Namespace Relativity.Desktop.Client
 			tempLoadFile.CopyFilesToDocumentRepository = loadFile.CopyFilesToDocumentRepository
 			tempLoadFile.SelectedCasePath = Me.SelectedCaseInfo.DocumentPath
 			tempLoadFile.Credentials = Await Me.GetCredentialsAsync()
+			WebApiCredentialSetter.PopulateNativeLoadFile(tempLoadFile)
 			tempLoadFile.DestinationFolderID = loadFile.DestinationFolderID
 			tempLoadFile.SelectedIdentifierField = (Await Me.CurrentFields(ArtifactTypeID, True)).Item((Await Me.GetCaseIdentifierFields(ArtifactTypeID))(0))
 			Dim x As New System.Windows.Forms.OpenFileDialog
@@ -1336,6 +1342,7 @@ Namespace Relativity.Desktop.Client
 			retval.CaseInfo = Me.SelectedCaseInfo
 			retval.DestinationFolderID = Me.SelectedCaseInfo.RootFolderID
 			retval.Credential = Await Me.GetCredentialsAsync()
+			WebApiCredentialSetter.PopulateImageLoadFile(retval)
 			Return retval
 		End Function
 
@@ -1671,29 +1678,7 @@ Namespace Relativity.Desktop.Client
 
 		Public Shared Function GetProductName() As String
 			Dim sb As New System.Text.StringBuilder("Relativity Desktop Client")
-			If GetIsPreReleaseVersion() Then
-				sb.Append(" - Pre-Release")
-			End If
-
 			Return sb.ToString()
-		End Function
-
-		Public Shared Function GetIsPreReleaseVersion() As Boolean
-			Dim assembly As System.Reflection.Assembly = GetExecutingAssembly()
-
-			Try
-				' The build stamps AssemblyInformationalVersion with pre-release tags.
-				Dim fvi As FileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location)
-				Dim version As Version = Nothing
-
-				' Use TryParse to avoid annoying exceptions being thrown.
-				Dim isPreRelease As Boolean = Not System.Version.TryParse(fvi.ProductVersion, version)
-				Return isPreRelease
-			Catch ex As Exception
-				' Never allow this method to fail
-				TryLogWarning(ex, "Failed to retrieve the pre-release version.")
-				Return True
-			End Try
 		End Function
 
 		Public Shared Function GetAssemblyVersion() As System.Version
@@ -1717,14 +1702,6 @@ Namespace Relativity.Desktop.Client
 			End Try
 		End Function
 
-		Private Shared Sub TryLogWarning(ByVal exception As Exception, ByVal message As String, ParamArray propertyValues As Object())
-			Try
-				Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog()
-				logger.LogWarning(exception, message, propertyValues)
-			Catch ex As Exception
-				' By design, this can never fail
-			End Try
-		End Sub
 #End Region
 
 		Public Overridable Async Function GetProductionPrecendenceList(ByVal caseInfo As CaseInfo) As Task(Of System.Data.DataTable)
@@ -1836,5 +1813,12 @@ Namespace Relativity.Desktop.Client
 				End Try
 			End If
 		End Sub
+
+		Public Sub ResetFieldsCache()
+			If (Not _fieldProviderCache Is Nothing) Then
+				_fieldProviderCache.ResetCache()
+			End If
+		End Sub
+
 	End Class
 End Namespace

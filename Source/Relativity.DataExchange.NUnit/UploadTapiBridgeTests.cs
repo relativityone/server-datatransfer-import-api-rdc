@@ -42,7 +42,7 @@ namespace Relativity.DataExchange.NUnit
 						using (new UploadTapiBridge2(
 							null,
 							parameters,
-							this.MockTransferLogger.Object,
+							this.MockLogger.Object,
 							this.CancellationTokenSource.Token))
 						{
 						}
@@ -54,19 +54,7 @@ namespace Relativity.DataExchange.NUnit
 						using (new UploadTapiBridge2(
 							this.MockTapiObjectService.Object,
 							null,
-							this.MockTransferLogger.Object,
-							this.CancellationTokenSource.Token))
-						{
-						}
-					});
-
-			Assert.Throws<ArgumentNullException>(
-				() =>
-					{
-						using (new UploadTapiBridge2(
-							this.MockTapiObjectService.Object,
-							parameters,
-							null,
+							this.MockLogger.Object,
 							this.CancellationTokenSource.Token))
 						{
 						}
@@ -79,7 +67,7 @@ namespace Relativity.DataExchange.NUnit
 						using (new UploadTapiBridge2(
 							this.MockTapiObjectService.Object,
 							parameters,
-							this.MockTransferLogger.Object,
+							this.MockLogger.Object,
 							this.CancellationTokenSource.Token))
 						{
 						}
@@ -92,7 +80,7 @@ namespace Relativity.DataExchange.NUnit
 						using (new UploadTapiBridge2(
 							this.MockTapiObjectService.Object,
 							parameters,
-							this.MockTransferLogger.Object,
+							this.MockLogger.Object,
 							this.CancellationTokenSource.Token))
 						{
 						}
@@ -107,9 +95,9 @@ namespace Relativity.DataExchange.NUnit
 			this.TapiBridgeInstance.LogTransferParameters();
 
 			// Force somebody to review this test should the number of logged entries change.
-			this.MockTransferLogger.Verify(
+			this.MockLogger.Verify(
 				log => log.LogInformation(It.IsAny<string>(), It.IsAny<object[]>()),
-				Times.Exactly(26));
+				Times.Exactly(27));
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -123,7 +111,7 @@ namespace Relativity.DataExchange.NUnit
 				this.MockTapiObjectService.Object,
 				parameters,
 				this.TestTransferContext,
-				this.MockTransferLogger.Object,
+				this.MockLogger.Object,
 				this.CancellationTokenSource.Token);
 			this.OnTapiBridgeCreated();
 		}

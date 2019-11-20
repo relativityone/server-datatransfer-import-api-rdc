@@ -109,7 +109,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 			End If
 
 			Dim xmlSerializer As New System.Xml.Serialization.XmlSerializer(GetType(SoapExceptionDetail))
-			'Empty namespace so there are no additional atributes on the root element
+			'Empty namespace so there are no additional attributes on the root element
 			Dim ns As New System.Xml.Serialization.XmlSerializerNamespaces()
 			ns.Add("", "")
 			Using stringWriter As New System.IO.StringWriter()

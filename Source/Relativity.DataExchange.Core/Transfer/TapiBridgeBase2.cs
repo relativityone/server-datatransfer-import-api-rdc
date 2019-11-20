@@ -21,6 +21,7 @@ namespace Relativity.DataExchange.Transfer
 	using Polly;
 
 	using Relativity.DataExchange.Resources;
+	using Relativity.Logging;
 	using Relativity.Transfer;
 	using Relativity.Transfer.Http;
 
@@ -143,8 +144,8 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="direction">
 		/// The transfer direction.
 		/// </param>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <param name="token">
 		/// The cancellation token.
@@ -153,9 +154,9 @@ namespace Relativity.DataExchange.Transfer
 			ITapiObjectService service,
 			TapiBridgeParameters2 parameters,
 			TransferDirection direction,
-			ITransferLog log,
+			ILog logger,
 			CancellationToken token)
-			: this(service, parameters, direction, CreateDefaultTransferContext(parameters), log, token)
+			: this(service, parameters, direction, CreateDefaultTransferContext(parameters), logger, token)
 		{
 		}
 
@@ -174,8 +175,8 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="context">
 		/// The transfer context.
 		/// </param>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <param name="token">
 		/// The cancellation token.
@@ -185,7 +186,7 @@ namespace Relativity.DataExchange.Transfer
 			TapiBridgeParameters2 parameters,
 			TransferDirection direction,
 			TransferContext context,
-			ITransferLog log,
+			ILog logger,
 			CancellationToken token)
 		{
 			if (service == null)
@@ -225,7 +226,7 @@ namespace Relativity.DataExchange.Transfer
 			this.parameters = parameters;
 			this.TargetPath = parameters.TargetPath;
 			this.cancellationToken = token;
-			this.TransferLog = log;
+			this.Logger = logger ?? new NullLogger();
 			this.currentJobNumber = 0;
 			this.transferContext = context;
 			this.SetupTransferListeners();
@@ -298,7 +299,7 @@ namespace Relativity.DataExchange.Transfer
 		/// The RequestTransferPathCount property was added to avoid costly hits to the repository.
 		/// </remarks>
 		public bool TransfersPending => this.TransferJob != null
-		                                && this.TransferJob.JobService.RequestTransferPathCount > 0;
+										&& this.TransferJob.JobService.RequestTransferPathCount > 0;
 
 		/// <summary>
 		/// Gets the workspace artifact unique identifier.
@@ -384,12 +385,12 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
-		/// Gets the Relativity transfer log.
+		/// Gets the Relativity logging instance.
 		/// </summary>
 		/// <value>
-		/// The <see cref="ITransferLog"/> instance.
+		/// The <see cref="ILog"/> instance.
 		/// </value>
-		protected ITransferLog TransferLog { get; }
+		protected ILog Logger { get; }
 
 		/// <summary>
 		/// Gets the current transfer client display name.
@@ -422,25 +423,27 @@ namespace Relativity.DataExchange.Transfer
 				var result = Policy.Handle<TransferException>().Retry(
 					RetryAttempts,
 					(exception, count) =>
+					{
+						transferException = exception;
+						if (this.TransferJob?.JobService.Statistics != null && this.TransferJob.JobService.Statistics.JobError)
 						{
-							transferException = exception;
-							if (this.TransferJob?.JobService.Statistics != null && this.TransferJob.JobService.Statistics.JobError)
-							{
-								this.TransferLog.LogError(
-									exception,
-									"Failed to add a path to the transfer job due to a job-level error. Job error: {JobErrorMessage}",
-									this.TransferJob.JobService.Statistics.JobErrorMessage);
-							}
-							else
-							{
-								this.TransferLog.LogError(
-									exception,
-									"Failed to add a path to the transfer job.");
-							}
+							this.Logger.LogError(
+								exception,
+								"Failed to add a path to the {TransferJobId} transfer job due to a job-level error. Job error: {JobErrorMessage}",
+								this.jobRequest?.JobId,
+								this.TransferJob.JobService.Statistics.JobErrorMessage);
+						}
+						else
+						{
+							this.Logger.LogError(
+								exception,
+								"Failed to add a path to the {TransferJobId} transfer job.",
+								this.jobRequest?.JobId);
+						}
 
-							// Note: if the switch is successful, the path will get added below.
-							this.SwitchToWebMode(exception);
-						}).Execute(
+						// Note: if the switch is successful, the path will get added below.
+						this.SwitchToWebMode(exception);
+					}).Execute(
 						() =>
 						{
 							// Fallback automatically attempts to add paths. Make sure the path isn't added twice.
@@ -472,24 +475,99 @@ namespace Relativity.DataExchange.Transfer
 			catch (ArgumentException e)
 			{
 				// Note: this exception is only thrown when ValidateSourcePaths is true.
-				this.TransferLog.LogWarning(
+				this.Logger.LogWarning(
 					e,
-					"There was a problem adding the '{SourceFile}' source file to the transfer job.",
-					path.SourcePath);
+					"There was a problem adding the '{SourceFile}' source file to the {TransferJobId} transfer job.",
+					path.SourcePath,
+					this.jobRequest?.JobId);
 				throw new FileNotFoundException(e.Message, path.SourcePath);
 			}
 			catch (FileNotFoundException e)
 			{
 				// Ensure this exception is accounted for.
-				this.TransferLog.LogWarning(e, "The '{SourceFile}' source file doesn't exist.", path.SourcePath);
+				this.Logger.LogWarning(e, "The '{SourceFile}' source file doesn't exist.", path.SourcePath);
 				throw;
 			}
 			catch (OperationCanceledException)
 			{
 				this.LogCancelRequest();
 				return !string.IsNullOrEmpty(path.TargetFileName)
-					       ? path.TargetFileName
-					       : Relativity.DataExchange.Io.FileSystem.Instance.Path.GetFileName(path.SourcePath);
+						   ? path.TargetFileName
+						   : Relativity.DataExchange.Io.FileSystem.Instance.Path.GetFileName(path.SourcePath);
+			}
+		}
+
+		/// <inheritdoc />
+		public virtual void CreateTransferClient()
+		{
+			this.CheckDispose();
+			if (this.transferClient != null)
+			{
+				return;
+			}
+
+			ClientConfiguration configuration = this.CreateClientConfiguration();
+			this.parameters.FileNotFoundErrorsDisabled = configuration.FileNotFoundErrorsDisabled;
+			this.parameters.FileNotFoundErrorsRetry = configuration.FileNotFoundErrorsRetry;
+			this.parameters.PermissionErrorsRetry = configuration.PermissionErrorsRetry;
+
+			// Note: allow zero for improved testability.
+			this.maxInactivitySeconds = this.parameters.MaxInactivitySeconds;
+			if (this.maxInactivitySeconds < 0)
+			{
+				this.maxInactivitySeconds = 1.25 * (this.parameters.WaitTimeBetweenRetryAttempts
+													* (this.parameters.MaxJobRetryAttempts + 1));
+			}
+
+			try
+			{
+				var clientId = this.tapiObjectService.GetClientId(this.parameters);
+				if (clientId != Guid.Empty)
+				{
+					configuration.ClientId = clientId;
+					this.CreateTransferClient(configuration);
+					this.PublishClientChanged(ClientChangeReason.ForceConfig);
+				}
+				else
+				{
+					configuration.ClientId = Guid.Empty;
+
+					// The configuration parameters may want to change order or restrict certain clients.
+					TransferClientStrategy clientStrategy;
+					if (!string.IsNullOrEmpty(this.parameters.ForceClientCandidates))
+					{
+						clientStrategy = new TransferClientStrategy(this.parameters.ForceClientCandidates);
+						this.Logger.LogInformation(
+							"Overriding the default transfer client strategy. Candidates={ForceClientCandidates}",
+							this.parameters.ForceClientCandidates);
+					}
+					else
+					{
+						clientStrategy = new TransferClientStrategy();
+						this.Logger.LogInformation("Using the default transfer client strategy.");
+					}
+
+					var transferHost = this.CreateTransferHost();
+					this.transferClient = transferHost
+						.CreateClientAsync(configuration, clientStrategy, this.cancellationToken)
+						.GetAwaiter()
+						.GetResult();
+					this.Logger.LogInformation(
+						"TAPI created the {Client} client via best-fit strategy.",
+						this.transferClient.DisplayName);
+					this.PublishClientChanged(ClientChangeReason.BestFit);
+				}
+			}
+			catch (Exception e)
+			{
+				this.Logger.LogError(e, "The transfer client construction failed.");
+				configuration.ClientId = new Guid(TransferClientConstants.HttpClientId);
+				this.CreateTransferClient(configuration);
+				this.PublishClientChanged(ClientChangeReason.HttpFallback);
+			}
+			finally
+			{
+				this.OptimizeClient();
 			}
 		}
 
@@ -507,28 +585,29 @@ namespace Relativity.DataExchange.Transfer
 		{
 			var importExportCoreVersion = this.GetType().Assembly.GetName().Version;
 			var tapiVersion = typeof(ITransferClient).Assembly.GetName().Version;
-			this.TransferLog.LogInformation("Import/Export Core - Version: {ImportExportCoreVersion}", importExportCoreVersion);
-			this.TransferLog.LogInformation("TAPI - Version: {TapiVersion}", tapiVersion);
-			this.TransferLog.LogInformation("Application: {Application}", this.parameters.Application);
-			this.TransferLog.LogInformation("Client request id: {ClientRequestId}", this.parameters.ClientRequestId);
-			this.TransferLog.LogInformation("Aspera doc root level: {AsperaDocRootLevels}", this.parameters.AsperaDocRootLevels);
-			this.TransferLog.LogInformation("File share: {FileShare}", this.parameters.FileShare);
-			this.TransferLog.LogInformation("Force Aspera client: {ForceAsperaClient}", this.parameters.ForceAsperaClient);
-			this.TransferLog.LogInformation("Force Fileshare client: {ForceFileShareClient}", this.parameters.ForceFileShareClient);
-			this.TransferLog.LogInformation("Force HTTP client: {ForceHttpClient}", this.parameters.ForceHttpClient);
-			this.TransferLog.LogInformation("Force client candidates: {ForceClientCandidates}", this.parameters.ForceClientCandidates);
-			this.TransferLog.LogInformation("HTTP timeout: {HttpTimeoutSeconds} seconds", this.parameters.TimeoutSeconds);
-			this.TransferLog.LogInformation("Max inactivity seconds: {MaxInactivitySeconds}", this.parameters.MaxInactivitySeconds);
-			this.TransferLog.LogInformation("Max job parallelism: {MaxJobParallelism}", this.parameters.MaxJobParallelism);
-			this.TransferLog.LogInformation("Max job retry attempts: {MaxJobRetryAttempts}", this.parameters.MaxJobRetryAttempts);
-			this.TransferLog.LogInformation("Min data rate: {MinDataRateMbps} Mbps", this.parameters.MinDataRateMbps);
-			this.TransferLog.LogInformation("Preserve file timestamps: {PreserveFileTimestamps}", this.parameters.PreserveFileTimestamps);
-			this.TransferLog.LogInformation("Retry on file permission error: {PermissionErrorsRetry}", this.parameters.PermissionErrorsRetry);
-			this.TransferLog.LogInformation("Retry on bad path error: {BadPathErrorsRetry}", this.parameters.BadPathErrorsRetry);
-			this.TransferLog.LogInformation("Submit APM metrics: {SubmitApmMetrics}", this.parameters.SubmitApmMetrics);
-			this.TransferLog.LogInformation("Target data rate: {TargetDataRateMbps} Mbps", this.parameters.TargetDataRateMbps);
-			this.TransferLog.LogInformation("Wait time between retry attempts: {WaitTimeBetweenRetryAttempts}", this.parameters.WaitTimeBetweenRetryAttempts);
-			this.TransferLog.LogInformation("Workspace identifier: {WorkspaceId}", this.parameters.WorkspaceId);
+			this.Logger.LogInformation("Import/Export Core - Version: {ImportExportCoreVersion}", importExportCoreVersion);
+			this.Logger.LogInformation("TAPI - Version: {TapiVersion}", tapiVersion);
+			this.Logger.LogInformation("Application: {Application}", this.parameters.Application);
+			this.Logger.LogInformation("Client request id: {ClientRequestId}", this.parameters.ClientRequestId);
+			this.Logger.LogInformation("Aspera doc root level: {AsperaDocRootLevels}", this.parameters.AsperaDocRootLevels);
+			this.Logger.LogInformation("Aspera datagram size: {AsperaDatagramSize}", this.parameters.AsperaDatagramSize);
+			this.Logger.LogInformation("File share: {FileShare}", this.parameters.FileShare);
+			this.Logger.LogInformation("Force Aspera client: {ForceAsperaClient}", this.parameters.ForceAsperaClient);
+			this.Logger.LogInformation("Force Fileshare client: {ForceFileShareClient}", this.parameters.ForceFileShareClient);
+			this.Logger.LogInformation("Force HTTP client: {ForceHttpClient}", this.parameters.ForceHttpClient);
+			this.Logger.LogInformation("Force client candidates: {ForceClientCandidates}", this.parameters.ForceClientCandidates);
+			this.Logger.LogInformation("HTTP timeout: {HttpTimeoutSeconds} seconds", this.parameters.TimeoutSeconds);
+			this.Logger.LogInformation("Max inactivity seconds: {MaxInactivitySeconds}", this.parameters.MaxInactivitySeconds);
+			this.Logger.LogInformation("Max job parallelism: {MaxJobParallelism}", this.parameters.MaxJobParallelism);
+			this.Logger.LogInformation("Max job retry attempts: {MaxJobRetryAttempts}", this.parameters.MaxJobRetryAttempts);
+			this.Logger.LogInformation("Min data rate: {MinDataRateMbps} Mbps", this.parameters.MinDataRateMbps);
+			this.Logger.LogInformation("Preserve file timestamps: {PreserveFileTimestamps}", this.parameters.PreserveFileTimestamps);
+			this.Logger.LogInformation("Retry on file permission error: {PermissionErrorsRetry}", this.parameters.PermissionErrorsRetry);
+			this.Logger.LogInformation("Retry on bad path error: {BadPathErrorsRetry}", this.parameters.BadPathErrorsRetry);
+			this.Logger.LogInformation("Submit APM metrics: {SubmitApmMetrics}", this.parameters.SubmitApmMetrics);
+			this.Logger.LogInformation("Target data rate: {TargetDataRateMbps} Mbps", this.parameters.TargetDataRateMbps);
+			this.Logger.LogInformation("Wait time between retry attempts: {WaitTimeBetweenRetryAttempts}", this.parameters.WaitTimeBetweenRetryAttempts);
+			this.Logger.LogInformation("Workspace identifier: {WorkspaceId}", this.parameters.WorkspaceId);
 		}
 
 		/// <inheritdoc />
@@ -547,7 +626,7 @@ namespace Relativity.DataExchange.Transfer
 				TapiTotals totals;
 				this.LogTransferTotals("Pre", false);
 				if (this.TransferJob == null || (this.batchTotals.TotalFileTransferRequests == 0
-				                                 && this.jobTotals.TotalFileTransferRequests == 0))
+												 && this.jobTotals.TotalFileTransferRequests == 0))
 				{
 					totals = keepJobAlive ? this.batchTotals.DeepCopy() : this.jobTotals.DeepCopy();
 				}
@@ -560,11 +639,13 @@ namespace Relativity.DataExchange.Transfer
 				this.PublishStatusMessage(successMessage, TapiConstants.NoLineNumber);
 				return totals;
 			}
-			catch (Exception e)
+			catch (Exception ex) when (!ex.IsCanceledByUser(this.cancellationToken))
 			{
+				// We don't want to log cancellation request as the error if it was requested by the end user
+
 				// Note: for backwards compatibility purposes, don't publish an error message.
 				this.PublishWarningMessage(errorMessage, TapiConstants.NoLineNumber);
-				this.TransferLog.LogError(e, errorMessage);
+				this.Logger.LogError(ex, errorMessage);
 				throw;
 			}
 		}
@@ -599,11 +680,11 @@ namespace Relativity.DataExchange.Transfer
 
 			// Note: large file progress is always enabled.
 			return new TransferContext
-				       {
-					       StatisticsRateSeconds = 1.0,
-					       LargeFileProgressEnabled = true,
-					       LargeFileProgressRateSeconds = 1.0,
-				       };
+			{
+				StatisticsRateSeconds = 1.0,
+				LargeFileProgressEnabled = true,
+				LargeFileProgressRateSeconds = 1.0,
+			};
 		}
 
 		/// <summary>
@@ -620,29 +701,31 @@ namespace Relativity.DataExchange.Transfer
 			// Intentionally limiting resiliency here; otherwise, status messages don't make it to IAPI.
 			const int MaxHttpRetryAttempts = 1;
 			var configuration = new ClientConfiguration
-				                    {
-					                    BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
-					                    BcpRootFolder = this.parameters.AsperaBcpRootFolder,
-					                    CookieContainer = this.parameters.WebCookieContainer,
-					                    Credential = this.parameters.TransferCredential,
-					                    FileTransferHint = FileTransferHint.Natives,
-					                    FileNotFoundErrorsDisabled = this.parameters.FileNotFoundErrorsDisabled,
-					                    FileNotFoundErrorsRetry = this.parameters.FileNotFoundErrorsRetry,
-					                    HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
-					                    MaxJobParallelism = this.parameters.MaxJobParallelism,
-					                    MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
-					                    MaxHttpRetryAttempts = MaxHttpRetryAttempts,
-					                    MinDataRateMbps = this.parameters.MinDataRateMbps,
-					                    PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
+			{
+				BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
+				BcpRootFolder = this.parameters.AsperaBcpRootFolder,
+				CookieContainer = this.parameters.WebCookieContainer,
+				Credential = this.parameters.TransferCredential,
+				FileTransferHint = FileTransferHint.Natives,
+				FileNotFoundErrorsDisabled = this.parameters.FileNotFoundErrorsDisabled,
+				FileNotFoundErrorsRetry = this.parameters.FileNotFoundErrorsRetry,
+				HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
+				MaxJobParallelism = this.parameters.MaxJobParallelism,
+				MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
+				MaxHttpRetryAttempts = MaxHttpRetryAttempts,
+				MinDataRateMbps = this.parameters.MinDataRateMbps,
+				PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
 
-					                    // REL-298418: preserving file timestamps are now driven by a configurable setting.
-					                    PreserveDates = this.parameters.PreserveFileTimestamps,
-					                    SupportCheckPath = this.parameters.SupportCheckPath,
-					                    TargetDataRateMbps = this.parameters.TargetDataRateMbps,
-					                    TransferLogDirectory = this.parameters.TransferLogDirectory,
-					                    ValidateSourcePaths = ValidateSourcePaths,
-				                    };
+				// REL-298418: preserving file timestamps are now driven by a configurable setting.
+				PreserveDates = this.parameters.PreserveFileTimestamps,
+				SupportCheckPath = this.parameters.SupportCheckPath,
+				TargetDataRateMbps = this.parameters.TargetDataRateMbps,
+				TransferLogDirectory = this.parameters.TransferLogDirectory,
+				ValidateSourcePaths = ValidateSourcePaths,
+				SavingMemoryMode = true,
+			};
 
+			configuration[Relativity.Transfer.Aspera.AsperaClientConfigurationKeys.DatagramSize] = this.parameters.AsperaDatagramSize;
 			return configuration;
 		}
 
@@ -741,7 +824,9 @@ namespace Relativity.DataExchange.Transfer
 			bool completed = this.batchTotals.TotalFileTransferRequests == this.batchTotals.TotalCompletedFileTransfers;
 			if (completed)
 			{
-				this.TransferLog.LogInformation2(this.jobRequest, "Successfully waited for all transfers to complete.");
+				this.Logger.LogInformation(
+					"Successfully waited for all {TransferJobId} file transfers to complete.",
+					this.jobRequest?.JobId);
 			}
 
 			return completed;
@@ -762,11 +847,11 @@ namespace Relativity.DataExchange.Transfer
 				bool exceeded = (DateTime.Now - lastTransferActivityTimestamp).TotalSeconds > this.maxInactivitySeconds;
 				if (exceeded)
 				{
-					this.TransferLog.LogWarning2(
-						this.jobRequest,
-						"Exceeded the max inactivity time of {MaxInactivitySeconds} seconds since the previous {LastTransferActivityTimestamp} timestamp update.",
+					this.Logger.LogInformation(
+						"Exceeded the max inactivity time of {MaxInactivitySeconds} seconds since the previous {LastTransferActivityTimestamp} timestamp update for the {TransferJobId} transfer job.",
 						this.maxInactivitySeconds,
-						lastTransferActivityTimestamp);
+						lastTransferActivityTimestamp,
+						this.jobRequest?.JobId);
 				}
 
 				return exceeded;
@@ -790,9 +875,9 @@ namespace Relativity.DataExchange.Transfer
 			bool result = this.RaisedPermissionIssue && !this.parameters.PermissionErrorsRetry;
 			if (result)
 			{
-				this.TransferLog.LogWarning2(
-					this.jobRequest,
-					"The transfer job will abort because a file permission issue was raised. {Error}",
+				this.Logger.LogInformation(
+					"The transfer job {TransferJobId} will abort because a file permission issue was raised. {Error}",
+					this.jobRequest?.JobId,
 					this.RaisedPermissionIssueMessage);
 			}
 
@@ -814,93 +899,17 @@ namespace Relativity.DataExchange.Transfer
 
 			TransferJobStatus status = this.TransferJob.Status;
 			bool result = status == TransferJobStatus.RetryPending || status == TransferJobStatus.Retrying
-			                                                       || status == TransferJobStatus.Running
-			                                                       || status == TransferJobStatus.Canceled;
+																   || status == TransferJobStatus.Running
+																   || status == TransferJobStatus.Canceled;
 			if (!result)
 			{
-				this.TransferLog.LogWarning2(
-					this.jobRequest,
-					"The transfer job status {TransferJobStatus} is neither running or retrying and is considered invalid.",
+				this.Logger.LogWarning(
+					"The transfer job {TransferJobId} status {TransferJobStatus} is neither running or retrying and is considered invalid.",
+					this.jobRequest?.JobId,
 					status);
 			}
 
 			return result;
-		}
-
-		/// <summary>
-		/// Creates the best transfer client.
-		/// </summary>
-		private void CreateTransferClient()
-		{
-			this.CheckDispose();
-			if (this.transferClient != null)
-			{
-				return;
-			}
-
-			ClientConfiguration configuration = this.CreateClientConfiguration();
-			this.parameters.FileNotFoundErrorsDisabled = configuration.FileNotFoundErrorsDisabled;
-			this.parameters.FileNotFoundErrorsRetry = configuration.FileNotFoundErrorsRetry;
-			this.parameters.PermissionErrorsRetry = configuration.PermissionErrorsRetry;
-
-			// Note: allow zero for improved testability.
-			this.maxInactivitySeconds = this.parameters.MaxInactivitySeconds;
-			if (this.maxInactivitySeconds < 0)
-			{
-				this.maxInactivitySeconds = 1.25 * (this.parameters.WaitTimeBetweenRetryAttempts
-				                                    * (this.parameters.MaxJobRetryAttempts + 1));
-			}
-
-			try
-			{
-				var clientId = this.tapiObjectService.GetClientId(this.parameters);
-				if (clientId != Guid.Empty)
-				{
-					configuration.ClientId = clientId;
-					this.CreateTransferClient(configuration);
-					this.PublishClientChanged(ClientChangeReason.ForceConfig);
-				}
-				else
-				{
-					configuration.ClientId = Guid.Empty;
-
-					// The configuration parameters may want to change order or restrict certain clients.
-					TransferClientStrategy clientStrategy;
-					if (!string.IsNullOrEmpty(this.parameters.ForceClientCandidates))
-					{
-						clientStrategy = new TransferClientStrategy(this.parameters.ForceClientCandidates);
-						this.TransferLog.LogInformation(
-							"Override the default transfer client strategy. Candidates={ForceClientCandidates}",
-							this.parameters.ForceClientCandidates);
-					}
-					else
-					{
-						clientStrategy = new TransferClientStrategy();
-						this.TransferLog.LogInformation("Using the default default transfer client strategy.");
-					}
-
-					var transferHost = this.CreateTransferHost();
-					this.transferClient = transferHost
-						.CreateClientAsync(configuration, clientStrategy, this.cancellationToken)
-						.GetAwaiter()
-						.GetResult();
-					this.TransferLog.LogInformation(
-						"TAPI created the {Client} client via best-fit strategy.",
-						this.transferClient.DisplayName);
-					this.PublishClientChanged(ClientChangeReason.BestFit);
-				}
-			}
-			catch (Exception e)
-			{
-				this.TransferLog.LogError(e, "The transfer client construction failed.");
-				configuration.ClientId = new Guid(TransferClientConstants.HttpClientId);
-				this.CreateTransferClient(configuration);
-				this.PublishClientChanged(ClientChangeReason.HttpFallback);
-			}
-			finally
-			{
-				this.OptimizeClient();
-			}
 		}
 
 		/// <summary>
@@ -912,12 +921,14 @@ namespace Relativity.DataExchange.Transfer
 		private IRelativityTransferHost CreateTransferHost()
 		{
 			// REL-281370: Lazy construct to avoid lengthy construction
-			//             and exceptions getting thrown via constructor.
+			// and exceptions getting thrown via constructor.
 			if (this.relativityTransferHost == null)
 			{
+				// For legacy code and performance considerations, disable automated statistics logging.
+				GlobalSettings.Instance.StatisticsLogEnabled = false;
 				var connectionInfo = this.tapiObjectService.CreateRelativityConnectionInfo(this.parameters);
 				this.relativityTransferHost =
-					this.tapiObjectService.CreateRelativityTransferHost(connectionInfo, this.TransferLog);
+					this.tapiObjectService.CreateRelativityTransferHost(connectionInfo, this.Logger);
 			}
 
 			return this.relativityTransferHost;
@@ -955,7 +966,7 @@ namespace Relativity.DataExchange.Transfer
 				return;
 			}
 
-			this.TransferLog.LogInformation("Create job started...");
+			this.Logger.LogInformation("Create job started...");
 			this.CreateTransferClient();
 			lock (this.syncRoot)
 			{
@@ -1006,7 +1017,7 @@ namespace Relativity.DataExchange.Transfer
 			{
 				var task = this.transferClient.CreateJobAsync(this.jobRequest, this.cancellationToken);
 				this.TransferJob = task.GetAwaiter().GetResult();
-				this.TransferLog.LogInformation("Create job ended.");
+				this.Logger.LogInformation("Create job ended.");
 			}
 			catch (OperationCanceledException)
 			{
@@ -1016,7 +1027,7 @@ namespace Relativity.DataExchange.Transfer
 			}
 			catch (Exception e)
 			{
-				this.TransferLog.LogError(e, "Failed to create the transfer job.");
+				this.Logger.LogError(e, "Failed to create the transfer job.");
 				if (webModeSwitch)
 				{
 					// Nothing more can be done.
@@ -1042,7 +1053,7 @@ namespace Relativity.DataExchange.Transfer
 		private void CreateJobRetryListener()
 		{
 			this.transferListeners.Add(
-				new TapiJobRetryListener(this.TransferLog, this.parameters.MaxJobRetryAttempts, this.transferContext));
+				new TapiJobRetryListener(this.Logger, this.parameters.MaxJobRetryAttempts, this.transferContext));
 		}
 
 		/// <summary>
@@ -1051,7 +1062,7 @@ namespace Relativity.DataExchange.Transfer
 		private void CreatePathIssueListener()
 		{
 			this.transferListeners.Add(
-				new TapiPathIssueListener(this.TransferLog, this.currentDirection, this.transferContext));
+				new TapiPathIssueListener(this.Logger, this.currentDirection, this.transferContext));
 			this.transferContext.TransferPathIssue += this.OnTransferPathIssue;
 		}
 
@@ -1060,30 +1071,30 @@ namespace Relativity.DataExchange.Transfer
 		/// </summary>
 		private void CreatePathProgressListener()
 		{
-			var listener = new TapiPathProgressListener(this.TransferLog, this.transferContext);
+			var listener = new TapiPathProgressListener(this.Logger, this.transferContext);
 			listener.ProgressEvent += (sender, args) =>
+			{
+				if (args.Completed)
 				{
-					if (args.Completed)
-					{
-						this.batchTotals.IncrementTotalCompletedFileTransfers();
-						this.jobTotals.IncrementTotalCompletedFileTransfers();
-					}
+					this.batchTotals.IncrementTotalCompletedFileTransfers();
+					this.jobTotals.IncrementTotalCompletedFileTransfers();
+				}
 
-					if (args.Successful)
-					{
-						this.batchTotals.IncrementTotalSuccessfulFileTransfers();
-						this.jobTotals.IncrementTotalSuccessfulFileTransfers();
-					}
+				if (args.Successful)
+				{
+					this.batchTotals.IncrementTotalSuccessfulFileTransfers();
+					this.jobTotals.IncrementTotalSuccessfulFileTransfers();
+				}
 
-					this.UpdateTransferActivityTimestamp();
-					this.TapiProgress?.Invoke(sender, args);
-				};
+				this.UpdateTransferActivityTimestamp();
+				this.TapiProgress?.Invoke(sender, args);
+			};
 
 			listener.LargeFileProgressEvent += (sender, args) =>
-				{
-					this.UpdateTransferActivityTimestamp();
-					this.TapiLargeFileProgress?.Invoke(sender, args);
-				};
+			{
+				this.UpdateTransferActivityTimestamp();
+				this.TapiLargeFileProgress?.Invoke(sender, args);
+			};
 
 			this.transferListeners.Add(listener);
 		}
@@ -1093,7 +1104,7 @@ namespace Relativity.DataExchange.Transfer
 		/// </summary>
 		private void CreateRequestListener()
 		{
-			this.transferListeners.Add(new TapiRequestListener(this.TransferLog, this.transferContext));
+			this.transferListeners.Add(new TapiRequestListener(this.Logger, this.transferContext));
 		}
 
 		/// <summary>
@@ -1101,7 +1112,7 @@ namespace Relativity.DataExchange.Transfer
 		/// </summary>
 		private void CreateStatisticsListener()
 		{
-			var listener = new TapiStatisticsListener(this.TransferLog, this.transferContext);
+			var listener = new TapiStatisticsListener(this.Logger, this.transferContext);
 			listener.StatisticsEvent += (sender, args) => this.TapiStatistics?.Invoke(sender, args);
 			this.transferListeners.Add(listener);
 		}
@@ -1206,7 +1217,7 @@ namespace Relativity.DataExchange.Transfer
 		private void SwitchToWebMode(Exception exception)
 		{
 			// Note: permission issues are fatal and cannot be "fixed" by switching to web mode.
-			//       this check will prevent unnecessary spinning and force an immediate job failure.
+			// this check will prevent unnecessary spinning and force an immediate job failure.
 			const bool Fatal = true;
 			if (this.RaisedPermissionIssue)
 			{
@@ -1224,7 +1235,7 @@ namespace Relativity.DataExchange.Transfer
 				throw new TransferException(Strings.WebModeFallbackAlreadyWebModeFatalExceptionMessage, exception, Fatal);
 			}
 
-			this.TransferLog.LogWarning("Preparing to fallback to web mode.");
+			this.Logger.LogWarning("Preparing to fallback to web mode.");
 
 			// Ensure the fallback mode is acknowledged via Warning message.
 			var message = string.Format(
@@ -1244,7 +1255,7 @@ namespace Relativity.DataExchange.Transfer
 			var retryablePaths = this.GetRetryableTransferPaths();
 			if (retryablePaths.Count == 0)
 			{
-				this.TransferLog.LogInformation("The current transfer job is switching to web mode and no retryable paths exist.");
+				this.Logger.LogInformation("The current transfer job is switching to web mode and no retryable paths exist.");
 			}
 
 			this.DestroyTransferJob();
@@ -1262,7 +1273,7 @@ namespace Relativity.DataExchange.Transfer
 				this.TransferJob.AddPath(path, this.cancellationToken);
 			}
 
-			this.TransferLog.LogInformation("Successfully switched to web mode.");
+			this.Logger.LogInformation("Successfully switched to web mode.");
 		}
 
 		/// <summary>
@@ -1306,8 +1317,8 @@ namespace Relativity.DataExchange.Transfer
 						.Select(jobPath => jobPath.Path));
 			}
 
-			this.TransferLog.LogInformation("Total number of retryable paths: {TotalRetryablePaths:n0}", paths.Count);
-			this.TransferLog.LogInformation("Total number of retryable bytes: {TotalRetryableBytes:n0}", paths.Sum(x => x.Bytes));
+			this.Logger.LogInformation("Total number of retryable paths: {TotalRetryablePaths:n0}", paths.Count);
+			this.Logger.LogInformation("Total number of retryable bytes: {TotalRetryableBytes:n0}", paths.Sum(x => x.Bytes));
 			return paths;
 		}
 
@@ -1325,10 +1336,10 @@ namespace Relativity.DataExchange.Transfer
 		/// </summary>
 		private void LogCancelRequest()
 		{
-			this.TransferLog.LogInformation(
+			this.Logger.LogInformation(
 				"The file transfer has been cancelled. ClientId={ClientId}, JobId={JobId} ",
 				this.parameters.ClientRequestId,
-				this.currentJobId);
+				this.jobRequest?.JobId);
 		}
 
 		/// <summary>
@@ -1346,25 +1357,28 @@ namespace Relativity.DataExchange.Transfer
 			StringBuilder sb = new StringBuilder(formattedPrefix);
 			if (!completed)
 			{
-				sb.Append("Awaiting {TotalFileTransferRequests:n0} transfer files using {TransferMode} mode.");
-				this.TransferLog.LogInformation(
+				sb.Append("Awaiting {TotalFileTransferRequests:n0} transfer files from {TransferJobId} using {TransferMode} mode.");
+				this.Logger.LogInformation(
 					sb.ToString(),
 					this.jobTotals.TotalFileTransferRequests,
+					this.jobRequest?.JobId,
 					this.ClientDisplayName);
 			}
 			else
 			{
 				sb.Append(
-					"Completed {TotalSuccessfulFileTransfers:n0} of {TotalFileTransferRequests:n0} transfer files using {TransferMode} mode.");
-				this.TransferLog.LogInformation(
+					"Completed {TotalSuccessfulFileTransfers:n0} of {TotalFileTransferRequests:n0} transfer files from {TransferJobId} using {TransferMode} mode.");
+				this.Logger.LogInformation(
 					sb.ToString(),
 					this.jobTotals.TotalSuccessfulFileTransfers,
 					this.jobTotals.TotalFileTransferRequests,
+					this.jobRequest?.JobId,
 					this.ClientDisplayName);
 				if (this.jobTotals.TotalFileTransferRequests == 0)
 				{
-					this.TransferLog.LogWarning(
-						"Although the transfer job completed, the total number of file requests is zero and may suggest a logic issue or unexpected result.");
+					this.Logger.LogWarning(
+						"Although the {TransferJobId} transfer job completed, the total number of file requests is zero and may suggest a logic issue or unexpected result.",
+						this.jobRequest?.JobId);
 				}
 			}
 		}
@@ -1518,21 +1532,21 @@ namespace Relativity.DataExchange.Transfer
 			foreach (var listener in this.transferListeners)
 			{
 				listener.ErrorMessage += (sender, args) =>
-					{
-						this.TapiErrorMessage?.Invoke(sender, args);
-					};
+				{
+					this.TapiErrorMessage?.Invoke(sender, args);
+				};
 				listener.FatalError += (sender, args) =>
-					{
-						this.TapiFatalError?.Invoke(sender, args);
-					};
+				{
+					this.TapiFatalError?.Invoke(sender, args);
+				};
 				listener.StatusMessage += (sender, args) =>
-					{
-						this.TapiStatusMessage?.Invoke(sender, args);
-					};
+				{
+					this.TapiStatusMessage?.Invoke(sender, args);
+				};
 				listener.WarningMessage += (sender, args) =>
-					{
-						this.TapiWarningMessage?.Invoke(sender, args);
-					};
+				{
+					this.TapiWarningMessage?.Invoke(sender, args);
+				};
 			}
 		}
 
@@ -1567,7 +1581,7 @@ namespace Relativity.DataExchange.Transfer
 		private void ValidateTransferPath(TransferPath path)
 		{
 			if (string.IsNullOrWhiteSpace(path.SourcePath)
-			    && (!path.SourcePathId.HasValue || path.SourcePathId.Value < 1))
+				&& (!path.SourcePathId.HasValue || path.SourcePathId.Value < 1))
 			{
 				throw new ArgumentException(
 					this.currentDirection == TransferDirection.Download || path.Direction == TransferDirection.Download
@@ -1594,7 +1608,9 @@ namespace Relativity.DataExchange.Transfer
 		/// </returns>
 		private TapiTotals WaitForCompletedTransfers()
 		{
-			this.TransferLog.LogInformation("Preparing to wait for the batched transfers to complete...");
+			this.Logger.LogInformation(
+				"Preparing to wait for the {TransferJobId} batched file transfers to complete...",
+				this.jobRequest?.JobId);
 
 			try
 			{
@@ -1608,51 +1624,53 @@ namespace Relativity.DataExchange.Transfer
 				Policy.HandleResult(false).WaitAndRetryForever(
 					i => TimeSpan.FromMilliseconds(WaitTimeBetweenChecks),
 					(result, span) =>
-						{
-							// Do nothing.
-						}).Execute(
+					{
+						// Do nothing.
+					}).Execute(
 					() =>
+					{
+						try
 						{
-							try
+							if (!this.CheckValidTransferJobStatus())
 							{
-								if (!this.CheckValidTransferJobStatus())
-								{
-									this.SwitchToWebMode(null);
-								}
-
-								this.cancellationToken.ThrowIfCancellationRequested();
-								bool terminateWait = this.CheckCompletedTransfers()
-								                     || this.CheckDataInactivityTimeExceeded()
-								                     || this.CheckAbortOnRaisedPermissionIssues();
-								return terminateWait;
+								this.SwitchToWebMode(null);
 							}
-							catch (OperationCanceledException)
+
+							this.cancellationToken.ThrowIfCancellationRequested();
+							bool terminateWait = this.CheckCompletedTransfers()
+												 || this.CheckDataInactivityTimeExceeded()
+												 || this.CheckAbortOnRaisedPermissionIssues();
+							return terminateWait;
+						}
+						catch (OperationCanceledException)
+						{
+							this.LogCancelRequest();
+							this.DestroyTransferJob();
+							throw;
+						}
+						catch (Exception e)
+						{
+							if (ExceptionHelper.IsFatalException(e))
 							{
-								this.LogCancelRequest();
-								this.DestroyTransferJob();
 								throw;
 							}
-							catch (Exception e)
-							{
-								if (ExceptionHelper.IsFatalException(e))
-								{
-									throw;
-								}
 
-								// Note: this will throw if already in web mode.
-								this.TransferLog.LogError(
-									e,
-									"An exception was thrown waiting for the transfers to complete.");
-								this.SwitchToWebMode(e);
-								return true;
-							}
-						});
+							// Note: this will throw if already in web mode.
+							this.Logger.LogError(
+								e,
+								"An exception was thrown waiting for the {TransferJobId} file transfers to complete.",
+								this.jobRequest?.JobId);
+							this.SwitchToWebMode(e);
+							return true;
+						}
+					});
 
 				// When all else fails, just wait for the transfer job to complete
 				if (!this.CheckCompletedTransfers())
 				{
-					this.TransferLog.LogWarning(
-						"WaitForCompletedTransfers has exited, not all transfers have completed, and now going to wait for the transfer job to complete.");
+					this.Logger.LogWarning(
+						"WaitForCompletedTransfers has exited, not all {TransferJobId} file transfers have completed, and now going to wait for the transfer job to complete.",
+						this.jobRequest?.JobId);
 					this.LogTransferTotals("Inactivity", false);
 
 					// Do NOT return WaitForCompletedTransferJob because it returns the job totals.
@@ -1680,7 +1698,9 @@ namespace Relativity.DataExchange.Transfer
 				return this.jobTotals.DeepCopy();
 			}
 
-			this.TransferLog.LogInformation("Preparing to wait for the transfer job to complete...");
+			this.Logger.LogInformation(
+				"Preparing to wait for transfer job {TransferJobId} to complete...",
+				this.jobRequest?.JobId);
 
 			try
 			{
@@ -1689,44 +1709,44 @@ namespace Relativity.DataExchange.Transfer
 				Policy.Handle<TransferException>().Retry(
 					RetryAttempts,
 					(exception, count) =>
-						{
-							handledException = exception;
-							this.TransferLog.LogWarning2(
-								exception,
-								this.jobRequest,
-								Strings.CompleteJobExceptionMessage);
-							this.SwitchToWebMode(exception);
-						}).Execute(
+					{
+						handledException = exception;
+						this.Logger.LogWarning(
+							exception,
+							"An unexpected error has occurred attempting to wait for transfer job {TransferJobId} to complete.",
+							this.jobRequest?.JobId);
+						this.SwitchToWebMode(exception);
+					}).Execute(
 					() =>
+					{
+						var taskResult = this.TransferJob.CompleteAsync(this.cancellationToken);
+						var transferResult = taskResult.GetAwaiter().GetResult();
+						this.Logger.LogInformation(
+							"Transfer job {TransferJobId} completed. {Name} transfer status: {Status}, elapsed time: {Elapsed}, data rate: {TransferRate:0.00} Mbps",
+							this.jobRequest?.JobId,
+							this.ClientDisplayName,
+							transferResult.Status,
+							transferResult.Elapsed,
+							transferResult.TransferRateMbps);
+						switch (transferResult.Status)
 						{
-							var taskResult = this.TransferJob.CompleteAsync(this.cancellationToken);
-							var transferResult = taskResult.GetAwaiter().GetResult();
-							this.TransferLog.LogInformation("Transfer job completed.");
-							this.TransferLog.LogInformation(
-								"{Name} transfer status: {Status}, elapsed time: {Elapsed}, data rate: {TransferRate:0.00} Mbps",
-								this.ClientDisplayName,
-								transferResult.Status,
-								transferResult.Elapsed,
-								transferResult.TransferRateMbps);
-							switch (transferResult.Status)
-							{
-								case TransferStatus.Failed:
-								case TransferStatus.Fatal:
-									this.LogTransferTotals("NotSuccessful", true);
-									string errorMessage = GetTransferErrorMessage(transferResult);
-									this.PublishStatusMessage(errorMessage, TapiConstants.NoLineNumber);
+							case TransferStatus.Failed:
+							case TransferStatus.Fatal:
+								this.LogTransferTotals("NotSuccessful", true);
+								string errorMessage = GetTransferErrorMessage(transferResult);
+								this.PublishStatusMessage(errorMessage, TapiConstants.NoLineNumber);
 
-									// Force web mode when job-based fatal errors or file-based errors occur.
-									if (handledException == null)
-									{
-										throw new TransferException(errorMessage);
-									}
+								// Force web mode when job-based fatal errors or file-based errors occur.
+								if (handledException == null)
+								{
+									throw new TransferException(errorMessage);
+								}
 
-									// Gracefully terminate.
-									this.PublishFatalError(errorMessage, TapiConstants.NoLineNumber);
-									break;
-							}
-						});
+								// Gracefully terminate.
+								this.PublishFatalError(errorMessage, TapiConstants.NoLineNumber);
+								break;
+						}
+					});
 				return this.jobTotals.DeepCopy();
 			}
 			catch (OperationCanceledException)

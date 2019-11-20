@@ -58,22 +58,37 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		[TestCase("File Transfer Mode: Pending", TapiClient.None)]
-		[TestCase("File Transfer Mode: Aspera", TapiClient.Aspera)]
-		[TestCase("File Transfer Mode: Aspera/Web", TapiClient.Aspera, TapiClient.Web)]
-		[TestCase("File Transfer Mode: Direct/Aspera", TapiClient.Aspera, TapiClient.Direct)]
-		[TestCase("File Transfer Mode: Direct/Aspera", TapiClient.Direct, TapiClient.Aspera)]
-		[TestCase("File Transfer Mode: Aspera/Web", TapiClient.Web, TapiClient.Aspera)]
-		[TestCase("File Transfer Mode: Aspera/Web", TapiClient.Aspera, TapiClient.Web)]
-		[TestCase("File Transfer Mode: Direct/Aspera/Web", TapiClient.Web, TapiClient.Aspera, TapiClient.Direct)]
-		[TestCase("File Transfer Mode: Direct/Aspera/Web", TapiClient.Direct, TapiClient.Web, TapiClient.Aspera)]
-		[TestCase("File Transfer Mode: Direct/Aspera/Web", TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)]
+		[TestCase("File Transfer Mode: Disabled", false, TapiClient.None)]
+		[TestCase("File Transfer Mode: Pending", true, TapiClient.None)]
+		[TestCase("File Transfer Mode: Aspera", true, TapiClient.Aspera)]
+		[TestCase("File Transfer Mode: Aspera/Web", true, TapiClient.Aspera, TapiClient.Web)]
+		[TestCase("File Transfer Mode: Direct/Aspera", true, TapiClient.Aspera, TapiClient.Direct)]
+		[TestCase("File Transfer Mode: Direct/Aspera", true, TapiClient.Direct, TapiClient.Aspera)]
+		[TestCase("File Transfer Mode: Aspera/Web", true, TapiClient.Web, TapiClient.Aspera)]
+		[TestCase("File Transfer Mode: Aspera/Web", true, TapiClient.Aspera, TapiClient.Web)]
+		[TestCase("File Transfer Mode: Direct/Aspera/Web", true, TapiClient.Web, TapiClient.Aspera, TapiClient.Direct)]
+		[TestCase("File Transfer Mode: Direct/Aspera/Web", true, TapiClient.Direct, TapiClient.Web, TapiClient.Aspera)]
+		[TestCase("File Transfer Mode: Direct/Aspera/Web", true, TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)]
 		[Repeat(3)]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldBuildTheExportStatusText(string expected, params TapiClient[] natives)
+		public void ShouldBuildTheExportStatusText(string expected, bool nativeFilesCopied, params TapiClient[] natives)
 		{
-			string text = TapiModeHelper.BuildExportStatusText(natives);
+			string text = TapiModeHelper.BuildExportStatusText(nativeFilesCopied, natives);
 			Assert.That(text, Is.EqualTo(expected));
+		}
+
+		[Test]
+		[TestCase(TapiClient.None)]
+		[TestCase(TapiClient.Direct, TapiClient.None, TapiClient.Direct, TapiClient.None)]
+		[TestCase(TapiClient.Aspera, TapiClient.Direct, TapiClient.Aspera, TapiClient.Direct)]
+		[TestCase(TapiClient.Web, TapiClient.Web, TapiClient.None, TapiClient.Aspera)]
+		[TestCase(TapiClient.Aspera, TapiClient.Aspera)]
+		[Repeat(3)]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldGetCorrectTapiClient(TapiClient expected, params TapiClient[] clients)
+		{
+			var actual = TapiModeHelper.GetTapiClient(clients);
+			Assert.That(actual, Is.EqualTo(expected));
 		}
 	}
 }

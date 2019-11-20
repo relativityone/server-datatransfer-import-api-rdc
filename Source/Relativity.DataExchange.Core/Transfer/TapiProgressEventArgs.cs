@@ -23,6 +23,9 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="fileName">
 		/// The transferred filename.
 		/// </param>
+		/// <param name="targetFile">
+		/// The full path to the transfer target file.
+		/// </param>
 		/// <param name="completed">
 		/// Specify whether the file transfer is completed.
 		/// </param>
@@ -43,6 +46,7 @@ namespace Relativity.DataExchange.Transfer
 		/// </param>
 		public TapiProgressEventArgs(
 			string fileName,
+			string targetFile,
 			bool completed,
 			bool successful,
 			int lineNumber,
@@ -57,6 +61,7 @@ namespace Relativity.DataExchange.Transfer
 			this.LineNumber = lineNumber;
 			this.StartTime = startTime;
 			this.Successful = successful;
+			this.TargetFile = targetFile;
 		}
 
 		/// <summary>
@@ -119,6 +124,18 @@ namespace Relativity.DataExchange.Transfer
 		public bool Successful
 		{
 			get;
+		}
+
+		/// <summary>
+		/// Gets or sets the full path to the transfer target file.
+		/// </summary>
+		/// <value>
+		/// The full path.
+		/// </value>
+		public string TargetFile
+		{
+			get;
+			set;
 		}
 	}
 }

@@ -3,6 +3,7 @@ Imports System.Threading
 Imports System.Threading.Tasks
 
 Imports kCura.WinEDDS.Api
+Imports Monitoring
 
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Data
@@ -78,6 +79,7 @@ Namespace kCura.WinEDDS
 		Private _processId As Guid
 		Private _parentArtifactTypeId As Int32?
 		Private _unmappedRelationalFields As System.Collections.ArrayList
+		Private _cancelledByUser As Boolean
 
 		Protected BulkLoadFileFieldDelimiter As String
 
@@ -117,6 +119,12 @@ Namespace kCura.WinEDDS
 		Friend ReadOnly Property CompletedRecords As Long
 			Get
 				Return TotalTransferredFilesCount
+			End Get
+		End Property
+
+		Friend ReadOnly Property IsCancelledByUser As Boolean
+			Get
+				Return _cancelledByUser
 			End Get
 		End Property
 
@@ -436,6 +444,8 @@ Namespace kCura.WinEDDS
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
 			_enforceDocumentLimit = enforceDocumentLimit
 
+			Statistics.ImportObjectType = CType(IIf(args.ArtifactTypeID = ArtifactType.Document, TelemetryConstants.ImportObjectType.Native, TelemetryConstants.ImportObjectType.Objects),TelemetryConstants.ImportObjectType)
+
 			ShouldImport = True
 			If (String.IsNullOrEmpty(args.OverwriteDestination)) Then
 				Overwrite = ImportOverwriteType.Append
@@ -492,8 +502,9 @@ Namespace kCura.WinEDDS
 
 			' This will tie both native and BCP to a single unique identifier.
 			nativeParameters.ClientRequestId = Guid.NewGuid()
-			nativeParameters.Credentials = If(args.TapiCredentials, args.Credentials)
+			nativeParameters.Credentials = If(args.WebApiCredential.Credential, args.Credentials)
 			nativeParameters.AsperaDocRootLevels = AppSettings.Instance.TapiAsperaNativeDocRootLevels
+			nativeParameters.AsperaDatagramSize = AppSettings.Instance.TapiAsperaDatagramSize
 			nativeParameters.FileShare = args.CaseInfo.DocumentPath
 			nativeParameters.ForceAsperaClient = AppSettings.Instance.TapiForceAsperaClient
 			nativeParameters.ForceClientCandidates = AppSettings.Instance.TapiForceClientCandidates
@@ -530,7 +541,7 @@ Namespace kCura.WinEDDS
 
 			' Never preserve timestamps for BCP load files.
 			bcpParameters.PreserveFileTimestamps = false
-			CreateTapiBridges(nativeParameters, bcpParameters)
+			CreateTapiBridges(nativeParameters, bcpParameters, args.WebApiCredential.TokenProvider)
 		End Sub
 
 #End Region
@@ -733,19 +744,22 @@ Namespace kCura.WinEDDS
 				End Using
 				Timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
 				Me.LogInformation("Successfully imported {ImportCount} documents via WinEDDS.", Me.FileTapiProgressCount)
-				Me.DumpStatisticsInfo()
+				Me.LogStatistics()
 				Return True
 			Catch ex As System.Exception
 				Me.WriteFatalError(Me.CurrentLineNumber, ex)
 				Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
-				Me.DumpStatisticsInfo()
+				Me.LogStatistics()
 			Finally
 				Using Timekeeper.CaptureTime("ReadFile_CleanupTempTables")
 					DestroyTapiBridges()
 					CleanupTempTables()
 
-					' Deletes all temp load files too.
 					If Not Me.OutputFileWriter Is Nothing Then
+						Dim numberOfNotDeletedFiles As Integer = Me.OutputFileWriter.TryCloseAndDeleteAllTempFiles()
+						If numberOfNotDeletedFiles > 0
+							WriteStatusLine(EventType2.Warning, $"Process was not able to delete {numberOfNotDeletedFiles} temporary file(s).", lineNumber := 0)
+						End If
 						Me.OutputFileWriter.Dispose()
 						Me.OutputFileWriter = Nothing
 					End If
@@ -1208,14 +1222,14 @@ Namespace kCura.WinEDDS
 
 			If (shouldCompleteNativeJob Or lastRun) And _jobCompleteNativeCount > 0 Then
 				_jobCompleteNativeCount = 0
-				CompletePendingPhysicalFileTransfers("Waiting for the native file job to complete...", "Native file job completed.", "Failed to complete all pending native file transfers.")
+				Me.AwaitPendingPhysicalFileUploadsForJob()
 			End If
 
 			' REL-157042: Prevent importing bad data into Relativity or honor stoppage.
 			If ShouldImport Then
 				Try
 					If ShouldImport AndAlso _copyFileToRepository AndAlso FileTapiBridge.TransfersPending Then
-						WaitForPendingFileUploads()
+						Me.AwaitPendingPhysicalFileUploadsForBatch()
 						JobCounter += 1
 
 						' The sync progress addresses an issue with TAPI clients that fail to raise progress when a failure occurs but successfully transfer all files via job retry (Aspera).
@@ -1227,7 +1241,6 @@ Namespace kCura.WinEDDS
 					End If
 
 					Dim start As Int64 = System.DateTime.Now.Ticks
-
 					If ShouldImport Then
 						Me.PushNativeBatch(outputNativePath, shouldCompleteMetadataJob, lastRun)
 					End If
@@ -1329,7 +1342,7 @@ Namespace kCura.WinEDDS
 			If _batchCounter = 0 OrElse Not ShouldImport Then
 				If _jobCompleteMetadataCount > 0 Then
 					_jobCompleteMetadataCount = 0
-					CompletePendingBulkLoadFileTransfers()
+					Me.AwaitPendingBulkLoadFileUploadsForJob()
 				End If
 				Exit Sub
 			End If
@@ -1337,7 +1350,7 @@ Namespace kCura.WinEDDS
 
 			If shouldCompleteJob And _jobCompleteMetadataCount > 0 Then
 				_jobCompleteMetadataCount = 0
-				CompletePendingBulkLoadFileTransfers()
+				Me.AwaitPendingBulkLoadFileUploadsForJob()
 			End If
 
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
@@ -1352,9 +1365,9 @@ Namespace kCura.WinEDDS
 			_jobCompleteMetadataCount += 4
 
 			If lastRun Then
-				CompletePendingBulkLoadFileTransfers()
+				Me.AwaitPendingBulkLoadFileUploadsForJob()
 			Else
-				WaitForPendingMetadataUploads()
+				Me.AwaitPendingBulkLoadFileUploadsForBatch()
 			End If
 
 			_lastRunMetadataImport = System.DateTime.Now.Ticks
@@ -1393,21 +1406,22 @@ Namespace kCura.WinEDDS
 			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 			settings.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
 			settings.Billable = _settings.Billable
-			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing Then
+			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing AndAlso Not _Task.IsFaulted AndAlso Not _Task.IsCanceled Then
 				WaitOnPushBatchTask()
 				_task = Nothing
 			End If
 			Dim makeServiceCalls As Action =
-					Sub()
-						Dim start As Int64 = DateTime.Now.Ticks
-						Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
+				    Sub()
+					    Dim start As Int64 = DateTime.Now.Ticks
+					    Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
-						Statistics.ProcessRunResults(runResults)
-						Statistics.SqlTime += (DateTime.Now.Ticks - start)
+					    Statistics.ProcessRunResults(runResults)
+					    Statistics.SqlTime += (DateTime.Now.Ticks - start)
+					    Statistics.BatchCount += 1
 
-						UpdateStatisticsSnapshot(DateTime.Now)
-						Me.ManageErrors(_artifactTypeID)
-					End Sub
+					    UpdateStatisticsSnapshot(DateTime.Now)
+					    Me.ManageErrors(_artifactTypeID)
+				    End Sub
 			If _usePipeliningForNativeAndObjectImports Then
 				Dim f As New System.Threading.Tasks.TaskFactory()
 				_task = f.StartNew(makeServiceCalls)
@@ -1432,7 +1446,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private _task As System.Threading.Tasks.Task = Nothing
-		Private _isRunOccurring As Boolean = False
 		Protected Function GetMassImportOverlayBehavior(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior?) As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior
 			Select Case inputOverlayType
 				Case LoadFile.FieldOverlayBehavior.MergeAll
@@ -1448,7 +1461,7 @@ Namespace kCura.WinEDDS
 
 		Protected Sub OpenFileWriters()
 			If Me.OutputFileWriter Is Nothing Then
-				Me.OutputFileWriter = New OutputFileWriter(Me.FileSystem)
+				Me.OutputFileWriter = New OutputFileWriter(Me.Logger, Me.FileSystem)
 			End If
 
 			Me.OutputFileWriter.Open()
@@ -1479,10 +1492,6 @@ Namespace kCura.WinEDDS
 				retval.Add(Me.GetIsSupportedRelativityFileTypeField)
 				retval.Add(Me.GetRelativityFileTypeField)
 				retval.Add(Me.GetHasNativesField)
-			Else
-				'If (_filePathColumnIndex <> -1) AndAlso _uploadFiles Then
-				'	retval.Add(Me.GetObjectFileField())
-				'End If
 			End If
 			Return DirectCast(retval.ToArray(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo)), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo())
 		End Function
@@ -1816,15 +1825,6 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
-		Private Function GetObjectFileField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In AllFields(_artifactTypeID)
-				If field.FieldTypeID = FieldType.File Then
-					Return Me.FieldDtoToFieldInfo(field)
-				End If
-			Next
-			Return Nothing
-		End Function
-
 		Private Function FieldDtoToFieldInfo(ByVal input As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			retval.ArtifactID = input.ArtifactID
@@ -1881,10 +1881,10 @@ Namespace kCura.WinEDDS
 				For Each item In _fieldMap
 					If FirstTimeThrough Then
 						If item.DocumentField Is Nothing Then
-							WriteStatusLine(EventType2.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)
+							WriteStatusLine(EventType2.Warning, $"File column '{(item.NativeFileColumnIndex + 1)}' will be unmapped", 0)
 						End If
 						If item.NativeFileColumnIndex = -1 Then
-							WriteStatusLine(EventType2.Warning, String.Format("Field '{0}' will be unmapped", item.DocumentField.FieldName), 0)
+							WriteStatusLine(EventType2.Warning, $"Field '{item.DocumentField.FieldName}' will be unmapped", 0)
 						End If
 					End If
 					If Not item.DocumentField Is Nothing Then
@@ -2063,6 +2063,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Sub _processContext_HaltProcessEvent(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles Context.CancellationRequest
 			If e.ProcessId.ToString = _processId.ToString Then
+				_cancelledByUser = e.RequestByUser
 				StopImport()
 			End If
 		End Sub
@@ -2187,7 +2188,7 @@ Namespace kCura.WinEDDS
 
 		''' <summary>
 		''' The exception thrown when the extracted text file length exceeds the max extracted text length.
-		''' When the encoding is not specified or is <see cref="System.Text.Encoding.UTF8"/>, the max length is 1GB;
+		''' When the encoding is not specified or is <see cref="System.Text.Encoding.UTF8"/>, the max length is 1GB
 		''' otherwise, the max length is <see cref="System.Int32.MaxValue"/>.
 		''' </summary>
 		<Serializable>
@@ -2360,7 +2361,7 @@ Namespace kCura.WinEDDS
 			RaiseEvent FieldMapped(sourceField, workspaceField)
 		End Sub
 
-		Public Sub Dispose() Implements IDisposable.Dispose
+		Public Overridable Sub Dispose() Implements IDisposable.Dispose
 			Me.errorMessageFileWriter?.Dispose()
 			Me.prePushErrorWriter?.Dispose()
 		End Sub

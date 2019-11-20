@@ -21,7 +21,6 @@
 		private readonly IBatchState _batchState;
 		private readonly IMessenger _messenger;
 		private readonly ILog _logger;
-		private int _batchNumber;
 
 		public Batch(
 			IBatchExporter batchExporter,
@@ -39,7 +38,6 @@
 			_batchState = batchState.ThrowIfNull(nameof(batchState));
 			_messenger = messenger.ThrowIfNull(nameof(messenger));
 			_logger = logger.ThrowIfNull(nameof(logger));
-			_batchNumber = 0;
 		}
 
 		public void Export(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -51,9 +49,6 @@
 					return;
 				}
 
-				int batchNumber = Interlocked.Increment(ref this._batchNumber);
-				DateTime batchStartTime = DateTime.Now;
-				this._logger.LogInformation("Starting export batch {BatchNumber}", batchNumber);
 				_messenger.PreparingBatchForExport();
 
 				_batchInitialization.PrepareBatch(artifacts, volumePredictions, cancellationToken);
@@ -82,11 +77,6 @@
 				}
 
 				_batchState.SaveState();
-				TimeSpan elapsed = DateTime.Now - batchStartTime;
-				this._logger.LogInformation(
-					"Completed export batch {BatchNumber} - Elapsed: {BatchElapsedTime}",
-					batchNumber,
-					elapsed);
 				_messenger.BatchCompleted();
 
 			}

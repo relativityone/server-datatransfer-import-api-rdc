@@ -772,7 +772,7 @@ Namespace kCura.WinEDDS
 
 		''' <summary>
 		''' The exception thrown when the extracted text file length exceeds the max extracted text length.
-		''' When the encoding is not specified or is <see cref="System.Text.Encoding.UTF8"/>, the max length is 1GB;
+		''' When the encoding is not specified or is <see cref="System.Text.Encoding.UTF8"/>, the max length is 1GB
 		''' otherwise, the max length is <see cref="System.Int32.MaxValue"/>.
 		''' </summary>
 		<Serializable>

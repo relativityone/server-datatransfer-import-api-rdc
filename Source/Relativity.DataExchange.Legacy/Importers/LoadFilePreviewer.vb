@@ -199,7 +199,7 @@ Namespace kCura.WinEDDS
 						End Select
 
 						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex, identifierField.ValueAsString, codePageId, mapItem.DocumentField.ImportBehavior)
-						'dont add field if object type is not a document and the field is a file field
+						'Don't add field if object type is not a document and the field is a file field
 						retval.Add(field)
 
 					End If
@@ -210,7 +210,7 @@ Namespace kCura.WinEDDS
 				If _processedIdentifiers(identifierField.Value.ToString) Is Nothing Then
 					_processedIdentifiers(identifierField.Value.ToString) = Me.CurrentLineNumber.ToString
 				Else
-					identifierField.Value = New Exceptions.ErrorMessage(String.Format("Error: The identifier '{0}' has been previously proccessed on line {1}.", identifierField.Value.ToString, _processedIdentifiers(identifierField.Value.ToString)))
+					identifierField.Value = New Exceptions.ErrorMessage(String.Format("Error: The identifier '{0}' has been previously processed on line {1}.", identifierField.Value.ToString, _processedIdentifiers(identifierField.Value.ToString)))
 					lineContainsErrors = True
 				End If
 			End If

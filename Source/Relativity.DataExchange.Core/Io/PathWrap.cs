@@ -37,6 +37,11 @@ namespace Relativity.DataExchange.Io
 		private const int WindowsMaxPathLength = 260;
 
 		/// <summary>
+		/// Name of the subdirectory with RDC temp files.
+		/// </summary>
+		private const string TempSubdirectoryName = "RelativityDataExchange";
+
+		/// <summary>
 		/// The primary directory character that's represented as a string.
 		/// </summary>
 		private static readonly string DirectorySeparatorString = System.IO.Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
@@ -170,6 +175,7 @@ namespace Relativity.DataExchange.Io
 			Justification = "The original implementation was explicitly designed to throw NullReferenceException.")]
 		public string GetFullyQualifiedPath(Uri baseUri, string path)
 		{
+			// Note: this check follows the original URI class design (e.g. kCura VB.NET assembly).
 			if (this.IsPathFullyQualified(path))
 			{
 				if (!path.EndsWith("/", StringComparison.OrdinalIgnoreCase))
@@ -180,26 +186,31 @@ namespace Relativity.DataExchange.Io
 				return path;
 			}
 
-			if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-			{
-				path = "/" + path;
-			}
-
-			if (!path.EndsWith("/", StringComparison.OrdinalIgnoreCase))
-			{
-				path += "/";
-			}
-
-			return baseUri.Scheme + Uri.SchemeDelimiter + baseUri.Host + path;
+			// The original VB.NET design assumed the base URL must be retrieved and combined.
+			return UrlHelper.GetBaseUrlAndCombine(baseUri.ToString(), path);
 		}
 
 		/// <inheritdoc />
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1031:DoNotCatchGeneralExceptionTypes",
+			Justification = "We want to ignore any exception and fallback to standard temp path.")]
 		public string GetTempPath()
 		{
 			string value = this.CustomTempPath;
 			if (string.IsNullOrEmpty(value))
 			{
-				value = System.IO.Path.GetTempPath();
+				string tempPath = System.IO.Path.GetTempPath();
+				try
+				{
+					string rdcTempPath = System.IO.Path.Combine(tempPath, TempSubdirectoryName);
+					System.IO.Directory.CreateDirectory(rdcTempPath);
+					value = rdcTempPath;
+				}
+				catch (Exception)
+				{
+					value = tempPath;
+				}
 			}
 
 			return value;
@@ -282,9 +293,9 @@ namespace Relativity.DataExchange.Io
 		{
 			// Note: long and relative paths should never be modified.
 			if (!this.SupportLongPaths ||
-			    string.IsNullOrEmpty(path) ||
-			    path.StartsWith(@"\\?\", StringComparison.OrdinalIgnoreCase) ||
-			    !System.IO.Path.IsPathRooted(path))
+				string.IsNullOrEmpty(path) ||
+				path.StartsWith(@"\\?\", StringComparison.OrdinalIgnoreCase) ||
+				!System.IO.Path.IsPathRooted(path))
 			{
 				return path;
 			}
@@ -307,10 +318,10 @@ namespace Relativity.DataExchange.Io
 		public bool PathEndsWithTrailingBackSlash(string path)
 		{
 			var result = !string.IsNullOrEmpty(path)
-			             && (path.EndsWith(DirectorySeparatorString, StringComparison.OrdinalIgnoreCase) ||
-			                 path.EndsWith(
-				                 AltDirectorySeparatorString,
-				                 StringComparison.OrdinalIgnoreCase));
+						 && (path.EndsWith(DirectorySeparatorString, StringComparison.OrdinalIgnoreCase) ||
+							 path.EndsWith(
+								 AltDirectorySeparatorString,
+								 StringComparison.OrdinalIgnoreCase));
 			return result;
 		}
 

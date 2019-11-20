@@ -65,8 +65,34 @@ namespace Relativity.DataExchange.Import.NUnit
 			this.importer.SetTapiBridges();
 			this.importer.SetBatchCounter(20);
 			Assert.Throws<WebException>(() =>
-			this.importer.PushNativeBatchInvoker(outputNativePath, shouldCompleteJob, lastRun));
+				this.importer.PushNativeBatchInvoker(outputNativePath, shouldCompleteJob, lastRun));
 			Assert.AreEqual(0, this.importer.GetMetadataFilesCount);
+		}
+
+		[Test]
+		[TestCase("hii}", 0, 60)]
+		[TestCase("hii{0:randomString}", 4423, 0)]
+		[TestCase("[[--", 2223, -100)]
+		[TestCase(" {1:hh}", 123123, 34)]
+		[TestCase("Prime numbers less than 10: {0}, {1}, {2}, {3}", -2113, 112334)]
+		[TestCase("0x{0:omg} {0:1337} {0:N}", 232, -66)]
+		[TestCase("dddd MMMM", 55, 66)]
+		public void WriteCodeLineToTempFileShouldNotDoubleFormat(string documentIdentifier, int codeArtifactID, int codeTypeID)
+		{
+			this.importer.WriteCodeLineToTempFile(documentIdentifier, codeArtifactID, codeTypeID);
+		}
+
+		[Test]
+		[TestCase("hii}", "hii}i", 0, 3224, 60)]
+		[TestCase("hii{0:randomString}", "hii}i", 4423, 434, 0)]
+		[TestCase("{", "[[--", 2223, 1134, -100)]
+		[TestCase(" {1:hh}", "hii}i", 123123, 34, 60)]
+		[TestCase("hii}", "Prime numbers less than 10: {0}, {1}, {2}, {3}", -2113, 112334, 4334)]
+		[TestCase("0x{0:omg} {0:1337} {0:N}", "hii}i", 232, -66, 656)]
+		[TestCase("hii}", "dddd MMMM", 55, 66, 3434)]
+		public void WriteObjectLineToTempFileShouldNotDoubleFormat(string ownerIdentifier, string objectName, int artifactID, int objectTypeArtifactID, int fieldID)
+		{
+			this.importer.WriteObjectLineToTempFile(ownerIdentifier, objectName, artifactID, objectTypeArtifactID, fieldID);
 		}
 
 		[Test]

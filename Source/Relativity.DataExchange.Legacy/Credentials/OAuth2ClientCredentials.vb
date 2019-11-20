@@ -9,18 +9,15 @@ Namespace kCura.WinEDDS.Credentials
 		Implements ICredentialsProvider
 
 		Private ReadOnly _tokenProvider As Global.Relativity.OAuth2Client.Interfaces.ITokenProvider
-		Private ReadOnly tokenSource As CancellationTokenSource 
 
 		Public Sub New(stsUri As Uri, clientID As String, clientSecret As String)
 			Dim providerFactory As Global.Relativity.OAuth2Client.Interfaces.IClientTokenProviderFactory = New ClientTokenProviderFactory(stsUri, clientId, clientSecret)
 			Dim tokenProvider As Global.Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() { "SystemUserInfo" })
 			_tokenProvider = tokenProvider
-			tokenSource = new CancellationTokenSource()
 		End Sub
 
 		Public Sub New(tokenProvider As Global.Relativity.OAuth2Client.Interfaces.ITokenProvider)
 			_tokenProvider = tokenProvider
-			tokenSource = new CancellationTokenSource()
 		End Sub
 
 		Public Function GetCredentials() As System.Net.NetworkCredential Implements ICredentialsProvider.GetCredentials
@@ -35,9 +32,9 @@ Namespace kCura.WinEDDS.Credentials
 
 		End Function
 
-		Public Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential) Implements ICredentialsProvider.GetCredentialsAsync
+		Public Async Function GetCredentialsAsync(Optional cancellationToken As CancellationToken = Nothing) As Task(Of System.Net.NetworkCredential) Implements ICredentialsProvider.GetCredentialsAsync
 			
-			dim token As String = Await _tokenProvider.GetAccessTokenAsync(tokenSource.Token).ConfigureAwait(False)
+			dim token As String = Await _tokenProvider.GetAccessTokenAsync(cancellationToken).ConfigureAwait(False)
 			Dim creds As System.Net.NetworkCredential = New NetworkCredential(kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName, token)
 			Return creds
 

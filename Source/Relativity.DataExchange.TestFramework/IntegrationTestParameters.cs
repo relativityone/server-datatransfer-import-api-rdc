@@ -305,6 +305,20 @@ namespace Relativity.DataExchange.TestFramework
 		}
 
 		/// <summary>
+		/// Gets or sets the test workspace artifact name.
+		/// </summary>
+		/// <value>
+		/// The artifact name.
+		/// </value>
+		[JsonProperty("WorkspaceName")]
+		[IntegrationTestParameter(false)]
+		public string WorkspaceName
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the name of the workspace template used when creating a test workspace.
 		/// </summary>
 		/// <value>

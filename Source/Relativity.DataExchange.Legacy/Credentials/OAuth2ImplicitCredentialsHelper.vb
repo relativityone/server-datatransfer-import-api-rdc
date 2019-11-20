@@ -1,4 +1,5 @@
-﻿Imports System.Threading.Tasks
+﻿Imports System.Threading
+Imports System.Threading.Tasks
 Imports Relativity.OAuth2Client.Interfaces.Events
 
 Namespace kCura.WinEDDS.Credentials
@@ -13,20 +14,16 @@ Namespace kCura.WinEDDS.Credentials
 		End Sub
 
 		Public Sub SetImplicitCredentialProvider()
-			If RelativityWebApiCredentialsProvider.Instance().CredentialsSet() AndAlso RelativityWebApiCredentialsProvider.Instance().ProviderType() = GetType(OAuth2ImplicitCredentials) Then
-				Dim tempImplicitProvider As OAuth2ImplicitCredentials = CType(RelativityWebApiCredentialsProvider.Instance().GetProvider(), OAuth2ImplicitCredentials)
-				tempImplicitProvider.CloseLoginView()
-			End If
 			Dim authEndpoint As String = $"{_identityServerLocationProvider()}/{"connect/authorize"}"
 			Dim implicitProvider As OAuth2ImplicitCredentials = New OAuth2ImplicitCredentials(New Uri(authEndpoint), "Relativity Desktop Client", _tokenResponseHandler)
 			RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
 		End Sub
-
-		Public Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential)
+		
+		Public Function GetCredentialsAsync(Optional cancellationToken As CancellationToken = Nothing) As Task(Of System.Net.NetworkCredential)
 			If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
 				SetImplicitCredentialProvider()
 			End If
-			Return Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync().ConfigureAwait(False)
+			Return RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync(cancellationToken)
 		End Function
 	End Class
 End Namespace

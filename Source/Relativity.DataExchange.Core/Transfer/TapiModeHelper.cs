@@ -22,6 +22,11 @@ namespace Relativity.DataExchange.Transfer
 	internal static class TapiModeHelper
 	{
 		/// <summary>
+		/// The singleton instance.
+		/// </summary>
+		private static readonly ITapiObjectService Instance = new TapiObjectService();
+
+		/// <summary>
 		/// Gets the dictionary that orders the Transfer API clients.
 		/// </summary>
 		private static IDictionary<TapiClient, int> TapiClientOrderMap =>
@@ -40,7 +45,7 @@ namespace Relativity.DataExchange.Transfer
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
 			sb.AppendLine("FILE TRANSFER MODES:");
-			using (var transferLog = new RelativityTransferLog())
+			using (var transferLog = new RelativityTransferLog(RelativityLogger.Instance))
 			{
 				foreach (var clientMetadata in Relativity.Transfer.TransferClientHelper.SearchAvailableClients(transferLog)
 					.OrderBy(x => x.DisplayName))
@@ -82,39 +87,50 @@ namespace Relativity.DataExchange.Transfer
 			TapiClient? native,
 			TapiClient? metadata)
 		{
-			ITapiObjectService tapiObjectService = new TapiObjectService();
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
 			string nativeFilesMode = GetFileTransferModeText(
-				tapiObjectService,
 				native != null ? new[] { native.Value } : new TapiClient[] { });
 			sb.AppendFormat(
 				Strings.FileTransferStatusTextModePrefix,
 				nativeFilesCopied ? nativeFilesMode : Strings.FileTransferModeDisabled);
 			sb.Append(", ");
 			string metadataFilesMode = GetFileTransferModeText(
-				tapiObjectService,
 				metadata != null ? new[] { metadata.Value } : new TapiClient[] { });
 			sb.AppendFormat(Strings.FileTransferStatusTextMetadataPrefix, metadataFilesMode);
 			return sb.ToString();
 		}
 
 		/// <summary>
-		/// Builds the import file transfer mode status text from th list of native transfer clients.
+		/// Builds the export file transfer mode status text from the list of native transfer clients.
 		/// </summary>
+		/// <param name="nativeFilesCopied">
+		/// <see langword="true" /> to copy all natives; otherwise, <see langword="false" /> skips copying natives.
+		/// </param>
 		/// <param name="natives">
 		/// The list of native transfer clients.
 		/// </param>
 		/// <returns>
 		/// The status text.
 		/// </returns>
-		public static string BuildExportStatusText(IEnumerable<TapiClient> natives)
+		public static string BuildExportStatusText(bool nativeFilesCopied, IEnumerable<TapiClient> natives)
 		{
-			ITapiObjectService tapiObjectService = new TapiObjectService();
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			string nativeFilesMode = GetFileTransferModeText(natives);
 			sb.AppendFormat(
 				Strings.FileTransferStatusTextModePrefix,
-				GetFileTransferModeText(tapiObjectService, natives));
+				nativeFilesCopied ? nativeFilesMode : Strings.FileTransferModeDisabled);
 			return sb.ToString();
+		}
+
+		/// <summary>
+		/// Retrieves single <see cref="TapiClient"/> from the list of transfer clients.
+		/// </summary>
+		/// <param name="clients">The list of clients.</param>
+		/// <returns>Single <see cref="TapiClient"/> from the list or <see cref="TapiClient.None"/> if list is empty.</returns>
+		public static TapiClient GetTapiClient(IEnumerable<TapiClient> clients)
+		{
+			var ordered = clients.Distinct().Except(new[] { TapiClient.None }).OrderBy(x => TapiClientOrderMap[x]).ToList();
+			return ordered.Any() ? ordered.Last() : TapiClient.None;
 		}
 
 		/// <summary>
@@ -147,16 +163,13 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Gets the file transfer mode text for the specified client.
 		/// </summary>
-		/// <param name="service">
-		/// The Transfer API object service.
-		/// </param>
 		/// <param name="clients">
 		/// The list of clients.
 		/// </param>
 		/// <returns>
 		/// The text.
 		/// </returns>
-		private static string GetFileTransferModeText(ITapiObjectService service, IEnumerable<TapiClient> clients)
+		private static string GetFileTransferModeText(IEnumerable<TapiClient> clients)
 		{
 			StringBuilder sb = new StringBuilder();
 			foreach (TapiClient flaggedClient in clients.Distinct().Except(new[] { TapiClient.None })
@@ -167,7 +180,7 @@ namespace Relativity.DataExchange.Transfer
 					sb.Append("/");
 				}
 
-				sb.Append(service.GetClientDisplayName(GetClientId(flaggedClient)));
+				sb.Append(Instance.GetClientDisplayName(GetClientId(flaggedClient)));
 			}
 
 			if (sb.Length == 0)

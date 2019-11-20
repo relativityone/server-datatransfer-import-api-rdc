@@ -106,15 +106,6 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An unexpected error has occurred attempting to wait for the transfer job to complete..
-        /// </summary>
-        internal static string CompleteJobExceptionMessage {
-            get {
-                return ResourceManager.GetString("CompleteJobExceptionMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to An error has occurred processing file [{0}] (page {1} of {2}).
         /// </summary>
         internal static string ConvertToMultiPageTiffOrPdfError {

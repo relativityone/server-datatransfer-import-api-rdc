@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Relativity All Errors" Description="This is a custom ruleset to enable all rules." ToolsVersion="14.0">
+<RuleSet Name="Relativity All Errors" Description="This is a custom ruleset to enable all rules." ToolsVersion="15.0">
   <Localization ResourceAssembly="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.dll" ResourceBaseName="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.Localized">
     <Name Resource="AllRules_Name" />
     <Description Resource="AllRules_Description" />
@@ -8,7 +8,7 @@
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1000" Action="Error" />
     <Rule Id="CA1001" Action="Error" />
-    <Rule Id="CA1002" Action="Error" />
+    <Rule Id="CA1002" Action="None" />
     <Rule Id="CA1003" Action="Error" />
     <Rule Id="CA1004" Action="Error" />
     <Rule Id="CA1005" Action="Error" />
@@ -238,7 +238,7 @@
     <Rule Id="CA2242" Action="Error" />
     <Rule Id="CA2243" Action="Error" />
     <Rule Id="CA5122" Action="Error" />
-  </Rules>  
+  </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1027" Action="None" />
     <Rule Id="SA1309" Action="None" />

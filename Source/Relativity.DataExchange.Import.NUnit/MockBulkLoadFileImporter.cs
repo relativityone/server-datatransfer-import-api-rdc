@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.Import.NUnit
 	/// <summary>
 	/// Represents a mock class object for <see cref="BulkLoadFileImporter"/>.
 	/// </summary>
-	public class MockBulkLoadFileImporter : BulkLoadFileImporter
+	public sealed class MockBulkLoadFileImporter : BulkLoadFileImporter
 	{
 		public MockBulkLoadFileImporter(
 			LoadFile args,
@@ -53,6 +53,10 @@ namespace Relativity.DataExchange.Import.NUnit
 			this._bulkImportManager = manager;
 			this.ImportBatchSize = 500;
 			this.ImportBatchVolume = 1000000;
+			this.OutputFileWriter = new OutputFileWriter(
+				new NullLogger(),
+				Relativity.DataExchange.Io.FileSystem.Instance);
+			this.OutputFileWriter.Open(true);
 		}
 
 		public int GetMetadataFilesCount => this.MetadataFilesCount;
@@ -120,7 +124,7 @@ namespace Relativity.DataExchange.Import.NUnit
 					                                         FileShare = "./somepath/",
 					                                         TimeoutSeconds = 0,
 				                                         };
-			this.CreateTapiBridges(parameters, parameters.ShallowCopy());
+			this.CreateTapiBridges(parameters, parameters.ShallowCopy(), new NullAuthTokenProvider());
 		}
 
 		public void SetBatchCounter(int numberToSet)
@@ -131,6 +135,12 @@ namespace Relativity.DataExchange.Import.NUnit
 		public void PushNativeBatchInvoker(string outputNativePath, bool shouldCompleteJob, bool lastRun)
 		{
 			this.PushNativeBatch(outputNativePath, shouldCompleteJob, lastRun);
+		}
+
+		public override void Dispose()
+		{
+			this.OutputFileWriter?.Dispose();
+			base.Dispose();
 		}
 
 		protected override void RaiseWarningAndPause(Exception exception, int timeoutSeconds, int retryCount, int totalRetryCount)

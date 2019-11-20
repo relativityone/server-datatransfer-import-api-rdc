@@ -4,14 +4,12 @@
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 
 	public class LongTextDownloadTapiBridgeFactory : ILongTextDownloadTapiBridgeFactory
 	{
 		private readonly TapiBridgeParametersFactory _tapiBridgeParametersFactory;
-		private readonly LongTextEncodingConverterFactory _converterFactory;
 		private readonly DownloadProgressManager _downloadProgressManager;
 		private readonly IMessagesHandler _messageHandler;
 		private readonly MetadataStatistics _metadataStatistics;
@@ -19,14 +17,12 @@
 
 		public LongTextDownloadTapiBridgeFactory(
 			TapiBridgeParametersFactory tapiBridgeParametersFactory,
-			LongTextEncodingConverterFactory converterFactory,
 			DownloadProgressManager downloadProgressManager,
 			IMessagesHandler messageHandler,
 			MetadataStatistics metadataStatistics,
 			ILog logger)
 		{
 			_tapiBridgeParametersFactory = tapiBridgeParametersFactory.ThrowIfNull(nameof(tapiBridgeParametersFactory));
-			_converterFactory = converterFactory.ThrowIfNull(nameof(converterFactory));
 			_downloadProgressManager = downloadProgressManager.ThrowIfNull(nameof(downloadProgressManager));
 			_messageHandler = messageHandler.ThrowIfNull(nameof(messageHandler));
 			_metadataStatistics = metadataStatistics.ThrowIfNull(nameof(metadataStatistics));

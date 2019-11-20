@@ -9,6 +9,7 @@ namespace Relativity.DataExchange.Transfer
 	using System;
 	using System.IO;
 
+	using Relativity.Logging;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -19,14 +20,14 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TapiPathProgressListener"/> class.
 		/// </summary>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <param name="context">
 		/// The transfer context.
 		/// </param>
-		public TapiPathProgressListener(ITransferLog log, TransferContext context)
-			: base(log, context)
+		public TapiPathProgressListener(ILog logger, TransferContext context)
+			: base(logger, context)
 		{
 		}
 
@@ -72,9 +73,8 @@ namespace Relativity.DataExchange.Transfer
 
 			// Guard against null timestamps.
 			var args = new TapiProgressEventArgs(
-				!string.IsNullOrEmpty(e.Path.TargetFileName)
-					? e.Path.TargetFileName
-					: Path.GetFileName(e.Path.SourcePath),
+				Path.GetFileName(e.TargetFile),
+				e.TargetFile,
 				e.Completed,
 				e.Status == TransferPathStatus.Successful,
 				e.Path.Order,

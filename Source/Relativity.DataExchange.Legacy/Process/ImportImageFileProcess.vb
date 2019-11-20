@@ -22,12 +22,18 @@ Namespace kCura.WinEDDS
 		Private _disableImageTypeValidation As Boolean?
 		Private _disableImageLocationValidation As Boolean?
 
-		Public Sub New ()
-			MyBase.New(new MetricService(New ImportApiMetricSinkConfig))
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New()
+			Me.New(new MetricService(New ImportApiMetricSinkConfig))
 		End Sub
 
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New (metricService As IMetricService)
-			MyBase.New(metricService)
+			Me.New(metricService, RelativityLogger.Instance)
+		End Sub
+
+		Public Sub New (metricService As IMetricService, logger As Global.Relativity.Logging.ILog)
+			MyBase.New(metricService, logger)
 		End Sub
 
         Public WriteOnly Property DisableImageTypeValidation As Boolean
@@ -54,14 +60,21 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Protected Overrides ReadOnly Property JobType As String = "Import"
-		Protected Overrides ReadOnly Property TapiClientName As String
+		Protected Overrides ReadOnly Property TransferDirection As TelemetryConstants.TransferDirection = TelemetryConstants.TransferDirection.Import
+
+		Protected Overrides ReadOnly Property TapiClient As TapiClient
 			Get
 				If _imageFileImporter Is Nothing Then
-					Return _tapiClientName
+					Return TapiClient.None
 				Else
-					Return _imageFileImporter.TapiClientName
+					Return _imageFileImporter.TapiClient
 				End If
+			End Get
+		End Property
+
+		Protected Overrides ReadOnly Property Statistics As Statistics
+			Get
+				Return _imageFileImporter.Statistics
 			End Get
 		End Property
 
@@ -82,6 +95,10 @@ Namespace kCura.WinEDDS
 			Return _imageFileImporter.HasErrors
 		End Function
 
+		Protected Overrides Function IsCancelled() As Boolean
+			Return _imageFileImporter.IsCancelledByUser
+		End Function
+
 		''' <inheritdoc/>
 		Protected Overrides Function GetTotalRecordsCount() As Long
 			Return _imageFileImporter.TotalRecords
@@ -92,20 +109,13 @@ Namespace kCura.WinEDDS
 			Return __imageFileImporter.CompletedRecords
 		End Function
 
-		Protected Overrides Sub OnFatalError()
-			MyBase.OnFatalError()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.FAILED, _imageFileImporter.Statistics)
-		End Sub
-
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _imageFileImporter.Statistics)
 			Me.Context.PublishProcessCompleted(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendMetricJobEndReport(TelemetryConstants.JobStatus.COMPLETED, _imageFileImporter.Statistics)
 			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
@@ -214,7 +224,7 @@ Namespace kCura.WinEDDS
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 						Me.Context.PublishRecordProcessed(e.CurrentRecordIndex)
 					Case EventType2.Statistics
-						SendMetricJobProgress(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+						SendMetricJobProgress(e.Statistics, checkThrottling := True)
 					Case EventType2.Status
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Warning

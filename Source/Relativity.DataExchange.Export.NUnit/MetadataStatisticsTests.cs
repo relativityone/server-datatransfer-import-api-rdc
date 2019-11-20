@@ -13,12 +13,10 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Moq;
 
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
-	using Relativity.Transfer;
 
 	[TestFixture]
 	public class MetadataStatisticsTests
@@ -51,17 +49,19 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.Subscribe(this._tapiBridge.Object);
 
 			// ACT
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, size1, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, string.Empty, true, true, 0, size1, start, end));
 
 			this._instance.SaveState();
 
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, size2, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, string.Empty, true, true, 0, size2, start, end));
 
 			this._instance.RestoreLastState();
 
 			// ASSERT
 			Assert.That(this._statistics.MetadataBytes, Is.EqualTo(size1));
 			Assert.That(this._statistics.MetadataTime, Is.EqualTo(end.Ticks - start.Ticks));
+			Assert.That(this._statistics.MetadataFilesTransferredCount, Is.EqualTo(2));
+			Assert.That(this._statistics.NativeFilesTransferredCount, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -77,9 +77,9 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.Subscribe(this._tapiBridge.Object);
 
 			// ACT
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, sizeDownload1, start, end));
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, false, false, 0, sizeNotDownload1, start, end));
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, sizeDownload2, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, string.Empty, true, true, 0, sizeDownload1, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, string.Empty, false, false, 0, sizeNotDownload1, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, string.Empty, true, true, 0, sizeDownload2, start, end));
 
 			// ASSERT
 			Assert.That(this._statistics.MetadataBytes, Is.EqualTo(sizeDownload1 + sizeDownload2));
@@ -98,11 +98,11 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.Subscribe(this._tapiBridge.Object);
 
 			// ACT
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, size1, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, string.Empty, true, true, 0, size1, start, end));
 
 			this._instance.Unsubscribe(this._tapiBridge.Object);
 
-			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, true, 0, size2, start, end));
+			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, string.Empty, true, true, 0, size2, start, end));
 
 			// ASSERT
 			Assert.That(this._statistics.MetadataBytes, Is.EqualTo(size1));

@@ -1,6 +1,7 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.Collections.Generic
 Imports System.IO
+Imports System.Reflection
 Imports System.Threading
 Imports System.Threading.Tasks
 Imports Castle.Windsor
@@ -14,6 +15,7 @@ Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
@@ -22,13 +24,14 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
 
-		Private _loadFileFormatterFactory As ILoadFileHeaderFormatterFactory
+		Private ReadOnly _logger As ILog
+		Private ReadOnly _loadFileFormatterFactory As ILoadFileHeaderFormatterFactory
 		Private ReadOnly _exportConfig As IExportConfig
-		Private _fieldProviderCache As IFieldProviderCache
-		Private _searchManager As Service.Export.ISearchManager
-		Private _productionManager As Service.Export.IProductionManager
-		Private _auditManager As Service.Export.IAuditManager
-		Private _fieldManager As Service.Export.IFieldManager
+		Private ReadOnly _fieldProviderCache As IFieldProviderCache
+		Private ReadOnly _searchManager As Service.Export.ISearchManager
+		Private ReadOnly _productionManager As Service.Export.IProductionManager
+		Private ReadOnly _auditManager As Service.Export.IAuditManager
+		Private ReadOnly _fieldManager As Service.Export.IFieldManager
 		Public Property ExportManager As Service.Export.IExportManager
 		Private _exportFile As kCura.WinEDDS.ExportFile
 		Private _columns As System.Collections.ArrayList
@@ -45,7 +48,7 @@ Namespace kCura.WinEDDS
 		Private _lastDocumentsExportedCountReported As Int32 = 0
 		Public Property Statistics As New kCura.WinEDDS.ExportStatistics
 		Private _lastStatisticsSnapshot As IDictionary
-		Private _start As System.DateTime
+		Private _stopwatch As System.Diagnostics.Stopwatch = New System.Diagnostics.Stopwatch()
 		Private _warningCount As Int32 = 0
 		Private _errorCount As Int32 = 0
 		Private _fileCount As Int64 = 0
@@ -60,6 +63,7 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _cancellationTokenSource As CancellationTokenSource
 		Private _syncLock As Object = New Object
 		Private _originalFileNameProvider As OriginalFileNameProvider
+		Private _cancelledByUser As Boolean
 
 #End Region
 
@@ -115,6 +119,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Friend ReadOnly Property IsCancelledByUser As Boolean
+			Get
+				Return _cancelledByUser
+			End Get
+		End Property
+
 		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
 			Get
 				Return _exportConfig.ExportErrorNumberOfRetries
@@ -154,17 +164,35 @@ Namespace kCura.WinEDDS
 
 		Public Event ShutdownEvent()
 		Public Sub Shutdown()
+			_logger.LogError("Prematurely shutting down export due to a serious configuration or validation issue.")
 			RaiseEvent ShutdownEvent()
 		End Sub
 
 #Region "Constructors"
 
-		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal context As ProcessContext, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
-			Me.New(exportFile, context, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig)
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New(exportFile As kCura.WinEDDS.ExportFile, 
+		               context As ProcessContext,
+		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
+			Me.New(exportFile, context, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig, RelativityLogger.Instance, CancellationToken.None)
 		End Sub
 
-		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal context As ProcessContext, serviceFactory As Service.Export.IServiceFactory,
-					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New(exportFile As kCura.WinEDDS.ExportFile,
+		               context As ProcessContext,
+		               serviceFactory As Service.Export.IServiceFactory,
+		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
+		               exportConfig As IExportConfig)
+			Me.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, RelativityLogger.Instance, CancellationToken.None)
+		End Sub
+
+		Public Sub New(exportFile As kCura.WinEDDS.ExportFile,
+		               context As ProcessContext,
+		               serviceFactory As Service.Export.IServiceFactory,
+		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
+		               exportConfig As IExportConfig,
+		               logger As ILog,
+		               cancellationToken As CancellationToken)
 			_searchManager = serviceFactory.CreateSearchManager()
 			_downloadHandler = serviceFactory.CreateExportFileDownloader()
 			_downloadModeStatus = _downloadHandler
@@ -174,7 +202,7 @@ Namespace kCura.WinEDDS
 			ExportManager = serviceFactory.CreateExportManager()
 
 			_fieldProviderCache = New FieldProviderCache(exportFile.Credential, exportFile.CookieContainer)
-			_cancellationTokenSource = New CancellationTokenSource()
+			_cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken)
 			_processContext = context
 			DocumentsExported = 0
 			TotalExportArtifactCount = 1
@@ -182,12 +210,25 @@ Namespace kCura.WinEDDS
 			Settings.FolderPath = Me.Settings.FolderPath + "\"
 			ExportNativesToFileNamedFrom = exportFile.ExportNativesToFileNamedFrom
 			_loadFileFormatterFactory = loadFileFormatterFactory
+			_logger = If(logger, new NullLogger())
 			_exportConfig = exportConfig
 		End Sub
 
 #End Region
 
 		Public Property DocumentsExported As Integer Implements IExporter.DocumentsExported
+			Get
+				SyncLock _syncLock
+					Return Me.Statistics.DocCount
+				End SyncLock
+			End Get
+			Set
+				SyncLock _syncLock
+					Me.Statistics.DocCount = value
+				End SyncLock
+			End Set
+		End Property
+
 		Private _interactionManager As IUserNotification = New Exporters.NullUserNotification
 		Public Property InteractionManager As Exporters.IUserNotification Implements IExporter.InteractionManager
 			Get
@@ -200,17 +241,24 @@ Namespace kCura.WinEDDS
 
 		Public Function ExportSearch() As Boolean Implements IExporter.ExportSearch
 			Try
-				_start = System.DateTime.Now
+				_stopwatch.Restart()
+				_logger.LogInformation("Preparing to execute the export search.")
 				Me.Search()
+				_logger.LogInformation("Successfully executed the export search.")
 			Catch ex As System.Exception
 				Me.WriteFatalError($"A fatal error occurred on document #{Me.DocumentsExported}", ex)
 				If Not _volumeManager Is Nothing Then
 					_volumeManager.Close()
 				End If
 			Finally
+				_stopwatch.Stop()
 				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType2.End, _lastStatisticsSnapshot, Statistics))
 			End Try
-			Return Me.ErrorLogFileName = ""
+
+			Me.LogStatistics()
+			Dim result As Boolean = String.IsNullOrWhiteSpace(Me.ErrorLogFileName)
+			Me.LogExportSearchResults(result)
+			Return result
 		End Function
 
 		Protected Overridable Function GetHeaderColName(fieldInfo As ViewFieldInfo) As String
@@ -231,6 +279,53 @@ Namespace kCura.WinEDDS
 			Next
 			Throw New System.Exception("Full text field somehow not in all fields")
 		End Function
+
+		Private Sub LogApiVersionInfo()
+			Dim dict As Dictionary(Of String, Object) = New Dictionary(Of String, Object) From
+				    {
+					    {"SDK", GetType(Global.Relativity.DataExchange.IAppSettings).Assembly.GetName().Version},
+					    {"TAPI", GetType(Global.Relativity.Transfer.ITransferClient).Assembly.GetName().Version}
+				    }
+			Me._logger.LogInformation("API Versions = @{ApiVersions}", dict)
+		End Sub
+
+		Private Sub LogExportSettings()
+			_logger.LogObjectAsDictionary("Export Settings = {@ExportConfiguration}", _exportConfig, AddressOf LogObjectAsDictionaryFilter)
+			_logger.LogObjectAsDictionary("Export File Settings = {@ExportFile}", _exportFile, AddressOf LogObjectAsDictionaryFilter)
+			_logger.LogObjectAsDictionary("Volume Info Settings = {@ExportFileVolumeInfo}", _exportFile.VolumeInfo, AddressOf LogObjectAsDictionaryFilter)
+		End Sub
+
+		Private Function LogObjectAsDictionaryFilter(info As PropertyInfo) As Boolean
+			' Reference types are intentionally limited due to size concerns.
+			Dim supported As Boolean = info.GetIndexParameters().Length = 0 AndAlso
+			                           Not String.Equals(info.Name, NameOf(_exportFile.FolderPath)) AndAlso
+			                           (info.PropertyType.IsValueType OrElse
+			                            Not Nullable.GetUnderlyingType(info.PropertyType) Is Nothing OrElse
+			                            info.PropertyType = GetType(String) OrElse
+			                            info.PropertyType = GetType(System.Text.Encoding))
+			Return supported
+		End Function
+
+		Private Sub LogWebApiServiceException(exception As Exception)
+			_logger.LogError(exception, "A serious error occurred calling a WebAPI service.")
+		End Sub
+
+		Private Sub LogStatistics()
+			Dim statisticsDict As IDictionary(Of String, Object) = Me.Statistics.ToDictionaryForLogs()
+			_logger.LogInformation("Export statistics: {@Statistics}", statisticsDict)
+		End Sub
+
+		Private Sub LogExportSearchResults(jobSuccessful As Boolean)
+			Dim results As Dictionary(Of String, Object) = New Dictionary(Of String, Object) From
+				{
+				    {"ElapsedTime", _stopwatch.Elapsed},
+				    {"Errors", Me._errorCount},
+				    {"JobSuccessful", jobSuccessful},
+				    {"JobCancelled", _cancellationTokenSource.IsCancellationRequested},
+				    {"Warnings", Me._warningCount}
+				}
+			_logger.LogInformation("Exporter search results: {@ExporterSearchResults}", results)
+		End Sub
 
 		Private Sub InitializeExportProcess()
 			_productionPrecedenceIds = (From p In If(Settings.ImagePrecedence, New Pair() {}) Where Not String.IsNullOrEmpty(p.Value) Select CInt(p.Value)).ToArray()
@@ -264,6 +359,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function Search() As Boolean
+			Me.LogApiVersionInfo()
+			Me.LogExportSettings()
 			InitializeExportProcess()
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
@@ -283,9 +380,12 @@ Namespace kCura.WinEDDS
 				While tries < maxTries
 					tries += 1
 					Try
+						_logger.LogVerbose("Preparing to retrieve the {ArtifactId} production from the {WorkspaceId} workspace.", Me.Settings.ArtifactID, Me.Settings.CaseArtifactID)
 						production = _productionManager.Read(Me.Settings.CaseArtifactID, Me.Settings.ArtifactID)
+						_logger.LogVerbose("Successfully retrieved the {ArtifactId} production from the {WorkspaceId} workspace.", Me.Settings.ArtifactID, Me.Settings.CaseArtifactID)
 						Exit While
 					Catch ex As System.Exception
+						Me.LogWebApiServiceException(ex)
 						If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
 							Me.WriteStatusLine(EventType2.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
 							System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
@@ -301,6 +401,7 @@ Namespace kCura.WinEDDS
 			Dim isFileNamePresent As Boolean = OriginalFileNameProvider.ExtendFieldRequestByFileNameIfNecessary(Me.Settings.AllExportableFields, allAvfIds)
 
 			tries = 0
+			_logger.LogInformation("Preparing to initialize the {TypeOfExport} export search.", Me.Settings.TypeOfExport)
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
 					typeOfExportDisplayString = "search"
@@ -319,9 +420,15 @@ Namespace kCura.WinEDDS
 					exportInitializationArgs = CallServerWithRetry(Function() Me.ExportManager.InitializeProductionExport(_exportFile.CaseInfo.ArtifactID, Me.Settings.ArtifactID, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1), maxTries)
 
 			End Select
+
+			_logger.LogInformation("Successfully initialized the {TypeOfExport} export search and returned {TotalArtifactCount} total artifacts and {RunId} run identifier.",
+			                       Me.Settings.TypeOfExport,
+			                       exportInitializationArgs.RowCount,
+			                       exportInitializationArgs.RunId)
 			Me.TotalExportArtifactCount = CType(exportInitializationArgs.RowCount, Int32)
 			If Me.TotalExportArtifactCount - 1 < Me.Settings.StartAtDocumentNumber Then
 				Dim msg As String = String.Format("The chosen start item number ({0}) exceeds the number of {2} items in the export ({1}).  Export halted.", Me.Settings.StartAtDocumentNumber + 1, Me.TotalExportArtifactCount, vbNewLine)
+				_logger.LogWarning(msg)
 				InteractionManager.AlertCriticalError(msg)
 				Me.Shutdown()
 				Return False
@@ -336,12 +443,13 @@ Namespace kCura.WinEDDS
 				Dim objectExportableSize As IObjectExportableSize = Nothing
 
 				If UseOldExport Then
-					_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, Statistics, FileHelper, DirectoryHelper, FileNameProvider)
+					_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, Statistics, FileHelper, DirectoryHelper, FileNameProvider, _logger)
 					FieldLookupService = _volumeManager
 					_volumeManager.ColumnHeaderString = columnHeaderString
 				Else
 					Dim validator As IExportValidation = container.Resolve(Of IExportValidation)
 					If (Not validator.ValidateExport(Settings, TotalExportArtifactCount)) Then
+						_logger.LogWarning("The export failed due to a validation failure.")
 						Shutdown()
 						Return False
 					End If
@@ -367,11 +475,15 @@ Namespace kCura.WinEDDS
 				Dim records As Object() = Nothing
 				Dim nextRecordIndex As Int32 = 0
 				Dim lastRecordCount As Int32 = -1
+				Me.Statistics.BatchCount = 0
 				While lastRecordCount <> 0
 					_timekeeper.MarkStart("Exporter_GetDocumentBlock")
+					Me.Statistics.BatchCount += 1
 					startTicks = System.DateTime.Now.Ticks
 					Dim textPrecedenceAvfIds As Int32() = Nothing
 					If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then textPrecedenceAvfIds = Me.Settings.SelectedTextFields.Select(Of Int32)(Function(f As ViewFieldInfo) f.AvfId).ToArray
+
+					_logger.LogVerbose("Preparing to retrieve the next batch of artifacts for starting record index {NextRecordIndex} and batch {BatchNumber}.", nextRecordIndex, Me.Statistics.BatchCount)
 
 					If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 						records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlockForProductionStartingFromIndex(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, _exportConfig.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds, Me.Settings.ArtifactID, nextRecordIndex), maxTries)
@@ -379,25 +491,44 @@ Namespace kCura.WinEDDS
 						records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlockStartingFromIndex(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, _exportConfig.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds, nextRecordIndex), maxTries)
 					End If
 
-					If records Is Nothing Then Exit While
+					If records Is Nothing Then
+						_logger.LogVerbose("Exiting the export batch loop because the export results block returned null for batch {BatchNumber}.", Me.Statistics.BatchCount)
+						Exit While
+					End If
+
+					_logger.LogVerbose("Successfully retrieved {TotalArtifactCount} artifacts for batch {BatchNumber}.", records.Length, Me.Statistics.BatchCount)
 					If Me.Settings.TypeOfExport = ExportFile.ExportType.Production AndAlso production IsNot Nothing AndAlso production.DocumentsHaveRedactions Then
 						WriteStatusLineWithoutDocCount(EventType2.Warning, "Please Note - Documents in this production were produced with redactions applied.  Ensure that you have exported text that was generated via OCR of the redacted documents.", True)
 					End If
+
 					lastRecordCount = records.Length
 					Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 					_timekeeper.MarkEnd("Exporter_GetDocumentBlock")
 					Dim artifactIDs As New List(Of Int32)
 					Dim artifactIdOrdinal As Int32 = FieldLookupService.GetOrdinalIndex("ArtifactID")
+					
 					If records.Length > 0 Then
 						For Each artifactMetadata As Object() In records
 							artifactIDs.Add(CType(artifactMetadata(artifactIdOrdinal), Int32))
 						Next
+
+						Dim batchStart As DateTime = DateTime.Now
+						_logger.LogInformation("Preparing to export {TotalArtifactCount} chunked artifacts for batch {BatchNumber}.", records.Length, Me.Statistics.BatchCount)
 						ExportChunk(artifactIDs.ToArray(), records, objectExportableSize, batch)
+						Dim batchTicks As Int64 = System.Math.Max(System.DateTime.Now.Ticks - batchStart.Ticks, 1)
+						_logger.LogInformation("Successfully exported {TotalArtifactCount} chunked artifacts for batch {BatchNumber} in {BatchTimeSpan}.", records.Length, Me.Statistics.BatchCount, TimeSpan.FromTicks(batchTicks))
 						nextRecordIndex += records.Length
 						artifactIDs.Clear()
 						records = Nothing
 					End If
-					If _cancellationTokenSource.IsCancellationRequested Then Exit While
+					If lastRecordCount = 0 Then
+						_logger.LogVerbose("Exiting the export batch loop because the next batch contains zero artifacts.")
+					End If
+
+					If _cancellationTokenSource.IsCancellationRequested Then
+						_logger.LogVerbose("Exiting the export batch loop because cancellation is requested.")
+						Exit While
+					End If
 				End While
 
 				' REL-292896: nextRecordIndex represents the total number of records and should match.
@@ -406,7 +537,9 @@ Namespace kCura.WinEDDS
 				Me.WriteStatusLine(EventType2.Status, FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
 
-				If UseOldExport Then _volumeManager.Finish()
+				If UseOldExport Then
+					_volumeManager.Finish()
+				End If
 
 				Me.AuditRun(True)
 				Return Nothing
@@ -414,7 +547,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub ValidateExportedRecordCount(actualExportedRecordsCount As Int32, expectedExportedRecordsCount As Long)
-			If actualExportedRecordsCount <> expectedExportedRecordsCount Then
+			' We don't want to display validation message on the cancelled job
+			If actualExportedRecordsCount <> expectedExportedRecordsCount AndAlso Not _cancellationTokenSource.IsCancellationRequested Then
 				WriteError($"Total items processed ({actualExportedRecordsCount}) is different than expected total records count ({expectedExportedRecordsCount}).")
 			End If
 		End Sub
@@ -442,6 +576,7 @@ Namespace kCura.WinEDDS
 					records = f()
 					Exit While
 				Catch ex As System.Exception
+					Me.LogWebApiServiceException(ex)
 					If TypeOf (ex) Is System.InvalidOperationException AndAlso ex.Message.Contains("empty response") Then
 						Throw New Exception("Communication with the WebAPI server has failed, possibly because values for MaximumLongTextSizeForExportInCell and/or MaximumTextVolumeForExportChunk are too large.  Please lower them and try again.", ex)
 					ElseIf tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
@@ -1032,7 +1167,8 @@ Namespace kCura.WinEDDS
 			End If
 			Try
 				args.FileExportCount = CType(_fileCount, Int32)
-			Catch
+			Catch ex As System.Exception
+				_logger.LogWarning(ex, "Failed to retrieve the file export count.")
 			End Try
 			Select Case Me.Settings.TypeOfExportedFilePath
 				Case ExportFile.ExportedFilePathType.Absolute
@@ -1085,7 +1221,7 @@ Namespace kCura.WinEDDS
 				preclist.Add(Int32.Parse(pair.Value))
 			Next
 			args.ProductionPrecedence = DirectCast(preclist.ToArray(GetType(Int32)), Int32())
-			args.RunTimeInMilliseconds = CType(System.Math.Min(System.DateTime.Now.Subtract(_start).TotalMilliseconds, Int32.MaxValue), Int32)
+			args.RunTimeInMilliseconds = CType(System.Math.Min(_stopwatch.ElapsedMilliseconds, Int32.MaxValue), Int32)
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.AncestorSearch OrElse Me.Settings.TypeOfExport = ExportFile.ExportType.ParentSearch Then
 				args.SourceRootFolderID = Me.Settings.ArtifactID
 			End If
@@ -1130,13 +1266,32 @@ Namespace kCura.WinEDDS
 			args.WarningCount = _warningCount
 			Try
 				_auditManager.AuditExport(Me.Settings.CaseInfo.ArtifactID, Not success, args)
-			Catch
+			Catch ex As System.Exception
+				Me.LogWebApiServiceException(ex)
 			End Try
 		End Sub
 
 		Friend Sub WriteFatalError(ByVal line As String, ByVal ex As System.Exception)
 			Me.AuditRun(False)
+			_logger.LogFatal(ex, "Export experienced a fatal error. Line: {Line}", line)
 			RaiseEvent FatalErrorEvent(line, ex)
+		End Sub
+
+		Private Sub LogStatusLine(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean)
+			Select Case e
+				Case EventType2.Warning
+					_logger.LogWarning(line)
+				Case EventType2.Error
+					_logger.LogError(line)
+				Case EventType2.Statistics
+					_logger.LogInformation(line)
+				Case Else
+					If isEssential Then
+						_logger.LogInformation(line)
+					Else
+						_logger.LogVerbose(line)
+					End If
+			End Select
 		End Sub
 
 		Friend Sub WriteStatusLine(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean, ByVal showNumberOfExportedDocuments As Boolean)
@@ -1152,8 +1307,9 @@ Namespace kCura.WinEDDS
 					End If
 					RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line & appendString, e, _lastStatisticsSnapshot, Statistics))
 				End If
-			End SyncLock
 
+				Me.LogStatusLine(e, line, isEssential)
+			End SyncLock
 		End Sub
 
 		Friend Sub WriteStatusLine(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean) Implements IStatus.WriteStatusLine
@@ -1169,8 +1325,9 @@ Namespace kCura.WinEDDS
 					_lastDocumentsExportedCountReported = Me.DocumentsExported
 					RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line, e, _lastStatisticsSnapshot, Statistics))
 				End If
-			End SyncLock
 
+				Me.LogStatusLine(e, line, isEssential)
+			End SyncLock
 		End Sub
 
 		Friend Sub WriteError(ByVal line As String) Implements IStatus.WriteError
@@ -1237,9 +1394,18 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-        Private Sub _processContext_HaltProcessEvent(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles _processContext.CancellationRequest
+        Private Sub _processContext_OnCancellationRequest(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles _processContext.CancellationRequest
 			_cancellationTokenSource.Cancel()
-			If Not _volumeManager Is Nothing Then _volumeManager.Halt = True
+	        _cancelledByUser = e.RequestByUser
+			If e.RequestByUser Then
+				_logger.LogInformation("The export cancellation request event has been raised by the user.")
+			Else
+				_logger.LogVerbose("The export cancellation request event has been raised by the search process to perform standard cleanup.")
+			End If
+			
+			If Not _volumeManager Is Nothing Then
+				_volumeManager.Halt = True
+			End If
 		End Sub
 
 		Private Sub _processContext_OnExportServerErrors(ByVal sender As Object, e As ExportErrorEventArgs) Handles _processContext.ExportServerErrors

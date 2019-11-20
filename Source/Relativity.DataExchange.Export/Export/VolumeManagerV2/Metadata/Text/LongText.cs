@@ -10,7 +10,7 @@
 		protected string LongTextValue { get; private set; }
 
 		public LongTextExportRequest ExportRequest { get; private set; }
-		public bool HasBeenDownloaded { get; set; }
+		public bool TransferCompleted { get; set; }
 		public string Location { get; private set; }
 		public bool RequireDeletion { get; private set; }
 		public int ArtifactId { get; private set; }
@@ -31,7 +31,7 @@
 				RequireDeletion = false,
 				SourceEncoding = sourceEncoding,
 				DestinationEncoding = destinationEncoding,
-				HasBeenDownloaded = false
+				TransferCompleted = false
 			};
 		}
 
@@ -47,7 +47,7 @@
 				RequireDeletion = true,
 				SourceEncoding = encoding,
 				DestinationEncoding = encoding,
-				HasBeenDownloaded = false
+				TransferCompleted = false
 			};
 		}
 
@@ -61,7 +61,7 @@
 				RequireDeletion = false,
 				SourceEncoding = encoding,
 				DestinationEncoding = encoding,
-				HasBeenDownloaded = true
+				TransferCompleted = true
 			};
 		}
 
@@ -75,7 +75,7 @@
 				RequireDeletion = false,
 				SourceEncoding = Encoding.Default,
 				DestinationEncoding = Encoding.Default,
-				HasBeenDownloaded = true
+				TransferCompleted = true
 			};
 		}
 	}
