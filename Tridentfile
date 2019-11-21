@@ -363,10 +363,8 @@ timestamps
                                 def int numberOfPassedTests = testResultsPassed
                                 def int numberOfSkippedTests = testResultsSkipped
                                 def String message = env.BUILD_TAG
-							    withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
-								{	
-									sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, [:], message, "CD", "${'$token'}" )
-								}
+								sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, [:], message, "CD" )
+
                             }
                         )
                     }
