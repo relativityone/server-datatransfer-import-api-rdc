@@ -9,6 +9,7 @@ Namespace Relativity.Desktop.Client
 
 #Region " Windows Form Designer generated code "
 
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New()
 			MyBase.New()
 
