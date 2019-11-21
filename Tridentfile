@@ -365,7 +365,7 @@ timestamps
                                 def String message = env.BUILD_TAG
 							    withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
 								{	
-									sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, numberOfFailedTests, numberOfPassedTests, numberOfSkippedTests, message, "$token")
+									sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, numberOfFailedTests, numberOfPassedTests, numberOfSkippedTests, message, "${'$token'}")
 								}
                             }
                         )
