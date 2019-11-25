@@ -8,8 +8,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 {
 	using global::NUnit.Framework;
 
-	using kCura.Relativity.ImportAPI;
-
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 
@@ -37,13 +35,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		public static void Setup()
 		{
 			TestParameters = IntegrationTestHelper.Create();
-
-			var importApi = new ImportAPI(
-				TestParameters.RelativityUserName,
-				TestParameters.RelativityPassword,
-				TestParameters.RelativityWebApiUrl.ToString());
-
-			ImportHelper.ImportDefaultTestData(importApi, TestParameters.WorkspaceId);
+			ImportHelper.ImportDefaultTestData(TestParameters);
 		}
 
 		[OneTimeTearDown]

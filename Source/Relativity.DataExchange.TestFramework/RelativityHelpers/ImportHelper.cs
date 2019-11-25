@@ -30,7 +30,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			void SetValues(DataRow dataRow, string file)
 			{
-				dataRow.SetFolderName(null);
 			}
 		}
 
