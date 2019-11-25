@@ -6,53 +6,134 @@
 
 namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data;
-    using System.Globalization;
-    using System.Linq;
-    using System.Text;
-    using kCura.EDDS.WebAPI.BulkImportManagerBase;
-    using kCura.Relativity.DataReaderClient;
-    using kCura.Relativity.ImportAPI;
-    using Relativity.DataExchange.TestFramework.Extensions;
+	using System;
+	using System.Collections.Generic;
+	using System.Data;
+	using System.Globalization;
+	using System.Linq;
+	using System.Text;
+	using kCura.EDDS.WebAPI.BulkImportManagerBase;
+	using kCura.Relativity.DataReaderClient;
+	using kCura.Relativity.ImportAPI;
+	using Relativity.DataExchange.TestFramework.Extensions;
 
-    public static class ImportHelper
+	public static class ImportHelper
 	{
-		public static void ImportDefaultTestData(ImportAPI importApi, int workspaceId)
+		public static IReadOnlyCollection<string> ImportDefaultTestData(IntegrationTestParameters parameters)
 		{
-			importApi.ThrowIfNull(nameof(importApi));
+			return ImportDocuments(parameters, SetupColumns, SetValues);
 
-			ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
-			Settings settings = job.Settings;
-
-			settings.CaseArtifactId = workspaceId;
-			ApplyDefaultsForDocuments(settings);
-			ConfigureJobErrorEvents(job);
-
-			using (var dataSource = new DataTable("Input Data"))
+			void SetupColumns(DataTable dataTable)
 			{
-				dataSource.Locale = CultureInfo.InvariantCulture;
-				dataSource.WithControlNumber()
-					.WithFilePath()
-					.WithFolderName();
+				dataTable.WithFolderName();
+			}
 
-				foreach (var file in TestData.SampleFiles)
-				{
-					DataRow dr = dataSource.NewRow()
-						.GenerateControlNumber()
-						.SetFilePath(file)
-						.SetFolderName(null);
-
-					dataSource.Rows.Add(dr);
-				}
-
-				job.SourceData.SourceData = dataSource.CreateDataReader();
-				job.Execute();
+			void SetValues(DataRow dataRow, string file)
+			{
+				dataRow.SetFolderName(null);
 			}
 		}
 
 		public static IReadOnlyCollection<string> ImportDocuments(IntegrationTestParameters parameters)
+		{
+			return ImportDocuments(parameters, SetupColumns, SetValues);
+
+			void SetupColumns(DataTable dataTable)
+			{
+				dataTable.WithFolderName()
+					.WithExtractedText();
+			}
+
+			void SetValues(DataRow dataRow, string file)
+			{
+				dataRow.SetFolderName(@"A\B")
+					.SetExtractedText($"Example extracted text from file {file}");
+			}
+		}
+
+		public static void ImportImagesForDocuments(
+			IntegrationTestParameters parameters,
+			IReadOnlyCollection<string> documentsControlNumbers)
+		{
+			ImportImagesForDocuments(parameters, GetImportJob, SetData);
+
+			ImageImportBulkArtifactJob GetImportJob(ImportAPI importApi)
+			{
+				var job = importApi.NewImageImportJob();
+				ApplyDefaultsForImageImport(job.Settings);
+				return job;
+			}
+
+			void SetData(DataTable dataSource)
+			{
+				var images = TestData.SampleImageFiles.ToList();
+
+				foreach (var documentControlNumber in documentsControlNumbers)
+				{
+					var batesNumber = documentControlNumber;
+					var batesNumberSuffix = 1;
+
+					foreach (var image in images)
+					{
+						var row = dataSource.NewRow()
+							.SetControlNumber(documentControlNumber)
+							.SetFileLocation(image)
+							.SetBatesNumber(batesNumber);
+
+						dataSource.Rows.Add(row);
+						batesNumber = $"{documentControlNumber}-{batesNumberSuffix:D2}";
+						batesNumberSuffix++;
+					}
+				}
+			}
+		}
+
+		public static void ImportProduction(
+			IntegrationTestParameters parameters,
+			string productionName,
+			IReadOnlyCollection<string> documentsControlNumbers)
+		{
+			var productionId =
+				ProductionHelper.CreateProduction(parameters, productionName, "BATES", IntegrationTestHelper.Logger);
+
+			ImportImagesForDocuments(parameters, GetImportJob, SetData);
+
+			ImageImportBulkArtifactJob GetImportJob(ImportAPI importApi)
+			{
+				var job = importApi.NewProductionImportJob(productionId);
+				ApplyDefaultsForProductionImport(job.Settings);
+				return job;
+			}
+
+			void SetData(DataTable dataSource)
+			{
+				var images = TestData.SampleImageFiles.ToList();
+				var docNumber = 1;
+
+				foreach (var documentControlNumber in documentsControlNumbers)
+				{
+					var batesNumberSuffix = 1;
+
+					foreach (var image in images)
+					{
+						var row = dataSource.NewRow()
+							.SetControlNumber(documentControlNumber)
+							.SetFileLocation(image)
+							.SetBatesNumber($"PROD{docNumber:D4}-{batesNumberSuffix:D4}");
+
+						dataSource.Rows.Add(row);
+						batesNumberSuffix++;
+					}
+
+					docNumber++;
+				}
+			}
+		}
+
+		private static IReadOnlyCollection<string> ImportDocuments(
+			IntegrationTestParameters parameters,
+			Action<DataTable> setupColumns,
+			Action<DataRow, string> setValues)
 		{
 			parameters.ThrowIfNull(nameof(parameters));
 
@@ -68,9 +149,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			{
 				dataSource.Locale = CultureInfo.InvariantCulture;
 				dataSource.WithControlNumber()
-					.WithFilePath()
-					.WithFolderName()
-					.WithExtractedText();
+					.WithFilePath();
+
+				setupColumns(dataSource);
 
 				var controlNumbers = new List<string>();
 
@@ -78,9 +159,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				{
 					var dr = dataSource.NewRow()
 						.GenerateControlNumber()
-						.SetFilePath(file)
-						.SetFolderName(@"A\B")
-						.SetExtractedText($"Example extracted text from file {file}");
+						.SetFilePath(file);
+
+					setValues(dr, file);
 
 					controlNumbers.Add(dr.GetControlNumber());
 					dataSource.Rows.Add(dr);
@@ -93,17 +174,14 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		public static void ImportImagesForDocuments(IntegrationTestParameters parameters, IEnumerable<string> documentsControlNumbers)
+		private static void ImportImagesForDocuments(
+			IntegrationTestParameters parameters,
+			Func<ImportAPI, ImageImportBulkArtifactJob> getImportJob,
+			Action<DataTable> setData)
 		{
-			parameters.ThrowIfNull(nameof(parameters));
-			documentsControlNumbers.ThrowIfNull(nameof(documentsControlNumbers));
-
 			var importApi = IntegrationTestHelper.CreateImportApi(parameters);
-			var job = importApi.NewImageImportJob();
-			var settings = job.Settings;
-
-			settings.CaseArtifactId = parameters.WorkspaceId;
-			ApplyDefaultsForImageImport(settings);
+			var job = getImportJob(importApi);
+			job.Settings.CaseArtifactId = parameters.WorkspaceId;
 			ConfigureJobErrorEvents(job);
 
 			using (var dataSource = new DataTable("Input Data"))
@@ -113,73 +191,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					.WithFileLocation()
 					.WithBatesNumber();
 
-				var images = TestData.SampleImageFiles.ToList();
-
-				foreach (var documentControlNumber in documentsControlNumbers)
-				{
-					string batesNumber = documentControlNumber;
-					int batesNumberSuffix = 1;
-
-					foreach (var image in images)
-					{
-						var row = dataSource.NewRow()
-							.SetControlNumber(documentControlNumber)
-							.SetFileLocation(image)
-							.SetBatesNumber(batesNumber);
-
-						dataSource.Rows.Add(row);
-						batesNumber = $"{documentControlNumber}-{batesNumberSuffix:D2}";
-						batesNumberSuffix++;
-					}
-				}
-
-				job.SourceData.SourceData = dataSource;
-				job.Execute();
-			}
-		}
-
-		public static void ImportProduction(IntegrationTestParameters parameters, string productionName, IEnumerable<string> documentsControlNumbers)
-		{
-			parameters.ThrowIfNull(nameof(parameters));
-			documentsControlNumbers.ThrowIfNull(nameof(documentsControlNumbers));
-			productionName.ThrowIfNullOrEmpty(nameof(parameters));
-
-			int productionId = ProductionHelper.CreateProduction(parameters, productionName, "BATES", IntegrationTestHelper.Logger);
-			var importApi = IntegrationTestHelper.CreateImportApi(parameters);
-			var job = importApi.NewProductionImportJob(productionId);
-			var settings = job.Settings;
-
-			settings.CaseArtifactId = parameters.WorkspaceId;
-			ApplyDefaultsForProductionImport(settings);
-			ConfigureJobErrorEvents(job);
-
-			using (var dataSource = new DataTable("Input Data"))
-			{
-				dataSource.Locale = CultureInfo.InvariantCulture;
-				dataSource.WithControlNumber()
-					.WithBatesNumber()
-					.WithFileLocation();
-
-				var images = TestData.SampleImageFiles.ToList();
-				var docNumber = 1;
-
-				foreach (var documentControlNumber in documentsControlNumbers)
-				{
-					int batesNumberSuffix = 1;
-
-					foreach (var image in images)
-					{
-						var row = dataSource.NewRow()
-							.SetControlNumber(documentControlNumber)
-							.SetBatesNumber($"PROD{docNumber:D4}-{batesNumberSuffix:D4}")
-							.SetFileLocation(image);
-
-						dataSource.Rows.Add(row);
-						batesNumberSuffix++;
-					}
-
-					docNumber++;
-				}
+				setData(dataSource);
 
 				job.SourceData.SourceData = dataSource;
 				job.Execute();
@@ -198,7 +210,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 				if (report.ErrorRowCount > 0)
 				{
-					IEnumerable<string> errors = report.ErrorRows.Select(x => $"{x.Identifier} - {x.Message}");
+					var errors = report.ErrorRows.Select(x => $"{x.Identifier} - {x.Message}");
 					throw new InvalidOperationException(string.Join("\n", errors));
 				}
 			};
@@ -206,86 +218,66 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		private static void ApplyDefaultsForDocuments(Settings settings)
 		{
+			ApplyDefaultBaseSettings(settings);
 			settings.ArtifactTypeId = WellKnownArtifactTypes.DocumentArtifactTypeId;
-			settings.IdentityFieldId = WellKnownFields.ControlNumberId;
-			settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
-			settings.Billable = false;
 			settings.BulkLoadFileFieldDelimiter = ";";
-			settings.CopyFilesToDocumentRepository = true;
 			settings.DisableControlNumberCompatibilityMode = true;
 			settings.DisableExtractedTextFileLocationValidation = false;
 			settings.DisableNativeLocationValidation = false;
 			settings.DisableNativeValidation = false;
-			settings.ExtractedTextEncoding = Encoding.Unicode;
-			settings.ExtractedTextFieldContainsFilePath = false;
 			settings.FileSizeColumn = WellKnownFields.NativeFileSize;
 			settings.FileSizeMapped = true;
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
-			settings.LoadImportedFullTextFromServer = false;
-			settings.MaximumErrorCount = int.MaxValue - 1;
-			settings.MoveDocumentsInAppendOverlayMode = false;
 			settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
 			settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
 			settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
 			settings.OIFileIdMapped = true;
 			settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
 			settings.OverwriteMode = OverwriteModeEnum.Append;
-			settings.StartRecordNumber = 0;
 		}
 
 		private static void ApplyDefaultsForProductionImport(ImageSettings settings)
 		{
-			settings.ArtifactTypeId = WellKnownArtifactTypes.DocumentArtifactTypeId;
-			settings.IdentityFieldId = WellKnownFields.ControlNumberId;
-			settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
-			settings.DocumentIdentifierField = WellKnownFields.ControlNumber;
-			settings.AutoNumberImages = false;
-			settings.BatesNumberField = WellKnownFields.BatesNumber;
-			settings.Billable = false;
-			settings.CopyFilesToDocumentRepository = true;
-			settings.DisableExtractedTextEncodingCheck = false;
-			settings.DisableImageLocationValidation = false;
-			settings.DisableImageTypeValidation = false;
-			settings.DisableUserSecurityCheck = true;
-			settings.ExtractedTextEncoding = Encoding.Unicode;
-			settings.ExtractedTextFieldContainsFilePath = false;
-			settings.FileLocationField = WellKnownFields.FileLocation;
-			settings.FolderPathSourceFieldName = null;
-			settings.ImageFilePathSourceFieldName = WellKnownFields.FileLocation;
-			settings.LoadImportedFullTextFromServer = false;
-			settings.MaximumErrorCount = int.MaxValue - 1;
-			settings.MoveDocumentsInAppendOverlayMode = false;
-			settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
-			settings.OverlayBehavior = OverlayBehavior.MergeAll;
+			ApplyDefaultBaseSettings(settings);
+			ApplyDefaultImageSettings(settings);
 			settings.OverwriteMode = OverwriteModeEnum.Append;
-			settings.StartRecordNumber = 0;
 		}
 
 		private static void ApplyDefaultsForImageImport(ImageSettings settings)
 		{
+			ApplyDefaultBaseSettings(settings);
+			ApplyDefaultImageSettings(settings);
+			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
+		}
+
+		private static void ApplyDefaultImageSettings(ImageSettings settings)
+		{
 			settings.ArtifactTypeId = WellKnownArtifactTypes.DocumentArtifactTypeId;
-			settings.IdentityFieldId = WellKnownFields.ControlNumberId;
-			settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
 			settings.DocumentIdentifierField = WellKnownFields.ControlNumber;
 			settings.AutoNumberImages = false;
 			settings.BatesNumberField = WellKnownFields.BatesNumber;
-			settings.Billable = false;
-			settings.CopyFilesToDocumentRepository = true;
-			settings.DisableExtractedTextEncodingCheck = true;
+			settings.DisableExtractedTextEncodingCheck = false;
 			settings.DisableImageLocationValidation = false;
 			settings.DisableImageTypeValidation = false;
 			settings.DisableUserSecurityCheck = true;
-			settings.ExtractedTextEncoding = Encoding.Unicode;
-			settings.ExtractedTextFieldContainsFilePath = false;
 			settings.FileLocationField = WellKnownFields.FileLocation;
 			settings.FolderPathSourceFieldName = null;
 			settings.ImageFilePathSourceFieldName = WellKnownFields.FileLocation;
+			settings.OverlayBehavior = OverlayBehavior.MergeAll;
+			settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
+		}
+
+		private static void ApplyDefaultBaseSettings(ImportSettingsBase settings)
+		{
+			settings.IdentityFieldId = WellKnownFields.ControlNumberId;
+			settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
+			settings.Billable = false;
+			settings.CopyFilesToDocumentRepository = true;
+			settings.ExtractedTextEncoding = Encoding.Unicode;
+			settings.ExtractedTextFieldContainsFilePath = false;
 			settings.LoadImportedFullTextFromServer = false;
 			settings.MaximumErrorCount = int.MaxValue - 1;
 			settings.MoveDocumentsInAppendOverlayMode = false;
-			settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
-			settings.OverlayBehavior = OverlayBehavior.MergeAll;
-			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			settings.StartRecordNumber = 0;
 		}
 	}
