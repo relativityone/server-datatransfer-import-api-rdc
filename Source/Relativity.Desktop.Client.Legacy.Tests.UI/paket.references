@@ -1,4 +1,5 @@
-group ui-automation	
-	Appium.WebDriver
-	selenium.support
-	selenium.webdriver
+relativity.telemetry.datacontracts.shared
+group ui-automation
+Appium.WebDriver
+selenium.support
+selenium.webdriver

@@ -15,3 +15,4 @@ relativity.services.interfaces
 relativity.testing.identification
 relativity.transfer.client
 stylecop.analyzers
+relativity.telemetry.datacontracts.shared
