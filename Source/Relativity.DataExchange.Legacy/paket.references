@@ -1,14 +1,12 @@
 castle.core
 castle.windsor
 newtonsoft.json
-relativity.datatransfer.messageservice
 relativity.kepler
 relativity.kepler.client
 relativity.logging.interfaces
 relativity.oauth2client
 relativity.oauth2client.implicit
 relativity.oauth2client.interfaces
-relativity.telemetry.apm
 relativity.telemetry.datacontracts.shared
 relativity.telemetry.services.interface
 relativity.transfer.client

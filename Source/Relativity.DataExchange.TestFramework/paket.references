@@ -4,7 +4,6 @@ kCura.relativity.client
 nbuilder
 NUnit
 newtonsoft.json
-relativity.dataTransfer.messageService
 relativity.kepler
 relativity.kepler.client
 relativity.logging

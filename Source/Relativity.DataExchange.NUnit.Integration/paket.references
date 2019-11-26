@@ -4,7 +4,6 @@ moq
 nbuilder
 newtonsoft.json
 nunit
-relativity.dataTransfer.messageService
 relativity.kepler.client
 relativity.logging.interfaces
 relativity.testing.identification
