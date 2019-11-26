@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 	public static class ImportHelper
 	{
-		public static IReadOnlyCollection<string> ImportDefaultTestData(IntegrationTestParameters parameters)
+		public static IEnumerable<string> ImportDefaultTestData(IntegrationTestParameters parameters)
 		{
 			return ImportDocuments(parameters, SetupColumns, SetValues);
 
@@ -33,7 +33,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		public static IReadOnlyCollection<string> ImportDocuments(IntegrationTestParameters parameters)
+		public static IEnumerable<string> ImportDocuments(IntegrationTestParameters parameters)
 		{
 			return ImportDocuments(parameters, SetupColumns, SetValues);
 
@@ -52,7 +52,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		public static void ImportImagesForDocuments(
 			IntegrationTestParameters parameters,
-			IReadOnlyCollection<string> documentsControlNumbers)
+			IEnumerable<string> documentsControlNumbers)
 		{
 			ImportImagesForDocuments(parameters, GetImportJob, SetData);
 
@@ -90,7 +90,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		public static void ImportProduction(
 			IntegrationTestParameters parameters,
 			string productionName,
-			IReadOnlyCollection<string> documentsControlNumbers)
+			IEnumerable<string> documentsControlNumbers)
 		{
 			var productionId =
 				ProductionHelper.CreateProduction(parameters, productionName, "BATES", IntegrationTestHelper.Logger);
@@ -129,7 +129,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		private static IReadOnlyCollection<string> ImportDocuments(
+		private static IEnumerable<string> ImportDocuments(
 			IntegrationTestParameters parameters,
 			Action<DataTable> setupColumns,
 			Action<DataRow, string> setValues)
