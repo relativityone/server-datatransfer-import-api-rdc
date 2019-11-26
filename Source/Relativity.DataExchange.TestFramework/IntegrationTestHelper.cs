@@ -84,6 +84,32 @@ namespace Relativity.DataExchange.TestFramework
 		}
 
 		/// <summary>
+		/// Get connection string.
+		/// </summary>
+		/// <param name="parameters">
+		/// The integration test parameters.
+		/// </param>
+		/// <returns>The builder with populated values.</returns>
+		public static SqlConnectionStringBuilder GetConnectionString(IntegrationTestParameters parameters)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			var builder = new SqlConnectionStringBuilder
+			{
+				DataSource = parameters.SqlInstanceName,
+				IntegratedSecurity = false,
+				UserID = parameters.SqlAdminUserName,
+				Password = parameters.SqlAdminPassword,
+				InitialCatalog = string.Empty,
+			};
+
+			return builder;
+		}
+
+		/// <summary>
 		/// Destroy the integration test environment that was previously created.
 		/// </summary>
 		/// <param name="parameters">
@@ -109,14 +135,7 @@ namespace Relativity.DataExchange.TestFramework
 			{
 				try
 				{
-					SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder
-					{
-						DataSource = parameters.SqlInstanceName,
-						IntegratedSecurity = false,
-						UserID = parameters.SqlAdminUserName,
-						Password = parameters.SqlAdminPassword,
-						InitialCatalog = string.Empty,
-					};
+					SqlConnectionStringBuilder builder = GetConnectionString(parameters);
 
 					SqlConnection.ClearAllPools();
 					using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
