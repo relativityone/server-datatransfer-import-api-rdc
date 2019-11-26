@@ -50,8 +50,8 @@ nuget relativity.kepler.client = 1.0.1.627
 nuget relativity.oauth2client = 1.0.27
 nuget relativity.oauth2client.implicit = 1.0.27
 nuget relativity.oauth2client.interfaces = 1.0.27
-nuget relativity.telemetry.datacontracts.shared = 2019.1.0
-nuget relativity.telemetry.services.interface = 2019.1.0
+nuget relativity.telemetry.datacontracts.shared ~> 3000.0
+nuget relativity.telemetry.services.interface ~> 3000.0
 nuget relativity.transfer.client ~> 6.3.7
 
 # The Relativity packages below are required ONLY for test projects!
