@@ -49,8 +49,8 @@ dependencies
 	Relativity.OAuth2Client.Interfaces >= 1.0.27
 	relativity.transfer.client >= 6.2.4
 	ZetaLongPaths >= 1.0.0.16
-	Relativity.Telemetry.Services.Interface >= 2019.1.0
-	Relativity.Telemetry.DataContracts.Shared >= 2019.1.0
+	Relativity.Telemetry.Services.Interface ~> 2019.1.0
+	Relativity.Telemetry.DataContracts.Shared ~> 2019.1.0
 frameworkAssemblies
   System
   System.Data
