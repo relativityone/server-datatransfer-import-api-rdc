@@ -136,7 +136,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		{
 			parameters.ThrowIfNull(nameof(parameters));
 
-			var importApi = IntegrationTestHelper.CreateImportApi(parameters);
+			var importApi = CreateImportApi(parameters);
 			var job = importApi.NewNativeDocumentImportJob();
 			var settings = job.Settings;
 
@@ -178,7 +178,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			Func<ImportAPI, ImageImportBulkArtifactJob> getImportJob,
 			Action<DataTable> setData)
 		{
-			var importApi = IntegrationTestHelper.CreateImportApi(parameters);
+			var importApi = CreateImportApi(parameters);
 			var job = getImportJob(importApi);
 			job.Settings.CaseArtifactId = parameters.WorkspaceId;
 			ConfigureJobErrorEvents(job);
@@ -213,6 +213,14 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					throw new InvalidOperationException(string.Join("\n", errors));
 				}
 			};
+		}
+
+		private static ImportAPI CreateImportApi(IntegrationTestParameters parameters)
+		{
+			return new ImportAPI(
+				parameters.RelativityUserName,
+				parameters.RelativityPassword,
+				parameters.RelativityWebApiUrl.ToString());
 		}
 
 		private static void ApplyDefaultsForDocuments(Settings settings)
