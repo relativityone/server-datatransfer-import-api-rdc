@@ -1047,7 +1047,7 @@ Namespace Relativity.Desktop.Client
 
 #Region "Process Management"
 		Private Function CreateProcessForm() As ProcessForm
-			Return New ProcessForm() With {.StatusRefreshRate = AppSettings.Instance.ProcessFormRefreshRate}
+			Return New ProcessForm(_logger) With {.StatusRefreshRate = AppSettings.Instance.ProcessFormRefreshRate}
 		End Function
 
 		Public Async Function QueryConnectivity() As Task

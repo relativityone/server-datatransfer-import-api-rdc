@@ -1,5 +1,7 @@
+Imports System.ComponentModel
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Process
+Imports Relativity.Logging
 
 Namespace Relativity.Desktop.Client
 	Public Class ProcessForm
@@ -7,6 +9,7 @@ Namespace Relativity.Desktop.Client
 
 #Region " Windows Form Designer generated code "
 
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New()
 			MyBase.New()
 
@@ -342,16 +345,18 @@ End Sub
 
 #End Region
 
+		Public Sub New(ByRef logger As ILog)
+			Me.New()
+			Me._logger = logger
+		End Sub
+
 		Protected _processId As Guid
 		Protected WithEvents _processContext As ProcessContext
+		Private ReadOnly _logger As ILog = New NullLogger()
 		Private Property FatalException As System.Exception
 		Private _inSafeMode As Boolean
-		Private _errorsDataSource As System.Data.DataTable
-		Private _exportErrorFileLocation As String = ""
 		Private _hasReceivedFatalError As Boolean = False
-		Private _hasExportedErrors As Boolean = False
 		Private _statusBarPopupText As String = ""
-		Private _errorFilesExtension As String = "CSV"
 		Private _hasClickedStop As Boolean = False
 		Private _summaryString As System.Text.StringBuilder
 		Private _cancelled As Boolean = False
@@ -367,14 +372,7 @@ End Sub
 			End Set
 		End Property
 
-		Public Property ErrorFileExtension() As String
-			Get
-				Return _errorFilesExtension
-			End Get
-			Set(ByVal value As String)
-				_errorFilesExtension = value
-			End Set
-		End Property
+		Public Property ErrorFileExtension() As String = "CSV"
 		Public Property ProcessID() As Guid
 			Get
 				Return _processId
@@ -480,19 +478,27 @@ End Sub
 #Region " Process Observer"
 
 		Private Sub _processContext_OnProcessEvent(ByVal sender As Object, ByVal e As ProcessEventArgs) Handles _processContext.ProcessEvent
-			If Not _hasClickedStop Then _currentRecordLabel.Text = e.RecordInfo
-			_currentMessageStatus.Text = e.Message
-			Select Case e.EventType
-				Case ProcessEventType.Status
-					_outputTextBox.WriteLine(e.Message + " " + e.RecordInfo)
-					If e.Message.ToLower = "cancel import" Then _cancelled = True
-				Case ProcessEventType.Error
-					_errorsOutputTextBox.WriteLine(e.Message)
-				Case ProcessEventType.Warning
-					_warningsOutputTextBox.WriteLine(e.Message)
-			End Select
-		End Sub
+			If e.EventType = ProcessEventType.Status AndAlso e.Message.ToLower = "cancel import" Then
+				_cancelled = True
+			End If
 
+			Try
+				If Not _hasClickedStop Then _currentRecordLabel.Text = e.RecordInfo
+				_currentMessageStatus.Text = e.Message
+				Select Case e.EventType
+					Case ProcessEventType.Status
+						_outputTextBox.WriteLine(e.Message + " " + e.RecordInfo)
+					Case ProcessEventType.Error
+						_errorsOutputTextBox.WriteLine(e.Message)
+					Case ProcessEventType.Warning
+						_warningsOutputTextBox.WriteLine(e.Message)
+				End Select
+			Catch ex As Win32Exception ' This exception is most likely caused by cross thread calls to UI elements Win32Exception
+				'We decided to ignore that exception while working on REL-378780
+				_logger.LogError(ex, "Exception occured while handling process event: {@e}", e)
+			End Try
+		End Sub
+		
 		Private Function GetTimeSpanString(ByVal ts As System.TimeSpan) As String
 			Dim retval As String = ts.ToString
 			If retval.IndexOf(".") <> -1 Then
@@ -607,12 +613,6 @@ End Sub
 				If e.ExportFilePath <> "" Then
 					ShowWarningPopup = False
 					_exportErrorFileButton.Visible = True
-					Try
-						Dim x As New System.Guid(e.ExportFilePath)
-						If System.IO.File.Exists(e.ExportFilePath) Then _exportErrorFileLocation = e.ExportFilePath
-					Catch
-						_exportErrorFileLocation = e.ExportFilePath
-					End Try
 					If MsgBox("Errors have occurred. Export error files?", MsgBoxStyle.OkCancel, "Relativity Desktop Client") = MsgBoxResult.Ok Then
 						If e.ExportLog Then
 							Me.ExportErrorFiles()
@@ -716,7 +716,7 @@ End Sub
 
 		Private Sub _exportErrorFileButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportErrorFileButton.Click
 			_exportErrorsDialog.FileName = ""
-			Dim errorFileExtension As String = _errorFilesExtension.ToLower.TrimStart("."c)
+			Dim errorFileExtension As String = Me.ErrorFileExtension.ToLower.TrimStart("."c)
 			_exportErrorsDialog.Filter = errorFileExtension.ToUpper & " Files|*." & errorFileExtension.ToLower & "|All Files|*.*"
 			_exportErrorsDialog.ShowDialog()
 			If Not _exportErrorsDialog.FileName Is Nothing AndAlso Not _exportErrorsDialog.FileName = "" Then

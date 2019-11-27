@@ -120,7 +120,8 @@ Public MustInherit Class MonitoredProcessBase
 				.ThroughputBytesPerSecond = Statistics.CalculateThroughput(Statistics.TotalBytes, jobDuration),
 				.ThroughputRecordsPerSecond = Statistics.CalculateThroughput(completedRecordsCount, jobDuration),
 				.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(Statistics.DocumentsCreated + Statistics.DocumentsUpdated, Statistics.SqlTime/TimeSpan.TicksPerSecond),
-				.ImportObjectType = Statistics.ImportObjectType}
+				.ImportObjectType = Statistics.ImportObjectType,
+				.JobDurationInSeconds = jobDuration}
 		BuildMetricBase(metric)
 		MetricService.Log(metric)
 	End Sub

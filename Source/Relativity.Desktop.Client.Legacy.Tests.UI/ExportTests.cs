@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using Relativity.DataExchange.TestFramework;
+using Relativity.DataExchange.TestFramework.RelativityHelpers;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Windows;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
 
@@ -10,7 +12,25 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 	[TestFixture]
 	internal class ExportTests : RdcTestBase
 	{
+		private const string ProductionName = "Production-For-Export";
 		private readonly string exportPath = PathsProvider.GetTestOutputPath(@"Export");
+
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
+		{
+			TestParameters = IntegrationTestHelper.Create();
+			ImportDataForExport();
+		}
+
+		[OneTimeTearDown]
+		public void OneTimeTearDown()
+		{
+			if (TestParameters != null)
+			{
+				IntegrationTestHelper.Destroy(TestParameters);
+				TestParameters = null;
+			}
+		}
 
 		[Test]
 		public void ExportNativesWithFullTextAsFilesFromFolderAndSubfoldersToDatFile()
@@ -30,7 +50,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				TextFieldPrecedence = "Extracted Text"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 1376, 140973);
+			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 31, 3627);
 		}
 
 		[Test]
@@ -51,7 +71,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				ImageFileType = "Multi-page TIF"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 680, 68641);
+			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 12, 1452);
 		}
 
 		[Test]
@@ -59,7 +79,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		{
 			var exportParameters = new ExportWindowSetupParameters
 			{
-				FieldSourceName = "Production-Set-To-Export",
+				FieldSourceName = ProductionName,
 				ExportPath = exportPath,
 				VolumeInformationDigitPadding = 3,
 				FilesNamedAfter = "Begin production number",
@@ -74,7 +94,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				ImageFileType = "Single-page TIF/JPG"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportProductionSet(), 2197, 219558);
+			RunExportTest(exportParameters, x => x.ExportProductionSet(), 52, 5186);
 		}
 
 		[Test]
@@ -97,7 +117,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				ImageFileType = "PDF"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportSavedSearch(), 2055, 209507);
+			RunExportTest(exportParameters, x => x.ExportSavedSearch(), 42, 4972);
 		}
 
 		[Test]
@@ -125,7 +145,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 
 			var workspaceSelectWindow = Login();
 
-			var rdcWindow = workspaceSelectWindow.ChooseWorkspace("Workspace-For-Export-Tests");
+			var rdcWindow = workspaceSelectWindow.ChooseWorkspace(TestParameters.WorkspaceName);
 			rdcWindow.SelectRootFolder();
 
 			var exportWindow = getExportWindow(rdcWindow);
@@ -157,6 +177,13 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			{
 				exportFolder.Create();
 			}
+		}
+
+		private void ImportDataForExport()
+		{
+			var documents = ImportHelper.ImportDocuments(TestParameters);
+			ImportHelper.ImportImagesForDocuments(TestParameters, documents);
+			ImportHelper.ImportProduction(TestParameters, ProductionName, documents);
 		}
 	}
 }

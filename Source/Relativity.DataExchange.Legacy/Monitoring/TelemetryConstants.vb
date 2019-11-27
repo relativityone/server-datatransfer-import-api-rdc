@@ -53,6 +53,7 @@
 			Public Const SYSTEM_TYPE As String = "SystemType"
 			Public Const SUB_SYSTEM_TYPE As String = "SubSystemType"
 			Public Const IMPORT_OBJECT_TYPE As String = "ImportObjectType"
+			Public Const JOB_DURATION As String = "JobDurationInSeconds"
 		End Class
 
 		''' <summary>
