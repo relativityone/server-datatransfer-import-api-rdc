@@ -102,12 +102,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			this.GivenTheImportJob();
 			this.GivenDefaultNativeDocumentImportJob();
+			this.ImportJob.Settings.MultiValueDelimiter = ';';
 
 			const int NumberOfDocumentsToImport = 2;
 			IEnumerable<ChoiceImportDto> importData = new[]
 			{
-				new ChoiceImportDto("20", "Highly Confidential"),
-				new ChoiceImportDto("21", "Not Confidential"),
+				new ChoiceImportDto("20", "Highly Confidential", "Attorney Client Communication;Attorney Work Product"),
+				new ChoiceImportDto("21", "Not Confidential", "Attorney Work Product;Do Whatever You Want"),
 			};
 
 			// ACT

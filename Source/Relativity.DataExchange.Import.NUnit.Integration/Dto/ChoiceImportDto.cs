@@ -12,10 +12,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 
 	public class ChoiceImportDto
 	{
-		public ChoiceImportDto(string controlNumber, string confidentialDesignation)
+		public ChoiceImportDto(string controlNumber, string confidentialDesignation, string privilegeDesignation)
 		{
 			this.ControlNumber = controlNumber;
 			this.ConfidentialDesignation = confidentialDesignation;
+			this.PrivilegeDesignation = privilegeDesignation;
 		}
 
 		[DisplayName(WellKnownFields.ControlNumber)]
@@ -23,5 +24,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 
 		[DisplayName(WellKnownFields.ConfidentialDesignation)]
 		public string ConfidentialDesignation { get; set; }
+
+		[DisplayName(WellKnownFields.PrivilegeDesignation)]
+		public string PrivilegeDesignation { get; set; }
 	}
 }

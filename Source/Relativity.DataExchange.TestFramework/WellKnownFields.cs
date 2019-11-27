@@ -85,5 +85,10 @@ namespace Relativity.DataExchange.TestFramework
 		/// The confidential designation.
 		/// </summary>
 		public const string ConfidentialDesignation = "Confidential Designation";
+
+		/// <summary>
+		/// The privilege designation.
+		/// </summary>
+		public const string PrivilegeDesignation = "Privilege Designation";
 	}
 }
