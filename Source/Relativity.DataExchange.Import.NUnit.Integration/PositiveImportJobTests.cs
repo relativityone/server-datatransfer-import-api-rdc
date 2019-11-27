@@ -10,6 +10,7 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System.Collections.Generic;
+	using System.Linq;
 
 	using global::NUnit.Framework;
 
@@ -79,6 +80,35 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				percentOfSpecial: 15);
 
 			IEnumerable<FolderImportDto> importData = randomFolderGenerator.ToEnumerable();
+
+			// ACT
+			this.WhenExecutingTheJob(importData);
+
+			// ASSERT
+			this.ThenTheImportJobIsSuccessful(NumberOfDocumentsToImport);
+			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
+			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfDocumentsToImport));
+		}
+
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[Category(TestCategories.TransferApi)]
+		[IdentifiedTest("700bda86-6e9a-43c1-a69c-2a1972cba4f8")]
+		[Test]
+		public void ShouldImportChoices()
+		{
+			// ARRANGE
+			ForceClient(TapiClient.Direct);
+
+			this.GivenTheImportJob();
+			this.GivenDefaultNativeDocumentImportJob();
+
+			const int NumberOfDocumentsToImport = 2;
+			IEnumerable<ChoiceImportDto> importData = new[]
+			{
+				new ChoiceImportDto("20", "Highly Confidential"),
+				new ChoiceImportDto("21", "Not Confidential"),
+			};
 
 			// ACT
 			this.WhenExecutingTheJob(importData);
