@@ -11,7 +11,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using System.Data.SqlClient;
 	using System.Xml.Linq;
 
-	public class SqlProfiling
+	public static class SqlProfiling
 	{
 		public static void StartProfilingForRelativityWebApi(string connectionString)
 		{
@@ -47,6 +47,7 @@ END";
 				}
 			}
 		}
+
 		public static string ReadCapturedEventsAndStopProfiling(string connectionString)
 		{
 			string data = null;

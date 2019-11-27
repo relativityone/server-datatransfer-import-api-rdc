@@ -12,6 +12,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	public class ProfilingReport
 	{
+		private readonly StringBuilder sql;
+
 		private bool printSql;
 		private ulong cpuTime;
 		private ulong duration;
@@ -19,7 +21,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private ulong logicalReads;
 		private ulong writes;
 		private ulong rowCount;
-		private readonly StringBuilder sql;
 
 		public ProfilingReport(bool printSql)
 		{
@@ -29,6 +30,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		public void Add(XElement element)
 		{
+			element.ThrowIfNull(nameof(element));
+
 			switch (element.Name.LocalName)
 			{
 				case "action":
@@ -55,7 +58,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 							break;
 						case "batch_text":
 						case "statement":
-							if (printSql)
+							if (this.printSql)
 							{
 								this.sql.AppendLine(element.Element("value").Value);
 								this.sql.AppendLine();
@@ -68,7 +71,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 					break;
 				default:
-					throw new ArgumentException(nameof(element));
+					throw new ArgumentException($"Unsupported element type: {element.Name.LocalName}", nameof(element));
 			}
 		}
 
@@ -76,7 +79,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			StringBuilder builder = new StringBuilder();
 
-			if (printSql)
+			if (this.printSql)
 			{
 				builder.Append(this.sql);
 			}
