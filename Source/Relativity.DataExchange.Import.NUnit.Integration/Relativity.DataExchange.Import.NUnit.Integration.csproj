@@ -85,7 +85,9 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProfilingReport.cs" />
     <Compile Include="RandomFolderGenerator.cs" />
+    <Compile Include="SqlProfiling.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
       <Paket>True</Paket>
     </Content>
