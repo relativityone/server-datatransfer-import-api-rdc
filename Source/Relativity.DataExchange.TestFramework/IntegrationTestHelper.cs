@@ -90,7 +90,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// The integration test parameters.
 		/// </param>
 		/// <returns>The builder with populated values.</returns>
-		public static SqlConnectionStringBuilder GetConnectionString(IntegrationTestParameters parameters)
+		public static SqlConnectionStringBuilder GetSqlConnectionStringBuilder(IntegrationTestParameters parameters)
 		{
 			if (parameters == null)
 			{
@@ -135,7 +135,7 @@ namespace Relativity.DataExchange.TestFramework
 			{
 				try
 				{
-					SqlConnectionStringBuilder builder = GetConnectionString(parameters);
+					SqlConnectionStringBuilder builder = GetSqlConnectionStringBuilder(parameters);
 
 					SqlConnection.ClearAllPools();
 					using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
