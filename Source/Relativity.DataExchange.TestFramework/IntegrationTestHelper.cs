@@ -16,6 +16,8 @@ namespace Relativity.DataExchange.TestFramework
 	using System.Net;
 	using System.Reflection;
 
+	using kCura.Relativity.ImportAPI;
+
 	using Newtonsoft.Json;
 
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
@@ -65,11 +67,12 @@ namespace Relativity.DataExchange.TestFramework
 
 			Console.WriteLine("Creating a test workspace...");
 			WorkspaceHelper.CreateTestWorkspace(parameters, Logger);
-			kCura.Relativity.ImportAPI.ImportAPI iapi = new kCura.Relativity.ImportAPI.ImportAPI(
+
+			var importApi = new ImportAPI(
 				parameters.RelativityUserName,
 				parameters.RelativityPassword,
 				parameters.RelativityWebApiUrl.ToString());
-			IEnumerable<kCura.Relativity.ImportAPI.Data.Workspace> workspaces = iapi.Workspaces();
+			IEnumerable<kCura.Relativity.ImportAPI.Data.Workspace> workspaces = importApi.Workspaces();
 			kCura.Relativity.ImportAPI.Data.Workspace workspace =
 				workspaces.FirstOrDefault(x => x.ArtifactID == parameters.WorkspaceId);
 			if (workspace == null)

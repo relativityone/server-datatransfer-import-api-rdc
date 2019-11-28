@@ -1,5 +1,6 @@
-relativity.telemetry.datacontracts.shared
-group ui-automation
-Appium.WebDriver
-selenium.support
-selenium.webdriver
+kcura.outsidein.fi.win32
+
+group ui-automation	
+	Appium.WebDriver
+	selenium.support
+	selenium.webdriver

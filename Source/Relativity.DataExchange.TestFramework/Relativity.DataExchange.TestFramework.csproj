@@ -84,6 +84,8 @@
     <Compile Include="DataReaderBase.cs" />
     <Compile Include="DummyTest.cs" />
     <Compile Include="EnumerableDataReader.cs" />
+    <Compile Include="Extensions\DataRowExtensions.cs" />
+    <Compile Include="Extensions\DataTableExtensions.cs" />
     <Compile Include="RelativityHelpers\ImportHelper.cs" />
     <Compile Include="TestData.cs" />
     <Compile Include="FileDto.cs" />

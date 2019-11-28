@@ -232,6 +232,20 @@
                        KeyPath="no" />
       </RegistryKey>
     </Component>
+    <Component Id="BrowserRegistryEntry"
+               Directory="INSTALLFOLDER"
+               Guid='{144BCAC9-A367-42DD-82F5-D451C5E76EE6}'>
+	    <RegistryKey Root="HKLM"
+	                 Key="$(var.BrowserRegistryKey)"
+	                 ForceCreateOnInstall="yes"
+	                 ForceDeleteOnUninstall="no">
+		    <RegistryValue Action="write"
+		                   Type="integer"
+		                   Name="Relativity.Desktop.Client.exe"
+		                   Value='11000'
+		                   KeyPath="yes" />
+	    </RegistryKey>
+    </Component>
     <Component Id="ImagesComponent"
                Directory="Images"
                Guid="{4DDBF4F4-7942-42E1-B2C5-B4B85729EAC7}"
@@ -260,6 +274,7 @@
                Absent="disallow">
         <ComponentRef Id="NativeDependencies" />
         <ComponentRef Id="RegistryEntries" />
+        <ComponentRef Id="BrowserRegistryEntry" />
         <ComponentRef Id="Relativity.Desktop.Client.exe" />
         <ComponentRef Id="Relativity.Desktop.Client.Config" />
         <ComponentRef Id="AppStartMenuShortcut" />
