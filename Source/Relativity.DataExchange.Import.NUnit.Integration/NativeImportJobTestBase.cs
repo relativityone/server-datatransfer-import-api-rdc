@@ -12,84 +12,136 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Linq;
 	using System.Text;
+
+	using Castle.Core.Internal;
 
 	using global::NUnit.Framework;
 
 	using kCura.Relativity.DataReaderClient;
+	using kCura.Relativity.ImportAPI;
 
 	using Relativity.DataExchange.TestFramework;
 
 	public abstract class NativeImportJobTestBase : ImportJobTestBase
 	{
-		protected ImportBulkArtifactJob ImportJob { get; set; }
+		protected Dictionary<string, ImportBulkArtifactJob> ImportJobsDict { get; } = new Dictionary<string, ImportBulkArtifactJob>();
 
-		[SetUp]
-		public void SetupNative()
+		protected ImportBulkArtifactJob ImportJob
 		{
-			this.ImportJob = null;
+			get
+			{
+				return this.ImportJobsDict.Values.FirstOrDefault();
+			}
 		}
 
 		[TearDown]
 		public void TeardownNative()
 		{
-			if (this.ImportJob != null)
+			foreach (var importBulkArtifactJob in this.ImportJobsDict.Values)
 			{
-				this.ImportJob.OnError -= this.ImportJob_OnError;
-				this.ImportJob.OnFatalException -= this.ImportJob_OnFatalException;
-				this.ImportJob.OnMessage -= this.ImportJob_OnMessage;
-				this.ImportJob.OnComplete -= this.ImportJob_OnComplete;
-				this.ImportJob.OnProgress -= this.ImportJob_OnProgress;
+				if (importBulkArtifactJob != null)
+				{
+					importBulkArtifactJob.OnError -= this.ImportJob_OnError;
+					importBulkArtifactJob.OnFatalException -= this.ImportJob_OnFatalException;
+					importBulkArtifactJob.OnMessage -= this.ImportJob_OnMessage;
+					importBulkArtifactJob.OnComplete -= this.ImportJob_OnComplete;
+					importBulkArtifactJob.OnProgress -= this.ImportJob_OnProgress;
+				}
+			}
+
+			this.ImportJobsDict.Clear();
+		}
+
+		protected void WhenExecutingTheJob<T>(IEnumerable<T> importData, ImportBulkArtifactJob importJob)
+		{
+			if (importJob == null)
+			{
+				importJob = this.ImportJobsDict.Values.First();
+			}
+
+			using (var dataReader = new EnumerableDataReader<T>(importData))
+			{
+				importJob.SourceData.SourceData = dataReader;
+				importJob.Execute();
+			}
+
+			if (this.ImportJobsDict.Count == 1)
+			{
+				Console.WriteLine(
+					"Import API elapsed time: {0}",
+					this.TestJobResult.CompletedJobReports.First().EndTime - this.TestJobResult.CompletedJobReports.First().StartTime);
 			}
 		}
 
 		protected void WhenExecutingTheJob<T>(IEnumerable<T> importData)
 		{
-			using (var dataReader = new EnumerableDataReader<T>(importData))
+			this.WhenExecutingTheJob(importData, null);
+		}
+
+		protected void GivenDefaultNativeDocumentImportJob(string clientId, ImportAPI importApi)
+		{
+			if (this.ImportJobsDict.ContainsKey(clientId))
 			{
-				this.ImportJob.SourceData.SourceData = dataReader;
-				this.ImportJob.Execute();
+				throw new ArgumentException($"Client id {clientId} has been already registered!");
 			}
 
-			Console.WriteLine("Import API elapsed time: {0}", this.TestJobResult.CompletedJobReport.EndTime - this.TestJobResult.CompletedJobReport.StartTime);
+			if (importApi == null)
+			{
+				importApi = this.ImportAPIInstancesDict.Values.First();
+			}
+
+			var importJob = importApi.NewNativeDocumentImportJob();
+			importJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();
+			importJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
+
+			importJob.Settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
+			importJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
+
+			importJob.OnError += this.ImportJob_OnError;
+			importJob.OnFatalException += this.ImportJob_OnFatalException;
+			importJob.OnMessage += this.ImportJob_OnMessage;
+			importJob.OnComplete += this.ImportJob_OnComplete;
+			importJob.OnProgress += this.ImportJob_OnProgress;
+
+			this.ImportJobsDict[clientId] = importJob;
 		}
 
 		protected void GivenDefaultNativeDocumentImportJob()
 		{
-			this.ImportJob = this.ImportAPI.NewNativeDocumentImportJob();
-			this.ImportJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();
-			this.ImportJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
+			this.GivenDefaultNativeDocumentImportJob(string.Empty, null);
+		}
 
-			this.ImportJob.Settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
-			this.ImportJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
+		protected void GiveNativeFilePathSourceDocumentImportJob(string clientId, ImportAPI importApi)
+		{
+			this.GivenDefaultNativeDocumentImportJob(clientId, importApi);
 
-			this.ImportJob.OnError += this.ImportJob_OnError;
-			this.ImportJob.OnFatalException += this.ImportJob_OnFatalException;
-			this.ImportJob.OnMessage += this.ImportJob_OnMessage;
-			this.ImportJob.OnComplete += this.ImportJob_OnComplete;
-			this.ImportJob.OnProgress += this.ImportJob_OnProgress;
+			var importJob = this.ImportJobsDict[clientId];
+
+			importJob.Settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
+			importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
+
+			importJob.Settings.OIFileIdMapped = true;
+			importJob.Settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
+			importJob.Settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
+
+			importJob.Settings.FileSizeMapped = true;
+			importJob.Settings.FileSizeColumn = WellKnownFields.NativeFileSize;
+
+			importJob.Settings.ApplicationName = clientId;
 		}
 
 		protected void GiveNativeFilePathSourceDocumentImportJob()
 		{
-			this.GivenDefaultNativeDocumentImportJob();
-
-			this.ImportJob.Settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
-			this.ImportJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
-
-			this.ImportJob.Settings.OIFileIdMapped = true;
-			this.ImportJob.Settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
-			this.ImportJob.Settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
-
-			this.ImportJob.Settings.FileSizeMapped = true;
-			this.ImportJob.Settings.FileSizeColumn = WellKnownFields.NativeFileSize;
+			this.GiveNativeFilePathSourceDocumentImportJob(string.Empty, null);
 		}
 
 		private void ImportJob_OnComplete(JobReport jobReport)
 		{
 			lock (this.TestJobResult)
 			{
-				this.TestJobResult.CompletedJobReport = jobReport;
+				this.TestJobResult.CompletedJobReports.Add(jobReport);
 				Console.WriteLine("[Job Complete]");
 			}
 		}

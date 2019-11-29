@@ -10,6 +10,8 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
+	using System.Collections.Generic;
+	using System.Linq;
 	using System.Net;
 
 	using global::NUnit.Framework;
@@ -31,15 +33,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		protected ImportTestJobResult TestJobResult { get; private set; }
 
-		protected ImportAPI ImportAPI { get; set; }
+		protected Dictionary<string, ImportAPI> ImportAPIInstancesDict { get; } = new Dictionary<string, ImportAPI>();
 
 		protected TempDirectory2 TempDirectory { get; private set; }
 
 		[SetUp]
 		public void Setup()
 		{
-			AppSettingsManager.Default(AppSettings.Instance);
-
 			kCura.WinEDDS.Config.ConfigSettings["BadPathErrorsRetry"] = false;
 			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobRetryAttempts"] = 1;
 			AppSettings.Instance.TapiMaxJobParallelism = 1;
@@ -59,6 +59,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[TearDown]
 		public void Teardown()
 		{
+			this.ImportAPIInstancesDict.Clear();
 			if (this.TempDirectory != null)
 			{
 				this.TempDirectory.ClearReadOnlyAttributes = true;
@@ -87,52 +88,84 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
+		protected void GivenTheImportJobs(int instanceCount)
+		{
+			for (int index = 0; index < instanceCount; ++index)
+			{
+				this.ImportAPIInstancesDict.Add($"Client-{index}", new ImportAPI(
+					AssemblySetup.TestParameters.RelativityUserName,
+					AssemblySetup.TestParameters.RelativityPassword,
+					AssemblySetup.TestParameters.RelativityWebApiUrl.ToString()));
+			}
+		}
+
 		protected void GivenTheImportJob()
 		{
-			this.ImportAPI = new ImportAPI(
-				AssemblySetup.TestParameters.RelativityUserName,
-				AssemblySetup.TestParameters.RelativityPassword,
-				AssemblySetup.TestParameters.RelativityWebApiUrl.ToString());
+			this.GivenTheImportJobs(1);
+		}
+
+		protected void GivenTheImportJobsWithIntegratedAuthentication(int instanceCount)
+		{
+			for (int index = 0; index < instanceCount; ++index)
+			{
+				this.ImportAPIInstancesDict.Add($"Client-{index}", new ImportAPI(
+					AssemblySetup.TestParameters.RelativityWebApiUrl.ToString()));
+			}
 		}
 
 		protected void GivenTheImportJobWithIntegratedAuthentication()
 		{
-			this.ImportAPI = new ImportAPI(AssemblySetup.TestParameters.RelativityWebApiUrl.ToString());
+			this.GivenTheImportJobsWithIntegratedAuthentication(1);
 		}
 
 		protected void ThenTheImportJobIsSuccessful(int expectedTotalRows)
 		{
 			Assert.That(this.TestJobResult.ErrorRows, Has.Count.Zero);
 			Assert.That(this.TestJobResult.JobFatalExceptions, Has.Count.Zero);
-			Assert.That(this.TestJobResult.CompletedJobReport, Is.Not.Null);
-			Assert.That(this.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.Zero);
-			Assert.That(this.TestJobResult.CompletedJobReport.FatalException, Is.Null);
-			Assert.That(this.TestJobResult.CompletedJobReport.TotalRows, Is.EqualTo(expectedTotalRows));
+			Assert.That(this.TestJobResult.CompletedJobReports, Is.All.Not.Null);
+			foreach (var jobReport in this.TestJobResult.CompletedJobReports)
+			{
+				Assert.That(jobReport.ErrorRows, Has.Count.Zero);
+				Assert.That(jobReport.FatalException, Is.Null);
+			}
+
+			var totalRecordCount = this.TestJobResult.CompletedJobReports.Select(item => item.TotalRows).Sum();
+			Assert.That(totalRecordCount, Is.EqualTo(expectedTotalRows));
 		}
 
 		protected void ThenTheImportJobFailedWithFatalError(int expectedErrorRows, int expectedTotalRows)
 		{
 			// Note: the exact number of expected rows can vary over a range when expecting an error.
-			Assert.That(this.TestJobResult.CompletedJobReport, Is.Not.Null);
-			Assert.That(this.TestJobResult.CompletedJobReport.TotalRows, Is.Positive.And.LessThanOrEqualTo(expectedTotalRows));
+			Assert.That(this.TestJobResult.CompletedJobReports, Is.All.Not.Null);
+			var totalRecordCount = this.TestJobResult.CompletedJobReports.Select(item => item.TotalRows).Sum();
 
-			Assert.That(this.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(expectedErrorRows));
-			Assert.That(this.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(this.TestJobResult.ErrorRows.Count));
+			Assert.That(totalRecordCount, Is.Positive.And.LessThanOrEqualTo(expectedTotalRows));
+
+			foreach (var jobReport in this.TestJobResult.CompletedJobReports)
+			{
+				Assert.That(jobReport.ErrorRows, Has.Count.EqualTo(expectedErrorRows));
+				Assert.That(jobReport.ErrorRows, Has.Count.EqualTo(this.TestJobResult.ErrorRows.Count));
+				Assert.That(jobReport.FatalException, Is.Not.Null);
+			}
 
 			Assert.That(this.TestJobResult.JobFatalExceptions, Has.Count.Positive);
-			Assert.That(this.TestJobResult.CompletedJobReport.FatalException, Is.Not.Null);
 		}
 
 		protected void ThenTheImportJobCompletedWithErrors(int expectedErrorRows, int expectedTotalRows)
 		{
-			Assert.That(this.TestJobResult.CompletedJobReport, Is.Not.Null);
-			Assert.That(this.TestJobResult.CompletedJobReport.TotalRows, Is.EqualTo(expectedTotalRows));
+			Assert.That(this.TestJobResult.CompletedJobReports, Is.All.Not.Null);
+			var totalRecordCount = this.TestJobResult.CompletedJobReports.Select(item => item.TotalRows).Sum();
 
-			Assert.That(this.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(expectedErrorRows));
-			Assert.That(this.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(this.TestJobResult.ErrorRows.Count));
+			Assert.That(totalRecordCount, Is.EqualTo(expectedTotalRows));
+
+			foreach (var jobReport in this.TestJobResult.CompletedJobReports)
+			{
+				Assert.That(jobReport.ErrorRows, Has.Count.EqualTo(expectedErrorRows));
+				Assert.That(jobReport.ErrorRows, Has.Count.EqualTo(this.TestJobResult.ErrorRows.Count));
+				Assert.That(jobReport.FatalException, Is.Not.Null);
+			}
 
 			Assert.That(this.TestJobResult.JobFatalExceptions, Has.Count.Zero);
-			Assert.That(this.TestJobResult.CompletedJobReport.FatalException, Is.Null);
 		}
 	}
 }

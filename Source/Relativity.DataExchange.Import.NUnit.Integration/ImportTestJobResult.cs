@@ -20,6 +20,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		public List<long> ProgressCompletedRows { get; } = new List<long>();
 
-		public JobReport CompletedJobReport { get; set; }
+		public List<JobReport> CompletedJobReports { get; } = new List<JobReport>();
 	}
 }
