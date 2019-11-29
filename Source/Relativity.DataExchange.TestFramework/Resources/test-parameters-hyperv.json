@@ -10,6 +10,7 @@
   "SkipDirectModeTests": "False",
   "SkipIntegrationTests": "False",
   "SqlDropWorkspaceDatabase": "True",
+  "SqlCaptureProfiling": "False",
   "SqlInstanceName": "il1ddtapirap001.kcura.corp",
   "SqlAdminUserName": "nazAwRzQciF2hmuzYw50HA==",
   "SqlAdminPassword": "FzHCbDP/Jh4XilTq7OLyEg==",

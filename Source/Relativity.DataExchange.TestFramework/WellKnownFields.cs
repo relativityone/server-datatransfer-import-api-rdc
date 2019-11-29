@@ -80,5 +80,15 @@ namespace Relativity.DataExchange.TestFramework
 		/// The Extracted Text field.
 		/// </summary>
 		public const string ExtractedText = "Extracted Text";
+
+		/// <summary>
+		/// The confidential designation.
+		/// </summary>
+		public const string ConfidentialDesignation = "Confidential Designation";
+
+		/// <summary>
+		/// The privilege designation.
+		/// </summary>
+		public const string PrivilegeDesignation = "Privilege Designation";
 	}
 }
