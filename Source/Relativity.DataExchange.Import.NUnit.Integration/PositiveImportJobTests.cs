@@ -95,7 +95,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("700bda86-6e9a-43c1-a69c-2a1972cba4f8")]
 		[Test]
-		public void ShouldImportChoices()
+		public void ShouldImportDocumentWithChoices()
 		{
 			// ARRANGE
 			ForceClient(TapiClient.Direct);
@@ -105,10 +105,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ImportJob.Settings.MultiValueDelimiter = ';';
 
 			const int NumberOfDocumentsToImport = 2;
-			IEnumerable<ChoiceImportDto> importData = new[]
+			IEnumerable<DocumentWithChoicesImportDto> importData = new[]
 			{
-				new ChoiceImportDto("20", "Highly Confidential", "Attorney Client Communication;Attorney Work Product"),
-				new ChoiceImportDto("21", "Not Confidential", "Attorney Work Product;Do Whatever You Want"),
+				new DocumentWithChoicesImportDto("20", "Highly Confidential", "Attorney Client Communication;Attorney Work Product"),
+				new DocumentWithChoicesImportDto("21", "Not Confidential", "Attorney Work Product;Do Whatever You Want"),
 			};
 
 			// ACT

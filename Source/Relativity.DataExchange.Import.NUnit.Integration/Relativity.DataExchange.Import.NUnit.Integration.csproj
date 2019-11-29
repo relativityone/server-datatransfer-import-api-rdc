@@ -85,7 +85,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dto\ChoiceImportDto.cs" />
+    <Compile Include="Dto\DocumentWithChoicesImportDto.cs" />
     <Compile Include="ProfilingReport.cs" />
     <Compile Include="RandomFolderGenerator.cs" />
     <Compile Include="SqlProfiling.cs" />

@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ChoiceImportDto.cs" company="Relativity ODA LLC">
+// <copyright file="DocumentWithChoicesImportDto.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -10,9 +10,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 
 	using Relativity.DataExchange.TestFramework;
 
-	public class ChoiceImportDto
+	public class DocumentWithChoicesImportDto
 	{
-		public ChoiceImportDto(string controlNumber, string confidentialDesignation, string privilegeDesignation)
+		public DocumentWithChoicesImportDto(string controlNumber, string confidentialDesignation, string privilegeDesignation)
 		{
 			this.ControlNumber = controlNumber;
 			this.ConfidentialDesignation = confidentialDesignation;
