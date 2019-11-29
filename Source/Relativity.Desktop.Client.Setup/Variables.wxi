@@ -8,4 +8,5 @@
   <?define RegistryKey="Software\kCura\RelativityDesktopClient" ?>
   <?define ConfigFile="$(var.Relativity.Desktop.Client.Legacy.TargetFileName).config"?>
   <?define ProcessName="Relativity.Desktop.Client"?>
+  <?define BrowserRegistryKey="Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION"?>
 </Include>
