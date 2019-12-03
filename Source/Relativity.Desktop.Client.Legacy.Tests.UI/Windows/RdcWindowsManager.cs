@@ -4,6 +4,7 @@ using System.Linq;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Windows.Names;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -12,27 +13,29 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly WindowsManager manager;
 		private readonly RelativityDesktopClientWindow rdcWindow;
 		private readonly Dictionary<string, IWindow> windows = new Dictionary<string, IWindow>();
+		private readonly ILog logger;
 
-		public RdcWindowsManager(WindowsManager manager)
+		public RdcWindowsManager(ILog logger, WindowsManager manager)
 		{
+			this.logger = logger;
 			this.manager = manager;
 			rdcWindow = CreateRelativityDesktopClientWindow();
 		}
 
 		public LoginWindow SwitchToLoginWindow()
 		{
-			return SwitchToWindow(RdcWindowName.RelativityLogin, x => new LoginWindow(this, x));
+			return SwitchToWindow(RdcWindowName.RelativityLogin, x => new LoginWindow(logger, this, x));
 		}
 
 		public bool TryGetUntrustedCertificateWindow(out UntrustedCertificateWindow window)
 		{
 			return TrySwitchToWindow(RdcWindowName.UntrustedCertificate, TimeSpan.FromSeconds(1),
-				x => new UntrustedCertificateWindow(this, x), out window);
+				x => new UntrustedCertificateWindow(logger, this, x), out window);
 		}
 
 		public SelectWorkspaceWindow SwitchToSelectWorkspaceWindow()
 		{
-			return SwitchToWindow(RdcWindowName.SelectWorkspace, x => new SelectWorkspaceWindow(this, x));
+			return SwitchToWindow(RdcWindowName.SelectWorkspace, x => new SelectWorkspaceWindow(logger, this, x));
 		}
 
 		public RelativityDesktopClientWindow SwitchToRelativityDesktopClientWindow()
@@ -43,35 +46,35 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public RdoImportWindow SwitchToRdoImportWindow(RdoImportProfile profile)
 		{
-			return SwitchToWindow(profile.ImportWindow,x => new RdoImportWindow(this, x, profile));
+			return SwitchToWindow(profile.ImportWindow,x => new RdoImportWindow(logger, this, x, profile));
 		}
 
 		public ExportWindow SwitchToExportWindow(ExportProfile profile)
 		{
-			return SwitchToWindow(profile.ExportWindow, x => new ExportWindow(this, x, profile));
+			return SwitchToWindow(profile.ExportWindow, x => new ExportWindow(logger,this, x, profile));
 		}
 
 		public ImageImportWindow SwitchToImageImportWindow(ImageImportProfile profile)
 		{
-			return SwitchToWindow(profile.ImportWindow, x => new ImageImportWindow(this, x, profile));
+			return SwitchToWindow(profile.ImportWindow, x => new ImageImportWindow(logger, this, x, profile));
 		}
 
 		public DialogWindow GetRdcConfirmationDialog()
 		{
 			var windowDetails = GetWindow(RdcWindowName.RelativityDesktopClient,
 				x => x.Handle != rdcWindow.Handle);
-			return new DialogWindow(this, windowDetails);
+			return new DialogWindow(logger, this, windowDetails);
 		}
 
 		public ProgressWindow SwitchToProgressWindow(ProgressWindowName name)
 		{
-			return SwitchToWindow(name, x => new ProgressWindow(this, x));
+			return SwitchToWindow(name, x => new ProgressWindow(logger, this, x));
 		}
 
 		private RelativityDesktopClientWindow CreateRelativityDesktopClientWindow()
 		{
 			return SwitchToWindow(RdcWindowName.RelativityDesktopClient,
-				x => new RelativityDesktopClientWindow(this, x));
+				x => new RelativityDesktopClientWindow(logger, this, x));
 		}
 
 		private T SwitchToWindow<T>(RdcWindowName name, Func<WindowDetails, T> createWindow) where T : RdcWindowBase<T>

@@ -126,10 +126,8 @@
     <Compile Include="Appium\ComboBoxUIElement.cs" />
     <Compile Include="Appium\DefaultTimeouts.cs" />
     <Compile Include="Appium\EditUIElement.cs" />
-    <Compile Include="Appium\Extensions\AppiumWebElementExtensions.cs" />
     <Compile Include="Appium\ElementClass.cs" />
     <Compile Include="Appium\ElementType.cs" />
-    <Compile Include="Appium\Extensions\TextElementExtensions.cs" />
     <Compile Include="Appium\GroupUIElement.cs" />
     <Compile Include="Appium\ListItemUIElement.cs" />
     <Compile Include="Appium\ListUIElement.cs" />

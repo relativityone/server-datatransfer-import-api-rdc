@@ -1,5 +1,6 @@
 ﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -12,10 +13,10 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly ComboBoxUIElement productionComboBox;
 		private readonly ImageImportProfile profile;
 
-		public ImageImportWindow(RdcWindowsManager windowsManager,
+		public ImageImportWindow(ILog logger, RdcWindowsManager windowsManager,
 			WindowDetails window,
 			ImageImportProfile profile) :
-			base(windowsManager, window)
+			base(logger, windowsManager, window)
 		{
 			this.profile = profile;
 
@@ -23,7 +24,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			filePathEdit = FindEditWithAutomationId("_filePath");
 			overwriteComboBox = FindComboBoxWithAutomationId("_overwriteDropdown");
 			productionComboBox = FindComboBoxWithAutomationId("_productionDropdown");
-			openSettingsDialog = new OpenSettingsDialog(FindWindow("Open"));
+			openSettingsDialog = new OpenSettingsDialog(logger, FindWindow("Open"));
 		}
 
 		public void SetupImport(ImageImportWindowSetupParameters parameters)
