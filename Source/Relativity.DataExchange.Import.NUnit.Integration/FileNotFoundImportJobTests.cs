@@ -44,8 +44,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 
-			this.GivenTheImportJob();
-			this.GiveNativeFilePathSourceDocumentImportJob();
+			this.CreateImportApiSetUpWithUserAndPwd(this.GetNativeFilePathSourceDocumentImportSettings());
 
 			// Intentionally provide an invalid file before adding valid ones.
 			const int NumberOfFilesToImport = 5;
@@ -55,15 +54,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.Concat(DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport));
 
 			// ACT
-			this.WhenExecutingTheJob(importData);
+			this.ImportApiSetUp.Execute(importData);
 
 			// ASSERT
 			this.ThenTheImportJobCompletedWithErrors(disableNativeLocationValidation ? 0 : 1, NumberOfFilesToImport + 1);
-			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport + 1));
-			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
+			Assert.That(this.ImportApiSetUp.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport + 1));
+			Assert.That(this.ImportApiSetUp.TestJobResult.JobMessages, Has.Count.Positive);
 			if (disableNativeLocationValidation)
 			{
-				Assert.That(this.TestJobResult.JobMessages, Has.Some.Contains("does not exist"));
+				Assert.That(this.ImportApiSetUp.TestJobResult.JobMessages, Has.Some.Contains("does not exist"));
 			}
 		}
 	}

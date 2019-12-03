@@ -78,8 +78,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = true;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = true;
 
-			this.GivenTheImportJobWithIntegratedAuthentication();
-			this.GiveNativeFilePathSourceDocumentImportJob();
+			this.CreateImportApiSetUpWithIntegratedAuthentication(this.GetNativeFilePathSourceDocumentImportSettings());
 
 			await ChangeStateOfIntegratedAuthentication(true).ConfigureAwait(false);
 			await UsersHelper.SwitchIntegratedAuthenticationForCurrentUser(AssemblySetup.TestParameters, isEnabled: true).ConfigureAwait(false);
@@ -89,12 +88,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport);
 
 			// ACT
-			this.WhenExecutingTheJob(importData);
+			this.ImportApiSetUp.Execute(importData);
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(NumberOfFilesToImport);
-			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
-			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport));
+			Assert.That(this.ImportApiSetUp.TestJobResult.JobMessages, Has.Count.Positive);
+			Assert.That(this.ImportApiSetUp.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport));
 		}
 
 		private static async Task ChangeStateOfIntegratedAuthentication(bool isEnabled)

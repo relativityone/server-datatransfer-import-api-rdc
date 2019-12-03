@@ -12,14 +12,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	public class ImportTestJobResult
 	{
-		public List<string> JobMessages { get; } = new List<string>();
-
 		public List<Exception> JobFatalExceptions { get; } = new List<Exception>();
 
 		public List<IDictionary> ErrorRows { get; } = new List<IDictionary>();
 
+		public List<string> JobMessages { get; } = new List<string>();
+
 		public List<long> ProgressCompletedRows { get; } = new List<long>();
 
-		public List<JobReport> CompletedJobReports { get; } = new List<JobReport>();
+		public JobReport CompletedJobReport { get; set; }
 	}
 }

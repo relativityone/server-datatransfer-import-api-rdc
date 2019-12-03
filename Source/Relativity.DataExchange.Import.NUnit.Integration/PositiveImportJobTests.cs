@@ -13,6 +13,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	using global::NUnit.Framework;
 
+	using kCura.Relativity.DataReaderClient;
+
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
@@ -40,19 +42,18 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 
-			this.GivenTheImportJob();
-			this.GiveNativeFilePathSourceDocumentImportJob();
+			this.CreateImportApiSetUpWithUserAndPwd(this.GetNativeFilePathSourceDocumentImportSettings());
 
 			const int NumberOfFilesToImport = 5;
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport);
 
 			// ACT
-			this.WhenExecutingTheJob(importData);
+			this.ImportApiSetUp.Execute(importData);
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(NumberOfFilesToImport);
-			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
-			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport));
+			Assert.That(this.ImportApiSetUp.TestJobResult.JobMessages, Has.Count.Positive);
+			Assert.That(this.ImportApiSetUp.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport));
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -65,9 +66,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// ARRANGE
 			ForceClient(TapiClient.Direct);
 
-			this.GivenTheImportJob();
-			this.GivenDefaultNativeDocumentImportJob();
-			this.ImportJob.Settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
+			Settings settings = this.GetDefaultNativeDocumentImportSettings();
+			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
+			this.CreateImportApiSetUpWithUserAndPwd(settings);
 
 			const int NumberOfDocumentsToImport = 2000;
 			var randomFolderGenerator = new RandomFolderGenerator(
@@ -81,12 +82,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			IEnumerable<FolderImportDto> importData = randomFolderGenerator.ToEnumerable();
 
 			// ACT
-			this.WhenExecutingTheJob(importData);
+			this.ImportApiSetUp.Execute(importData);
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(NumberOfDocumentsToImport);
-			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
-			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfDocumentsToImport));
+			Assert.That(this.ImportApiSetUp.TestJobResult.JobMessages, Has.Count.Positive);
+			Assert.That(this.ImportApiSetUp.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfDocumentsToImport));
 		}
 	}
 }

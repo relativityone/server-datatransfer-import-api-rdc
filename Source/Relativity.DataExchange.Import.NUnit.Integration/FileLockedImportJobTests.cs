@@ -44,8 +44,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 
-			this.GivenTheImportJob();
-			this.GiveNativeFilePathSourceDocumentImportJob();
+			this.CreateImportApiSetUpWithUserAndPwd(this.GetNativeFilePathSourceDocumentImportSettings());
 
 			const int NumberOfFilesToImport = 5;
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport)
@@ -53,14 +52,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.Select(DenyAccessToFile);
 
 			// ACT
-			this.WhenExecutingTheJob(importData);
+			this.ImportApiSetUp.Execute(importData);
 
 			this.ThenTheImportJobFailedWithFatalError(0, NumberOfFilesToImport);
 
 			// ASSERT
 			// The exact value is impossible to predict.
-			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.Positive);
-			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
+			Assert.That(this.ImportApiSetUp.TestJobResult.ProgressCompletedRows, Has.Count.Positive);
+			Assert.That(this.ImportApiSetUp.TestJobResult.JobMessages, Has.Count.Positive);
 		}
 
 		[TearDown]

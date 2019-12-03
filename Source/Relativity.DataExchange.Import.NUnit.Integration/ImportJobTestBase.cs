@@ -16,24 +16,28 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	using global::NUnit.Framework;
 
+	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
 	using Relativity.DataExchange.Transfer;
+	using Relativity.Testing.Identification;
 
-	public abstract class ImportJobTestBase : IDisposable
+	public abstract class ImportJobTestBase<TImportJob, TSettings> : IDisposable
+		where TImportJob : IImportNotifier
+		where TSettings : ImportSettingsBase
 	{
-		protected ImportJobTestBase()
+		private ImportApiSetUp<TImportJob, TSettings> importApiSetUp;
+
+		protected ImportJobTestBase(ImportApiSetUp<TImportJob, TSettings> importApiSetUp)
 		{
 			Assume.That(AssemblySetup.TestParameters.WorkspaceId, Is.Positive, "The test workspace must be created or specified in order to run this integration test.");
 
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
+
+			this.importApiSetUp = importApiSetUp;
 		}
-
-		protected ImportTestJobResult TestJobResult { get; private set; }
-
-		protected Dictionary<string, ImportAPI> ImportAPIInstancesDict { get; } = new Dictionary<string, ImportAPI>();
 
 		protected TempDirectory2 TempDirectory { get; private set; }
 
@@ -53,19 +57,29 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			this.TempDirectory = new TempDirectory2();
 			this.TempDirectory.Create();
-			this.TestJobResult = new ImportTestJobResult();
 		}
 
 		[TearDown]
 		public void Teardown()
 		{
-			this.ImportAPIInstancesDict.Clear();
 			if (this.TempDirectory != null)
 			{
 				this.TempDirectory.ClearReadOnlyAttributes = true;
 				this.TempDirectory.Dispose();
 				this.TempDirectory = null;
 			}
+
+			this.importApiSetUp.Dispose();
+		}
+
+		public virtual void CreateImportApiSetUpWithUserAndPwd(TSettings settings)
+		{
+			this.ImportApiSetUp = this.CreateImportApiSetUp().SetUpImportApi(this.CreateImportApiWithUserAndPwd(), settings);
+		}
+
+		public virtual void CreateImportApiSetUpWithIntegratedAuthentication(TSettings settings)
+		{
+			this.ImportApiSetUp = this.CreateImportApiSetUp().SetUpImportApi(this.CreateImportApiWithIntegratedAuthentication(), settings);
 		}
 
 		public void Dispose()
@@ -80,6 +94,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			AppSettings.Instance.TapiForceHttpClient = tapiClient == TapiClient.Web;
 		}
 
+		protected abstract ImportApiSetUp<TImportJob, TSettings> CreateImportApiSetUp();
+
 		protected virtual void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -88,84 +104,53 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		protected void GivenTheImportJobs(int instanceCount)
-		{
-			for (int index = 0; index < instanceCount; ++index)
-			{
-				this.ImportAPIInstancesDict.Add($"Client-{index}", new ImportAPI(
-					AssemblySetup.TestParameters.RelativityUserName,
-					AssemblySetup.TestParameters.RelativityPassword,
-					AssemblySetup.TestParameters.RelativityWebApiUrl.ToString()));
-			}
-		}
-
-		protected void GivenTheImportJob()
-		{
-			this.GivenTheImportJobs(1);
-		}
-
-		protected void GivenTheImportJobsWithIntegratedAuthentication(int instanceCount)
-		{
-			for (int index = 0; index < instanceCount; ++index)
-			{
-				this.ImportAPIInstancesDict.Add($"Client-{index}", new ImportAPI(
-					AssemblySetup.TestParameters.RelativityWebApiUrl.ToString()));
-			}
-		}
-
-		protected void GivenTheImportJobWithIntegratedAuthentication()
-		{
-			this.GivenTheImportJobsWithIntegratedAuthentication(1);
-		}
-
 		protected void ThenTheImportJobIsSuccessful(int expectedTotalRows)
 		{
-			Assert.That(this.TestJobResult.ErrorRows, Has.Count.Zero);
-			Assert.That(this.TestJobResult.JobFatalExceptions, Has.Count.Zero);
-			Assert.That(this.TestJobResult.CompletedJobReports, Is.All.Not.Null);
-			foreach (var jobReport in this.TestJobResult.CompletedJobReports)
-			{
-				Assert.That(jobReport.ErrorRows, Has.Count.Zero);
-				Assert.That(jobReport.FatalException, Is.Null);
-			}
-
-			var totalRecordCount = this.TestJobResult.CompletedJobReports.Select(item => item.TotalRows).Sum();
-			Assert.That(totalRecordCount, Is.EqualTo(expectedTotalRows));
+			Assert.That(this.ImportApiSetUp.TestJobResult.ErrorRows, Has.Count.Zero);
+			Assert.That(this.ImportApiSetUp.TestJobResult.JobFatalExceptions, Has.Count.Zero);
+			Assert.That(this.ImportApiSetUp.TestJobResult.CompletedJobReport, Is.Not.Null);
+			Assert.That(this.ImportApiSetUp.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.Zero);
+			Assert.That(this.ImportApiSetUp.TestJobResult.CompletedJobReport.FatalException, Is.Null);
+			Assert.That(this.ImportApiSetUp.TestJobResult.CompletedJobReport.TotalRows, Is.EqualTo(expectedTotalRows));
 		}
 
 		protected void ThenTheImportJobFailedWithFatalError(int expectedErrorRows, int expectedTotalRows)
 		{
 			// Note: the exact number of expected rows can vary over a range when expecting an error.
-			Assert.That(this.TestJobResult.CompletedJobReports, Is.All.Not.Null);
-			var totalRecordCount = this.TestJobResult.CompletedJobReports.Select(item => item.TotalRows).Sum();
+			Assert.That(this.ImportApiSetUp.TestJobResult.CompletedJobReport, Is.Not.Null);
+			Assert.That(this.ImportApiSetUp.TestJobResult.CompletedJobReport.TotalRows, Is.Positive.And.LessThanOrEqualTo(expectedTotalRows));
 
-			Assert.That(totalRecordCount, Is.Positive.And.LessThanOrEqualTo(expectedTotalRows));
+			Assert.That(this.ImportApiSetUp.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(expectedErrorRows));
+			Assert.That(this.ImportApiSetUp.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(this.ImportApiSetUp.TestJobResult.ErrorRows.Count));
 
-			foreach (var jobReport in this.TestJobResult.CompletedJobReports)
-			{
-				Assert.That(jobReport.ErrorRows, Has.Count.EqualTo(expectedErrorRows));
-				Assert.That(jobReport.ErrorRows, Has.Count.EqualTo(this.TestJobResult.ErrorRows.Count));
-				Assert.That(jobReport.FatalException, Is.Not.Null);
-			}
-
-			Assert.That(this.TestJobResult.JobFatalExceptions, Has.Count.Positive);
+			Assert.That(this.ImportApiSetUp.TestJobResult.JobFatalExceptions, Has.Count.Positive);
+			Assert.That(this.ImportApiSetUp.TestJobResult.CompletedJobReport.FatalException, Is.Not.Null);
 		}
 
 		protected void ThenTheImportJobCompletedWithErrors(int expectedErrorRows, int expectedTotalRows)
 		{
-			Assert.That(this.TestJobResult.CompletedJobReports, Is.All.Not.Null);
-			var totalRecordCount = this.TestJobResult.CompletedJobReports.Select(item => item.TotalRows).Sum();
+			Assert.That(this.ImportApiSetUp.TestJobResult.CompletedJobReport, Is.Not.Null);
+			Assert.That(this.ImportApiSetUp.TestJobResult.CompletedJobReport.TotalRows, Is.EqualTo(expectedTotalRows));
 
-			Assert.That(totalRecordCount, Is.EqualTo(expectedTotalRows));
+			Assert.That(this.ImportApiSetUp.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(expectedErrorRows));
+			Assert.That(this.ImportApiSetUp.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(this.ImportApiSetUp.TestJobResult.ErrorRows.Count));
 
-			foreach (var jobReport in this.TestJobResult.CompletedJobReports)
-			{
-				Assert.That(jobReport.ErrorRows, Has.Count.EqualTo(expectedErrorRows));
-				Assert.That(jobReport.ErrorRows, Has.Count.EqualTo(this.TestJobResult.ErrorRows.Count));
-				Assert.That(jobReport.FatalException, Is.Not.Null);
-			}
+			Assert.That(this.ImportApiSetUp.TestJobResult.JobFatalExceptions, Has.Count.Zero);
+			Assert.That(this.ImportApiSetUp.TestJobResult.CompletedJobReport.FatalException, Is.Null);
+		}
 
-			Assert.That(this.TestJobResult.JobFatalExceptions, Has.Count.Zero);
+		private ImportAPI CreateImportApiWithUserAndPwd()
+		{
+			return new ImportAPI(
+				AssemblySetup.TestParameters.RelativityUserName,
+				AssemblySetup.TestParameters.RelativityPassword,
+				AssemblySetup.TestParameters.RelativityWebApiUrl.ToString());
+		}
+
+		private ImportAPI CreateImportApiWithIntegratedAuthentication()
+		{
+			return new ImportAPI(
+				AssemblySetup.TestParameters.RelativityWebApiUrl.ToString());
 		}
 	}
 }

@@ -28,18 +28,16 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
-		[IdentifiedTest("b9b6897f-ea3f-4694-80d2-db08529387AB")]
-		[Test]
-		[TestCase(8)]
-		public void ShouldImportFoldersParallel(int parallelIApiClientCount)
+		[IdentifiedTestCase("b9b6897f-ea3f-4694-80d2-db08529387AB", 16, 800000)]
+		[IdentifiedTestCase("68322B14-8BFA-49D2-9B00-6501DBAA2452", 8, 400000)]
+		public void ShouldImportFoldersParallel(int parallelIApiClientCount, int numberOfDocumentsToImport)
 		{
-			const int NumberOfDocumentsToImport = 800000;
 			var randomFolderGenerator = new RandomFolderGenerator(
-				numOfPaths: NumberOfDocumentsToImport,
-				maxDepth: 100,
-				numOfDifferentFolders: 1000,
-				numOfDifferentPaths: 500,
-				maxFolderLength: 255,
+				numOfPaths: numberOfDocumentsToImport,
+				maxDepth: 10,
+				numOfDifferentFolders: 100,
+				numOfDifferentPaths: 1000,
+				maxFolderLength: 100,
 				percentOfSpecial: 15);
 
 			// ARRANGE
@@ -48,7 +46,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			this.GivenTheImportJobs(parallelIApiClientCount);
 			foreach (var keyVal in this.ImportAPIInstancesDict)
 			{
-				this.GivenDefaultNativeDocumentImportJob(keyVal.Key, keyVal.Value);
+				this.GetDefaultNativeDocumentImportSettings(keyVal.Key, keyVal.Value);
 			}
 
 			IEnumerable<FolderImportDto> importData = randomFolderGenerator.ToEnumerable();
