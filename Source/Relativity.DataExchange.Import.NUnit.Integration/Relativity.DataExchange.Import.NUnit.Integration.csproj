@@ -87,6 +87,7 @@
     <Compile Include="SetUp\ImportApiSetUp.cs" />
     <Compile Include="RandomFolderGenerator.cs" />
     <Compile Include="SetUp\NativeImportApiSetUp.cs" />
+    <Compile Include="SetUp\NativeImportSettingsProvider.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
       <Paket>True</Paket>
     </Content>
@@ -149,7 +150,6 @@
     <Compile Include="FileNotFoundImportJobTests.cs" />
     <Compile Include="ImportJobTestBase.cs" />
     <Compile Include="ImportTestJobResult.cs" />
-    <Compile Include="NativeImportJobTestBase.cs" />
     <Compile Include="PositiveImportJobTests.cs" />
     <Content Include="LogConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

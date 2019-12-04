@@ -17,21 +17,20 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 	using kCura.Relativity.ImportAPI;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.Extensions;
 
 	public class NativeImportApiSetUp : ImportApiSetUp<ImportBulkArtifactJob, Settings>
 	{
-		public override ImportApiSetUp<ImportBulkArtifactJob, Settings> SetUpImportApi(ImportAPI importApi, Settings settings)
+		public override void SetUpImportApi(Func<ImportAPI> importApiFunc, Settings settings)
 		{
-			base.SetUpImportApi(importApi, settings);
+			base.SetUpImportApi(importApiFunc, settings);
 
 			// Attach native import specific events
 			this.ImportJob.OnError += this.ImportJob_OnError;
 			this.ImportJob.OnMessage += this.ImportJob_OnMessage;
-
-			return this;
 		}
 
-		public override ImportApiSetUp<ImportBulkArtifactJob, Settings> Execute<T>(IEnumerable<T> importData)
+		public override void Execute<T>(IEnumerable<T> importData)
 		{
 			using (var dataReader = new EnumerableDataReader<T>(importData))
 			{
@@ -42,7 +41,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 			Console.WriteLine(
 				"Import API elapsed time: {0}",
 				this.TestJobResult.CompletedJobReport.EndTime - this.TestJobResult.CompletedJobReport.StartTime);
-			return this;
 		}
 
 		protected override ImportBulkArtifactJob CreateJobWithSettings(Settings settings)
@@ -51,16 +49,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 
 			var importJob = this.ImportApi.NewNativeDocumentImportJob();
 
-			if (this.ImportJob == null)
+			if (importJob == null)
 			{
 				throw new Exception($"{nameof(this.ImportJob)} property has not been initialized!");
 			}
 
-			this.ImportJob.Settings = settings;
-
-			this.ImportJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();
-			this.ImportJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
-
+			settings.CopyTo(importJob.Settings);
+			importJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();
+			importJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
 			return importJob;
 		}
 

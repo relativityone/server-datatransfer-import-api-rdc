@@ -17,15 +17,23 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	using global::NUnit.Framework;
 
+	using kCura.Relativity.DataReaderClient;
+
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
+	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-	public class FileLockedImportJobTests : NativeImportJobTestBase
+	public class FileLockedImportJobTests : ImportJobTestBase<ImportBulkArtifactJob, Settings>
 	{
+		public FileLockedImportJobTests()
+			: base(new NativeImportApiSetUp())
+		{
+		}
+
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
@@ -44,7 +52,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 
-			this.CreateImportApiSetUpWithUserAndPwd(this.GetNativeFilePathSourceDocumentImportSettings());
+			this.InitializeImportApiWithUserAndPwd(NativeImportSettingsProvider.GetNativeFilePathSourceDocumentImportSettings());
 
 			const int NumberOfFilesToImport = 5;
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport)
@@ -52,14 +60,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.Select(DenyAccessToFile);
 
 			// ACT
-			this.ImportApiSetUp.Execute(importData);
+			ImportTestJobResult results = this.Execute(importData);
 
 			this.ThenTheImportJobFailedWithFatalError(0, NumberOfFilesToImport);
 
 			// ASSERT
 			// The exact value is impossible to predict.
-			Assert.That(this.ImportApiSetUp.TestJobResult.ProgressCompletedRows, Has.Count.Positive);
-			Assert.That(this.ImportApiSetUp.TestJobResult.JobMessages, Has.Count.Positive);
+			Assert.That(results.ProgressCompletedRows, Has.Count.Positive);
+			Assert.That(results.JobMessages, Has.Count.Positive);
 		}
 
 		[TearDown]

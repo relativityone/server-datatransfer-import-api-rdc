@@ -18,27 +18,25 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		where TImportJob : IImportNotifier
 		where TSettings : ImportSettingsBase
 	{
-		public ImportTestJobResult TestJobResult { get; private set; }
+		public virtual ImportTestJobResult TestJobResult { get; protected set; } = new ImportTestJobResult();
 
 		protected ImportAPI ImportApi { get; private set; }
 
 		protected TImportJob ImportJob { get; private set; }
 
-		public virtual ImportApiSetUp<TImportJob, TSettings> SetUpImportApi(ImportAPI importApi, TSettings settings)
+		public virtual void SetUpImportApi(Func<ImportAPI> importApiFunc, TSettings settings)
 		{
-			this.ImportApi = importApi;
+			this.TestJobResult = new ImportTestJobResult();
+			this.ImportApi = importApiFunc.Invoke();
 
 			this.ImportJob = this.CreateJobWithSettings(settings);
 
 			this.ImportJob.OnComplete += this.ImportJob_OnComplete;
 			this.ImportJob.OnProgress += this.ImportJob_OnProgress;
-
 			this.ImportJob.OnFatalException += this.ImportJob_OnFatalException;
-
-			return this;
 		}
 
-		public void Dispose()
+		public virtual void Dispose()
 		{
 			if (this.ImportJob != null)
 			{
@@ -48,7 +46,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		public abstract ImportApiSetUp<TImportJob, TSettings> Execute<T>(IEnumerable<T> importData);
+		public abstract void Execute<T>(IEnumerable<T> importData);
 
 		protected abstract TImportJob CreateJobWithSettings(TSettings settings);
 

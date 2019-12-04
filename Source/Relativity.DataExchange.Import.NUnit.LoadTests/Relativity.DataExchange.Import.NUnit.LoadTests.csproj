@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="LoadTestsAssemblySetup.cs" />
     <Compile Include="ImportDocumentsLoadTests.cs" />
+    <Compile Include="SetUp\ParallelNativeImportApiSetUp.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
       <Paket>True</Paket>
     </Content>
@@ -551,4 +552,5 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
 </Project>
