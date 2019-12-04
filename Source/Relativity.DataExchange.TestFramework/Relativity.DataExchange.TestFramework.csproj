@@ -78,6 +78,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CryptoHelper.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="EnumerableDataReader.cs" />
     <Compile Include="Extensions\DataRowExtensions.cs" />
     <Compile Include="Extensions\DataTableExtensions.cs" />
+    <Compile Include="RelativityHelpers\FolderHelper.cs" />
     <Compile Include="RelativityHelpers\ImportHelper.cs" />
     <Compile Include="TestData.cs" />
     <Compile Include="FileDto.cs" />
@@ -127,6 +129,9 @@
     <None Include="paket.references" />
     <EmbeddedResource Include="Resources\test-parameters-hyperv.json" />
     <EmbeddedResource Include="Resources\test-parameters-e2e.json" />
+    <None Include="Resources\CreateInput.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\Docs\EDRM-Sample1.pdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -14,6 +14,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	using global::NUnit.Framework;
 
+	using kCura.Relativity.DataReaderClient;
+
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
@@ -87,6 +89,34 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(NumberOfDocumentsToImport);
 			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
 			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfDocumentsToImport));
+		}
+
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[IdentifiedTest("3723e0e9-2ce1-472b-b655-8fbffb515c1a")]
+		[Test]
+		public void ShouldMoveToFolders()
+		{
+			// ARRANGE
+			ForceClient(TapiClient.Direct);
+
+			this.GivenTheImportJob();
+			this.GivenDefaultNativeDocumentImportJob();
+			this.ImportJob.Settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
+			this.ImportJob.Settings.MoveDocumentsInAppendOverlayMode = true;
+			this.ImportJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
+
+			int numberOfDocumentsToImport = TestData.SampleDocFiles.Count();
+			IEnumerable<FolderImportDto> importData =
+				TestData.SampleDocFiles.Select(p => new FolderImportDto(System.IO.Path.GetFileName(p), @"\aaa \cc"));
+
+			// ACT
+			this.WhenExecutingTheJob(importData);
+
+			// ASSERT
+			this.ThenTheImportJobIsSuccessful(numberOfDocumentsToImport);
+			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
+			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(numberOfDocumentsToImport));
 		}
 
 		[Category(TestCategories.ImportDoc)]
