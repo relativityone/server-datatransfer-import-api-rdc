@@ -54,7 +54,7 @@ namespace Relativity.DataExchange.TestFramework
 		public static IntegrationTestParameters Create()
 		{
 			// Note: don't create the logger until all parameters have been retrieved.
-			IntegrationTestParameters parameters = GetIntegrationTestParameters();
+			IntegrationTestParameters parameters = ReadIntegrationTestParameters();
 			SetupLogger(parameters);
 			SetupServerCertificateValidation(parameters);
 			if (parameters.SkipIntegrationTests)
@@ -107,6 +107,11 @@ namespace Relativity.DataExchange.TestFramework
 			};
 
 			return builder;
+		}
+
+		public static SqlConnectionStringBuilder GetSqlConnectionStringBuilder()
+		{
+			return GetSqlConnectionStringBuilder(ReadIntegrationTestParameters());
 		}
 
 		/// <summary>
@@ -168,7 +173,7 @@ END";
 			}
 		}
 
-		private static IntegrationTestParameters GetIntegrationTestParameters()
+		public static IntegrationTestParameters ReadIntegrationTestParameters()
 		{
 			Console.WriteLine("Retrieving and dumping all integration test parameters...");
 			bool decryptParameters = false;

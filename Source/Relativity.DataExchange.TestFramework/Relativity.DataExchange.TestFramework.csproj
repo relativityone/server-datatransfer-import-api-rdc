@@ -78,13 +78,27 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CryptoHelper.cs" />
     <Compile Include="DataReaderBase.cs" />
     <Compile Include="DummyTest.cs" />
     <Compile Include="EnumerableDataReader.cs" />
+    <Compile Include="NUnitExtensions\CollectWebApiExecutionPlansAttribute.cs" />
+    <Compile Include="NUnitExtensions\CollectWebApiSqlAttribute.cs" />
+    <Compile Include="NUnitExtensions\ProfilingSessionTestCommand.cs" />
     <Compile Include="RelativityHelpers\ImportHelper.cs" />
+    <Compile Include="WebApiSqlProfiling\ExecutionPlan\CollectedExecutionPlansProfilerReportBuilder.cs" />
+    <Compile Include="WebApiSqlProfiling\SqlStatement\CollectedSqlStatementsProfilerReportBuilder.cs" />
+    <Compile Include="WebApiSqlProfiling\ExecutionPlan\CollectExecutionPlansProfilingSession.cs" />
+    <Compile Include="WebApiSqlProfiling\SqlStatement\CollectSqlStatementsProfilingSession.cs" />
+    <Compile Include="WebApiSqlProfiling\ExecutionPlan\ExecutionPlanReportRowDto.cs" />
+    <Compile Include="WebApiSqlProfiling\IProfilerReportBuilder.cs" />
+    <Compile Include="WebApiSqlProfiling\ProfilerReport.cs" />
+    <Compile Include="WebApiSqlProfiling\ProfilerReportBuilderBase.cs" />
+    <Compile Include="WebApiSqlProfiling\ProfilingSession.cs" />
     <Compile Include="TestData.cs" />
     <Compile Include="FileDto.cs" />
     <Compile Include="IntegrationTestHelper.cs" />
@@ -95,6 +109,8 @@
     <Compile Include="TestDirectory.cs" />
     <Compile Include="RelativityHelpers\InstanceSettingsHelper.cs" />
     <Compile Include="RelativityHelpers\UsersHelper.cs" />
+    <Compile Include="WebApiSqlProfiling\SqlStatement\SqlStatementRowDto.cs" />
+    <Compile Include="WebApiSqlProfiling\TextFileDto.cs" />
     <Compile Include="TestStrings.cs" />
     <Compile Include="ServiceHelper.cs" />
     <Compile Include="RelativityHelpers\ProductionHelper.cs" />
@@ -160,6 +176,35 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Content Include="Resources\Docs\EDRM-Sample10.wmf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample5.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample6.emf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample8.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample9.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\EDRM-Sample-000001.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\EDRM-Sample1.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\EDRM-Sample2.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\EDRM-Sample3.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -496,35 +541,5 @@
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\ru-RU\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <Content Include="Resources\Docs\EDRM-Sample10.wmf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Docs\EDRM-Sample5.htm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Docs\EDRM-Sample6.emf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Docs\EDRM-Sample8.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Docs\EDRM-Sample9.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Images\EDRM-Sample-000001.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Images\EDRM-Sample1.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Images\EDRM-Sample2.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Images\EDRM-Sample3.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 </Project>
