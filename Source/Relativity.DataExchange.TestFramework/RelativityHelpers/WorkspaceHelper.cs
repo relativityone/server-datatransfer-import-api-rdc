@@ -73,7 +73,13 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 								parameters.WorkspaceTemplate,
 								templateWorkspaceId);
 
-							var workspace = GetWorkspaceToCreate(parameters);
+							Workspace workspace = new Workspace
+							{
+								Name = GetWorkspaceName(parameters),
+								DownloadHandlerApplicationPath = "Relativity.Distributed",
+								MatterID = 1017108,
+								Client = new Client(1015644),
+							};
 
 							logger.LogInformation("Creating the {WorkspaceName} workspace...", workspace.Name);
 							ProcessOperationResult result =
@@ -205,15 +211,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return string.IsNullOrEmpty(parameters.WorkspaceName)
 				? $"Import API Sample Workspace ({DateTime.Now:MM-dd HH.mm.ss.fff})"
 				: parameters.WorkspaceName;
-		}
-
-		private static Workspace GetWorkspaceToCreate(IntegrationTestParameters parameters)
-		{
-			return new Workspace
-			{
-				Name = GetWorkspaceName(parameters),
-				DownloadHandlerApplicationPath = "Relativity.Distributed",
-			};
 		}
 	}
 }

@@ -58,7 +58,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
-		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("b9b6897f-ea3f-4694-80d2-db0852938789")]
 		[Test]
 		public void ShouldImportFolders()
@@ -92,23 +91,45 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
-		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("700bda86-6e9a-43c1-a69c-2a1972cba4f8")]
 		[Test]
 		public void ShouldImportDocumentWithChoices()
 		{
 			// ARRANGE
-			ForceClient(TapiClient.Direct);
-
 			this.GivenTheImportJob();
 			this.GivenDefaultNativeDocumentImportJob();
-			this.ImportJob.Settings.MultiValueDelimiter = ';';
 
 			const int NumberOfDocumentsToImport = 2;
 			IEnumerable<DocumentWithChoicesImportDto> importData = new[]
 			{
 				new DocumentWithChoicesImportDto("20", "Highly Confidential", "Attorney Client Communication;Attorney Work Product"),
 				new DocumentWithChoicesImportDto("21", "Not Confidential", "Attorney Work Product;Do Whatever You Want"),
+			};
+
+			// ACT
+			this.WhenExecutingTheJob(importData);
+
+			// ASSERT
+			this.ThenTheImportJobIsSuccessful(NumberOfDocumentsToImport);
+			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
+			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfDocumentsToImport));
+		}
+
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[IdentifiedTest("13dc1d17-4a2b-4b48-9015-b61e58bc5168")]
+		[Test]
+		public void ShouldImportDocumentWithObjects()
+		{
+			// ARRANGE
+			this.GivenTheImportJob();
+			this.GivenDefaultNativeDocumentImportJob();
+
+			const int NumberOfDocumentsToImport = 2;
+			IEnumerable<DocumentWithObjectsImportDto> importData = new[]
+			{
+				new DocumentWithObjectsImportDto("1", "Error1", "abc.com;def.org", "ijk.com"),
+				new DocumentWithObjectsImportDto("2", "Error2", "def.com", "def.com;lmn.pl"),
 			};
 
 			// ACT

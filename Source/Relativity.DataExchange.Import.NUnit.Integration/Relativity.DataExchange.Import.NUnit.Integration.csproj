@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dto\DocumentWithChoicesImportDto.cs" />
+    <Compile Include="Dto\DocumentWithObjectsImportDto.cs" />
     <Compile Include="ProfilingReport.cs" />
     <Compile Include="RandomFolderGenerator.cs" />
     <Compile Include="SqlProfiling.cs" />
