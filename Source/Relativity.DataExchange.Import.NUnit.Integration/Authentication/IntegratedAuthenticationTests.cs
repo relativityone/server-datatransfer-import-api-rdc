@@ -82,15 +82,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 
 			// ARRANGE
+			await ChangeStateOfIntegratedAuthentication(true).ConfigureAwait(false);
+			await UsersHelper.SwitchIntegratedAuthenticationForCurrentUser(AssemblySetup.TestParameters, isEnabled: true).ConfigureAwait(false);
+			await RdoHelper.DeleteAllObjectsByType(AssemblySetup.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
+
 			ForceClient(client);
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = true;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = true;
 
 			this.InitializeImportApiWithIntegratedAuthentication(NativeImportSettingsProvider.GetNativeFilePathSourceDocumentImportSettings());
-
-			await ChangeStateOfIntegratedAuthentication(true).ConfigureAwait(false);
-			await UsersHelper.SwitchIntegratedAuthenticationForCurrentUser(AssemblySetup.TestParameters, isEnabled: true).ConfigureAwait(false);
-			await RdoHelper.DeleteAllObjectsByType(AssemblySetup.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
 
 			const int NumberOfFilesToImport = 5;
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport);
