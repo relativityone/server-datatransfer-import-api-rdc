@@ -69,7 +69,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		public static async Task<int> EnsureUser(IntegrationTestParameters parameters, string firstName, string lastName, string password, IEnumerable<int> groupArtifactIds)
 		{
-			UserRef[] users = await GetUserList(parameters);
+			UserRef[] users = await GetUserList(parameters).ConfigureAwait(false);
 			string name = $"{lastName}, {firstName}";
 			UserRef user = users.FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
@@ -78,14 +78,14 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				return user.ArtifactID;
 			}
 
-			return await CreateNewUser(parameters, firstName, lastName, password, groupArtifactIds);
+			return await CreateNewUser(parameters, firstName, lastName, password, groupArtifactIds).ConfigureAwait(false);
 		}
 
 		public static async Task<UserRef[]> GetUserList(IntegrationTestParameters parameters)
 		{
 			using (IUserManager userManager = ServiceHelper.GetServiceProxy<IUserManager>(parameters))
 			{
-				WorkspaceUserData user = await userManager.RetrieveAllActiveAsync(parameters.WorkspaceId);
+				WorkspaceUserData user = await userManager.RetrieveAllActiveAsync(parameters.WorkspaceId).ConfigureAwait(false);
 				return user.ActiveUsers;
 			}
 		}
@@ -124,8 +124,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				string url = $"{uri.AbsolutePath}/Relativity/User";
 
 				StringContent content = new StringContent(request.ToString(), Encoding.UTF8, "application/json");
-				HttpResponseMessage response = await httpClient.PostAsync(url, content);
-				string result = await response.Content.ReadAsStringAsync();
+				HttpResponseMessage response = await httpClient.PostAsync(url, content).ConfigureAwait(false);
+				string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
 				if (response.StatusCode != HttpStatusCode.Created)
 				{
