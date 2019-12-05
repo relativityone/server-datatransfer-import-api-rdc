@@ -392,7 +392,6 @@
     <Compile Include="ImportExtension\DataReaderReaderInitializationArgs.vb" />
     <Compile Include="ImportExtension\ImageImport\DataReaderImageImporter.vb" />
     <Compile Include="ImportExtension\ImageImport\DataReaderImageImporterProcess.vb" />
-    <Compile Include="ImportExtension\ImageImport\DataSource.vb" />
     <Compile Include="ImportExtension\ImageImport\ImageDataTableReader.vb" />
     <Compile Include="ImportExtension\NativeFileValidatedArtifactFieldCollection.vb" />
     <Compile Include="Monitoring\MetricJobEndReport.vb" />

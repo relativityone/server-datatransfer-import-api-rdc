@@ -99,7 +99,7 @@ Function Get-CurrentBranchType{
     }
     else
     {
-        $(Throw New-Object System.ArgumentException "Branch must start with 'feature' or 'bugfix' (case sensitive), or be equal to 'develop', current branch is '$currentBranch'","branch name")
+        $(Throw New-Object System.ArgumentException "The branch name is not 'develop', or starts with 'release-' or starts with a Jira number (like 'REL-123456'). The branchname supplied is '$currentBranch'", "branch name")
     }
 }
 
@@ -531,7 +531,7 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
         $hostname = $testVM.BoxName 
         If ((Get-Content (Join-Path $testVM.Directory box.json) | ConvertFrom-Json).parameters.joinDomain.value -eq 0) { 
             $hostname = "$($testVM.BoxName).kcura.corp"
-        } 
+        }
 
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_RELATIVITYURL", "https://$hostname", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_RELATIVITYRESTURL", "https://$hostname/relativity.rest/api", "Process")
@@ -543,6 +543,7 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPDIRECTMODETESTS", "false", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "false", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLDROPWORKSPACEDATABASE", "true", "Process")
+		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLCAPTUREPROFILING", "false", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLINSTANCENAME", "$hostname\\EDDSINSTANCE001", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINUSERNAME", "sa", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINPASSWORD", "P@ssw0rd@1", "Process")

@@ -26,10 +26,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 		}
 
 		[DisplayName(WellKnownFields.ControlNumber)]
-		public string ControlNumber { get; set; }
+		public string ControlNumber { get; }
 
 		[DisplayName(WellKnownFields.FilePath)]
-		public string FilePath { get; set; }
+		public string FilePath { get; }
 
 		public static IEnumerable<DefaultImportDto> GetRandomTextFiles(string directory, int maxFiles)
 		{

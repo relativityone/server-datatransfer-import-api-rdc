@@ -66,6 +66,7 @@ namespace Relativity.DataExchange.TestFramework
 			this.SqlAdminPassword = copy.SqlAdminPassword;
 			this.SqlAdminUserName = copy.SqlAdminUserName;
 			this.SqlDropWorkspaceDatabase = copy.SqlDropWorkspaceDatabase;
+			this.SqlCaptureProfiling = copy.SqlCaptureProfiling;
 			this.SqlInstanceName = copy.SqlInstanceName;
 			this.WorkspaceId = copy.WorkspaceId;
 		}
@@ -229,6 +230,20 @@ namespace Relativity.DataExchange.TestFramework
 		[JsonProperty("SqlDropWorkspaceDatabase")]
 		[IntegrationTestParameter(true)]
 		public bool SqlDropWorkspaceDatabase
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to drop the test workspace SQL database.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to drop the workspace SQL database; otherwise, <see langword="false" />.
+		/// </value>
+		[JsonProperty("SqlCaptureProfiling")]
+		[IntegrationTestParameter(true)]
+		public bool SqlCaptureProfiling
 		{
 			get;
 			set;
