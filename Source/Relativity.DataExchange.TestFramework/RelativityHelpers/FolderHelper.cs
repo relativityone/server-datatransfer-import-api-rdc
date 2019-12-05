@@ -22,7 +22,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			using (IFolderManager folderManager = ServiceHelper.GetServiceProxy<IFolderManager>(parameters))
 			{
 				Folder rootFolder = await folderManager.GetWorkspaceRootAsync(parameters.WorkspaceId);
-				FolderRef folderRef = new FolderRef(rootFolder.ArtifactID);
+				var folderRef = new FolderRef(rootFolder.ArtifactID);
 
 				foreach (string folderName in folders)
 				{

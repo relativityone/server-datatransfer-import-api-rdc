@@ -61,7 +61,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IdentifiedTest("b9b6897f-ea3f-4694-80d2-db0852938789")]
-		[Test]
 		public void ShouldImportFolders()
 		{
 			// ARRANGE
@@ -94,8 +93,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IdentifiedTest("3723e0e9-2ce1-472b-b655-8fbffb515c1a")]
-		[Test]
-		public void ShouldMoveToFolders()
+		public void ShouldAppendOverlayDocumentsAndMoveToNewFolders()
 		{
 			// ARRANGE
 			ForceClient(TapiClient.Direct);
@@ -122,7 +120,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IdentifiedTest("700bda86-6e9a-43c1-a69c-2a1972cba4f8")]
-		[Test]
 		public void ShouldImportDocumentWithChoices()
 		{
 			// ARRANGE
@@ -148,7 +145,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IdentifiedTest("13dc1d17-4a2b-4b48-9015-b61e58bc5168")]
-		[Test]
 		public void ShouldImportDocumentWithObjects()
 		{
 			// ARRANGE

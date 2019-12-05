@@ -9,7 +9,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using System;
 	using System.Collections.Generic;
 	using System.Data.SqlClient;
-	using System.Threading;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
@@ -26,7 +26,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		}
 
 		[OneTimeSetUp]
-		public void Setup()
+		public async Task Setup()
 		{
 			TestParameters = IntegrationTestHelper.Create();
 
@@ -34,14 +34,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			int level2GroupId = 1015029;
 			int level3GroupId = 1015030;
 
-			_ = UsersHelper.EnsureUser(TestParameters, "Level1", "User", "Level1User!", new[] { level1GroupId }).Result;
-			_ = UsersHelper.EnsureUser(TestParameters, "Level2", "User", "Level2User!", new[] { level2GroupId }).Result;
-			_ = UsersHelper.EnsureUser(TestParameters, "Level3", "User", "Level3User!", new[] { level3GroupId }).Result;
+			_ = await UsersHelper.EnsureUser(TestParameters, "Level1", "User", "Level1User!", new[] { level1GroupId });
+			_ = await UsersHelper.EnsureUser(TestParameters, "Level2", "User", "Level2User!", new[] { level2GroupId });
+			_ = await UsersHelper.EnsureUser(TestParameters, "Level3", "User", "Level3User!", new[] { level3GroupId });
 
-			List<int> folderIds = FolderHelper.CreateFolders(TestParameters, new[] { "Level1 Permissions", "Level2 Permissions", "Level3 Permissions", "Aaa", "aaa", "Aaa ", "aaa   " }).Result;
-			FolderHelper.SetItemLevelSecurity(TestParameters, folderIds[0], "Level 1").Wait();
-			FolderHelper.SetItemLevelSecurity(TestParameters, folderIds[1], "Level 2").Wait();
-			FolderHelper.SetItemLevelSecurity(TestParameters, folderIds[2], "Level 3").Wait();
+			List<int> folderIds = await FolderHelper.CreateFolders(TestParameters, new[] { "Level1 Permissions", "Level2 Permissions", "Level3 Permissions", "Aaa", "aaa", "Aaa ", "aaa   " });
+			await FolderHelper.SetItemLevelSecurity(TestParameters, folderIds[0], "Level 1");
+			await FolderHelper.SetItemLevelSecurity(TestParameters, folderIds[1], "Level 2");
+			await FolderHelper.SetItemLevelSecurity(TestParameters, folderIds[2], "Level 3");
 
 			ImportHelper.ImportDefaultTestData(TestParameters);
 

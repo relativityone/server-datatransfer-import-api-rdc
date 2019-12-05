@@ -74,7 +74,6 @@ DROP EVENT SESSION [RelativityWebAPI] ON SERVER;";
 
 		public static ProfilingReport AggregateReport(string data, bool printSql)
 		{
-			System.IO.File.WriteAllText(@"S:\objects.xml", data);
 			var profilingReport = new ProfilingReport(printSql);
 
 			DateTime lastTimestamp = DateTime.MinValue;

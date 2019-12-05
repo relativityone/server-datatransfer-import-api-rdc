@@ -73,7 +73,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 								parameters.WorkspaceTemplate,
 								templateWorkspaceId);
 
-							Workspace workspace = new Workspace
+							var workspace = new Workspace
 							{
 								Name = GetWorkspaceName(parameters),
 								DownloadHandlerApplicationPath = "Relativity.Distributed",

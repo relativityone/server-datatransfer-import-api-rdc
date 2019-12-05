@@ -21,15 +21,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 		}
 
 		[DisplayName(WellKnownFields.ControlNumber)]
-		public string ControlNumber { get; set; }
+		public string ControlNumber { get; }
 
 		[DisplayName(WellKnownFields.OriginatingImagingDocumentError)]
-		public string OriginatingImagingDocumentError { get; set; }
+		public string OriginatingImagingDocumentError { get; }
 
 		[DisplayName(WellKnownFields.DomainsEmailTo)]
-		public string DomainsEmailTo { get; set; }
+		public string DomainsEmailTo { get; }
 
 		[DisplayName(WellKnownFields.DomainsEmailFrom)]
-		public string DomainsEmailFrom { get; set; }
+		public string DomainsEmailFrom { get; }
 	}
 }
