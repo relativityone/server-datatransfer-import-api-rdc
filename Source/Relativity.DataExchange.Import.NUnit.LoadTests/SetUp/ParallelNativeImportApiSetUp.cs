@@ -9,8 +9,10 @@
 namespace Relativity.DataExchange.Import.NUnit.LoadTests.SetUp
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Threading;
 	using System.Threading.Tasks;
 
 	using kCura.Relativity.DataReaderClient;
@@ -22,11 +24,11 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.SetUp
 	public class ParallelNativeImportApiSetUp : ImportApiSetUp<ImportBulkArtifactJob, Settings>
 	{
 		/// <summary>
-		/// Arbitrary number that limits the max count of ImportAPI instance count.
+		/// Arbitrary number that limits the max ImportAPI instance count.
 		/// </summary>
 		private const int MaxInstanceLimit = 32;
 
-		private List<NativeImportApiSetUp> nativeImportApiSetUpList;
+		private readonly List<NativeImportApiSetUp> nativeImportApiSetUpList = new List<NativeImportApiSetUp>();
 
 		private int numberOfDocumentsToImport;
 
@@ -39,7 +41,12 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.SetUp
 		{
 			this.ValidateInstanceCountAndDocCountParams(importApiInstanceCount, documentCountToImport);
 
-			this.nativeImportApiSetUpList = Enumerable.Repeat(new NativeImportApiSetUp(), importApiInstanceCount).ToList();
+			this.nativeImportApiSetUpList.Clear();
+			for (int index = 0; index < importApiInstanceCount; index++)
+			{
+				this.nativeImportApiSetUpList.Add(new NativeImportApiSetUp());
+			}
+
 			this.numberOfDocumentsToImport = documentCountToImport;
 			return this;
 		}
@@ -58,7 +65,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.SetUp
 			var tasks = new List<Task>();
 			int batchSize = this.numberOfDocumentsToImport / this.nativeImportApiSetUpList.Count;
 
-			IList<IEnumerable<T>> batches = this.CreateBatchesFrom(importData, batchSize).ToList();
+			IList<IEnumerable<T>> batches = CreateBatchesFrom(importData, batchSize).ToList();
 
 			for (int index = 0; index < this.nativeImportApiSetUpList.Count; index++)
 			{
@@ -77,9 +84,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.SetUp
 						this.TestJobResult.JobFatalExceptions.AddRange(importApiSetUp.TestJobResult.JobFatalExceptions);
 						this.TestJobResult.ErrorRows.AddRange(importApiSetUp.TestJobResult.ErrorRows);
 						this.TestJobResult.JobMessages.AddRange(importApiSetUp.TestJobResult.JobMessages);
-
-						importApiSetUp.TestJobResult.CompletedJobReport.ErrorRows.ToList().ForEach(
-							errorRow => this.TestJobResult.CompletedJobReport.ErrorRows.Add(errorRow));
 					});
 		}
 
@@ -103,9 +107,25 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.SetUp
 				.Select(importApiSetUp => importApiSetUp.TestJobResult.CompletedJobReport.FatalException).ToList();
 		}
 
+		/// <summary>
+		/// Extracted to be consistent with other JobResult class properties aggregations.
+		/// </summary>
+		/// <returns>Return list of the potential fatal exceptions thrown by any import api instance.</returns>
+		public IEnumerable<JobReport.RowError> GetErrorRowsFromReport()
+		{
+			return this.nativeImportApiSetUpList
+				.SelectMany(importApiSetUp => importApiSetUp.TestJobResult.CompletedJobReport.ErrorRows);
+		}
+
 		public override void Dispose()
 		{
-			this.nativeImportApiSetUpList?.ForEach(setUp => setUp.Dispose());
+			if (this.nativeImportApiSetUpList != null)
+			{
+				foreach (var setUp in this.nativeImportApiSetUpList)
+				{
+					setUp.Dispose();
+				}
+			}
 		}
 
 		protected override ImportBulkArtifactJob CreateJobWithSettings(Settings settings)
@@ -117,26 +137,17 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.SetUp
 		{
 			if (importApiInstanceCount < 0 && importApiInstanceCount > MaxInstanceLimit)
 			{
-				throw new Exception(
+				throw new ArgumentException(
 					$"{importApiInstanceCount} parameter should be positive number, not greater than {MaxInstanceLimit} limit");
 			}
 
 			if (documentCountToImport <= 0)
 			{
-				throw new Exception($"{documentCountToImport} parameter should be positive number");
+				throw new ArgumentException($"{documentCountToImport} parameter should be positive number");
 			}
 		}
 
-		private void ValidateImportApiInstanceInitialization()
-		{
-			if (this.nativeImportApiSetUpList == null || this.nativeImportApiSetUpList.Count == 0)
-			{
-				throw new Exception(
-					$"ImportAPI instance list has not been initialized. Please call {nameof(this.ConfigureImportApiInstanceAndDocCounts)} method before!");
-			}
-		}
-
-		private IEnumerable<IEnumerable<T>> CreateBatchesFrom<T>(IEnumerable<T> objects, int batchSize)
+		private static IEnumerable<IEnumerable<T>> CreateBatchesFrom<T>(IEnumerable<T> objects, int batchSize)
 		{
 			var batch = new List<T>(batchSize);
 			foreach (T item in objects)
@@ -152,6 +163,15 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.SetUp
 			if (batch.Count > 0)
 			{
 				yield return batch;
+			}
+		}
+
+		private void ValidateImportApiInstanceInitialization()
+		{
+			if (this.nativeImportApiSetUpList == null || this.nativeImportApiSetUpList.Count == 0)
+			{
+				throw new InvalidOperationException(
+					$"ImportAPI instance list has not been initialized. Please call {nameof(this.ConfigureImportApiInstanceAndDocCounts)} method before!");
 			}
 		}
 	}

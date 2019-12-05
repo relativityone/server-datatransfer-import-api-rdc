@@ -11,7 +11,7 @@ namespace Relativity.DataExchange.TestFramework.Extensions
 
 	public static class CopySettingsExtenstion
 	{
-		// This list can be extended for images
+		// This list can be extended for images. This is the list of properties that are crated by ImportJob class itself
 		private static readonly List<string> DoNotCopyPropNames = new List<string>() { $"{nameof(Settings.ArtifactTypeId)}" };
 
 		public static void CopyTo<T>(this T source, T destination)

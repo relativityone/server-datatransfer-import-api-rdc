@@ -41,6 +41,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[IdentifiedTestCase("68322B14-8BFA-49D2-9B00-6501DBAA2452", 16, 800000)]
 		public void ShouldImportFoldersParallel(int parallelIApiClientCount, int numberOfDocumentsToImport)
 		{
+			// ARRANGE
 			var randomFolderGenerator = new RandomFolderGenerator(
 				numOfPaths: numberOfDocumentsToImport,
 				maxDepth: 10,
@@ -49,7 +50,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 				maxFolderLength: 100,
 				percentOfSpecial: 15);
 
-			// ARRANGE
 			ForceClient(TapiClient.Direct);
 
 			Settings settings = NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings();
@@ -62,15 +62,15 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			ImportTestJobResult results = this.Execute(importData);
 
 			// ASSERT
-			this.ThenTheImportJobIsSuccessful(numberOfDocumentsToImport);
+			this.ValidateTotalRowsCount(numberOfDocumentsToImport);
+			this.ValidateFatalExceptionsNotExist();
+			this.ValidateErrorRowsNotExist(results);
 			Assert.That(results.JobMessages, Has.Count.Positive);
 			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(numberOfDocumentsToImport));
 		}
 
 		protected override void ValidateTotalRowsCount(int expectedTotalRows)
 		{
-			Assert.That(this.ImportApiSetUp<ParallelNativeImportApiSetUp>().TestJobResult.CompletedJobReport, Is.Not.Null);
-
 			int totalDocCount = this.ImportApiSetUp<ParallelNativeImportApiSetUp>().GetCompletedTotalDocCountFromReport();
 
 			Assert.That(totalDocCount, Is.EqualTo(expectedTotalRows));
@@ -81,8 +81,16 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			List<Exception> fatalExceptions =
 				this.ImportApiSetUp<ParallelNativeImportApiSetUp>().GetFatalExceptionsFromReport();
 
-			Assert.That(fatalExceptions.Any(item => item != null));
+			Assert.That(fatalExceptions.All(item => item == null));
 			Assert.That(this.ImportApiSetUp<ParallelNativeImportApiSetUp>().TestJobResult.JobFatalExceptions, Has.Count.Zero);
+		}
+
+		private void ValidateErrorRowsNotExist(ImportTestJobResult jobResult)
+		{
+			IEnumerable<JobReport.RowError> errorRows = this.ImportApiSetUp<ParallelNativeImportApiSetUp>().GetErrorRowsFromReport();
+
+			Assert.That(!errorRows.Any());
+			Assert.That(jobResult.ErrorRows, Has.Count.Zero);
 		}
 
 		private void InitializeImportApiWithUserAndPwd(Settings settings, int instanceCount, int documentCount)
