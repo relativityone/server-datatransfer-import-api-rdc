@@ -157,7 +157,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				foreach (var file in TestData.SampleDocFiles)
 				{
 					var dr = dataSource.NewRow()
-						.GenerateControlNumber()
+						.SetControlNumber(System.IO.Path.GetFileName(file))
 						.SetFilePath(file);
 
 					setValues(dr, file);

@@ -86,7 +86,7 @@ namespace Relativity.DataExchange.TestFramework
 			return GetResourceFilePath("Images", fileName);
 		}
 
-		public static string GetResourceFolderDirectory(string folder)
+		public static string GetResourceFolderPath(string folder)
 		{
 			string basePath = Path.GetDirectoryName(typeof(FieldHelper).Assembly.Location);
 			string folderPath =
@@ -96,12 +96,12 @@ namespace Relativity.DataExchange.TestFramework
 
 		public static IEnumerable<string> GetResourceFolderFiles(string folder)
 		{
-			return Directory.EnumerateFiles(GetResourceFolderDirectory(folder), "*", SearchOption.AllDirectories);
+			return Directory.EnumerateFiles(GetResourceFolderPath(folder), "*", SearchOption.AllDirectories);
 		}
 
 		public static string GetResourceFilePath(string folder, string fileName)
 		{
-			return Path.Combine(GetResourceFolderDirectory(folder), fileName);
+			return Path.Combine(GetResourceFolderPath(folder), fileName);
 		}
 	}
 }
