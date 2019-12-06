@@ -121,5 +121,18 @@
 				CustomData.Item(TelemetryConstants.KeyName.SQL_THROUGHPUT) = Value
 			End Set
 		End Property
+
+		''' <summary>
+		''' Gets or sets job duration in seconds.
+		''' </summary>
+		''' <returns>Job duration in seconds.</returns>
+		Public Property JobDurationInSeconds As Double
+			Get
+				Return GetValueOrDefault(Of Double)(TelemetryConstants.KeyName.JOB_DURATION)
+			End Get
+			Set
+				CustomData.Item(TelemetryConstants.KeyName.JOB_DURATION) = value
+			End Set
+		End Property
 	End Class
 End NameSpace

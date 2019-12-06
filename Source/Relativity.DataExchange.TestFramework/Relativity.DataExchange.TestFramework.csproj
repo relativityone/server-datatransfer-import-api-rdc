@@ -78,6 +78,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -86,6 +87,10 @@
     <Compile Include="DataReaderBase.cs" />
     <Compile Include="DummyTest.cs" />
     <Compile Include="EnumerableDataReader.cs" />
+    <Compile Include="Extensions\CopySettingsExtenstion.cs" />
+    <Compile Include="Extensions\DataRowExtensions.cs" />
+    <Compile Include="Extensions\DataTableExtensions.cs" />
+    <Compile Include="RelativityHelpers\FolderHelper.cs" />
     <Compile Include="NUnitExtensions\CollectWebApiExecutionPlansAttribute.cs" />
     <Compile Include="NUnitExtensions\CollectWebApiSqlAttribute.cs" />
     <Compile Include="NUnitExtensions\ProfilingSessionTestCommand.cs" />
@@ -141,6 +146,9 @@
     <None Include="paket.references" />
     <EmbeddedResource Include="Resources\test-parameters-hyperv.json" />
     <EmbeddedResource Include="Resources\test-parameters-e2e.json" />
+    <None Include="Resources\CreateInput.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\Docs\EDRM-Sample1.pdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -299,17 +307,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.DataTransfer.MessageService">
-          <HintPath>..\..\packages\Relativity.DataTransfer.MessageService\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="FaspManager">
           <HintPath>..\..\packages\relativity.faspmanager\lib\net40\FaspManager.dll</HintPath>
           <Private>True</Private>
@@ -443,17 +440,6 @@
       <ItemGroup>
         <Reference Include="Relativity.Telemetry.DataContracts.Shared">
           <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Telemetry.Services.Interface">
-          <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

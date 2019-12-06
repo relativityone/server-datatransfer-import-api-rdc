@@ -14,10 +14,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
+
+	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 	using kCura.WinEDDS.Exceptions;
 
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
+	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.Transfer;
@@ -26,7 +29,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Authentication]
 	[Explicit("These tests don't work on Trident, because they are executed there in an non-interactive process.")]
-	public class IntegratedAuthenticationTests : NativeImportJobTestBase
+	public class IntegratedAuthenticationTests : ImportJobTestBase<ImportBulkArtifactJob, Settings>
 	{
 		private const int _WAIT_TIME_FOR_INSTANCE_SETTING_CHANGE_IN_MS = 30 * 1000;
 
@@ -36,6 +39,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 		/// in positive cases 40s seems to be reasonable limit for importing 5 small files.
 		/// </summary>
 		private const int _TIMEOUT_IN_MS = 70 * 1000;
+
+		public IntegratedAuthenticationTests()
+			: base(new NativeImportApiSetUp())
+		{
+		}
 
 		[OneTimeTearDown]
 		public static Task OneTimeTearDown()
@@ -78,8 +86,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = true;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = true;
 
-			this.GivenTheImportJobWithIntegratedAuthentication();
-			this.GiveNativeFilePathSourceDocumentImportJob();
+			this.InitializeImportApiWithIntegratedAuthentication(NativeImportSettingsProvider.GetNativeFilePathSourceDocumentImportSettings());
 
 			await ChangeStateOfIntegratedAuthentication(true).ConfigureAwait(false);
 			await UsersHelper.SwitchIntegratedAuthenticationForCurrentUser(AssemblySetup.TestParameters, isEnabled: true).ConfigureAwait(false);
@@ -89,12 +96,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport);
 
 			// ACT
-			this.WhenExecutingTheJob(importData);
+			ImportTestJobResult results = this.Execute(importData);
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(NumberOfFilesToImport);
-			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
-			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport));
+			Assert.That(results.JobMessages, Has.Count.Positive);
+			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport));
 		}
 
 		private static async Task ChangeStateOfIntegratedAuthentication(bool isEnabled)

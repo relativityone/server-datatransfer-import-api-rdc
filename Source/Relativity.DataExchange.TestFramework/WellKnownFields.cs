@@ -75,5 +75,35 @@ namespace Relativity.DataExchange.TestFramework
 		/// The relativity image count.
 		/// </summary>
 		public const string RelativityImageCount = "relativity image count";
+
+		/// <summary>
+		/// The Extracted Text field.
+		/// </summary>
+		public const string ExtractedText = "Extracted Text";
+
+		/// <summary>
+		/// The confidential designation.
+		/// </summary>
+		public const string ConfidentialDesignation = "Confidential Designation";
+
+		/// <summary>
+		/// The privilege designation.
+		/// </summary>
+		public const string PrivilegeDesignation = "Privilege Designation";
+
+		/// <summary>
+		/// The domains (email to).
+		/// </summary>
+		public const string DomainsEmailTo = "Domains (Email To)";
+
+		/// <summary>
+		/// The domains (email from).
+		/// </summary>
+		public const string DomainsEmailFrom = "Domains (Email From)";
+
+		/// <summary>
+		/// The originating imaging document error.
+		/// </summary>
+		public const string OriginatingImagingDocumentError = "Originating Imaging Document Error";
 	}
 }

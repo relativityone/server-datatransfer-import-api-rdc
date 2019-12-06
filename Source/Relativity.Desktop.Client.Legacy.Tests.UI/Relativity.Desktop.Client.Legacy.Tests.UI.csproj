@@ -36,10 +36,68 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="oi\docs\fileids_values_only_sorted.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\docs\fileids_values_strs.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\cmmap000.bin">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.exe">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.jar">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccca-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccch-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccda-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccex-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfa-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfi-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfmt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfnt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccind-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\scclo-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\wvcore-R1.dll">
+      <Paket>True</Paket>
+    </Content>
     <None Include="App.config" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FreeImageNET">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client">
       <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
     </Reference>
@@ -53,12 +111,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Appium\ButtonUIElement.cs" />
@@ -135,8 +192,32 @@
       <Name>Relativity.DataExchange.TestFramework</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.DynamicReferences.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="oi">
+          <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+          <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -192,4 +273,5 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
 </Project>

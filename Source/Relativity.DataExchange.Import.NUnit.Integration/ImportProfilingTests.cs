@@ -8,7 +8,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	using global::NUnit.Framework;
 
+	using kCura.Relativity.DataReaderClient;
+
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
+	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.Transfer;
@@ -17,8 +20,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	[TestFixture]
 	[Explicit]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-	public class ImportProfilingTests : NativeImportJobTestBase
+	public class ImportProfilingTests : ImportJobTestBase<ImportBulkArtifactJob, Settings>
 	{
+		public ImportProfilingTests()
+			: base(new NativeImportApiSetUp())
+		{
+		}
+
 		[CollectWebApiExecutionPlans]
 		[CollectWebApiSql]
 		[TestCase(5)]
@@ -37,13 +45,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = DisableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = DisableNativeValidation;
 
-			this.GivenTheImportJob();
-			this.GiveNativeFilePathSourceDocumentImportJob();
+			this.InitializeImportApiWithUserAndPassword(NativeImportSettingsProvider.GetNativeFilePathSourceDocumentImportSettings());
 
-			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, numberOfDocuments);
+			const int NumberOfFilesToImport = 5;
+			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport);
 
 			// ACT
-			this.WhenExecutingTheJob(importData);
+			ImportTestJobResult results = this.Execute(importData);
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(numberOfDocuments);

@@ -22,7 +22,7 @@ namespace Relativity.DataExchange.NUnit
 	[TestFixture]
 	public class ImageLoadFileDeserializationTests
 	{
-		private static IEnumerable<string> FileNames => Directory.GetFiles(ResourceFileHelper.GetResourceFolderDirectory("ImageLoadFile"), "*.kwi");
+		private static IEnumerable<string> FileNames => Directory.GetFiles(ResourceFileHelper.GetResourceFolderPath("ImageLoadFile"), "*.kwi");
 
 		[Test]
 		[TestCaseSource(nameof(FileNames))]

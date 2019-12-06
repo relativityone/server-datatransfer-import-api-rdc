@@ -24,7 +24,7 @@ namespace Relativity.DataExchange.NUnit
 	[TestFixture]
 	public static class SerializationTests
 	{
-		private static IEnumerable<string> FileNames => Directory.GetFiles(ResourceFileHelper.GetResourceFolderDirectory("ExportFile"), "*.kwx");
+		private static IEnumerable<string> FileNames => Directory.GetFiles(ResourceFileHelper.GetResourceFolderPath("ExportFile"), "*.kwx");
 
 		[Test]
 		[TestCaseSource(nameof(FileNames))]
