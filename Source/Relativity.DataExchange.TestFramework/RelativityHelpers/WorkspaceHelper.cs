@@ -77,8 +77,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 							{
 								Name = GetWorkspaceName(parameters),
 								DownloadHandlerApplicationPath = "Relativity.Distributed",
-								MatterID = 1017108,
-								Client = new Client(1015644),
 							};
 
 							logger.LogInformation("Creating the {WorkspaceName} workspace...", workspace.Name);

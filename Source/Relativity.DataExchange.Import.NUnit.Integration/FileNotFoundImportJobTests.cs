@@ -14,15 +14,23 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	using global::NUnit.Framework;
 
+	using kCura.Relativity.DataReaderClient;
+
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
+	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-	public class FileNotFoundImportJobTests : NativeImportJobTestBase
+	public class FileNotFoundImportJobTests : ImportJobTestBase<ImportBulkArtifactJob, Settings>
 	{
+		public FileNotFoundImportJobTests()
+			: base(new NativeImportApiSetUp())
+		{
+		}
+
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
@@ -44,8 +52,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 
-			this.GivenTheImportJob();
-			this.GiveNativeFilePathSourceDocumentImportJob();
+			this.InitializeImportApiWithUserAndPassword(NativeImportSettingsProvider.GetNativeFilePathSourceDocumentImportSettings());
 
 			// Intentionally provide an invalid file before adding valid ones.
 			const int NumberOfFilesToImport = 5;
@@ -55,15 +62,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.Concat(DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport));
 
 			// ACT
-			this.WhenExecutingTheJob(importData);
+			ImportTestJobResult results = this.Execute(importData);
 
 			// ASSERT
 			this.ThenTheImportJobCompletedWithErrors(disableNativeLocationValidation ? 0 : 1, NumberOfFilesToImport + 1);
-			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport + 1));
-			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
+			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport + 1));
+			Assert.That(results.JobMessages, Has.Count.Positive);
 			if (disableNativeLocationValidation)
 			{
-				Assert.That(this.TestJobResult.JobMessages, Has.Some.Contains("does not exist"));
+				Assert.That(results.JobMessages, Has.Some.Contains("does not exist"));
 			}
 		}
 	}
