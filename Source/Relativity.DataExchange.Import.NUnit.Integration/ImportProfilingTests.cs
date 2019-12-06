@@ -51,7 +51,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport);
 
 			// ACT
-			ImportTestJobResult results = this.Execute(importData);
+			this.Execute(importData);
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(numberOfDocuments);

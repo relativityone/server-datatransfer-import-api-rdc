@@ -15,18 +15,19 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
 	public sealed class CollectWebApiExecutionPlansAttribute : PropertyAttribute, IWrapSetUpTearDown
 	{
-		private readonly string connectionString;
-
-		public CollectWebApiExecutionPlansAttribute()
-		{
-			this.connectionString = IntegrationTestHelper.GetSqlConnectionStringBuilder().ConnectionString;
-		}
-
 		public TestCommand Wrap(TestCommand command)
 		{
 			return IntegrationTestHelper.ReadIntegrationTestParameters().SqlCaptureProfiling
-					   ? new ProfilingSessionTestCommand(command, new CollectExecutionPlansProfilingSession(this.connectionString))
+					   ? CreateTestCommandWithProfiling(command)
 					   : command;
+		}
+
+		private static TestCommand CreateTestCommandWithProfiling(TestCommand command)
+		{
+			string connectionString = IntegrationTestHelper.GetSqlConnectionStringBuilder().ConnectionString;
+			string outputPath = IntegrationTestHelper.ReadIntegrationTestParameters().SqlProfilingReportsOutputPath;
+
+			return new ProfilingSessionTestCommand(command, new CollectExecutionPlansProfilingSession(connectionString), outputPath);
 		}
 	}
 }

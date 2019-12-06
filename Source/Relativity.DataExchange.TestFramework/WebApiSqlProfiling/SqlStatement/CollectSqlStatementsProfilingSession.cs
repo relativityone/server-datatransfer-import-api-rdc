@@ -21,15 +21,13 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.SqlStatement
 
 		protected override string[] GetEventsToCollect()
 		{
-			string[] events =
+			return new[]
 				{
 					$@"ADD EVENT sqlserver.rpc_completed({Action} {Where})",
 					$@"ADD EVENT sqlserver.sql_batch_completed({Action} {Where})",
 					$@"ADD EVENT sqlserver.sql_statement_completed({Action} {Where})",
 					$@"ADD EVENT sqlserver.sp_statement_completed({Action} {Where})",
 				};
-
-			return events;
 		}
 	}
 }
