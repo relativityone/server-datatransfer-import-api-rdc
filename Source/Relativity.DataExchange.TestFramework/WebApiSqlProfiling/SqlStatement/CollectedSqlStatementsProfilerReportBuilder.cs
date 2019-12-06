@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.SqlStatement
 			IList<SqlStatementRowDto> statementsByDuration = this.GetStatementsSortedByDuration();
 
 			string description = this.BuildDescription();
-			IEnumerable<TextFileDto> files = this.BuildFiles(description, statementsByDuration);
+			IEnumerable<TextFileDto> files = BuildFiles(description, statementsByDuration);
 			return new ProfilerReport(description, files);
 		}
 
@@ -68,6 +68,36 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.SqlStatement
 					row.Statement = element.Element("value").Value;
 					break;
 			}
+		}
+
+		private static IEnumerable<TextFileDto> BuildFiles(string description, IList<SqlStatementRowDto> sortedStatements)
+		{
+			const string fileName = "SQLs";
+			const string extension = "txt";
+
+			var sb = new StringBuilder();
+			sb.AppendLine(description);
+			sb.AppendLine("All statements:");
+			foreach (SqlStatementRowDto row in sortedStatements)
+			{
+				sb.AppendLine($"--- Query Hash: {row.QueryHash}; Duration: {row.Duration}; CpuTime: {row.CpuTime};");
+				sb.AppendLine($"--- Logical Reads: {row.LogicalReads}; Physical Reads: {row.PhysicalReads}; Writes: {row.Writes};");
+				sb.AppendLine($"--- Row Count: {row.RowCount}");
+				sb.AppendLine($"--- Session: {row.SessionID}; Request: {row.RequestID}");
+				sb.AppendLine("Sql Text:");
+				sb.AppendLine(row.Sql);
+				sb.AppendLine("Batch Text");
+				string batchText = row.BatchText == row.Sql ? "Same as Sql text" : row.BatchText;
+				sb.AppendLine(batchText);
+				sb.AppendLine("Statement");
+				string statementText = row.Statement == row.Sql ? "Same as Sql text" :
+				                       row.Statement == row.BatchText ? "Same as Batch text" : row.Statement;
+				sb.AppendLine(statementText);
+				sb.AppendLine();
+			}
+
+			var content = sb.ToString();
+			yield return new TextFileDto(fileName, extension, content);
 		}
 
 		private string BuildDescription()
@@ -119,36 +149,6 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.SqlStatement
 			sb.AppendLine($"{nameof(logicalReads)}: {logicalReads}");
 			sb.AppendLine($"{nameof(writes)}: {writes}");
 			sb.AppendLine($"{nameof(rowCount)}: {rowCount}");
-		}
-
-		private IEnumerable<TextFileDto> BuildFiles(string description, IList<SqlStatementRowDto> sortedStatements)
-		{
-			const string fileName = "SQLs";
-			const string extension = "txt";
-
-			var sb = new StringBuilder();
-			sb.AppendLine(description);
-			sb.AppendLine("All statements:");
-			foreach (SqlStatementRowDto row in sortedStatements)
-			{
-				sb.AppendLine($"--- Query Hash: {row.QueryHash}; Duration: {row.Duration}; CpuTime: {row.CpuTime};");
-				sb.AppendLine($"--- Logical Reads: {row.LogicalReads}; Physical Reads: {row.PhysicalReads}; Writes: {row.Writes};");
-				sb.AppendLine($"--- Row Count: {row.RowCount}");
-				sb.AppendLine($"--- Session: {row.SessionID}; Request: {row.RequestID}");
-				sb.AppendLine("Sql Text:");
-				sb.AppendLine(row.Sql);
-				sb.AppendLine("Batch Text");
-				string batchText = row.BatchText == row.Sql ? "Same as Sql text" : row.BatchText;
-				sb.AppendLine(batchText);
-				sb.AppendLine("Statement");
-				string statementText = row.Statement == row.Sql ? "Same as Sql text" :
-									   row.Statement == row.BatchText ? "Same as Batch text" : row.Statement;
-				sb.AppendLine(statementText);
-				sb.AppendLine();
-			}
-
-			var content = sb.ToString();
-			yield return new TextFileDto(fileName, extension, content);
 		}
 
 		private IList<SqlStatementRowDto> GetStatementsSortedByDuration()
