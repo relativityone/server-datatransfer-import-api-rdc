@@ -29,9 +29,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[CollectWebApiExecutionPlans]
 		[CollectWebApiSql]
-		[TestCase(5)]
-		[TestCase(1000)]
-		[TestCase(5000)]
+		[IdentifiedTestCase("b756e4b0-0206-43e1-8508-6b1a65759e1b", 5)]
+		[IdentifiedTestCase("6b6d0cf1-e9ce-4d6a-8e32-02af853efd3b", 1000)]
+		[IdentifiedTestCase("1c9e735b-922d-49f2-8536-94b041917467", 5000)]
 		public void SimpleImportTestCase(int numberOfDocuments)
 		{
 			const TapiClient Client = TapiClient.Direct;
