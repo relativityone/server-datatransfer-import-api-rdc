@@ -49,7 +49,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 
-			this.InitializeImportApiWithUserAndPwd(NativeImportSettingsProvider.GetNativeFilePathSourceDocumentImportSettings());
+			this.InitializeImportApiWithUserAndPassword(NativeImportSettingsProvider.GetNativeFilePathSourceDocumentImportSettings());
 
 			const int NumberOfFilesToImport = 5;
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport);
@@ -73,7 +73,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			Settings settings = NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings();
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
-			this.InitializeImportApiWithUserAndPwd(settings);
+			this.InitializeImportApiWithUserAndPassword(settings);
 
 			const int NumberOfDocumentsToImport = 2000;
 			var randomFolderGenerator = new RandomFolderGenerator(
@@ -107,7 +107,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
 			settings.MoveDocumentsInAppendOverlayMode = true;
 			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
-			this.InitializeImportApiWithUserAndPwd(settings);
+			this.InitializeImportApiWithUserAndPassword(settings);
 
 			int numberOfDocumentsToImport = TestData.SampleDocFiles.Count();
 			IEnumerable<FolderImportDto> importData =
@@ -128,7 +128,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldImportDocumentWithChoices()
 		{
 			// ARRANGE
-			this.InitializeImportApiWithUserAndPwd(NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings());
+			this.InitializeImportApiWithUserAndPassword(NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings());
 
 			const int NumberOfDocumentsToImport = 2;
 			IEnumerable<DocumentWithChoicesImportDto> importData = new[]
@@ -152,7 +152,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldImportDocumentWithObjects()
 		{
 			// ARRANGE
-			this.InitializeImportApiWithUserAndPwd(NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings());
+			this.InitializeImportApiWithUserAndPassword(NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings());
 
 			const int NumberOfDocumentsToImport = 2;
 			IEnumerable<DocumentWithObjectsImportDto> importData = new[]

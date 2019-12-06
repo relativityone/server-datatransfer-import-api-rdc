@@ -72,7 +72,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.importApiSetUp.Dispose();
 		}
 
-		public virtual void InitializeImportApiWithUserAndPwd(TSettings settings)
+		public virtual void InitializeImportApiWithUserAndPassword(TSettings settings)
 		{
 			this.importApiSetUp.SetUpImportApi(this.CreateImportApiWithUserAndPwd, settings);
 		}
