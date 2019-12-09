@@ -43,7 +43,6 @@ Namespace kCura.WinEDDS
 		Protected _previewCodeCount As New System.Collections.Specialized.HybridDictionary
 		Protected _startLineNumber As Int64
 		Protected _keyFieldID As Int32
-		Protected _settings As kCura.WinEDDS.LoadFile
 		Private _codeValidator As CodeValidator.Base
 		Private _codesCreated As Int32 = 0
 		Private _errorLogFileName As String = ""
@@ -53,6 +52,11 @@ Namespace kCura.WinEDDS
 		Private _genericTimestamp As System.DateTime
 		Private _trackErrorsInFieldValues As Boolean
 		Protected _executionSource As ExecutionSource
+		Private _currentIdentifier As String
+
+		Protected ReadOnly _settings As kCura.WinEDDS.LoadFile
+		Private ReadOnly _identifierFieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
+		
 #End Region
 
 #Region " Constructors "
@@ -60,6 +64,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean, ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
 			MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter, True)
 			_settings = args
+			_identifierFieldMapItem = args.FieldMap.Identifier
 			_trackErrorsInFieldValues = trackErrorsAsFieldValues
 			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn
@@ -253,8 +258,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function SourceIdentifierValue() As String Implements IArtifactReader.SourceIdentifierValue
-			Return String.Empty
-			' not implemented here.  Really only for the import api.
+			Return If(_currentIdentifier, String.Empty)
 		End Function
 
 		Public Sub AdvanceRecord() Implements Api.IArtifactReader.AdvanceRecord
@@ -301,7 +305,7 @@ Namespace kCura.WinEDDS
 			If _executionSource = ExecutionSource.Rdc
 				Return NullableTypesHelper.ToNullableDecimalUsingCurrentCulture(value)
 			Else
-				Return NullableTypesHelper.ToNullableDecimal(value) 
+				Return NullableTypesHelper.ToNullableDecimal(value)
 			End If
 		End Function
 
@@ -400,18 +404,24 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function ReadArtifact() As Api.ArtifactFieldCollection Implements Api.IArtifactReader.ReadArtifact
+			_currentIdentifier = String.Empty
 			Dim collection As New Api.ArtifactFieldCollection
 			Dim line As String() = Me.GetLine
 			If line.Length <> _columnHeaders.Length Then Throw New BulkLoadFileImporter.ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
+
+			'' We need to parse identifier first, so we can write value of it to error report when other column in that line is invalid
+			If _identifierFieldMapItem IsNot Nothing Then
+				Dim identifierFieldValue As Api.ArtifactField = ParseFieldValueAndAddToCollection(collection, line, _identifierFieldMapItem)
+				_currentIdentifier = identifierFieldValue.ValueAsString
+			End If
+
 			For Each mapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In _settings.FieldMap
 				If Not mapItem.DocumentField Is Nothing Then
-					Dim field As New Api.ArtifactField(mapItem.DocumentField)
-					If mapItem.NativeFileColumnIndex < 0 OrElse mapItem.NativeFileColumnIndex > line.Length - 1 Then
-						Me.SetFieldValue(field, String.Empty, mapItem.NativeFileColumnIndex)
-					Else
-						Me.SetFieldValue(field, line(mapItem.NativeFileColumnIndex), mapItem.NativeFileColumnIndex)
+					If mapItem.DocumentField.FieldCategory = FieldCategory.Identifier Then
+						Continue For 'Identifier was already read
 					End If
-					collection.Add(field)
+
+					ParseFieldValueAndAddToCollection(collection, line, mapItem)
 				End If
 			Next
 			If _settings.LoadNativeFiles AndAlso Not _settings.NativeFilePathColumn Is Nothing AndAlso Not _settings.NativeFilePathColumn = String.Empty AndAlso collection.FileField Is Nothing Then
@@ -440,6 +450,17 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Helpers"
+
+		Private Function ParseFieldValueAndAddToCollection(collection As ArtifactFieldCollection, line() As String, mapItem As LoadFileFieldMap.LoadFileFieldMapItem) As Api.ArtifactField
+			Dim field As New Api.ArtifactField(mapItem.DocumentField)
+			If mapItem.NativeFileColumnIndex < 0 OrElse mapItem.NativeFileColumnIndex > line.Length - 1 Then
+				Me.SetFieldValue(field, String.Empty, mapItem.NativeFileColumnIndex)
+			Else
+				Me.SetFieldValue(field, line(mapItem.NativeFileColumnIndex), mapItem.NativeFileColumnIndex)
+			End If
+			collection.Add(field)
+			Return field
+		End Function
 
 #End Region
 

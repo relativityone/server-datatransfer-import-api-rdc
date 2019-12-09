@@ -106,6 +106,7 @@
     <Compile Include="ExportFilterSelectForm.vb" />
     <Compile Include="ExportFormTest.vb" />
     <Compile Include="GlobalSuppressions.vb" />
+    <Compile Include="LoadFileReaderTests.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="TextAndNativeFileNameTests.vb">
       <SubType>Form</SubType>
@@ -115,6 +116,18 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="paket.references" />
+    <None Include="Resources\LoadFileReaderTests\InvalidDate.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\LoadFileReaderTests\EmptyControlNumber.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\LoadFileReaderTests\InvalidNumberOfColumns.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\LoadFileReaderTests\ValidInput.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Relativity.DataExchange.Legacy\Relativity.DataExchange.Legacy.vbproj">
