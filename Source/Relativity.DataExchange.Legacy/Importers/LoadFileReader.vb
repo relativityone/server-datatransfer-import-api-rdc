@@ -409,7 +409,7 @@ Namespace kCura.WinEDDS
 			If line.Length <> _columnHeaders.Length Then Throw New BulkLoadFileImporter.ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
 
 			'' We need to parse identifier first, so we can write value of it to error report when other column in that line is invalid
-			If Not _identifierFieldMapItem Is Nothing Then
+			If _identifierFieldMapItem IsNot Nothing Then
 				Dim identifierFieldValue As Api.ArtifactField = ParseFieldValueAndAddToCollection(collection, line, _identifierFieldMapItem)
 				_currentIdentifier = identifierFieldValue.ValueAsString
 			End If
