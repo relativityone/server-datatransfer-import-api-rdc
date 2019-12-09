@@ -122,6 +122,9 @@
     <None Include="Resources\LoadFileReaderTests\EmptyControlNumber.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\LoadFileReaderTests\InvalidNumberOfColumns.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\LoadFileReaderTests\ValidInput.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

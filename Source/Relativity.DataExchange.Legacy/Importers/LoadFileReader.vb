@@ -404,6 +404,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function ReadArtifact() As Api.ArtifactFieldCollection Implements Api.IArtifactReader.ReadArtifact
+			_currentIdentifier = String.Empty
 			Dim collection As New Api.ArtifactFieldCollection
 			Dim line As String() = Me.GetLine
 			If line.Length <> _columnHeaders.Length Then Throw New BulkLoadFileImporter.ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)

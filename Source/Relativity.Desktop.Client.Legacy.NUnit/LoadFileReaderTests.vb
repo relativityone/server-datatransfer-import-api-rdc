@@ -80,6 +80,32 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 			End While
 		End Sub
 
+		<Test>
+		Public Shared Sub SourceIdentifierValue_ShouldBeEmptyWhenNumberOfCellsInRowIsInvalid()
+			Const expectedNumberOfRowsWithInvalidNumberOfColumns = 1
+			Dim inputFilePath = ResourceFileHelper.GetResourceFilePath("LoadFileReaderTests", "InvalidNumberOfColumns.dat")
+
+			Dim fieldMap = New LoadFileFieldMap()
+			fieldMap.Add(GetControlNumberLoadFileFieldMapItem(fieldID:=1, columnInFile:=0))
+			fieldMap.Add(GetDateCreatedLoadFileFieldMapItem(fieldID:=2, columnInFile:=1))
+
+			Dim sut As LoadFileReader = CreateAndInitializeSut(inputFilePath, fieldMap)
+
+			' Act
+			Dim actualNumberOfRowsWithInvalidNumberOfColumns = 0
+			While sut.HasMoreRecords()
+				Try
+					sut.ReadArtifact()
+				Catch ex As LoadFileBase.ColumnCountMismatchException
+					actualNumberOfRowsWithInvalidNumberOfColumns += 1
+					Assert.AreEqual(String.Empty, sut.SourceIdentifierValue())
+				End Try
+			End While
+
+			' Assert
+			Assert.AreEqual(expectedNumberOfRowsWithInvalidNumberOfColumns, actualNumberOfRowsWithInvalidNumberOfColumns)
+		End Sub
+
 		Private Shared Function GetControlNumberLoadFileFieldMapItem(ByVal fieldID As Integer, ByVal columnInFile As Integer) As LoadFileFieldMap.LoadFileFieldMapItem
 			Dim controlNumberDocumentField = New DocumentField("Control Number", fieldID, FieldType.Varchar, FieldCategory.Identifier, Nothing, 255, Nothing, 1, Nothing, False)
 			Dim controlNumberFieldItem = New LoadFileFieldMap.LoadFileFieldMapItem(controlNumberDocumentField, columnInFile)
