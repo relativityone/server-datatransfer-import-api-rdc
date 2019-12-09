@@ -11,13 +11,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Data;
-	using System.Globalization;
-	using System.Linq;
 
 	using global::NUnit.Framework;
 
+	using kCura.Relativity.DataReaderClient;
+
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
+	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
 	using Relativity.DataExchange.Media;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
@@ -25,8 +25,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-	public class PositiveImageImportJobTests : ImageImportJobTestBase
+	public class PositiveImageImportJobTests : ImportJobTestBase<ImageImportBulkArtifactJob, ImageSettings>
 	{
+		public PositiveImageImportJobTests()
+			: base(new ImageImportApiSetUp())
+		{
+		}
+
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
@@ -46,42 +51,31 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			AppSettings.Instance.DisableImageLocationValidation = disableImageLocationValidation;
 			AppSettings.Instance.DisableImageTypeValidation = disableImageTypeValidation;
 
-			this.GivenTheImportJob();
-			this.GiveImageFilePathSourceDocumentImportJob();
+			this.InitializeImportApiWithUserAndPassword(ImageImportSettingsProvider.GetImageFilePathSourceDocumentImportSettings());
 
 			const int NumberOfDocumentsToImport = 5;
 			const int NumberOfImagesPerDocument = 3;
+			IEnumerable<ImageImportDto> importData = GetRandomImageFiles(this.TempDirectory.Directory, NumberOfDocumentsToImport, NumberOfImagesPerDocument, imageFormat);
 
-			using (var dataTable = new DataTable())
-			{
-				dataTable.Locale = CultureInfo.InvariantCulture;
-				GenerateRandomDataTable(dataTable, this.TempDirectory.Directory, NumberOfDocumentsToImport, NumberOfImagesPerDocument, imageFormat);
-
-				// ACT
-				this.WhenExecutingTheJob(dataTable);
-			}
+			ImportTestJobResult results = this.Execute(importData);
 
 			// ASSERT
 			const int TotalNumberOfImagesToImport = NumberOfDocumentsToImport * NumberOfImagesPerDocument;
 			this.ThenTheImportJobIsSuccessful(TotalNumberOfImagesToImport);
-			Assert.That(this.TestJobResult.JobMessages, Has.Count.Positive);
+			Assert.That(results.JobMessages, Has.Count.Positive);
 
 			// test result job returns ProgressCompletedRows larger by 1 than real files count
-			Assert.That(this.TestJobResult.ProgressCompletedRows, Has.Count.EqualTo(TotalNumberOfImagesToImport + 1));
+			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(TotalNumberOfImagesToImport + 1));
 		}
 
-		private static void GenerateRandomDataTable(DataTable dataTable, string directory, int numberOfDocumentsToImport, int numberOfImagesPerDocument, ImageFormat imageFormat)
+		private static IEnumerable<ImageImportDto> GetRandomImageFiles(string directory, int numberOfDocumentsToImport, int numberOfImagesPerDocument, ImageFormat imageFormat)
 		{
-			dataTable.Columns.Add("BatesNumber", typeof(string));
-			dataTable.Columns.Add("DocumentIdentifier", typeof(string));
-			dataTable.Columns.Add("FileLocation", typeof(string));
-
 			for (int i = 1; i <= numberOfDocumentsToImport; i++)
 			{
 				string documentIdentifier = $"{Guid.NewGuid():D}";
 				for (int j = 1; j <= numberOfImagesPerDocument; j++)
 				{
-					dataTable.Rows.Add($"{documentIdentifier}_{j}", $"{documentIdentifier}", RandomHelper.NextImageFile(imageFormat, directory));
+					yield return new ImageImportDto($"{documentIdentifier}_{j}", $"{documentIdentifier}", RandomHelper.NextImageFile(imageFormat, directory));
 				}
 			}
 		}

@@ -15,7 +15,7 @@ namespace Relativity.DataExchange.TestFramework.Extensions
 		private static readonly List<string> DoNotCopyPropNames = new List<string>() { $"{nameof(Settings.ArtifactTypeId)}" };
 
 		public static void CopyTo<T>(this T source, T destination)
-			where T : Settings
+			where T : ImportSettingsBase
 		{
 			destination.ThrowIfNull(nameof(destination));
 
