@@ -16,13 +16,13 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling
 		private readonly string connectionString;
 		private readonly string profilingSessionName;
 
-		private readonly Func<IProfilerReportBuilder> profilerReportFactory;
+		private readonly Func<IProfilerReportBuilder> profilerReportBuilderFactory;
 
-		protected ProfilingSession(string connectionString, Func<IProfilerReportBuilder> profilerReportFactory)
+		protected ProfilingSession(string connectionString, Func<IProfilerReportBuilder> profilerReportBuilderFactory)
 		{
 			this.connectionString = connectionString;
 			this.profilingSessionName = $"DataExchange_{Guid.NewGuid().ToString("N")}";
-			this.profilerReportFactory = profilerReportFactory;
+			this.profilerReportBuilderFactory = profilerReportBuilderFactory;
 		}
 
 		public void StartProfilingForRelativityWebApi()
@@ -66,7 +66,7 @@ DROP EVENT SESSION [{this.profilingSessionName}] ON SERVER;";
 
 		private ProfilerReport BuildProfilingReport(string data)
 		{
-			IProfilerReportBuilder profilingReport = this.profilerReportFactory();
+			IProfilerReportBuilder profilingReportBuilder = this.profilerReportBuilderFactory();
 
 			DateTime lastTimestamp = DateTime.MinValue;
 
@@ -81,16 +81,16 @@ DROP EVENT SESSION [{this.profilingSessionName}] ON SERVER;";
 
 				lastTimestamp = currentTimestamp;
 
-				profilingReport.CreateNewRow();
+				profilingReportBuilder.CreateNewRow();
 				foreach (XElement element in eventElement.Elements())
 				{
-					profilingReport.AddDetailsToCurrentRow(element);
+					profilingReportBuilder.AddDetailsToCurrentRow(element);
 				}
 
-				profilingReport.CommitRow();
+				profilingReportBuilder.CommitRow();
 			}
 
-			return profilingReport.Build();
+			return profilingReportBuilder.Build();
 		}
 
 		private string BuildStartProfilingQuery()

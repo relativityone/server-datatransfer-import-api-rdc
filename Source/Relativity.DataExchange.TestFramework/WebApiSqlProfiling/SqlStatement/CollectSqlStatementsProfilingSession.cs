@@ -15,7 +15,7 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.SqlStatement
 		public CollectSqlStatementsProfilingSession(string connectionString)
 			: base(
 				connectionString,
-				profilerReportFactory: () => new CollectedSqlStatementsProfilerReportBuilder())
+				profilerReportBuilderFactory: () => new CollectedSqlStatementsProfilerReportBuilder())
 		{
 		}
 

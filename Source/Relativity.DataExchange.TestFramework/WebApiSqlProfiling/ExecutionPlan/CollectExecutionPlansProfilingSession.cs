@@ -9,7 +9,7 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.ExecutionPlan
 		public CollectExecutionPlansProfilingSession(string connectionString)
 			: base(
 				connectionString,
-				profilerReportFactory: () => new CollectedExecutionPlansProfilerReportBuilder())
+				profilerReportBuilderFactory: () => new CollectedExecutionPlansProfilerReportBuilder())
 		{
 		}
 
