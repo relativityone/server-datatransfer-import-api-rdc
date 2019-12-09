@@ -5,11 +5,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FED61746-80EC-40CB-998E-9299B804CE7D}</ProjectGuid>
+    <ProjectGuid>{F86E3808-81B9-41F5-9B11-220910715EB8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Relativity.DataExchange.TestFramework</RootNamespace>
-    <AssemblyName>Relativity.DataExchange.TestFramework</AssemblyName>
+    <RootNamespace>Relativity.DataExchange.Import.NUnit.LoadTests</RootNamespace>
+    <AssemblyName>Relativity.DataExchange.Import.NUnit.LoadTests</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -26,8 +26,8 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Relativity.DataExchange.TestFramework.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
+    <DocumentationFile>bin\Relativity.DataExchange.Import.NUnit.LoadTests.xml</DocumentationFile>
+    <NoWarn>1591;0618</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -40,8 +40,8 @@
     <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Relativity.DataExchange.TestFramework.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
+    <DocumentationFile>bin\Relativity.DataExchange.Import.NUnit.LoadTests.xml</DocumentationFile>
+    <NoWarn>1591;0618</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -50,9 +50,9 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
-    <DocumentationFile>bin\Relativity.DataExchange.TestFramework.xml</DocumentationFile>
+    <DocumentationFile>bin\Relativity.DataExchange.Import.NUnit.LoadTests.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>1591;0618</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
@@ -63,9 +63,9 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;WINDOWS64</DefineConstants>
-    <DocumentationFile>bin\Relativity.DataExchange.TestFramework.xml</DocumentationFile>
+    <DocumentationFile>bin\Relativity.DataExchange.Import.NUnit.LoadTests.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>1591;0618</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
@@ -74,85 +74,90 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="itextsharp, Version=5.1.2.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+    <Reference Include="FreeImageNET">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll</HintPath>
+      <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CryptoHelper.cs" />
-    <Compile Include="DataReaderBase.cs" />
-    <Compile Include="DummyTest.cs" />
-    <Compile Include="EnumerableDataReader.cs" />
-    <Compile Include="Extensions\CopySettingsExtenstion.cs" />
-    <Compile Include="Extensions\DataRowExtensions.cs" />
-    <Compile Include="Extensions\DataTableExtensions.cs" />
-    <Compile Include="RelativityHelpers\FolderHelper.cs" />
-    <Compile Include="RelativityHelpers\ImportHelper.cs" />
-    <Compile Include="TestData.cs" />
-    <Compile Include="FileDto.cs" />
-    <Compile Include="IntegrationTestHelper.cs" />
-    <Compile Include="RelativityHelpers\FieldHelper.cs" />
-    <Compile Include="IntegrationTestParameterAttribute.cs" />
-    <Compile Include="RelativityTestLogger.cs" />
-    <Compile Include="TapiClientModeAvailabilityChecker.cs" />
-    <Compile Include="TestDirectory.cs" />
-    <Compile Include="RelativityHelpers\InstanceSettingsHelper.cs" />
-    <Compile Include="RelativityHelpers\UsersHelper.cs" />
-    <Compile Include="TestStrings.cs" />
-    <Compile Include="ServiceHelper.cs" />
-    <Compile Include="RelativityHelpers\ProductionHelper.cs" />
-    <Compile Include="RandomHelper.cs" />
-    <Compile Include="ResourceFileHelper.cs" />
-    <Compile Include="TestCategories.cs" />
-    <Compile Include="RelativityHelpers\RdoHelper.cs" />
-    <Compile Include="RelativityHelpers\WorkspaceHelper.cs" />
-    <Compile Include="WellKnownArtifactTypes.cs" />
-    <Compile Include="WellKnownFields.cs" />
-    <Compile Include="IntegrationTestParameters.cs" />
+    <Compile Include="LoadTestsAssemblySetup.cs" />
+    <Compile Include="ImportDocumentsLoadTests.cs" />
+    <Compile Include="SetUp\ParallelNativeImportApiSetUp.cs" />
+    <Content Include="oi\docs\fileids_values_only_sorted.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\docs\fileids_values_strs.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\cmmap000.bin">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.exe">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.jar">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccca-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccch-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccda-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccex-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfa-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfi-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfmt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfnt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccind-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\scclo-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\wvcore-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="LogConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
     <Compile Include="GlobalSuppressions.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryFieldFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\buildtools\stylecop.json">
       <Link>stylecop.json</Link>
     </AdditionalFiles>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="paket.references" />
-    <EmbeddedResource Include="Resources\test-parameters-hyperv.json" />
-    <EmbeddedResource Include="Resources\test-parameters-e2e.json" />
-    <None Include="Resources\CreateInput.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Docs\EDRM-Sample1.pdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Docs\EDRM-Sample2.doc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Docs\EDRM-Sample3.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Docs\EDRM-Sample4.msg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Docs\EDRM-Sample7.ppt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\buildtools\CustomDictionary.xml">
@@ -173,34 +178,19 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
-    <Content Include="Resources\Docs\EDRM-Sample10.wmf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Docs\EDRM-Sample5.htm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Docs\EDRM-Sample6.emf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Docs\EDRM-Sample8.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Docs\EDRM-Sample9.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Images\EDRM-Sample-000001.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Images\EDRM-Sample1.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Images\EDRM-Sample2.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Images\EDRM-Sample3.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\Relativity.DataExchange.Import.NUnit.Integration\Relativity.DataExchange.Import.NUnit.Integration.csproj">
+      <Project>{4bc26612-c72d-45d9-9902-88562017eda0}</Project>
+      <Name>Relativity.DataExchange.Import.NUnit.Integration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.DataExchange.TestFramework\Relativity.DataExchange.TestFramework.csproj">
+      <Project>{fed61746-80ec-40cb-998e-9299b804ce7d}</Project>
+      <Name>Relativity.DataExchange.TestFramework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -230,6 +220,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="oi">
+          <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="kCura.Relativity.Client">
           <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
           <Private>True</Private>
@@ -241,8 +242,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="FizzWare.NBuilder">
-          <HintPath>..\..\packages\NBuilder\lib\net40\FizzWare.NBuilder.dll</HintPath>
+        <Reference Include="Moq">
+          <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -274,6 +275,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="NUnitExtras.HierarchicalCategories">
+          <HintPath>..\..\packages\NUnitExtras.HierarchicalCategories\lib\net45\NUnitExtras.HierarchicalCategories.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Polly">
           <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
           <Private>True</Private>
@@ -292,6 +304,9 @@
         </Reference>
       </ItemGroup>
     </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -438,6 +453,28 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Telemetry.Services.Interface">
+          <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Testing.Identification">
+          <HintPath>..\..\packages\Relativity.Testing.Identification\lib\net462\Relativity.Testing.Identification.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Transfer.Client">
           <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
           <Private>True</Private>
@@ -469,17 +506,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Serilog">
-          <HintPath>..\..\packages\Serilog\lib\net46\Serilog.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Renci.SshNet">
           <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
           <Private>True</Private>
@@ -488,6 +514,7 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
   <ItemGroup>
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
       <Paket>True</Paket>
@@ -517,4 +544,5 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
 </Project>

@@ -20,12 +20,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 		}
 
 		[DisplayName(WellKnownFields.ControlNumber)]
-		public string ControlNumber { get; set; }
+		public string ControlNumber { get; }
 
 		[DisplayName(WellKnownFields.ConfidentialDesignation)]
-		public string ConfidentialDesignation { get; set; }
+		public string ConfidentialDesignation { get; }
 
 		[DisplayName(WellKnownFields.PrivilegeDesignation)]
-		public string PrivilegeDesignation { get; set; }
+		public string PrivilegeDesignation { get; }
 	}
 }
