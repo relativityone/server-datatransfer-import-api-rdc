@@ -16,7 +16,7 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.SqlStatement
 	{
 		public override ProfilerReport Build()
 		{
-			IList<SqlStatementRowDto> statementsByDuration = this.GetStatementsSortedByDuration();
+			IEnumerable<SqlStatementRowDto> statementsByDuration = this.GetStatementsSortedByDuration();
 
 			string description = this.BuildDescription();
 			IEnumerable<TextFileDto> files = BuildFiles(description, statementsByDuration);
@@ -70,7 +70,7 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.SqlStatement
 			}
 		}
 
-		private static IEnumerable<TextFileDto> BuildFiles(string description, IList<SqlStatementRowDto> sortedStatements)
+		private static IEnumerable<TextFileDto> BuildFiles(string description, IEnumerable<SqlStatementRowDto> sortedStatements)
 		{
 			const string fileName = "SQLs";
 			const string extension = "txt";
@@ -151,9 +151,9 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.SqlStatement
 			sb.AppendLine($"{nameof(rowCount)}: {rowCount}");
 		}
 
-		private IList<SqlStatementRowDto> GetStatementsSortedByDuration()
+		private IEnumerable<SqlStatementRowDto> GetStatementsSortedByDuration()
 		{
-			return this.Rows.OrderByDescending(x => x.Duration).ToList();
+			return this.Rows.OrderByDescending(x => x.Duration);
 		}
 	}
 }

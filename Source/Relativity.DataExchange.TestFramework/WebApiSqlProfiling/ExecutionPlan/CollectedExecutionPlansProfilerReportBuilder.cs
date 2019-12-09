@@ -16,7 +16,7 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.ExecutionPlan
 	{
 		public override ProfilerReport Build()
 		{
-			IEnumerable<ExecutionPlanReportRowDto> sortedExecutionPlans = this.GetExecutionPlansSortedByDuration();
+			List<ExecutionPlanReportRowDto> sortedExecutionPlans = this.GetExecutionPlansSortedByDuration().ToList();
 			string description = BuildDescription(sortedExecutionPlans);
 
 			List<TextFileDto> files = sortedExecutionPlans
@@ -115,9 +115,9 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.ExecutionPlan
 			return sb.ToString();
 		}
 
-		private IList<ExecutionPlanReportRowDto> GetExecutionPlansSortedByDuration()
+		private IEnumerable<ExecutionPlanReportRowDto> GetExecutionPlansSortedByDuration()
 		{
-			return this.Rows.OrderByDescending(x => x.Duration).ToList();
+			return this.Rows.OrderByDescending(x => x.Duration);
 		}
 	}
 }
