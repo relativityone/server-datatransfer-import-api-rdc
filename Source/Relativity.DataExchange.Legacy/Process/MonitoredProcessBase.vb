@@ -50,10 +50,13 @@ Public MustInherit Class MonitoredProcessBase
 	End Sub
 
 	Protected Overrides Sub OnExecute()
-		Dim initialized As Boolean = False
 		Try
 			Initialize()
-			initialized = True
+		Catch ex As Exception
+			OnInitializationError()
+			throw
+		End Try
+		Try
 			If Run() Then
 				If HasErrors() Then
 					OnHasErrors()
@@ -64,15 +67,9 @@ Public MustInherit Class MonitoredProcessBase
 				OnFatalError()
 			End If
 		Catch ex As Exception
-			If (Not initialized)
-				OnInitializationError()
-			Else
-				OnFatalError()
-			End If
+			OnFatalError()
 			throw
 		End Try
-		
-
 	End Sub
 
 	Protected Overridable Sub SetEndTime()
