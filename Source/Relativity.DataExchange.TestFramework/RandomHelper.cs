@@ -36,7 +36,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// Gets random file name.
 		/// </summary>
 		/// <returns>File name.</returns>
-		public static string GetRandomFileName
+		private static string GetRandomFileName
 		{
 			get
 			{
@@ -259,8 +259,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// This method should be used later in production import integration tests
 		public static string NextPdfFile(int minLength, int maxLength, string directory)
 		{
-			var fileName = GetRandomFileName;
-			var file = NextPdfFile(minLength, maxLength, directory, fileName);
+			var file = NextPdfFile(minLength, maxLength, directory, GetRandomFileName);
 
 			return file;
 		}
@@ -292,8 +291,8 @@ namespace Relativity.DataExchange.TestFramework
 				fileName = Path.ChangeExtension(fileName, ".pdf");
 			}
 
-			var text = NextString(minTextLength, maxTextLength);
-			var file = Path.Combine(directory, fileName);
+			string text = NextString(minTextLength, maxTextLength);
+			string file = Path.Combine(directory, fileName);
 
 			using (FileStream fs = new FileStream(file, FileMode.Create))
 			using (var document = new iTextSharp.text.Document())
@@ -315,24 +314,28 @@ namespace Relativity.DataExchange.TestFramework
 		/// <param name="directory">
 		/// The directory to create the file.
 		/// </param>
+		/// <param name="width">
+		/// The image width.
+		/// </param>
+		/// <param name="height">
+		/// The image height.
+		/// </param>
 		/// <returns>
 		/// The file.
 		/// </returns>
-		public static string NextImageFile(Relativity.DataExchange.Media.ImageFormat imageFormat, string directory)
+		public static string NextImageFile(Relativity.DataExchange.Media.ImageFormat imageFormat, string directory, int width, int height)
 		{
 			var fileName = GetRandomFileName;
-			var imageWidth = 200;
-			var imageHeight = 200;
 
 			switch (imageFormat)
 			{
 				case Relativity.DataExchange.Media.ImageFormat.Jpeg:
-					return NextJpegFile(directory, fileName, imageWidth, imageHeight);
+					return NextJpegFile(directory, fileName, width, height);
 				case Relativity.DataExchange.Media.ImageFormat.Tiff:
-					return NextTiffFile(directory, fileName, imageWidth, imageHeight);
+					return NextTiffFile(directory, fileName, width, height);
+				default:
+					throw new InvalidOperationException("Not supported image format");
 			}
-
-			throw new InvalidOperationException("Not supported image format");
 		}
 
 		/// <summary>

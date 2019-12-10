@@ -25,7 +25,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 		[DisplayName(WellKnownFields.FilePath)]
 		public string FilePath { get; }
 
-		[DisplayName("Document Identifier")]
+		[DisplayName(WellKnownFields.DocumentIdentifier)]
 		public string DocumentIdentifier { get; }
 	}
 }

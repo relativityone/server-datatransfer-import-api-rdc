@@ -59,34 +59,5 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 			importJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
 			return importJob;
 		}
-
-		private void ImportJob_OnError(IDictionary row)
-		{
-			lock (this.TestJobResult)
-			{
-				this.TestJobResult.ErrorRows.Add(row);
-				StringBuilder rowMetaData = new StringBuilder();
-				foreach (string key in row.Keys)
-				{
-					if (rowMetaData.Length > 0)
-					{
-						rowMetaData.Append(",");
-					}
-
-					rowMetaData.AppendFormat("{0}={1}", key, row[key]);
-				}
-
-				Console.WriteLine("[Job Error Metadata]: " + rowMetaData);
-			}
-		}
-
-		private void ImportJob_OnMessage(Status status)
-		{
-			lock (this.TestJobResult)
-			{
-				this.TestJobResult.JobMessages.Add(status.Message);
-				Console.WriteLine("[Job Message]: " + status.Message);
-			}
-		}
 	}
 }
