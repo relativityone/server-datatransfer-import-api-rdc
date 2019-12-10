@@ -14,26 +14,20 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
 
-		Protected _columnsAreInitialized As Boolean
 		Protected _columnHeaders As String()
 		Protected _filePathColumn As String
 		Protected _filePathColumnIndex As Int32
 		Protected _firstLineContainsColumnNames As Boolean
 		Protected _docFields As DocumentField()
 		Protected _multiValueSeparator As Char()
-		Protected _allCodes As SqlDataView
-		Protected _allCodeTypes As SqlDataView
 		Protected _folderID As Int32
 		Protected _caseSystemID As Int32
 		Protected _caseArtifactID As Int32
-		Protected _timeZoneOffset As Int32
-		Protected _autoDetect As Boolean
 		Protected _uploadFiles As Boolean
 		Protected _fieldMap As LoadFileFieldMap
 		Protected _createFolderStructure As Boolean
 		Protected _destinationFolder As String
 		Protected _fullTextColumnMapsToFileLocation As Boolean
-		Private _users As UserCollection
 		Protected _sourceFileEncoding As System.Text.Encoding
 		Protected _extractedTextFileEncoding As System.Text.Encoding
 		Protected _extractedTextFileEncodingName As String
@@ -43,9 +37,6 @@ Namespace kCura.WinEDDS
 		Protected _previewCodeCount As New System.Collections.Specialized.HybridDictionary
 		Protected _startLineNumber As Int64
 		Protected _keyFieldID As Int32
-		Private _codeValidator As CodeValidator.Base
-		Private _codesCreated As Int32 = 0
-		Private _errorLogFileName As String = ""
 		Private _errorLogWriter As System.IO.StreamWriter
 		Private WithEvents _loadFilePreProcessor As kCura.WinEDDS.LoadFilePreProcessor
 		Private _recordCount As Int64 = -1
@@ -167,22 +158,6 @@ Namespace kCura.WinEDDS
 			sb.Remove(sb.Length - 1, 1)
 			Return sb.ToString
 		End Function
-
-		Private Sub LogErrorLine(ByVal values As String())
-			If values Is Nothing Then Exit Sub
-			If _errorLogFileName = "" Then
-				_errorLogFileName = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
-				_errorLogWriter = New System.IO.StreamWriter(_errorLogFileName, False, _sourceFileEncoding)
-				_errorLogWriter.WriteLine(Me.ToDelimetedLine(_columnHeaders))
-			End If
-			_errorLogWriter.WriteLine(Me.ToDelimetedLine(values))
-		End Sub
-
-		Public ReadOnly Property ErrorLogFileName() As String
-			Get
-				Return _errorLogFileName
-			End Get
-		End Property
 
 #End Region
 
