@@ -89,6 +89,7 @@
     <Compile Include="Dto\ImageImportDto.cs" />
     <Compile Include="SetUp\ImageImportSettingsProvider.cs" />
     <Compile Include="SetUp\ImportApiSetUp.cs" />
+    <Compile Include="ImportProfilingTests.cs" />
     <Compile Include="RandomFolderGenerator.cs" />
     <Compile Include="SetUp\NativeImportApiSetUp.cs" />
     <Compile Include="SetUp\NativeImportSettingsProvider.cs" />
@@ -96,8 +97,6 @@
     <Compile Include="SetUp\ImageImportApiSetUp.cs" />
     <Compile Include="Dto\DocumentWithObjectsImportDto.cs" />
     <Compile Include="PositiveImageImportJobTests.cs" />
-    <Compile Include="ProfilingReport.cs" />
-    <Compile Include="SqlProfiling.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
       <Paket>True</Paket>
     </Content>
@@ -546,5 +545,4 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <ItemGroup />
 </Project>

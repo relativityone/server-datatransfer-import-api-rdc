@@ -8,7 +8,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Data.SqlClient;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
@@ -44,25 +43,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			await FolderHelper.SetItemLevelSecurity(TestParameters, folderIds[2], "Level 3").ConfigureAwait(false);
 
 			ImportHelper.ImportDefaultTestData(TestParameters);
-
-			if (TestParameters.SqlCaptureProfiling)
-			{
-				SqlConnectionStringBuilder connectionBuilder = IntegrationTestHelper.GetSqlConnectionStringBuilder(TestParameters);
-				SqlProfiling.StartProfilingForRelativityWebApi(connectionBuilder.ConnectionString);
-			}
 		}
 
 		[OneTimeTearDown]
 		public void TearDown()
 		{
-			if (TestParameters.SqlCaptureProfiling)
-			{
-				SqlConnectionStringBuilder connectionBuilder = IntegrationTestHelper.GetSqlConnectionStringBuilder(TestParameters);
-				string data = SqlProfiling.ReadCapturedEventsAndStopProfiling(connectionBuilder.ConnectionString);
-				ProfilingReport profilingReport = SqlProfiling.AggregateReport(data, false);
-				Console.WriteLine(profilingReport);
-			}
-
 			IntegrationTestHelper.Destroy(TestParameters);
 		}
 	}

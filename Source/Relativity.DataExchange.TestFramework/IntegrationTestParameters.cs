@@ -67,6 +67,7 @@ namespace Relativity.DataExchange.TestFramework
 			this.SqlAdminUserName = copy.SqlAdminUserName;
 			this.SqlDropWorkspaceDatabase = copy.SqlDropWorkspaceDatabase;
 			this.SqlCaptureProfiling = copy.SqlCaptureProfiling;
+			this.SqlProfilingReportsOutputPath = copy.SqlProfilingReportsOutputPath;
 			this.SqlInstanceName = copy.SqlInstanceName;
 			this.WorkspaceId = copy.WorkspaceId;
 		}
@@ -244,6 +245,20 @@ namespace Relativity.DataExchange.TestFramework
 		[JsonProperty("SqlCaptureProfiling")]
 		[IntegrationTestParameter(true)]
 		public bool SqlCaptureProfiling
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a path where  SQL profiling reports are written.
+		/// </summary>
+		/// <value>
+		/// Path to SQL profiling output directory.
+		/// </value>
+		[JsonProperty("SqlProfilingReportsOutputPath")]
+		[IntegrationTestParameter(true)]
+		public string SqlProfilingReportsOutputPath
 		{
 			get;
 			set;
