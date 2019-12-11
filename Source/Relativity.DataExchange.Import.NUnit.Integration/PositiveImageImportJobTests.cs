@@ -37,45 +37,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("9db2e7f4-0bc8-46a8-9e95-621ca9bcc5c1")]
 		[Pairwise]
-		public void ShouldImportTheFilesTransferModes(
-			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
+		public void ShouldImportImagesUsignDifferentTransferModesAndFileFormats(
+			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client,
+			[Values(ImageFormat.Jpeg, ImageFormat.Tiff)] ImageFormat imageFormat)
 		{
 			// ARRANGE
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 
 			ForceClient(client);
-
-			this.InitializeImportApiWithUserAndPassword(ImageImportSettingsProvider.GetImageFilePathSourceDocumentImportSettings());
-
-			const int NumberOfDocumentsToImport = 5;
-			const int NumberOfImagesPerDocument = 3;
-			IEnumerable<ImageImportDto> importData = GetRandomImageFiles(this.TempDirectory.Directory, NumberOfDocumentsToImport, NumberOfImagesPerDocument, ImageFormat.Jpeg);
-
-			// ACT
-			ImportTestJobResult results = this.Execute(importData);
-
-			// ASSERT
-			const int ExpectedNumberOfImportedImages = NumberOfDocumentsToImport * NumberOfImagesPerDocument;
-			this.ThenTheImportJobIsSuccessful(ExpectedNumberOfImportedImages);
-			Assert.That(results.JobMessages, Has.Count.Positive);
-
-			// test result job returns ProgressCompletedRows larger by 1 than real files count
-			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(ExpectedNumberOfImportedImages + 1));
-		}
-
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.TransferApi)]
-		[IdentifiedTest("8a855ae4-93e6-4340-bfb2-59886cef953d")]
-		[Pairwise]
-		public void ShouldImportTheFilesConfiguration(
-			[Values(true, false)] bool disableImageLocationValidation,
-			[Values(true, false)] bool disableImageTypeValidation,
-			[Values(ImageFormat.Jpeg, ImageFormat.Tiff)] ImageFormat imageFormat)
-		{
-			// ARRANGE
-			AppSettings.Instance.DisableImageLocationValidation = disableImageLocationValidation;
-			AppSettings.Instance.DisableImageTypeValidation = disableImageTypeValidation;
 
 			this.InitializeImportApiWithUserAndPassword(ImageImportSettingsProvider.GetImageFilePathSourceDocumentImportSettings());
 
@@ -90,9 +59,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			const int ExpectedNumberOfImportedImages = NumberOfDocumentsToImport * NumberOfImagesPerDocument;
 			this.ThenTheImportJobIsSuccessful(ExpectedNumberOfImportedImages);
 			Assert.That(results.JobMessages, Has.Count.Positive);
-
-			// test result job returns ProgressCompletedRows larger by 1 than real files count
-			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(ExpectedNumberOfImportedImages + 1));
+			Assert.That(results.CompletedJobReport.TotalRows, Is.EqualTo(ExpectedNumberOfImportedImages));
 		}
 
 		private static IEnumerable<ImageImportDto> GetRandomImageFiles(string directory, int numberOfDocumentsToImport, int numberOfImagesPerDocument, ImageFormat imageFormat)
