@@ -23,7 +23,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected _hasFatalErrorOccured As Boolean
 	Private _jobStartedMetricSent As Boolean = False
 	Protected MustOverride ReadOnly Property TapiClient As TapiClient
-
+	
 	Public Property CaseInfo As CaseInfo
 
 	Public Property ExecutionSource As ExecutionSource = ExecutionSource.Unknown
@@ -50,17 +50,26 @@ Public MustInherit Class MonitoredProcessBase
 	End Sub
 
 	Protected Overrides Sub OnExecute()
-		Initialize()
-		If Run() Then
-			If HasErrors() Then
-				OnHasErrors()
+		Try
+			Initialize()
+		Catch ex As Exception
+			OnInitializationError()
+			throw
+		End Try
+		Try
+			If Run() Then
+				If HasErrors() Then
+					OnHasErrors()
+				Else
+					OnSuccess()
+				End If
 			Else
-				OnSuccess()
+				OnFatalError()
 			End If
-		Else
+		Catch ex As Exception
 			OnFatalError()
-		End If
-
+			throw
+		End Try
 	End Sub
 
 	Protected Overridable Sub SetEndTime()
@@ -160,6 +169,13 @@ Public MustInherit Class MonitoredProcessBase
 		SendMetricJobEndReport(jobStatus)
 		' This is to ensure we send non-zero JobProgressMessage even with small job
 		SendMetricJobProgress(Statistics, checkThrottling := False)
+	End Sub
+
+	Private Sub OnInitializationError()
+		' send only a basic version of metric since objects may not be initialized correctly
+		Dim metric As MetricJobEndReport = New MetricJobEndReport() With { .JobStatus = TelemetryConstants.JobStatus.Failed }
+		BuildMetricBase(metric)
+		MetricService.Log(metric)
 	End Sub
 
 	Private Sub BuildMetricBase(metric As MetricJobBase)
