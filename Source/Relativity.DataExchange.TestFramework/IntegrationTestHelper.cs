@@ -56,7 +56,7 @@ namespace Relativity.DataExchange.TestFramework
 		public static IntegrationTestParameters Create()
 		{
 			// Note: don't create the logger until all parameters have been retrieved.
-			IntegrationTestParameters parameters = GetIntegrationTestParameters();
+			IntegrationTestParameters parameters = ReadIntegrationTestParameters();
 			SetupLogger(parameters);
 			SetupServerCertificateValidation(parameters);
 			if (parameters.SkipIntegrationTests)
@@ -87,6 +87,37 @@ namespace Relativity.DataExchange.TestFramework
 		}
 
 		/// <summary>
+		/// Get connection string.
+		/// </summary>
+		/// <param name="parameters">
+		/// The integration test parameters.
+		/// </param>
+		/// <returns>The builder with populated values.</returns>
+		public static SqlConnectionStringBuilder GetSqlConnectionStringBuilder(IntegrationTestParameters parameters)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			var builder = new SqlConnectionStringBuilder
+			{
+				DataSource = parameters.SqlInstanceName,
+				IntegratedSecurity = false,
+				UserID = parameters.SqlAdminUserName,
+				Password = parameters.SqlAdminPassword,
+				InitialCatalog = string.Empty,
+			};
+
+			return builder;
+		}
+
+		public static SqlConnectionStringBuilder GetSqlConnectionStringBuilder()
+		{
+			return GetSqlConnectionStringBuilder(ReadIntegrationTestParameters());
+		}
+
+		/// <summary>
 		/// Destroy the integration test environment that was previously created.
 		/// </summary>
 		/// <param name="parameters">
@@ -112,14 +143,7 @@ namespace Relativity.DataExchange.TestFramework
 			{
 				try
 				{
-					SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder
-					{
-						DataSource = parameters.SqlInstanceName,
-						IntegratedSecurity = false,
-						UserID = parameters.SqlAdminUserName,
-						Password = parameters.SqlAdminPassword,
-						InitialCatalog = string.Empty,
-					};
+					SqlConnectionStringBuilder builder = GetSqlConnectionStringBuilder(parameters);
 
 					SqlConnection.ClearAllPools();
 					using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
@@ -152,7 +176,7 @@ END";
 			}
 		}
 
-		private static IntegrationTestParameters GetIntegrationTestParameters()
+		public static IntegrationTestParameters ReadIntegrationTestParameters()
 		{
 			Console.WriteLine("Retrieving and dumping all integration test parameters...");
 			bool decryptParameters = false;

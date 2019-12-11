@@ -10,6 +10,8 @@
   "SkipDirectModeTests": "True",
   "SkipIntegrationTests": "False",
   "SqlDropWorkspaceDatabase": "False",
+  "SqlCaptureProfiling": "False",
+  "SqlProfilingReportsOutputPath" :  "C:\\SqlProfiling",
   "SqlInstanceName": "",
   "SqlAdminUserName": "",
   "SqlAdminPassword": "",

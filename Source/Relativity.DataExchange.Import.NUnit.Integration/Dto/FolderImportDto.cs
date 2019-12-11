@@ -19,9 +19,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 		}
 
 		[DisplayName(WellKnownFields.ControlNumber)]
-		public string ControlNumber { get; set; }
+		public string ControlNumber { get; }
 
 		[DisplayName(WellKnownFields.FolderName)]
-		public string Folder { get; set; }
+		public string Folder { get; }
 	}
 }

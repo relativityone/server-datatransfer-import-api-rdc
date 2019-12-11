@@ -1,0 +1,65 @@
+{
+  "Artifact Type ID": 2,
+  "Artifact Type Name": "User",
+  "Parent Artifact": {
+    "Artifact ID": 62
+  },
+  "Groups": [
+    {
+      "Artifact ID": 1015030
+    }
+  ],
+  "First Name": "Test User 001",
+  "Last Name": "REST",
+  "Email Address": "rest.user001@relativity.com",
+  "Type": {
+    "Artifact ID": 663,
+    "Artifact Type ID": 7,
+    "Artifact Type Name": "Choice"
+  },
+  "Item List Page Length": 25,
+  "Client": {
+    "Artifact ID": 1006066,
+    "Artifact Type ID": 5,
+    "Artifact Type Name": "Client"
+  },
+  "Authentication Data": "",
+  "Default Selected File Type": {
+    "Artifact ID": 1014420,
+    "Artifact Type ID": 7,
+    "Artifact Type Name": "Choice"
+  },
+  "Beta User": false,
+  "Change Settings": true,
+  "Trusted IPs": "",
+  "Relativity Access": true,
+  "Advanced Search Public By Default": false,
+  "Native Viewer Cache Ahead": true,
+  "Change Password": true,
+  "Maximum Password Age": 0,
+  "Change Password Next Login": false,
+  "Send Password To": {
+    "Artifact ID": 1015049,
+    "Artifact Type ID": 7,
+    "Artifact Type Name": "Choice"
+  },
+  "Password Action": {
+    "Artifact ID": 1015048,
+    "Artifact Type ID": 7,
+    "Artifact Type Name": "Choice"
+  },
+  "Password": "UserPasswordHere1!",
+  "Document Skip": {
+    "Artifact ID": 1015042,
+    "Artifact Type ID": 7,
+    "Artifact Type Name": "Choice"
+  },
+  "Data Focus": 1,
+  "Keyboard Shortcuts": true,
+  "Enforce Viewer Compatibility": true,
+  "Skip Default Preference": {
+    "Artifact ID": 1015044,
+    "Artifact Type ID": 7,
+    "Artifact Type Name": "Choice"
+  }
+}
