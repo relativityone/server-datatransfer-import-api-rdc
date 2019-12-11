@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="RandomFolderGenerator.cs" company="Relativity ODA LLC">
+// <copyright file="RandomPathGenerator.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -8,24 +8,20 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
 	using System.Linq;
 	using System.Text;
 
-	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
 	using Relativity.DataExchange.TestFramework;
 
-	public class RandomFolderGenerator
+	public class RandomPathGenerator
 	{
-		private readonly int numOfPaths;
 		private readonly List<string> folders;
 		private readonly List<List<int>> paths;
 
-		public RandomFolderGenerator(int numOfPaths, int maxDepth, int numOfDifferentFolders, int numOfDifferentPaths, int maxFolderLength, int percentOfSpecial)
+		public RandomPathGenerator(List<char> characters, int maxDepth, int numOfDifferentFolders, int numOfDifferentPaths, int maxFolderLength)
 		{
-			this.numOfPaths = numOfPaths;
-
 			var random = new Random(42);
-			List<char> characters = GetCharactersForFolderName(percentOfSpecial);
 
 			this.folders = new List<string>();
 			for (int i = 0; i < numOfDifferentFolders; i++)
@@ -54,19 +50,60 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		public IEnumerable<FolderImportDto> ToEnumerable()
+		public static RandomPathGenerator GetFolderGenerator(int maxDepth, int numOfDifferentFolders, int numOfDifferentPaths, int maxFolderLength)
+		{
+			const string Special = @"*/:?<>""|$ ";
+			List<char> characters = GetCharactersForFolderName().Where(p => p != Path.PathSeparator).ToList();
+			for (int i = 0; i < 3; i++)
+			{
+				characters.AddRange(Special);
+			}
+
+			return new RandomPathGenerator(characters, maxDepth, numOfDifferentFolders, numOfDifferentPaths, maxFolderLength);
+		}
+
+		public static RandomPathGenerator GetChoiceGenerator(int maxDepth, int numOfDifferentFolders, int numOfDifferentPaths, int maxFolderLength, char multiValueDelimiter, char nestedValueDelimiter)
+		{
+			List<char> characters = GetCharactersForFolderName().Where(p => p != multiValueDelimiter && p != nestedValueDelimiter).ToList();
+
+			return new RandomPathGenerator(characters, maxDepth, numOfDifferentFolders, numOfDifferentPaths, maxFolderLength);
+		}
+
+		public static RandomPathGenerator GetObjectGenerator(int maxDepth, int numOfDifferentFolders, int numOfDifferentPaths, int maxFolderLength, char multiValueDelimiter)
+		{
+			List<char> characters = GetCharactersForFolderName().Where(p => p != multiValueDelimiter).ToList();
+
+			return new RandomPathGenerator(characters, maxDepth, numOfDifferentFolders, numOfDifferentPaths, maxFolderLength);
+		}
+
+		public IEnumerable<string> ToFolders(int numOfPaths)
+		{
+			return this.ToEnumerable(numOfPaths, Path.PathSeparator);
+		}
+
+		public IEnumerable<string> ToEnumerable(int numOfPaths)
+		{
+			return this.ToEnumerable(numOfPaths, string.Empty);
+		}
+
+		public IEnumerable<string> ToEnumerable(int numOfPaths, char separator)
+		{
+			return this.ToEnumerable(numOfPaths, separator.ToString());
+		}
+
+		public IEnumerable<string> ToEnumerable(int numOfPaths, string separator)
 		{
 			// Create the random object with the same seed to make the IEnumerable repeatable for validation purposes.
 			var random = new Random(42 * 42);
 			List<Func<string, string>> modifiers = GetModifiers();
 
-			for (int i = 0; i < this.numOfPaths; i++)
+			for (int i = 0; i < numOfPaths; i++)
 			{
 				IEnumerable<string> selectedFolders = random.NextElement(this.paths)
 					.Select(p => random.NextElement(modifiers)(this.folders[p]));
 
-				string path = string.Join("\\", selectedFolders);
-				yield return new FolderImportDto(i.ToString(), path);
+				string path = string.Join(separator, selectedFolders);
+				yield return path;
 			}
 		}
 
@@ -102,28 +139,18 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			return modifiers;
 		}
 
-		private static List<char> GetCharactersForFolderName(int percentOfSpecial)
+		private static List<char> GetCharactersForFolderName()
 		{
-			const string special = @"*/:?<>""|$ ";
 			var characters = new List<char>();
 
 			for (int i = ' '; i <= '~'; ++i)
 			{
-				if (i != '\\')
-				{
-					characters.Add((char)i);
-				}
+				characters.Add((char)i);
 			}
 
 			for (int i = 'À'; i <= 'ÿ'; ++i)
 			{
 				characters.Add((char)i);
-			}
-
-			int timesOfSpecialCharacters = (int)Math.Ceiling((characters.Count - special.Length) * (percentOfSpecial / 100.0 / special.Length));
-			for (int i = 0; i < timesOfSpecialCharacters; i++)
-			{
-				characters.AddRange(special);
 			}
 
 			return characters;

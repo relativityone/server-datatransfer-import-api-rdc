@@ -9,7 +9,7 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
-	using System.Collections.Generic;
+	using System.Data;
 
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
@@ -46,7 +46,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		public abstract void Execute<T>(IEnumerable<T> importData);
+		public abstract void Execute(IDataReader dataReader);
 
 		protected abstract TImportJob CreateJobWithSettings(TSettings settings);
 

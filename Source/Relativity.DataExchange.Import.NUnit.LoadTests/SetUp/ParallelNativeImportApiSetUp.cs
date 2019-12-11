@@ -11,6 +11,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.SetUp
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Data;
 	using System.Linq;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.SetUp
 
 	using Relativity.DataExchange.Import.NUnit.Integration;
 	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
+	using Relativity.DataExchange.TestFramework;
 
 	public class ParallelNativeImportApiSetUp : ImportApiSetUp<ImportBulkArtifactJob, Settings>
 	{
@@ -60,22 +62,47 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.SetUp
 			this.nativeImportApiSetUpList.ForEach(importApiSetUp => importApiSetUp.SetUpImportApi(importApiFunc, settings));
 		}
 
-		public override void Execute<T>(IEnumerable<T> importData)
+		public override void Execute(IDataReader dataReader)
 		{
-			var tasks = new List<Task>();
-			int batchSize = this.numberOfDocumentsToImport / this.nativeImportApiSetUpList.Count;
+			IEnumerable<object[]> importData = this.DataReaderToEnumerable(dataReader);
+			Func<object[], object>[] getters = Enumerable.Range(0, dataReader.FieldCount)
+				.Select(p => (Func<object[], object>)(obj => obj[p])).ToArray();
+			string[] names = Enumerable.Range(0, dataReader.FieldCount).Select(dataReader.GetName).ToArray();
 
-			IList<IEnumerable<T>> batches = CreateBatchesFrom(importData, batchSize).ToList();
+			this.Execute(importData, getters, names);
+		}
+
+		public IEnumerable<object[]> DataReaderToEnumerable(IDataReader dataReader)
+		{
+			while (dataReader.Read())
+			{
+				var values = new object[dataReader.FieldCount];
+				dataReader.GetValues(values);
+				yield return values;
+			}
+		}
+
+		public void Execute(IEnumerable<object[]> importData, Func<object[], object>[] getters, string[] names)
+		{
+			int batchSize = this.numberOfDocumentsToImport / this.nativeImportApiSetUpList.Count;
+			IList<IEnumerable<object[]>> batches = CreateBatchesFrom(importData, batchSize).ToList();
+			var tasks = new Task[this.nativeImportApiSetUpList.Count];
 
 			for (int index = 0; index < this.nativeImportApiSetUpList.Count; index++)
 			{
 				NativeImportApiSetUp nativeSetUp = this.nativeImportApiSetUpList[index];
-				IEnumerable<T> batch = batches[index];
+				IEnumerable<object[]> batch = batches[index];
 
-				tasks.Add(Task.Run(() => nativeSetUp.Execute(batch)));
+				tasks[index] = Task.Run(() =>
+					{
+						using (var dataReader = new EnumerableDataReader<object[]>(batch, getters, names))
+						{
+							nativeSetUp.Execute(dataReader);
+						}
+					});
 			}
 
-			Task.WaitAll(tasks.ToArray());
+			Task.WaitAll(tasks);
 
 			this.nativeImportApiSetUpList.ForEach(
 				importApiSetUp =>

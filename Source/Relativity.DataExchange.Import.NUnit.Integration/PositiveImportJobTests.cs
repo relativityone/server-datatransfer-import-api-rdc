@@ -19,6 +19,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
 	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.Extensions;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
@@ -76,15 +77,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.InitializeImportApiWithUserAndPassword(settings);
 
 			const int NumberOfDocumentsToImport = 2000;
-			var randomFolderGenerator = new RandomFolderGenerator(
-				numOfPaths: NumberOfDocumentsToImport,
+			var randomFolderGenerator = RandomPathGenerator.GetFolderGenerator(
 				maxDepth: 100,
 				numOfDifferentFolders: 25,
 				numOfDifferentPaths: 100,
-				maxFolderLength: 255,
-				percentOfSpecial: 15);
+				maxFolderLength: 255);
 
-			IEnumerable<FolderImportDto> importData = randomFolderGenerator.ToEnumerable();
+			IEnumerable<FolderImportDto> importData = randomFolderGenerator
+				.ToFolders(NumberOfDocumentsToImport)
+				.Select((p, i) => new FolderImportDto(i.ToString(), p));
 
 			// ACT
 			ImportTestJobResult results = this.Execute(importData);
@@ -128,22 +129,66 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldImportDocumentWithChoices()
 		{
 			// ARRANGE
+			Settings settings = NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings();
+
+			const int NumberOfDocumentsToImport = 2000;
+			char multiValueDelimiter = settings.MultiValueDelimiter;
+			char nestedValueDelimiter = settings.NestedValueDelimiter;
+
+			this.InitializeImportApiWithUserAndPassword(settings);
+
+			RandomPathGenerator confidentialDesignation = RandomPathGenerator.GetChoiceGenerator(
+				maxDepth: 1,
+				numOfDifferentFolders: 100,
+				numOfDifferentPaths: 100,
+				maxFolderLength: 200,
+				multiValueDelimiter: multiValueDelimiter,
+				nestedValueDelimiter: nestedValueDelimiter);
+
+			RandomPathGenerator privilegeDesignation = RandomPathGenerator.GetChoiceGenerator(
+				maxDepth: 4,
+				numOfDifferentFolders: 250,
+				numOfDifferentPaths: 100,
+				maxFolderLength: 200,
+				multiValueDelimiter: multiValueDelimiter,
+				nestedValueDelimiter: nestedValueDelimiter);
+
+			ImportTestJobResult results = null;
+			using (var dataReader = new ZipDataReader())
+			{
+				dataReader.Add(WellKnownFields.ControlNumber, Enumerable.Range((2 * NumberOfDocumentsToImport) + 1, NumberOfDocumentsToImport).Select(p => p.ToString()));
+				dataReader.Add(WellKnownFields.ConfidentialDesignation, confidentialDesignation.ToEnumerable(NumberOfDocumentsToImport));
+				dataReader.Add(WellKnownFields.PrivilegeDesignation, privilegeDesignation.ToEnumerable(int.MaxValue, nestedValueDelimiter).RandomUniqueBatch(4, multiValueDelimiter));
+
+				// ACT
+				results = this.Execute(dataReader);
+			}
+
+			// ASSERT
+			this.ThenTheImportJobIsSuccessful(NumberOfDocumentsToImport);
+			Assert.That(results.JobMessages, Has.Count.Positive);
+			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(NumberOfDocumentsToImport));
+		}
+
+		[Test]
+		public void ShouldImportDocumentWithChoices2()
+		{
+			// ARRANGE
 			this.InitializeImportApiWithUserAndPassword(NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings());
 
-			const int NumberOfDocumentsToImport = 2;
-			IEnumerable<DocumentWithChoicesImportDto> importData = new[]
+			DocumentWithChoicesImportDto[] importData =
 			{
-				new DocumentWithChoicesImportDto("20", "Highly Confidential", "Attorney Client Communication;Attorney Work Product"),
-				new DocumentWithChoicesImportDto("21", "Not Confidential", "Attorney Work Product;Do Whatever You Want"),
+				new DocumentWithChoicesImportDto("100001", "qqqq", "www;eee"),
+				new DocumentWithChoicesImportDto("100002", "qqqq", @"www;eee\rrr"),
 			};
 
 			// ACT
 			ImportTestJobResult results = this.Execute(importData);
 
 			// ASSERT
-			this.ThenTheImportJobIsSuccessful(NumberOfDocumentsToImport);
+			this.ThenTheImportJobIsSuccessful(importData.Length);
 			Assert.That(results.JobMessages, Has.Count.Positive);
-			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(NumberOfDocumentsToImport));
+			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(importData.Length));
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -152,14 +197,42 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldImportDocumentWithObjects()
 		{
 			// ARRANGE
-			this.InitializeImportApiWithUserAndPassword(NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings());
+			Settings settings = NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings();
 
-			const int NumberOfDocumentsToImport = 2;
-			IEnumerable<DocumentWithObjectsImportDto> importData = new[]
-			{
-				new DocumentWithObjectsImportDto("1", "Error1", "abc.com;def.org", "ijk.com"),
-				new DocumentWithObjectsImportDto("2", "Error2", "def.com", "def.com;lmn.pl"),
-			};
+			const int NumberOfDocumentsToImport = 2000;
+			char multiValueDelimiter = settings.MultiValueDelimiter;
+			this.InitializeImportApiWithUserAndPassword(settings);
+
+			var originatingImagingDocumentError = RandomPathGenerator.GetObjectGenerator(
+				maxDepth: 1,
+				numOfDifferentFolders: 100,
+				numOfDifferentPaths: 100,
+				maxFolderLength: 255,
+				multiValueDelimiter: multiValueDelimiter);
+
+			var domainsEmailTo = RandomPathGenerator.GetObjectGenerator(
+				maxDepth: 1,
+				numOfDifferentFolders: 300,
+				numOfDifferentPaths: 100,
+				maxFolderLength: 255,
+				multiValueDelimiter: multiValueDelimiter);
+
+			var domainsEmailFrom = RandomPathGenerator.GetObjectGenerator(
+				maxDepth: 1,
+				numOfDifferentFolders: 400,
+				numOfDifferentPaths: 100,
+				maxFolderLength: 255,
+				multiValueDelimiter: multiValueDelimiter);
+
+			IEnumerable<DocumentWithObjectsImportDto> importData = Enumerable
+				.Range((3 * NumberOfDocumentsToImport) + 1, NumberOfDocumentsToImport)
+				.Select(p => p.ToString())
+				.Zip(
+					originatingImagingDocumentError.ToEnumerable(NumberOfDocumentsToImport),
+					domainsEmailTo.ToEnumerable(int.MaxValue).RandomUniqueBatch(2, multiValueDelimiter),
+					domainsEmailFrom.ToEnumerable(int.MaxValue).RandomUniqueBatch(5, multiValueDelimiter),
+					(controlNumber, imagingDocumentError, emailTo, emailFrom) =>
+						new DocumentWithObjectsImportDto(controlNumber, imagingDocumentError, emailTo, emailFrom));
 
 			// ACT
 			ImportTestJobResult results = this.Execute(importData);

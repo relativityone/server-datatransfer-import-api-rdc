@@ -87,11 +87,11 @@
   <ItemGroup>
     <Compile Include="SetUp\ImportApiSetUp.cs" />
     <Compile Include="ImportProfilingTests.cs" />
-    <Compile Include="RandomFolderGenerator.cs" />
     <Compile Include="SetUp\NativeImportApiSetUp.cs" />
     <Compile Include="SetUp\NativeImportSettingsProvider.cs" />
     <Compile Include="Dto\DocumentWithChoicesImportDto.cs" />
     <Compile Include="Dto\DocumentWithObjectsImportDto.cs" />
+    <Compile Include="RandomPathGenerator.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
       <Paket>True</Paket>
     </Content>
