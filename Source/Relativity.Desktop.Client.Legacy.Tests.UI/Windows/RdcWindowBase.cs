@@ -1,4 +1,5 @@
 ﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -6,8 +7,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 	{
 		protected readonly RdcWindowsManager WindowsManager;
 
-		protected RdcWindowBase(RdcWindowsManager windowsManager, WindowDetails window)
-			: base(window)
+		protected RdcWindowBase(ILog logger, RdcWindowsManager windowsManager, WindowDetails window)
+			: base(logger, window)
 		{
 			WindowsManager = windowsManager;
 		}

@@ -1,5 +1,6 @@
 ﻿using System;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -9,8 +10,13 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		private readonly TabsUIElement tabs;
 
-		public ProgressWindow(RdcWindowsManager windowsManager, WindowDetails window) : base(
-			windowsManager, window)
+		public string StatusText => currentRecordLabel.Text;
+
+		public ProgressWindow(ILog logger, RdcWindowsManager windowsManager, WindowDetails window)
+			: base(
+				logger,
+				windowsManager,
+				window)
 		{
 			currentRecordLabel = FindTextWithAutomationId("_currentRecordLabel");
 			tabs = FindTabsWithAutomationId("_Tabs");

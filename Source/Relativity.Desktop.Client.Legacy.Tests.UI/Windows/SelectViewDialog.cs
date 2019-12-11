@@ -1,6 +1,7 @@
 ﻿using System;
 using OpenQA.Selenium.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -9,7 +10,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly ButtonUIElement selectButton;
 		private readonly ListUIElement viewsList;
 
-		public SelectViewDialog(Func<AppiumWebElement> create) : base(create)
+		public SelectViewDialog(ILog logger, Func<AppiumWebElement> create) : base(logger, create)
 		{
 			viewsList = FindListWithAutomationId("selectionListBox");
 			selectButton = FindButtonWithAutomationId("_selectButton");

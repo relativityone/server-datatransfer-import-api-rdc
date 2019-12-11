@@ -65,18 +65,18 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			void SetData(DataTable dataSource)
 			{
-				var images = TestData.SampleImageFiles.ToList();
+				var imagePaths = TestData.SampleImageFiles.ToList();
 
-				foreach (var documentControlNumber in documentsControlNumbers)
+				foreach (string documentControlNumber in documentsControlNumbers)
 				{
-					var batesNumber = documentControlNumber;
-					var batesNumberSuffix = 1;
+					string batesNumber = documentControlNumber;
+					int batesNumberSuffix = 1;
 
-					foreach (var image in images)
+					foreach (string imagePath in imagePaths)
 					{
-						var row = dataSource.NewRow()
+						DataRow row = dataSource.NewRow()
 							.SetControlNumber(documentControlNumber)
-							.SetFileLocation(image)
+							.SetFileLocation(imagePath)
 							.SetBatesNumber(batesNumber);
 
 						dataSource.Rows.Add(row);
@@ -92,7 +92,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			string productionName,
 			IEnumerable<string> documentsControlNumbers)
 		{
-			var productionId =
+			int productionId =
 				ProductionHelper.CreateProduction(parameters, productionName, "BATES", IntegrationTestHelper.Logger);
 
 			ImportImagesForDocuments(parameters, GetImportJob, SetData);
@@ -106,18 +106,18 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			void SetData(DataTable dataSource)
 			{
-				var images = TestData.SampleImageFiles.ToList();
-				var docNumber = 1;
+				var imagePaths = TestData.SampleImageFiles.ToList();
+				int docNumber = 1;
 
-				foreach (var documentControlNumber in documentsControlNumbers)
+				foreach (string documentControlNumber in documentsControlNumbers)
 				{
-					var batesNumberSuffix = 1;
+					int batesNumberSuffix = 1;
 
-					foreach (var image in images)
+					foreach (string imagePath in imagePaths)
 					{
-						var row = dataSource.NewRow()
+						DataRow row = dataSource.NewRow()
 							.SetControlNumber(documentControlNumber)
-							.SetFileLocation(image)
+							.SetFileLocation(imagePath)
 							.SetBatesNumber($"PROD{docNumber:D4}-{batesNumberSuffix:D4}");
 
 						dataSource.Rows.Add(row);
@@ -144,7 +144,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			ApplyDefaultsForDocuments(settings);
 			ConfigureJobErrorEvents(job);
 
-			using (var dataSource = new DataTable("Input Data"))
+			using (DataTable dataSource = new DataTable("Input Data"))
 			{
 				dataSource.Locale = CultureInfo.InvariantCulture;
 				dataSource.WithControlNumber()
@@ -154,9 +154,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 				var controlNumbers = new List<string>();
 
-				foreach (var file in TestData.SampleDocFiles)
+				foreach (string file in TestData.SampleDocFiles)
 				{
-					var dr = dataSource.NewRow()
+					DataRow dr = dataSource.NewRow()
 						.SetControlNumber(System.IO.Path.GetFileName(file))
 						.SetFilePath(file);
 
@@ -183,7 +183,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			job.Settings.CaseArtifactId = parameters.WorkspaceId;
 			ConfigureJobErrorEvents(job);
 
-			using (var dataSource = new DataTable("Input Data"))
+			using (DataTable dataSource = new DataTable("Input Data"))
 			{
 				dataSource.Locale = CultureInfo.InvariantCulture;
 				dataSource.WithControlNumber()

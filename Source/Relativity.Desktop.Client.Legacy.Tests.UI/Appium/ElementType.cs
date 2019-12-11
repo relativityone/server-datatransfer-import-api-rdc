@@ -14,6 +14,8 @@
 
 		public const string Tree = "Tree";
 
+		public const string TreeItem = "TreeItem";
+
 		public const string MenuBar = "MenuBar";
 
 		public const string MenuItem = "MenuItem";
