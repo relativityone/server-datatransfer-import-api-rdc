@@ -19,6 +19,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
+	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
 
@@ -35,6 +36,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 
 		public override void Execute<T>(IEnumerable<T> importData)
 		{
+			if (!(importData is IEnumerable<ImageImportDto>))
+			{
+				throw new InvalidOperationException("Unsupported import data type");
+			}
+
 			// Convertion to dataTable is temporary, after DataSource unification it will be not needed
 			using (DataTable dataTable = new DataTable())
 			{
@@ -62,13 +68,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 		protected override ImageImportBulkArtifactJob CreateJobWithSettings(ImageSettings settings)
 		{
 			settings.ThrowIfNull(nameof(settings));
-
 			var importJob = this.ImportApi.NewImageImportJob();
-
-			if (importJob == null)
-			{
-				throw new Exception($"{nameof(this.ImportJob)} property has not been initialized!");
-			}
 
 			settings.CopyTo(importJob.Settings);
 			importJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();

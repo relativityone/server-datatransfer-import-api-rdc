@@ -36,13 +36,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// Gets random file name.
 		/// </summary>
 		/// <returns>File name.</returns>
-		private static string GetRandomFileName
-		{
-			get
-			{
-				return $"Iapi_TestFile_{DateTime.Now.Ticks}_{Guid.NewGuid():D}";
-			}
-		}
+		private static string GetRandomFileName => Path.GetRandomFileName();
 
 		/// <summary>
 		/// Creates a new binary file whose file size is between <paramref name="minLength"/> and <paramref name="maxLength"/>.

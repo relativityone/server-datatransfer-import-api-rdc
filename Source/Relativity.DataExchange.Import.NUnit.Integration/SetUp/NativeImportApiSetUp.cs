@@ -46,13 +46,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 		protected override ImportBulkArtifactJob CreateJobWithSettings(Settings settings)
 		{
 			settings.ThrowIfNull(nameof(settings));
-
 			var importJob = this.ImportApi.NewNativeDocumentImportJob();
-
-			if (importJob == null)
-			{
-				throw new Exception($"{nameof(this.ImportJob)} property has not been initialized!");
-			}
 
 			settings.CopyTo(importJob.Settings);
 			importJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();
