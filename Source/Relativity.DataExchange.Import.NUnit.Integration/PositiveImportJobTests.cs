@@ -170,16 +170,21 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(NumberOfDocumentsToImport));
 		}
 
-		[Test]
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[IdentifiedTest("e555aa7f-9976-4a74-87b4-577853209b57")]
 		public void ShouldImportDocumentWithChoices2()
 		{
 			// ARRANGE
-			this.InitializeImportApiWithUserAndPassword(NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings());
+			Settings settings = NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings();
+			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
+
+			this.InitializeImportApiWithUserAndPassword(settings);
 
 			DocumentWithChoicesImportDto[] importData =
 			{
-				new DocumentWithChoicesImportDto("100001", "qqqq", "www;eee"),
-				new DocumentWithChoicesImportDto("100002", "qqqq", @"www;eee\rrr"),
+				new DocumentWithChoicesImportDto("100009", "qqqq2", "www;eee"),
+				new DocumentWithChoicesImportDto("100010", "qqqq2", @"www;eee\rrr"),
 			};
 
 			// ACT
