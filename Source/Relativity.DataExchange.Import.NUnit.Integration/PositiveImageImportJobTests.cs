@@ -37,7 +37,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("9db2e7f4-0bc8-46a8-9e95-621ca9bcc5c1")]
 		[Pairwise]
-		public void ShouldImportImagesUsignDifferentTransferModesAndFileFormats(
+		public void ShouldImportImagesUsingDifferentTransferModesAndFileFormats(
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client,
 			[Values(ImageFormat.Jpeg, ImageFormat.Tiff)] ImageFormat imageFormat)
 		{
