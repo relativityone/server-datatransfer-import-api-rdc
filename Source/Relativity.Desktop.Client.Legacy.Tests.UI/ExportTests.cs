@@ -52,7 +52,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				TextFieldPrecedence = "Extracted Text"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 31);
+			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 21);
 		}
 
 		[Test]
@@ -119,7 +119,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				ImageFileType = "PDF"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportSavedSearch(), 42);
+			RunExportTest(exportParameters, x => x.ExportSavedSearch(), 32);
 		}
 
 		[Test]

@@ -247,7 +247,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			settings.FolderPathSourceFieldName = null;
 			settings.ImageFilePathSourceFieldName = WellKnownFields.FileLocation;
 			settings.OverlayBehavior = OverlayBehavior.MergeAll;
-			settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
+			settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
 		}
 
 		private static void ApplyDefaultBaseSettings(ImportSettingsBase settings)
