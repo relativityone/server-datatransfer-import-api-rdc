@@ -400,9 +400,9 @@ namespace Relativity.DataExchange.TestFramework
 
 			var file = Path.Combine(directory, fileName);
 			using (var bitmap = new Bitmap(width, height))
+			using (var graphics = Graphics.FromImage(bitmap))
 			{
 				// adding anything to bitmap
-				var graphics = Graphics.FromImage(bitmap);
 				graphics.Clear(System.Drawing.Color.Orange);
 
 				// there is some special logic as Relativity requires Tiff Group4 compression
