@@ -9,6 +9,8 @@ namespace Relativity.DataExchange.TestFramework
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Drawing;
+	using System.Drawing.Imaging;
 	using System.IO;
 	using System.Linq;
 	using System.Security.Cryptography;
@@ -29,6 +31,12 @@ namespace Relativity.DataExchange.TestFramework
 		/// The random generator instance.
 		/// </summary>
 		private static readonly RandomGenerator RandomGeneratorInstance = new RandomGenerator();
+
+		/// <summary>
+		/// Gets random file name.
+		/// </summary>
+		/// <returns>File name.</returns>
+		private static string GetRandomFileName => Path.GetRandomFileName();
 
 		/// <summary>
 		/// Creates a new binary file whose file size is between <paramref name="minLength"/> and <paramref name="maxLength"/>.
@@ -179,7 +187,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </returns>
 		public static string NextTextFile(int minLength, int maxLength, string directory, bool readOnly)
 		{
-			var fileName = "Iapi_TestFile_" + DateTime.Now.Ticks + "_" + Guid.NewGuid().ToString("D");
+			var fileName = GetRandomFileName;
 			var file = NextTextFile(minLength, maxLength, directory, fileName);
 			if (!readOnly)
 			{
@@ -225,6 +233,191 @@ namespace Relativity.DataExchange.TestFramework
 				File.WriteAllText(file, text);
 				return file;
 			}
+		}
+
+		/// <summary>
+		/// Creates a new random pdf file with text content whose text size is between <paramref name="minLength"/> and <paramref name="maxLength"/>.
+		/// </summary>
+		/// <param name="minLength">
+		/// The minimum file length.
+		/// </param>
+		/// <param name="maxLength">
+		/// The maximum file length.
+		/// </param>
+		/// <param name="directory">
+		/// The directory to create the file.
+		/// </param>
+		/// <returns>
+		/// The file.
+		/// </returns>
+		/// This method should be used later in production import integration tests
+		public static string NextPdfFile(int minLength, int maxLength, string directory)
+		{
+			var file = NextPdfFile(minLength, maxLength, directory, GetRandomFileName);
+
+			return file;
+		}
+
+		/// <summary>
+		///  Creates a new random pdf file with text content whose text size is between <paramref name="minTextLength"/> and <paramref name="maxTextLength"/>.
+		/// </summary>
+		/// <param name="minTextLength">
+		/// The minimum value.
+		/// </param>
+		/// <param name="maxTextLength">
+		/// The maximum value.
+		/// </param>
+		/// <param name="directory">
+		/// The directory to create the file.
+		/// </param>
+		/// <param name="fileName">
+		/// The file name.
+		/// </param>
+		/// <returns>
+		/// The file.
+		/// </returns>
+		public static string NextPdfFile(int minTextLength, int maxTextLength, string directory, string fileName)
+		{
+			Directory.CreateDirectory(directory);
+
+			if (string.IsNullOrEmpty(Path.GetExtension(fileName)))
+			{
+				fileName = Path.ChangeExtension(fileName, ".pdf");
+			}
+
+			string text = NextString(minTextLength, maxTextLength);
+			string file = Path.Combine(directory, fileName);
+
+			using (FileStream fs = new FileStream(file, FileMode.Create))
+			using (var document = new iTextSharp.text.Document())
+			{
+				iTextSharp.text.pdf.PdfWriter.GetInstance(document, fs);
+				document.Open();
+				document.Add(new iTextSharp.text.Paragraph(text));
+			}
+
+			return file;
+		}
+
+		/// <summary>
+		/// Creates a new random image file.
+		/// </summary>
+		/// <param name="imageFormat">
+		/// The image format. Jpeg and Tiff are supported.
+		/// </param>
+		/// <param name="directory">
+		/// The directory to create the file.
+		/// </param>
+		/// <param name="width">
+		/// The image width.
+		/// </param>
+		/// <param name="height">
+		/// The image height.
+		/// </param>
+		/// <returns>
+		/// The file.
+		/// </returns>
+		public static string NextImageFile(Relativity.DataExchange.Media.ImageFormat imageFormat, string directory, int width, int height)
+		{
+			var fileName = GetRandomFileName;
+
+			switch (imageFormat)
+			{
+				case Relativity.DataExchange.Media.ImageFormat.Jpeg:
+					return NextJpegFile(directory, fileName, width, height);
+				case Relativity.DataExchange.Media.ImageFormat.Tiff:
+					return NextTiffFile(directory, fileName, width, height);
+				default:
+					throw new InvalidOperationException("Not supported image format");
+			}
+		}
+
+		/// <summary>
+		///  Creates a new random jpg file whose resolution is defined by <paramref name="width"/> and <paramref name="height"/>.
+		/// </summary>
+		/// <param name="directory">
+		/// The directory to create the file.
+		/// </param>
+		/// <param name="fileName">
+		/// The file name.
+		/// </param>
+		/// <param name="width">
+		/// The image width.
+		/// </param>
+		/// <param name="height">
+		/// The image height.
+		/// </param>
+		/// <returns>
+		/// The file.
+		/// </returns>
+		public static string NextJpegFile(string directory, string fileName, int width, int height)
+		{
+			Directory.CreateDirectory(directory);
+
+			if (string.IsNullOrEmpty(Path.GetExtension(fileName)))
+			{
+				fileName = Path.ChangeExtension(fileName, ".jpeg");
+			}
+
+			var file = Path.Combine(directory, fileName);
+			using (var bitmap = new Bitmap(width, height))
+			{
+				// adding anything to bitmap
+				var graphics = Graphics.FromImage(bitmap);
+				graphics.Clear(System.Drawing.Color.Orange);
+				bitmap.Save(file, System.Drawing.Imaging.ImageFormat.Jpeg);
+			}
+
+			return file;
+		}
+
+		/// <summary>
+		///  Creates a new random tiff file whose resolution is defined by <paramref name="width"/> and <paramref name="height"/>.
+		/// </summary>
+		/// <param name="directory">
+		/// The directory to create the file.
+		/// </param>
+		/// <param name="fileName">
+		/// The file name.
+		/// </param>
+		/// <param name="width">
+		/// The image width.
+		/// </param>
+		/// <param name="height">
+		/// The image height.
+		/// </param>
+		/// <returns>
+		/// The file.
+		/// </returns>
+		public static string NextTiffFile(string directory, string fileName, int width, int height)
+		{
+			Directory.CreateDirectory(directory);
+
+			if (string.IsNullOrEmpty(Path.GetExtension(fileName)))
+			{
+				fileName = Path.ChangeExtension(fileName, ".tiff");
+			}
+
+			var file = Path.Combine(directory, fileName);
+			using (var bitmap = new Bitmap(width, height))
+			using (var graphics = Graphics.FromImage(bitmap))
+			{
+				// adding anything to bitmap
+				graphics.Clear(System.Drawing.Color.Orange);
+
+				// there is some special logic as Relativity requires Tiff Group4 compression
+				ImageCodecInfo encoder = GetEncoder("image/tiff");
+				var myEncoder = Encoder.Compression;
+				using (var encoderParameters = new EncoderParameters(1))
+				{
+					var encoderParameter = new EncoderParameter(myEncoder, (long)EncoderValue.CompressionCCITT4);
+					encoderParameters.Param[0] = encoderParameter;
+
+					bitmap.Save(file, encoder, encoderParameters);
+				}
+			}
+
+			return file;
 		}
 
 		/// <summary>
@@ -441,6 +634,21 @@ namespace Relativity.DataExchange.TestFramework
 			}
 
 			return list[random.NextIndex(list)];
+		}
+
+		private static ImageCodecInfo GetEncoder(string mimeType)
+		{
+			ImageCodecInfo[] encoders;
+			encoders = ImageCodecInfo.GetImageEncoders();
+			for (int i = 0; i < encoders.Length; ++i)
+			{
+				if (encoders[i].MimeType == mimeType)
+				{
+					return encoders[i];
+				}
+			}
+
+			return null;
 		}
 	}
 }

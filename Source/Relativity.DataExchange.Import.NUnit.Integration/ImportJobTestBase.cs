@@ -18,6 +18,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
+	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
 	using Relativity.DataExchange.Transfer;
 
 	public abstract class ImportJobTestBase<TImportJob, TSettings> : IDisposable
