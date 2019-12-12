@@ -95,9 +95,17 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 
 			var rdcWindow = workspaceSelectWindow.ChooseWorkspace(TestParameters.WorkspaceName);
 			rdcWindow.SelectRootFolder();
+			rdcWindow.WaitForTransferModeDetection();
 
 			var progressWindow = runImport(rdcWindow);
 			var allRecordsProcessed = progressWindow.WaitForAllRecordsToBeProcessed(TimeSpan.FromMinutes(5));
+
+			if (RdcWindowsManager.TryGetRdcConfirmationDialog(out DialogWindow confirmationDialog))
+			{
+				confirmationDialog.ClickButton("Cancel");
+				progressWindow.SwitchToWindow();
+			}
+
 			var progressStatus = progressWindow.StatusText;
 			var errors = progressWindow.GetErrorsText();
 

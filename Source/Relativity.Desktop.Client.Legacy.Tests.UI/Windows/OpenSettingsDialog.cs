@@ -20,6 +20,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		{
 			fileNameEdit.SendKeys(settingsFile);
 			openButton.Click();
+			//Waiting for dialog to be closed and settings loaded
+			WaitToNotExist(TimeSpan.FromSeconds(5));
 		}
 	}
 }

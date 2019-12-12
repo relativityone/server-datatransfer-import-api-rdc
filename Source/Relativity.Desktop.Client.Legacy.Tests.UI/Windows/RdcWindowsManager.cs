@@ -66,9 +66,22 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			return new DialogWindow(logger, this, windowDetails);
 		}
 
+		public bool TryGetRdcConfirmationDialog(out DialogWindow window)
+		{
+			return TrySwitchToWindow(RdcWindowName.RelativityDesktopClient,
+				x => x.Handle != rdcWindow.Handle,
+				TimeSpan.FromSeconds(3),
+				x => new DialogWindow(logger, this, x), out window);
+		}
+
 		public ProgressWindow SwitchToProgressWindow(ProgressWindowName name)
 		{
 			return SwitchToWindow(name, x => new ProgressWindow(logger, this, x));
+		}
+
+		public void SwitchToWindow(string windowHandle)
+		{
+			manager.SwitchToWindow(windowHandle);
 		}
 
 		private RelativityDesktopClientWindow CreateRelativityDesktopClientWindow()
@@ -93,13 +106,13 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			return TrySwitchToWindow(name, DefaultTimeouts.WaitForWindow, createWindow, out window);
 		}
 
-		private bool TrySwitchToWindow<T>(RdcWindowName name, TimeSpan waitForWindowTimeout,
+		private bool TrySwitchToWindow<T>(RdcWindowName name, Func<WindowDetails, bool> predicate, TimeSpan waitForWindowTimeout,
 			Func<WindowDetails, T> createWindow, out T window)
 			where T : RdcWindowBase<T>
 		{
 			ClearClosedWindows();
 
-			if (!manager.TryGetWindow(name, waitForWindowTimeout, out var windowDetails))
+			if (!manager.TryGetWindow(name, predicate, waitForWindowTimeout, out var windowDetails))
 			{
 				window = null;
 				return false;
@@ -118,9 +131,17 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			return true;
 		}
 
+		private bool TrySwitchToWindow<T>(RdcWindowName name, TimeSpan waitForWindowTimeout,
+			Func<WindowDetails, T> createWindow, out T window)
+			where T : RdcWindowBase<T>
+		{
+			return TrySwitchToWindow(name, _ => true, waitForWindowTimeout, createWindow, out window);
+		}
+
 		private void ClearClosedWindows()
 		{
-			windows.Keys.Where(x => !manager.IsOpen(x)).ToList().ForEach(x => windows.Remove(x));
+			var openedWindows = manager.OpenedWindowsHandles;
+			windows.Keys.Where(x => openedWindows.All(handle => handle != x)).ToList().ForEach(x => windows.Remove(x));
 		}
 
 		private WindowDetails GetWindow(RdcWindowName name, Func<WindowDetails, bool> predicate)

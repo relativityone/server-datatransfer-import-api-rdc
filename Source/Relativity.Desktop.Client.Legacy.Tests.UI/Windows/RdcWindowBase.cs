@@ -12,5 +12,10 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		{
 			WindowsManager = windowsManager;
 		}
+
+		public void SwitchToWindow()
+		{
+			WindowsManager.SwitchToWindow(Handle);
+		}
 	}
 }
