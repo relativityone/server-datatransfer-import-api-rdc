@@ -43,10 +43,10 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		{
 			// ARRANGE
 			var randomFolderGenerator = RandomPathGenerator.GetFolderGenerator(
-				maxDepth: 10,
-				numOfDifferentFolders: 100,
+				numOfDifferentElements: 100,
+				maxElementLength: 100,
 				numOfDifferentPaths: 1000,
-				maxFolderLength: 100);
+				maxPathDepth: 10);
 
 			ForceClient(TapiClient.Direct);
 

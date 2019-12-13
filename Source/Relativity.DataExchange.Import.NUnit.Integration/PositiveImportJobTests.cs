@@ -9,7 +9,9 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
+	using System;
 	using System.Collections.Generic;
+	using System.IO;
 	using System.Linq;
 
 	using global::NUnit.Framework;
@@ -20,6 +22,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
@@ -76,16 +79,16 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
 			this.InitializeImportApiWithUserAndPassword(settings);
 
-			const int NumberOfDocumentsToImport = 2000;
+			const int NumberOfDocumentsToImport = 2010;
 			var randomFolderGenerator = RandomPathGenerator.GetFolderGenerator(
-				maxDepth: 100,
-				numOfDifferentFolders: 25,
+				numOfDifferentElements: 25,
+				maxElementLength: 255,
 				numOfDifferentPaths: 100,
-				maxFolderLength: 255);
+				maxPathDepth: 100);
 
 			IEnumerable<FolderImportDto> importData = randomFolderGenerator
 				.ToFolders(NumberOfDocumentsToImport)
-				.Select((p, i) => new FolderImportDto(i.ToString(), p));
+				.Select((p, i) => new FolderImportDto($"{i}-{nameof(this.ShouldImportFolders)}", p));
 
 			// ACT
 			ImportTestJobResult results = this.Execute(importData);
@@ -112,7 +115,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			int numberOfDocumentsToImport = TestData.SampleDocFiles.Count();
 			IEnumerable<FolderImportDto> importData =
-				TestData.SampleDocFiles.Select(p => new FolderImportDto(System.IO.Path.GetFileName(p), @"\aaa \cc"));
+				TestData.SampleDocFiles.Select(p => new FolderImportDto(Path.GetFileName(p), @"\aaa \cc"));
 
 			// ACT
 			ImportTestJobResult results = this.Execute(importData);
@@ -126,53 +129,64 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IdentifiedTest("700bda86-6e9a-43c1-a69c-2a1972cba4f8")]
-		public void ShouldImportDocumentWithChoices()
+		public void ShouldImportDocumentWithChoices(
+			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode)
 		{
 			// ARRANGE
 			Settings settings = NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings();
-
-			const int NumberOfDocumentsToImport = 2000;
-			char multiValueDelimiter = settings.MultiValueDelimiter;
-			char nestedValueDelimiter = settings.NestedValueDelimiter;
+			settings.OverwriteMode = overwriteMode;
 
 			this.InitializeImportApiWithUserAndPassword(settings);
 
-			RandomPathGenerator confidentialDesignation = RandomPathGenerator.GetChoiceGenerator(
-				maxDepth: 1,
-				numOfDifferentFolders: 100,
-				numOfDifferentPaths: 100,
-				maxFolderLength: 200,
-				multiValueDelimiter: multiValueDelimiter,
-				nestedValueDelimiter: nestedValueDelimiter);
+			char multiValueDelimiter = settings.MultiValueDelimiter;
+			char nestedValueDelimiter = settings.NestedValueDelimiter;
 
-			RandomPathGenerator privilegeDesignation = RandomPathGenerator.GetChoiceGenerator(
-				maxDepth: 4,
-				numOfDifferentFolders: 250,
-				numOfDifferentPaths: 100,
-				maxFolderLength: 200,
-				multiValueDelimiter: multiValueDelimiter,
-				nestedValueDelimiter: nestedValueDelimiter);
+			int numberOfDocumentsToAppend = overwriteMode == OverwriteModeEnum.Overlay ? 0 : 201;
+			int numberOfDocumentsToOverlay = overwriteMode == OverwriteModeEnum.Append ? 0 : TestData.SampleDocFiles.Count();
+			int numberOfDocumentsToImport = numberOfDocumentsToAppend + numberOfDocumentsToOverlay;
+
+			IEnumerable<string> controlNumber = GetControlNumberEnumerable(overwriteMode, numberOfDocumentsToAppend, nameof(this.ShouldImportDocumentWithChoices));
+
+			IEnumerable<string> confidentialDesignation = RandomPathGenerator.GetChoiceGenerator(
+					numOfDifferentElements: 100,
+					maxElementLength: 200,
+					numOfDifferentPaths: 100,
+					maxPathDepth: 1,
+					multiValueDelimiter: multiValueDelimiter,
+					nestedValueDelimiter: nestedValueDelimiter)
+				.ToEnumerable(int.MaxValue);
+
+			IEnumerable<string> privilegeDesignation = RandomPathGenerator.GetChoiceGenerator(
+					numOfDifferentElements: 250,
+					maxElementLength: 200,
+					numOfDifferentPaths: 100,
+					maxPathDepth: 4,
+					multiValueDelimiter: multiValueDelimiter,
+					nestedValueDelimiter: nestedValueDelimiter)
+				.ToEnumerable(int.MaxValue, nestedValueDelimiter)
+				.RandomUniqueBatch(4, multiValueDelimiter);
 
 			ImportTestJobResult results = null;
 			using (var dataReader = new ZipDataReader())
 			{
-				dataReader.Add(WellKnownFields.ControlNumber, Enumerable.Range((2 * NumberOfDocumentsToImport) + 1, NumberOfDocumentsToImport).Select(p => p.ToString()));
-				dataReader.Add(WellKnownFields.ConfidentialDesignation, confidentialDesignation.ToEnumerable(NumberOfDocumentsToImport));
-				dataReader.Add(WellKnownFields.PrivilegeDesignation, privilegeDesignation.ToEnumerable(int.MaxValue, nestedValueDelimiter).RandomUniqueBatch(4, multiValueDelimiter));
+				dataReader.Add(WellKnownFields.ControlNumber, controlNumber);
+				dataReader.Add(WellKnownFields.ConfidentialDesignation, confidentialDesignation);
+				dataReader.Add(WellKnownFields.PrivilegeDesignation, privilegeDesignation);
 
 				// ACT
 				results = this.Execute(dataReader);
 			}
 
 			// ASSERT
-			this.ThenTheImportJobIsSuccessful(NumberOfDocumentsToImport);
+			this.ThenTheImportJobIsSuccessful(numberOfDocumentsToImport);
 			Assert.That(results.JobMessages, Has.Count.Positive);
-			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(NumberOfDocumentsToImport));
+			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(numberOfDocumentsToImport));
 		}
 
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IdentifiedTest("e555aa7f-9976-4a74-87b4-577853209b57")]
+		[CollectWebApiSql]
 		public void ShouldImportDocumentWithChoices2()
 		{
 			// ARRANGE
@@ -199,53 +213,87 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IdentifiedTest("13dc1d17-4a2b-4b48-9015-b61e58bc5168")]
-		public void ShouldImportDocumentWithObjects()
+		public void ShouldImportDocumentWithObjects(
+			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode)
 		{
 			// ARRANGE
 			Settings settings = NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings();
+			settings.OverwriteMode = overwriteMode;
 
-			const int NumberOfDocumentsToImport = 2000;
-			char multiValueDelimiter = settings.MultiValueDelimiter;
 			this.InitializeImportApiWithUserAndPassword(settings);
 
-			var originatingImagingDocumentError = RandomPathGenerator.GetObjectGenerator(
-				maxDepth: 1,
-				numOfDifferentFolders: 100,
+			char multiValueDelimiter = settings.MultiValueDelimiter;
+
+			int numberOfDocumentsToAppend = overwriteMode == OverwriteModeEnum.Overlay ? 0 : 2010;
+			int numberOfDocumentsToOverlay = overwriteMode == OverwriteModeEnum.Append ? 0 : TestData.SampleDocFiles.Count();
+			int numberOfDocumentsToImport = numberOfDocumentsToAppend + numberOfDocumentsToOverlay;
+
+			IEnumerable<string> controlNumber = GetControlNumberEnumerable(overwriteMode, numberOfDocumentsToAppend, nameof(this.ShouldImportDocumentWithObjects));
+
+			IEnumerable<string> originatingImagingDocumentError = RandomPathGenerator.GetObjectGenerator(
+				numOfDifferentElements: 100,
+				maxElementLength: 255,
 				numOfDifferentPaths: 100,
-				maxFolderLength: 255,
-				multiValueDelimiter: multiValueDelimiter);
+				maxPathDepth: 1,
+				multiValueDelimiter: multiValueDelimiter)
+			.ToEnumerable(int.MaxValue);
 
-			var domainsEmailTo = RandomPathGenerator.GetObjectGenerator(
-				maxDepth: 1,
-				numOfDifferentFolders: 300,
+			IEnumerable<string> domainsEmailTo = RandomPathGenerator.GetObjectGenerator(
+				numOfDifferentElements: 300,
+				maxElementLength: 255,
 				numOfDifferentPaths: 100,
-				maxFolderLength: 255,
-				multiValueDelimiter: multiValueDelimiter);
+				maxPathDepth: 1,
+				multiValueDelimiter: multiValueDelimiter)
+			.ToEnumerable(int.MaxValue)
+			.RandomUniqueBatch(2, multiValueDelimiter);
 
-			var domainsEmailFrom = RandomPathGenerator.GetObjectGenerator(
-				maxDepth: 1,
-				numOfDifferentFolders: 400,
+			IEnumerable<string> domainsEmailFrom = RandomPathGenerator.GetObjectGenerator(
+				numOfDifferentElements: 400,
+				maxElementLength: 255,
 				numOfDifferentPaths: 100,
-				maxFolderLength: 255,
-				multiValueDelimiter: multiValueDelimiter);
+				maxPathDepth: 1,
+				multiValueDelimiter: multiValueDelimiter)
+			.ToEnumerable(int.MaxValue)
+			.RandomUniqueBatch(5, multiValueDelimiter);
 
-			IEnumerable<DocumentWithObjectsImportDto> importData = Enumerable
-				.Range((3 * NumberOfDocumentsToImport) + 1, NumberOfDocumentsToImport)
-				.Select(p => p.ToString())
-				.Zip(
-					originatingImagingDocumentError.ToEnumerable(NumberOfDocumentsToImport),
-					domainsEmailTo.ToEnumerable(int.MaxValue).RandomUniqueBatch(2, multiValueDelimiter),
-					domainsEmailFrom.ToEnumerable(int.MaxValue).RandomUniqueBatch(5, multiValueDelimiter),
-					(controlNumber, imagingDocumentError, emailTo, emailFrom) =>
-						new DocumentWithObjectsImportDto(controlNumber, imagingDocumentError, emailTo, emailFrom));
+			ImportTestJobResult results = null;
+			using (var dataReader = new ZipDataReader())
+			{
+				dataReader.Add(WellKnownFields.ControlNumber, controlNumber);
+				dataReader.Add(WellKnownFields.OriginatingImagingDocumentError, originatingImagingDocumentError);
+				dataReader.Add(WellKnownFields.DomainsEmailTo, domainsEmailTo);
+				dataReader.Add(WellKnownFields.DomainsEmailFrom, domainsEmailFrom);
 
-			// ACT
-			ImportTestJobResult results = this.Execute(importData);
+				// ACT
+				results = this.Execute(dataReader);
+			}
 
 			// ASSERT
-			this.ThenTheImportJobIsSuccessful(NumberOfDocumentsToImport);
+			this.ThenTheImportJobIsSuccessful(numberOfDocumentsToImport);
 			Assert.That(results.JobMessages, Has.Count.Positive);
-			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(NumberOfDocumentsToImport));
+			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(numberOfDocumentsToImport));
+		}
+
+		private static IEnumerable<string> GetControlNumberEnumerable(OverwriteModeEnum overwriteMode, int numberOfDocumentsToAppend, string appendToName)
+		{
+			IEnumerable<string> controlNumber;
+			if (overwriteMode == OverwriteModeEnum.Overlay || overwriteMode == OverwriteModeEnum.AppendOverlay)
+			{
+				controlNumber = TestData.SampleDocFiles.Select(Path.GetFileName);
+			}
+			else
+			{
+				controlNumber = Enumerable.Empty<string>();
+			}
+
+			if (overwriteMode == OverwriteModeEnum.Append || overwriteMode == OverwriteModeEnum.AppendOverlay)
+			{
+				controlNumber = controlNumber.Concat(
+					Enumerable.Range(1, numberOfDocumentsToAppend)
+						.Select(p => $"{p}-{appendToName}"));
+			}
+
+			return controlNumber;
 		}
 	}
 }
