@@ -90,11 +90,15 @@
     <Compile Include="Extensions\CopySettingsExtenstion.cs" />
     <Compile Include="Extensions\DataRowExtensions.cs" />
     <Compile Include="Extensions\DataTableExtensions.cs" />
+    <Compile Include="NUnitExtensions\CollectDeadlocksAttribute.cs" />
     <Compile Include="RelativityHelpers\FolderHelper.cs" />
     <Compile Include="NUnitExtensions\CollectWebApiExecutionPlansAttribute.cs" />
     <Compile Include="NUnitExtensions\CollectWebApiSqlAttribute.cs" />
     <Compile Include="NUnitExtensions\ProfilingSessionTestCommand.cs" />
     <Compile Include="RelativityHelpers\ImportHelper.cs" />
+    <Compile Include="WebApiSqlProfiling\DeadlockReport\CollectDeadlockProfilerReportSession.cs" />
+    <Compile Include="WebApiSqlProfiling\DeadlockReport\CollectedDeadlockProfilerReportBuilder.cs" />
+    <Compile Include="WebApiSqlProfiling\DeadlockReport\DeadlockReportRowDto.cs" />
     <Compile Include="WebApiSqlProfiling\ExecutionPlan\CollectedExecutionPlansProfilerReportBuilder.cs" />
     <Compile Include="WebApiSqlProfiling\SqlStatement\CollectedSqlStatementsProfilerReportBuilder.cs" />
     <Compile Include="WebApiSqlProfiling\ExecutionPlan\CollectExecutionPlansProfilingSession.cs" />
@@ -528,4 +532,5 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
 </Project>
