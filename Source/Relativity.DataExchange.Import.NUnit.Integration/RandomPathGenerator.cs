@@ -59,8 +59,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public static RandomPathGenerator GetFolderGenerator(int numOfDifferentElements, int maxElementLength, int numOfDifferentPaths, int maxPathDepth)
 		{
 			const string Special = @"*/:?<>""|$ ";
-			List<char> characters = GetCharactersForFolderName().Where(p => p != Path.PathSeparator).ToList();
-			for (int i = 0; i < 3; i++)
+			List<char> characters = GetCharacters().Where(p => p != Path.PathSeparator).ToList();
+			const int TimesSpecial = 3;
+			for (int i = 0; i < TimesSpecial; i++)
 			{
 				characters.AddRange(Special);
 			}
@@ -72,14 +73,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		public static RandomPathGenerator GetChoiceGenerator(int numOfDifferentElements, int maxElementLength, int numOfDifferentPaths, int maxPathDepth, char multiValueDelimiter, char nestedValueDelimiter)
 		{
-			List<char> characters = GetCharactersForFolderName().Where(p => p != multiValueDelimiter && p != nestedValueDelimiter).ToList();
+			List<char> characters = GetCharacters().Where(p => p != multiValueDelimiter && p != nestedValueDelimiter).ToList();
 			IEnumerable<string> elements = GetElements(characters, numOfDifferentElements, maxElementLength);
 			return new RandomPathGenerator(elements, numOfDifferentPaths, maxPathDepth);
 		}
 
 		public static RandomPathGenerator GetObjectGenerator(int numOfDifferentElements, int maxElementLength, int numOfDifferentPaths, int maxPathDepth, char multiValueDelimiter)
 		{
-			List<char> characters = GetCharactersForFolderName().Where(p => p != multiValueDelimiter).ToList();
+			List<char> characters = GetCharacters().Where(p => p != multiValueDelimiter).ToList();
 			IEnumerable<string> elements = GetElements(characters, numOfDifferentElements, maxElementLength);
 			return new RandomPathGenerator(elements, numOfDifferentPaths, maxPathDepth);
 		}
@@ -147,7 +148,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			return modifiers;
 		}
 
-		private static List<char> GetCharactersForFolderName()
+		private static List<char> GetCharacters()
 		{
 			var characters = new List<char>();
 

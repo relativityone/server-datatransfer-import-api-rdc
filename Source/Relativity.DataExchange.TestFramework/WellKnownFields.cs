@@ -92,6 +92,11 @@ namespace Relativity.DataExchange.TestFramework
 		public const string PrivilegeDesignation = "Privilege Designation";
 
 		/// <summary>
+		/// The privilege designation.
+		/// </summary>
+		public const string ClassificationIndex = "Classification Index";
+
+		/// <summary>
 		/// The domains (email to).
 		/// </summary>
 		public const string DomainsEmailTo = "Domains (Email To)";

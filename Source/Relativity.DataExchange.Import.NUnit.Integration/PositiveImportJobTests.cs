@@ -17,6 +17,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using global::NUnit.Framework;
 
 	using kCura.Relativity.DataReaderClient;
+	using kCura.WinEDDS;
 
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
 	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
@@ -145,7 +146,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			int numberOfDocumentsToOverlay = overwriteMode == OverwriteModeEnum.Append ? 0 : TestData.SampleDocFiles.Count();
 			int numberOfDocumentsToImport = numberOfDocumentsToAppend + numberOfDocumentsToOverlay;
 
-			IEnumerable<string> controlNumber = GetControlNumberEnumerable(overwriteMode, numberOfDocumentsToAppend, nameof(this.ShouldImportDocumentWithChoices));
+			IEnumerable<string> controlNumber = GetControlNumberEnumerable(overwriteMode, numberOfDocumentsToAppend, $"{nameof(this.ShouldImportDocumentWithChoices)}{overwriteMode}");
 
 			IEnumerable<string> confidentialDesignation = RandomPathGenerator.GetChoiceGenerator(
 					numOfDifferentElements: 100,
@@ -156,7 +157,19 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					nestedValueDelimiter: nestedValueDelimiter)
 				.ToEnumerable(int.MaxValue);
 
+			// Overlay replace.
 			IEnumerable<string> privilegeDesignation = RandomPathGenerator.GetChoiceGenerator(
+					numOfDifferentElements: 250,
+					maxElementLength: 200,
+					numOfDifferentPaths: 100,
+					maxPathDepth: 4,
+					multiValueDelimiter: multiValueDelimiter,
+					nestedValueDelimiter: nestedValueDelimiter)
+				.ToEnumerable(int.MaxValue, nestedValueDelimiter)
+				.RandomUniqueBatch(4, multiValueDelimiter);
+
+			// Overlay append.
+			IEnumerable<string> classificationIndex = RandomPathGenerator.GetChoiceGenerator(
 					numOfDifferentElements: 250,
 					maxElementLength: 200,
 					numOfDifferentPaths: 100,
@@ -172,6 +185,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				dataReader.Add(WellKnownFields.ControlNumber, controlNumber);
 				dataReader.Add(WellKnownFields.ConfidentialDesignation, confidentialDesignation);
 				dataReader.Add(WellKnownFields.PrivilegeDesignation, privilegeDesignation);
+				dataReader.Add(WellKnownFields.ClassificationIndex, classificationIndex);
 
 				// ACT
 				results = this.Execute(dataReader);
@@ -186,7 +200,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IdentifiedTest("e555aa7f-9976-4a74-87b4-577853209b57")]
-		[CollectWebApiSql]
 		public void ShouldImportDocumentWithChoices2()
 		{
 			// ARRANGE
@@ -228,7 +241,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			int numberOfDocumentsToOverlay = overwriteMode == OverwriteModeEnum.Append ? 0 : TestData.SampleDocFiles.Count();
 			int numberOfDocumentsToImport = numberOfDocumentsToAppend + numberOfDocumentsToOverlay;
 
-			IEnumerable<string> controlNumber = GetControlNumberEnumerable(overwriteMode, numberOfDocumentsToAppend, nameof(this.ShouldImportDocumentWithObjects));
+			IEnumerable<string> controlNumber = GetControlNumberEnumerable(overwriteMode, numberOfDocumentsToAppend, $"{nameof(this.ShouldImportDocumentWithObjects)}{overwriteMode}");
 
 			IEnumerable<string> originatingImagingDocumentError = RandomPathGenerator.GetObjectGenerator(
 				numOfDifferentElements: 100,
