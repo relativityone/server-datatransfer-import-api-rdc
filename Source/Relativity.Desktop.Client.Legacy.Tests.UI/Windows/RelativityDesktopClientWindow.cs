@@ -1,5 +1,6 @@
 ﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -9,8 +10,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly ComboBoxUIElement objectTypeComboBox;
 		private readonly TreeUIElement treeView;
 
-		public RelativityDesktopClientWindow(RdcWindowsManager windowsManager, WindowDetails window)
-			: base(windowsManager, window)
+		public RelativityDesktopClientWindow(ILog logger, RdcWindowsManager windowsManager, WindowDetails window)
+			: base(logger, windowsManager, window)
 		{
 			menuBar = FindMenuBar("Application");
 			treeView = FindTreeWithAutomationId("_treeView");
@@ -19,7 +20,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public void SelectRootFolder()
 		{
-			var rootFolder = treeView.FindTree();
+			var rootFolder = treeView.FindTreeItem();
 			rootFolder.Click();
 		}
 

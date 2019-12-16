@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -27,9 +28,9 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly ComboBoxUIElement textFileEncodingComboBox;
 		private readonly SpinnerComboBoxUIElement volumeDigitPaddingComboBox;
 
-		public ExportWindow(RdcWindowsManager windowsManager, WindowDetails window,
+		public ExportWindow(ILog logger, RdcWindowsManager windowsManager, WindowDetails window,
 			ExportProfile profile)
-			: base(windowsManager, window)
+			: base(logger, windowsManager, window)
 		{
 			this.profile = profile;
 			menuBar = FindMenuBar("Application");
@@ -38,9 +39,9 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			destinationFilesTab = tabs.FindTabItem("Destination Files");
 			selectFieldsSourceButton = FindButtonWithAutomationId("_selectFromListButton");
 			folderPathTextBox = FindEditWithAutomationId("_folderPath");
-			browseForFolderDialog = new BrowseForFolderDialog(FindWindow("Browse For Folder"));
-			selectFieldsSourceDialog = new SelectViewDialog(FindWindow(profile.FieldsSourceDialogName));
-			pickTextPrecedenceDialog = new PickTextPrecedenceDialog(FindWindow("Pick Text Precedence"));
+			browseForFolderDialog = new BrowseForFolderDialog(logger, FindWindow("Browse For Folder"));
+			selectFieldsSourceDialog = new SelectViewDialog(logger, FindWindow(profile.FieldsSourceDialogName));
+			pickTextPrecedenceDialog = new PickTextPrecedenceDialog(logger, FindWindow("Pick Text Precedence"));
 			var textAndNativeFileNamesGroup = FindGroupWithAutomationId("GroupBoxTextAndNativeFileNames");
 			textAndNativeComboBox = textAndNativeFileNamesGroup.FindComboBoxWithAutomationId("_comboBox");
 			exportImagesCheckBox = FindCheckBoxWithAutomationId("_exportImages");

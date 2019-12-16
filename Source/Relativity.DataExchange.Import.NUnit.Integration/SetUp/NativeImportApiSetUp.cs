@@ -44,47 +44,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 		protected override ImportBulkArtifactJob CreateJobWithSettings(Settings settings)
 		{
 			settings.ThrowIfNull(nameof(settings));
-
 			var importJob = this.ImportApi.NewNativeDocumentImportJob();
-
-			if (importJob == null)
-			{
-				throw new Exception($"{nameof(this.ImportJob)} property has not been initialized!");
-			}
 
 			settings.CopyTo(importJob.Settings);
 			importJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();
 			importJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
 			return importJob;
-		}
-
-		private void ImportJob_OnError(IDictionary row)
-		{
-			lock (this.TestJobResult)
-			{
-				this.TestJobResult.ErrorRows.Add(row);
-				StringBuilder rowMetaData = new StringBuilder();
-				foreach (string key in row.Keys)
-				{
-					if (rowMetaData.Length > 0)
-					{
-						rowMetaData.Append(",");
-					}
-
-					rowMetaData.AppendFormat("{0}={1}", key, row[key]);
-				}
-
-				Console.WriteLine("[Job Error Metadata]: " + rowMetaData);
-			}
-		}
-
-		private void ImportJob_OnMessage(Status status)
-		{
-			lock (this.TestJobResult)
-			{
-				this.TestJobResult.JobMessages.Add(status.Message);
-				Console.WriteLine("[Job Message]: " + status.Message);
-			}
 		}
 	}
 }

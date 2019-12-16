@@ -9,10 +9,16 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
+	using System.Collections;
+	using System.Collections.Generic;
 	using System.Data;
+	using System.Linq;
+	using System.Text;
 
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
+
+	using Relativity.DataExchange.TestFramework.Extensions;
 
 	public abstract class ImportApiSetUp<TImportJob, TSettings> : IDisposable
 		where TImportJob : IImportNotifier
@@ -49,6 +55,29 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public abstract void Execute(IDataReader dataReader);
 
 		protected abstract TImportJob CreateJobWithSettings(TSettings settings);
+
+		protected virtual void ImportJob_OnError(IDictionary row)
+		{
+			lock (this.TestJobResult)
+			{
+				this.TestJobResult.ErrorRows.Add(row);
+				string rowMetaData = string.Join(",", ((IEnumerable<string>)row.Keys).Select(key => $"{key} {row[key]}"));
+
+				Console.WriteLine("[Job Error Metadata]: " + rowMetaData);
+			}
+		}
+
+		protected virtual void ImportJob_OnMessage(Status status)
+		{
+			lock (this.TestJobResult)
+			{
+				if (status != null)
+				{
+					this.TestJobResult.JobMessages.Add(status.Message);
+					Console.WriteLine("[Job Message]: " + status.Message);
+				}
+			}
+		}
 
 		private void ImportJob_OnProgress(long completedRow)
 		{

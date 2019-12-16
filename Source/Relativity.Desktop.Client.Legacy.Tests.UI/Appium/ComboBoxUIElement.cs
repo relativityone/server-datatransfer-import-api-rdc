@@ -1,6 +1,7 @@
 ﻿using System;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
@@ -9,7 +10,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 		private readonly ButtonUIElement button;
 		private readonly TextUIElement textBox;
 
-		public ComboBoxUIElement(Func<AppiumWebElement> create) : base(create)
+		public ComboBoxUIElement(ILog logger, Func<AppiumWebElement> create) : base(logger, create)
 		{
 			textBox = FindText();
 			button = FindButton();

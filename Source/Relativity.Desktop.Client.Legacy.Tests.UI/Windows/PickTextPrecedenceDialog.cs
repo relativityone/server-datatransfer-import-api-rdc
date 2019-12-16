@@ -1,6 +1,7 @@
 ﻿using System;
 using OpenQA.Selenium.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -10,7 +11,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly ButtonUIElement moveFieldRightButton;
 		private readonly ButtonUIElement okButton;
 
-		public PickTextPrecedenceDialog(Func<AppiumWebElement> create) : base(create)
+		public PickTextPrecedenceDialog(ILog logger, Func<AppiumWebElement> create) : base(logger, create)
 		{
 			okButton = FindButtonWithAutomationId("_okButton");
 			moveFieldRightButton = FindButtonWithAutomationId("_moveFieldRight");

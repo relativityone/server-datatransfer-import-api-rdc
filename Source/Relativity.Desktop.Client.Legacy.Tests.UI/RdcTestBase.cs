@@ -28,20 +28,26 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 
 			var sessionFactory = new WindowsDriverSessionFactory(new Uri(WindowsApplicationDriverUrl));
 			session = sessionFactory.CreateExeAppSession(PathsProvider.RdcPath);
-			RdcWindowsManager = new RdcWindowsManager(new WindowsManager(session));
-
+			RdcWindowsManager = new RdcWindowsManager(Relativity.Logging.Log.Logger, new WindowsManager(session));
 			AllowUntrustedCertificate();
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			RdcWindowsManager.SwitchToRelativityDesktopClientWindow();
-			session.Close();
-			session.Quit();
-			session = null;
-
+			CloseSession();
 			OnTearDown();
+		}
+
+		protected void CloseSession()
+		{
+			if (session != null)
+			{
+				RdcWindowsManager.SwitchToRelativityDesktopClientWindow();
+				session.Close();
+				session.Quit();
+				session = null;
+			}
 		}
 
 		protected virtual void OnSetUp()

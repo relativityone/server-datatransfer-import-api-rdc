@@ -80,13 +80,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
 			this.InitializeImportApiWithUserAndPassword(settings);
 
-			const int NumberOfDocumentsToImport = 2010;
 			var randomFolderGenerator = RandomPathGenerator.GetFolderGenerator(
 				numOfDifferentElements: 25,
 				maxElementLength: 255,
 				numOfDifferentPaths: 100,
 				maxPathDepth: 100);
 
+			const int NumberOfDocumentsToImport = 2010;
 			IEnumerable<FolderImportDto> importData = randomFolderGenerator
 				.ToFolders(NumberOfDocumentsToImport)
 				.Select((p, i) => new FolderImportDto($"{i}-{nameof(this.ShouldImportFolders)}", p));

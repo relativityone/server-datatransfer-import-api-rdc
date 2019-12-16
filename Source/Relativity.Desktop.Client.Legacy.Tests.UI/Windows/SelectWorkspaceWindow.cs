@@ -1,5 +1,6 @@
 ﻿using System;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -11,8 +12,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly EditUIElement searchTextBox;
 		private readonly ListUIElement workspaceList;
 
-		public SelectWorkspaceWindow(RdcWindowsManager windowsManager, WindowDetails window)
-			: base(windowsManager, window)
+		public SelectWorkspaceWindow(ILog logger, RdcWindowsManager windowsManager, WindowDetails window)
+			: base(logger, windowsManager, window)
 		{
 			okButton = FindButtonWithAutomationId("OKButton");
 			searchTextBox = FindEditWithAutomationId("SearchQuery");

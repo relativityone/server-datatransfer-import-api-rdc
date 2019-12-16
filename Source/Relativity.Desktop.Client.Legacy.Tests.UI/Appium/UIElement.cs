@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using OpenQA.Selenium.Appium;
-using Relativity.Desktop.Client.Legacy.Tests.UI.Appium.Extensions;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
@@ -10,12 +11,14 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 		private readonly Func<AppiumWebElement> create;
 		private AppiumWebElement appiumWebElement;
 		private TimeSpan waitForTimeout = TimeSpan.Zero;
+		protected readonly ILog Logger;
 
-		protected UIElement(Func<AppiumWebElement> create)
+		protected UIElement(ILog logger, Func<AppiumWebElement> create)
 		{
+			this.Logger = logger;
 			this.create = create;
 		}
-
+		
 		private AppiumWebElement Element => appiumWebElement ?? (appiumWebElement = CreateElement());
 		public string Text => Element.Text;
 		public bool Selected => Element.Selected;
@@ -49,6 +52,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		public virtual void Click()
 		{
+			Logger.LogDebug($"Clicking on element: {GetElementDescription()}");
 			Element.Click();
 		}
 
@@ -89,129 +93,129 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		protected EditUIElement FindEdit(string name)
 		{
-			return new EditUIElement(FindChild(ElementType.Edit, name));
+			return new EditUIElement(Logger, FindChild(ElementType.Edit, name));
 		}
 
 		protected EditUIElement FindEdit()
 		{
-			return new EditUIElement(FindChild(ElementType.Edit));
+			return new EditUIElement(Logger, FindChild(ElementType.Edit));
 		}
 
 		public EditUIElement FindEditWithAutomationId(string automationId)
 		{
-			return new EditUIElement(FindChildWithAutomationId(ElementType.Edit, automationId));
+			return new EditUIElement(Logger, FindChildWithAutomationId(ElementType.Edit, automationId));
 		}
 
 		protected ButtonUIElement FindButton(string name)
 		{
-			return new ButtonUIElement(FindChild(ElementType.Button, name));
+			return new ButtonUIElement(Logger, FindChild(ElementType.Button, name));
 		}
 
 		protected ButtonUIElement FindButton()
 		{
-			return new ButtonUIElement(FindChild(ElementType.Button));
+			return new ButtonUIElement(Logger, FindChild(ElementType.Button));
 		}
 
 		public ButtonUIElement FindButtonWithAutomationId(string automationId)
 		{
-			return new ButtonUIElement(FindChildWithAutomationId(ElementType.Button, automationId));
+			return new ButtonUIElement(Logger, FindChildWithAutomationId(ElementType.Button, automationId));
 		}
 
 		protected ButtonUIElement FindButtonWithClass(string name)
 		{
-			return new ButtonUIElement(FindChildWithClass(ElementType.Button, name, ElementClass.Button));
+			return new ButtonUIElement(Logger, FindChildWithClass(ElementType.Button, name, ElementClass.Button));
 		}
 
 		public CheckBoxUIElement FindCheckBoxWithAutomationId(string automationId)
 		{
-			return new CheckBoxUIElement(FindChildWithAutomationId(ElementType.CheckBox, automationId));
+			return new CheckBoxUIElement(Logger, FindChildWithAutomationId(ElementType.CheckBox, automationId));
 		}
 
 		protected TextUIElement FindText()
 		{
-			return new TextUIElement(FindChild(ElementType.Text));
+			return new TextUIElement(Logger, FindChild(ElementType.Text));
 		}
 
 		protected TextUIElement FindTextWithAutomationId(string automationId)
 		{
-			return new TextUIElement(FindChildWithAutomationId(ElementType.Text, automationId));
+			return new TextUIElement(Logger, FindChildWithAutomationId(ElementType.Text, automationId));
 		}
 
 		public ComboBoxUIElement FindComboBoxWithAutomationId(string automationId)
 		{
-			return new ComboBoxUIElement(FindChildWithAutomationId(ElementType.ComboBox, automationId));
+			return new ComboBoxUIElement(Logger, FindChildWithAutomationId(ElementType.ComboBox, automationId));
 		}
 
 		public SpinnerComboBoxUIElement FindSpinnerComboBoxWithAutomationId(string automationId)
 		{
-			return new SpinnerComboBoxUIElement(FindChildWithAutomationId(ElementType.ComboBox, automationId));
+			return new SpinnerComboBoxUIElement(Logger, FindChildWithAutomationId(ElementType.ComboBox, automationId));
 		}
 
 		public ComboBoxUIElement FindComboBox()
 		{
-			return new ComboBoxUIElement(FindChild(ElementType.ComboBox));
+			return new ComboBoxUIElement(Logger, FindChild(ElementType.ComboBox));
 		}
 
 		protected TabsUIElement FindTabsWithAutomationId(string automationId)
 		{
-			return new TabsUIElement(FindChildWithAutomationId(ElementType.Tab, automationId));
+			return new TabsUIElement(Logger, FindChildWithAutomationId(ElementType.Tab, automationId));
 		}
 
 		protected PaneUIElement FindPaneWithAutomationId(string automationId)
 		{
-			return new PaneUIElement(FindChildWithAutomationId(ElementType.Pane, automationId));
+			return new PaneUIElement(Logger, FindChildWithAutomationId(ElementType.Pane, automationId));
 		}
 
 		protected MenuItemUIElement FindMenuBar(string name)
 		{
-			return new MenuItemUIElement(FindChild(ElementType.MenuBar, name));
+			return new MenuItemUIElement(Logger, FindChild(ElementType.MenuBar, name));
 		}
 
 		protected GroupUIElement FindGroupWithAutomationId(string automationId)
 		{
-			return new GroupUIElement(FindChildWithAutomationId(ElementType.Group, automationId));
+			return new GroupUIElement(Logger, FindChildWithAutomationId(ElementType.Group, automationId));
 		}
 
 		public TreeUIElement FindTree()
 		{
-			return new TreeUIElement(FindChild(ElementType.Tree));
+			return new TreeUIElement(Logger, FindChild(ElementType.Tree));
 		}
 
 		protected TreeUIElement FindTreeWithAutomationId(string automationId)
 		{
-			return new TreeUIElement(FindChildWithAutomationId(ElementType.Tree, automationId));
+			return new TreeUIElement(Logger, FindChildWithAutomationId(ElementType.Tree, automationId));
 		}
 
 		public ListUIElement FindListWithAutomationId(string automationId)
 		{
-			return new ListUIElement(FindChildWithAutomationId(ElementType.List, automationId));
+			return new ListUIElement(Logger, FindChildWithAutomationId(ElementType.List, automationId));
 		}
 
 		public ListUIElement FindList()
 		{
-			return new ListUIElement(FindChild(ElementType.List));
+			return new ListUIElement(Logger, FindChild(ElementType.List));
 		}
 
 		protected Func<AppiumWebElement> FindWindow(string name)
 		{
-			return () => Element.FindChild(ElementType.Window, name);
+			return () => FindElement(ElementType.Window, name);
 		}
 
 		protected Func<AppiumWebElement> FindChild(string elementType, string name)
 		{
-			return () => Element.FindChild(elementType, name);
+			return () => FindElement(elementType, name);
 		}
 
-		private Func<AppiumWebElement> FindChild(string elementType)
+		protected Func<AppiumWebElement> FindChild(string elementType)
 		{
-			return () => Element.FindChild(elementType);
+			return () => FindElement(elementType);
 		}
 
 		private Func<AppiumWebElement> FindChildWithAutomationId(
 			string elementType,
 			string automationId)
 		{
-			return () => Element.FindChildWithAutomationId(elementType, automationId);
+			return () => FindElementWithAutomationId(elementType, automationId);
 		}
 
 		private Func<AppiumWebElement> FindChildWithClass(
@@ -219,12 +223,12 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			string name,
 			string className)
 		{
-			return () => Element.FindChildWithClass(elementType, name, className);
+			return () => FindElementWithClass(elementType, name, className);
 		}
 
 		protected IReadOnlyList<AppiumWebElement> FindChildren(string elementType)
 		{
-			return Element.FindChildren(elementType);
+			return FindElements(elementType);
 		}
 
 		private AppiumWebElement CreateElement()
@@ -236,6 +240,59 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 		{
 			Wait.For(() => condition(Element), timeout);
 			return (T)this;
+		}
+
+		private AppiumWebElement FindElement(string elementType, string name)
+		{
+			return FindElementByXPath($"*//{elementType}[@Name=\"{name}\"]");
+		}
+
+		private AppiumWebElement FindElement(string elementType)
+		{
+			return FindElementByXPath($"*//{elementType}");
+		}
+
+		private AppiumWebElement FindElementWithClass(
+			string elementType,
+			string name,
+			string className)
+		{
+			return FindElementByXPath($"*//{elementType}[@ClassName=\"{className}\"][@Name=\"{name}\"]");
+		}
+
+		private AppiumWebElement FindElementWithAutomationId(
+			string elementType,
+			string automationId)
+		{
+			return FindElementByXPath($"*//{elementType}[@AutomationId=\"{automationId}\"]");
+		}
+
+		private IReadOnlyList<AppiumWebElement> FindElements(string elementType)
+		{
+			return FindElementsByXPath($"*//{elementType}");
+		}
+
+		private AppiumWebElement FindElementByXPath(string xPath)
+		{
+			string parentDetails = GetElementDescription();
+			Logger.LogDebug($"Finding element on parent: {parentDetails} by XPath: {xPath}");
+			var child = Element.FindElementByXPath(xPath);
+			Logger.LogDebug($"Element found on parent: {parentDetails} by XPath: {xPath}");
+			return child;
+		}
+
+		private ReadOnlyCollection<AppiumWebElement> FindElementsByXPath(string xPath)
+		{
+			string parentDetails = GetElementDescription();
+			Logger.LogDebug($"Finding elements on parent: {parentDetails} by XPath: {xPath}");
+			var children = Element.FindElementsByXPath(xPath);
+			Logger.LogDebug($"{children.Count} elements found on parent: {parentDetails} by XPath: {xPath}");
+			return children;
+		}
+
+		private string GetElementDescription()
+		{
+			return $"[TagName: {Element.TagName}, Text: {Element.Text}]";
 		}
 	}
 }

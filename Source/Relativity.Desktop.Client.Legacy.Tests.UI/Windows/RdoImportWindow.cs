@@ -1,5 +1,6 @@
 ﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -14,13 +15,13 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly ChooseLoadFileDialog chooseLoadFileDialog;
 		private readonly RdoImportProfile profile;
 
-		public RdoImportWindow(RdcWindowsManager windowsManager, WindowDetails window, RdoImportProfile profile)
-			: base(windowsManager, window)
+		public RdoImportWindow(ILog logger, RdcWindowsManager windowsManager, WindowDetails window, RdoImportProfile profile)
+			: base(logger, windowsManager, window)
 		{
 			this.profile = profile;
 			menuBar = FindMenuBar("Application");
-			openSavedFieldMapDialog = new OpenSavedFieldMapDialog(FindWindow("Open Saved Field Map"));
-			chooseLoadFileDialog = new ChooseLoadFileDialog(FindWindow("Open")).WaitFor();
+			openSavedFieldMapDialog = new OpenSavedFieldMapDialog(logger, FindWindow("Open Saved Field Map"));
+			chooseLoadFileDialog = new ChooseLoadFileDialog(logger, FindWindow("Open")).WaitFor();
 			var tabs = FindTabsWithAutomationId("TabControl1");
 			loadFileTab = tabs.FindTabItem("Load File");
 			fieldMapTab = tabs.FindTabItem("Field Map");

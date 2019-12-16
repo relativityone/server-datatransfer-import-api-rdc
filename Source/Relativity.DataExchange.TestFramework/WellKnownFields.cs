@@ -110,5 +110,10 @@ namespace Relativity.DataExchange.TestFramework
 		/// The originating imaging document error.
 		/// </summary>
 		public const string OriginatingImagingDocumentError = "Originating Imaging Document Error";
+
+		/// <summary>
+		/// The document identifier.
+		/// </summary>
+		public const string DocumentIdentifier = "Document Identifier";
 	}
 }

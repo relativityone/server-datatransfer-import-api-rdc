@@ -59,7 +59,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public static RandomPathGenerator GetFolderGenerator(int numOfDifferentElements, int maxElementLength, int numOfDifferentPaths, int maxPathDepth)
 		{
 			const string Special = @"*/:?<>""|$ ";
-			List<char> characters = GetCharacters().Where(p => p != Path.PathSeparator).ToList();
+			List<char> characters = GetCharacters().Where(p => p != Path.DirectorySeparatorChar).ToList();
 			const int TimesSpecial = 3;
 			for (int i = 0; i < TimesSpecial; i++)
 			{
@@ -87,7 +87,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		public IEnumerable<string> ToFolders(int numOfPaths)
 		{
-			return this.ToEnumerable(numOfPaths, Path.PathSeparator);
+			return this.ToEnumerable(numOfPaths, Path.DirectorySeparatorChar);
 		}
 
 		public IEnumerable<string> ToEnumerable(int numOfPaths)
