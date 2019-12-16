@@ -4,13 +4,12 @@
 
 namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.ExecutionPlan
 {
-	using System;
 	using System.Collections.Generic;
 
 	internal class DeadlockReportRowDto
 	{
 		public string DeadlockReport { get; set; }
 
-		public List<string> LockObjectNames { get; } = new List<string>();
+		public List<(string Name, string Sql)> LockedObjectInfo { get; } = new List<(string Name, string Sql)>();
 	}
 }

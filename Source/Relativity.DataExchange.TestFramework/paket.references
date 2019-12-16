@@ -16,3 +16,5 @@ relativity.transfer.client
 serilog
 stylecop.analyzers
 relativity.telemetry.datacontracts.shared
+group integration-tests
+System.ValueTuple
