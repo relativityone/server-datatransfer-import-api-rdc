@@ -12,7 +12,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 
 	using Relativity.DataExchange.TestFramework.WebApiSqlProfiling.ExecutionPlan;
 
-	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+	[AttributeUsage(AttributeTargets.Method, Inherited = false)]
 	public sealed class CollectWebApiExecutionPlansAttribute : PropertyAttribute, IWrapSetUpTearDown
 	{
 		public TestCommand Wrap(TestCommand command)

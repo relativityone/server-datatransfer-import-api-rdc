@@ -12,7 +12,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 
 	using Relativity.DataExchange.TestFramework.WebApiSqlProfiling.SqlStatement;
 
-	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+	[AttributeUsage(AttributeTargets.Method, Inherited = false)]
 	public sealed class CollectWebApiSqlAttribute : PropertyAttribute, IWrapSetUpTearDown
 	{
 		public TestCommand Wrap(TestCommand command)

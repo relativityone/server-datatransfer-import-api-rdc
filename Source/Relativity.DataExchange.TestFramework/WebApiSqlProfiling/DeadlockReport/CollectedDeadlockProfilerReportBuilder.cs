@@ -30,7 +30,7 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockRepor
 			element = element ?? throw new ArgumentNullException(nameof(element));
 			row = row ?? throw new ArgumentNullException(nameof(row));
 
-			if (string.Compare(element.Attribute("name").Value, "xml_report", StringComparison.OrdinalIgnoreCase) == 0)
+			if (string.Equals(element.Attribute("name").Value, "xml_report"))
 			{
 				ParseDeadlockReport(element, row);
 			}
@@ -50,16 +50,16 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockRepor
 		{
 			var deadLockElement = element.Descendants("deadlock").First();
 
-			row.DeadlockReport = deadLockElement?.ToString();
+			row.DeadlockReport = deadLockElement.ToString();
 
 			var processes = deadLockElement.Descendants("process");
 
-			List<(string RID, string SqlText)> ridToSqls = new List<(string RID, string SqlText)>();
+			var ridToSqls = new List<(string RID, string SqlText)>();
 
 			foreach (var process in processes)
 			{
-				string sql = process.Descendants("inputbuf").First()?.Value;
-				string rid = process.Attribute("waitresource")?.Value;
+				string sql = process.Descendants("inputbuf").First().Value;
+				string rid = process.Attribute("waitresource").Value;
 				ridToSqls.Add((RID: rid, SqlText: sql));
 			}
 
@@ -87,21 +87,21 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockRepor
 
 			var sb = new StringBuilder();
 			sb.AppendLine($"{ReportHeader} - report");
-			sb.AppendLine($"Number of deadlock occurence: {deadlockReports.Count}");
+			sb.AppendLine($"Number of deadlock occurence: {deadlockReports.Count}").AppendLine();
 
 			foreach (var lockedObjectName in lockedObjectNames)
 			{
-				sb.AppendLine($"Deadlocks count on object name '{lockedObjectName.Key}' : {lockedObjectName.Value}");
+				sb.AppendLine($"Deadlocks count on object name '{lockedObjectName.Key.Name}' : {lockedObjectName.Value}");
 			}
 
+			sb.AppendLine();
 			sb.AppendLine("Details:");
 			foreach (var lockObject in deadlockReports.SelectMany(item => item.LockedObjectInfo))
 			{
-				sb.AppendLine($"Deadlocks object name '{lockObject.Name}' - Sql: {lockObject.Sql}");
+				sb.AppendLine($"Deadlocks object name '{lockObject.Name}' - Sql: {lockObject.Sql}").AppendLine();
 			}
 
-			sb.AppendLine($"{ReportHeader} - End of the report");
-			return sb.ToString();
+			return sb.AppendLine($"{ReportHeader} - End of the report").ToString();
 		}
 	}
 }
