@@ -1,4 +1,4 @@
-﻿// <copyright file="CollectWebApiSqlAttribute.cs" company="Relativity ODA LLC">
+﻿// <copyright file="CollectDeadlocksAttribute.cs" company="Relativity ODA LLC">
 // © Relativity All Rights Reserved.
 // </copyright>
 
@@ -10,10 +10,10 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 	using NUnit.Framework.Interfaces;
 	using NUnit.Framework.Internal.Commands;
 
-	using Relativity.DataExchange.TestFramework.WebApiSqlProfiling.SqlStatement;
+	using Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockReport;
 
 	[AttributeUsage(AttributeTargets.Method, Inherited = false)]
-	public sealed class CollectWebApiSqlAttribute : PropertyAttribute, IWrapSetUpTearDown
+	public sealed class CollectDeadlocksAttribute : PropertyAttribute, IWrapSetUpTearDown
 	{
 		public TestCommand Wrap(TestCommand command)
 		{
@@ -27,7 +27,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 			string connectionString = IntegrationTestHelper.GetSqlConnectionStringBuilder().ConnectionString;
 			string outputPath = IntegrationTestHelper.ReadIntegrationTestParameters().SqlProfilingReportsOutputPath;
 
-			return new ProfilingSessionTestCommand(command, new CollectSqlStatementsProfilingSession(connectionString), outputPath);
+			return new ProfilingSessionTestCommand(command, new CollectDeadlockProfilerReportSession(connectionString), outputPath);
 		}
 	}
 }

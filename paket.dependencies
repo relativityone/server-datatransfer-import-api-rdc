@@ -69,4 +69,9 @@ framework: net462
 source https://relativity.jfrog.io/relativity/api/nuget/v3/nuget-anthology
 	nuget Appium.WebDriver = 3.0.0.2
 	nuget selenium.support = 3.8.0
-	nuget selenium.webdriver = 3.8.0	
+	nuget selenium.webdriver = 3.8.0
+
+group integration-tests
+source https://relativity.jfrog.io/relativity/api/nuget/v3/nuget-anthology
+framework: net462
+	nuget System.ValueTuple = 4.5.0
