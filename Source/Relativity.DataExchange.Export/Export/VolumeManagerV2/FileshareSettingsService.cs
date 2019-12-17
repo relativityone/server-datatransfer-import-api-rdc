@@ -22,7 +22,7 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 		private readonly IStatus _status;
 		private readonly ITapiObjectService _tapiObjectService;
 		private readonly ILog _logger;
-		private readonly ExportFile _settings;
+
 		private readonly List<RelativityFileShareSettings> _nonDefaultFileShareSettings = new List<RelativityFileShareSettings>();
 		private readonly TapiBridgeParameters2 _parameters;
 		private RelativityFileShareSettings _defaultFileShareSettings;
@@ -38,7 +38,7 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 			_status = status.ThrowIfNull(nameof(status));
 			_tapiObjectService = tapiObjectService.ThrowIfNull(nameof(tapiObjectService));
 			_logger = logger.ThrowIfNull(nameof(logger));
-			_settings = settings.ThrowIfNull(nameof(settings));
+			var settings1 = settings.ThrowIfNull(nameof(settings));
 			if (settings.CaseInfo == null)
 			{
 				throw new ArgumentException(
@@ -55,8 +55,8 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 
 			_parameters = new TapiBridgeParameters2
 				              {
-					              Credentials = _settings.Credential,
-					              WebCookieContainer = _settings.CookieContainer,
+					              Credentials = settings1.Credential,
+					              WebCookieContainer = settings1.CookieContainer,
 					              WebServiceUrl = AppSettings.Instance.WebApiServiceUrl,
 					              WorkspaceId = settings.CaseInfo.ArtifactID
 				              };

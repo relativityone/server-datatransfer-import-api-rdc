@@ -6,7 +6,6 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
-	using System;
 	using System.Collections.Generic;
 	using System.Threading.Tasks;
 

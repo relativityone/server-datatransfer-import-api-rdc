@@ -167,7 +167,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 			Dim nativeFileData As DataRowView = CreateFileDataRowView(fileNameFromFileTable)
 
 			'Act
-			Dim actualFileName As String = fileNameProvider.GetOriginalFileName(metadata, nativeFileData)
+			fileNameProvider.GetOriginalFileName(metadata, nativeFileData)
 
 			'Assert
 			Assert.AreEqual(0, _numberOfCallsToWriteWarning)

@@ -41,7 +41,7 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling
 
 		public ProfilerReport ReadCapturedEventsAndStopProfiling()
 		{
-			string data = null;
+			string data;
 			using (var connection = new SqlConnection(this.connectionString))
 			{
 				connection.Open();

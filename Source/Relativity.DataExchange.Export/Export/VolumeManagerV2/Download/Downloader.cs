@@ -20,8 +20,6 @@
 		private readonly ILongTextDownloader _longTextDownloader;
 		private readonly IErrorFileWriter _errorFileWriter;
 
-		private readonly IFileDownloadSubscriber _fileSubscriber;
-
 		private readonly ILog _logger;
 		private readonly IExportRequestRetriever _exportRequestRetriever;
 
@@ -33,9 +31,8 @@
 			_logger = logger;
 			_exportRequestRetriever = exportRequestRetriever;
 			_errorFileWriter = errorFileWriter;
-			_fileSubscriber = fileSubscriber;
 
-			this._longTextDownloader.RegisterSubscriber(_fileSubscriber);
+			this._longTextDownloader.RegisterSubscriber(fileSubscriber);
 
 			if (AppSettings.Instance.SuppressServerCertificateValidation)
 			{

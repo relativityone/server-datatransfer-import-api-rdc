@@ -6,9 +6,7 @@
 
 namespace Relativity.DataExchange.Io
 {
-	using System;
 	using System.IO;
-	using System.Runtime.Remoting;
 	using System.Text;
 
 	/// <summary>

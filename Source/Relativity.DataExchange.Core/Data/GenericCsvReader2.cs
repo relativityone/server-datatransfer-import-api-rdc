@@ -11,8 +11,6 @@ namespace Relativity.DataExchange.Data
 	using System.Text;
 	using System.Threading;
 
-	using Microsoft.VisualBasic.CompilerServices;
-
 	using Relativity.DataExchange.Io;
 	using Relativity.Logging;
 

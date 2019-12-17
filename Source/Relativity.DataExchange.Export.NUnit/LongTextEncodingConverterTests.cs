@@ -6,7 +6,6 @@
 
 namespace Relativity.DataExchange.Export.NUnit
 {
-	using System;
 	using System.Reactive.Linq;
 	using System.Reactive.Subjects;
 	using System.Text;
@@ -22,7 +21,6 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.Logging;
 

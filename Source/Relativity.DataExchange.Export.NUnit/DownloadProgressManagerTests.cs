@@ -6,7 +6,6 @@
 
 namespace Relativity.DataExchange.Export.NUnit
 {
-	using System.IO;
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
