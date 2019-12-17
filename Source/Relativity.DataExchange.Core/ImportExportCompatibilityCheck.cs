@@ -22,14 +22,12 @@ namespace Relativity.DataExchange
 	/// </summary>
 	internal class ImportExportCompatibilityCheck : IImportExportCompatibilityCheck
 	{
-		private static readonly IObjectCacheRepository DefaultObjectCacheRepository = new MemoryCacheRepository();
 		private readonly RelativityInstanceInfo instanceInfo;
 		private readonly ILog log;
 		private readonly IApplicationVersionService applicationVersionService;
 		private readonly Version minRelativityVersion;
 		private readonly Version requiredWebApiVersion;
 		private readonly Version webApiStartFromRelativityVersion;
-		private readonly IObjectCacheRepository objectCacheRepository;
 		private readonly IAppSettings appSettings;
 		private readonly IAppSettingsInternal appSettingsInternal;
 
@@ -56,7 +54,6 @@ namespace Relativity.DataExchange
 				VersionConstants.MinRelativityVersion,
 				VersionConstants.RequiredWebApiVersion,
 				VersionConstants.WebApiStartFromRelativityVersion,
-				DefaultObjectCacheRepository,
 				AppSettings.Instance,
 				AppSettings.Instance as IAppSettingsInternal)
 		{
@@ -83,9 +80,6 @@ namespace Relativity.DataExchange
 		/// <param name="webApiStartFromRelativityVersion">
 		/// The required Relativity version from which it support WebAPI version.
 		/// </param>
-		/// <param name="cacheRepository">
-		/// The object cache repository.
-		/// </param>
 		/// <param name="appSettings">
 		/// The application settings.
 		/// </param>
@@ -99,7 +93,6 @@ namespace Relativity.DataExchange
 			Version minRelativityVersion,
 			Version requiredWebApiVersion,
 			Version webApiStartFromRelativityVersion,
-			IObjectCacheRepository cacheRepository,
 			IAppSettings appSettings,
 			IAppSettingsInternal appSettingsInternal)
 		{
@@ -109,7 +102,6 @@ namespace Relativity.DataExchange
 			this.applicationVersionService = applicationVersionService.ThrowIfNull(nameof(applicationVersionService));
 			this.minRelativityVersion = minRelativityVersion.ThrowIfNull(nameof(minRelativityVersion));
 			this.requiredWebApiVersion = requiredWebApiVersion.ThrowIfNull(nameof(requiredWebApiVersion));
-			this.objectCacheRepository = cacheRepository.ThrowIfNull(nameof(cacheRepository));
 			this.appSettings = appSettings.ThrowIfNull(nameof(appSettings));
 			this.appSettingsInternal = appSettingsInternal.ThrowIfNull(nameof(appSettingsInternal));
 		}
@@ -117,24 +109,6 @@ namespace Relativity.DataExchange
 		/// <inheritdoc />
 		public async Task ValidateAsync(CancellationToken token)
 		{
-			InstanceCheckCacheItem item =
-				new InstanceCheckCacheItem { Exception = null, Validated = false, RelativityVersion = null };
-			string cacheKey = CacheKeys.CreateCompatibilityCheckCacheKey(this.instanceInfo.Host.ToString());
-			if (this.objectCacheRepository.Contains(cacheKey))
-			{
-				item = this.objectCacheRepository.SelectByKey<InstanceCheckCacheItem>(cacheKey);
-				this.log.LogDebug(
-					"Instance check cache item cache hit. RelativityVersion={RelativityVersion}, ImportExportWebApiVersion={ImportExportWebApiVersion}",
-					item.RelativityVersion,
-					item.ImportExportWebApiVersion);
-				if (item.Validated || !this.ShouldThrowException(item.Exception.Message))
-				{
-					return;
-				}
-
-				throw item.Exception;
-			}
-
 			this.log.LogInformation(
 				"Retrieving the Relativity version for Relativity instance {RelativityHost}...",
 				this.instanceInfo.Host);
@@ -144,37 +118,13 @@ namespace Relativity.DataExchange
 				"Successfully retrieved Relativity version {RelativityVersion} for Relativity instance {RelativityHost}.",
 				relativityVersion,
 				this.instanceInfo.Host);
-			item.RelativityVersion = relativityVersion;
-
-			this.VerifyRelativityVersionFormat(relativityVersion, item, cacheKey);
-
-			try
-			{
-				await this.PerformValidationAsync(token, relativityVersion, item, cacheKey).ConfigureAwait(false);
-			}
-			catch (RelativityNotSupportedException e)
-			{
-				item.Validated = false;
-				item.Exception = e;
-				throw;
-			}
-			catch (HttpServiceException e)
-			{
-				item.Validated = false;
-				item.Exception = e;
-				throw;
-			}
-			finally
-			{
-				this.objectCacheRepository.Upsert(cacheKey, item);
-			}
+			this.VerifyRelativityVersionFormat(relativityVersion);
+			await this.PerformValidationAsync(token, relativityVersion).ConfigureAwait(false);
 		}
 
 		private async Task PerformValidationAsync(
 			CancellationToken token,
-			Version relativityVersion,
-			InstanceCheckCacheItem item,
-			string cacheKey)
+			Version relativityVersion)
 		{
 			if (relativityVersion < this.webApiStartFromRelativityVersion)
 			{
@@ -183,15 +133,13 @@ namespace Relativity.DataExchange
 			}
 			else
 			{
-				await this.ValidateWebApiVersion(token, relativityVersion, item, cacheKey).ConfigureAwait(false);
+				await this.ValidateWebApiVersion(token, relativityVersion).ConfigureAwait(false);
 			}
 		}
 
 		private async Task ValidateWebApiVersion(
 			CancellationToken token,
-			Version relativityVersion,
-			InstanceCheckCacheItem item,
-			string cacheKey)
+			Version relativityVersion)
 		{
 			this.log.LogInformation(
 				"Retrieving the import/export WebAPI version for Relativity instance {RelativityHost}...",
@@ -202,7 +150,6 @@ namespace Relativity.DataExchange
 				"Successfully retrieved the import/export WebAPI version {ImportExportWebApiVersion} for Relativity instance {RelativityHost}.",
 				importExportWebApiVersion,
 				this.instanceInfo.Host);
-			item.ImportExportWebApiVersion = importExportWebApiVersion;
 			this.log.LogInformation(
 				"Preparing to perform the client/server API version compatibility check for Relativity instance {RelativityHost}...",
 				this.instanceInfo.Host);
@@ -210,12 +157,9 @@ namespace Relativity.DataExchange
 			this.log.LogInformation(
 				"Successfully performed the client/server API version compatibility check for Relativity instance {RelativityHost}.",
 				this.instanceInfo.Host);
-			item.Validated = true;
-			item.Exception = null;
-			this.objectCacheRepository.Upsert(cacheKey, item);
 		}
 
-		private void VerifyRelativityVersionFormat(Version relativityVersion, InstanceCheckCacheItem item, string cacheKey)
+		private void VerifyRelativityVersionFormat(Version relativityVersion)
 		{
 			// Make sure the version is logically sound.
 			if (relativityVersion.Major <= 0)
@@ -234,16 +178,10 @@ namespace Relativity.DataExchange
 						this.appSettings.ApplicationName);
 				}
 
-				RelativityNotSupportedException exception = new RelativityNotSupportedException(message, relativityVersion);
-				item.Exception = exception;
-				item.Validated = false;
-				this.objectCacheRepository.Upsert(cacheKey, item);
-				if (!this.appSettingsInternal.EnforceVersionCompatibilityCheck)
+				if (this.ShouldThrowException(message))
 				{
-					return;
+					throw new RelativityNotSupportedException(message, relativityVersion);
 				}
-
-				throw exception;
 			}
 		}
 
@@ -340,33 +278,6 @@ namespace Relativity.DataExchange
 				{
 					throw new RelativityNotSupportedException(message, relativityVersion);
 				}
-			}
-		}
-
-		private class InstanceCheckCacheItem
-		{
-			public bool Validated
-			{
-				get;
-				set;
-			}
-
-			public Exception Exception
-			{
-				get;
-				set;
-			}
-
-			public Version RelativityVersion
-			{
-				get;
-				set;
-			}
-
-			public Version ImportExportWebApiVersion
-			{
-				get;
-				set;
 			}
 		}
 	}
