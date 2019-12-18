@@ -23,6 +23,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected _hasFatalErrorOccured As Boolean
 	Private _jobStartedMetricSent As Boolean = False
 	Protected MustOverride ReadOnly Property TapiClient As TapiClient
+	Private _initialTapiClient As TapiClient = TapiClient.None
 	
 	Public Property CaseInfo As CaseInfo
 
@@ -105,14 +106,19 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected MustOverride Function Run() As Boolean
 
-	Protected Sub SendMetricJobStarted()
+	Protected Sub OnTapiClientChanged()
 		If Not _jobStartedMetricSent And TapiClient <> TapiClient.None Then
+			SendMetricJobStarted()
+			_jobStartedMetricSent = True
+			_initialTapiClient = TapiClient
+		End If
+	End Sub
+
+	Private Sub SendMetricJobStarted()
 			Dim metric As MetricJobStarted = New MetricJobStarted
 			metric.ImportObjectType = Statistics.ImportObjectType
 			BuildMetricBase(metric)
 			MetricService.Log(metric)
-			_jobStartedMetricSent = True
-		End If
 	End Sub
 
 	Protected Sub SendMetricJobEndReport(jobStatus As TelemetryConstants.JobStatus)
@@ -128,9 +134,10 @@ Public MustInherit Class MonitoredProcessBase
 				.CompletedRecords = completedRecordsCount,
 				.ThroughputBytesPerSecond = Statistics.CalculateThroughput(Statistics.TotalBytes, jobDuration),
 				.ThroughputRecordsPerSecond = Statistics.CalculateThroughput(completedRecordsCount, jobDuration),
-				.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(Statistics.DocumentsCreated + Statistics.DocumentsUpdated, Statistics.SqlTime/TimeSpan.TicksPerSecond),
+				.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(Statistics.DocumentsCreated + Statistics.DocumentsUpdated, Statistics.SqlTime / TimeSpan.TicksPerSecond),
 				.ImportObjectType = Statistics.ImportObjectType,
-				.JobDurationInSeconds = jobDuration}
+				.JobDurationInSeconds = jobDuration,
+				.InitialTransferMode = _initialTapiClient}
 		BuildMetricBase(metric)
 		MetricService.Log(metric)
 	End Sub

@@ -36,6 +36,7 @@
 			Public Const CORRELATION_ID As String = "CorrelationID"
 			Public Const UNIT_OF_MEASURE As String = "UnitOfMeasure"
 			Public Const TRANSFER_MODE As String = "TransferMode"
+			Public Const INITIAL_TRANSFER_MODE As String = "InitialTransferMode"
 			Public Const APPLICATION_NAME As String = "ApplicationName"
 			Public Const USE_OLD_EXPORT As String = "UseOldExport"
 			Public Const FILE_THROUGHPUT As String = "FileThroughputBytesPerSecond"
