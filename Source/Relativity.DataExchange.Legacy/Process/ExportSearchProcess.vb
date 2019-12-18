@@ -134,7 +134,7 @@ Namespace kCura.WinEDDS
 			Dim statusBarText As String = TapiModeHelper.BuildExportStatusText(nativeFilesCopied, args.TransferClients)
 			_tapiClient = TapiModeHelper.GetTapiClient(args.TransferClients)
 			
-			SendMetricJobStarted()
+			OnTapiClientChanged()
 			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)
 			Me.Logger.LogInformation("Export transfer mode changed: {@TransferClients}", args.TransferClients)
 		End Sub

@@ -352,7 +352,7 @@ Namespace kCura.WinEDDS
 				_uploadModeText = TapiModeHelper.BuildDocText()
 			End If
 
-			SendMetricJobStarted()
+			OnTapiClientChanged()
 			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)
 		End Sub
 
