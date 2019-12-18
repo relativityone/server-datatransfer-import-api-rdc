@@ -23,7 +23,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		public RelativityDesktopClientWindow ChooseWorkspace(string workspaceName)
 		{
 			EnterSearchText(workspaceName);
-			Wait.For(() => workspaceList.ItemsCount == 1);
+			workspaceList.WaitToHaveSingleElement();
 			SelectWorkspace(workspaceName);
 			ClickOkButton();
 			return WindowsManager.SwitchToRelativityDesktopClientWindow();

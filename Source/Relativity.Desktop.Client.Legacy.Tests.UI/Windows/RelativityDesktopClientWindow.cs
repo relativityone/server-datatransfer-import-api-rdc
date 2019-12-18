@@ -1,4 +1,6 @@
-﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+﻿using System;
+using System.Threading;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
 using Relativity.Logging;
 
@@ -9,6 +11,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly MenuItemUIElement menuBar;
 		private readonly ComboBoxUIElement objectTypeComboBox;
 		private readonly TreeUIElement treeView;
+		private readonly TextUIElement statusBarText;
 
 		public RelativityDesktopClientWindow(ILog logger, RdcWindowsManager windowsManager, WindowDetails window)
 			: base(logger, windowsManager, window)
@@ -16,17 +19,20 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			menuBar = FindMenuBar("Application");
 			treeView = FindTreeWithAutomationId("_treeView");
 			objectTypeComboBox = FindComboBoxWithAutomationId("_objectTypeDropDown");
+			statusBarText = FindStatusBarWithAutomationId("StatusBar").FindText();
 		}
 
 		public void SelectRootFolder()
 		{
-			var rootFolder = treeView.FindTreeItem();
+			var rootFolder = treeView.FindTreeItem().WaitFor(TimeSpan.FromSeconds(10));
 			rootFolder.Click();
+			rootFolder.WaitToBeSelected(TimeSpan.FromSeconds(2));
 		}
 
 		public RdoImportWindow ImportDocumentLoadFile()
 		{
 			ClickImportMenuItem("Document Load File...");
+			Thread.Sleep(5000);
 			return WindowsManager.SwitchToRdoImportWindow(RdoImportProfile.DocumentLoadFile);
 		}
 
@@ -63,8 +69,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public ExportWindow ExportProductionSet()
 		{
-			menuBar.ClickMenuItem("Tools").ClickMenuItem("Export")
-				.ClickMenuItem("Production Set...");
+			ClickExportMenuItem("Production Set...");
 			return WindowsManager.SwitchToExportWindow(ExportProfile.ProductionSet);
 		}
 
@@ -73,6 +78,12 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			SelectObjectType("Imaging Profile");
 			ClickExportMenuItem("Objects");
 			return WindowsManager.SwitchToExportWindow(ExportProfile.ExportImagingProfileObjects);
+		}
+
+		public void WaitForTransferModeDetection()
+		{
+			Wait.For(() => statusBarText.Text != "Workspace Loaded - File Transfer Mode: Connecting...",
+				TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(3));
 		}
 
 		private void SelectObjectType(string objectTypeName)

@@ -35,7 +35,9 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public string GetErrorsText()
 		{
-			tabs.FindTabItem("Errors").Click();
+			var errorsTab = tabs.FindTabItem("Errors");
+			errorsTab.Click();
+			errorsTab.WaitToBeSelected();
 			return tabs.FindEditWithAutomationId("TextBox").Text;
 		}
 	}

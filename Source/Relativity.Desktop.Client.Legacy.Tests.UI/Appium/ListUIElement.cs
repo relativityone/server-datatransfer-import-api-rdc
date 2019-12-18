@@ -10,13 +10,18 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 		{
 		}
 
-		public int ItemsCount => FindChildren(ElementType.ListItem).Count;
+		private int ItemsCount => FindChildren(ElementType.ListItem).Count;
 
 		public void SelectListItem(string name)
 		{
 			var item = FindListItem(name);
 			item.Click();
 			item.WaitToBeSelected();
+		}
+
+		public void WaitToHaveSingleElement()
+		{
+			Wait.For(() => ItemsCount == 1);
 		}
 
 		public ListItemUIElement FindListItem(string name)
