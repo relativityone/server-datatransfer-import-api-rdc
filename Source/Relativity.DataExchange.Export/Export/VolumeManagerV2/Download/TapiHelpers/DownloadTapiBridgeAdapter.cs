@@ -3,7 +3,6 @@
 	using System;
 	using System.Reactive.Concurrency;
 	using System.Reactive.Linq;
-	using System.Reactive.Subjects;
 
 	using Relativity.DataExchange.Transfer;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;

@@ -5,7 +5,6 @@ namespace Relativity.DataExchange.Io
 {
 	using System;
 	using System.IO;
-	using Microsoft.VisualBasic;
 
 	/// <summary>
 	/// Class that is specialized in writing error messages to the error message file.

@@ -4,8 +4,6 @@
 
 namespace Relativity.DataExchange.Io
 {
-	using System.Collections.Generic;
-
 	/// <summary>
 	/// Error record before mass import occurs.
 	/// These tend to be issues with the data source itself.

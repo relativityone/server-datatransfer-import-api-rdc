@@ -9,8 +9,6 @@ namespace Relativity.DataExchange.TestFramework
 	using System.Collections.Generic;
 	using System.Linq;
 
-	using Relativity.DataExchange.TestFramework;
-
 	public static class TestData
 	{
 		/// <summary>

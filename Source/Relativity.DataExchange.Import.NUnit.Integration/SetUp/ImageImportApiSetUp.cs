@@ -10,11 +10,9 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 {
 	using System;
-	using System.Collections;
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Globalization;
-	using System.Text;
 
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
@@ -41,7 +39,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 				throw new InvalidOperationException("Unsupported import data type");
 			}
 
-			// Convertion to dataTable is temporary, after DataSource unification it will be not needed
+			// Conversion to dataTable is temporary, after DataSource unification it will be not needed
 			using (DataTable dataTable = new DataTable())
 			{
 				dataTable.Locale = CultureInfo.InvariantCulture;

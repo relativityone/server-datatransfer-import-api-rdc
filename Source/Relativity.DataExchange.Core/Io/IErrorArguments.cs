@@ -4,8 +4,6 @@
 
 namespace Relativity.DataExchange.Io
 {
-	using System.Collections.Generic;
-
 	/// <summary>
 	/// This object can retrieve arguments for an error.
 	/// </summary>

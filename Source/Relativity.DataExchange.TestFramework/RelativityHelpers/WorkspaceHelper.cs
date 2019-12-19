@@ -137,7 +137,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				client.APIOptions.WorkspaceID = parameters.WorkspaceId;
 				logger.LogInformation("Retrieving the {WorkspaceId} workspace folders...", parameters.WorkspaceId);
 				Query<Folder> query = new Query<Folder> { Fields = FieldValue.AllFields };
-				QueryResultSet<Folder> resultSet = client.Repositories.Folder.Query(query, 0);
+				QueryResultSet<Folder> resultSet = client.Repositories.Folder.Query(query);
 				List<string> folders = resultSet.Results.Select(x => x.Artifact.Name).ToList();
 				logger.LogInformation(
 					"Retrieved {FolderCount} {WorkspaceId} workspace folders.",
@@ -155,7 +155,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				Fields = FieldValue.AllFields,
 			};
 
-			QueryResultSet<Workspace> resultSet = client.Repositories.Workspace.Query(query, 0);
+			QueryResultSet<Workspace> resultSet = client.Repositories.Workspace.Query(query);
 			return resultSet;
 		}
 
