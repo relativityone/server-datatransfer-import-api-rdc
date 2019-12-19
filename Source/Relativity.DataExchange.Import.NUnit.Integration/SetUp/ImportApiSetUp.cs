@@ -61,7 +61,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			lock (this.TestJobResult)
 			{
 				this.TestJobResult.ErrorRows.Add(row);
-				string rowMetaData = string.Join(",", ((IEnumerable<string>)row.Keys).Select(key => $"{key} {row[key]}"));
+				string rowMetaData = string.Join(",", row.Keys.Cast<object>().Select(key => $"{key} {row[key]}"));
 
 				Console.WriteLine("[Job Error Metadata]: " + rowMetaData);
 			}
