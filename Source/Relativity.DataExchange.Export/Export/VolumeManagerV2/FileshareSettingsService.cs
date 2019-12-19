@@ -38,7 +38,7 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 			_status = status.ThrowIfNull(nameof(status));
 			_tapiObjectService = tapiObjectService.ThrowIfNull(nameof(tapiObjectService));
 			_logger = logger.ThrowIfNull(nameof(logger));
-			var settings1 = settings.ThrowIfNull(nameof(settings));
+			var exportSettings = settings.ThrowIfNull(nameof(settings));
 			if (settings.CaseInfo == null)
 			{
 				throw new ArgumentException(
@@ -55,8 +55,8 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 
 			_parameters = new TapiBridgeParameters2
 				              {
-					              Credentials = settings1.Credential,
-					              WebCookieContainer = settings1.CookieContainer,
+					              Credentials = exportSettings.Credential,
+					              WebCookieContainer = exportSettings.CookieContainer,
 					              WebServiceUrl = AppSettings.Instance.WebApiServiceUrl,
 					              WorkspaceId = settings.CaseInfo.ArtifactID
 				              };
