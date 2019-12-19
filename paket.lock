@@ -80,6 +80,12 @@ NUGET
     System.Reactive (4.0)
     System.ValueTuple (4.5)
 
+GROUP integration-tests
+RESTRICTION: == net462
+NUGET
+  remote: https://relativity.jfrog.io/relativity/api/nuget/v3/nuget-anthology
+    System.ValueTuple (4.5.0)
+
 GROUP ui-automation
 RESTRICTION: == net462
 NUGET

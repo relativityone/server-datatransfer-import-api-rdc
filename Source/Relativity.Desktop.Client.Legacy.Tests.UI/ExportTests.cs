@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -14,6 +15,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 	{
 		private const string ProductionName = "Production-For-Export";
 		private readonly string exportRootPath = PathsProvider.GetTestOutputPath(@"Export");
+		private readonly string allDocumentsViewName = ConfigurationManager.AppSettings["AllDocumentsViewName"];
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -37,7 +39,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		{
 			var exportParameters = new ExportWindowSetupParameters
 			{
-				FieldSourceName = "Documents - All Metadata",
+				FieldSourceName = allDocumentsViewName,
 				ExportPath = CreateExportPath(),
 				VolumeInformationDigitPadding = 3,
 				FilesNamedAfter = "Identifier",
@@ -50,7 +52,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				TextFieldPrecedence = "Extracted Text"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 31, 429283);
+			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 21);
 		}
 
 		[Test]
@@ -58,7 +60,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		{
 			var exportParameters = new ExportWindowSetupParameters
 			{
-				FieldSourceName = "Documents - All Metadata",
+				FieldSourceName = allDocumentsViewName,
 				ExportPath = CreateExportPath(),
 				VolumeInformationDigitPadding = 3,
 				FilesNamedAfter = "Identifier",
@@ -71,7 +73,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				ImageFileType = "Multi-page TIF"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 12, 7515998);
+			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 12);
 		}
 
 		[Test]
@@ -94,7 +96,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				ImageFileType = "Single-page TIF/JPG"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportProductionSet(), 52, 7535217);
+			RunExportTest(exportParameters, x => x.ExportProductionSet(), 52);
 		}
 
 		[Test]
@@ -117,7 +119,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				ImageFileType = "PDF"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportSavedSearch(), 42, 7969054);
+			RunExportTest(exportParameters, x => x.ExportSavedSearch(), 32);
 		}
 
 		[Test]
@@ -133,29 +135,34 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				MetadataFileEncoding = "Unicode (UTF-8)"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportImagingProfileObjects(), 1, 159);
+			RunExportTest(exportParameters, x => x.ExportImagingProfileObjects(), 1);
 		}
 
 		private void RunExportTest(ExportWindowSetupParameters exportParameters,
 			Func<RelativityDesktopClientWindow, ExportWindow> getExportWindow,
-			int expectedFilesCount,
-			int expectedFilesSize)
+			int expectedFilesCount)
 		{
 			var workspaceSelectWindow = Login();
 
 			var rdcWindow = workspaceSelectWindow.ChooseWorkspace(TestParameters.WorkspaceName);
 			rdcWindow.SelectRootFolder();
+			rdcWindow.WaitForTransferModeDetection();
 
 			var exportWindow = getExportWindow(rdcWindow);
 			exportWindow.SetupExport(exportParameters);
 			var progressWindow = exportWindow.RunExport();
 
 			var allRecordsProcessed = progressWindow.WaitForAllRecordsToBeProcessed(TimeSpan.FromMinutes(5));
+
+			if (RdcWindowsManager.TryGetRdcConfirmationDialog(out DialogWindow confirmationDialog))
+			{
+				confirmationDialog.ClickButton("Cancel");
+				progressWindow.SwitchToWindow();
+			}
+
 			var progressStatus = progressWindow.StatusText;
 			var errors = progressWindow.GetErrorsText();
-			var exportDir = new DirectoryInfo(exportParameters.ExportPath);
-			var files = exportDir.GetFiles("*.*", SearchOption.AllDirectories);
-			var filesSize = files.Sum(x => x.Length);
+			var files = Directory.GetFiles(exportParameters.ExportPath, "*.*", SearchOption.AllDirectories);
 
 			if (string.IsNullOrEmpty(errors) && allRecordsProcessed)
 			{
@@ -167,7 +174,6 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			Assert.IsTrue(string.IsNullOrEmpty(errors), $"Export failed with errors: {errors}");
 			Assert.IsTrue(allRecordsProcessed, $"Failed to process all records. Status: {progressStatus}");
 			Assert.AreEqual(expectedFilesCount, files.Length);
-			Assert.AreEqual(expectedFilesSize, filesSize);
 		}
 
 		private string CreateExportPath()

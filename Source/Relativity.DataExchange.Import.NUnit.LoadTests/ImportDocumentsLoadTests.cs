@@ -34,6 +34,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		{
 		}
 
+		[TestFramework.NUnitExtensions.CollectDeadlocks]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]

@@ -20,17 +20,12 @@ namespace Relativity.DataExchange.NUnit
 
 	[TestFixture("Processing")]
 	[TestFixture(null)]
-	[System.Diagnostics.CodeAnalysis.SuppressMessage(
-		"Microsoft.Design",
-		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
-		Justification = "The test class handles the disposal.")]
 	public class ImportExportCompatibilityCheckTests
 	{
 		private readonly string applicationName;
 		private Mock<IApplicationVersionService> relativityVersionServiceMock;
 		private Mock<ILog> logMock;
 		private RelativityInstanceInfo instanceInfo;
-		private IObjectCacheRepository objectCacheRepository;
 		private Mock<IAppSettings> appSettings;
 		private Mock<DataExchange.IAppSettingsInternal> appSettingsInternal;
 
@@ -50,17 +45,10 @@ namespace Relativity.DataExchange.NUnit
 				WebApiServiceUrl = new Uri("https://relativity.one/RelativityWebAPI/")
 			};
 
-			this.objectCacheRepository = new MemoryCacheRepository(TimeSpan.FromSeconds(0));
 			this.appSettings = new Mock<IAppSettings>();
 			this.appSettings.SetupGet(settings => settings.ApplicationName).Returns(this.applicationName);
 			this.appSettingsInternal = new Mock<DataExchange.IAppSettingsInternal>();
 			this.appSettingsInternal.SetupGet(settings => settings.EnforceVersionCompatibilityCheck).Returns(true);
-		}
-
-		[TearDown]
-		public void Teardown()
-		{
-			this.objectCacheRepository.Dispose();
 		}
 
 		[Test]
@@ -88,7 +76,6 @@ namespace Relativity.DataExchange.NUnit
 				Version.Parse(mockMinRelativityVersion),
 				Version.Parse(mockRequiredWebApiVersion),
 				Version.Parse(webApiStartFromRelativityVersion),
-				this.objectCacheRepository,
 				this.appSettings.Object,
 				this.appSettingsInternal.Object);
 
@@ -128,7 +115,6 @@ namespace Relativity.DataExchange.NUnit
 				new Version(9, 7, 0, 0),
 				new Version(1, 0),
 				new Version(10, 3),
-				this.objectCacheRepository,
 				this.appSettings.Object,
 				this.appSettingsInternal.Object);
 
@@ -167,7 +153,6 @@ namespace Relativity.DataExchange.NUnit
 				new Version(minRelativityVersion),
 				DataExchange.VersionConstants.RequiredWebApiVersion,
 				new Version(webApiStartFromRelativityVersion),
-				this.objectCacheRepository,
 				this.appSettings.Object,
 				this.appSettingsInternal.Object);
 
@@ -222,7 +207,6 @@ namespace Relativity.DataExchange.NUnit
 				new Version(minRelativityVersion),
 				new Version(minWebApiVersion),
 				new Version(webApiStartFromRelativityVersion),
-				this.objectCacheRepository,
 				this.appSettings.Object,
 				this.appSettingsInternal.Object);
 

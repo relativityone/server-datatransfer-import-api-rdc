@@ -35,5 +35,7 @@
 		public const string CheckBox = "CheckBox";
 
 		public const string Pane = "Pane";
+
+		public const string StatusBar = "StatusBar";
 	}
 }

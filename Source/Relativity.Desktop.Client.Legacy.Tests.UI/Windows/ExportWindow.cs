@@ -151,7 +151,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			if (!string.IsNullOrEmpty(parameters.TextFieldPrecedence))
 			{
 				pickTextFieldPrecedenceButton.Click();
-				pickTextPrecedenceDialog.SelectFieldsAndClose(parameters.TextFieldPrecedence);
+				pickTextPrecedenceDialog.SelectFieldAndClose(parameters.TextFieldPrecedence);
 			}
 		}
 

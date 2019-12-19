@@ -13,7 +13,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		public TreeUIElement FindTreeItem()
 		{
-			return new TreeUIElement(Logger, FindTreeChild().WaitFor());
+			return new TreeUIElement(Logger, FindTreeChild());
 		}
 
 		private Func<AppiumWebElement> FindTreeChild()

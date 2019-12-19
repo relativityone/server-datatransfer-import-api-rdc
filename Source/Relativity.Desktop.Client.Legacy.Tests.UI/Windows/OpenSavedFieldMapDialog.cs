@@ -16,8 +16,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		{
 			fileNameEdit = FindEdit("File name:");
 			openButton = FindButtonWithClass("Open");
-			chooseLoadFileDialog = new ChooseLoadFileDialog(logger, FindWindow("Choose Load File")).WaitFor();
-			confirmationDialog = new RelativityConfirmationDialog(logger, FindWindow("Relativity.Desktop.Client")).WaitFor();
+			chooseLoadFileDialog = new ChooseLoadFileDialog(logger, FindWindow("Choose Load File")).WaitFor(TimeSpan.FromSeconds(10));
+			confirmationDialog = new RelativityConfirmationDialog(logger, FindWindow("Relativity.Desktop.Client")).WaitFor(TimeSpan.FromSeconds(10));
 		}
 
 		public void LoadKweFile(string kweFile, string datFile)
@@ -26,6 +26,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			openButton.Click();
 			confirmationDialog.ClickOkButton();
 			chooseLoadFileDialog.LoadDatFile(datFile);
+			WaitToNotExist(TimeSpan.FromSeconds(10));
 		}
 	}
 }

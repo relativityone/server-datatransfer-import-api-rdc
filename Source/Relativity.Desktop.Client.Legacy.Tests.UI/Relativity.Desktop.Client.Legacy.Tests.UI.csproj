@@ -104,6 +104,10 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Polly, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Kepler">
       <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
@@ -131,6 +135,7 @@
     <Compile Include="Appium\MenuItemUIElement.cs" />
     <Compile Include="Appium\PaneUIElement.cs" />
     <Compile Include="Appium\SpinnerComboBoxUIElement.cs" />
+    <Compile Include="Appium\StatusBarUIElement.cs" />
     <Compile Include="Appium\TabItemUIElement.cs" />
     <Compile Include="Appium\TabsUIElement.cs" />
     <Compile Include="Appium\TextUIElement.cs" />

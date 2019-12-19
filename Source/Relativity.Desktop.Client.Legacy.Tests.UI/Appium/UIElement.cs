@@ -38,6 +38,23 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			}
 		}
 
+		public bool WaitToNotExist(TimeSpan timeout)
+		{
+			var elementDetails = ToString();
+			Logger.LogDebug("Waiting for element: {0} to not exist", elementDetails);
+			var originalWaitForTimeout = waitForTimeout;
+
+			var notExist = Wait.For(() =>
+			{
+				appiumWebElement = null;
+				return !Exists;
+			}, timeout);
+
+			waitForTimeout = originalWaitForTimeout;
+			Logger.LogDebug("Waiting on element: {0} to not exist {1}", elementDetails, GetResultMessage(notExist));
+			return notExist;
+		}
+
 		public T WaitFor()
 		{
 			waitForTimeout = DefaultTimeouts.FindElement;
@@ -52,7 +69,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		public virtual void Click()
 		{
-			Logger.LogDebug($"Clicking on element: {GetElementDescription()}");
+			Logger.LogDebug("Clicking on element: {0}", ToString());
 			Element.Click();
 		}
 
@@ -63,6 +80,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		public T WaitToBeVisible(TimeSpan timeout)
 		{
+			string parentDetails = ToString();
+			Logger.LogDebug("Waiting for element: {0} to be visible. Timeout {1}", parentDetails, timeout);
 			return WaitFor(x => x.Displayed, timeout);
 		}
 
@@ -73,6 +92,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		public T WaitToBeEnabled(TimeSpan timeout)
 		{
+			string parentDetails = ToString();
+			Logger.LogDebug("Waiting for element: {0} to be enabled. Timeout {1}", parentDetails, timeout);
 			return WaitFor(x => x.Enabled, timeout);
 		}
 
@@ -83,6 +104,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		public T WaitToBeSelected(TimeSpan timeout)
 		{
+			string parentDetails = ToString();
+			Logger.LogDebug("Waiting for element: {0} to be selected. Timeout {1}", parentDetails, timeout);
 			return WaitFor(x => x.Selected, timeout);
 		}
 
@@ -131,7 +154,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			return new CheckBoxUIElement(Logger, FindChildWithAutomationId(ElementType.CheckBox, automationId));
 		}
 
-		protected TextUIElement FindText()
+		public TextUIElement FindText()
 		{
 			return new TextUIElement(Logger, FindChild(ElementType.Text));
 		}
@@ -191,6 +214,11 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			return new ListUIElement(Logger, FindChildWithAutomationId(ElementType.List, automationId));
 		}
 
+		public StatusBarUIElement FindStatusBarWithAutomationId(string automationId)
+		{
+			return new StatusBarUIElement(Logger, FindChildWithAutomationId(ElementType.StatusBar, automationId));
+		}
+
 		public ListUIElement FindList()
 		{
 			return new ListUIElement(Logger, FindChild(ElementType.List));
@@ -208,14 +236,14 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		protected Func<AppiumWebElement> FindChild(string elementType)
 		{
-			return () => FindElement(elementType);
+			return () => FindElementByXPath($"*//{elementType}");
 		}
 
 		private Func<AppiumWebElement> FindChildWithAutomationId(
 			string elementType,
 			string automationId)
 		{
-			return () => FindElementWithAutomationId(elementType, automationId);
+			return () => FindElementByXPath($"*//{elementType}[@AutomationId=\"{automationId}\"]");
 		}
 
 		private Func<AppiumWebElement> FindChildWithClass(
@@ -223,12 +251,12 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			string name,
 			string className)
 		{
-			return () => FindElementWithClass(elementType, name, className);
+			return () => FindElementByXPath($"*//{elementType}[@ClassName=\"{className}\"][@Name=\"{name}\"]");
 		}
 
 		protected IReadOnlyList<AppiumWebElement> FindChildren(string elementType)
 		{
-			return FindElements(elementType);
+			return FindElementsByXPath($"*//{elementType}");
 		}
 
 		private AppiumWebElement CreateElement()
@@ -238,8 +266,14 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		private T WaitFor(Func<AppiumWebElement, bool> condition, TimeSpan timeout)
 		{
-			Wait.For(() => condition(Element), timeout);
+			bool success = Wait.For(() => condition(Element), timeout);
+			Logger.LogDebug("Waiting for element status {0}", GetResultMessage(success));
 			return (T)this;
+		}
+
+		private static string GetResultMessage(bool success)
+		{
+			return success ? "SUCCEED" : "FAILED";
 		}
 
 		private AppiumWebElement FindElement(string elementType, string name)
@@ -247,50 +281,25 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 			return FindElementByXPath($"*//{elementType}[@Name=\"{name}\"]");
 		}
 
-		private AppiumWebElement FindElement(string elementType)
-		{
-			return FindElementByXPath($"*//{elementType}");
-		}
-
-		private AppiumWebElement FindElementWithClass(
-			string elementType,
-			string name,
-			string className)
-		{
-			return FindElementByXPath($"*//{elementType}[@ClassName=\"{className}\"][@Name=\"{name}\"]");
-		}
-
-		private AppiumWebElement FindElementWithAutomationId(
-			string elementType,
-			string automationId)
-		{
-			return FindElementByXPath($"*//{elementType}[@AutomationId=\"{automationId}\"]");
-		}
-
-		private IReadOnlyList<AppiumWebElement> FindElements(string elementType)
-		{
-			return FindElementsByXPath($"*//{elementType}");
-		}
-
 		private AppiumWebElement FindElementByXPath(string xPath)
 		{
-			string parentDetails = GetElementDescription();
-			Logger.LogDebug($"Finding element on parent: {parentDetails} by XPath: {xPath}");
+			string parentDetails = ToString();
+			Logger.LogDebug("Finding element on parent: {0} by XPath: {1}", parentDetails, xPath);
 			var child = Element.FindElementByXPath(xPath);
-			Logger.LogDebug($"Element found on parent: {parentDetails} by XPath: {xPath}");
+			Logger.LogDebug("Element found on parent: {0} by XPath: {1}", parentDetails, xPath);
 			return child;
 		}
 
 		private ReadOnlyCollection<AppiumWebElement> FindElementsByXPath(string xPath)
 		{
-			string parentDetails = GetElementDescription();
-			Logger.LogDebug($"Finding elements on parent: {parentDetails} by XPath: {xPath}");
+			string parentDetails = ToString();
+			Logger.LogDebug("Finding elements on parent: {0} by XPath: {1}", parentDetails, xPath);
 			var children = Element.FindElementsByXPath(xPath);
-			Logger.LogDebug($"{children.Count} elements found on parent: {parentDetails} by XPath: {xPath}");
+			Logger.LogDebug("{0} elements found on parent: {1} by XPath: {2}", children.Count, parentDetails, xPath);
 			return children;
 		}
 
-		private string GetElementDescription()
+		public override string ToString()
 		{
 			return $"[TagName: {Element.TagName}, Text: {Element.Text}]";
 		}
