@@ -12,8 +12,6 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockRepor
 	using System.Text;
 	using System.Xml.Linq;
 
-	using Relativity.DataExchange.TestFramework.WebApiSqlProfiling.ExecutionPlan;
-
 	internal class CollectedDeadlockProfilerReportBuilder : ProfilerReportBuilderBase<DeadlockReportRowDto>
 	{
 		public override ProfilerReport Build()

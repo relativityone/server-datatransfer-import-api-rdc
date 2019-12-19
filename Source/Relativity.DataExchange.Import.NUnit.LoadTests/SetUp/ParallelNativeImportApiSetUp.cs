@@ -39,6 +39,16 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.SetUp
 		/// </summary>
 		public override ImportTestJobResult TestJobResult { get; protected set; } = new ImportTestJobResult();
 
+		public static IEnumerable<object[]> DataReaderToEnumerable(IDataReader dataReader)
+		{
+			while (dataReader.Read())
+			{
+				var values = new object[dataReader.FieldCount];
+				dataReader.GetValues(values);
+				yield return values;
+			}
+		}
+
 		public ParallelNativeImportApiSetUp ConfigureImportApiInstanceAndDocCounts(int importApiInstanceCount, int documentCountToImport)
 		{
 			this.ValidateInstanceCountAndDocCountParams(importApiInstanceCount, documentCountToImport);
@@ -64,22 +74,12 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.SetUp
 
 		public override void Execute(IDataReader dataReader)
 		{
-			IEnumerable<object[]> importData = this.DataReaderToEnumerable(dataReader);
+			IEnumerable<object[]> importData = DataReaderToEnumerable(dataReader);
 			Func<object[], object>[] getters = Enumerable.Range(0, dataReader.FieldCount)
 				.Select(p => (Func<object[], object>)(obj => obj[p])).ToArray();
 			string[] names = Enumerable.Range(0, dataReader.FieldCount).Select(dataReader.GetName).ToArray();
 
 			this.Execute(importData, getters, names);
-		}
-
-		public IEnumerable<object[]> DataReaderToEnumerable(IDataReader dataReader)
-		{
-			while (dataReader.Read())
-			{
-				var values = new object[dataReader.FieldCount];
-				dataReader.GetValues(values);
-				yield return values;
-			}
 		}
 
 		public void Execute(IEnumerable<object[]> importData, Func<object[], object>[] getters, string[] names)
