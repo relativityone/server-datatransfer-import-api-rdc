@@ -1,4 +1,6 @@
-﻿Namespace Monitoring
+﻿Imports Relativity.DataExchange.Transfer
+
+Namespace Monitoring
 	Public Class MetricJobEndReport
 		Inherits MetricJobBase
 
@@ -132,6 +134,19 @@
 			End Get
 			Set
 				CustomData.Item(TelemetryConstants.KeyName.JOB_DURATION) = value
+			End Set
+		End Property
+
+		''' <summary>
+		''' Gets or sets initial transfer mode.
+		''' </summary>
+		''' <returns>Initial transfer mode.</returns>
+		Public Property InitialTransferMode As TapiClient
+			Get
+				Return GetValueOrDefault(Of TapiClient)(TelemetryConstants.KeyName.INITIAL_TRANSFER_MODE)
+			End Get
+			Set
+				CustomData.Item(TelemetryConstants.KeyName.INITIAL_TRANSFER_MODE) = value
 			End Set
 		End Property
 	End Class
