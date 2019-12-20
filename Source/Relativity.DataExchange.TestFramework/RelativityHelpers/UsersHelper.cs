@@ -14,11 +14,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Net.Http;
 	using System.Text;
 	using System.Threading.Tasks;
-
-	using kCura.Relativity.Client;
-	using kCura.WinEDDS.Exceptions;
-
-	using Newtonsoft.Json;
 	using Newtonsoft.Json.Linq;
 
 	using Relativity.Services.Security;

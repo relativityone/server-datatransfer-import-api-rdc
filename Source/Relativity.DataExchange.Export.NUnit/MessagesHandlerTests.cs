@@ -12,7 +12,6 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Moq;
 
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.DataExchange.Process;
 	using Relativity.DataExchange.Transfer;

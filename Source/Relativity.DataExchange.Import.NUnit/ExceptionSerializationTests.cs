@@ -17,7 +17,6 @@ namespace Relativity.DataExchange.Import.NUnit
 	using kCura.WinEDDS.Exceptions;
 
 	using Relativity.DataExchange.Io;
-	using Relativity.DataExchange.Transfer;
 
 	[TestFixture]
 	public static class ExceptionSerializationTests

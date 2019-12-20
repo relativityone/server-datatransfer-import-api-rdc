@@ -10,7 +10,6 @@
 namespace Relativity.DataExchange.NUnit
 {
 	using System;
-	using System.Threading;
 
 	using global::NUnit.Framework;
 

@@ -6,7 +6,6 @@
 
 namespace Relativity.DataExchange.Export.NUnit
 {
-	using System;
 	using System.Threading;
 
 	using global::NUnit.Framework;
@@ -17,7 +16,6 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;

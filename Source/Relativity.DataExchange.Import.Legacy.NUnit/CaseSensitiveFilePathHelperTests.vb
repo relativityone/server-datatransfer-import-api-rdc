@@ -11,7 +11,6 @@ Imports Moq
 Imports NUnit.Framework
 
 Imports Relativity.DataExchange.Io
-Imports Rhino.Mocks
 
 Namespace Relativity.DataExchange.Import.NUnit
 

@@ -9,8 +9,6 @@
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
-
 	public class BatchExporter : IBatchExporter
 	{
 		private readonly IDownloader _downloader;

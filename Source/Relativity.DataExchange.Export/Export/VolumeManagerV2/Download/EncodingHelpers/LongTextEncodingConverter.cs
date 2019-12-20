@@ -2,7 +2,6 @@
 {
 	using System;
 	using System.Collections.Concurrent;
-	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -52,16 +51,8 @@
 			await Task.WhenAll(this._conversionTasks).ConfigureAwait(false);
 			this._logger.LogVerbose("Clearing conversion tasks list...");
 
-			CleanupTaskList(this._conversionTasks);
-		}
-
-		private void CleanupTaskList(ConcurrentBag<Task> concurrentBag)
-		{
-			Task someItem;
-			while (!concurrentBag.IsEmpty)
-			{
-				concurrentBag.TryTake(out someItem);
-			}
+			var newBag = new ConcurrentBag<Task>();
+			Interlocked.Exchange(ref this._conversionTasks, newBag);
 		}
 
 		private void AddForConversion(string longTextFileName)

@@ -9,15 +9,11 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 {
 	using System;
-	using System.Collections;
-	using System.Collections.Generic;
 	using System.Data;
-	using System.Text;
 
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
-	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
 
 	public class NativeImportApiSetUp : ImportApiSetUp<ImportBulkArtifactJob, Settings>

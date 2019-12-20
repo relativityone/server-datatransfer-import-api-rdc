@@ -10,15 +10,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
 	using System.Collections;
-	using System.Collections.Generic;
 	using System.Data;
 	using System.Linq;
-	using System.Text;
 
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
-
-	using Relativity.DataExchange.TestFramework.Extensions;
 
 	public abstract class ImportApiSetUp<TImportJob, TSettings> : IDisposable
 		where TImportJob : IImportNotifier
