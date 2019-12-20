@@ -2,7 +2,7 @@
 // © Relativity All Rights Reserved.
 // </copyright>
 
-namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.ExecutionPlan
+namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockReport
 {
 	using System.Collections.Generic;
 

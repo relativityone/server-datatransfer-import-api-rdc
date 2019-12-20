@@ -9,12 +9,11 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 {
 	using System;
-	using System.Collections.Generic;
+	using System.Data;
 
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
-	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
 
 	public class NativeImportApiSetUp : ImportApiSetUp<ImportBulkArtifactJob, Settings>
@@ -28,13 +27,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 			this.ImportJob.OnMessage += this.ImportJob_OnMessage;
 		}
 
-		public override void Execute<T>(IEnumerable<T> importData)
+		public override void Execute(IDataReader dataReader)
 		{
-			using (var dataReader = new EnumerableDataReader<T>(importData))
-			{
-				this.ImportJob.SourceData.SourceData = dataReader;
-				this.ImportJob.Execute();
-			}
+			this.ImportJob.SourceData.SourceData = dataReader;
+			this.ImportJob.Execute();
 
 			Console.WriteLine(
 				"Import API elapsed time: {0}",

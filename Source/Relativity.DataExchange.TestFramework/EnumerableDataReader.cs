@@ -44,6 +44,15 @@ namespace Relativity.DataExchange.TestFramework
 				.ToDictionary(this.GetName, q => q, StringComparer.OrdinalIgnoreCase);
 		}
 
+		public EnumerableDataReader(IEnumerable<T> enumerable, Func<T, object>[] getters, string[] names)
+		{
+			this.enumerator = enumerable.GetEnumerator();
+			this.getters = getters;
+			this.ordinalToName = names;
+			this.nameToOrdinal = Enumerable.Range(0, names.Length)
+				.ToDictionary(this.GetName, q => q, StringComparer.OrdinalIgnoreCase);
+		}
+
 		public override int FieldCount => this.getters.Length;
 
 		public override int Depth => 0;

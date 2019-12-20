@@ -10,15 +10,12 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 {
 	using System;
-	using System.Collections.Generic;
 	using System.Data;
 	using System.Globalization;
 
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
-	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
-	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
 
 	public class ImageImportApiSetUp : ImportApiSetUp<ImageImportBulkArtifactJob, ImageSettings>
@@ -32,12 +29,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 			this.ImportJob.OnMessage += this.ImportJob_OnMessage;
 		}
 
-		public override void Execute<T>(IEnumerable<T> importData)
+		public override void Execute(IDataReader dataReader)
 		{
-			if (!(importData is IEnumerable<ImageImportDto>))
-			{
-				throw new InvalidOperationException("Unsupported import data type");
-			}
+			dataReader.ThrowIfNull(nameof(dataReader));
 
 			// Conversion to dataTable is temporary, after DataSource unification it will be not needed
 			using (DataTable dataTable = new DataTable())
@@ -48,16 +42,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 				dataTable.Columns.Add("DocumentIdentifier", typeof(string));
 				dataTable.Columns.Add("FileLocation", typeof(string));
 
-				using (var dataReader = new EnumerableDataReader<T>(importData))
+				while (dataReader.Read())
 				{
-					while (dataReader.Read())
-					{
-						dataTable.Rows.Add(dataReader.GetString(0), dataReader.GetString(1), dataReader.GetString(2));
-					}
-
-					this.ImportJob.SourceData.SourceData = dataTable;
-					this.ImportJob.Execute();
+					dataTable.Rows.Add(dataReader[0], dataReader[1], dataReader[2]);
 				}
+
+				this.ImportJob.SourceData.SourceData = dataTable;
+				this.ImportJob.Execute();
 			}
 
 			Console.WriteLine("Import API elapsed time: {0}", this.TestJobResult.CompletedJobReport.EndTime - this.TestJobResult.CompletedJobReport.StartTime);

@@ -11,6 +11,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Data;
 	using System.Net;
 
 	using global::NUnit.Framework;
@@ -18,6 +19,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
+	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 
 	public abstract class ImportJobTestBase<TImportJob, TSettings> : IDisposable
@@ -84,9 +87,17 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		public ImportTestJobResult Execute<T>(IEnumerable<T> importData)
 		{
-			this.importApiSetUp.Execute(importData);
+			using (var dataReader = new EnumerableDataReader<T>(importData))
+			{
+				return this.Execute(dataReader);
+			}
+		}
 
-			// At this point all results should be setup
+		public ImportTestJobResult Execute(IDataReader dataReader)
+		{
+			this.importApiSetUp.Execute(dataReader);
+
+				// At this point all results should be setup
 			return this.importApiSetUp.TestJobResult;
 		}
 

@@ -43,13 +43,11 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		public void ShouldImportFoldersParallel(int parallelIApiClientCount, int numberOfDocumentsToImport)
 		{
 			// ARRANGE
-			var randomFolderGenerator = new RandomFolderGenerator(
-				numOfPaths: numberOfDocumentsToImport,
-				maxDepth: 10,
-				numOfDifferentFolders: 100,
+			var randomFolderGenerator = RandomPathGenerator.GetFolderGenerator(
+				numOfDifferentElements: 100,
+				maxElementLength: 100,
 				numOfDifferentPaths: 1000,
-				maxFolderLength: 100,
-				percentOfSpecial: 15);
+				maxPathDepth: 10);
 
 			ForceClient(TapiClient.Direct);
 
@@ -57,7 +55,9 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
 			this.InitializeImportApiWithUserAndPwd(settings, parallelIApiClientCount, numberOfDocumentsToImport);
 
-			IEnumerable<FolderImportDto> importData = randomFolderGenerator.ToEnumerable();
+			IEnumerable<FolderImportDto> importData = randomFolderGenerator
+				.ToFolders(numberOfDocumentsToImport)
+				.Select((p, i) => new FolderImportDto(i.ToString(), p));
 
 			// ACT
 			ImportTestJobResult results = this.Execute(importData);
