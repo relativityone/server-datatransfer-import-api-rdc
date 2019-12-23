@@ -33,8 +33,7 @@
 		{
 			lock (_syncLock)
 			{
-				Native native;
-				_nativesByArtifactIdDictionary.TryGetValue(artifactId, out native);
+				_nativesByArtifactIdDictionary.TryGetValue(artifactId, out var native);
 				return native;
 			}
 		}

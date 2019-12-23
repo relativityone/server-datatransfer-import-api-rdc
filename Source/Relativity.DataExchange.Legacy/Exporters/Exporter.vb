@@ -358,13 +358,12 @@ Namespace kCura.WinEDDS
 			Return allAvfIds
 		End Function
 
-		Private Function Search() As Boolean
+		Private Sub Search()
 			Me.LogApiVersionInfo()
 			Me.LogExportSettings()
 			InitializeExportProcess()
-			Dim tries As Int32 = 0
+			
 			Dim maxTries As Int32 = NumberOfRetries + 1
-
 			Dim typeOfExportDisplayString As String = ""
 			Dim errorOutputFilePath As String = _exportFile.FolderPath & "\" & _exportFile.LoadFilesPrefix & "_img_errors.txt"
 			If FileHelper.Exists(errorOutputFilePath) AndAlso _exportFile.Overwrite Then FileHelper.Delete(errorOutputFilePath)
@@ -376,7 +375,7 @@ Namespace kCura.WinEDDS
 
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 
-				tries = 0
+				Dim tries As Int32 = 0
 				While tries < maxTries
 					tries += 1
 					Try
@@ -400,7 +399,6 @@ Namespace kCura.WinEDDS
 			Dim allAvfIds As List(Of Int32) = GetAvfIds()
 			Dim isFileNamePresent As Boolean = OriginalFileNameProvider.ExtendFieldRequestByFileNameIfNecessary(Me.Settings.AllExportableFields, allAvfIds)
 
-			tries = 0
 			_logger.LogInformation("Preparing to initialize the {TypeOfExport} export search.", Me.Settings.TypeOfExport)
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
@@ -431,7 +429,7 @@ Namespace kCura.WinEDDS
 				_logger.LogWarning(msg)
 				InteractionManager.AlertCriticalError(msg)
 				Me.Shutdown()
-				Return False
+				Return
 			End If
 
 			Me.TotalExportArtifactCount -= Me.Settings.StartAtDocumentNumber
@@ -451,7 +449,7 @@ Namespace kCura.WinEDDS
 					If (Not validator.ValidateExport(Settings, TotalExportArtifactCount)) Then
 						_logger.LogWarning("The export failed due to a validation failure.")
 						Shutdown()
-						Return False
+						Return
 					End If
 					objectExportableSize = container.Resolve(Of IObjectExportableSize)
 					FieldLookupService = container.Resolve(Of IFieldLookupService)
@@ -542,9 +540,9 @@ Namespace kCura.WinEDDS
 				End If
 
 				Me.AuditRun(True)
-				Return Nothing
+				Return
 			End Using
-		End Function
+		End Sub
 
 		Private Sub ValidateExportedRecordCount(actualExportedRecordsCount As Int32, expectedExportedRecordsCount As Long)
 			' We don't want to display validation message on the cancelled job
@@ -747,7 +745,7 @@ Namespace kCura.WinEDDS
 						_timekeeper.MarkStart("Exporter_GetImagesForDocumentBlock")
 						start = System.DateTime.Now.Ticks
 
-						images.Table = CallServerWithRetry(Function() Me.RetrieveImagesForDocuments(documentArtifactIDs, Me.Settings.ImagePrecedence), maxTries)
+						images.Table = CallServerWithRetry(Function() Me.RetrieveImagesForDocuments(documentArtifactIDs), maxTries)
 
 						Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 						_timekeeper.MarkEnd("Exporter_GetImagesForDocumentBlock")
@@ -806,7 +804,7 @@ Namespace kCura.WinEDDS
 				artifact.ProductionBeginBates = record(beginBatesColumnIndex).ToString
 			End If
 			artifact.IdentifierValue = record(identifierColumnIndex).ToString
-			artifact.Images = Me.PrepareImages(images, productionImages, documentArtifactID, artifact.IdentifierValue, artifact, Me.Settings.ImagePrecedence, prediction)
+			artifact.Images = Me.PrepareImages(images, productionImages, documentArtifactID, artifact, Me.Settings.ImagePrecedence, prediction)
 			If nativeRow Is Nothing Then
 				artifact.NativeFileGuid = ""
 				artifact.OriginalFileName = ""
@@ -829,7 +827,7 @@ Namespace kCura.WinEDDS
 				artifact.NativeExtension = ""
 			End If
 			artifact.ArtifactID = documentArtifactID
-			artifact.Metadata = DirectCast(record, Object())
+			artifact.Metadata = record
 			SetProductionBegBatesFileName(artifact, lookup)
 
 			prediction.NativeFileCount = artifact.NativeCount
@@ -884,7 +882,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Function PrepareImagesForProduction(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo, ByRef prediction As VolumePredictions) As System.Collections.ArrayList
+		Private Function PrepareImagesForProduction(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByRef prediction As VolumePredictions) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
 			Dim matchingRows As DataRow() = imagesView.Table.Select("DocumentArtifactID = " & documentArtifactID.ToString)
@@ -940,18 +938,18 @@ Namespace kCura.WinEDDS
 			Return Not production Is Nothing AndAlso production.BatesNumbering = False AndAlso production.UseDocumentLevelNumbering AndAlso Not production.IncludeImageLevelNumberingForDocumentLevelNumbering
 		End Function
 
-		Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal productionImagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo,
+		Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal productionImagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal artifact As Exporters.ObjectExportInfo,
 																	 ByVal productionOrderList As Pair(), ByRef prediction As VolumePredictions) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 				productionImagesView.Sort = "DocumentArtifactID ASC, PageID ASC"
-				Return Me.PrepareImagesForProduction(productionImagesView, documentArtifactID, batesBase, artifact, prediction)
+				Return Me.PrepareImagesForProduction(productionImagesView, documentArtifactID, prediction)
 			End If
 			Dim item As Pair
 			For Each item In productionOrderList
 				If item.Value = "-1" Then
-					Return Me.PrepareOriginalImages(imagesView, documentArtifactID, batesBase, artifact, prediction)
+					Return Me.PrepareOriginalImages(imagesView, documentArtifactID, artifact, prediction)
 				Else
 					productionImagesView.RowFilter = String.Format("DocumentArtifactID = {0} AND ProductionArtifactID = {1}", documentArtifactID, item.Value)
 					Dim firstImageFileName As String = Nothing
@@ -990,7 +988,7 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function PrepareOriginalImages(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo, ByRef prediction As VolumePredictions) As System.Collections.ArrayList
+		Private Function PrepareOriginalImages(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal artifact As Exporters.ObjectExportInfo, ByRef prediction As VolumePredictions) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
 			imagesView.RowFilter = "DocumentArtifactID = " & documentArtifactID.ToString
@@ -1077,7 +1075,7 @@ Namespace kCura.WinEDDS
 			Return header
 		End Function
 
-		Private Function RetrieveImagesForDocuments(ByVal documentArtifactIDs As Int32(), ByVal productionOrderList As Pair()) As System.Data.DataTable
+		Private Function RetrieveImagesForDocuments(ByVal documentArtifactIDs As Int32()) As System.Data.DataTable
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.Production
 					Return Nothing

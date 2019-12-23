@@ -4,7 +4,6 @@ Imports Relativity.DataExchange
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
-Imports Relativity.Transfer
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -382,12 +381,10 @@ Namespace kCura.Relativity.DataReaderClient
 
 
 		Private Function MapInputToSettingsFactory(ByVal clientSettings As Settings) As WinEDDS.DynamicObjectSettingsFactory
-			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory = Nothing
-			'If clientSettings.Credential Is Nothing Then
-			'dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
-			'Else
+			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory
+
 			dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(_credentials, _webApiCredential, _cookieMonster, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
-			'End If
+
 			_docIDFieldCollection = dosf_settings.DocumentIdentifierFields
 
 			With dosf_settings
@@ -406,8 +403,8 @@ Namespace kCura.Relativity.DataReaderClient
 
 				.MoveDocumentsInAppendOverlayMode = clientSettings.MoveDocumentsInAppendOverlayMode
 
-				.MultiRecordDelimiter = CType(clientSettings.MultiValueDelimiter, Char)
-				.HierarchicalValueDelimiter = CType(clientSettings.NestedValueDelimiter, Char)
+				.MultiRecordDelimiter = clientSettings.MultiValueDelimiter
+				.HierarchicalValueDelimiter = clientSettings.NestedValueDelimiter
 
 				If Not clientSettings.NativeFilePathSourceFieldName = String.Empty Then
 					.NativeFilePathColumn = clientSettings.NativeFilePathSourceFieldName

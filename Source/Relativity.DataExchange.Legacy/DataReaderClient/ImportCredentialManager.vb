@@ -50,7 +50,7 @@ Friend Class ImportCredentialManager
 		End If
 
 		Dim retVal As SessionCredentials = Nothing
-		Dim cachedCreds As Boolean = False
+		Dim cachedCreds As Boolean
 
 		SyncLock _lockObject
 			' This section needs to be sync locked
@@ -65,7 +65,7 @@ Friend Class ImportCredentialManager
 				' 2. credential in cache not found, so actually log in and create credentials
 				Dim logger As Relativity.Logging.ILog = RelativityLogger.Instance
 				Dim token As CancellationToken = CancellationToken.None
-				Dim creds As NetworkCredential = Nothing
+				Dim creds As NetworkCredential
 				Dim cookieMonster As New CookieContainer
 
 				Try

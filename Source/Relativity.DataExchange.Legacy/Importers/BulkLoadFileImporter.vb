@@ -609,7 +609,7 @@ Namespace kCura.WinEDDS
 				Using Timekeeper.CaptureTime("TOTAL")
 					OnStartFileImport()
 					Using Timekeeper.CaptureTime("ReadFile_InitializeMembers")
-						If Not InitializeMembers(path) Then
+						If Not InitializeMembers() Then
 							Return False
 						End If
 						ProcessedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
@@ -625,7 +625,6 @@ Namespace kCura.WinEDDS
 							If (docLimit <> 0 And countAfterJob > docLimit) Then
 								Dim errorMessage As String = String.Format("The document import was canceled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
 								Throw New Exception(errorMessage)
-								Return False
 							End If
 						End If
 					End If
@@ -768,7 +767,7 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
-		Private Function InitializeMembers(ByVal path As String) As Boolean
+		Private Function InitializeMembers() As Boolean
 			RecordCount = _artifactReader.CountRecords
 			If RecordCount = -1 Then
 				OnStatusMessage(New StatusEventArgs(EventType2.Progress, CurrentLineNumber, CurrentLineNumber, CancelEventMsg, CurrentStatisticsSnapshot, Statistics))
@@ -1326,10 +1325,9 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub AdvanceStream(ByVal sr As System.IO.StreamReader, ByVal count As Int64)
-			Dim i As Int32
 			If count > 0 Then
 				For j As Int64 = 0 To count - 1
-					i = sr.Read()
+					sr.Read()
 				Next
 			End If
 		End Sub
