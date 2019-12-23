@@ -249,6 +249,91 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets the size of the buffer in bytes to use when retrieving long text field data from Object Manager during export jobs.
+		/// </summary>
+		/// <value>
+		/// The total number of bytes.
+		/// </value>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Naming",
+			"CA1720:IdentifiersShouldNotContainTypeNames",
+			MessageId = "long",
+			Justification = "This is an appropriate name for this setting and unrelated to the long data type.")]
+		int ExportLongTextBufferSizeBytes
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the rate, in seconds, that large file progress events are raised when retrieving long text field data from Object Manager during export jobs.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Naming",
+			"CA1720:IdentifiersShouldNotContainTypeNames",
+			MessageId = "long",
+			Justification = "This is an appropriate name for this setting and unrelated to the long data type.")]
+		int ExportLongTextLargeFileProgressRateSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to use Object Manager or the legacy Relativity.Distributed to retrieve long text field data during export jobs. This is <see langword="true" /> by default.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to use Object Manager; otherwise, <see langword="false" /> for the legacy Relativity.Distributed implementation.
+		/// </value>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Naming",
+			"CA1720:IdentifiersShouldNotContainTypeNames",
+			MessageId = "long",
+			Justification = "This is an appropriate name for this setting and unrelated to the long data type.")]
+		bool ExportLongTextObjectManagerEnabled
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the number of concurrent requests to retrieve long text field data, stored in Data Grid, from Object Manager during export jobs.
+		/// </summary>
+		/// <value>
+		/// The total number of bytes.
+		/// </value>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Naming",
+			"CA1720:IdentifiersShouldNotContainTypeNames",
+			MessageId = "long",
+			Justification = "This is an appropriate name for this setting and unrelated to the long data type.")]
+		int ExportLongTextDataGridThreadCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the number of concurrent requests to retrieve long text field data, stored in SQL Server, from Object Manager during export jobs.
+		/// </summary>
+		/// <value>
+		/// The total number of bytes.
+		/// </value>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Naming",
+			"CA1720:IdentifiersShouldNotContainTypeNames",
+			MessageId = "long",
+			Justification = "This is an appropriate name for this setting and unrelated to the long data type.")]
+		int ExportLongTextSqlThreadCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the maximum number of seconds to identify a file type before reaching the timeout.
 		/// </summary>
 		/// <value>
@@ -285,6 +370,30 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets the number of retry attempts for HTTP related fault tolerant methods.
+		/// </summary>
+		/// <value>
+		/// The total number of retries.
+		/// </value>
+		int HttpErrorNumberOfRetries
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the number of seconds to wait between retry attempts for HTTP related fault tolerant methods.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int HttpErrorWaitTimeInSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the HTTP timeout in seconds. This is 300 seconds by default.
 		/// </summary>
 		/// <value>
@@ -297,7 +406,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets the HTTP extracted text timeout in seconds. This is 900 seconds by default.
+		/// Gets or sets the timeout, in seconds, for the legacy Relativity.Distributed long text specific HTTP/REST-based API web services. This is 900 seconds by default.
 		/// </summary>
 		/// <value>
 		/// The total number of seconds.

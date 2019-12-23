@@ -152,11 +152,14 @@
     <Compile Include="Export\VolumeManagerV2\Download\IExportFileValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IExportRequestRetriever.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\NullLongTextFileDownloadSubscriber.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ILongTextFileDownloadSubscriber.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ILongTextDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ImageExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IPhysicalFilesDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextExportRequest.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\LongTextObjectManagerDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\PhysicalFileExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\PhysicalFilesDownloader.cs" />
@@ -373,7 +376,6 @@
       <Name>Relativity.DataExchange.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
@@ -442,8 +444,52 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Kepler">
+          <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Logging.Interfaces">
           <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.DataContracts">
+          <HintPath>..\..\packages\Relativity.Services.DataContracts\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.Interfaces">
+          <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

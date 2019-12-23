@@ -17,10 +17,17 @@
 		public int FieldArtifactId { get; private set; }
 		public Encoding SourceEncoding { get; set; }
 		public Encoding DestinationEncoding { get; private set; }
+		public long Length { get; private set; }
 
 		public abstract TextReader GetLongText();
 
-		public static LongText CreateFromMissingFile(int artifactId, int fieldArtifactId, LongTextExportRequest exportRequest, Encoding sourceEncoding, Encoding destinationEncoding)
+		public static LongText CreateFromMissingFile(
+			int artifactId,
+			int fieldArtifactId,
+			LongTextExportRequest exportRequest,
+			Encoding sourceEncoding,
+			Encoding destinationEncoding,
+			long length)
 		{
 			return new LongTextInFile
 			{
@@ -31,11 +38,17 @@
 				RequireDeletion = false,
 				SourceEncoding = sourceEncoding,
 				DestinationEncoding = destinationEncoding,
-				TransferCompleted = false
+				TransferCompleted = false,
+				Length = length
 			};
 		}
 
-		public static LongText CreateFromMissingValue(int artifactId, int fieldArtifactId, LongTextExportRequest exportRequest, Encoding encoding)
+		public static LongText CreateFromMissingValue(
+			int artifactId,
+			int fieldArtifactId,
+			LongTextExportRequest exportRequest,
+			Encoding encoding,
+			long length)
 		{
 			return new LongTextInFile
 			{
@@ -47,11 +60,17 @@
 				RequireDeletion = true,
 				SourceEncoding = encoding,
 				DestinationEncoding = encoding,
-				TransferCompleted = false
+				TransferCompleted = false,
+				Length = length
 			};
 		}
 
-		public static LongText CreateFromExistingFile(int artifactId, int fieldArtifactId, string location, Encoding encoding)
+		public static LongText CreateFromExistingFile(
+			int artifactId,
+			int fieldArtifactId,
+			string location,
+			Encoding encoding,
+			long length)
 		{
 			return new LongTextInFile
 			{
@@ -61,7 +80,8 @@
 				RequireDeletion = false,
 				SourceEncoding = encoding,
 				DestinationEncoding = encoding,
-				TransferCompleted = true
+				TransferCompleted = true,
+				Length = length
 			};
 		}
 
@@ -75,7 +95,8 @@
 				RequireDeletion = false,
 				SourceEncoding = Encoding.Default,
 				DestinationEncoding = Encoding.Default,
-				TransferCompleted = true
+				TransferCompleted = true,
+				Length = text?.Length ?? 0
 			};
 		}
 	}

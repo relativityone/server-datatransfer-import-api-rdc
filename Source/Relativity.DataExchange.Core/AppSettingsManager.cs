@@ -133,6 +133,10 @@ namespace Relativity.DataExchange
 				{
 					AssignInt64(settings, prop, null);
 				}
+				else if (prop.PropertyType == typeof(float))
+				{
+					AssignFloat(settings, prop, null);
+				}
 				else if (prop.PropertyType.IsEnum)
 				{
 					AssignEnum(settings, prop, null);
@@ -398,6 +402,10 @@ namespace Relativity.DataExchange
 			{
 				AssignInt64(settings, prop, value);
 			}
+			else if (prop.PropertyType == typeof(float))
+			{
+				AssignFloat(settings, prop, value);
+			}
 			else if (prop.PropertyType == typeof(Uri))
 			{
 				AssignUri(settings, prop, value);
@@ -564,6 +572,38 @@ namespace Relativity.DataExchange
 			}
 
 			AssignValue(settings, prop, longValue);
+		}
+
+		private static void AssignFloat(IAppSettings settings, PropertyInfo prop, object value)
+		{
+			float? floatValue = null;
+			if (value != null)
+			{
+				if (float.TryParse(value.ToString(), out float temp))
+				{
+					floatValue = temp;
+				}
+			}
+
+			float defaultValue = 0f;
+			AppSettingAttribute attribute = GetAppSettingAttribute(GetPropertyKey(prop));
+			if (!floatValue.HasValue && attribute != null)
+			{
+				if (attribute.DefaultValue != null)
+				{
+					if (!float.TryParse(attribute.DefaultValue.ToString(), out defaultValue))
+					{
+						defaultValue = 0L;
+					}
+				}
+			}
+
+			if (!floatValue.HasValue)
+			{
+				floatValue = defaultValue;
+			}
+
+			AssignValue(settings, prop, floatValue);
 		}
 
 		private static void AssignUri(IAppSettings settings, PropertyInfo prop, object value)

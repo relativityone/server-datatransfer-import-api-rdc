@@ -28,6 +28,7 @@ Namespace kCura.WinEDDS.Exporters
 		Friend Property CoalescedProductionID As Int32? = Nothing
 		Public Property Filename() As String = String.Empty
 		Public Property DocumentError As Boolean = False
+		Public Property LongTextLength As Int64 = 0
 
 #End Region
 

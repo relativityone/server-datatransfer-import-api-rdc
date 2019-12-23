@@ -3,7 +3,7 @@
 // © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents <see cref="ProcessErrorWriter"/> tests.
+//   Represents <see cref="SerializationHelper"/> tests.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 

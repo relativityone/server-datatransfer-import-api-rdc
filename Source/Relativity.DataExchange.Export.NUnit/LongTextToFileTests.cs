@@ -70,7 +70,8 @@ namespace Relativity.DataExchange.Export.NUnit
 				artifact.ArtifactID,
 				field.FieldArtifactId,
 				LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, expectedResult),
-				Encoding.Default);
+				Encoding.Default,
+				artifact.LongTextLength);
 			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry entry = new DeferredEntry();
@@ -98,7 +99,8 @@ namespace Relativity.DataExchange.Export.NUnit
 				artifact.ArtifactID,
 				field.FieldArtifactId,
 				LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, location),
-				Encoding.Default);
+				Encoding.Default,
+				artifact.LongTextLength);
 			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry entry = new DeferredEntry();
@@ -137,7 +139,8 @@ namespace Relativity.DataExchange.Export.NUnit
 					artifact,
 					trueTextPrecedenceField.FieldArtifactId,
 					expectedResult),
-				Encoding.Default);
+				Encoding.Default,
+				artifact.LongTextLength);
 			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry entry = new DeferredEntry();

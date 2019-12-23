@@ -33,6 +33,7 @@
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Media;
+	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Transfer;
 
@@ -151,6 +152,8 @@
 			container.Register(Component.For<IFilePathTransformer>().UsingFactoryMethod(k => k.Resolve<FilePathTransformerFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IBatchValidator>().UsingFactoryMethod(k => k.Resolve<BatchValidatorFactory>().Create(ExportSettings, ExportConfig, container)));
 			container.Register(Component.For<IBatchInitialization>().UsingFactoryMethod(k => k.Resolve<BatchInitializationFactory>().Create(ExportSettings, ExportConfig, container)));
+			container.Register(Component.For<IFileSystem>().UsingFactoryMethod(k => FileSystem.Instance));
+			container.Register(Component.For<IAppSettings>().UsingFactoryMethod(k => AppSettings.Instance));
 			container.Register(Component.For<ILog>().UsingFactoryMethod(k => _logger));
 			container.Register(Component.For<ITapiObjectService>().ImplementedBy<TapiObjectService>());
 			container.Register(Component.For<IAuthenticationTokenProvider>().ImplementedBy<NullAuthTokenProvider>());
@@ -195,6 +198,24 @@
 			container.Register(Component.For<IDelimiter>().UsingFactoryMethod(k => k.Resolve<DelimiterFactory>().Create(ExportSettings)));
 			container.Register(Component.For<ILongTextStreamFormatterFactory>().UsingFactoryMethod(k => k.Resolve<LongTextStreamFormatterFactoryFactory>().Create(ExportSettings)));
 			container.Register(Component.For<IFileDownloadSubscriber>().ImplementedBy<LongTextEncodingConverter>());
+			container.Register(Component.For<IServiceRetryPolicyFactory>().ImplementedBy<KeplerRetryPolicyFactory>());
+			container.Register(Component.For<IServiceProxyFactory>().ImplementedBy<KeplerServiceProxyFactory>());
+			container.Register(Component.For<IServiceConnectionInfo>().UsingFactoryMethod(a => new KeplerServiceConnectionInfo(new Uri(AppSettings.Instance.WebApiServiceUrl), ExportSettings.Credential)));
+			if (AppSettings.Instance.ExportLongTextObjectManagerEnabled)
+			{
+				container.Register(Component.For<ILongTextStreamService>().ImplementedBy<LongTextStreamService>());
+				container.Register(
+					Component.For<ILongTextFileDownloadSubscriber>()
+						.ImplementedBy<NullLongTextFileDownloadSubscriber>());
+				container.Register(
+					Component.For<ILongTextDownloader>().ImplementedBy<LongTextObjectManagerDownloader>());
+			}
+			else
+			{
+				container.Register(
+					Component.For<ILongTextDownloader, ILongTextFileDownloadSubscriber>()
+						.ImplementedBy<LongTextDownloader>());
+			}
 		}
 
 		private void InstallStatefulComponents(IWindsorContainer container)

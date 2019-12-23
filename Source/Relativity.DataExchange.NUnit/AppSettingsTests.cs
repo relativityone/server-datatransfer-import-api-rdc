@@ -1383,6 +1383,10 @@ namespace Relativity.DataExchange.NUnit
 				{
 					prop.SetValue(settings, RandomHelper.NextInt64(1, 1000));
 				}
+				else if (prop.PropertyType == typeof(float))
+				{
+					prop.SetValue(settings, Convert.ToSingle(RandomHelper.NextInt32(1, 1000)));
+				}
 				else if (prop.PropertyType == typeof(Uri))
 				{
 					Uri host = RandomHelper.NextUri();

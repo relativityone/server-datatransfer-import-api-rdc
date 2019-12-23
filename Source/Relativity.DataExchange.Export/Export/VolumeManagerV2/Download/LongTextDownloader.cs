@@ -2,7 +2,6 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using System.Threading;
 	using System.Threading.Tasks;
 
@@ -12,7 +11,7 @@
 	using Relativity.Logging;
 	using Relativity.Transfer;
 
-	public class LongTextDownloader : ILongTextDownloader
+	public class LongTextDownloader : ILongTextDownloader, ILongTextFileDownloadSubscriber
 	{
 		private readonly SafeIncrement _safeIncrement;
 		private readonly ILongTextTapiBridgePool _longTextTapiBridgePool;

@@ -31,6 +31,8 @@
 			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
+		public long MetadataTime => this._statistics.MetadataTime;
+
 		public void Subscribe(ITapiBridge tapiBridge)
 		{
 			tapiBridge.ThrowIfNull(nameof(tapiBridge));
@@ -88,6 +90,27 @@
 				else
 				{
 					_logger.LogWarning("Trying to add statistics for file {path}, but file doesn't exist.", path);
+				}
+			}
+		}
+
+		public void UpdateStatistics(string fileName, bool transferResult, long transferredBytes, long totalTicks)
+		{
+			_logger.LogVerbose(
+				"Progress event for file {FileName} with status {Successful}.",
+				fileName,
+				transferResult);
+			if (transferResult)
+			{
+				lock (_lock)
+				{
+					// Note: the ticks continually replaces the metadata time instead of adding to the existing value.
+					_statistics.MetadataFilesTransferredCount++;
+					_statistics.MetadataBytes += transferredBytes;
+					_statistics.MetadataTime = totalTicks;
+					_statistics.MetadataThroughput = kCura.WinEDDS.Statistics.CalculateThroughput(
+						_statistics.MetadataBytes,
+						_statistics.MetadataTime);
 				}
 			}
 		}

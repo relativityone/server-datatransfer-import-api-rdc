@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.IO;
+	using System.Threading.Tasks;
 
 	using Castle.Core;
 
@@ -45,11 +46,16 @@
 
 		public void Write(ExportFileType type, ObjectExportInfo documentInfo, string fileLocation, string errorText)
 		{
+			WriteAsync(type, documentInfo, fileLocation, errorText).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task WriteAsync(ExportFileType type, ObjectExportInfo documentInfo, string fileLocation, string errorText)
+		{
 			string recordIdentifier = documentInfo?.IdentifierValue ?? string.Empty;
 			try
 			{
-				InitializeStream();
-				WriteLine(type, recordIdentifier, fileLocation, errorText);
+				await InitializeStreamAsync().ConfigureAwait(false);
+				await WriteLineAsync(type, recordIdentifier, fileLocation, errorText).ConfigureAwait(false);
 			}
 			catch (IOException ex)
 			{
@@ -76,27 +82,27 @@
 			}
 		}
 
-		private void InitializeStream()
+		private async Task InitializeStreamAsync()
 		{
 			if (_streamWriter == null)
 			{
 				_logger.LogVerbose("Creating stream for error file in {destination}.", _errorFileDestinationPath.Path);
 				_streamWriter = _streamFactory.Create(_streamWriter, 0, _errorFileDestinationPath.Path, _errorFileDestinationPath.Encoding, false);
-				WriteHeader();
+				await WriteHeaderAsync().ConfigureAwait(false);
 			}
 		}
 
-		private void WriteHeader()
+		private Task WriteHeaderAsync()
 		{
 			string header = FormatErrorLine("File Type", "Document Identifier", "File Guid", "Error Description");
-			_streamWriter.WriteLine(header);
+			return _streamWriter.WriteLineAsync(header);
 		}
 
-		private void WriteLine(ExportFileType type, string recordIdentifier, string fileLocation, string errorText)
+		private Task WriteLineAsync(ExportFileType type, string recordIdentifier, string fileLocation, string errorText)
 		{
 			string line = FormatErrorLine(type.ToString(), recordIdentifier, fileLocation, errorText.ToCsvCellContents());
 			_logger.LogError(line);
-			_streamWriter.WriteLine(line);
+			return _streamWriter.WriteLineAsync(line);
 		}
 
 		private string FormatErrorLine(string fileType, string documentIdentifier, string fileGuid, string errorDescription)

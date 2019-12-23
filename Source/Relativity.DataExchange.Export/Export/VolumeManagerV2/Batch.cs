@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Threading;
+	using System.Threading.Tasks;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
@@ -40,7 +41,7 @@
 			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
-		public void Export(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
+		public async Task ExportAsync(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -60,7 +61,7 @@
 
 				_messenger.DownloadingBatch();
 
-				_batchExporter.Export(artifacts, cancellationToken);
+				await _batchExporter.ExportAsync(artifacts, cancellationToken).ConfigureAwait(false);
 
 				if (cancellationToken.IsCancellationRequested)
 				{

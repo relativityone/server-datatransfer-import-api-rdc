@@ -95,6 +95,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ByteSize.cs" />
     <Compile Include="CacheKeys.cs" />
     <Compile Include="Data\BooleanImporterException.cs" />
     <Compile Include="Data\CellImporterException.cs" />
@@ -179,6 +180,18 @@
     <Compile Include="Process\ExportErrorEventArgs.cs" />
     <Compile Include="Process\RecordNumberEventArgs.cs" />
     <Compile Include="Process\ShowReportEventArgs.cs" />
+    <Compile Include="Service\ObjectManagerExceptionHelper.cs" />
+    <Compile Include="Service\KeplerServiceConnectionInfo.cs" />
+    <Compile Include="Service\IServiceConnectionInfo.cs" />
+    <Compile Include="Service\IServiceProxyFactory.cs" />
+    <Compile Include="Service\IServiceRetryPolicyFactory.cs" />
+    <Compile Include="Service\KeplerRetryPolicyFactory.cs" />
+    <Compile Include="Service\KeplerServiceProxyFactory.cs" />
+    <Compile Include="Transfer\ILongTextStreamService.cs" />
+    <Compile Include="Transfer\LongTextStreamProgressEventArgs.cs" />
+    <Compile Include="Transfer\LongTextStreamRequest.cs" />
+    <Compile Include="Transfer\LongTextStreamResult.cs" />
+    <Compile Include="Transfer\LongTextStreamService.cs" />
     <Compile Include="UrlHelper.cs" />
     <Compile Include="SerializationHelper.cs" />
     <Compile Include="Service\ArtifactType.cs" />
@@ -435,8 +448,52 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Kepler">
+          <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Logging.Interfaces">
           <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.DataContracts">
+          <HintPath>..\..\packages\Relativity.Services.DataContracts\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.Interfaces">
+          <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

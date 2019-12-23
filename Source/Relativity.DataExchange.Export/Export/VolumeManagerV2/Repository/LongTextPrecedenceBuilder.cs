@@ -92,18 +92,18 @@
 				{
 					_logger.LogVerbose("LongText file missing - creating ExportRequest to destination file.");
 
-					return LongText.CreateFromMissingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest, sourceEncoding, _exportSettings.TextFileEncoding);
+					return LongText.CreateFromMissingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest, sourceEncoding, _exportSettings.TextFileEncoding, artifact.LongTextLength);
 				}
 
 				_logger.LogVerbose("File {file} exists and won't be overwritten - updating statistics.", destinationLocation);
 				_metadataProcessingStatistics.UpdateStatisticsForFile(destinationLocation);
 
 				_logger.LogWarning("LongText file already exists and cannot overwrite - creating ExportRequest from existing file. Assuming that file encoding is the same as selected.");
-				return LongText.CreateFromExistingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, destinationLocation, _exportSettings.TextFileEncoding);
+				return LongText.CreateFromExistingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, destinationLocation, _exportSettings.TextFileEncoding, artifact.LongTextLength);
 			}
 
 			_logger.LogVerbose("LongText file missing - creating ExportRequest to temporary file.");
-			return LongText.CreateFromMissingValue(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest, sourceEncoding);
+			return LongText.CreateFromMissingValue(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest, sourceEncoding, artifact.LongTextLength);
 		}
 
 		private LongText CreateForLongText(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field)
@@ -128,7 +128,7 @@
 
 				_logger.LogVerbose("File {file} exists or has been created from metadata - updating statistics.", destinationLocation);
 				_metadataProcessingStatistics.UpdateStatisticsForFile(destinationLocation);
-				return LongText.CreateFromExistingFile(artifact.ArtifactID, field.FieldArtifactId, destinationLocation, _exportSettings.TextFileEncoding);
+				return LongText.CreateFromExistingFile(artifact.ArtifactID, field.FieldArtifactId, destinationLocation, _exportSettings.TextFileEncoding, artifact.LongTextLength);
 			}
 
 			_logger.LogVerbose("LongText value exists - storing it into memory.");

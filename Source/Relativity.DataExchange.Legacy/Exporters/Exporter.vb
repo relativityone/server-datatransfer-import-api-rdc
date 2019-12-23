@@ -708,7 +708,7 @@ Namespace kCura.WinEDDS
 				_volumeManager.WriteDatFile(_linesToWriteDat, artifacts)
 				_volumeManager.WriteOptFile(_linesToWriteOpt, artifacts)
 			Else
-				batch.Export(artifacts, volumePredictions, _cancellationTokenSource.Token)
+				batch.ExportAsync(artifacts, volumePredictions, _cancellationTokenSource.Token).ConfigureAwait(false).GetAwaiter().GetResult()
 			End If
 		End Sub
 

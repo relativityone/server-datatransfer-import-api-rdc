@@ -42,7 +42,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			artifact.ArtifactID = artifactId;
 			artifact.Metadata = new object[] { string.Empty, textToWrite, fileLocation };
 
-			LongText longText = LongText.CreateFromExistingFile(artifactId, -1, fileLocation, Encoding.Default);
+			LongText longText = LongText.CreateFromExistingFile(artifactId, -1, fileLocation, Encoding.Default, artifact.LongTextLength);
 			this.LongTextRepository.Add(longText.InList());
 		}
 	}

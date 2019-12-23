@@ -7,7 +7,6 @@ nbuilder
 newtonsoft.json
 nunit
 relativity.dataTransfer.messageService
-relativity.kepler
 relativity.kepler.client
 relativity.logging
 relativity.logging.interfaces

@@ -84,6 +84,7 @@
     <Compile Include="FieldHelper.cs" />
     <Compile Include="IntegrationTestParameterAttribute.cs" />
     <Compile Include="RelativityTestLogger.cs" />
+    <Compile Include="TestDirectoryManager.cs" />
     <Compile Include="TestDirectory.cs" />
     <Compile Include="TestStrings.cs" />
     <Compile Include="ServiceHelper.cs" />

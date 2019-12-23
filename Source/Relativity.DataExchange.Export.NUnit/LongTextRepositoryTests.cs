@@ -152,7 +152,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 
 			LongText longText1 =
-				LongText.CreateFromMissingValue(artifact1.ArtifactID, 10, LongTextExportRequest.CreateRequestForLongText(artifact1, 10, "require_deletion"), Encoding.Default);
+				LongText.CreateFromMissingValue(artifact1.ArtifactID, 10, LongTextExportRequest.CreateRequestForLongText(artifact1, 10, "require_deletion"), Encoding.Default, 1);
 			longText1.ExportRequest.Order = 1;
 
 			LongText longText2 = LongText.CreateFromExistingValue(artifact1.ArtifactID, 20, "text");
@@ -167,7 +167,8 @@ namespace Relativity.DataExchange.Export.NUnit
 				30,
 				LongTextExportRequest.CreateRequestForFullText(artifact2, 30, "do_not_require_deletion"),
 				Encoding.Default,
-				Encoding.Default);
+				Encoding.Default,
+				artifact2.LongTextLength);
 			longText3.ExportRequest.Order = 3;
 
 			return new List<LongText> { longText1, longText2, longText3 };
