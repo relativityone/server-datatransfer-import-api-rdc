@@ -10,10 +10,7 @@ Namespace kCura.WinEDDS
 		Public LoadFile As LoadFile
 		Protected WithEvents _loadFilePreviewer As LoadFilePreviewer
 		Protected WithEvents _IoReporterContext As IoReporterContext
-		Private _startTime As System.DateTime
-		Private _errorCount As Int32
 		Private _errorsOnly As Boolean
-		Private _warningCount As Int32
 		Private _timeZoneOffset As Int32
 		Private _formType As Int32
 		Private StartTime As System.DateTime
@@ -59,9 +56,6 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Protected Overrides Sub OnExecute()
-			_startTime = DateTime.Now
-			_warningCount = 0
-			_errorCount = 0
 			_IoReporterContext = New IoReporterContext(Me.FileSystem, Me.AppSettings, New WaitAndRetryPolicy(Me.AppSettings))
 			Dim reporter As IIoReporter = Me.CreateIoReporter(_IoReporterContext)
 			_loadFilePreviewer = New kCura.WinEDDS.LoadFilePreviewer(
@@ -79,29 +73,29 @@ Namespace kCura.WinEDDS
 
 		Private Sub _loadFilePreviewer_OnEvent(ByVal e As LoadFilePreviewer.EventArgs) Handles _loadFilePreviewer.OnEvent
 			SyncLock Me.Context
-				Dim totaldisplay As String
-				Dim processeddisplay As String
+				Dim totalDisplay As String
+				Dim processedDisplay As String
 				If e.TotalBytes >= 1048576 Then
-					totaldisplay = (e.TotalBytes / 1048576).ToString("N0") & " MB"
-					processeddisplay = (e.BytesRead / 1048576).ToString("N0") & " MB"
+					totalDisplay = (e.TotalBytes / 1048576).ToString("N0") & " MB"
+					processedDisplay = (e.BytesRead / 1048576).ToString("N0") & " MB"
 				ElseIf e.TotalBytes < 1048576 AndAlso e.TotalBytes >= 102400 Then
-					totaldisplay = (e.TotalBytes / 1024).ToString("N0") & " KB"
-					processeddisplay = (e.BytesRead / 1024).ToString("N0") & " KB"
+					totalDisplay = (e.TotalBytes / 1024).ToString("N0") & " KB"
+					processedDisplay = (e.BytesRead / 1024).ToString("N0") & " KB"
 				Else
-					totaldisplay = e.TotalBytes.ToString & " B"
-					processeddisplay = e.BytesRead.ToString & " B"
+					totalDisplay = e.TotalBytes.ToString & " B"
+					processedDisplay = e.BytesRead.ToString & " B"
 				End If
 				Select Case e.Type
 					Case LoadFilePreviewer.EventType.Begin
 						Me.StartTime = System.DateTime.Now
 					Case LoadFilePreviewer.EventType.Complete
 						If e.TotalBytes = -1 Then
-							Me.Context.PublishProgress(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, "First " & Me.AppSettings.PreviewThreshold & " records", totaldisplay)
+							Me.Context.PublishProgress(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, "First " & Me.AppSettings.PreviewThreshold & " records", totalDisplay)
 						Else
-							Me.Context.PublishProgress(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
+							Me.Context.PublishProgress(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totalDisplay, processedDisplay)
 						End If
 					Case LoadFilePreviewer.EventType.Progress
-						Me.Context.PublishProgress(e.TotalBytes, e.BytesRead, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
+						Me.Context.PublishProgress(e.TotalBytes, e.BytesRead, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totalDisplay, processedDisplay)
 						Me.Context.PublishStatusEvent("", "Preparing file for preview")
 				End Select
 			End SyncLock
