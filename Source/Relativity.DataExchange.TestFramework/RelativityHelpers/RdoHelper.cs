@@ -238,6 +238,35 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
+		public static IList<RelativityObject> QueryRelativityObjects(
+			IntegrationTestParameters parameters,
+			int artifactTypeId,
+			string condition,
+			IEnumerable<string> fields)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			using (IObjectManager client = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
+			{
+				QueryRequest queryRequest = new QueryRequest
+					                            {
+						                            Fields = fields?.Select(x => new FieldRef { Name = x }),
+						                            ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId },
+						                            Condition = condition,
+					                            };
+
+				Relativity.Services.Objects.DataContracts.QueryResult result = client.QueryAsync(
+					parameters.WorkspaceId,
+					queryRequest,
+					1,
+					ServiceHelper.MaxItemsToFetch).GetAwaiter().GetResult();
+				return result.Objects;
+			}
+		}
+
 		public static int QueryWorkspaceObjectTypeDescriptorId(IntegrationTestParameters parameters, int artifactId)
 		{
 			if (parameters == null)

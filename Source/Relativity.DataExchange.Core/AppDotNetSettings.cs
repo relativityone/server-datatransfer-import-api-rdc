@@ -30,6 +30,8 @@ namespace Relativity.DataExchange
 		private int ioErrorWaitTimeInSeconds;
 		private int httpTimeoutSeconds;
 		private int httpExtractedTextTimeoutSeconds;
+		private int httpErrorNumberOfRetries;
+		private int httpErrorWaitTimeInSeconds;
 		private int maximumReloginTries;
 		private int tapiMinDataRateMbps;
 		private int tapiMaxInactivitySeconds;
@@ -38,6 +40,9 @@ namespace Relativity.DataExchange
 		private int tapiTargetDataRateMbps;
 		private int tapiAsperaDatagramSize;
 		private int webBasedFileDownloadChunkSize;
+		private int exportLongTextDataGridThreadCount;
+		private int exportLongTextSqlThreadCount;
+		private int exportLongTextBufferSizeBytes;
 		private string webApiServiceMappedUrl;
 		private string programmaticWebApiServiceUrl;
 
@@ -312,6 +317,94 @@ namespace Relativity.DataExchange
 
 		/// <inheritdoc />
 		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.ExportLongTextBufferSizeBytesKey,
+			AppSettingsConstants.ExportLongTextBufferSizeBytesDefaultValue)]
+		int IAppSettings.ExportLongTextBufferSizeBytes
+		{
+			get
+			{
+				if (this.exportLongTextBufferSizeBytes < AppSettingsConstants.ExportLongTextBufferSizeBytesMinValue
+				    || this.exportLongTextBufferSizeBytes > AppSettingsConstants.ExportLongTextBufferSizeBytesMaxValue)
+				{
+					this.exportLongTextBufferSizeBytes = AppSettingsConstants.ExportLongTextBufferSizeBytesDefaultValue;
+				}
+
+				return this.exportLongTextBufferSizeBytes;
+			}
+
+			set => this.exportLongTextBufferSizeBytes = value;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.ExportLongTextLargeFileProgressRateSecondsKey,
+			AppSettingsConstants.ExportLongTextLargeFileProgressRateSecondsDefaultValue)]
+		int IAppSettings.ExportLongTextLargeFileProgressRateSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.ExportLongTextObjectManagerEnabledKey,
+			AppSettingsConstants.ExportLongTextObjectManagerEnabledDefaultValue)]
+		public bool ExportLongTextObjectManagerEnabled
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.ExportLongTextDataGridThreadCountKey,
+			AppSettingsConstants.ExportLongTextDataGridThreadCountDefaultValue)]
+		public int ExportLongTextDataGridThreadCount
+		{
+			get
+			{
+				// The max thread count is based on published performance tests and internal testing.
+				if (this.exportLongTextDataGridThreadCount < AppSettingsConstants.ExportLongTextMinThreadCountValue
+				    || this.exportLongTextDataGridThreadCount > AppSettingsConstants.ExportLongTextMaxThreadCountValue)
+				{
+					this.exportLongTextDataGridThreadCount =
+						AppSettingsConstants.ExportLongTextDataGridThreadCountDefaultValue;
+				}
+
+				return this.exportLongTextDataGridThreadCount;
+			}
+
+			set => this.exportLongTextDataGridThreadCount = value;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.ExportLongTextSqlThreadCountKey,
+			AppSettingsConstants.ExportLongTextSqlThreadCountDefaultValue)]
+		public int ExportLongTextSqlThreadCount
+		{
+			get
+			{
+				// The max thread count is based on published performance tests and internal testing.
+				if (this.exportLongTextSqlThreadCount < AppSettingsConstants.ExportLongTextMinThreadCountValue
+				    || this.exportLongTextSqlThreadCount > AppSettingsConstants.ExportLongTextMaxThreadCountValue)
+				{
+					this.exportLongTextSqlThreadCount = AppSettingsConstants.ExportLongTextSqlThreadCountDefaultValue;
+				}
+
+				return this.exportLongTextSqlThreadCount;
+			}
+
+			set => this.exportLongTextSqlThreadCount = value;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.ExportThreadCountKey,
 			AppSettingsConstants.ExportThreadCountDefaultValue)]
@@ -373,6 +466,46 @@ namespace Relativity.DataExchange
 
 		/// <inheritdoc />
 		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.HttpErrorNumberOfRetriesKey,
+			AppSettingsConstants.HttpErrorNumberOfRetriesDefaultValue)]
+		int IAppSettings.HttpErrorNumberOfRetries
+		{
+			get
+			{
+				if (this.EnforceMinRetryCount && this.httpErrorNumberOfRetries < AppSettingsConstants.HttpErrorNumberOfRetriesMinValue)
+				{
+					this.httpErrorNumberOfRetries = AppSettingsConstants.HttpErrorNumberOfRetriesDefaultValue;
+				}
+
+				return this.httpErrorNumberOfRetries;
+			}
+
+			set => this.httpErrorNumberOfRetries = value;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.HttpErrorWaitTimeInSecondsKey,
+			AppSettingsConstants.HttpErrorWaitTimeInSecondsDefaultValue)]
+		int IAppSettings.HttpErrorWaitTimeInSeconds
+		{
+			get
+			{
+				if (this.httpErrorWaitTimeInSeconds < AppSettingsConstants.HttpErrorWaitTimeInSecondsMinValue)
+				{
+					this.httpErrorWaitTimeInSeconds = AppSettingsConstants.HttpErrorWaitTimeInSecondsDefaultValue;
+				}
+
+				return this.httpErrorWaitTimeInSeconds;
+			}
+
+			set => this.httpErrorWaitTimeInSeconds = value;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.HttpTimeoutSecondsKey,
 			AppSettingsConstants.HttpTimeoutSecondsDefaultValue)]
@@ -380,7 +513,7 @@ namespace Relativity.DataExchange
 		{
 			get
 			{
-				if (this.httpTimeoutSeconds < 1)
+				if (this.httpTimeoutSeconds < AppSettingsConstants.HttpTimeoutSecondsMinValue)
 				{
 					this.httpTimeoutSeconds = AppSettingsConstants.HttpTimeoutSecondsDefaultValue;
 				}

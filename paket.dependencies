@@ -55,9 +55,9 @@ nuget relativity.telemetry.services.interface ~> 3000.0
 nuget relativity.transfer.client ~> 6.3.7
 
 # The Relativity packages below are required ONLY for test projects!
-nuget kcura.relativity.client = 11.0.79.97-DEV
+nuget kcura.relativity.client = 11.0.137.1
 nuget relativity.logging = 2018.11.8
-nuget relativity.productions.services.interfaces = 11.0.4
+nuget relativity.productions.services.interfaces = 11.0.7
 nuget relativity.services.datacontracts = 11.0.79.97-DEV
 nuget relativity.services.interfaces = 11.0.79.97-DEV
 nuget relativity.services.interfaces.private = 11.0.79.97-DEV
@@ -69,4 +69,9 @@ framework: net462
 source https://relativity.jfrog.io/relativity/api/nuget/v3/nuget-anthology
 	nuget Appium.WebDriver = 3.0.0.2
 	nuget selenium.support = 3.8.0
-	nuget selenium.webdriver = 3.8.0	
+	nuget selenium.webdriver = 3.8.0
+
+group integration-tests
+source https://relativity.jfrog.io/relativity/api/nuget/v3/nuget-anthology
+framework: net462
+	nuget System.ValueTuple = 4.5.0

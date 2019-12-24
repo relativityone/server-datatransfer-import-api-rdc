@@ -3,8 +3,11 @@ moq
 nbuilder
 newtonsoft.json
 nunit
+relativity.kepler.client
 relativity.logging
 relativity.logging.interfaces
+relativity.services.datacontracts
+relativity.services.interfaces
 relativity.telemetry.datacontracts.shared
 relativity.telemetry.services.interface
 rhinomocks

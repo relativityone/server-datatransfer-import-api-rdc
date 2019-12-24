@@ -187,10 +187,6 @@
       <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataTransfer.MessageService">
-      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Relativity.Logging.Interfaces">
       <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>

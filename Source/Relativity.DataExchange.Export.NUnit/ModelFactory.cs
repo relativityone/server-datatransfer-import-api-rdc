@@ -118,7 +118,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			LongTextExportRequest exportRequest = LongTextExportRequest.CreateRequestForLongText(artifact, 1, location);
 			exportRequest.FileName = Guid.NewGuid().ToString();
 			exportRequest.Order = _order++;
-			LongText longText = LongText.CreateFromMissingValue(artifactId, 1, exportRequest, encoding);
+			LongText longText = LongText.CreateFromMissingValue(artifactId, 1, exportRequest, encoding, artifact.LongTextLength);
 			longTextRepository.Add(longText.InList());
 			return longText;
 		}

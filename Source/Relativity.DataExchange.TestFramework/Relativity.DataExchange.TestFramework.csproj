@@ -111,6 +111,7 @@
     <Compile Include="IntegrationTestParameterAttribute.cs" />
     <Compile Include="RelativityTestLogger.cs" />
     <Compile Include="TapiClientModeAvailabilityChecker.cs" />
+    <Compile Include="TestDirectoryManager.cs" />
     <Compile Include="TestDirectory.cs" />
     <Compile Include="RelativityHelpers\InstanceSettingsHelper.cs" />
     <Compile Include="RelativityHelpers\UsersHelper.cs" />

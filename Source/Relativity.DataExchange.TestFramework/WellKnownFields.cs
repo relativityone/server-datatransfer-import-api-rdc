@@ -32,6 +32,11 @@ namespace Relativity.DataExchange.TestFramework
 		public const int ControlNumberId = 1003667;
 
 		/// <summary>
+		/// The extracted text field.
+		/// </summary>
+		public const string ExtractedText = "Extracted Text";
+
+		/// <summary>
 		/// The file location field name.
 		/// </summary>
 		public const string FileLocation = "file location";
@@ -75,11 +80,6 @@ namespace Relativity.DataExchange.TestFramework
 		/// The relativity image count.
 		/// </summary>
 		public const string RelativityImageCount = "relativity image count";
-
-		/// <summary>
-		/// The Extracted Text field.
-		/// </summary>
-		public const string ExtractedText = "Extracted Text";
 
 		/// <summary>
 		/// The confidential designation.
