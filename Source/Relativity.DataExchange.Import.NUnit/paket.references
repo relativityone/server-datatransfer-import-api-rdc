@@ -6,7 +6,6 @@ moq
 nbuilder
 newtonsoft.json
 nunit
-relativity.kepler
 relativity.kepler.client
 relativity.logging
 relativity.logging.interfaces

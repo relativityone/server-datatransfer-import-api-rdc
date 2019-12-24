@@ -45,7 +45,7 @@
             int extractedTextFieldId = _longTextHelper.GetFieldArtifactId(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME);
 			LongTextExportRequest longTextExportRequest = LongTextExportRequest.CreateRequestForFullText(artifact, extractedTextFieldId, tempLocation);
 			//Encoding won't be used in this case. StreamReader will be created with auto detecting file encoding
-			LongText longText = LongText.CreateFromMissingValue(artifact.ArtifactID, extractedTextFieldId, longTextExportRequest, Encoding.Unicode);
+			LongText longText = LongText.CreateFromMissingValue(artifact.ArtifactID, extractedTextFieldId, longTextExportRequest, Encoding.Unicode, artifact.LongTextLength);
 			return longText;
 		}
 

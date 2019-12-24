@@ -1,6 +1,7 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download
 {
 	using System.Collections.Generic;
+	using System.Linq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 
@@ -19,20 +20,12 @@
 
         public List<LongTextExportRequest> RetrieveLongTextExportRequests()
         {
-	        IEnumerable<LongTextExportRequest> longTextExportRequests = _longTextRepository.GetExportRequests();
-            return new List<LongTextExportRequest>(longTextExportRequests);
+			return _longTextRepository.GetExportRequests().ToList();
         }
 
         public List<ExportRequest> RetrieveFileExportRequests()
         {
-            var fileExportRequests = new List<ExportRequest>();
-
-	        IEnumerable<ExportRequest> nativeExportRequests = _nativeRepository.GetExportRequests();
-            fileExportRequests.AddRange(nativeExportRequests);
-
-	        IEnumerable<ExportRequest> imageExportRequests = _imageRepository.GetExportRequests();
-            fileExportRequests.AddRange(imageExportRequests);
-            return fileExportRequests;
+            return _nativeRepository.GetExportRequests().Concat(_imageRepository.GetExportRequests()).ToList();
         }
     }
 }

@@ -8,6 +8,7 @@ namespace Relativity.DataExchange.Export.NUnit
 {
 	using System.Collections.Generic;
 	using System.Threading;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
@@ -32,7 +33,9 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		private Mock<IErrorFileWriter> _errorFileWriter;
 		private Mock<IPhysicalFilesDownloader> _physicalFilesDownloader;
+
 		private Mock<ILongTextDownloader> _longTextDownloader;
+		private Mock<ILongTextFileDownloadSubscriber> _longTextFileDownloadSubscriber;
 		private Mock<IFileDownloadSubscriber> _fileDownloadSubscriber;
 
 		[SetUp]
@@ -45,14 +48,22 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._physicalFilesDownloader = new Mock<IPhysicalFilesDownloader>();
 			this._longTextDownloader = new Mock<ILongTextDownloader>();
+			this._longTextFileDownloadSubscriber = new Mock<ILongTextFileDownloadSubscriber>();
 			this._fileDownloadSubscriber = new Mock<IFileDownloadSubscriber>();
 
 			this._errorFileWriter = new Mock<IErrorFileWriter>();
-			this._instance = new Downloader(this._exportRequestRetriever, this._physicalFilesDownloader.Object, this._longTextDownloader.Object, this._errorFileWriter.Object, this._fileDownloadSubscriber.Object, new NullLogger());
+			this._instance = new Downloader(
+				this._exportRequestRetriever,
+				this._physicalFilesDownloader.Object,
+				this._longTextDownloader.Object,
+				this._longTextFileDownloadSubscriber.Object,
+				this._errorFileWriter.Object,
+				this._fileDownloadSubscriber.Object,
+				new NullLogger());
 		}
 
 		[Test]
-		public void GoldWorkflow()
+		public async Task GoldWorkflow()
 		{
 			Native native = ModelFactory.GetNative(this._nativeRepository);
 			ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID);
@@ -60,12 +71,11 @@ namespace Relativity.DataExchange.Export.NUnit
 			ModelFactory.GetLongText(native.Artifact.ArtifactID, this._longTextRepository);
 
 			// ACT
-			this._instance.DownloadFilesForArtifacts(CancellationToken.None);
+			await this._instance.DownloadFilesForArtifactsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			this._physicalFilesDownloader.Verify(x => x.DownloadFilesAsync(It.Is<List<ExportRequest>>(list => list.Count == 3), CancellationToken.None));
 			this._longTextDownloader.Verify(x => x.DownloadAsync(It.Is<List<LongTextExportRequest>>(list => list.Count == 1), CancellationToken.None), Times.Once);
-			this._longTextDownloader.Verify(x => x.RegisterSubscriber(this._fileDownloadSubscriber.Object));
 		}
 
 		[Test]
@@ -74,7 +84,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._physicalFilesDownloader.Setup(x => x.DownloadFilesAsync(It.IsAny<List<ExportRequest>>(), CancellationToken.None)).Throws<TransferException>();
 
 			// ACT & ASSERT
-			Assert.Throws<TransferException>(() => this._instance.DownloadFilesForArtifacts(CancellationToken.None));
+			Assert.ThrowsAsync<TransferException>(async () => await this._instance.DownloadFilesForArtifactsAsync(CancellationToken.None).ConfigureAwait(false));
 
 			this._errorFileWriter.Verify(x => x.Write(ErrorFileWriter.ExportFileType.Generic, It.IsAny<ObjectExportInfo>(), It.IsAny<string>(), It.IsAny<string>()));
 		}

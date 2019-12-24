@@ -144,6 +144,43 @@ namespace Relativity.DataExchange.TestFramework
 		}
 
 		/// <summary>
+		/// Creates a new random large text file for the specified file <paramref name="length"/>. This method should be used when the <paramref name="length"/> is greater than 1 MB.
+		/// </summary>
+		/// <param name="encoding">
+		/// The encoding used to write the text file.
+		/// </param>
+		/// <param name="length">
+		/// The text length.
+		/// </param>
+		/// <param name="file">
+		/// The full path to the file to create.
+		/// </param>
+		public static void NextLargeTextFile(System.Text.Encoding encoding, long length, string file)
+		{
+			string directory = System.IO.Path.GetDirectoryName(file);
+			if (!string.IsNullOrEmpty(directory))
+			{
+				Directory.CreateDirectory(directory);
+			}
+
+			using (FileStream fileStream = File.OpenWrite(file))
+			{
+				StreamWriter writer = new StreamWriter(fileStream, encoding);
+				const int MaxPhraseLength = 1000;
+				long remaining = length;
+				while (remaining > 0)
+				{
+					string text = NextPhrase(
+						remaining < MaxPhraseLength ? Convert.ToInt32(remaining) : MaxPhraseLength);
+					writer.WriteLine(text);
+					remaining -= text.Length;
+				}
+
+				writer.Flush();
+			}
+		}
+
+		/// <summary>
 		/// Creates a new random text file whose file size is between <paramref name="minValue"/> and <paramref name="maxValue"/>.
 		/// </summary>
 		/// <param name="minValue">
@@ -429,6 +466,20 @@ namespace Relativity.DataExchange.TestFramework
 		public static bool NextBoolean()
 		{
 			return RandomInstance.NextDouble() >= 0.5;
+		}
+
+		/// <summary>
+		/// Gets the next random phrase with the specified <paramref name="length"/>.
+		/// </summary>
+		/// <param name="length">
+		/// The phrase length.
+		/// </param>
+		/// <returns>
+		/// The random string value.
+		/// </returns>
+		public static string NextPhrase(int length)
+		{
+			return RandomGeneratorInstance.Phrase(length).PadRight(length);
 		}
 
 		/// <summary>

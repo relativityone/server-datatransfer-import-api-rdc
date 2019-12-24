@@ -77,10 +77,6 @@
     <Reference Include="FreeImageNET">
       <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.627, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
-    </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
       <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
     </Reference>
@@ -90,6 +86,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
@@ -154,12 +151,22 @@
     </Compile>
     <Compile Include="AppSettingsTests.cs" />
     <Compile Include="ArtifactFieldCollectionTests.cs" />
+    <Compile Include="ByteSize\ArithmeticMethods.cs" />
+    <Compile Include="ByteSize\CreatingMethods.cs" />
+    <Compile Include="ByteSize\ParsingMethods.cs" />
+    <Compile Include="ByteSize\ToStringMethod.cs" />
     <Compile Include="ChoiceInfoTests.cs" />
     <Compile Include="FreeImageServiceTests.cs" />
     <Compile Include="HttpServiceExceptionTests.cs" />
     <Compile Include="ImageConverterServiceTests.cs" />
     <Compile Include="ImageLoadFileDeserializationTests.cs" />
+    <Compile Include="KeplerRetryPolicyFactoryTests.cs" />
+    <Compile Include="KeplerServiceConnectionInfoTests.cs" />
     <Compile Include="LogExtensionsTests.cs" />
+    <Compile Include="ExceptionHelperTests.cs" />
+    <Compile Include="ObjectManagerExceptionTestData.cs" />
+    <Compile Include="ObjectManagerExceptionHelperTests.cs" />
+    <Compile Include="LongTextStreamServiceTests.cs" />
     <Compile Include="Monitoring\Sinks\ImportApiMetricSinkConfigTest.cs" />
     <Compile Include="LoadFileDeserializationTests.cs" />
     <Compile Include="Monitoring\Sinks\MetricServiceTest.cs" />
@@ -474,8 +481,52 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Kepler">
+          <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Logging.Interfaces">
           <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.DataContracts">
+          <HintPath>..\..\packages\Relativity.Services.DataContracts\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.Interfaces">
+          <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -554,6 +605,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

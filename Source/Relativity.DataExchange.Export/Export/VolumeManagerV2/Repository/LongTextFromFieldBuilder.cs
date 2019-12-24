@@ -63,7 +63,7 @@
 			string tempLocation = TempFileBuilder.GetTempFileName(TempFileConstants.LongTextFileNameSuffix);
             LongTextExportRequest exportRequest = LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, tempLocation);
 			Encoding sourceEncoding = _longTextHelper.GetLongTextFieldFileEncoding(field);
-			LongText longText = LongText.CreateFromMissingValue(artifact.ArtifactID, field.FieldArtifactId, exportRequest, sourceEncoding);
+			LongText longText = LongText.CreateFromMissingValue(artifact.ArtifactID, field.FieldArtifactId, exportRequest, sourceEncoding, artifact.LongTextLength);
 			longTexts.Add(longText);
 		}
 

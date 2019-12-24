@@ -114,10 +114,23 @@ namespace Relativity.DataExchange.NUnit.Integration
 			this.OnSetup();
 		}
 
+		[TearDown]
+		public void Teardown()
+		{
+			this.OnTeardown();
+		}
+
 		/// <summary>
 		/// Called when the test setup is executed.
 		/// </summary>
 		protected virtual void OnSetup()
+		{
+		}
+
+		/// <summary>
+		/// Called when the test tear down is executed.
+		/// </summary>
+		protected virtual void OnTeardown()
 		{
 		}
 

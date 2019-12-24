@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents <see cref="CollectionExtensions"/> tests.
+//   Represents <see cref="DateTimeExtensions"/> tests.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 

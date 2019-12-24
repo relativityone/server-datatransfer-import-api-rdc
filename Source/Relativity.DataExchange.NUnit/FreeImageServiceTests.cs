@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents <see cref="FileIDService"/> tests.
+//   Represents <see cref="FreeImageService"/> tests.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 

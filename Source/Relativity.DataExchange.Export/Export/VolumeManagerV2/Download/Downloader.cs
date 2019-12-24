@@ -19,28 +19,31 @@
 		private readonly IPhysicalFilesDownloader _physicalFilesDownloader;
 		private readonly ILongTextDownloader _longTextDownloader;
 		private readonly IErrorFileWriter _errorFileWriter;
-
 		private readonly ILog _logger;
 		private readonly IExportRequestRetriever _exportRequestRetriever;
 
-		public Downloader(IExportRequestRetriever exportRequestRetriever, IPhysicalFilesDownloader physicalFilesDownloader, ILongTextDownloader longTextDownloader,
-			IErrorFileWriter errorFileWriter, IFileDownloadSubscriber fileSubscriber, ILog logger)
+		public Downloader(
+			IExportRequestRetriever exportRequestRetriever,
+			IPhysicalFilesDownloader physicalFilesDownloader,
+			ILongTextDownloader longTextDownloader,
+			ILongTextFileDownloadSubscriber longTextFileDownloadSubscriber,
+			IErrorFileWriter errorFileWriter,
+			IFileDownloadSubscriber fileSubscriber,
+			ILog logger)
 		{
 			_physicalFilesDownloader = physicalFilesDownloader;
 			_longTextDownloader = longTextDownloader;
 			_logger = logger;
 			_exportRequestRetriever = exportRequestRetriever;
 			_errorFileWriter = errorFileWriter;
-
-			this._longTextDownloader.RegisterSubscriber(fileSubscriber);
-
+			longTextFileDownloadSubscriber?.RegisterSubscriber(fileSubscriber);
 			if (AppSettings.Instance.SuppressServerCertificateValidation)
 			{
 				ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => true;
 			}
 		}
 
-		public void DownloadFilesForArtifacts(CancellationToken cancellationToken)
+		public async Task DownloadFilesForArtifactsAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -56,7 +59,7 @@
 			}
 
 			_logger.LogVerbose("Attempting to download files.");
-			DownloadRequests(cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
+			await DownloadRequests(cancellationToken).ConfigureAwait(false);
 		}
 
 		private void RetrieveExportRequests()
@@ -69,17 +72,11 @@
 		{
 			try
 			{
+				_logger.LogVerbose("Waiting for long text and physical file transfers to finish.");
 				Task filesDownloadTask = _physicalFilesDownloader.DownloadFilesAsync(_fileExportRequests, cancellationToken);
-
 				Task longTextDownloadTask = _longTextDownloader.DownloadAsync(_longTextExportRequests, cancellationToken);
-
-				_logger.LogVerbose("Waiting for long text transfer to finish.");
-				await longTextDownloadTask.ConfigureAwait(false);
-				_logger.LogVerbose("Long text transfer finished.");
-
-				_logger.LogVerbose("Waiting for files transfer to finish.");
-				await filesDownloadTask.ConfigureAwait(false);
-				_logger.LogVerbose("Files transfer finished.");
+				await Task.WhenAll(filesDownloadTask, longTextDownloadTask).ConfigureAwait(false);
+				_logger.LogVerbose("Long text and physical file transfers have finished.");
 			}
 			catch (OperationCanceledException ex)
 			{

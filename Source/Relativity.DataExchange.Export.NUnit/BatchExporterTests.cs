@@ -7,6 +7,7 @@
 namespace Relativity.DataExchange.Export.NUnit
 {
 	using System.Threading;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
@@ -45,15 +46,15 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void GoldWorkflow()
+		public async Task GoldWorkflow()
 		{
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
 
 			// ACT
-			this._instance.Export(artifacts, CancellationToken.None);
+			await this._instance.ExportAsync(artifacts, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			this._downloader.Verify(x => x.DownloadFilesForArtifacts(CancellationToken.None), Times.Once);
+			this._downloader.Verify(x => x.DownloadFilesForArtifactsAsync(CancellationToken.None), Times.Once);
 			this._imagesRollupManager.Verify(x => x.RollupImagesForArtifacts(artifacts, CancellationToken.None), Times.Once);
 			this._imageLoadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
 			this._loadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);

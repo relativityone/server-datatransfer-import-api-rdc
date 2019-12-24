@@ -1,4 +1,5 @@
 Imports Monitoring
+Imports Relativity.DataExchange
 
 Namespace kCura.WinEDDS
 	Public Class Statistics
@@ -76,6 +77,12 @@ Namespace kCura.WinEDDS
 		Public Property BatchSize As Int32 = 0
 
 		Public Property ImportObjectType As TelemetryConstants.ImportObjectType = TelemetryConstants.ImportObjectType.NotApplicable
+
+		Public Sub ProcessRunResults(ByVal results As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
+			_documentsCreated += results.ArtifactsCreated
+			_documentsUpdated += results.ArtifactsUpdated
+			_filesProcessed += results.FilesProcessed
+		End Sub
 
 		''' <summary>
 		'''  Gets or sets transferred metadata bytes.
@@ -220,12 +227,6 @@ Namespace kCura.WinEDDS
 				_docCount = value
 			End Set
 		End Property
-		
-		Public Sub ProcessRunResults(ByVal results As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
-			_documentsCreated += results.ArtifactsCreated
-			_documentsUpdated += results.ArtifactsUpdated
-			_filesProcessed += results.FilesProcessed
-		End Sub
 
 		''' <summary>
 		''' General function calculating throughput in units per second.
@@ -238,34 +239,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function ToFileSizeSpecification(ByVal value As Double) As String
-			Dim prefix As String = Nothing
-			Dim k As Int32
-			If value <= 0 Then
-				k = 0
-			Else
-				k = CType(System.Math.Floor(System.Math.Log(value, 1000)), Int32)
-			End If
-			Select Case k
-				Case 0
-					prefix = ""
-				Case 1
-					prefix = "K"
-				Case 2
-					prefix = "M"
-				Case 3
-					prefix = "G"
-				Case 4
-					prefix = "T"
-				Case 5
-					prefix = "P"
-				Case 6
-					prefix = "E"
-				Case 7
-					prefix = "B"
-				Case 8
-					prefix = "Y"
-			End Select
-			Return (value / Math.Pow(1000, k)).ToString("N2") & " " & prefix & "B"
+			Return ByteSize.FromBytes(value).ToString("0.##")
 		End Function
 
 		''' <summary>

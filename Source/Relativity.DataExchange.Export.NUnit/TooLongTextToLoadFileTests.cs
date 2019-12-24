@@ -70,7 +70,8 @@ namespace Relativity.DataExchange.Export.NUnit
 				field.FieldArtifactId,
 				LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, expectedPath),
 				Encoding.Unicode,
-				expectedEncoding);
+				expectedEncoding,
+				artifact.LongTextLength);
 			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry lineEntry = new DeferredEntry();
@@ -112,7 +113,8 @@ namespace Relativity.DataExchange.Export.NUnit
 					trueTextPrecedenceField.FieldArtifactId,
 					expectedPath),
 				Encoding.Unicode,
-				expectedEncoding);
+				expectedEncoding,
+				artifact.LongTextLength);
 			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry lineEntry = new DeferredEntry();

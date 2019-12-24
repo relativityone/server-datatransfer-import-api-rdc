@@ -7,7 +7,5 @@
 	public interface ILongTextDownloader
 	{
 		Task DownloadAsync(List<LongTextExportRequest> longTextExportRequests, CancellationToken cancellationToken);
-
-		void RegisterSubscriber(IFileDownloadSubscriber fileDownloadSubscriber);
 	}
 }

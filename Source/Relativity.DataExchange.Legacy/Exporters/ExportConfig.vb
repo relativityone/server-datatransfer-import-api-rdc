@@ -48,6 +48,36 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public ReadOnly Property ExportLongTextDataGridThreadCount As Integer Implements IExportConfig.ExportLongTextDataGridThreadCount
+			Get
+				Return AppSettings.Instance.ExportLongTextDataGridThreadCount
+			End Get
+		End Property
+
+		Public ReadOnly Property ExportLongTextObjectManagerEnabled As Boolean Implements IExportConfig.ExportLongTextObjectManagerEnabled
+			Get
+				Return AppSettings.Instance.ExportLongTextObjectManagerEnabled
+			End Get
+		End Property
+
+		Public ReadOnly Property ExportLongTextSqlThreadCount As Integer Implements IExportConfig.ExportLongTextSqlThreadCount
+			Get
+				Return AppSettings.Instance.ExportLongTextSqlThreadCount
+			End Get
+		End Property
+
+		Public ReadOnly Property HttpErrorNumberOfRetries As Integer Implements IExportConfig.HttpErrorNumberOfRetries
+			Get
+				Return AppSettings.Instance.HttpErrorNumberOfRetries
+			End Get
+		End Property
+
+		Public ReadOnly Property HttpErrorWaitTimeInSeconds As Integer Implements IExportConfig.HttpErrorWaitTimeInSeconds
+			Get
+				Return AppSettings.Instance.HttpErrorWaitTimeInSeconds
+			End Get
+		End Property
+
 		Public ReadOnly Property TapiForceHttpClient As Boolean Implements IExportConfig.TapiForceHttpClient
 			Get
 				Return AppSettings.Instance.TapiForceHttpClient
