@@ -245,6 +245,58 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.ExportBatchSize, Is.EqualTo(expectedValue));
 		}
 
+		[TestCase(-1, DataExchange.AppSettingsConstants.ExportLongTextBufferSizeBytesDefaultValue)]
+		[TestCase(DataExchange.AppSettingsConstants.ExportLongTextBufferSizeBytesMinValue - 1, DataExchange.AppSettingsConstants.ExportLongTextBufferSizeBytesDefaultValue)]
+		[TestCase(DataExchange.AppSettingsConstants.ExportLongTextBufferSizeBytesMaxValue + 1, DataExchange.AppSettingsConstants.ExportLongTextBufferSizeBytesDefaultValue)]
+		[TestCase(DataExchange.AppSettingsConstants.ExportLongTextBufferSizeBytesMinValue, DataExchange.AppSettingsConstants.ExportLongTextBufferSizeBytesMinValue)]
+		[TestCase(DataExchange.AppSettingsConstants.ExportLongTextBufferSizeBytesMaxValue, DataExchange.AppSettingsConstants.ExportLongTextBufferSizeBytesMaxValue)]
+		[TestCase(16484, 16484)]
+		[TestCase(65536, 65536)]
+		public void ShouldGetAndSetTheExportLongTextBufferSizeBytesSetting(int input, int expectedValue)
+		{
+			Assert.That(
+				this.settings.ExportLongTextBufferSizeBytes,
+				Is.EqualTo(DataExchange.AppSettingsConstants.ExportLongTextBufferSizeBytesDefaultValue));
+			this.settings.ExportLongTextBufferSizeBytes = input;
+			Assert.That(this.settings.ExportLongTextBufferSizeBytes, Is.EqualTo(expectedValue));
+		}
+
+		[TestCase(-1, DataExchange.AppSettingsConstants.ExportLongTextDataGridThreadCountDefaultValue)]
+		[TestCase(DataExchange.AppSettingsConstants.ExportLongTextMinThreadCountValue - 1, DataExchange.AppSettingsConstants.ExportLongTextDataGridThreadCountDefaultValue)]
+		[TestCase(DataExchange.AppSettingsConstants.ExportLongTextMaxThreadCountValue + 1, DataExchange.AppSettingsConstants.ExportLongTextDataGridThreadCountDefaultValue)]
+		[TestCase(DataExchange.AppSettingsConstants.ExportLongTextMinThreadCountValue, DataExchange.AppSettingsConstants.ExportLongTextMinThreadCountValue)]
+		[TestCase(DataExchange.AppSettingsConstants.ExportLongTextMaxThreadCountValue, DataExchange.AppSettingsConstants.ExportLongTextMaxThreadCountValue)]
+		[TestCase(2, 2)]
+		[TestCase(4, 4)]
+		[TestCase(8, 8)]
+		[TestCase(16, 16)]
+		public void ShouldGetAndSetTheExportLongTextDataGridThreadCountSetting(int input, int expectedValue)
+		{
+			Assert.That(
+				this.settings.ExportLongTextDataGridThreadCount,
+				Is.EqualTo(DataExchange.AppSettingsConstants.ExportLongTextDataGridThreadCountDefaultValue));
+			this.settings.ExportLongTextDataGridThreadCount = input;
+			Assert.That(this.settings.ExportLongTextDataGridThreadCount, Is.EqualTo(expectedValue));
+		}
+
+		[TestCase(-1, AppSettingsConstants.ExportLongTextSqlThreadCountDefaultValue)]
+		[TestCase(DataExchange.AppSettingsConstants.ExportLongTextMinThreadCountValue, DataExchange.AppSettingsConstants.ExportLongTextMinThreadCountValue)]
+		[TestCase(DataExchange.AppSettingsConstants.ExportLongTextMaxThreadCountValue, DataExchange.AppSettingsConstants.ExportLongTextMaxThreadCountValue)]
+		[TestCase(DataExchange.AppSettingsConstants.ExportLongTextMinThreadCountValue - 1, DataExchange.AppSettingsConstants.ExportLongTextSqlThreadCountDefaultValue)]
+		[TestCase(DataExchange.AppSettingsConstants.ExportLongTextMaxThreadCountValue + 1, DataExchange.AppSettingsConstants.ExportLongTextSqlThreadCountDefaultValue)]
+		[TestCase(2, 2)]
+		[TestCase(4, 4)]
+		[TestCase(8, 8)]
+		[TestCase(16, 16)]
+		public void ShouldGetAndSetTheExportLongTextSqlThreadCountSetting(int input, int expectedValue)
+		{
+			Assert.That(
+				this.settings.ExportLongTextSqlThreadCount,
+				Is.EqualTo(DataExchange.AppSettingsConstants.ExportLongTextSqlThreadCountDefaultValue));
+			this.settings.ExportLongTextSqlThreadCount = input;
+			Assert.That(this.settings.ExportLongTextSqlThreadCount, Is.EqualTo(expectedValue));
+		}
+
 		[TestCase(true, 0, AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue)]
 		[TestCase(true, -1, AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue)]
 		[TestCase(true, int.MinValue, AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue)]
@@ -361,6 +413,40 @@ namespace Relativity.DataExchange.NUnit
 				Is.EqualTo(DataExchange.AppSettingsConstants.HttpTimeoutSecondsDefaultValue));
 			this.settings.HttpTimeoutSeconds = input;
 			Assert.That(this.settings.HttpTimeoutSeconds, Is.EqualTo(expectedValue));
+		}
+
+		[TestCase(-1, AppSettingsConstants.HttpErrorNumberOfRetriesDefaultValue)]
+		[TestCase(AppSettingsConstants.HttpErrorNumberOfRetriesMinValue - 1, AppSettingsConstants.HttpErrorNumberOfRetriesDefaultValue)]
+		[TestCase(AppSettingsConstants.HttpErrorNumberOfRetriesMinValue, AppSettingsConstants.HttpErrorNumberOfRetriesMinValue)]
+		[TestCase(1, 1)]
+		[TestCase(8, 8)]
+		[TestCase(16, 16)]
+		[TestCase(int.MinValue, AppSettingsConstants.HttpErrorNumberOfRetriesDefaultValue)]
+		[TestCase(int.MaxValue, int.MaxValue)]
+		public void ShouldGetAndSetTheHttpErrorNumberOfRetriesSetting(int input, int expectedValue)
+		{
+			Assert.That(
+				this.settings.HttpErrorNumberOfRetries,
+				Is.EqualTo(DataExchange.AppSettingsConstants.HttpErrorNumberOfRetriesDefaultValue));
+			this.settings.HttpErrorNumberOfRetries = input;
+			Assert.That(this.settings.HttpErrorNumberOfRetries, Is.EqualTo(expectedValue));
+		}
+
+		[TestCase(-1, AppSettingsConstants.HttpErrorWaitTimeInSecondsDefaultValue)]
+		[TestCase(AppSettingsConstants.HttpErrorWaitTimeInSecondsMinValue - 1, AppSettingsConstants.HttpErrorWaitTimeInSecondsDefaultValue)]
+		[TestCase(AppSettingsConstants.HttpErrorWaitTimeInSecondsMinValue, AppSettingsConstants.HttpErrorWaitTimeInSecondsMinValue)]
+		[TestCase(1, 1)]
+		[TestCase(8, 8)]
+		[TestCase(16, 16)]
+		[TestCase(int.MinValue, AppSettingsConstants.HttpErrorWaitTimeInSecondsDefaultValue)]
+		[TestCase(int.MaxValue, int.MaxValue)]
+		public void ShouldGetAndSetTheHttpErrorWaitTimeInSecondsSetting(int input, int expectedValue)
+		{
+			Assert.That(
+				this.settings.HttpErrorWaitTimeInSeconds,
+				Is.EqualTo(DataExchange.AppSettingsConstants.HttpErrorWaitTimeInSecondsDefaultValue));
+			this.settings.HttpErrorWaitTimeInSeconds = input;
+			Assert.That(this.settings.HttpErrorWaitTimeInSeconds, Is.EqualTo(expectedValue));
 		}
 
 		[Test]

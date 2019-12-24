@@ -10,10 +10,10 @@
 namespace Relativity.DataExchange.NUnit
 {
 	using System;
-	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Threading;
+
+	using Castle.Core.Internal;
 
 	using global::NUnit.Framework;
 
@@ -71,6 +71,20 @@ namespace Relativity.DataExchange.NUnit
 			VerifyResults(exception, false, false, false, false, false);
 		}
 
+		[Test]
+		public static void ShouldNotFailOnDeepInnerExceptionDepths()
+		{
+			// ARRANGE
+			Stack<ServiceException> stack = new Stack<ServiceException>();
+			stack.Push(new ServiceException("Failed", new InvalidOperationException()));
+			Enumerable.Range(0, ObjectManagerExceptionHelper.MaxInnerExceptionDepth + 1).ForEach(x => stack.Push(new ServiceException("Failed", stack.Peek())));
+			ServiceException top = stack.Peek();
+			ServiceException exception = ObjectManagerExceptionTestData.SerializeErrorDetails(top);
+
+			// ACT/ASSERT
+			VerifyResults(exception, false, false, false, false, false);
+		}
+
 		private static void VerifyResults(
 			Exception exception,
 			bool nonFatalError,
@@ -80,10 +94,10 @@ namespace Relativity.DataExchange.NUnit
 			bool serverSideFilePermissions)
 		{
 			Assert.That(ObjectManagerExceptionHelper.IsInvalidParametersError(exception), Is.EqualTo(invalidParameters));
-			Assert.That(ObjectManagerExceptionHelper.IsNonFatalError(exception), Is.EqualTo(nonFatalError));
 			Assert.That(ObjectManagerExceptionHelper.IsServerSideDirectoryNotFoundError(exception), Is.EqualTo(serverSideDirectoryNotFound));
 			Assert.That(ObjectManagerExceptionHelper.IsServerSideFileNotFoundError(exception), Is.EqualTo(serverSideFileNotFound));
 			Assert.That(ObjectManagerExceptionHelper.IsServerSideFilePermissionsError(exception), Is.EqualTo(serverSideFilePermissions));
+			Assert.That(ObjectManagerExceptionHelper.IsNonFatalError(exception), Is.EqualTo(nonFatalError));
 		}
 	}
 }

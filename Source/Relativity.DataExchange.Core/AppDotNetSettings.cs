@@ -30,6 +30,8 @@ namespace Relativity.DataExchange
 		private int ioErrorWaitTimeInSeconds;
 		private int httpTimeoutSeconds;
 		private int httpExtractedTextTimeoutSeconds;
+		private int httpErrorNumberOfRetries;
+		private int httpErrorWaitTimeInSeconds;
 		private int maximumReloginTries;
 		private int tapiMinDataRateMbps;
 		private int tapiMaxInactivitySeconds;
@@ -322,7 +324,8 @@ namespace Relativity.DataExchange
 		{
 			get
 			{
-				if (this.exportLongTextBufferSizeBytes < 128 || this.exportLongTextBufferSizeBytes > 1048576)
+				if (this.exportLongTextBufferSizeBytes < AppSettingsConstants.ExportLongTextBufferSizeBytesMinValue
+				    || this.exportLongTextBufferSizeBytes > AppSettingsConstants.ExportLongTextBufferSizeBytesMaxValue)
 				{
 					this.exportLongTextBufferSizeBytes = AppSettingsConstants.ExportLongTextBufferSizeBytesDefaultValue;
 				}
@@ -364,9 +367,12 @@ namespace Relativity.DataExchange
 		{
 			get
 			{
-				if (this.exportLongTextDataGridThreadCount < 1)
+				// The max thread count is based on published performance tests and internal testing.
+				if (this.exportLongTextDataGridThreadCount < AppSettingsConstants.ExportLongTextMinThreadCountValue
+				    || this.exportLongTextDataGridThreadCount > AppSettingsConstants.ExportLongTextMaxThreadCountValue)
 				{
-					this.exportLongTextDataGridThreadCount = AppSettingsConstants.ExportLongTextDataGridThreadCountDefaultValue;
+					this.exportLongTextDataGridThreadCount =
+						AppSettingsConstants.ExportLongTextDataGridThreadCountDefaultValue;
 				}
 
 				return this.exportLongTextDataGridThreadCount;
@@ -384,7 +390,9 @@ namespace Relativity.DataExchange
 		{
 			get
 			{
-				if (this.exportLongTextSqlThreadCount < 1)
+				// The max thread count is based on published performance tests and internal testing.
+				if (this.exportLongTextSqlThreadCount < AppSettingsConstants.ExportLongTextMinThreadCountValue
+				    || this.exportLongTextSqlThreadCount > AppSettingsConstants.ExportLongTextMaxThreadCountValue)
 				{
 					this.exportLongTextSqlThreadCount = AppSettingsConstants.ExportLongTextSqlThreadCountDefaultValue;
 				}
@@ -463,8 +471,17 @@ namespace Relativity.DataExchange
 			AppSettingsConstants.HttpErrorNumberOfRetriesDefaultValue)]
 		int IAppSettings.HttpErrorNumberOfRetries
 		{
-			get;
-			set;
+			get
+			{
+				if (this.EnforceMinRetryCount && this.httpErrorNumberOfRetries < AppSettingsConstants.HttpErrorNumberOfRetriesMinValue)
+				{
+					this.httpErrorNumberOfRetries = AppSettingsConstants.HttpErrorNumberOfRetriesDefaultValue;
+				}
+
+				return this.httpErrorNumberOfRetries;
+			}
+
+			set => this.httpErrorNumberOfRetries = value;
 		}
 
 		/// <inheritdoc />
@@ -474,8 +491,17 @@ namespace Relativity.DataExchange
 			AppSettingsConstants.HttpErrorWaitTimeInSecondsDefaultValue)]
 		int IAppSettings.HttpErrorWaitTimeInSeconds
 		{
-			get;
-			set;
+			get
+			{
+				if (this.httpErrorWaitTimeInSeconds < AppSettingsConstants.HttpErrorWaitTimeInSecondsMinValue)
+				{
+					this.httpErrorWaitTimeInSeconds = AppSettingsConstants.HttpErrorWaitTimeInSecondsDefaultValue;
+				}
+
+				return this.httpErrorWaitTimeInSeconds;
+			}
+
+			set => this.httpErrorWaitTimeInSeconds = value;
 		}
 
 		/// <inheritdoc />
@@ -487,7 +513,7 @@ namespace Relativity.DataExchange
 		{
 			get
 			{
-				if (this.httpTimeoutSeconds < 1)
+				if (this.httpTimeoutSeconds < AppSettingsConstants.HttpTimeoutSecondsMinValue)
 				{
 					this.httpTimeoutSeconds = AppSettingsConstants.HttpTimeoutSecondsDefaultValue;
 				}

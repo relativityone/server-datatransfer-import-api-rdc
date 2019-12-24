@@ -11,20 +11,37 @@ namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using Relativity.Services.Exceptions;
+	using System.Dynamic;
+	using System.Linq;
+	using System.Threading;
+
+	using Newtonsoft.Json;
+	using Newtonsoft.Json.Converters;
+	using Newtonsoft.Json.Serialization;
+
+	using Relativity.Services.Exceptions;
 
 	/// <summary>
 	/// Represents Object Manager specific error data that can be used by unit tests.
 	/// </summary>
 	internal static class ObjectManagerExceptionTestData
 	{
-		private const string SampleFilePath1 =
+		private const string SampleFilePath =
 			@"\\files\T005\Files\EDDS1028050\relativity_vm-t005-files1_edds1028050_10\Fields.ExtractedText\1bd\d93\32abc8ab-f438-489f-b191-102dc85576e4.txt";
 
-		private const string SampleFilePath2 =
-			@"/files/T005/Files/EDDS1028050/relativity_vm-t005-files1_edds1028050_10/Fields.ExtractedText/1bd/d93/32abc8ab-f438-489f-b191-102dc85576e4.txt";
+		private static readonly JsonSerializerSettings DefaultJsonSerializerSettings = new JsonSerializerSettings
+			                                                                              {
+				                                                                              Formatting = Formatting.Indented,
+				                                                                              ContractResolver =
+					                                                                              new DefaultContractResolver(),
+				                                                                              Converters =
+					                                                                              new List<JsonConverter>(
+						                                                                              new[]
+							                                                                              {
+								                                                                              new
+									                                                                              ExpandoObjectConverter(),
+							                                                                              }),
+			                                                                              };
 
 		public static IEnumerable<Exception> AllExpectedObjectManagerErrors
 		{
@@ -44,18 +61,19 @@ namespace Relativity.DataExchange.NUnit
 			get
 			{
 				// Field not found
-				yield return new ValidationException();
-				yield return new ValidationException("Error");
-				yield return new ValidationException("Error1", new ServiceException("Error2"));
+				yield return SerializeErrorDetails(new ValidationException());
+				yield return SerializeErrorDetails(new ValidationException("Error"));
+				yield return SerializeErrorDetails(new ValidationException("Error1", new ServiceException("Error2")));
 
 				// General
-				yield return new InvalidInputException();
-				yield return new InvalidInputException("Invalid Parameter");
-				yield return new InvalidInputException("Invalid Parameter1", new InvalidInputException("Invalid Parameter2"));
+				yield return SerializeErrorDetails(new InvalidInputException());
+				yield return SerializeErrorDetails(new InvalidInputException("Invalid Parameter"));
+				yield return SerializeErrorDetails(
+					new InvalidInputException("Invalid Parameter1", new InvalidInputException("Invalid Parameter2")));
 
 				// Object not found
-				yield return new ServiceException("Read Failed");
-				yield return new ServiceException("read failed", new ServiceException("Read Failed2"));
+				yield return SerializeErrorDetails(new ServiceException("Read Failed"));
+				yield return SerializeErrorDetails(new ServiceException("read failed", new ServiceException("Read Failed2")));
 			}
 		}
 
@@ -67,20 +85,19 @@ namespace Relativity.DataExchange.NUnit
 		{
 			get
 			{
-				foreach (string filePath in new[] { SampleFilePath1, SampleFilePath2 })
-				{
-					string errorMessage = $@"Could not find a part of the path '{filePath}'";
-					yield return new ServiceException(errorMessage);
-					yield return new ServiceException(errorMessage.ToLowerInvariant());
-					yield return new ServiceException(errorMessage.ToUpperInvariant());
-					yield return new ServiceException(errorMessage + ".");
-					string messageExtended1 =
-						$@"DataGrid action have failed after maximum number of retries. Total number of tries: 3 -> Error reading file -> {errorMessage}";
-					yield return new ServiceException(messageExtended1);
-					yield return new ServiceException(messageExtended1.ToLowerInvariant());
-					yield return new ServiceException(messageExtended1.ToUpperInvariant());
-					yield return new ServiceException(messageExtended1 + ".");
-				}
+				string errorMessage = $@"Could not find a part of the path '{SampleFilePath}'";
+				yield return SerializeErrorDetails(
+					new ServiceException("Failed", new System.IO.DirectoryNotFoundException(errorMessage)));
+				yield return SerializeErrorDetails(
+					new ServiceException(
+						"Failed",
+						new ServiceException("Failed", new System.IO.DirectoryNotFoundException(errorMessage))));
+				yield return SerializeErrorDetails(
+					new ServiceException(
+						"Failed",
+						new ServiceException(
+							"Failed",
+							new ServiceException("Failed", new System.IO.DirectoryNotFoundException(errorMessage)))));
 			}
 		}
 
@@ -92,19 +109,19 @@ namespace Relativity.DataExchange.NUnit
 		{
 			get
 			{
-				foreach (string filePath in new[] { SampleFilePath1, SampleFilePath2 })
-				{
-					string errorMessage = $@"Could not find file '{filePath}'";
-					yield return new ServiceException(errorMessage);
-					yield return new ServiceException(errorMessage.ToLowerInvariant());
-					yield return new ServiceException(errorMessage.ToUpperInvariant());
-					yield return new ServiceException(errorMessage + ".");
-					string messageExtended = $@"DataGrid action have failed after maximum number of retries. Total number of tries: 3 -> Error reading file -> {errorMessage}";
-					yield return new ServiceException(messageExtended);
-					yield return new ServiceException(messageExtended.ToLowerInvariant());
-					yield return new ServiceException(messageExtended.ToUpperInvariant());
-					yield return new ServiceException(messageExtended + ".");
-				}
+				string errorMessage = $@"Could not find file '{SampleFilePath}'";
+				yield return SerializeErrorDetails(
+					new ServiceException("Failed", new System.IO.FileNotFoundException(errorMessage)));
+				yield return SerializeErrorDetails(
+					new ServiceException(
+						"Failed",
+						new ServiceException("Failed", new System.IO.FileNotFoundException(errorMessage))));
+				yield return SerializeErrorDetails(
+					new ServiceException(
+						"Failed",
+						new ServiceException(
+							"Failed",
+							new ServiceException("Failed", new System.IO.FileNotFoundException(errorMessage)))));
 			}
 		}
 
@@ -116,15 +133,19 @@ namespace Relativity.DataExchange.NUnit
 		{
 			get
 			{
-				foreach (string filePath in new[] { SampleFilePath1, SampleFilePath2 })
-				{
-					string errorMessage = $@"Access to the path '{filePath}' is denied";
-					yield return new ServiceException(errorMessage);
-					yield return new ServiceException(errorMessage + ".");
-					string messageExtended = $@"Error during readchunk -> {errorMessage}";
-					yield return new ServiceException(messageExtended);
-					yield return new ServiceException(messageExtended + ".");
-				}
+				string errorMessage = $@"Access to the path '{SampleFilePath}' is denied";
+				yield return SerializeErrorDetails(
+					new ServiceException("Failed", new System.UnauthorizedAccessException(errorMessage)));
+				yield return SerializeErrorDetails(
+					new ServiceException(
+						"Failed",
+						new ServiceException("Failed", new System.UnauthorizedAccessException(errorMessage))));
+				yield return SerializeErrorDetails(
+					new ServiceException(
+						"Failed",
+						new ServiceException(
+							"Failed",
+							new ServiceException("Failed", new System.UnauthorizedAccessException(errorMessage)))));
 			}
 		}
 
@@ -153,6 +174,26 @@ namespace Relativity.DataExchange.NUnit
 						});
 				return exceptions;
 			}
+		}
+
+		public static ServiceException SerializeErrorDetails(ServiceException exception)
+		{
+			// Note: this attempts to simulate how ServiceException objects are serialized by Kepler.
+			ServiceException currentServiceException = exception;
+			while (currentServiceException != null)
+			{
+				if (currentServiceException.ErrorDetails is Exception)
+				{
+					// Note: this is incredibly slow!
+					string json = JsonConvert.SerializeObject(currentServiceException.ErrorDetails, DefaultJsonSerializerSettings);
+					currentServiceException.ErrorDetails =
+						JsonConvert.DeserializeObject<ExpandoObject>(json, DefaultJsonSerializerSettings);
+				}
+
+				currentServiceException = currentServiceException.InnerException as ServiceException;
+			}
+
+			return exception;
 		}
 	}
 }
