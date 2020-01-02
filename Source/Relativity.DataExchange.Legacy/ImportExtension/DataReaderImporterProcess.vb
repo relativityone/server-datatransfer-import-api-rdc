@@ -7,11 +7,8 @@ Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImporterProcess
 		Inherits kCura.WinEDDS.ImportLoadFileProcess
 
-		Private _sourceData As System.Data.IDataReader
-
 		Public Sub New(ByVal sourceData As System.Data.IDataReader, ByVal metricService As IMetricService)
 			MyBase.New(metricService)
-			_sourceData = sourceData
 
 			' Use the default value for the delimiter because as a public class,
 			' users of this class may not know what value to set for this
@@ -31,7 +28,7 @@ Namespace kCura.WinEDDS.ImportExtension
 					Dim iIndex As Integer = dr.GetOrdinal(retColumnName)
 					retColumnName = String.Concat(retColumnName, "(", iIndex + 1, ")")
 				Catch ex As IndexOutOfRangeException
-					Throw New IndexOutOfRangeException(String.Format("ERROR: {0} must be a field in the source data", columnName), ex)
+					Throw New IndexOutOfRangeException($"ERROR: {columnName} must be a field in the source data", ex)
 				End Try
 			End If
 			Return retColumnName

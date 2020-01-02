@@ -26,10 +26,6 @@ Namespace kCura.WinEDDS
 		Private _imageFileWriter As System.IO.StreamWriter
 		Private _nativeFileWriter As System.IO.StreamWriter
 		Private _errorWriter As System.IO.StreamWriter
-
-		Private _nativeFileWriterPosition As Int64 = 0
-		Private _imageFileWriterPosition As Int64 = 0
-
 		Private _currentVolumeNumber As Int32
 		Private _currentSubdirectoryNumber As Int32
 
@@ -392,7 +388,7 @@ Namespace kCura.WinEDDS
 			While tries < maxTries And Not Me.Halt
 				tries += 1
 				Try
-					Return Me.ExportArtifact(artifact, linesToWriteDat, linesToWriteOpt, tries > 1, threadNumber, volumeNumber, subDirectoryNumber)
+					Return Me.RetryExportArtifact(artifact, linesToWriteDat, linesToWriteOpt, threadNumber, volumeNumber, subDirectoryNumber)
 				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
 					If tries = maxTries Then Throw
 					_parent.WriteWarning(String.Format("Error writing data file(s) for document {0}", artifact.IdentifierValue))
@@ -406,26 +402,6 @@ Namespace kCura.WinEDDS
 				End Try
 			End While
 			Return Nothing
-		End Function
-
-		Private Function ReInitializeStream(ByVal brokenStream As System.IO.StreamWriter, ByVal position As Int64, ByVal filepath As String, ByVal encoding As System.Text.Encoding) As System.IO.StreamWriter
-			If brokenStream Is Nothing Then Return Nothing
-			Try
-				brokenStream.Close()
-			Catch ex As Exception
-			End Try
-			Try
-				brokenStream = Nothing
-			Catch ex As Exception
-			End Try
-			Try
-				Dim newFileStream As FileStream = _fileHelper.ReopenAndTruncate(filepath, position)
-				Dim retval As New System.IO.StreamWriter(newFileStream, encoding)
-				retval.BaseStream.Position = position
-				Return retval
-			Catch ex As System.IO.IOException
-				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Generic, ex)
-			End Try
 		End Function
 
 #Region " Rollup Images "
@@ -466,7 +442,7 @@ Namespace kCura.WinEDDS
 				If currentTempLocation.IndexOf("."c) <> -1 Then currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
 				currentTempLocation &= ext
 				DirectCast(artifact.Images(0), Exporters.ImageExportInfo).FileName = currentTempLocation
-				Dim location As String = DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation
+
 				If _fileHelper.Exists(DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation) Then
 					If Me.Settings.Overwrite Then
 						_fileHelper.Delete(DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
@@ -516,8 +492,8 @@ Namespace kCura.WinEDDS
 			Return (From f In Me.Settings.SelectedTextFields Where f IsNot Nothing).Any
 		End Function
 
-		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWrite As ConcurrentDictionary(Of Int32, ILoadFileEntry),
-		                                ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)), ByVal isRetryAttempt As Boolean, ByVal threadNumber As Integer,
+		Private Function RetryExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWrite As ConcurrentDictionary(Of Int32, ILoadFileEntry),
+		                                ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)), ByVal threadNumber As Integer,
 		                                ByVal volumeNumber As Integer, ByVal subDirectoryNumber As Integer) As Int64
 			Dim totalFileSize As Int64 = 0
 			Dim extractedTextFileSizeForVolume As Int64 = 0
@@ -1259,66 +1235,44 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Sub WriteDatFile(ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry), ByVal artifacts As Exporters.ObjectExportInfo())
-			Dim tries As Int32 = 0
-			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim lastArtifactId As Int32 = -1
 			Dim loadFileBytes As Int64 = 0
-			While tries < maxTries And Not Me.Halt
-				tries += 1
+			Try
+				'Write column headers
+				Dim loadFileEntry As ILoadFileEntry = Nothing
+				linesToWriteDat.TryGetValue(-1, loadFileEntry)
+				If Not loadFileEntry Is Nothing Then loadFileEntry.Write(_nativeFileWriter)
 
-				'Rollback stream position if retrying write
-				If tries > 1 Then
-					Me.ReInitializeStream(_nativeFileWriter, _nativeFileWriterPosition, Me.LoadFileDestinationPath, _encoding)
+				'Write artifact entries
+				For Each artifact As Exporters.ObjectExportInfo in artifacts
+					lastArtifactId = artifact.ArtifactID
+					If linesToWriteDat.TryGetValue(artifact.ArtifactID, loadFileEntry)
+						If Not loadFileEntry Is Nothing Then loadFileEntry.Write(_nativeFileWriter)
+					End If
+				Next
+
+				'Flush writer
+				Try
+					If Not _nativeFileWriter Is Nothing Then _nativeFileWriter.Flush()
+				Catch ex As Exception
+					Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Load, ex)
+				End Try
+
+				'Save file writer stream position in case we need to rollback on retry attempts
+				If Not _nativeFileWriter Is Nothing Then
+					loadFileBytes += Global.Relativity.DataExchange.Io.FileSystem.Instance.File.GetFileSize(DirectCast(_nativeFileWriter.BaseStream, System.IO.FileStream).Name)
 				End If
 
-				Try
-					'Write column headers
-					Dim loadFileEntry As ILoadFileEntry = Nothing
-					linesToWriteDat.TryGetValue(-1, loadFileEntry)
-					If Not loadFileEntry Is Nothing Then loadFileEntry.Write(_nativeFileWriter)
-
-					'Write artifact entries
-					For Each artifact As Exporters.ObjectExportInfo in artifacts
-						lastArtifactId = artifact.ArtifactID
-						If linesToWriteDat.TryGetValue(artifact.ArtifactID, loadFileEntry)
-							If Not loadFileEntry Is Nothing Then loadFileEntry.Write(_nativeFileWriter)
-						End If
-					Next
-
-					'Flush writer
-					Try
-						If Not _nativeFileWriter Is Nothing Then _nativeFileWriter.Flush()
-					Catch ex As Exception
-						Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Load, ex)
-					End Try
-
-					'Save file writer stream position in case we need to rollback on retry attempts
-					If Not _nativeFileWriter Is Nothing Then
-						_nativeFileWriterPosition = _nativeFileWriter.BaseStream.Position
-						loadFileBytes += Global.Relativity.DataExchange.Io.FileSystem.Instance.File.GetFileSize(DirectCast(_nativeFileWriter.BaseStream, System.IO.FileStream).Name)
-					End If
-
-					'Store statistics
-					_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
-					
-					Exit While
-				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
-					If tries = maxTries Then Throw
-					_parent.WriteWarning(String.Format("Error writing metadata for artifact {0}", lastArtifactId))
-					_parent.WriteWarning(String.Format("Actual error: {0}", ex.ToString))
-					If tries > 1 Then
-						_parent.WriteWarning(String.Format("Waiting {0} seconds to retry", WaitTimeBetweenRetryAttempts))
-						System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
-					Else
-						_parent.WriteWarning("Retrying now")
-					End If
-				End Try
-			End While
+				'Store statistics
+				_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
+			Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
+				_parent.WriteWarning($"Error writing metadata for artifact {lastArtifactId}")
+				_parent.WriteWarning($"Actual error: {ex.ToString}")
+				Throw
+			End Try
 		End Sub
 
 		Public Sub WriteOptFile(ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)), ByVal artifacts As Exporters.ObjectExportInfo())
-			Dim tries As Int32 = 0
-			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim lastArtifactId As Int32 = -1
 			Dim loadFileBytes As Int64 = 0
 
@@ -1333,60 +1287,42 @@ Namespace kCura.WinEDDS
 			Else
 				comparer = StringComparer.InvariantCulture
 			End If
-
-			While tries < maxTries And Not Me.Halt
-				tries += 1
-
-				'Rollback stream position if retrying write
-				If tries > 1 Then
-					Me.ReInitializeStream(_imageFileWriter, _imageFileWriterPosition, Me.ImageFileDestinationPath, Me.GetImageFileEncoding())
-				End If
-
-				Try
-					'Write artifact entries
-					For Each artifact As Exporters.ObjectExportInfo In artifacts
-						For Each bates As String In artifact.Images.Cast(Of WinEDDS.Exporters.ImageExportInfo)().Select(Function(i) i.BatesNumber).Distinct()
-							'If IPRO Full Text append FT Lines
-							Dim key As String = bates
-							For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = "FT" + key).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value, comparer)
-								_imageFileWriter.Write(entry.Value)
-							Next
-							'Otherwise go and grab the Image line
-							For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = key).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value, comparer)
-								_imageFileWriter.Write(entry.Value)
-							Next
+			Try
+				'Write artifact entries
+				For Each artifact As Exporters.ObjectExportInfo In artifacts
+					For Each bates As String In artifact.Images.Cast(Of WinEDDS.Exporters.ImageExportInfo)().Select(Function(i) i.BatesNumber).Distinct()
+						'If IPRO Full Text append FT Lines
+						Dim key As String = bates
+						For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = "FT" + key).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value, comparer)
+							_imageFileWriter.Write(entry.Value)
+						Next
+						'Otherwise go and grab the Image line
+						For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = key).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value, comparer)
+							_imageFileWriter.Write(entry.Value)
 						Next
 					Next
+				Next
 
-					'Flush writer
-					Try
-						If Not _imageFileWriter Is Nothing Then _imageFileWriter.Flush()
-					Catch ex As Exception
-						Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Image, ex)
-					End Try
-
-					'Save file writer stream position in case we need to rollback on retry attempts
-					If Not _imageFileWriter Is Nothing Then
-						_imageFileWriterPosition = _imageFileWriter.BaseStream.Position
-						loadFileBytes += Global.Relativity.DataExchange.Io.FileSystem.Instance.File.GetFileSize(DirectCast(_imageFileWriter.BaseStream, System.IO.FileStream).Name)
-					End If
-
-					'Store statistics
-					_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
-
-					Exit While
-				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
-					If tries = maxTries Then Throw
-					_parent.WriteWarning(String.Format("Error writing .opt file entry for artifact {0}", lastArtifactId))
-					_parent.WriteWarning(String.Format("Actual error: {0}", ex.ToString))
-					If tries > 1 Then
-						_parent.WriteWarning(String.Format("Waiting {0} seconds to retry", WaitTimeBetweenRetryAttempts))
-						System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
-					Else
-						_parent.WriteWarning("Retrying now")
-					End If
+				'Flush writer
+				Try
+					If Not _imageFileWriter Is Nothing Then _imageFileWriter.Flush()
+				Catch ex As Exception
+					Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Image, ex)
 				End Try
-			End While
+
+				'Save file writer stream position in case we need to rollback on retry attempts
+				If Not _imageFileWriter Is Nothing Then
+					loadFileBytes += Global.Relativity.DataExchange.Io.FileSystem.Instance.File.GetFileSize(DirectCast(_imageFileWriter.BaseStream, System.IO.FileStream).Name)
+				End If
+
+				'Store statistics
+				_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
+
+			Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
+				_parent.WriteWarning($"Error writing .opt file entry for artifact {lastArtifactId}")
+				_parent.WriteWarning($"Actual error: {ex.ToString}")
+				Throw
+			End Try
 		End Sub
 
 		Public Sub UpdateVolume()

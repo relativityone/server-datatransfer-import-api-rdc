@@ -821,11 +821,11 @@ Namespace kCura.WinEDDS
 
 		Private Function ManageDocument(ByVal fileTypeIdentifier As IFileTypeIdentifier, ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String
 			Dim filename As String = String.Empty
-			Dim originalFilename As String = String.Empty
+			Dim originalFilename As String
 			Dim fileGuid As String = String.Empty
 			Dim uploadFile As Boolean = record.FieldList(FieldType.File).Length > 0 AndAlso Not record.FieldList(FieldType.File)(0).Value Is Nothing
 			Dim fileExists As Boolean
-			Dim identityValue As String = String.Empty
+			Dim identityValue As String
 			Dim parentFolderID As Int32
 			Dim fullFilePath As String = String.Empty
 			Dim fileTypeInfo As IFileTypeInfo = Nothing
@@ -986,9 +986,6 @@ Namespace kCura.WinEDDS
 						'TODO: If we are going to do this for more than documents, fix this as well...
 						Dim textIdentifier As String = NullableTypesHelper.ToEmptyStringOrValue(NullableTypesHelper.DBNullString(record.FieldList(FieldCategory.ParentArtifact)(0).Value.ToString))
 						If textIdentifier = "" Then
-							If Overwrite = ImportOverwriteType.Overlay OrElse Overwrite = ImportOverwriteType.AppendOverlay Then
-								parentFolderID = -1
-							End If
 							Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, DestinationFolderColumnIndex)
 						Else
 							Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID,
@@ -1184,7 +1181,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
-			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Nothing
+			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			If _artifactTypeID = ArtifactType.Document Then
 				retval = New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel, .OverlayArtifactID = OverlayArtifactId}
 				If _createFoldersInWebApi Then
@@ -1548,7 +1545,7 @@ Namespace kCura.WinEDDS
 					Select Case field.EnableDataGrid
 
 						Case False
-							WriteDocumentField(chosenEncoding, field, OutputFileWriter.OutputNativeFileWriter, _fullTextColumnMapsToFileLocation, BulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
+							WriteDocumentField(chosenEncoding, field, OutputFileWriter.OutputNativeFileWriter, BulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
 
 						Case True
 							If Not foundDataGridField Then
@@ -1558,7 +1555,7 @@ Namespace kCura.WinEDDS
 							End If
 
 							'TODO: do we want to set/update the "chosenEncoding" property if the extracted text is going to the data grid?
-							WriteDocumentField(chosenEncoding, field, OutputFileWriter.OutputDataGridFileWriter, _fullTextColumnMapsToFileLocation, BulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
+							WriteDocumentField(chosenEncoding, field, OutputFileWriter.OutputDataGridFileWriter, BulkLoadFileFieldDelimiter, _artifactTypeID, _extractedTextFileEncoding)
 
 					End Select
 				Catch ex As ExtractedTextFileNotFoundException
@@ -1634,7 +1631,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As Global.Relativity.DataExchange.Io.IStreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
+		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As Global.Relativity.DataExchange.Io.IStreamWriter, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
 			If field.Type = FieldType.MultiCode OrElse field.Type = FieldType.Code Then
 				outputWriter.Write(field.Value)
 				outputWriter.Write(delimiter)
@@ -1731,7 +1728,7 @@ Namespace kCura.WinEDDS
 										End If
 
 										Dim sr As New System.IO.StreamReader(fileStream, encoding)
-										Dim count As Int32 = 1
+										Dim count As Int32
 										Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
 										Do
 											count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
@@ -2090,7 +2087,7 @@ Namespace kCura.WinEDDS
 			Else
 				defaultExtension = ".txt"
 			End If
-			rootFileName.Trim("\"c)
+
 			If rootFileName.IndexOf("\") <> -1 Then
 				rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
 			End If

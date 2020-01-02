@@ -46,10 +46,9 @@ Namespace kCura.WinEDDS
 			Return Global.Relativity.DataExchange.AppSettingsManager.GetRegistryKeyValue(keyName)
 		End Function
 
-		Private Shared Function SetRegistryKeyValue(ByVal keyName As String, ByVal keyVal As String) As String
+		Private Shared Sub SetRegistryKeyValue(ByVal keyName As String, ByVal keyVal As String)
 			Global.Relativity.DataExchange.AppSettingsManager.SetRegistryKeyValue(keyName, keyVal)
-			Return Nothing
-		End Function
+		End Sub
 
 		Public Shared Function ValidateURIFormat(ByVal returnValue As String) As String
 			Return AppSettings.Instance.ValidateUriFormat(returnValue)

@@ -551,9 +551,9 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Function DoLogicAndPushImageBatch(ByVal totalRecords As Integer, ByVal recordsProcessed As Integer, ByVal bulkLocation As String, ByVal dataGridLocation As String, ByRef charactersSuccessfullyProcessed As Long, ByVal i As Integer, ByVal charactersProcessed As Long) As Integer
 			_batchCount = i
-			RaiseStatusEvent(EventType2.Warning, "Begin processing sub-batch of size " & i & ".", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+			RaiseStatusEvent(EventType2.Warning, "Begin processing sub-batch of size " & i & ".", CType((_totalValidated + _totalProcessed) / 2, Int64))
 			Me.PushImageBatch(bulkLocation, dataGridLocation, False, True)
-			RaiseStatusEvent(EventType2.Warning, "End processing sub-batch of size " & i & ".  " & recordsProcessed & " of " & totalRecords & " in the original batch processed", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+			RaiseStatusEvent(EventType2.Warning, "End processing sub-batch of size " & i & ".  " & recordsProcessed & " of " & totalRecords & " in the original batch processed", CType((_totalValidated + _totalProcessed) / 2, Int64))
 			recordsProcessed += i
 			charactersSuccessfullyProcessed += charactersProcessed
 			Return recordsProcessed
@@ -573,10 +573,9 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub AdvanceStream(ByVal sr As System.IO.TextReader, ByVal count As Int64)
-			Dim i As Int32
 			If count > 0 Then
 				For j As Int64 = 0 To count - 1
-					i = sr.Read()
+					sr.Read()
 				Next
 			End If
 		End Sub
@@ -702,8 +701,8 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 
-				RaiseStatusEvent(EventType2.Progress, "Begin Image Upload", 0, 0)
-				RaiseStatusEvent(EventType2.ResetStartTime, "", 0, 0)
+				RaiseStatusEvent(EventType2.Progress, "Begin Image Upload", 0)
+				RaiseStatusEvent(EventType2.ResetStartTime, "", 0)
 				Dim al As New System.Collections.Generic.List(Of Api.ImageRecord)
 				Dim status As Int64 = 0
 				_timekeeper.MarkEnd("ReadFile_Init")
@@ -725,7 +724,7 @@ Namespace kCura.WinEDDS
 						'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
 						' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
 						' -Phil S. 06/12/2012
-						RaiseStatusEvent(EventType2.Count, String.Empty, 0, 0)
+						RaiseStatusEvent(EventType2.Count, String.Empty, 0)
 						Dim record As Api.ImageRecord = _imageReader.GetImageRecord
 						record.OriginalIndex = _imageReader.CurrentRecordNumber
 						If (record.IsNewDoc) Then
@@ -817,7 +816,7 @@ Namespace kCura.WinEDDS
 			_totalValidated += 1			
 			'check for existence
 			If imageRecord.BatesNumber.Trim = "" Then
-				Me.RaiseStatusEvent(EventType2.Error, "No image file or identifier specified on line.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+				Me.RaiseStatusEvent(EventType2.Error, "No image file or identifier specified on line.", CType((_totalValidated + _totalProcessed) / 2, Int64))
 				Return ImportStatus.NoImageSpecifiedOnLine
 			End If
 
@@ -829,12 +828,12 @@ Namespace kCura.WinEDDS
 				Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
 
 				If Not fileExists
-					Me.RaiseStatusEvent(EventType2.Error, $"Image file specified ( {imageRecord.FileLocation} ) does not exist.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+					Me.RaiseStatusEvent(EventType2.Error, $"Image file specified ( {imageRecord.FileLocation} ) does not exist.", CType((_totalValidated + _totalProcessed) / 2, Int64))
 					Return ImportStatus.FileSpecifiedDne
 				End If
 
 				If Not String.Equals(imageFilePath, foundFileName)
-					Me.RaiseStatusEvent(EventType2.Warning ,$"File {imageFilePath} does not exist. File {foundFileName} will be used instead.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+					Me.RaiseStatusEvent(EventType2.Warning ,$"File {imageFilePath} does not exist. File {foundFileName} will be used instead.", CType((_totalValidated + _totalProcessed) / 2, Int64))
 					imageFilePath = foundFileName
 				End If
 			End If
@@ -847,7 +846,7 @@ Namespace kCura.WinEDDS
 					imageValidator.Validate(imageFilePath)
 				End If
 
-				Me.RaiseStatusEvent(EventType2.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+				Me.RaiseStatusEvent(EventType2.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64))
 			Catch ex As Exception
 				If TypeOf ex Is ImageValidationException Then
 				Me.LogError(ex, "Failed to validate the {Path} image.", imageFilePath)
@@ -900,7 +899,7 @@ Namespace kCura.WinEDDS
 					imageFilePath = foundFileName
 				End If
 
-				Me.GetImageForDocument(imageFilePath, record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, Convert.ToInt32(record.OriginalIndex), status, lines.Count, i = 0)
+				Me.GetImageForDocument(imageFilePath, record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, Convert.ToInt32(record.OriginalIndex), status, i = 0)
 			Next
 
 			Dim lastDivider As String = If(_fullTextStorageIsInSql, ",", String.Empty)
@@ -998,7 +997,7 @@ Namespace kCura.WinEDDS
 			Next
 		End Sub
 
-		Private Sub GetImageForDocument(ByVal imageFile As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As Int32, ByVal status As Int64, ByVal totalForDocument As Int32, ByVal isStartRecord As Boolean)
+		Private Sub GetImageForDocument(ByVal imageFile As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As Int32, ByVal status As Int64, ByVal isStartRecord As Boolean)
 			_totalProcessed += 1
 			Dim filename As String = imageFile.Substring(imageFile.LastIndexOf("\") + 1)
 			Dim extractedTextFileName As String = imageFile.Substring(0, imageFile.LastIndexOf("."c) + 1) & "txt"
@@ -1026,7 +1025,7 @@ Namespace kCura.WinEDDS
 					fullTextFiles.Add(extractedTextFileName)
 				Else
 					If _replaceFullText AndAlso Not Me.GetFileExists(extractedTextFileName, retry) Then
-						RaiseStatusEvent(EventType2.Warning, $"File '{extractedTextFileName}' not found.  No text updated.", CType((_totalValidated + _totalProcessed) / 2, Int64), originalLineNumber)
+						RaiseStatusEvent(EventType2.Warning, $"File '{extractedTextFileName}' not found.  No text updated.", CType((_totalValidated + _totalProcessed) / 2, Int64))
 					End If
 				End If
 			End If
@@ -1067,7 +1066,7 @@ Namespace kCura.WinEDDS
 			RaiseEvent FatalErrorEvent($"Error processing line: {CurrentLineNumber}", ex)
 		End Sub
 
-		Private Sub RaiseStatusEvent(ByVal et As EventType2, ByVal message As String, ByVal progressLineNumber As Int64, ByVal physicalLineNumber As Int64)
+		Private Sub RaiseStatusEvent(ByVal et As EventType2, ByVal message As String, ByVal progressLineNumber As Int64)
 			RaiseEvent StatusMessage(New StatusEventArgs(et, progressLineNumber, _recordCount, message, et = EventType2.Warning, Me.CurrentStatisticsSnapshot, Statistics))
 		End Sub
 
@@ -1085,7 +1084,7 @@ Namespace kCura.WinEDDS
 			If Not _imageReader Is Nothing Then
 				_imageReader.Cancel()
 			End If
-			RaiseStatusEvent(EventType2.Progress, $"Job has been stopped by the user - {Me.TotalTransferredFilesCount} images have been transferred.", Me.TotalTransferredFilesCount, Me.CurrentLineNumber)
+			RaiseStatusEvent(EventType2.Progress, $"Job has been stopped by the user - {Me.TotalTransferredFilesCount} images have been transferred.", Me.TotalTransferredFilesCount)
 			OnWriteStatusMessage(EventType2.Status, "Finalizing job…", TapiConstants.NoLineNumber, TapiConstants.NoLineNumber)
 		End Sub
 
@@ -1095,12 +1094,12 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overrides Sub OnWriteStatusMessage(ByVal eventType As EventType2, ByVal message As String)
-			Me.RaiseStatusEvent(EventType2.Status, message, Me.CurrentLineNumber, Me.CurrentLineNumber)
+			Me.RaiseStatusEvent(EventType2.Status, message, Me.CurrentLineNumber)
 		End Sub
 
 		Protected Overrides Sub OnWriteStatusMessage(ByVal eventType As EventType2, ByVal message As String, ByVal progressLineNumber As Int32, ByVal physicalLineNumber As Int32)
 			message = GetLineMessage(message, physicalLineNumber)
-			Me.RaiseStatusEvent(eventType, message, progressLineNumber, physicalLineNumber)
+			Me.RaiseStatusEvent(eventType, message, progressLineNumber)
 		End Sub
 
 		Private Sub WriteStatusLine(ByVal et As EventType2, ByVal line As String, ByVal lineNumber As Int32)
@@ -1123,7 +1122,7 @@ Namespace kCura.WinEDDS
 			Me.RaiseFatalError(exception)
 		End Sub
 
-		Private Sub RaiseReportError(ByVal row As System.Collections.Hashtable, ByVal lineNumber As Int32, ByVal identifier As String, ByVal type As String)
+		Private Sub RaiseReportError(ByVal row As System.Collections.Hashtable)
 			_errorCount += 1
 			If _errorMessageFileLocation = "" Then
 				_errorMessageFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
@@ -1132,9 +1131,9 @@ Namespace kCura.WinEDDS
 			If _errorCount < MaxNumberOfErrorsInGrid Then
 				RaiseEvent ReportErrorEvent(row)
 			ElseIf _errorCount = MaxNumberOfErrorsInGrid Then
-				Dim moretobefoundMessage As New System.Collections.Hashtable
-				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
-				RaiseEvent ReportErrorEvent(moretobefoundMessage)
+				Dim moreToBeFoundMessage As New System.Collections.Hashtable
+				moreToBeFoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
+				RaiseEvent ReportErrorEvent(moreToBeFoundMessage)
 			End If
 			errorMessageFileWriter.WriteLine(String.Format("{0},{1},{2},{3}",
 														   CSVFormat(row("Line Number").ToString),
@@ -1179,7 +1178,7 @@ Namespace kCura.WinEDDS
 			Dim sr As GenericCsvReader2 = Nothing
 			Try
 				With _bulkImportManager.GenerateImageErrorFiles(_caseInfo.ArtifactID, _runId, True, _keyFieldDto.ArtifactID)
-					Me.RaiseStatusEvent(EventType2.Status, "Retrieving errors from server", Me.CurrentLineNumber, Me.CurrentLineNumber)
+					Me.RaiseStatusEvent(EventType2.Status, "Retrieving errors from server", Me.CurrentLineNumber)
 					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer)
 					Dim errorsLocation As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 					sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)
@@ -1210,7 +1209,7 @@ Namespace kCura.WinEDDS
 								errorMessages = sb.ToString.TrimEnd(ChrW(10))
 							End If
 							ht.Add("Message", errorMessages)
-							RaiseReportError(ht, CType(originalIndex, Integer), line(2), "server")
+							RaiseReportError(ht)
 							'TODO: track stats
 							Dim recordNumber As Long = originalIndex + ImportFilesCount
 							RaiseEvent StatusMessage(New StatusEventArgs(EventType2.Error, recordNumber - 1, _recordCount, "[Line " & line(0) & "]" & errorMessages, Nothing, Statistics))
@@ -1300,7 +1299,7 @@ Namespace kCura.WinEDDS
 			Else
 				defaultExtension = ".opt"
 			End If
-			rootFileName.Trim("\"c)
+
 			If rootFileName.IndexOf("\") <> -1 Then
 				rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
 			End If

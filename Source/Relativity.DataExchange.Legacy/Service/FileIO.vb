@@ -149,7 +149,7 @@ Namespace kCura.WinEDDS.Service
 						If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
 							Throw ParseExceptionForMoreInfo(ex)
 						Else
-							Throw ex
+							Throw
 						End If
 					End If
 				End Try

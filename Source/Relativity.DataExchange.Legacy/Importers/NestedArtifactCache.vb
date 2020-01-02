@@ -7,7 +7,6 @@ Namespace kCura.WinEDDS
 		Private _rootArtifactID As Int32
 		Private _caseContextArtifactID As Int32
 		Private _nestedItemDelimiter As String
-		Private _nestedCountCodes As New ArrayList
 		Private _createCount As Int32 = 0
 
 		Public ReadOnly Property CreationCount() As Int32
@@ -18,7 +17,7 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property SelectedIds(ByVal artifactPath As String) As Object()
 			Get
-				Dim artifactVal As Int32 = -1
+				Dim artifactVal As Int32
 				Dim strings As String() = artifactPath.Trim(_nestedItemDelimiter.ToCharArray).Split(_nestedItemDelimiter.ToCharArray)
 				Dim goodArtifacts As New System.Collections.ArrayList
 				For Each name As String In strings
@@ -93,7 +92,6 @@ Namespace kCura.WinEDDS
 			Else
 				Dim pathEntry As String = artifactPath.Substring(artifactPath.LastIndexOf(_nestedItemDelimiter) + 1)
 				If pathEntry = "" Then
-					pathEntry = _nestedItemDelimiter
 					Return DirectCast(_ht(_nestedItemDelimiter), ArtifactCacheItem)
 				End If
 				pathToDestination.Insert(0, pathEntry)

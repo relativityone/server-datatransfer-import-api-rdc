@@ -246,7 +246,7 @@ Namespace kCura.WinEDDS
 
 		Private Function DisplayFolderAndChoiceWarning(ByVal checkFolders As Boolean, ByVal checkChoices As Boolean) As Boolean
 			'Determine choice threshold
-			Dim popupRetVal As Int32 = -1
+			Dim popupRetVal As Int32
 			Dim choiceCountThreshold As Int32
 			If checkChoices Then
 				choiceCountThreshold = _codeManager.GetChoiceLimitForUI()

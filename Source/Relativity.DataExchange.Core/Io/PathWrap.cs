@@ -132,7 +132,7 @@ namespace Relativity.DataExchange.Io
 		}
 
 		/// <inheritdoc />
-		public string ConvertIllegalCharactersInFilename(string fileName, string replacement = "_")
+		public string ConvertIllegalCharactersInFilename(string fileName, string replacement)
 		{
 			return string.Copy(fileName).Replace("\\", replacement).Replace("/", replacement).Replace("?", replacement)
 				.Replace(":", replacement).Replace("*", replacement).Replace(">", replacement).Replace("<", replacement)

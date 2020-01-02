@@ -107,7 +107,6 @@ Namespace Relativity.Desktop.Client
 		Public Property TimeZoneOffset() As Int32
 			Get
 				Return 0
-				Return _timeZoneOffset
 			End Get
 			Set(ByVal value As Int32)
 				_timeZoneOffset = value
@@ -1534,7 +1533,7 @@ Namespace Relativity.Desktop.Client
 		Public Function IsAccessDisabledException(ByVal ex As System.Exception) As Boolean
 			If TypeOf ex Is System.Web.Services.Protocols.SoapException Then
 				Dim soapEx As System.Web.Services.Protocols.SoapException = DirectCast(ex, System.Web.Services.Protocols.SoapException)
-				Dim exceptionType As String = String.Empty
+				Dim exceptionType As String
 				Try
 					exceptionType = soapEx.Detail("ExceptionType").InnerText
 				Catch caughtEx As Exception

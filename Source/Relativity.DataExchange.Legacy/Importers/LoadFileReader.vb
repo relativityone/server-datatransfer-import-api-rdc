@@ -37,7 +37,6 @@ Namespace kCura.WinEDDS
 		Protected _previewCodeCount As New System.Collections.Specialized.HybridDictionary
 		Protected _startLineNumber As Int64
 		Protected _keyFieldID As Int32
-		Private _errorLogWriter As System.IO.StreamWriter
 		Private WithEvents _loadFilePreProcessor As kCura.WinEDDS.LoadFilePreProcessor
 		Private _recordCount As Int64 = -1
 		Private _genericTimestamp As System.DateTime
@@ -242,12 +241,6 @@ Namespace kCura.WinEDDS
 
 		Public Sub Close1() Implements Api.IArtifactReader.Close
 			Me.Close()
-			If _errorLogWriter IsNot Nothing Then
-				Try
-					_errorLogWriter.Close()
-				Catch ex As System.Exception
-				End Try
-			End If
 		End Sub
 
 		Public ReadOnly Property CurrentLineNumber1() As Integer Implements Api.IArtifactReader.CurrentLineNumber

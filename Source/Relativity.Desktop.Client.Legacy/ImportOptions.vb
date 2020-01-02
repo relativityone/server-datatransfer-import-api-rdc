@@ -178,12 +178,6 @@ Public Class ImportOptions
 		If Not System.IO.File.Exists(LoadFilePath) Then Throw New LoadFilePathException(LoadFilePath)
 	End Sub
 
-	Private Function EnsureEncoding() As Boolean
-		Dim determinedEncoding As System.Text.Encoding = kCura.WinEDDS.Utility.DetectEncoding(LoadFilePath, True).DeterminedEncoding
-		If determinedEncoding Is Nothing Then Return True
-		Return (determinedEncoding.Equals(SourceFileEncoding))
-	End Function
-
 	Private Sub SetFileLocation(ByVal path As String)
 		LoadFilePath = path
 		_hasSetLoadFileLocation = Not String.IsNullOrEmpty(LoadFilePath)

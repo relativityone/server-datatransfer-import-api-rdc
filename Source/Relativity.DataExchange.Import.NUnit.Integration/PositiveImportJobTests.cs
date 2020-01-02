@@ -9,7 +9,6 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
-	using System;
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
@@ -17,13 +16,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using global::NUnit.Framework;
 
 	using kCura.Relativity.DataReaderClient;
-	using kCura.WinEDDS;
 
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
 	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
-	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
@@ -179,7 +176,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.ToEnumerable(int.MaxValue, nestedValueDelimiter)
 				.RandomUniqueBatch(4, multiValueDelimiter);
 
-			ImportTestJobResult results = null;
+			ImportTestJobResult results;
 			using (var dataReader = new ZipDataReader())
 			{
 				dataReader.Add(WellKnownFields.ControlNumber, controlNumber);
@@ -269,7 +266,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			.ToEnumerable(int.MaxValue)
 			.RandomUniqueBatch(5, multiValueDelimiter);
 
-			ImportTestJobResult results = null;
+			ImportTestJobResult results;
 			using (var dataReader = new ZipDataReader())
 			{
 				dataReader.Add(WellKnownFields.ControlNumber, controlNumber);

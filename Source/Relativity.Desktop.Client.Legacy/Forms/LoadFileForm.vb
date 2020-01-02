@@ -1399,7 +1399,7 @@ Namespace Relativity.Desktop.Client
 			Dim columnHeaders As String() = Nothing
 			Dim listsAreSame As Boolean = True
 			Dim currentHeaders As String() = Nothing
-			Dim determinedEncoding As System.Text.Encoding = Nothing
+			Dim determinedEncoding As System.Text.Encoding
 			If System.IO.File.Exists(LoadFile.FilePath) Then
 				_loadFileEncodingPicker.Enabled = True
 				LabelFileEncoding.Text = "File Encoding"
@@ -1980,13 +1980,11 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Private Async Function EnsureConnection() As Task(Of Boolean)
-			Dim retval As Boolean = False
 			If Not _loadFile Is Nothing AndAlso Not _loadFile.CaseInfo Is Nothing Then
-				retval = Await _application.EnsureConnection()
+				return Await _application.EnsureConnection()
 			Else
-				retval = True
+				return True
 			End If
-			Return retval
 		End Function
 
 		Private Async Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click

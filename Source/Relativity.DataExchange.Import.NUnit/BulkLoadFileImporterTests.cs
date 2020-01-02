@@ -11,8 +11,10 @@ namespace Relativity.DataExchange.Import.NUnit
 	using System.Collections.Generic;
 	using System.Net;
 	using global::NUnit.Framework;
+
 	using kCura.WinEDDS;
 	using Moq;
+
 	using Relativity.DataExchange.Service;
 
 	/// <summary>
@@ -137,14 +139,13 @@ namespace Relativity.DataExchange.Import.NUnit
 		[Test]
 		public void ShouldGetTheMappedFields()
 		{
-			kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo[] fields = null;
 			LoadFileFieldMap fieldMap = new LoadFileFieldMap();
 			fieldMap.Add(new LoadFileFieldMap.LoadFileFieldMapItem(new DocumentField("Field1", 1, (int)FieldType.Object, 1, 0, 0, 0, true, null, false), 0));
 			fieldMap.Add(new LoadFileFieldMap.LoadFileFieldMapItem(new DocumentField("Field2", 2, (int)FieldType.Object, 1, 0, 0, 0, true, null, false), 0));
 			this.importer.FieldMap = fieldMap;
 
 			// ImportBehavior is null because no artifact identifiers are specified.
-			fields = this.importer.GetMappedFields(1, new List<int>());
+			var fields = this.importer.GetMappedFields(1, new List<int>());
 			Assert.That(fields.Length, Is.EqualTo(2));
 			Assert.That(fields[0].ImportBehavior, Is.Null);
 			Assert.That(fields[1].ImportBehavior, Is.Null);
@@ -232,9 +233,8 @@ namespace Relativity.DataExchange.Import.NUnit
 		[Test]
 		public void ShouldGetTheMaxExtractedTextLength()
 		{
-			int actual = 0;
 			System.Text.Encoding encoding = null;
-			actual = this.importer.GetMaxExtractedTextLength(encoding);
+			var actual = this.importer.GetMaxExtractedTextLength(encoding);
 			Assert.That(actual, Is.EqualTo(1073741824));
 			encoding = System.Text.Encoding.UTF8;
 			actual = this.importer.GetMaxExtractedTextLength(encoding);

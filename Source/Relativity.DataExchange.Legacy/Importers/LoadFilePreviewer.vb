@@ -130,7 +130,7 @@ Namespace kCura.WinEDDS
 					_filePathColumnIndex = Int32.Parse(_filePathColumn.Replace("Column", "").Replace("(", "").Replace(")", "").Trim) - 1
 				End If
 			End If
-			Dim i As Int32 = 0
+			Dim i As Int32
 			i = 0
 			While _artifactReader.HasMoreRecords AndAlso _continue
 				If fieldArrays.Count < AppSettings.Instance.PreviewThreshold Then

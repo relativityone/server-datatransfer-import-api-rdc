@@ -126,7 +126,6 @@ Namespace Relativity.Desktop.Client
 				Return DirectCast(DropDown.SelectedItem, EncodingItem).Encoding
 			End Get
 			Set(ByVal value As System.Text.Encoding)
-				Dim success As Boolean = False
 				If value Is Nothing Then
 					DropDown.SelectedItem = firstItemValue
 					Exit Property
@@ -138,19 +137,16 @@ Namespace Relativity.Desktop.Client
 					Dim ei As EncodingItem = DirectCast(eiObject, EncodingItem)
 					If value.CodePage = ei.CodePageId Then
 						DropDown.SelectedItem = ei
-						success = True
 						Exit Property
 					End If
 				Next
-				If Not success Then
-					For Each ei As EncodingItem In Constants.AllEncodings
-						If value.CodePage = ei.CodePageId Then
-							DropDown.Items.Add(ei)
-							DropDown.SelectedItem = ei
-							Exit Property
-						End If
-					Next
-				End If
+				For Each ei As EncodingItem In Constants.AllEncodings
+					If value.CodePage = ei.CodePageId Then
+						DropDown.Items.Add(ei)
+						DropDown.SelectedItem = ei
+						Exit Property
+					End If
+				Next
 			End Set
 		End Property
 

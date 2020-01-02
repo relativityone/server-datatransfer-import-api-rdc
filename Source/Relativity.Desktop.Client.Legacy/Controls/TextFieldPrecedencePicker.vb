@@ -34,7 +34,7 @@ Namespace Relativity.Desktop.Client
 					Dim tempSelectedFields As New List(Of kCura.WinEDDS.ViewFieldInfo)()
 					tempSelectedFields.AddRange(Me.SelectedFields)
 					For Each selectedItem As kCura.WinEDDS.ViewFieldInfo In tempSelectedFields
-						Dim selectedItemViewlFieldInfo As kCura.WinEDDS.ViewFieldInfo = DirectCast(selectedItem, kCura.WinEDDS.ViewFieldInfo)
+						Dim selectedItemViewlFieldInfo As kCura.WinEDDS.ViewFieldInfo = selectedItem
 						Dim selectedItemExists As Boolean = False
 						For Each item As kCura.WinEDDS.ViewFieldInfo In value
 							If selectedItemViewlFieldInfo.AvfId = item.AvfId Then

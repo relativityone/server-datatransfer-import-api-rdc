@@ -145,16 +145,14 @@ Namespace Relativity.Desktop.Client
 
 		Public Sub InitializeSoapExceptionWithCustomMessage(ByVal ex As SoapException, ByVal errorMessage As String)
 			Try
-				Dim MrSoapy As SoapException = CType(ex, SoapException)
 				If String.IsNullOrEmpty(errorMessage) Then
-					txtBoxFriendlyError.Text = MrSoapy.Detail("ExceptionMessage").InnerText
+					txtBoxFriendlyError.Text = ex.Detail("ExceptionMessage").InnerText
 				Else
 					txtBoxFriendlyError.Text = errorMessage
 				End If
-				_errorText.Text = MrSoapy.Detail("ExceptionFullText").InnerText
+				_errorText.Text = ex.Detail("ExceptionFullText").InnerText
 				Return
-			Catch ex2 As System.Exception	'MrSoapy not soapified :(
-				'use a default rendering
+			Catch ex2 As System.Exception
 				txtBoxFriendlyError.Text = errorMessage
 				_errorText.Text = errorMessage & vbNewLine & "-----" & vbNewLine & ex.ToString
 			End Try

@@ -1,4 +1,3 @@
-Imports System.Web.Services.Protocols
 Imports Relativity.DataExchange
 
 Namespace kCura.WinEDDS.Service

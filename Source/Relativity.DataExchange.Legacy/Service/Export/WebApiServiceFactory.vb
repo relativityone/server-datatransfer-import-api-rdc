@@ -13,7 +13,6 @@
 
 		Public Function CreateExportFileDownloader() As IExportFileDownloader Implements IServiceFactory.CreateExportFileDownloader
 			Return New FileDownloader(ExportSettings.Credential, ExportSettings.CaseInfo.DocumentPath & "\EDDS" & ExportSettings.CaseInfo.ArtifactID, ExportSettings.CaseInfo.DownloadHandlerURL, ExportSettings.CookieContainer)
-			FileDownloader.TotalWebTime = 0
 		End Function
 
 		Public Function CreateExportManager() As IExportManager Implements IServiceFactory.CreateExportManager

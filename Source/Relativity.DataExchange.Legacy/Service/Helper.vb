@@ -5,7 +5,7 @@ Namespace kCura.WinEDDS.Service
 
 		'TODO: Precious tests! We needs it, we wants it! 
 		Public Shared Sub AttemptReLogin(ByVal credentials As System.Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal tryNumber As Int32, Optional ByVal retryOnFailure As Boolean = True)
-			System.Threading.Thread.CurrentThread.Join(CType((1000 * (tryNumber + 1)), Int32))
+			System.Threading.Thread.CurrentThread.Join(1000 * (tryNumber + 1))
 			credentials = GetUpdatedCredentials(credentials)
 			Dim manager As New UserManager(credentials, cookieContainer)
 
@@ -19,8 +19,8 @@ Namespace kCura.WinEDDS.Service
 				If(Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet())
 					result = DirectCast(defaultCredentials, System.Net.NetworkCredential)
 				Else 
-					dim updatedWebApiCreds As System.Net.NetworkCredential = RelativityWebApiCredentialsProvider.Instance().GetCredentials()
-					result = updatedWebApiCreds
+					dim updatedWebApiCredentials As System.Net.NetworkCredential = RelativityWebApiCredentialsProvider.Instance().GetCredentials()
+					result = updatedWebApiCredentials
 				End If
 			Catch ex As Exception
 				result = DirectCast(defaultCredentials, System.Net.NetworkCredential)

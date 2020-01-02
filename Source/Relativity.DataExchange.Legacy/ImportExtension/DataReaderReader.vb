@@ -142,7 +142,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private Function DoesFilenameMarkerFieldExistInIDataReader() As Boolean
 			If Not _markerNameIsMapped.HasValue Then
 				Try
-					Dim isValidItemName As Integer = _reader.GetOrdinal(_KCURAMARKERFILENAME)
+					_reader.GetOrdinal(_KCURAMARKERFILENAME)
 					_markerNameIsMapped = True
 				Catch ex As IndexOutOfRangeException
 					_markerNameIsMapped = False

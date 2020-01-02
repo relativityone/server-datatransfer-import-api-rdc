@@ -230,7 +230,7 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.processCompleteEvents.Count, Is.EqualTo(5));
 			Assert.That(
 				this.processCompleteEvents.Any(
-					x => x.CloseForm == true && x.ExportLog == true && x.ExportFilePath == "a"),
+					x => x.CloseForm && x.ExportLog && x.ExportFilePath == "a"),
 				Is.True);
 
 			// Assert that null events are handled.

@@ -777,7 +777,7 @@ namespace Relativity.DataExchange.Data
 		/// </returns>
 		private bool ValidateAppend(long startPosition, int maxCharacterLength, ref bool hasAlertedError)
 		{
-			if (checked(this.CharacterPosition - startPosition) > (long)maxCharacterLength)
+			if (checked(this.CharacterPosition - startPosition) > maxCharacterLength)
 			{
 				if (!hasAlertedError)
 				{
@@ -870,11 +870,11 @@ namespace Relativity.DataExchange.Data
 			StringBuilder stringBuilder = new StringBuilder();
 			long initialCharacterPosition = this.CharacterPosition;
 			bool hasAlertedError = false;
-			if (this.Peek() == (int)this.Bound)
+			if (this.Peek() == this.Bound)
 			{
 				// The Read character is NOT used.
 				Microsoft.VisualBasic.Strings.ChrW(this.Read());
-				if ((int)Microsoft.VisualBasic.Strings.ChrW(this.Peek()) == (int)this.Delimiter ||
+				if (Microsoft.VisualBasic.Strings.ChrW(this.Peek()) == this.Delimiter ||
 				    this.Peek() == EofChar ||
 				    this.Peek() == 13)
 				{
@@ -921,7 +921,7 @@ namespace Relativity.DataExchange.Data
 			while (this.Peek() != EofChar)
 			{
 				char ch1 = Microsoft.VisualBasic.Strings.ChrW(this.Read());
-				if ((int)ch1 == (int)this.Bound)
+				if (ch1 == this.Bound)
 				{
 					if (this.TrimOption == TrimOption.Both ||
 					    this.TrimOption == TrimOption.Trailing)
@@ -934,7 +934,7 @@ namespace Relativity.DataExchange.Data
 					}
 
 					int num = this.Peek();
-					if (num == (int)this.Delimiter)
+					if (num == this.Delimiter)
 					{
 						this.Read();
 						return this.ConvertNewLine(stringBuilder);
@@ -963,7 +963,7 @@ namespace Relativity.DataExchange.Data
 							break;
 
 						default:
-							if (num == (int)this.Bound)
+							if (num == this.Bound)
 							{
 								this.Append(
 									stringBuilder,
@@ -1026,7 +1026,6 @@ namespace Relativity.DataExchange.Data
 					currentArrayList = new ConditionalArrayList(false);
 				}
 
-				// TODO: Verify the usage of "Or" vs "OrAlso"
 				while ((Microsoft.VisualBasic.Strings.ChrW(charCode) == ' '
 				        || Microsoft.VisualBasic.Strings.ChrW(charCode) == '\t')
 				       && (this.TrimOption == TrimOption.Both
@@ -1036,12 +1035,12 @@ namespace Relativity.DataExchange.Data
 				}
 
 				char ch = Microsoft.VisualBasic.Strings.ChrW(charCode);
-				if ((int)ch == (int)this.Bound)
+				if (ch == this.Bound)
 				{
 					currentArrayList.Add(
 						this.GetBoundedFieldValue(ref hasHitEndOfLine, currentArrayList.Count, maximumFieldLength));
 				}
-				else if ((int)ch == (int)this.Delimiter)
+				else if (ch == this.Delimiter)
 				{
 					// Add an empty value
 					currentArrayList.Add(string.Empty);

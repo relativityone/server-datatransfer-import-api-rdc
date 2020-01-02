@@ -110,7 +110,7 @@ Namespace Relativity.Desktop.Client
 				lineTypeString = "[Error:Fatal]"
 			End If
 			stringBuilder.Append("""").Append("[").Append(System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff").Replace("Z", "")).Append("]").Append(""",")
-			stringBuilder.Append("""").Append(lineTypeString).Append(""",").ToString()
+			stringBuilder.Append("""").Append(lineTypeString).Append(""",")
 			stringBuilder.Append("""").Append(line.Replace("""", """""").Replace(vbNewLine, ChrW(10))).Append("""")
 			Console.WriteLine(stringBuilder.ToString)
 		End Sub

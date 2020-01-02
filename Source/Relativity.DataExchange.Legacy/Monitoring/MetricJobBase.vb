@@ -1,5 +1,4 @@
-﻿Imports Relativity.DataExchange.Service
-Imports Relativity.DataExchange.Transfer
+﻿Imports Relativity.DataExchange.Transfer
 
 Namespace Monitoring
 	Public MustInherit Class MetricJobBase

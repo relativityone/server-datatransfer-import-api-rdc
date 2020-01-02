@@ -119,13 +119,10 @@ namespace Relativity.DataExchange.NUnit
 			intTest = null;
 			Assert.Throws<NullReferenceException>(
 				() => { DataExchange.NullableTypesHelper.DBNullConvertToNullable<int>(intTest); });
-			bool? boolTest = true;
-			Assert.That(DataExchange.NullableTypesHelper.DBNullConvertToNullable<bool>(boolTest), Is.True);
-			boolTest = false;
-			Assert.That(DataExchange.NullableTypesHelper.DBNullConvertToNullable<bool>(boolTest), Is.False);
-			boolTest = null;
+			Assert.That(DataExchange.NullableTypesHelper.DBNullConvertToNullable<bool>(true), Is.True);
+			Assert.That(DataExchange.NullableTypesHelper.DBNullConvertToNullable<bool>(false), Is.False);
 			Assert.Throws<NullReferenceException>(
-				() => { DataExchange.NullableTypesHelper.DBNullConvertToNullable<bool>(boolTest); });
+				() => { DataExchange.NullableTypesHelper.DBNullConvertToNullable<bool>(null); });
 			double? doubleTest = 1.25d;
 			Assert.That(DataExchange.NullableTypesHelper.DBNullConvertToNullable<double>(doubleTest), Is.EqualTo(1.25d));
 			doubleTest = null;

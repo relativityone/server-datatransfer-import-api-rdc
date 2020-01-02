@@ -87,7 +87,7 @@ Namespace kCura.WinEDDS
 
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(_credential, _cookieContainer)
 
-			Dim successfulLogin As Boolean = False
+			Dim successfulLogin As Boolean
 			Try
 				successfulLogin = relativityManager.ValidateSuccesfulLogin()
 			Catch ex As Exception
