@@ -18,7 +18,7 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockRepor
 		{
 			string description = BuildSummary(this.Rows);
 
-			List<TextFileDto> files = this.Rows.SelectMany(GetSqlStatementFiles).Concat(GetSummaryFile(description)).ToList();
+			List<TextFileDto> files = this.Rows.SelectMany(GetDeadlockGraphFiles).Concat(GetSummaryFile(description)).ToList();
 
 			return new ProfilerReport(description, files);
 		}
@@ -34,7 +34,7 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockRepor
 			}
 		}
 
-		private static IEnumerable<TextFileDto> GetSqlStatementFiles(DeadlockReportRowDto dto)
+		private static IEnumerable<TextFileDto> GetDeadlockGraphFiles(DeadlockReportRowDto dto)
 		{
 			return new[] { new TextFileDto(Guid.NewGuid().ToString(), "xdl", dto.DeadlockReport) };
 		}
@@ -80,8 +80,8 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockRepor
 			const string ReportHeader = "SQL Profiling - Collect Deadlocks";
 
 			var lockedObjectNames = deadlockReports.SelectMany(item => item.LockedObjectInfo)
-				.GroupBy(objectName => objectName)
-				.ToDictionary(objectName => objectName.Key, objectName => objectName.Count());
+				.GroupBy(objectName => objectName.Name)
+				.OrderByDescending(item => item.Count());
 
 			var sb = new StringBuilder();
 			sb.AppendLine($"{ReportHeader} - report");
@@ -89,17 +89,16 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockRepor
 
 			foreach (var lockedObjectName in lockedObjectNames)
 			{
-				sb.AppendLine($"Deadlocks count on object name '{lockedObjectName.Key.Name}' : {lockedObjectName.Value}");
+				sb.AppendLine($"Deadlocks count on object name '{lockedObjectName.Key}' : {lockedObjectName.Count()}");
 			}
 
-			sb.AppendLine();
-			sb.AppendLine("Details:");
+			sb.AppendLine().AppendLine("Details:").AppendLine();
 			foreach (var lockObject in deadlockReports.SelectMany(item => item.LockedObjectInfo))
 			{
 				sb.AppendLine($"Deadlocks object name '{lockObject.Name}' - Sql: {lockObject.Sql}").AppendLine();
 			}
 
-			return sb.AppendLine($"{ReportHeader} - End of the report").ToString();
+			return sb.AppendLine().AppendLine($"{ReportHeader} - End of the report").ToString();
 		}
 	}
 }
