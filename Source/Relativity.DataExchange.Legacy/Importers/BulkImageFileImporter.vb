@@ -632,8 +632,11 @@ Namespace kCura.WinEDDS
 				Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.RunBulkImport(overwrite, True)
 				Me.Statistics.ProcessRunResults(runResults)
 				_runId = runResults.RunID
-				Me.Statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+				Dim numberOfTicks As Long = System.DateTime.Now.Ticks - start
+				Dim batchDuration As TimeSpan = New TimeSpan(numberOfTicks)
+				Me.Statistics.SqlTime += System.Math.Max(numberOfTicks, 1)
 				Me.Statistics.BatchCount += 1
+				Logger.LogInformation("Duration of mass import processing: {durationInMilliseconds}, batch: {numberOfBatch}", batchDuration.TotalMilliseconds, Me.Statistics.BatchCount)
 				ManageErrors()
 
 				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount
