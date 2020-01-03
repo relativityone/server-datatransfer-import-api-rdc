@@ -1,3 +1,4 @@
+Imports System.Collections.Generic
 Imports System.Threading
 
 Imports Relativity.DataExchange
@@ -66,6 +67,7 @@ Namespace kCura.WinEDDS
 		Public Property FileSizeColumn() As String
 		Public Property FileNameColumn As String
 		Public Property SupportedByViewerColumn As String
+		Private Property _artifactIDDataSetCache As Dictionary(Of Tuple(Of Integer, String), DataSet)
 #End Region
 
 #Region "Accessors"
@@ -207,6 +209,7 @@ Namespace kCura.WinEDDS
 			_previewCodeCount = args.PreviewCodeCount
 			_startLineNumber = args.StartLineNumber
 			_codeValidator = Me.GetSingleCodeValidator()
+			_artifactIDDataSetCache = New Dictionary(Of Tuple(Of Integer, String), DataSet)
 
 			MulticodeMatrix = New System.Collections.Hashtable
 			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> ImportOverwriteType.Overlay.ToString.ToLower AndAlso args.ArtifactTypeID = ArtifactType.Document Then
@@ -342,10 +345,16 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Overridable Function LookupArtifactIDForName(objectName As String, associatedObjectTypeID As Int32) As Int32
-			Dim artifactID As System.Data.DataSet = _objectManager.RetrieveArtifactIdOfMappedObject(_caseArtifactID, objectName, associatedObjectTypeID)
+			Dim artifactIDDataSet As DataSet = Nothing
+			Dim key As New Tuple(Of Integer,String)(associatedObjectTypeID, objectName)
+			If Not _artifactIDDataSetCache.TryGetValue(key, artifactIDDataSet) Then
+				artifactIDDataSet = _objectManager.RetrieveArtifactIdOfMappedObject(_caseArtifactID, objectName, associatedObjectTypeID)
+				_artifactIDDataSetCache.Add(key, artifactIDDataSet)
+			End If
+
 			Dim retval As Int32 = -1
 
-			If artifactID.Tables(0).Rows.Count > 0 Then retval = CInt(artifactID.Tables(0).Rows(0)(0))
+			If artifactIDDataSet.Tables(0).Rows.Count > 0 Then retval = CInt(artifactIDDataSet.Tables(0).Rows(0)(0))
 			Return retval
 		End Function
 
