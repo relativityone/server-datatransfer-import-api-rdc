@@ -20,6 +20,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 
 	public class ImageImportApiSetUp : ImportApiSetUp<ImageImportBulkArtifactJob, ImageSettings>
 	{
+		public bool UseFileNames { get; set; } = false;
+
+		public bool UseDefaultFieldNames { get; set; } = false;
+
 		public override void SetUpImportApi(Func<ImportAPI> importApiFunc, ImageSettings settings)
 		{
 			base.SetUpImportApi(importApiFunc, settings);
@@ -38,13 +42,24 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 			{
 				dataTable.Locale = CultureInfo.InvariantCulture;
 
-				dataTable.Columns.Add("BatesNumber", typeof(string));
-				dataTable.Columns.Add("DocumentIdentifier", typeof(string));
-				dataTable.Columns.Add("FileLocation", typeof(string));
+				dataTable.Columns.Add(this.UseDefaultFieldNames ? DefaultImageFieldNames.BatesNumber : "Bates_Number", typeof(string));
+				dataTable.Columns.Add(this.UseDefaultFieldNames ? DefaultImageFieldNames.DocumentIdentifier : "Document_Identifier", typeof(string));
+				dataTable.Columns.Add(this.UseDefaultFieldNames ? DefaultImageFieldNames.FileLocation : "File_Location", typeof(string));
+				if (this.UseFileNames)
+				{
+					dataTable.Columns.Add(this.UseDefaultFieldNames ? DefaultImageFieldNames.FileName : "File_Name", typeof(string));
+				}
 
 				while (dataReader.Read())
 				{
-					dataTable.Rows.Add(dataReader[0], dataReader[1], dataReader[2]);
+					if (this.UseFileNames)
+					{
+						dataTable.Rows.Add(dataReader.GetString(0), dataReader.GetString(1), dataReader.GetString(2), dataReader.GetString(3));
+					}
+					else
+					{
+						dataTable.Rows.Add(dataReader.GetString(0), dataReader.GetString(1), dataReader.GetString(2));
+					}
 				}
 
 				this.ImportJob.SourceData.SourceData = dataTable;
@@ -62,6 +77,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 			settings.CopyTo(importJob.Settings);
 			importJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();
 			importJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
+
 			return importJob;
 		}
 	}

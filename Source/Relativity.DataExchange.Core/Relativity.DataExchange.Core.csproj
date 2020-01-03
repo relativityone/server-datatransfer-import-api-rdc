@@ -304,6 +304,7 @@
     <Compile Include="Transfer\TapiStatisticsEventArgs.cs" />
     <Compile Include="Transfer\TapiStatisticsListener.cs" />
     <Compile Include="WaitAndRetryPolicy.cs" />
+    <Compile Include="DefaultImageFieldNames.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
       <Paket>True</Paket>
     </Content>

@@ -1,8 +1,11 @@
-﻿Namespace kCura.WinEDDS.ImportExtension
+﻿Imports Relativity.DataExchange
+
+Namespace kCura.WinEDDS.ImportExtension
 	Public Class ImageDataTableReader
 		Implements kCura.WinEDDS.Api.IImageReader
 		Private _currentRecordNumber As Int32 = -1
 		Private _source As System.Data.DataTable
+		Private _fileNameColumnExists As Boolean
 		Public Sub AdvanceRecord() Implements Api.IImageReader.AdvanceRecord
 			_currentRecordNumber += 1
 		End Sub
@@ -10,6 +13,7 @@
 		Public Sub New(ByVal dataSource As System.Data.DataTable)
 			_source = dataSource
 			_source.DefaultView.Sort = "DocumentIdentifier ASC"
+			_fileNameColumnExists = dataSource.Columns.Contains(DefaultImageFieldNames.FileName)
 		End Sub
 
 		Public Sub Cancel() Implements Api.IImageReader.Cancel
@@ -33,12 +37,16 @@
 		Public Function GetImageRecord() As Api.ImageRecord Implements Api.IImageReader.GetImageRecord
 			Dim row As System.Data.DataRow = _source.Rows(_currentRecordNumber)
 			Dim retval As New Api.ImageRecord
-			retval.BatesNumber = row("BatesNumber").ToString
-			retval.FileLocation = row("FileLocation").ToString
+			retval.BatesNumber = row(DefaultImageFieldNames.BatesNumber).ToString
+			retval.FileLocation = row(DefaultImageFieldNames.FileLocation).ToString
+			
+			If _fileNameColumnExists Then
+			    retval.FileName = row(DefaultImageFieldNames.FileName).ToString
+			End If
 			If _currentRecordNumber = 0 Then
 				retval.IsNewDoc = True
 			Else
-				retval.IsNewDoc = Not (row("DocumentIdentifier").ToString = _source.Rows(_currentRecordNumber - 1)("DocumentIdentifier").ToString)
+				retval.IsNewDoc = Not (row(DefaultImageFieldNames.DocumentIdentifier).ToString = _source.Rows(_currentRecordNumber - 1)(DefaultImageFieldNames.DocumentIdentifier).ToString)
 			End If
 			_currentRecordNumber = _currentRecordNumber + 1
 			Return retval

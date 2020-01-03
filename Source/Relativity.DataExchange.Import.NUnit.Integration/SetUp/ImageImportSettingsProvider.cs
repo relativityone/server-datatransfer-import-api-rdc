@@ -15,11 +15,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 
 	public static class ImageImportSettingsProvider
 	{
-		public static ImageSettings GetImageFilePathSourceDocumentImportSettings()
+		public static ImageSettings GetImageFilePathSourceDocumentImportSettings(bool useDefaultFieldNames)
 		{
 			ImageSettings settings = new ImageSettings();
 			SetDefaultImageDocumentImportSettings(settings);
-			SetImageFilePathSourceDocumentImportSettings(settings);
+			SetImageFilePathSourceDocumentImportSettings(settings, useDefaultFieldNames);
 			return settings;
 		}
 
@@ -29,14 +29,16 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 			settings.OverwriteMode = OverwriteModeEnum.Append;
 		}
 
-		private static void SetImageFilePathSourceDocumentImportSettings(ImageSettings settings)
+		private static void SetImageFilePathSourceDocumentImportSettings(ImageSettings settings, bool useDefaultFieldNames)
 		{
 			settings.ImageFilePathSourceFieldName = WellKnownFields.FilePath;
 			settings.AutoNumberImages = false;
 
-			settings.BatesNumberField = "BatesNumber";
-			settings.DocumentIdentifierField = "DocumentIdentifier";
-			settings.FileLocationField = "FileLocation";
+			settings.BatesNumberField = useDefaultFieldNames ? null : "Bates_Number";
+			settings.DocumentIdentifierField = useDefaultFieldNames ? null : "Document_Identifier";
+			settings.FileLocationField = useDefaultFieldNames ? null : "File_Location";
+			settings.FileNameField = useDefaultFieldNames ? null : "File_Name";
+
 			settings.CopyFilesToDocumentRepository = true;
 		}
 	}

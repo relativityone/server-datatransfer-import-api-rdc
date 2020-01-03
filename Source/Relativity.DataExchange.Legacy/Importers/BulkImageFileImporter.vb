@@ -895,11 +895,13 @@ Namespace kCura.WinEDDS
 				Const retry As Boolean = True
 				Dim imageFilePath As String = BulkImageFileImporter.GetFileLocation(record)
 				Dim foundFileName As String = Me.GetExistingFilePath(imageFilePath, retry)
+				Dim originalFileName As String = lines(i).FileName
+
 				If Not (foundFileName Is Nothing)
 					imageFilePath = foundFileName
 				End If
 
-				Me.GetImageForDocument(imageFilePath, record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, Convert.ToInt32(record.OriginalIndex), status, i = 0)
+				Me.GetImageForDocument(imageFilePath, originalFileName, record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, Convert.ToInt32(record.OriginalIndex), status, i = 0)
 			Next
 
 			Dim lastDivider As String = If(_fullTextStorageIsInSql, ",", String.Empty)
@@ -997,9 +999,10 @@ Namespace kCura.WinEDDS
 			Next
 		End Sub
 
-		Private Sub GetImageForDocument(ByVal imageFile As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As Int32, ByVal status As Int64, ByVal isStartRecord As Boolean)
+		Private Sub GetImageForDocument(ByVal imageFile As String, ByVal originalFileName As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As Int32, ByVal status As Int64, ByVal isStartRecord As Boolean)
 			_totalProcessed += 1
-			Dim filename As String = imageFile.Substring(imageFile.LastIndexOf("\") + 1)
+			
+			Dim filename As String = If(Not originalFileName.IsNullOrEmpty(), originalFileName, imageFile.Substring(imageFile.LastIndexOf("\") + 1))
 			Dim extractedTextFileName As String = imageFile.Substring(0, imageFile.LastIndexOf("."c) + 1) & "txt"
 			Dim fileGuid As String = ""
 			Dim fileLocation As String = imageFile

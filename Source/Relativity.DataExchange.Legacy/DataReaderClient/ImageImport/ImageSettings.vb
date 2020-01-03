@@ -1,3 +1,5 @@
+Imports Relativity.DataExchange
+
 Namespace kCura.Relativity.DataReaderClient
 
 	''' <summary>
@@ -13,15 +15,18 @@ Namespace kCura.Relativity.DataReaderClient
 		Private ReadOnly _documentIDFieldDefault As String
 		Private _fileLocationField As String
 		Private ReadOnly _fileLocationFieldDefault As String
+        Private _fileNameField As String
+        Private ReadOnly _fileNameFieldDefault As String
 #End Region
 
 #Region "Constructors"
 		Friend Sub New()
 			MyBase.New()
 
-			_batesNumberFieldDefault = "BatesNumber"
-			_documentIDFieldDefault = "DocumentIdentifier"
-			_fileLocationFieldDefault = "FileLocation"
+			_batesNumberFieldDefault = DefaultImageFieldNames.BatesNumber
+			_documentIDFieldDefault = DefaultImageFieldNames.DocumentIdentifier
+			_fileLocationFieldDefault = DefaultImageFieldNames.FileLocation
+			_fileNameFieldDefault = DefaultImageFieldNames.FileName
 		End Sub
 #End Region
 
@@ -102,6 +107,23 @@ Namespace kCura.Relativity.DataReaderClient
 			End Get
 			Set(value As String)
 				_fileLocationField = value
+			End Set
+		End Property
+
+		''' <summary>
+		''' Indicates the column name in the source DataTable that maps to the FileName field in Relativity. 
+		''' </summary>
+		''' <remarks>In the data set, this field value should contain a original file name with its extension. Original file name is stored in Filename column in File table</remarks>
+		Public Property FileNameField() As String
+			Get
+				If _fileNameField Is Nothing Then
+					Return _fileNameFieldDefault
+				End If
+
+				Return _fileNameField
+			End Get
+			Set(value As String)
+			    _fileNameField = value
 			End Set
 		End Property
 

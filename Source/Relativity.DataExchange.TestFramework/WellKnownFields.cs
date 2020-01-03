@@ -42,6 +42,11 @@ namespace Relativity.DataExchange.TestFramework
 		public const string FileLocation = "file location";
 
 		/// <summary>
+		/// The file name field name.
+		/// </summary>
+		public const string FileName = "file name";
+
+		/// <summary>
 		/// The file path field.
 		/// </summary>
 		public const string FilePath = "file path";

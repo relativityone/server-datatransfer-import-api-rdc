@@ -215,9 +215,9 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub ValidateDataSourceSettings()
 			'This expects the DataTable in SourceData to have already been set
-			EnsureFieldNameIsValid("BatesNumber", Settings.BatesNumberField)
-			EnsureFieldNameIsValid("DocumentIdentifier", Settings.DocumentIdentifierField)
-			EnsureFieldNameIsValid("FileLocation", Settings.FileLocationField)
+			EnsureFieldNameIsValid(DefaultImageFieldNames.BatesNumber, Settings.BatesNumberField)
+			EnsureFieldNameIsValid(DefaultImageFieldNames.DocumentIdentifier, Settings.DocumentIdentifierField)
+			EnsureFieldNameIsValid(DefaultImageFieldNames.FileLocation, Settings.FileLocationField)
 		End Sub
 
 		Private Sub EnsureFieldNameIsValid(ByVal imageSettingsField As String, ByVal forFieldName As String)
@@ -277,9 +277,13 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub MapSuppliedFieldNamesToActual(ByVal imageSettings As ImageSettings, ByRef srcDataTable As DataTable)
 			'kCura.WinEDDS.ImportExtension.ImageDataTableReader contains the 'real' field names
-			srcDataTable.Columns(imageSettings.BatesNumberField).ColumnName = "BatesNumber"
-			srcDataTable.Columns(imageSettings.DocumentIdentifierField).ColumnName = "DocumentIdentifier"
-			srcDataTable.Columns(imageSettings.FileLocationField).ColumnName = "FileLocation"
+			srcDataTable.Columns(imageSettings.BatesNumberField).ColumnName = DefaultImageFieldNames.BatesNumber
+			srcDataTable.Columns(imageSettings.DocumentIdentifierField).ColumnName = DefaultImageFieldNames.DocumentIdentifier
+			srcDataTable.Columns(imageSettings.FileLocationField).ColumnName = DefaultImageFieldNames.FileLocation
+			'Additional fileName column to fix issue REL-365880: File Extensions not Populating after Integration Points Promotion. To ensure backward compatibility is not required.
+			If srcDataTable.Columns(imageSettings.FileNameField) IsNot Nothing Then
+    		    srcDataTable.Columns(imageSettings.FileNameField).ColumnName = DefaultImageFieldNames.FileName
+			End If
 		End Sub
 
 		Private Function GetDefaultIdentifierFieldID(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32) As Int32
