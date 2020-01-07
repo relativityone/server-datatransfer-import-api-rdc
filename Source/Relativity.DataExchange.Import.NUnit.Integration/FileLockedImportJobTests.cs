@@ -66,8 +66,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			// The exact value is impossible to predict.
-			Assert.That(results.ProgressCompletedRows, Has.Count.Positive);
-			Assert.That(results.JobMessages, Has.Count.Positive);
+			Assert.That(results.NumberOfCompletedRows, Is.GreaterThan(0));
+			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 		}
 
 		[TearDown]

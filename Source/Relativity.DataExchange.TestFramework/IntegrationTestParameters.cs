@@ -190,6 +190,20 @@ namespace Relativity.DataExchange.TestFramework
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to write logs to the console.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to write logs to the console; otherwise, <see langword="false" />.
+		/// </value>
+		[JsonProperty("WriteLogsToConsole")]
+		[IntegrationTestParameter(true)]
+		public bool WriteLogsToConsole
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the SQL admin password.
 		/// </summary>
 		/// <value>

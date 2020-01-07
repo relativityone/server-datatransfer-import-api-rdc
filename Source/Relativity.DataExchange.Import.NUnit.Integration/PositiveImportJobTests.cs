@@ -61,8 +61,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(NumberOfFilesToImport);
-			Assert.That(results.JobMessages, Has.Count.Positive);
-			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport));
+			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfFilesToImport));
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -93,8 +93,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(NumberOfDocumentsToImport);
-			Assert.That(results.JobMessages, Has.Count.Positive);
-			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(NumberOfDocumentsToImport));
+			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfDocumentsToImport));
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -190,8 +190,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(numberOfDocumentsToImport);
-			Assert.That(results.JobMessages, Has.Count.Positive);
-			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(numberOfDocumentsToImport));
+			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToImport));
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -216,8 +216,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(importData.Length);
-			Assert.That(results.JobMessages, Has.Count.Positive);
-			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(importData.Length));
+			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(importData.Length));
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -280,8 +280,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(numberOfDocumentsToImport);
-			Assert.That(results.JobMessages, Has.Count.Positive);
-			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(numberOfDocumentsToImport));
+			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToImport));
 		}
 
 		private static IEnumerable<string> GetControlNumberEnumerable(OverwriteModeEnum overwriteMode, int numberOfDocumentsToAppend, string appendToName)

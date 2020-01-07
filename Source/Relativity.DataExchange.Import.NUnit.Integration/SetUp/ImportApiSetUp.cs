@@ -15,11 +15,20 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
+	using Relativity.DataExchange.TestFramework;
+	using Relativity.Logging;
 
 	public abstract class ImportApiSetUp<TImportJob, TSettings> : IDisposable
 		where TImportJob : IImportNotifier
 		where TSettings : ImportSettingsBase
 	{
+		private readonly ILog logger;
+
+		protected ImportApiSetUp()
+		{
+			this.logger = IntegrationTestHelper.Logger;
+		}
+
 		public virtual ImportTestJobResult TestJobResult { get; protected set; } = new ImportTestJobResult();
 
 		protected ImportAPI ImportApi { get; private set; }
@@ -59,7 +68,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				this.TestJobResult.ErrorRows.Add(row);
 				string rowMetaData = string.Join(",", row.Keys.Cast<object>().Select(key => $"{key} {row[key]}"));
 
-				Console.WriteLine("[Job Error Metadata]: " + rowMetaData);
+				this.logger.LogError("Job Error Metadata: {rowMetaData}" + rowMetaData);
 			}
 		}
 
@@ -69,8 +78,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			{
 				if (status != null)
 				{
-					this.TestJobResult.JobMessages.Add(status.Message);
-					Console.WriteLine("[Job Message]: " + status.Message);
+					this.TestJobResult.AddMessage(status.Message);
+					this.logger.LogDebug("Job Message: {message}", status.Message);
 				}
 			}
 		}
@@ -79,9 +88,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			lock (this.TestJobResult)
 			{
-				this.TestJobResult.ProgressCompletedRows.Add(completedRow);
-				Console.WriteLine("[Job Progress]: " + completedRow);
+				this.TestJobResult.NumberOfCompletedRows++;
 			}
+
+			this.logger.LogInformation("Job Progress: {completedRow}", completedRow);
 		}
 
 		private void ImportJob_OnComplete(JobReport jobReport)
@@ -89,8 +99,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			lock (this.TestJobResult)
 			{
 				this.TestJobResult.CompletedJobReport = jobReport;
-				Console.WriteLine("[Job Complete]");
 			}
+
+			this.logger.LogInformation("Job Complete");
 		}
 
 		private void ImportJob_OnFatalException(JobReport jobReport)
@@ -98,8 +109,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			lock (this.TestJobResult)
 			{
 				this.TestJobResult.JobFatalExceptions.Add(jobReport.FatalException);
-				Console.WriteLine("[Job Fatal Exception]: " + jobReport.FatalException);
 			}
+
+			this.logger.LogError(jobReport.FatalException, "Job Fatal Exception");
 		}
 	}
 }

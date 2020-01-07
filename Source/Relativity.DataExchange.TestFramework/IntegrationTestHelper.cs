@@ -21,6 +21,7 @@ namespace Relativity.DataExchange.TestFramework
 	using Newtonsoft.Json;
 
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.Logging;
 
 	/// <summary>
 	/// Defines static methods to setup and teardown integration tests.
@@ -352,7 +353,7 @@ END";
 
 		private static void SetupLogger(IntegrationTestParameters parameters)
 		{
-			Relativity.Logging.LoggerOptions loggerOptions = new Relativity.Logging.LoggerOptions
+			var loggerOptions = new LoggerOptions
 			{
 				Application = "8A1A6418-29B3-4067-8C9E-51E296F959DE",
 				ConfigurationFileLocation = Path.Combine(ResourceFileHelper.GetBasePath(), "LogConfig.xml"),
@@ -368,17 +369,22 @@ END";
 
 			// Configure the optional HTTP sink to periodically send logs to Relativity.
 			loggerOptions.AddSinkParameter(
-				Relativity.Logging.Configuration.RelativityHttpSinkConfig.CredentialSinkParameterKey,
+				Logging.Configuration.RelativityHttpSinkConfig.CredentialSinkParameterKey,
 				new NetworkCredential(parameters.RelativityUserName, parameters.RelativityPassword));
 			loggerOptions.AddSinkParameter(
-				Relativity.Logging.Configuration.RelativityHttpSinkConfig.InstanceUrlSinkParameterKey,
+				Logging.Configuration.RelativityHttpSinkConfig.InstanceUrlSinkParameterKey,
 				parameters.RelativityUrl);
-			Logger = Relativity.Logging.Factory.LogFactory.GetLogger(loggerOptions);
+			Logger = Logging.Factory.LogFactory.GetLogger(loggerOptions);
 
-			// Note: Wrapping the ILog instance to ensure all logs written via tests are dumped to the console.
-			//       Until Import API supports passing a logger instance via constructor, the API
-			//       internally uses the Logger singleton instance if defined.
-			Relativity.Logging.Log.Logger = new RelativityTestLogger(Logger);
+			if (parameters.WriteLogsToConsole)
+			{
+				// Note: Wrapping the ILog instance to ensure all logs written via tests are dumped to the console.
+				Logger = new RelativityTestLogger(Logger);
+			}
+
+			// Until Import API supports passing a logger instance via constructor, the API
+			// internally uses the Logger singleton instance if defined.
+			Log.Logger = Logger;
 		}
 	}
 }

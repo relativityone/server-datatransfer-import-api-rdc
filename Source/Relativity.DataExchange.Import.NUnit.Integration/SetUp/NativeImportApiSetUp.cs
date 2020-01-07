@@ -14,10 +14,19 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
+	using Relativity.Logging;
 
 	public class NativeImportApiSetUp : ImportApiSetUp<ImportBulkArtifactJob, Settings>
 	{
+		private readonly ILog logger;
+
+		public NativeImportApiSetUp()
+		{
+			this.logger = IntegrationTestHelper.Logger;
+		}
+
 		public override void SetUpImportApi(Func<ImportAPI> importApiFunc, Settings settings)
 		{
 			base.SetUpImportApi(importApiFunc, settings);
@@ -32,15 +41,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 			this.ImportJob.SourceData.SourceData = dataReader;
 			this.ImportJob.Execute();
 
-			Console.WriteLine(
-				"Import API elapsed time: {0}",
-				this.TestJobResult.CompletedJobReport.EndTime - this.TestJobResult.CompletedJobReport.StartTime);
+			TimeSpan elapsedTime = this.TestJobResult.CompletedJobReport.EndTime - this.TestJobResult.CompletedJobReport.StartTime;
+			this.logger.LogInformation("Import API elapsed time: {elapsedTime}", elapsedTime);
 		}
 
 		protected override ImportBulkArtifactJob CreateJobWithSettings(Settings settings)
 		{
 			settings.ThrowIfNull(nameof(settings));
-			var importJob = this.ImportApi.NewNativeDocumentImportJob();
+			ImportBulkArtifactJob importJob = this.ImportApi.NewNativeDocumentImportJob();
 
 			settings.CopyTo(importJob.Settings);
 			importJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();

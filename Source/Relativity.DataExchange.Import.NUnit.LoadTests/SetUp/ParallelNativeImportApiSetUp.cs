@@ -105,10 +105,10 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.SetUp
 			this.nativeImportApiSetUpList.ForEach(
 				importApiSetUp =>
 					{
-						this.TestJobResult.ProgressCompletedRows.AddRange(importApiSetUp.TestJobResult.ProgressCompletedRows);
+						this.TestJobResult.NumberOfCompletedRows += importApiSetUp.TestJobResult.NumberOfCompletedRows;
 						this.TestJobResult.JobFatalExceptions.AddRange(importApiSetUp.TestJobResult.JobFatalExceptions);
 						this.TestJobResult.ErrorRows.AddRange(importApiSetUp.TestJobResult.ErrorRows);
-						this.TestJobResult.JobMessages.AddRange(importApiSetUp.TestJobResult.JobMessages);
+						this.TestJobResult.NumberOfJobMessages += importApiSetUp.TestJobResult.NumberOfJobMessages;
 					});
 		}
 

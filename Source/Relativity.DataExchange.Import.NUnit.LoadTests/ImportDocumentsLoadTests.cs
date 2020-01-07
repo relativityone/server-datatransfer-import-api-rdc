@@ -66,8 +66,8 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			this.ValidateTotalRowsCount(numberOfDocumentsToImport);
 			this.ValidateFatalExceptionsNotExist();
 			this.ValidateErrorRowsNotExist(results);
-			Assert.That(results.JobMessages, Has.Count.Positive);
-			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(numberOfDocumentsToImport));
+			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToImport));
 		}
 
 		protected override void ValidateTotalRowsCount(int expectedTotalRows)

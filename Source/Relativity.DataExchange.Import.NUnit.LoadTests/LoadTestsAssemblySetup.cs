@@ -6,6 +6,8 @@
 
 namespace Relativity.DataExchange.Import.NUnit.LoadTests
 {
+	using System.Threading.Tasks;
+
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Import.NUnit.Integration;
@@ -16,9 +18,9 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		private readonly AssemblySetup _assemblySetup = new AssemblySetup();
 
 		[OneTimeSetUp]
-		public void Setup()
+		public Task Setup()
 		{
-			this._assemblySetup.Setup();
+			return this._assemblySetup.Setup();
 		}
 
 		[OneTimeTearDown]

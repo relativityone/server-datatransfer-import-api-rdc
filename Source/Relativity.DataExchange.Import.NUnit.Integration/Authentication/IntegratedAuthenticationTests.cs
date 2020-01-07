@@ -100,8 +100,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(NumberOfFilesToImport);
-			Assert.That(results.JobMessages, Has.Count.Positive);
-			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport));
+			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfFilesToImport));
 		}
 
 		private static async Task ChangeStateOfIntegratedAuthentication(bool isEnabled)

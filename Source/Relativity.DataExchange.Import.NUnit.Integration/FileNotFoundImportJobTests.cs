@@ -66,8 +66,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			this.ThenTheImportJobCompletedWithErrors(disableNativeLocationValidation ? 0 : 1, NumberOfFilesToImport + 1);
-			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(NumberOfFilesToImport + 1));
-			Assert.That(results.JobMessages, Has.Count.Positive);
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfFilesToImport + 1));
+			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			if (disableNativeLocationValidation)
 			{
 				Assert.That(results.JobMessages, Has.Some.Contains("does not exist"));

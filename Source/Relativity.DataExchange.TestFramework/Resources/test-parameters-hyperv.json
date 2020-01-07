@@ -6,6 +6,7 @@
   "RelativityUserName": "/OYL+FsJFRq/u3h1cgH/PTZ7U4s6bycpE1b1BCVicGQ=",
   "RelativityPassword": "LtQqUZTGdfTlhapC2jooKw==",
   "ServerCertificateValidation": "False",
+  "WriteLogsToConsole": "True",
   "SkipAsperaModeTests": "False",
   "SkipDirectModeTests": "False",
   "SkipIntegrationTests": "False",
