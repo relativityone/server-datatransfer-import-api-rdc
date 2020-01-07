@@ -90,6 +90,7 @@
     <Compile Include="ExportTestJobResult.cs" />
     <Compile Include="Dto\ExportImageDto.cs" />
     <Compile Include="Dto\ExportNativeDto.cs" />
+    <Compile Include="MultiResourcePoolExportTests.cs" />
     <Compile Include="PositiveExportTests.cs" />
     <Compile Include="Dto\PaddingDto.cs" />
     <Compile Include="TestContainerFactory.cs" />

@@ -35,7 +35,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		public static IEnumerable<string> ImportDocuments(IntegrationTestParameters parameters)
 		{
-			return ImportDocuments(parameters, SetupColumns, SetValues);
+			return ImportDocuments(parameters, SetupColumns, SetValues, true);
 
 			void SetupColumns(DataTable dataTable)
 			{
@@ -85,7 +85,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		private static IEnumerable<string> ImportDocuments(
 			IntegrationTestParameters parameters,
 			Action<DataTable> setupColumns,
-			Action<DataRow, string> setValues)
+			Action<DataRow, string> setValues,
+			bool generateControlNumber = false)
 		{
 			parameters.ThrowIfNull(nameof(parameters));
 
@@ -109,9 +110,16 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 				foreach (string file in TestData.SampleDocFiles)
 				{
-					DataRow dr = dataSource.NewRow()
-						.SetControlNumber(System.IO.Path.GetFileName(file))
-						.SetFilePath(file);
+					DataRow dr = dataSource.NewRow().SetFilePath(file);
+
+					if (generateControlNumber)
+					{
+						dr.GenerateControlNumber();
+					}
+					else
+					{
+						dr.SetControlNumber(System.IO.Path.GetFileName(file));
+					}
 
 					setValues(dr, file);
 

@@ -27,6 +27,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	[Category(TestCategories.Integration)]
 	public class FolderAndSubFolderExportTests : ExportTestBase
 	{
+		protected override IntegrationTestParameters TestParameters => AssemblySetup.TestParameters;
+
 		[IdentifiedTest("3B50E3A9-0A28-4FA4-9ACD-5FB878DEF97A")]
 		[TestCase(false)]
 		[TestCase(true)]

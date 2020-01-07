@@ -68,6 +68,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			new DelimiterDto(':', '/', '\n', '"', '\r'),
 		};
 
+		protected override IntegrationTestParameters TestParameters => AssemblySetup.TestParameters;
+
 		[IdentifiedTest("5b20c6f1-1196-41ea-9326-0e875e2cabe9")]
 		[Test]
 		[Pairwise]
@@ -81,7 +83,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			[ValueSource(nameof(Paddings))] PaddingDto paddingValue,
 			[ValueSource(nameof(Delimiters))] DelimiterDto delimiterValue)
 		{
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
+			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(TestParameters, client);
 
 			// ARRANGE
 			GivenTheTapiForceClientAppSettings(client);

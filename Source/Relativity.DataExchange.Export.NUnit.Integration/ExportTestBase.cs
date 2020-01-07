@@ -55,14 +55,14 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected ExportTestBase()
 		{
-			Assume.That(AssemblySetup.TestParameters.WorkspaceId, Is.Positive, "The test workspace must be created or specified in order to run this integration test.");
-
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
 		}
 
 		internal Mock<TapiObjectService> MockTapiObjectService { get; private set; }
+
+		protected abstract IntegrationTestParameters TestParameters { get; }
 
 		protected ExtendedExportFile ExtendedExportFile { get; set; }
 
@@ -80,7 +80,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			ContainerFactoryProvider.ContainerFactory = new TestContainerFactory(this.testContainer, new NullLogger());
 
 			this.cookieContainer = new CookieContainer();
-			this.credentials = new NetworkCredential(AssemblySetup.TestParameters.RelativityUserName, AssemblySetup.TestParameters.RelativityPassword);
+			this.credentials = new NetworkCredential(TestParameters.RelativityUserName, TestParameters.RelativityPassword);
 
 			this.TempDirectory = new TempDirectory2();
 			this.TempDirectory.Create();
@@ -294,7 +294,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		{
 			using (var caseManager = new CaseManager(this.credentials, this.cookieContainer))
 			{
-				CaseInfo caseInfo = caseManager.Read(AssemblySetup.TestParameters.WorkspaceId);
+				CaseInfo caseInfo = caseManager.Read(TestParameters.WorkspaceId);
 				this.ExtendedExportFile.CaseInfo = caseInfo;
 				this.ExtendedExportFile.ArtifactID = caseInfo.RootFolderID;
 			}
@@ -307,11 +307,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				{
 					case kCura.WinEDDS.ExportFile.ExportType.Production:
 						this.ExtendedExportFile.DataTable = productionManager
-							.RetrieveProducedByContextArtifactID(AssemblySetup.TestParameters.WorkspaceId).Tables[0];
+							.RetrieveProducedByContextArtifactID(TestParameters.WorkspaceId).Tables[0];
 						break;
 
 					default:
-						this.ExtendedExportFile.DataTable = GetSearchExportDataSource(
+						this.ExtendedExportFile.DataTable = this.GetSearchExportDataSource(
 							searchManager,
 							this.ExtendedExportFile.TypeOfExport == kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch,
 							this.ExtendedExportFile.ArtifactTypeID);
@@ -334,12 +334,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				else
 				{
 					this.ExtendedExportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(
-						AssemblySetup.TestParameters.WorkspaceId,
+						TestParameters.WorkspaceId,
 						this.ExtendedExportFile.ArtifactTypeID,
 						artifactIds,
 						this.ExtendedExportFile.TypeOfExport == kCura.WinEDDS.ExportFile.ExportType.Production);
 					this.ExtendedExportFile.AllExportableFields =
-						searchManager.RetrieveAllExportableViewFields(AssemblySetup.TestParameters.WorkspaceId, this.ExtendedExportFile.ArtifactTypeID);
+						searchManager.RetrieveAllExportableViewFields(TestParameters.WorkspaceId, this.ExtendedExportFile.ArtifactTypeID);
 				}
 			}
 		}
@@ -418,10 +418,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			Assert.That(this.exporterTestJobResult.TransferModes, Has.All.AnyOf(TapiClient.Direct, TapiClient.Web));
 		}
 
-		private static DataTable GetSearchExportDataSource(SearchManager searchManager, bool isArtifactSearch, int artifactType)
+		private DataTable GetSearchExportDataSource(SearchManager searchManager, bool isArtifactSearch, int artifactType)
 		{
 			DataSet dataset = searchManager.RetrieveViewsByContextArtifactID(
-				AssemblySetup.TestParameters.WorkspaceId,
+				TestParameters.WorkspaceId,
 				artifactType,
 				isArtifactSearch);
 			return dataset.Tables[0];
@@ -431,7 +431,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		{
 			using (var objectTypeManager = new ObjectTypeManager(this.credentials, this.cookieContainer))
 			{
-				DataSet dataset = objectTypeManager.RetrieveAllUploadable(AssemblySetup.TestParameters.WorkspaceId);
+				DataSet dataset = objectTypeManager.RetrieveAllUploadable(TestParameters.WorkspaceId);
 				DataRowCollection rows = dataset.Tables[0].Rows;
 				foreach (DataRow row in rows)
 				{
@@ -454,7 +454,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			var fields = new DocumentFieldCollection();
 			using (var fieldQuery = new FieldQuery(this.credentials, this.cookieContainer))
 			{
-				foreach (Field field in fieldQuery.RetrieveAllAsArray(AssemblySetup.TestParameters.WorkspaceId, artifactTypeId))
+				foreach (Field field in fieldQuery.RetrieveAllAsArray(TestParameters.WorkspaceId, artifactTypeId))
 				{
 					fields.Add(new DocumentField(
 						field.DisplayName,
