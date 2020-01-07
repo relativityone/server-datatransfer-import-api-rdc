@@ -7,3 +7,4 @@ relativity.oauth2client.implicit
 relativity.oauth2client.interfaces
 relativity.transfer.client
 relativity.telemetry.datacontracts.shared
+relativity.telemetry.services.interface

@@ -16,3 +16,4 @@ relativity.transfer.client
 stylecop.analyzers
 system.reactive
 relativity.telemetry.datacontracts.shared
+relativity.telemetry.services.interface
