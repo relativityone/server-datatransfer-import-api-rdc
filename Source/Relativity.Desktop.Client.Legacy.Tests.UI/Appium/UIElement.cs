@@ -11,6 +11,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 		private readonly Func<AppiumWebElement> create;
 		private AppiumWebElement appiumWebElement;
 		private TimeSpan waitForTimeout = TimeSpan.Zero;
+		private string elementDescription = "Unknown";
 		protected readonly ILog Logger;
 
 		protected UIElement(ILog logger, Func<AppiumWebElement> create)
@@ -301,7 +302,16 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 
 		public override string ToString()
 		{
-			return $"[TagName: {Element.TagName}, Text: {Element.Text}]";
+			try
+			{
+				elementDescription = $"[TagName: {Element.TagName}, Text: {Element.Text}]";
+			}
+			catch (InvalidOperationException)
+			{
+				Logger.LogDebug("Failed to get element description. Previous element description is: {0}", elementDescription);
+			}
+
+			return elementDescription;
 		}
 	}
 }
