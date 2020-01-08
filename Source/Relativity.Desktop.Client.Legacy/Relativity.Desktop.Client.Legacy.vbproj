@@ -193,8 +193,6 @@
     <Compile Include="CommandLine\Command.vb" />
     <Compile Include="CommandLine\CommandLineParser.vb" />
     <Compile Include="CommandLine\CommandList.vb" />
-    <Compile Include="CommandLine\InvalidArgumentException.vb" />
-    <Compile Include="CommandLine\InvalidCommandLineFormat.vb" />
     <Compile Include="ConfigurationException.vb" />
     <Compile Include="Controls\EnhancedMenuProvider.vb">
       <SubType>Component</SubType>

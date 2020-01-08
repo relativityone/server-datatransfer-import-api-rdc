@@ -270,7 +270,6 @@
     <Compile Include="Exporters\LoadFileCellFormatters\HtmlCellFormatter.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileCellFormatter.vb" />
     <Compile Include="Exporters\ILongTextStreamFormatter.vb" />
-    <Compile Include="Exporters\LineFactory\ObjectLineFactoryBase.vb" />
     <Compile Include="Exporters\ObjectExportInfo.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -454,12 +453,6 @@
     <Compile Include="Process\Statistics.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="PropertyExtractor\EML.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PropertyExtractor\File.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="ReadFromExisting.vb" />
     <Compile Include="ServiceFactoryFactory.vb" />
     <Compile Include="Service\AuditManager.vb">
@@ -568,9 +561,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Types\FolderInfo.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Types\ImportStatusMessagePriority.vb">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Types\LoadFileFieldMap.vb">
@@ -1132,6 +1122,7 @@
       <Name>Relativity.DataExchange.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

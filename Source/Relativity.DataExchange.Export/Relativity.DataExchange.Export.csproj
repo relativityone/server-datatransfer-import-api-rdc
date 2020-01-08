@@ -180,7 +180,6 @@
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgePool.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\SafeIncrement.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeParametersFactory.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\WaitHandleExtensions.cs" />
     <Compile Include="Export\VolumeManagerV2\FileshareSettingsService.cs" />
     <Compile Include="Export\VolumeManagerV2\IFileshareSettingsService.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\EmptyImagesRollup.cs" />
@@ -303,7 +302,6 @@
     <Compile Include="Export\VolumeManagerV2\Repository\NativeRepositoryBuilderFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\ColumnsFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\ColumnsOrdinalLookupFactory.cs" />
-    <Compile Include="Export\VolumeManagerV2\Settings\Config.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\FieldLookupService.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\FieldService.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\FieldServiceFactory.cs" />
@@ -328,7 +326,6 @@
     <Compile Include="Export\VolumeManagerV2\Statistics\Messenger.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\MetadataStatistics.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ProgressHandler.cs" />
-    <Compile Include="Export\VolumeManagerV2\Statistics\ThreadSafeAddOnlyHashSet.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheck.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportValidation.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidator.cs" />
