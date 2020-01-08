@@ -127,7 +127,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					dataSource.Rows.Add(dr);
 				}
 
-				job.SourceData.SourceData = dataSource.CreateDataReader();
+				job.SourceData.Reader = dataSource.CreateDataReader();
 				job.Execute();
 
 				return controlNumbers;
@@ -153,7 +153,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 				SetImagesData(dataSource, documentsControlNumbers);
 
-				job.SourceData.SourceData = dataSource;
+				job.SourceData.Reader = dataSource.CreateDataReader();
 				job.Execute();
 			}
 		}

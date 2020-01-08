@@ -51,12 +51,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			ForceClient(client);
 
-			this.InitializeImportApiWithUserAndPassword(ImageImportSettingsProvider.GetImageFilePathSourceDocumentImportSettings(false));
+			this.InitializeImportApiWithUserAndPassword(ImageImportSettingsProvider.GetImageFilePathSourceDocumentImportSettings(true));
 
 			const int NumberOfDocumentsToImport = 5;
 			const int NumberOfImagesPerDocument = 3;
+			this.ImportApiSetUp<ImageImportApiSetUp>().UseFileNames = true;
 
-			IEnumerable<ImageImportDto> importData = GetRandomImageFiles(this.TempDirectory.Directory, NumberOfDocumentsToImport, NumberOfImagesPerDocument, ImageFormat.Jpeg);
+			IEnumerable<ImageImportWithFileNameDto> importData = GetRandomImageFiles(this.TempDirectory.Directory, NumberOfDocumentsToImport, NumberOfImagesPerDocument, ImageFormat.Jpeg);
 
 			// ACT
 			this.Execute(importData);
@@ -70,37 +71,48 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportImage)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
-		[IdentifiedTest("6fbd96bd-7c94-48af-b156-77e02f4c94fa")]
+		[IdentifiedTest("f5b4a1d7-9dfc-4931-ba55-0fb0d56564ad")]
 		[Pairwise]
 		public void ShouldImportTheImage(
 			[Values(true, false)] bool useFileNames,
 			[Values(true, false)] bool useDefaultFieldNames,
+			[Values(true, false)] bool useDataTableSource,
 			[Values(ImageFormat.Jpeg, ImageFormat.Tiff)] ImageFormat imageFormat)
 		{
-			this.InitializeImportApiWithUserAndPassword(ImageImportSettingsProvider.GetImageFilePathSourceDocumentImportSettings(useDefaultFieldNames));
+			this.InitializeImportApiWithUserAndPassword(ImageImportSettingsProvider.GetImageFilePathSourceDocumentImportSettings(useDefaultFieldNames || !useDataTableSource));
 
 			// ARRANGE
 			const int ExpectedNumberOfImportedImages = 1;
 			RdoHelper.DeleteAllObjectsByType(AssemblySetup.TestParameters, WellKnownArtifactTypes.DocumentArtifactTypeId).Wait();
 
+			string documentIdentifier = RandomHelper.NextString(10, 10);
 			string batesNumber = RandomHelper.NextString(10, 10);
-			string controlNumber = RandomHelper.NextString(10, 10);
 
 			// The Bates field for the first image in a set must be identical to the doc identifier.
 			// batesNumber = controlNumber;
 			int imageWidth = 200;
 			int imageHeight = 200;
-			string filePath = RandomHelper.NextImageFile(imageFormat, this.TempDirectory.Directory, imageWidth, imageHeight);
-			string fileName = AddSpecialCharacters($"{RandomHelper.NextString(10, 10)}.{Path.GetExtension(filePath)}");
+			string fileLocation = RandomHelper.NextImageFile(imageFormat, this.TempDirectory.Directory, imageWidth, imageHeight);
 
-			var imageImportDto = new ImageImportDto(controlNumber, batesNumber, fileName, filePath);
-			var importData = new List<ImageImportDto>() { imageImportDto };
+			ImageImportDto imageImportDto;
 
 			this.ImportApiSetUp<ImageImportApiSetUp>().UseFileNames = useFileNames;
+			this.ImportApiSetUp<ImageImportApiSetUp>().UseDataTableSource = useDataTableSource;
 			this.ImportApiSetUp<ImageImportApiSetUp>().UseDefaultFieldNames = useDefaultFieldNames;
 
 			// ACT
-			this.Execute(importData);
+			if (useFileNames)
+			{
+				string fileName = AddSpecialCharacters($"{RandomHelper.NextString(10, 10)}.{Path.GetExtension(fileLocation)}");
+				var imageImportWithFileNameDto = new ImageImportWithFileNameDto(batesNumber, documentIdentifier, fileLocation, fileName);
+				imageImportDto = imageImportWithFileNameDto;
+				this.Execute(new List<ImageImportWithFileNameDto>() { imageImportWithFileNameDto });
+			}
+			else
+			{
+				imageImportDto = new ImageImportDto(batesNumber, documentIdentifier, fileLocation);
+				this.Execute(new List<ImageImportDto>() { imageImportDto });
+			}
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(ExpectedNumberOfImportedImages);
@@ -108,7 +120,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ThenTheImportedDocumentIsCorrect(imageImportDto, useFileNames);
 		}
 
-		private static IEnumerable<ImageImportDto> GetRandomImageFiles(string directory, int numberOfDocumentsToImport, int numberOfImagesPerDocument, ImageFormat imageFormat)
+		private static IEnumerable<ImageImportWithFileNameDto> GetRandomImageFiles(string directory, int numberOfDocumentsToImport, int numberOfImagesPerDocument, ImageFormat imageFormat)
 		{
 			int imageWidth = 200;
 			int imageHeight = 200;
@@ -118,10 +130,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				string documentIdentifier = Guid.NewGuid().ToString();
 				for (int imageIndex = 1; imageIndex <= numberOfImagesPerDocument; imageIndex++)
 				{
-					string controlNumber = $"{documentIdentifier}_{imageIndex}";
-					string filePath = RandomHelper.NextImageFile(imageFormat, directory, imageWidth, imageHeight);
-					string fileName = AddSpecialCharacters($"{RandomHelper.NextString(10, 10)}.{Path.GetExtension(filePath)}");
-					yield return new ImageImportDto(controlNumber, documentIdentifier, fileName, filePath);
+					string batesNumber = $"{documentIdentifier}_{imageIndex}";
+					string fileLocation = RandomHelper.NextImageFile(imageFormat, directory, imageWidth, imageHeight);
+					string fileName = AddSpecialCharacters($"{RandomHelper.NextString(10, 10)}.{Path.GetExtension(fileLocation)}");
+					yield return new ImageImportWithFileNameDto(batesNumber, documentIdentifier, fileLocation, fileName);
 				}
 			}
 		}
@@ -139,7 +151,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		private static void ThenTheImportedDocumentIsCorrect(ImageImportDto imageImportDto, bool useFileNames)
 		{
-			RelativityObject document = QueryDocument(imageImportDto.ControlNumber);
+			RelativityObject document = QueryDocument(imageImportDto.BatesNumber);
 
 			Assert.That(document, Is.Not.Null);
 			Choice hasImagesField = GetDocumentFieldValue(document, WellKnownFields.HasImages) as Choice;
@@ -159,11 +171,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(imageFile.FileId, Is.Positive);
 			if (useFileNames)
 			{
-				Assert.That(imageFile.FileName, Is.EqualTo(imageImportDto.FileName));
+				Assert.That(imageFile.FileName, Is.EqualTo((imageImportDto as ImageImportWithFileNameDto)?.FileName));
 			}
 
 			Assert.That(imageFile.FileType, Is.EqualTo((int)FileType.Tif));
-			Assert.That(imageFile.Identifier, Is.EqualTo(imageImportDto.ControlNumber).Or.EqualTo(imageImportDto.DocumentIdentifier));
+			Assert.That(imageFile.Identifier, Is.EqualTo(imageImportDto.BatesNumber).Or.EqualTo(imageImportDto.DocumentIdentifier));
 			Assert.That(imageFile.InRepository, Is.True);
 			Assert.That(imageFile.Path, Is.Not.Null.Or.Empty);
 			Assert.That(imageFile.Size, Is.Positive);
@@ -183,9 +195,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				new[] { WellKnownFields.ArtifactId, WellKnownFields.ControlNumber, WellKnownFields.HasImages, WellKnownFields.HasNative, WellKnownFields.BatesNumber, WellKnownFields.RelativityImageCount });
 
 			return (from document in documents
-			        from pair in document.FieldValues
-			        where pair.Field.Name == WellKnownFields.ControlNumber && pair.Value.ToString() == controlNumber
-			        select document).FirstOrDefault();
+					from pair in document.FieldValues
+					where pair.Field.Name == WellKnownFields.ControlNumber && pair.Value.ToString() == controlNumber
+					select document).FirstOrDefault();
 		}
 
 		private static IEnumerable<FileDto> QueryImageFileInfo(int artifactId)

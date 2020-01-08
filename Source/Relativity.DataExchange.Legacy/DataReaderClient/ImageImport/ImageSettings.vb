@@ -43,7 +43,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property AutoNumberImages() As Boolean
 
 		''' <summary>
-		''' Defines a column name in the source DataTable, which maps to a field used as a unique identifier.
+		''' Defines a column name in the SourceData, which maps to a field used as a unique identifier. If property is not set, default column name "BatesNumber" is used.
 		''' </summary>
 		''' <remarks>This unique identifier may be called Bates Number or Control Number in a database.</remarks>
 		Public Property BatesNumberField() As String
@@ -77,7 +77,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property DisableImageTypeValidation As Boolean?
 
 		''' <summary>
-		''' Name of the field in the data source corresponding to the DocumentIdentifier field.
+		''' Name of the field in the SourceData corresponding to the DocumentIdentifier field. If property is not set, default column name "DocumentIdentifier" is used.
 		''' </summary>
 		Public Property DocumentIdentifierField() As String
 			Get
@@ -93,7 +93,7 @@ Namespace kCura.Relativity.DataReaderClient
 		End Property
 
 		''' <summary>
-		''' Indicates the column name in the source DataTable that maps to the FileLocation field in Relativity. 
+		''' Indicates the column name in the SourceData that maps to the FileLocation field in Relativity. If property is not set, default column name "FileLocation" is used.
 		''' </summary>
 		''' <remarks>In the data set, this field value should contain a fully-qualified file location path and file name, such as C:\images\image1.jpg or \\servername\images\image1.jpg.
 		''' The Import API doesn't support multi-page TIFFs.</remarks>
@@ -111,7 +111,7 @@ Namespace kCura.Relativity.DataReaderClient
 		End Property
 
 		''' <summary>
-		''' Indicates the column name in the source DataTable that maps to the FileName field in Relativity. 
+		''' Indicates the column name in the SourceData that maps to the FileName field in Relativity. If property is not set, default column name "FileName" is used.
 		''' </summary>
 		''' <remarks>In the data set, this field value should contain a original file name with its extension. Original file name is stored in Filename column in File table</remarks>
 		Public Property FileNameField() As String

@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dto\ImageImportDto.cs" />
+    <Compile Include="Dto\ImageImportWithFileNameDto.cs" />
     <Compile Include="SetUp\ImageImportSettingsProvider.cs" />
     <Compile Include="SetUp\ImportApiSetUp.cs" />
     <Compile Include="ImportProfilingTests.cs" />

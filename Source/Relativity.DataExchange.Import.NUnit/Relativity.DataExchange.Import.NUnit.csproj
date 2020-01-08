@@ -141,6 +141,7 @@
     </Content>
     <Compile Include="BulkFileImporterTestsBase.cs" />
     <Compile Include="BulkImageFileImporterTests.cs" />
+    <Compile Include="ImageDataReaderTests.cs" />
     <Compile Include="MockBulkImageFileImporter.cs" />
     <Compile Include="MockBulkLoadFileImporter.cs" />
     <Compile Include="BulkLoadFileImporterTests.cs" />
@@ -183,6 +184,10 @@
   </Target>
   -->
   <ItemGroup>
+    <ProjectReference Include="..\Relativity.DataExchange.Import.NUnit.Integration\Relativity.DataExchange.Import.NUnit.Integration.csproj">
+      <Project>{4BC26612-C72D-45D9-9902-88562017EDA0}</Project>
+      <Name>Relativity.DataExchange.Import.NUnit.Integration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity.DataExchange.TestFramework\Relativity.DataExchange.TestFramework.csproj">
       <Project>{fed61746-80ec-40cb-998e-9299b804ce7d}</Project>
       <Name>Relativity.DataExchange.TestFramework</Name>

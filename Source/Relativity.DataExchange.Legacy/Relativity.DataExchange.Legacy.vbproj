@@ -181,6 +181,7 @@
     <Compile Include="API\IImageReader.vb" />
     <Compile Include="API\ImageRecord.vb" />
     <Compile Include="API\LoginHelper.vb" />
+    <Compile Include="ImportExtension\ImageImport\ImageDataReader.vb" />
     <Compile Include="Monitoring\MetricAuthenticationType.vb" />
     <Compile Include="Monitoring\MetricJobBase.vb" />
     <Compile Include="RsaBearerTokenAuthenticationProvider.vb" />
@@ -391,7 +392,6 @@
     <Compile Include="ImportExtension\DataReaderReaderInitializationArgs.vb" />
     <Compile Include="ImportExtension\ImageImport\DataReaderImageImporter.vb" />
     <Compile Include="ImportExtension\ImageImport\DataReaderImageImporterProcess.vb" />
-    <Compile Include="ImportExtension\ImageImport\ImageDataTableReader.vb" />
     <Compile Include="ImportExtension\NativeFileValidatedArtifactFieldCollection.vb" />
     <Compile Include="Monitoring\MetricJobEndReport.vb" />
     <Compile Include="Monitoring\Sinks\IMetricService.vb" />

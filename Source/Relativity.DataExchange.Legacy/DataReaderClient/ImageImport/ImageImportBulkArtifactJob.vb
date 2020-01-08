@@ -1,6 +1,7 @@
 Imports System.Net
 Imports Relativity.DataExchange
 Imports kCura.WinEDDS
+Imports kCura.WinEDDS.ImportExtension
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
@@ -69,7 +70,7 @@ Namespace kCura.Relativity.DataReaderClient
 		End Property
 
 		''' <summary>
-		''' Represents an instance of the SourceIDataReader, which contains data for import. This property is required.
+		''' Represents an instance of the ImageSourceIDataReader, which contains data for import. This property is required.
 		''' </summary>
 		''' <value>
 		''' The source data.
@@ -91,6 +92,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private WithEvents _processContext As ProcessContext
 		Private _settings As ImageSettings
 		Private _sourceData As ImageSourceIDataReader
+        Private _sourceDataReader As SourceIDataReader
 		Private _credentials As ICredentials
 		Private _cookieMonster As Net.CookieContainer
 		Private _jobReport As JobReport
@@ -142,10 +144,9 @@ Namespace kCura.Relativity.DataReaderClient
 			If IsSettingsValid() Then
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-				MapSuppliedFieldNamesToActual(Settings, SourceData.SourceData)
-
 			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_webApiCredential.Credential))
-				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, metricService)
+			    Dim process As kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess = New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData, Settings, metricService)
+				
 				process.ExecutionSource = _executionSource
                 process.ApplicationName = Settings.ApplicationName
 				_processContext = process.Context
@@ -223,10 +224,6 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Sub EnsureFieldNameIsValid(ByVal imageSettingsField As String, ByVal forFieldName As String)
 			If String.IsNullOrEmpty(forFieldName) Then
 				Throw New Exception("No field name specified for " & imageSettingsField)
-			End If
-
-			If Not SourceData.SourceData.Columns.Contains(forFieldName) Then
-				Throw New Exception(String.Format("No field named {0} found in the DataTable for " & imageSettingsField, forFieldName))
 			End If
 		End Sub
 

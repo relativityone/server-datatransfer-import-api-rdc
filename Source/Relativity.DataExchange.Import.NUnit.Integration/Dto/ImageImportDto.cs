@@ -12,24 +12,20 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 
 	public class ImageImportDto
 	{
-		public ImageImportDto(string controlNumber, string documentIdentifier, string fileName, string filePath)
+		public ImageImportDto(string batesNumber, string documentIdentifier, string fileLocation)
 		{
-			this.ControlNumber = controlNumber;
+			this.BatesNumber = batesNumber;
 			this.DocumentIdentifier = documentIdentifier;
-			this.FileName = fileName;
-			this.FilePath = filePath;
+			this.FileLocation = fileLocation;
 		}
 
-		[DisplayName(WellKnownFields.ControlNumber)]
-		public string ControlNumber { get; }
+		[DisplayName(DefaultImageFieldNames.BatesNumber)]
+		public string BatesNumber { get; }
 
-		[DisplayName(WellKnownFields.DocumentIdentifier)]
+		[DisplayName(DefaultImageFieldNames.DocumentIdentifier)]
 		public string DocumentIdentifier { get; }
 
-		[DisplayName(WellKnownFields.FilePath)]
-		public string FilePath { get; }
-
-		[DisplayName(WellKnownFields.FileName)]
-		public string FileName { get; }
+		[DisplayName(DefaultImageFieldNames.FileLocation)]
+		public string FileLocation { get; }
 	}
 }

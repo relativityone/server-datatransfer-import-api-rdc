@@ -1,4 +1,6 @@
+Imports System.Net.Configuration
 Imports System.Threading
+Imports kCura.Relativity.DataReaderClient
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
@@ -8,7 +10,8 @@ Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImageImporter
 		Inherits kCura.WinEDDS.BulkImageFileImporter
 
-		Private _sourceTable As System.Data.DataTable
+		Private _reader As IDataReader
+		Private _imageSettings As ImageSettings
 
 		Public Sub New(ByVal folderId As Int32, _
 		               ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, _
@@ -16,9 +19,10 @@ Namespace kCura.WinEDDS.ImportExtension
 		               ByVal ioReporterInstance As IIoReporter, 
 		               ByVal logger As ILog, _
 		               ByVal processID As System.Guid, _
-		               ByVal sourceDataReader As System.Data.DataTable, _
 		               ByVal enforceDocumentLimit As Boolean, _
 		               ByVal tokenSource As CancellationTokenSource,
+                       ByVal reader As IDataReader,
+					   ByVal imageSettings As ImageSettings, _
 		               Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
 			MyBase.New(folderId, _
 			           imageLoadFile, _
@@ -30,18 +34,18 @@ Namespace kCura.WinEDDS.ImportExtension
 			           enforceDocumentLimit, _
 			           tokenSource, _
 			           executionSource)
-			_sourceTable = sourceDataReader
+			_reader = reader
+			_imageSettings = imageSettings
 		End Sub
 
 		Public Overrides Function GetImageReader() As kCura.WinEDDS.Api.IImageReader
-			'Return New Datasource
-			Return New ImageDataTableReader(SourceData)
+			Return New ImageDataReader(Reader, _imageSettings)
 		End Function
 
-		Public ReadOnly Property SourceData() As System.Data.DataTable
-			Get
-				Return _sourceTable
-			End Get
-		End Property
+        Public ReadOnly Property Reader() As IDataReader
+            Get
+                Return _reader
+            End Get
+        End Property
 	End Class
 End Namespace

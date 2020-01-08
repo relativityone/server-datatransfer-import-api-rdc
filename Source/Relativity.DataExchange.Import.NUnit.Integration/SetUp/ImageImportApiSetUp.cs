@@ -10,16 +10,21 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Data;
 	using System.Globalization;
 
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
+	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
 
 	public class ImageImportApiSetUp : ImportApiSetUp<ImageImportBulkArtifactJob, ImageSettings>
 	{
+		public bool UseDataTableSource { get; set; } = false;
+
 		public bool UseFileNames { get; set; } = false;
 
 		public bool UseDefaultFieldNames { get; set; } = false;
@@ -36,33 +41,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 		public override void Execute(IDataReader dataReader)
 		{
 			dataReader.ThrowIfNull(nameof(dataReader));
-
-			// Conversion to dataTable is temporary, after DataSource unification it will be not needed
-			using (DataTable dataTable = new DataTable())
+			if (this.UseDataTableSource)
 			{
-				dataTable.Locale = CultureInfo.InvariantCulture;
-
-				dataTable.Columns.Add(this.UseDefaultFieldNames ? DefaultImageFieldNames.BatesNumber : "Bates_Number", typeof(string));
-				dataTable.Columns.Add(this.UseDefaultFieldNames ? DefaultImageFieldNames.DocumentIdentifier : "Document_Identifier", typeof(string));
-				dataTable.Columns.Add(this.UseDefaultFieldNames ? DefaultImageFieldNames.FileLocation : "File_Location", typeof(string));
-				if (this.UseFileNames)
-				{
-					dataTable.Columns.Add(this.UseDefaultFieldNames ? DefaultImageFieldNames.FileName : "File_Name", typeof(string));
-				}
-
-				while (dataReader.Read())
-				{
-					if (this.UseFileNames)
-					{
-						dataTable.Rows.Add(dataReader.GetString(0), dataReader.GetString(1), dataReader.GetString(2), dataReader.GetString(3));
-					}
-					else
-					{
-						dataTable.Rows.Add(dataReader.GetString(0), dataReader.GetString(1), dataReader.GetString(2));
-					}
-				}
-
-				this.ImportJob.SourceData.SourceData = dataTable;
+				this.ExecuteObsoleteDataSourceType(dataReader);
+			}
+			else
+			{
+				this.ImportJob.SourceData.Reader = dataReader;
 				this.ImportJob.Execute();
 			}
 
@@ -79,6 +64,51 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 			importJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
 
 			return importJob;
+		}
+
+		private void ExecuteObsoleteDataSourceType(IDataReader dataReader)
+		{
+			using (DataTable dataTable = new DataTable())
+			{
+				dataTable.Locale = CultureInfo.InvariantCulture;
+
+				// properties from derived class come first in dataReader
+				if (this.UseFileNames)
+				{
+					dataTable.Columns.Add(
+						this.UseDefaultFieldNames ? DefaultImageFieldNames.FileName : "File_Name",
+						typeof(string));
+				}
+
+				dataTable.Columns.Add(
+					this.UseDefaultFieldNames ? DefaultImageFieldNames.BatesNumber : "Bates_Number",
+					typeof(string));
+				dataTable.Columns.Add(
+					this.UseDefaultFieldNames ? DefaultImageFieldNames.DocumentIdentifier : "Document_Identifier",
+					typeof(string));
+				dataTable.Columns.Add(
+					this.UseDefaultFieldNames ? DefaultImageFieldNames.FileLocation : "File_Location",
+					typeof(string));
+
+				while (dataReader.Read())
+				{
+					if (this.UseFileNames)
+					{
+						dataTable.Rows.Add(
+							dataReader.GetString(0),
+							dataReader.GetString(1),
+							dataReader.GetString(2),
+							dataReader.GetString(3));
+					}
+					else
+					{
+						dataTable.Rows.Add(dataReader.GetString(0), dataReader.GetString(1), dataReader.GetString(2));
+					}
+				}
+
+				this.ImportJob.SourceData.SourceData = dataTable;
+				this.ImportJob.Execute();
+			}
 		}
 	}
 }
