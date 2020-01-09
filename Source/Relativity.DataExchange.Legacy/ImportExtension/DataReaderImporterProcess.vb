@@ -7,8 +7,8 @@ Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImporterProcess
 		Inherits kCura.WinEDDS.ImportLoadFileProcess
 
-		Public Sub New(ByVal sourceData As System.Data.IDataReader, ByVal metricService As IMetricService)
-			MyBase.New(metricService)
+		Public Sub New(ByVal metricService As IMetricService, ByVal runningContext As IRunningContext)
+			MyBase.New(metricService, runningContext)
 
 			' Use the default value for the delimiter because as a public class,
 			' users of this class may not know what value to set for this
@@ -55,7 +55,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				_temporaryLocalDirectory, _
 				Me.CancellationTokenSource, _
 				initializeArtifactReader:=False, _
-				executionSource := ExecutionSource) With
+				executionSource := Me.RunningContext.ExecutionSource) With
 				    {
 						.OnBehalfOfUserToken = Me.OnBehalfOfUserToken,
 						.Timekeeper = Me.TimeKeeperManager

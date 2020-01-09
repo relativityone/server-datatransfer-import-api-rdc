@@ -53,6 +53,8 @@ namespace kCura.Relativity.ImportAPI
 		/// </summary>
 		private IAuthenticationTokenProvider _authenticationTokenProvider = new NullAuthTokenProvider();
 
+		private readonly IRunningContext _runningContext = new RunningContext();
+
 		/// <summary>
 		/// Holds cookies for the current session.
 		/// </summary>
@@ -348,7 +350,8 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
-			return new ImageImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, (int)ExecutionSource);
+			this._runningContext.ExecutionSource = (ExecutionSource)this.ExecutionSource;
+			return new ImageImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, this._runningContext);
 		}
 
 		/// <summary>
@@ -397,7 +400,8 @@ namespace kCura.Relativity.ImportAPI
 		/// </returns>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId)
 		{
-			var returnJob = new ImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, (int)ExecutionSource);
+			this._runningContext.ExecutionSource = (ExecutionSource)this.ExecutionSource;
+			var returnJob = new ImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, this._runningContext);
 			returnJob.Settings.ArtifactTypeId = artifactTypeId;
 			return returnJob;
 		}
@@ -453,7 +457,7 @@ namespace kCura.Relativity.ImportAPI
 			try
 			{
 				ImportCredentialManager.WebServiceURL = webServiceURL;
-				credentials = ImportCredentialManager.GetCredentials(userName, password);
+				credentials = ImportCredentialManager.GetCredentials(userName, password, this._runningContext);
 			}
 			catch (kCura.WinEDDS.Exceptions.CredentialsNotSupportedException)
 			{
@@ -490,10 +494,10 @@ namespace kCura.Relativity.ImportAPI
 		private TelemetryConstants.AuthenticationMethod GetAuthenticationMethod(string username)
 		{
 			return (string.IsNullOrEmpty(username)
-				        ? TelemetryConstants.AuthenticationMethod.Windows
-				        : (username == kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName
-					           ? TelemetryConstants.AuthenticationMethod.BearerToken
-					           : TelemetryConstants.AuthenticationMethod.UsernamePassword));
+						? TelemetryConstants.AuthenticationMethod.Windows
+						: (username == kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName
+							   ? TelemetryConstants.AuthenticationMethod.BearerToken
+							   : TelemetryConstants.AuthenticationMethod.UsernamePassword));
 		}
 
 		private void SendAuthenticationTypeMetric(NetworkCredential credentials, TelemetryConstants.AuthenticationMethod authenticationMethod)
@@ -501,13 +505,15 @@ namespace kCura.Relativity.ImportAPI
 			Monitoring.Sinks.IMetricService metricService = new Monitoring.Sinks.MetricService(new Monitoring.Sinks.ImportApiMetricSinkConfig(), ServiceFactoryFactory.Create(credentials));
 			var logger = RelativityLogger.Instance;
 			var metric = new MetricAuthenticationType()
-				             {
-					             CorrelationID = Guid.NewGuid().ToString(),
-					             UnitOfMeasure = "login(s)",
-					             AuthenticationMethod = authenticationMethod,
-					             SystemType = logger.System,
-					             SubSystemType = logger.SubSystem
-				             };
+							 {
+								 CorrelationID = Guid.NewGuid().ToString(),
+								 UnitOfMeasure = "login(s)",
+								 AuthenticationMethod = authenticationMethod,
+								 SystemType = logger.System,
+								 SubSystemType = logger.SubSystem,
+								 ImportApiVersion = this._runningContext.ImportApiSdkVersion.ToString(),
+								 RelativityVersion = this._runningContext.RelativityVersion.ToString()
+			};
 			metricService.Log(metric);
 		}
 

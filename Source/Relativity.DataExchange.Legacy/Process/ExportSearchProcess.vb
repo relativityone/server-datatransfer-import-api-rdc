@@ -41,20 +41,20 @@ Namespace kCura.WinEDDS
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
-			Me.New(loadFileHeaderFormatterFactory, exportConfig, RelativityLogger.Instance)
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, RelativityLogger.Instance, New RunningContext())
 		End Sub
 
-		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog)
-			Me.New(loadFileHeaderFormatterFactory, exportConfig, New MetricService(New ImportApiMetricSinkConfig), logger)
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog, runningContext As IRunningContext)
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, New MetricService(New ImportApiMetricSinkConfig), runningContext, logger)
 		End Sub
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService)
-			Me.New(loadFileHeaderFormatterFactory, exportConfig, metricService, RelativityLogger.Instance)
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, metricService, New RunningContext(), RelativityLogger.Instance)
 		End Sub
 
-		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService, logger As ILog)
-			MyBase.New(metricService, logger)
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService, runningContext As IRunningContext, logger As ILog)
+			MyBase.New(metricService, runningContext, logger)
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
 			_exportConfig = exportConfig
 		End Sub

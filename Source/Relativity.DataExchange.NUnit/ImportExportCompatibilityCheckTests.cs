@@ -76,6 +76,7 @@ namespace Relativity.DataExchange.NUnit
 				Version.Parse(mockMinRelativityVersion),
 				Version.Parse(mockRequiredWebApiVersion),
 				Version.Parse(webApiStartFromRelativityVersion),
+				new RunningContext(),
 				this.appSettings.Object,
 				this.appSettingsInternal.Object);
 
@@ -115,6 +116,7 @@ namespace Relativity.DataExchange.NUnit
 				new Version(9, 7, 0, 0),
 				new Version(1, 0),
 				new Version(10, 3),
+				new RunningContext(),
 				this.appSettings.Object,
 				this.appSettingsInternal.Object);
 
@@ -153,6 +155,7 @@ namespace Relativity.DataExchange.NUnit
 				new Version(minRelativityVersion),
 				DataExchange.VersionConstants.RequiredWebApiVersion,
 				new Version(webApiStartFromRelativityVersion),
+				new RunningContext(),
 				this.appSettings.Object,
 				this.appSettingsInternal.Object);
 
@@ -207,6 +210,7 @@ namespace Relativity.DataExchange.NUnit
 				new Version(minRelativityVersion),
 				new Version(minWebApiVersion),
 				new Version(webApiStartFromRelativityVersion),
+				new RunningContext(),
 				this.appSettings.Object,
 				this.appSettingsInternal.Object);
 

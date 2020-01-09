@@ -1,4 +1,5 @@
 ﻿Imports System.Net
+Imports System.Collections.Concurrent
 Imports System.Collections.Generic
 Imports System.Threading
 Imports Relativity.DataExchange
@@ -6,6 +7,7 @@ Imports Relativity.DataExchange
 Friend Class ImportCredentialManager
 
 	Private Shared CredentialCache As List(Of CredentialEntry)
+	Private ReadOnly Shared _versionCache As ConcurrentDictionary(Of String, VersionEntry) = New ConcurrentDictionary(Of String,VersionEntry)()
 	Private Shared _WebServiceURL As String
 
 	Private Shared _lockObject As New System.Object
@@ -32,8 +34,9 @@ Friend Class ImportCredentialManager
 	'''  </summary>
 	''' <param name="UserName">username or <see cref="kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName"/></param>
 	''' <param name="Password">password or bearer token</param>
+	''' <param name="runningContext">Contains information about the context in which jobs are executed.</param>
 	''' <returns>Credentials <see cref="SessionCredentials"/></returns>
-	Public Shared Function GetCredentials(ByVal UserName As String, ByVal Password As String) As SessionCredentials
+	Public Shared Function GetCredentials(ByVal UserName As String, ByVal Password As String, ByVal runningContext As IRunningContext) As SessionCredentials
 		' this function needs to be thread safe so that multiple simultaneous threads could call it
 
 		' data cleanup first
@@ -70,9 +73,9 @@ Friend Class ImportCredentialManager
 
 				Try
 					If String.IsNullOrEmpty(UserName) Then
-						creds = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster, WebServiceURL, token, logger)
+						creds = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster, WebServiceURL, token, runningContext, logger)
 					Else
-						creds = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(UserName.Trim(), Password.Trim(), cookieMonster, WebServiceURL, token, logger)
+						creds = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(UserName.Trim(), Password.Trim(), cookieMonster, WebServiceURL, token, runningContext, logger)
 					End If
 				Catch ex As kCura.WinEDDS.Exceptions.CredentialsNotSupportedException
 					Throw
@@ -87,6 +90,7 @@ Friend Class ImportCredentialManager
 				' add credentials to cache and return session credentials to caller
 				If Not creds Is Nothing Then
 					retVal = AddCredentials(UserName, Password, creds, cookieMonster).SessionCredentials()
+					_versionCache.TryAdd(WebServiceURL, New VersionEntry() With { .RelativityVersion = runningContext.RelativityVersion, .ImportExportWebApiVersion = runningContext.ImportExportWebApiVersion })
 				End If
 				cachedCreds = False
 			End If
@@ -104,8 +108,22 @@ Friend Class ImportCredentialManager
 			End If
 		End If
 
+		AddVersionToContext(retVal, runningContext)
+
 		Return retVal
 	End Function
+
+	Private Shared Sub AddVersionToContext(credentials As SessionCredentials, runningContext As IRunningContext)
+		Dim foundVersion As VersionEntry = Nothing
+		_versionCache.TryGetValue(WebServiceURL, foundVersion)
+		If Not foundVersion Is Nothing Then
+			runningContext.RelativityVersion = foundVersion.RelativityVersion
+			runningContext.ImportExportWebApiVersion = foundVersion.ImportExportWebApiVersion
+		Else
+			kCura.WinEDDS.Api.LoginHelper.ValidateVersionCompatibility(credentials.Credentials, credentials.CookieMonster, WebServiceURL, CancellationToken.None, runningContext, RelativityLogger.Instance)
+			_versionCache.TryAdd(WebServiceURL, New VersionEntry() With { .RelativityVersion = runningContext.RelativityVersion, .ImportExportWebApiVersion = runningContext.ImportExportWebApiVersion })
+		End If
+	End Sub
 
 	Private Shared Function FindCredentials(ByVal UserName As String, ByVal Password As String) As CredentialEntry
 		If CredentialCache Is Nothing Then
@@ -182,5 +200,10 @@ Friend Class ImportCredentialManager
 			sc.CookieMonster = CookieMonster
 			Return sc
 		End Function
+	End Class
+
+	Private Class VersionEntry
+		Public RelativityVersion As Version
+		Public ImportExportWebApiVersion As Version
 	End Class
 End Class

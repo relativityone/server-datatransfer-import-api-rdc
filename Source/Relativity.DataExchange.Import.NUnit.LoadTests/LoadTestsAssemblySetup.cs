@@ -15,18 +15,16 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	[SetUpFixture]
 	public class LoadTestsAssemblySetup
 	{
-		private readonly AssemblySetup _assemblySetup = new AssemblySetup();
-
 		[OneTimeSetUp]
-		public Task Setup()
+		public Task SetupAsync()
 		{
-			return this._assemblySetup.Setup();
+			return AssemblySetup.SetupAsync();
 		}
 
 		[OneTimeTearDown]
 		public void TearDown()
 		{
-			this._assemblySetup.TearDown();
+			AssemblySetup.TearDown();
 		}
 	}
 }

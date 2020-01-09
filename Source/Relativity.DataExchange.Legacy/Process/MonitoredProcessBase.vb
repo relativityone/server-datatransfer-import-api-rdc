@@ -19,6 +19,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Property EndTime As System.DateTime
 	Protected MustOverride ReadOnly Property TransferDirection As TelemetryConstants.TransferDirection
 	Protected MustOverride ReadOnly Property Statistics As Statistics
+	Protected ReadOnly Property RunningContext As IRunningContext
 	Protected ReadOnly Property MetricService() As IMetricService
 	Protected _hasFatalErrorOccured As Boolean
 	Private _jobStartedMetricSent As Boolean = False
@@ -27,27 +28,20 @@ Public MustInherit Class MonitoredProcessBase
 	
 	Public Property CaseInfo As CaseInfo
 
-	Public Property ExecutionSource As ExecutionSource = ExecutionSource.Unknown
-
-	''' <summary>
-	''' Gets or sets name of application executing import/export job. This property is used to support telemetry.
-	''' </summary>
-	''' <returns>The application name</returns>
-	Public Property ApplicationName As String = Nothing
-
 	<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
-	Public Sub New(metricService As IMetricService)
-		Me.New(metricService, RelativityLogger.Instance)
+	Public Sub New(metricService As IMetricService, runningContext As IRunningContext)
+		Me.New(metricService, runningContext, RelativityLogger.Instance)
 	End Sub
 
-	Public Sub New(metricService As IMetricService, logger As ILog)
-		Me.New(metricService, logger, New CancellationTokenSource())
+	Public Sub New(metricService As IMetricService, runningContext As IRunningContext, logger As ILog)
+		Me.New(metricService, runningContext, logger, New CancellationTokenSource())
 	End Sub
 
-	Public Sub New(metricService As IMetricService, logger As ILog, tokenSource As CancellationTokenSource)
+	Public Sub New(metricService As IMetricService, runningContext As IRunningContext, logger As ILog, tokenSource As CancellationTokenSource)
 		MyBase.New(logger, tokenSource)
 		Me.MetricService = metricService
 		_metricThrottling = metricService.MetricSinkConfig.ThrottleTimeout
+		Me.RunningContext = runningContext
 	End Sub
 
 	Protected Overrides Sub OnExecute()
@@ -192,6 +186,8 @@ Public MustInherit Class MonitoredProcessBase
 		metric.UseOldExport = Me.AppSettings.UseOldExport
 		metric.UnitOfMeasure = TelemetryConstants.Values.NOT_APPLICABLE
 		metric.ApplicationName = GetApplicationName()
+		metric.ImportApiVersion = RunningContext.ImportApiSdkVersion.ToString()
+		metric.RelativityVersion = RunningContext.RelativityVersion.ToString()
 		If Not (CaseInfo Is Nothing) Then
 			metric.WorkspaceID = CaseInfo.ArtifactID
 		End If
@@ -202,12 +198,12 @@ Public MustInherit Class MonitoredProcessBase
 	''' </summary>
 	''' <returns>The application name</returns>
 	Private Function GetApplicationName() As String
-		If Not String.IsNullOrEmpty(ApplicationName) Then
-			Return ApplicationName
+		If Not String.IsNullOrEmpty(RunningContext.ApplicationName) Then
+			Return RunningContext.ApplicationName
 		ElseIf Not String.IsNullOrEmpty(AppSettings.ApplicationName) Then
 			Return AppSettings.ApplicationName
 		Else
-			Return ExecutionSource.ToString()
+			Return RunningContext.ExecutionSource.ToString()
 		End If
 	End Function
 End Class

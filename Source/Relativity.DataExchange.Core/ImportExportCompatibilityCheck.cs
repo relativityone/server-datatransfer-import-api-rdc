@@ -30,6 +30,7 @@ namespace Relativity.DataExchange
 		private readonly Version webApiStartFromRelativityVersion;
 		private readonly IAppSettings appSettings;
 		private readonly IAppSettingsInternal appSettingsInternal;
+		private readonly IRunningContext runningContext;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ImportExportCompatibilityCheck"/> class.
@@ -40,12 +41,16 @@ namespace Relativity.DataExchange
 		/// <param name="applicationVersionService">
 		/// The application version service object.
 		/// </param>
+		/// <param name="runningContext">
+		/// Contains information about the context in which jobs are executed.
+		/// </param>
 		/// <param name="log">
 		/// the log object.
 		/// </param>
 		public ImportExportCompatibilityCheck(
 			RelativityInstanceInfo instanceInfo,
 			IApplicationVersionService applicationVersionService,
+			IRunningContext runningContext,
 			ILog log)
 			: this(
 				instanceInfo,
@@ -54,6 +59,7 @@ namespace Relativity.DataExchange
 				VersionConstants.MinRelativityVersion,
 				VersionConstants.RequiredWebApiVersion,
 				VersionConstants.WebApiStartFromRelativityVersion,
+				runningContext,
 				AppSettings.Instance,
 				AppSettings.Instance as IAppSettingsInternal)
 		{
@@ -80,6 +86,9 @@ namespace Relativity.DataExchange
 		/// <param name="webApiStartFromRelativityVersion">
 		/// The required Relativity version from which it support WebAPI version.
 		/// </param>
+		/// <param name="runningContext">
+		/// Job's context allowing us to store information about versions.
+		/// </param>
 		/// <param name="appSettings">
 		/// The application settings.
 		/// </param>
@@ -93,6 +102,7 @@ namespace Relativity.DataExchange
 			Version minRelativityVersion,
 			Version requiredWebApiVersion,
 			Version webApiStartFromRelativityVersion,
+			IRunningContext runningContext,
 			IAppSettings appSettings,
 			IAppSettingsInternal appSettingsInternal)
 		{
@@ -102,6 +112,7 @@ namespace Relativity.DataExchange
 			this.applicationVersionService = applicationVersionService.ThrowIfNull(nameof(applicationVersionService));
 			this.minRelativityVersion = minRelativityVersion.ThrowIfNull(nameof(minRelativityVersion));
 			this.requiredWebApiVersion = requiredWebApiVersion.ThrowIfNull(nameof(requiredWebApiVersion));
+			this.runningContext = runningContext;
 			this.appSettings = appSettings.ThrowIfNull(nameof(appSettings));
 			this.appSettingsInternal = appSettingsInternal.ThrowIfNull(nameof(appSettingsInternal));
 		}
@@ -114,6 +125,7 @@ namespace Relativity.DataExchange
 				this.instanceInfo.Host);
 			Version relativityVersion = await this.applicationVersionService
 											.GetRelativityVersionAsync(token).ConfigureAwait(false);
+			this.runningContext.RelativityVersion = relativityVersion;
 			this.log.LogInformation(
 				"Successfully retrieved Relativity version {RelativityVersion} for Relativity instance {RelativityHost}.",
 				relativityVersion,
@@ -146,6 +158,7 @@ namespace Relativity.DataExchange
 				this.instanceInfo.Host);
 			Version importExportWebApiVersion = await this.applicationVersionService
 													.GetImportExportWebApiVersionAsync(token).ConfigureAwait(false);
+			this.runningContext.ImportExportWebApiVersion = importExportWebApiVersion;
 			this.log.LogInformation(
 				"Successfully retrieved the import/export WebAPI version {ImportExportWebApiVersion} for Relativity instance {RelativityHost}.",
 				importExportWebApiVersion,

@@ -133,6 +133,7 @@
     <Compile Include="Io\OutsideInFileTypeIdentifierService.cs" />
     <Compile Include="Io\TempFileBuilder.cs" />
     <Compile Include="Io\TempFileConstants.cs" />
+    <Compile Include="IRunningContext.cs" />
     <Compile Include="LogExtensions.cs" />
     <Compile Include="Media\ByteOrdering.cs" />
     <Compile Include="Media\FreeImageService.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="Transfer\LongTextStreamRequest.cs" />
     <Compile Include="Transfer\LongTextStreamResult.cs" />
     <Compile Include="Transfer\LongTextStreamService.cs" />
+    <Compile Include="RunningContext.cs" />
     <Compile Include="UrlHelper.cs" />
     <Compile Include="SerializationHelper.cs" />
     <Compile Include="Service\ArtifactType.cs" />

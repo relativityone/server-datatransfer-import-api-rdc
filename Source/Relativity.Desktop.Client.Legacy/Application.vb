@@ -62,7 +62,7 @@ Namespace Relativity.Desktop.Client
 		Private _documentRepositoryList As String()
 		Private ReadOnly _logger As Relativity.Logging.ILog
 		Private ReadOnly oAuth2ImplicitCredentialsHelper As Lazy(Of OAuth2ImplicitCredentialsHelper) = New Lazy(Of OAuth2ImplicitCredentialsHelper)(AddressOf CreateOAuth2ImplicitCredentialsHelper)
-        Private _metricService As IMetricService
+		Private _metricService As IMetricService
 #End Region
 
 #Region "Properties"
@@ -189,6 +189,8 @@ Namespace Relativity.Desktop.Client
 		Public Property UserHasImportPermission() As Boolean
 
 		Public Property UserHasExportPermission() As Boolean
+
+		Public ReadOnly Property RunningContext As IRunningContext = New RunningContext() With { .ExecutionSource = ExecutionSource.Rdc}
 
 #End Region
 
@@ -1112,14 +1114,13 @@ Namespace Relativity.Desktop.Client
 			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
 					Dim frm As ProcessForm = CreateProcessForm()
-					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await SetupMetricService(), _logger)
+					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await SetupMetricService(), RunningContext, _logger)
 					importer.CaseInfo = SelectedCaseInfo
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 					importer.CloudInstance = Config.CloudInstance
 					importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
-					importer.ExecutionSource = ExecutionSource.Rdc
 					SetWorkingDirectory(loadFile.FilePath)
 					frm.Context = importer.Context
 					frm.StopImportButtonText = "Stop"
@@ -1163,13 +1164,12 @@ Namespace Relativity.Desktop.Client
 				Return
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
-			Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await SetupMetricService(), _logger)
+			Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await SetupMetricService(), Me.RunningContext, _logger)
 			ImageLoadFile.CookieContainer = Me.CookieContainer
 			importer.CaseInfo = SelectedCaseInfo
 			importer.ImageLoadFile = ImageLoadFile
 			importer.CloudInstance = Config.CloudInstance
 			importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
-			importer.ExecutionSource = ExecutionSource.Rdc
 			SetWorkingDirectory(ImageLoadFile.FileName)
 			frm.Context = importer.Context
 			frm.Text = "Import Image File Progress ..."
@@ -1187,7 +1187,7 @@ Namespace Relativity.Desktop.Client
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
 			frm.StatusRefreshRate = 0
-			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMetricService(), _logger)
+			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMetricService(), Me.RunningContext, _logger)
 			exporter.UserNotification = New FormsUserNotification()
 			exporter.CaseInfo = SelectedCaseInfo
 			exporter.ExportFile = exportFile
@@ -1788,7 +1788,7 @@ Namespace Relativity.Desktop.Client
 								.WebApiServiceUrl = New Uri(AppSettings.Instance.WebApiServiceUrl)
 								}
 
-						Return LoginHelper.ValidateVersionCompatibilityAsync(instanceInfo, _cancellationTokenSource.Token, _logger)
+						Return LoginHelper.ValidateVersionCompatibilityAsync(instanceInfo, _cancellationTokenSource.Token, Me.RunningContext, _logger)
 					End Function,
 					_cancellationTokenSource.Token).ConfigureAwait(False)
 			Finally

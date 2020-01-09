@@ -24,16 +24,16 @@ Namespace kCura.WinEDDS
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New()
-			Me.New(new MetricService(New ImportApiMetricSinkConfig))
+			Me.New(new MetricService(New ImportApiMetricSinkConfig), New RunningContext)
 		End Sub
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
-		Public Sub New (metricService As IMetricService)
-			Me.New(metricService, RelativityLogger.Instance)
+		Public Sub New (metricService As IMetricService, runningContext As IRunningContext)
+			Me.New(metricService, runningContext, RelativityLogger.Instance)
 		End Sub
 
-		Public Sub New (metricService As IMetricService, logger As Global.Relativity.Logging.ILog)
-			MyBase.New(metricService, logger)
+		Public Sub New (metricService As IMetricService, runningContext As IRunningContext, logger As Global.Relativity.Logging.ILog)
+			MyBase.New(metricService, runningContext, logger)
 		End Sub
 
         Public WriteOnly Property DisableImageTypeValidation As Boolean
@@ -156,7 +156,7 @@ Namespace kCura.WinEDDS
 	            True, _
 	            EnforceDocumentLimit, _
 	            Me.CancellationTokenSource, _
-	            ExecutionSource)
+	            Me.RunningContext.ExecutionSource)
 			Return returnImporter
 		End Function
 

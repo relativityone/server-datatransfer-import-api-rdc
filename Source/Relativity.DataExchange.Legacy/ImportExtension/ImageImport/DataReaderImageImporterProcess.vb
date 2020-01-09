@@ -10,8 +10,8 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _reader As IDataReader
 		Private _imageSettings As ImageSettings
 
-		Public Sub New(ByVal sourceData As ImageSourceIDataReader, ByVal imageSettings As ImageSettings, ByVal metricService As IMetricService)
-			MyBase.New(metricService)
+		Public Sub New(ByVal sourceData As ImageSourceIDataReader, ByVal imageSettings As ImageSettings, ByVal metricService As IMetricService, ByVal runningContext As IRunningContext)
+			MyBase.New(metricService, runningContext)
 			_reader = sourceData.Reader
 			_imageSettings = imageSettings
 		End Sub
@@ -41,7 +41,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				Me.CancellationTokenSource,
 				_reader,
 				_imageSettings,
-				ExecutionSource)
+				Me.RunningContext.ExecutionSource)
 		End Function
 
 		Protected Overrides Sub OnExecute()

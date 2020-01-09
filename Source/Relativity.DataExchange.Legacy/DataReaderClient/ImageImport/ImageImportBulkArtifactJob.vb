@@ -89,6 +89,7 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region " Private variables "
+		Private ReadOnly _runningContext As IRunningContext
 		Private WithEvents _processContext As ProcessContext
 		Private _settings As ImageSettings
 		Private _sourceData As ImageSourceIDataReader
@@ -96,7 +97,6 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _credentials As ICredentials
 		Private _cookieMonster As Net.CookieContainer
 		Private _jobReport As JobReport
-		Private _executionSource As ExecutionSource
 		Private _webApiCredential As WebApiCredential
 #End Region
 
@@ -116,10 +116,10 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		''' <param name="credentials">The credentials.</param>
 		''' <param name="cookieMonster">The cookie monster.</param>
-		''' <param name="executionSource">Optional parameter that states what process the import is coming from.</param>
-		Friend Sub New(ByVal credentials As ICredentials, ByVal webApiCredential As WebApiCredential,  ByVal cookieMonster As Net.CookieContainer, ByVal Optional executionSource As Integer = 0)
+		''' <param name="runningContext">Contains information about the context in which jobs are executed.</param>
+		Friend Sub New(ByVal credentials As ICredentials, ByVal webApiCredential As WebApiCredential,  ByVal cookieMonster As Net.CookieContainer, runningContext As IRunningContext)
 			Me.New()
-			_executionSource = CType(executionSource, ExecutionSource)
+			_runningContext = runningContext
 			_credentials = credentials
 			_cookieMonster = cookieMonster
 			_webApiCredential = webApiCredential
@@ -135,7 +135,7 @@ Namespace kCura.Relativity.DataReaderClient
 			' Authenticate here instead of in CreateLoadFile
 			If _credentials Is Nothing Then
 				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
-				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
+				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword, _runningContext)
 				_credentials = creds.Credentials
 				_webApiCredential.Credential = creds.Credentials
 				_cookieMonster = creds.CookieMonster
@@ -145,10 +145,8 @@ Namespace kCura.Relativity.DataReaderClient
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
 			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_webApiCredential.Credential))
-			    Dim process As kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess = New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData, Settings, metricService)
-				
-				process.ExecutionSource = _executionSource
-                process.ApplicationName = Settings.ApplicationName
+				_runningContext.ApplicationName = Settings.ApplicationName
+			    Dim process As kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess = New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData, Settings, metricService, _runningContext)
 				_processContext = process.Context
 
 				If Settings.DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = Settings.DisableImageTypeValidation.Value

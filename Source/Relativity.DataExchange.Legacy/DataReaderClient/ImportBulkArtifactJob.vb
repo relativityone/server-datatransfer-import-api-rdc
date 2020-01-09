@@ -29,7 +29,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _webApiCredential As WebApiCredential
 		Private _cookieMonster As Net.CookieContainer
 
-		Private ReadOnly _executionSource As ExecutionSource
+		Private ReadOnly _runningContext As IRunningContext
 
 		Private Const _DOCUMENT_ARTIFACT_TYPE_ID As Int32 = 10 'TODO: make a reference to Relativity so we don't have to do this
 
@@ -46,13 +46,14 @@ Namespace kCura.Relativity.DataReaderClient
 
 			_bulkLoadFileFieldDelimiter = ServiceConstants.DEFAULT_FIELD_DELIMITER
 
+			_runningContext = New RunningContext()
 			_webApiCredential = New WebApiCredential()
 			_webApiCredential.TokenProvider = New NullAuthTokenProvider
 		End Sub
 
-		Friend Sub New(ByVal credentials As ICredentials, ByVal webApiCredential As WebApiCredential, ByVal cookieMonster As Net.CookieContainer, ByVal Optional executionSource As Integer = 0)
+		Friend Sub New(ByVal credentials As ICredentials, ByVal webApiCredential As WebApiCredential, ByVal cookieMonster As Net.CookieContainer, ByVal runningContext As IRunningContext)
 			Me.New()
-			_executionSource = CType(executionSource, ExecutionSource)
+			_runningContext = runningContext
 			_credentials = credentials
 			_webApiCredential = webApiCredential
 			_cookieMonster = cookieMonster
@@ -108,7 +109,7 @@ Namespace kCura.Relativity.DataReaderClient
 			' authenticate here
 			If _credentials Is Nothing Then
 				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
-				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
+				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword, _runningContext)
 				_credentials = creds.Credentials
 				_webApiCredential.Credential = creds.Credentials
 				_cookieMonster = creds.CookieMonster
@@ -117,10 +118,9 @@ Namespace kCura.Relativity.DataReaderClient
 			If IsSettingsValid() Then
 
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
-			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_webApiCredential.Credential))
-				Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(SourceData.SourceData, metricService) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
-					process.ExecutionSource = _executionSource
-                    process.ApplicationName = Settings.ApplicationName
+				Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_webApiCredential.Credential))
+				_runningContext.ApplicationName = Settings.ApplicationName
+				Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(metricService, _runningContext) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
 					_processContext = process.Context
 
 					If Settings.DisableNativeValidation.HasValue Then process.DisableNativeValidation = Settings.DisableNativeValidation.Value

@@ -10,24 +10,28 @@ Namespace kCura.WinEDDS.Api
 	Public Class LoginHelper
 		Public Shared Function LoginUsernamePassword(ByVal username As String,
 													 ByVal password As String,
-													 ByVal cookieContainer As Net.CookieContainer) As System.Net.NetworkCredential
+													 ByVal cookieContainer As Net.CookieContainer,
+													 ByVal runningContext As IRunningContext) As System.Net.NetworkCredential
 			Return LoginUsernamePassword(
 				username,
 				password,
 				cookieContainer,
-				AppSettings.Instance.WebApiServiceUrl)
+				AppSettings.Instance.WebApiServiceUrl,
+				runningContext)
 		End Function
 
 		Public Shared Function LoginUsernamePassword(ByVal username As String,
 													 ByVal password As String,
 													 ByVal cookieContainer As Net.CookieContainer,
-													 ByVal webServiceUrl As String) As System.Net.NetworkCredential
+													 ByVal webServiceUrl As String,
+													 ByVal runningContext As IRunningContext) As System.Net.NetworkCredential
 			Return LoginUsernamePassword(
 				username,
 				password,
 				cookieContainer,
 				AppSettings.Instance.WebApiServiceUrl,
 				CancellationToken.None,
+				runningContext,
 				New Global.Relativity.Logging.NullLogger())
 		End Function
 
@@ -36,6 +40,7 @@ Namespace kCura.WinEDDS.Api
 													 ByVal cookieContainer As Net.CookieContainer,
 													 ByVal webServiceUrl As String,
 													 ByVal token As CancellationToken,
+													 ByVal runningContext As IRunningContext,
 													 ByVal logger As Global.Relativity.Logging.ILog) As System.Net.NetworkCredential
 			If cookieContainer Is Nothing Then
 				Throw New ArgumentException(NameOf(cookieContainer))
@@ -61,7 +66,7 @@ Namespace kCura.WinEDDS.Api
 
 			Using relManager As New kCura.WinEDDS.Service.RelativityManager(credentials, cookieContainer, webServiceUrl)
 				Initialize(relManager, webServiceUrl)
-				ValidateVersionCompatibility(credentials, cookieContainer, webServiceUrl, token, logger)
+				ValidateVersionCompatibility(credentials, cookieContainer, webServiceUrl, token, runningContext, logger)
 				Return credentials
 			End Using
 		End Function
@@ -75,11 +80,13 @@ Namespace kCura.WinEDDS.Api
 		''' <param name="cookieContainer">Cookie container</param>
 		''' <param name="webServiceUrl">URL of RelativityWebApi service</param>
 		''' <param name="token">cancellation token for compatibility check</param>
+		''' <param name="runningContext">Object containing information about job context.</param>
 		''' <param name="logger">logger</param>
 		''' <returns>Bearer token <see cref="Net.NetworkCredential"/></returns>
 		Public Shared Function LoginWindowsAuth(ByVal cookieContainer As System.Net.CookieContainer,
 													ByVal webServiceUrl As String,
 													ByVal token As CancellationToken,
+													ByVal runningContext As IRunningContext,
 													ByVal logger As Global.Relativity.Logging.ILog) As System.Net.NetworkCredential
 			' Windows Authentication is used only to authenticate in a implicit flow process which returns credentials used in the import process
 			' RDC behavior is similar, it tries to authenticate in RelativityManager using Windows Authentication
@@ -89,16 +96,17 @@ Namespace kCura.WinEDDS.Api
 			Using windowsAuthRelativityManager As New kCura.WinEDDS.Service.RelativityManager(windowsAuthCredentials, cookieContainer, webServiceUrl)
 				Dim provider As IntegratedAuthenticationOAuthCredentialsProvider = New IntegratedAuthenticationOAuthCredentialsProvider(windowsAuthRelativityManager)
 				Dim credentials As System.Net.NetworkCredential = provider.LoginWindowsAuth()
-				ValidateVersionCompatibility(credentials, cookieContainer, webServiceUrl, token, logger)
+				ValidateVersionCompatibility(credentials, cookieContainer, webServiceUrl, token, runningContext, logger)
 				Return credentials
 			End Using
 		End Function
 
 		Public Shared Sub ValidateVersionCompatibility(ByVal credential As System.Net.NetworkCredential,
-													   ByVal cookieContainer As Net.CookieContainer,
-													   ByVal webServiceUrl As String,
-													   ByVal token As CancellationToken,
-													   ByVal logger As Global.Relativity.Logging.ILog)
+														ByVal cookieContainer As Net.CookieContainer,
+														ByVal webServiceUrl As String,
+														ByVal token As CancellationToken,
+														ByVal runningContext As IRunningContext,
+														ByVal logger As Global.Relativity.Logging.ILog)
 			If credential Is Nothing Then
 				Throw New ArgumentException(NameOf(credential))
 			End If
@@ -123,16 +131,18 @@ Namespace kCura.WinEDDS.Api
 					.CookieContainer = cookieContainer,
 					.WebApiServiceUrl = New Uri(webServiceUrl)
 					}
-			ValidateVersionCompatibilityAsync(instanceInfo, token, logger).GetAwaiter().GetResult()
+			ValidateVersionCompatibilityAsync(instanceInfo, token, runningContext, logger).GetAwaiter().GetResult()
 		End Sub
 
 		Friend Shared Function ValidateVersionCompatibilityAsync(ByVal instanceInfo As RelativityInstanceInfo,
 																 ByVal token As CancellationToken,
+																 ByVal runningContext As IRunningContext,
 																 ByVal logger As Global.Relativity.Logging.ILog) As System.Threading.Tasks.Task
 			' Automatically throws RelativityNotSupportedException when the validation fails. 
 			Dim compatibilityCheck As IImportExportCompatibilityCheck = New ImportExportCompatibilityCheck(
 				instanceInfo,
 				New kCura.WinEDDS.Service.ApplicationVersionService(instanceInfo, AppSettings.Instance, logger),
+				runningContext,
 				logger)
 			Return compatibilityCheck.ValidateAsync(token)
 		End Function

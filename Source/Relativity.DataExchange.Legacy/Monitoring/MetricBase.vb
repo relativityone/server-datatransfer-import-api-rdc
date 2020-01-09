@@ -3,7 +3,7 @@
 Namespace Monitoring
     Public MustInherit class MetricBase
 
-        Public Sub New()
+	    Public Sub New()
             CustomData = New Dictionary(Of String, Object)
         End Sub
 
@@ -55,6 +55,32 @@ Namespace Monitoring
             End Get
             Set
                 CustomData.Item(TelemetryConstants.KeyName.UNIT_OF_MEASURE) = Value
+            End Set
+        End Property
+
+		''' <summary>
+		''' Gets or sets version of Import API.
+		''' </summary>
+		''' <returns>Version of Import API as string.</returns>
+        Public Property ImportApiVersion As String
+            Get
+                Return GetValueOrDefault(Of String)(TelemetryConstants.KeyName.IMPORT_API_VERSION)
+            End Get
+            Set
+                CustomData.Item(TelemetryConstants.KeyName.IMPORT_API_VERSION) = value
+            End Set
+        End Property
+
+        ''' <summary>
+        ''' Gets or sets version Relativity.
+        ''' </summary>
+        ''' <returns>Version of Relativity as string.</returns>
+        Public Property RelativityVersion As String
+            Get
+                Return GetValueOrDefault(Of String)(TelemetryConstants.KeyName.RELATIVITY_VERSION)
+            End Get
+            Set
+                CustomData.Item(TelemetryConstants.KeyName.RELATIVITY_VERSION) = value
             End Set
         End Property
 

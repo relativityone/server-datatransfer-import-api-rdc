@@ -35,6 +35,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		public static void Setup()
 		{
 			TestParameters = IntegrationTestHelper.Create();
+			if (TestParameters.SkipIntegrationTests)
+			{
+				return;
+			}
+
 			ImportHelper.ImportDefaultTestData(TestParameters);
 		}
 
