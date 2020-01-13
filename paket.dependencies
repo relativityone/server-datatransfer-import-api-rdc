@@ -24,7 +24,7 @@ nuget nunit.consolerunner = 3.10.0
 nuget nunit.extension.vsprojectloader = 3.8.0
 
 # Polly is explicitly listed to avoid conflicts between TAPI and Relativity.
-nuget polly = 5.7.0.0
+nuget polly = 5.7
 nuget psake = 4.7.4
 nuget reportgenerator = 4.1.2
 
