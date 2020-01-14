@@ -47,7 +47,7 @@ Namespace kCura.WinEDDS
 		Protected RecordCount As Int64 = -1
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Private _fieldsForCreate As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
-		Protected ProcessedDocumentIdentifiers As Collections.Specialized.NameValueCollection
+		Protected ProcessedDocumentIdentifiers As Dictionary(Of String, Integer)
 		Protected WithEvents Context As ProcessContext
 		Protected Offset As Int32 = 0
 		Protected FirstTimeThrough As Boolean
@@ -612,7 +612,7 @@ Namespace kCura.WinEDDS
 						If Not InitializeMembers() Then
 							Return False
 						End If
-						ProcessedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
+						ProcessedDocumentIdentifiers = New Dictionary(Of String,Integer)
 					End Using
 
 					If (_enforceDocumentLimit) Then
@@ -667,7 +667,7 @@ Namespace kCura.WinEDDS
 										End Using
 
 										Using Timekeeper.CaptureTime("ReadFile_IdTrack")
-											ProcessedDocumentIdentifiers.Add(id, CurrentLineNumber.ToString)
+											ProcessedDocumentIdentifiers.Add(id, CurrentLineNumber)
 										End Using
 									End If
 								Catch ex As LoadFileBase.CodeCreationException
@@ -1013,9 +1013,9 @@ Namespace kCura.WinEDDS
 			If identityValue = String.Empty Then
 				'lineStatus += ImportStatus.EmptyIdentifier				'
 				Throw New IdentityValueNotSetException
-			ElseIf Not ProcessedDocumentIdentifiers(identityValue) Is Nothing Then
+			ElseIf ProcessedDocumentIdentifiers.ContainsKey(identityValue) Then
 				'lineStatus += ImportStatus.IdentifierOverlap				'
-				Throw New IdentifierOverlapException(identityValue, ProcessedDocumentIdentifiers(identityValue))
+				Throw New IdentifierOverlapException(identityValue, ProcessedDocumentIdentifiers(identityValue).ToString())
 			End If
 
 			Dim dataGridID As String = Nothing
@@ -1875,7 +1875,7 @@ Namespace kCura.WinEDDS
 
 				If Not keyField Is Nothing AndAlso Not keyField.Value Is Nothing Then identityValue = keyField.Value.ToString
 				If identityValue Is Nothing OrElse identityValue = String.Empty Then Throw New IdentityValueNotSetException
-				If Not ProcessedDocumentIdentifiers(identityValue) Is Nothing Then Throw New IdentifierOverlapException(identityValue, ProcessedDocumentIdentifiers(identityValue))
+				If ProcessedDocumentIdentifiers.ContainsKey(identityValue) Then Throw New IdentifierOverlapException(identityValue, ProcessedDocumentIdentifiers(identityValue).ToString())
 				For Each item In _fieldMap
 					If FirstTimeThrough Then
 						If item.DocumentField Is Nothing Then
