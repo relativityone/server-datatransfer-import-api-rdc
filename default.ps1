@@ -269,6 +269,12 @@ task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
     }
 }
 
+task CheckSdkDependencies -Description "Checks if the references in ..\.paket\paket.template.relativity.dataexchange.client.sdk can be found in ..\paket.dependencies"{
+    exec { 
+        & "$ScriptsDir\Check-Sdk-Template.ps1" -SolutionDir $Root
+    } -errorMessage "References in ..\.paket\paket.template.relativity.dataexchange.client.sdk are not equal to ..\paket.dependencies."
+}
+
 task BuildRdcPackage -Description "Builds the RDC NuGet package" {
     Initialize-Folder $LogsDir -Safe
     Initialize-Folder $PackagesArtifactsDir -Safe

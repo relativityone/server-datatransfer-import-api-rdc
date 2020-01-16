@@ -91,6 +91,12 @@ timestamps
                         currentBuild.displayName = "$outputStringParsed"
                         buildVersion = outputStringParsed
                     }
+					
+					stage('Check sdk dependencies')
+					{
+					    echo "checking dependencies of the .sdk .nuspec file"
+						powershell ".\\build.ps1 CheckSdkDependencies"
+					}
 
                     stage('Build binaries') 
                     {
