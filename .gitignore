@@ -286,7 +286,6 @@ build/
 # build artifacts
 /.paket/paket*.exe
 /.paket/Paket.Restore.targets
-/buildtools/Resharper-CA
 /paket-files
 /Logs/*
 /PDBs/*

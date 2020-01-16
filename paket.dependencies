@@ -19,7 +19,7 @@ nuget nbuilder = 6.0.0
 nuget newtonsoft.json = 6.0.8
 
 # Note: periodically update NUnit to the latest version.
-nuget nunit = 3.11.0
+nuget nunit = 3.11.0 redirects: force
 nuget nunit.consolerunner = 3.10.0
 nuget nunit.extension.vsprojectloader = 3.8.0
 
@@ -53,14 +53,14 @@ nuget relativity.oauth2client.interfaces = 1.0.27
 nuget relativity.telemetry.datacontracts.shared ~> 3000.0
 nuget relativity.telemetry.services.interface ~> 3000.0
 nuget relativity.transfer.client ~> 6.3.7
+nuget relativity.services.datacontracts = 11.0.137.1
+nuget relativity.services.interfaces = 11.0.137.1
+nuget relativity.services.interfaces.private = 11.0.137.1
 
 # The Relativity packages below are required ONLY for test projects!
 nuget kcura.relativity.client = 11.0.137.1
 nuget relativity.logging = 2018.11.8
 nuget relativity.productions.services.interfaces = 11.0.7
-nuget relativity.services.datacontracts = 11.0.79.97-DEV
-nuget relativity.services.interfaces = 11.0.79.97-DEV
-nuget relativity.services.interfaces.private = 11.0.79.97-DEV
 nuget relativity.testing.identification ~> 1.6.0
 
 # A group is used to address dependency conflicts and only required by UI automation tests.
