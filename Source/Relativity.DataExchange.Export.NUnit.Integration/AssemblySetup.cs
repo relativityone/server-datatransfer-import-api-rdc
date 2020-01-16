@@ -35,12 +35,16 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		public static void Setup()
 		{
 			TestParameters = IntegrationTestHelper.Create();
+
 			if (TestParameters.SkipIntegrationTests)
 			{
 				return;
 			}
 
-			ImportHelper.ImportDefaultTestData(TestParameters);
+			var controlNumbers = ImportHelper.ImportDefaultTestData(TestParameters);
+
+			// we are importing images only for the first document
+			ImportHelper.ImportImagesForDocuments(TestParameters, controlNumbers.GetRange(0, 1));
 		}
 
 		[OneTimeTearDown]
