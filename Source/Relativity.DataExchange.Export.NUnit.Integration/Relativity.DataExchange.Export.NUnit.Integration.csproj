@@ -87,6 +87,7 @@
   <ItemGroup>
     <Compile Include="Dto\DelimiterDto.cs" />
     <Compile Include="Dto\ExportTypeDto.cs" />
+    <Compile Include="ExportedFilesValidator.cs" />
     <Compile Include="ExportTestJobResult.cs" />
     <Compile Include="Dto\ExportImageDto.cs" />
     <Compile Include="Dto\ExportNativeDto.cs" />

@@ -123,7 +123,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			// ASSERT
 			// TODO REL-369935 add much better validation for each of the results.
-			this.ThenTheExportJobIsSuccessful(TestData.SampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.SampleDocFiles.Count());
+
+			ExportedFilesValidator.ValidateNativesCount(this.ExtendedExportFile, TestData.SampleDocFiles.Count());
+
+			// We imported images only to one document during test setup phase
+			ExportedFilesValidator.ValidateImagesCount(this.ExtendedExportFile, TestData.SampleImageFiles.Count());
 		}
 	}
 }

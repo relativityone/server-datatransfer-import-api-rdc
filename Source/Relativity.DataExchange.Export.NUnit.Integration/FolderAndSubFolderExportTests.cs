@@ -40,7 +40,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(TestData.SampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.SampleDocFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
@@ -57,7 +57,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(TestData.SampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.SampleDocFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
@@ -73,7 +73,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(TestData.SampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.SampleDocFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
@@ -107,7 +107,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(TestData.SampleFiles.Count());
+			this.ThenTheExportJobIsSuccessful(TestData.SampleDocFiles.Count());
 			this.ThenTheMockFileShareSettingsServiceIsVerified();
 		}
 
@@ -149,7 +149,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			// ASSERT
 			// Note: the Exporter artifact search doesn't support dependency injection and the DownloadProgressManage now performs a finalization that counts all search/DI artifacts.
-			this.ThenTheExportJobIsNotSuccessful(TestData.SampleFiles.Count() + fileExportRequests.Count);
+			this.ThenTheExportJobIsNotSuccessful(TestData.SampleDocFiles.Count() + fileExportRequests.Count);
 		}
 
 		[IdentifiedTest("76FB096D-7948-4BFE-8CED-7E509505CA95")]
@@ -208,7 +208,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			// ASSERT
 			// Note: the Exporter artifact search doesn't support dependency injection and the DownloadProgressManage now performs a finalization that counts all search/DI artifacts.
-			this.ThenTheExportJobIsNotSuccessful(TestData.SampleFiles.Count() + fileExportRequests.Count + longTextExportRequests.Count);
+			this.ThenTheExportJobIsNotSuccessful(TestData.SampleDocFiles.Count() + fileExportRequests.Count + longTextExportRequests.Count);
 		}
 	}
 }
