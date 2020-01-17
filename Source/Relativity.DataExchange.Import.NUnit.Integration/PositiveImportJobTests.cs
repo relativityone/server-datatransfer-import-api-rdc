@@ -120,8 +120,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(numberOfDocumentsToImport);
-			Assert.That(results, Has.Count.Positive);
-			Assert.That(results, Has.Count.EqualTo(numberOfDocumentsToImport));
+			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToImport));
 		}
 
 		[Category(TestCategories.ImportDoc)]
