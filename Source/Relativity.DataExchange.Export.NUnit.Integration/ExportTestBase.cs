@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------
 // <copyright file="ExportTestBase.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
@@ -13,6 +13,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Data;
+	using System.IO;
 	using System.Linq;
 	using System.Net;
 	using System.Text;
@@ -418,6 +419,25 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			Assert.That(this.exporterTestJobResult.TransferModes, Has.All.AnyOf(TapiClient.Direct, TapiClient.Web));
 		}
 
+		protected void ThenTheExportJobIsNotSuccessful(int expectedDocsProcessed, int expectedErrorsCount)
+		{
+			Assert.That(this.exporterTestJobResult.TotalDocumentsProcessed, Is.EqualTo(expectedDocsProcessed));
+			Assert.That(this.exporterTestJobResult.ErrorMessages, Has.Count.EqualTo(expectedErrorsCount));
+			Assert.That(this.exporterTestJobResult.SearchResult, Is.False);
+			Assert.That(this.exporterTestJobResult.AlertCriticalErrors, Has.Count.Zero);
+			Assert.That(this.exporterTestJobResult.Alerts, Has.Count.Zero);
+			Assert.That(this.exporterTestJobResult.AlertWarningSkippables, Has.Count.Zero);
+			Assert.That(this.exporterTestJobResult.FatalErrors, Has.Count.Zero);
+			Assert.That(this.exporterTestJobResult.StatusMessages, Has.Count.Positive);
+			Assert.That(this.exporterTestJobResult.TransferModes, Has.All.AnyOf(TapiClient.Direct, TapiClient.Web));
+		}
+
+		protected void ThenTheFilesAreExported(int expectedExportedFilesCount)
+		{
+			int exportedFilesCount = Directory.GetFiles(ExtendedExportFile.FolderPath, "*.*", SearchOption.AllDirectories).Length;
+			Assert.That(exportedFilesCount, Is.EqualTo(expectedExportedFilesCount));
+		}
+
 		private DataTable GetSearchExportDataSource(SearchManager searchManager, bool isArtifactSearch, int artifactType)
 		{
 			DataSet dataset = searchManager.RetrieveViewsByContextArtifactID(
@@ -503,6 +523,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				if (!string.IsNullOrEmpty(args.Message))
 				{
 					this.exporterTestJobResult.StatusMessages.Add(args.Message);
+
+					if (args.EventType == EventType2.Error)
+					{
+						this.exporterTestJobResult.ErrorMessages.Add(args.Message);
+					}
 				}
 			}
 

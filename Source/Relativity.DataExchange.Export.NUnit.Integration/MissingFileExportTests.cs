@@ -1,9 +1,11 @@
-﻿// <copyright file="MultiResourcePoolExportTests.cs" company="Relativity ODA LLC">
+﻿// <copyright file="MissingFileExportTests.cs" company="Relativity ODA LLC">
 // © Relativity All Rights Reserved.
 // </copyright>
 
 namespace Relativity.DataExchange.Export.NUnit.Integration
 {
+	using System.Data;
+	using System.IO;
 	using System.Linq;
 	using System.Threading.Tasks;
 
@@ -15,10 +17,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.Testing.Identification;
 
 	[Explicit]
-	public class MultiResourcePoolExportTests : ExportTestBase
+	public class MissingFileExportTests : ExportTestBase
 	{
-		private ResourcePoolHelper resourcePoolHelper;
-
 		private IntegrationTestParameters testParameters;
 
 		protected override IntegrationTestParameters TestParameters => testParameters;
@@ -28,26 +28,15 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		{
 			testParameters = IntegrationTestHelper.Create();
 
-			resourcePoolHelper = new ResourcePoolHelper(TestParameters);
-
 			ImportDocumentsAndImages();
 
-			await resourcePoolHelper.CreateResourcePoolWithFileShareAsync().ConfigureAwait(false);
-
-			ImportDocumentsAndImages();
+			await RemoveFileFromFileShare().ConfigureAwait(false);
 		}
 
-		[OneTimeTearDown]
-		public void OneTimeTearDown()
-		{
-			IntegrationTestHelper.Destroy(testParameters);
-		}
-
-		[IdentifiedTest("2EAFF4D8-ED3B-412C-B506-D35574130C04")]
-		[TestCase(TapiClient.Aspera)]
+		[IdentifiedTest("2013DF1B-46DE-4755-B96B-AF454CA5D2CE")]
 		[TestCase(TapiClient.Direct)]
 		[TestCase(TapiClient.Web)]
-		public void ShouldExportAllSampleDocAndImagesFromTwoFileShares(TapiClient client)
+		public void ExportShouldReportErrorOnMissingFile(TapiClient client)
 		{
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(TestParameters, client);
 
@@ -62,14 +51,28 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// ACT
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
-			int expectedDocumentsCountInBothShares = 2 * TestData.SampleDocFiles.Count();
+			int expectedDocumentsCount = TestData.SampleDocFiles.Count();
 			int imagesPerDocumentCount = TestData.SampleImageFiles.Count();
 			int metadataFilesCount = 2;
-			int expectedExportedFilesCount = metadataFilesCount + expectedDocumentsCountInBothShares + (expectedDocumentsCountInBothShares * imagesPerDocumentCount);
+			int expectedMissingFilesCount = 1;
+			int expectedExportedFilesCount = metadataFilesCount + expectedDocumentsCount + (expectedDocumentsCount * imagesPerDocumentCount) - expectedMissingFilesCount;
 
 			// ASSERT
-			this.ThenTheExportJobIsSuccessful(expectedDocumentsCountInBothShares);
+			this.ThenTheExportJobIsNotSuccessful(expectedDocsProcessed: expectedDocumentsCount, expectedErrorsCount: expectedMissingFilesCount);
 			ThenTheFilesAreExported(expectedExportedFilesCount);
+		}
+
+		private async Task RemoveFileFromFileShare()
+		{
+			var queryHelper = new SqlQueryHelper(TestParameters);
+			var fileNameToRemove = Path.GetFileName(TestData.SampleDocFiles.First());
+
+			string fileLocationQuery =
+				$@"SELECT [Location] FROM [EDDS{TestParameters.WorkspaceId}].[EDDSDBO].[File] WHERE [Filename] = '{fileNameToRemove}'";
+
+			DataTable result = await queryHelper.ExecuteQueryAsync(fileLocationQuery).ConfigureAwait(false);
+			string path = (string)result.Rows[0][0];
+			File.Delete(path);
 		}
 
 		private void ImportDocumentsAndImages()

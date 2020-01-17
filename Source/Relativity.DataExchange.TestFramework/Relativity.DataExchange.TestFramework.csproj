@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\packages\NUnit\build\NUnit.props" Condition="Exists('..\..\packages\NUnit\build\NUnit.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -106,6 +106,7 @@
     <Compile Include="NUnitExtensions\ProfilingSessionTestCommand.cs" />
     <Compile Include="RelativityHelpers\ImportHelper.cs" />
     <Compile Include="ObjectManagers\ServiceProxyFactory.cs" />
+    <Compile Include="RelativityHelpers\SqlQueryHelper.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\CollectDeadlockProfilerReportSession.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\CollectedDeadlockProfilerReportBuilder.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\DeadlockReportRowDto.cs" />

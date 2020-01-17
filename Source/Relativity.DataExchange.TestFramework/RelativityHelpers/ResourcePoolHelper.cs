@@ -52,7 +52,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		{
 			if (!await ResourcePoolExistsAsync().ConfigureAwait(false))
 			{
-				await CreateResourcePoolAsync().ConfigureAwait(false);
+				await CreateResourcePoolWithDefaultServersAsync().ConfigureAwait(false);
 				await CreateFileShareAsync().ConfigureAwait(false);
 				await AddFileShareToResourcePool().ConfigureAwait(false);
 			}
@@ -108,7 +108,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return resourcePool != null;
 		}
 
-		private async Task<int> CreateResourcePoolAsync()
+		private async Task<int> CreateResourcePoolWithDefaultServersAsync()
 		{
 			Client relativityClient = await clientManager.ReadAsync("Relativity").ConfigureAwait(false);
 			int resourcePoolId = await resourcePoolManager.CreateAsync(ResourcePoolName, relativityClient.ArtifactID)

@@ -18,6 +18,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		public List<string> StatusMessages { get; } = new List<string>();
 
+		public List<string> ErrorMessages { get; } = new List<string>();
+
 		public List<string> FatalErrors { get; } = new List<string>();
 
 		public int TotalDocumentsProcessed { get; set; }

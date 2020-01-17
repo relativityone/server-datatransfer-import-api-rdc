@@ -17,9 +17,10 @@ namespace Relativity.DataExchange.TestFramework.Extensions
 			return dataRow;
 		}
 
-		public static DataRow GenerateControlNumber(this DataRow dataRow)
+		public static DataRow GenerateControlNumber(this DataRow dataRow, string fileName = null)
 		{
-			dataRow[WellKnownFields.ControlNumber] = "REL-" + Guid.NewGuid();
+			string fileNameSection = string.IsNullOrEmpty(fileName) ? string.Empty : fileName + "-";
+			dataRow[WellKnownFields.ControlNumber] = "REL-" + fileNameSection + Guid.NewGuid();
 			return dataRow;
 		}
 

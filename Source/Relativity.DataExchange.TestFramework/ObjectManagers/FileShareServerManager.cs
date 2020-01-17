@@ -44,6 +44,19 @@ namespace Relativity.DataExchange.TestFramework.ObjectManagers
 			}
 		}
 
+		public async Task<FileShareResourceServer> ReadAsync(int artifactId)
+		{
+			using (var fileShareServerManager = serviceProxyFactory.CreateServiceProxy<IFileShareServerManager>())
+			{
+				var query = new Services.Query
+					            {
+						            Condition = $"('ArtifactID' == '{artifactId}')",
+					            };
+				var resultSet = await fileShareServerManager.QueryAsync(query).ConfigureAwait(false);
+				return resultSet.Results.FirstOrDefault()?.Artifact;
+			}
+		}
+
 		public async Task<bool> DeleteAsync(string name)
 		{
 			var fileShare = await ReadAsync(name).ConfigureAwait(false);
