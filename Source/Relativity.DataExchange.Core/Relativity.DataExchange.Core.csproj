@@ -183,6 +183,8 @@
     <Compile Include="Process\ExportErrorEventArgs.cs" />
     <Compile Include="Process\RecordNumberEventArgs.cs" />
     <Compile Include="Process\ShowReportEventArgs.cs" />
+    <Compile Include="Service\IServiceNotification.cs" />
+    <Compile Include="ErrorMessageFormatter.cs" />
     <Compile Include="Service\ObjectManagerExceptionHelper.cs" />
     <Compile Include="Service\KeplerServiceConnectionInfo.cs" />
     <Compile Include="Service\IServiceConnectionInfo.cs" />

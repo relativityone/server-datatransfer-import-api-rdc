@@ -207,12 +207,6 @@
   <data name="TransferFileUploadFatalMessage" xml:space="preserve">
     <value>Error uploading file: {0}</value>
   </data>
-  <data name="TransferIssueRetryingAppendMessage" xml:space="preserve">
-    <value>Retrying in {0} second(s) - {1} retry(s) left</value>
-  </data>
-  <data name="TransferIssueRetryingNoAttemptsLeftAppendMessage" xml:space="preserve">
-    <value>No more retry attempts left</value>
-  </data>
   <data name="TransferTransferDownloadFileWarningMessage" xml:space="preserve">
     <value>{0} download file issue: {1}</value>
   </data>
@@ -420,5 +414,14 @@ Detail: {4}</value>
   </data>
   <data name="FileTransferModePending" xml:space="preserve">
     <value>Pending</value>
+  </data>
+  <data name="RetryIssueAppendMessage" xml:space="preserve">
+    <value>Retrying in {0} second(s) - {1} retry(s) left.</value>
+  </data>
+  <data name="RetryIssueNoAttemptsLeftAppendMessage" xml:space="preserve">
+    <value>No more retry attempts left.</value>
+  </data>
+  <data name="WebServiceNotFatalRetryMessage" xml:space="preserve">
+    <value>A non-fatal issue occurred attempting to call the '{0}' web service: {1}.</value>
   </data>
 </root>

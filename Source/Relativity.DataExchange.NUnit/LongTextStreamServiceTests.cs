@@ -53,6 +53,7 @@ namespace Relativity.DataExchange.NUnit
 		private Mock<IServiceProxyFactory> factory;
 		private Mock<IObjectManager> objectManager;
 		private Mock<IKeplerStream> keplerStream;
+		private Mock<IServiceNotification> serviceNotification;
 		private LongTextStreamService sut;
 		private string longTextData;
 		private byte[] longTextDataBytes;
@@ -88,6 +89,7 @@ namespace Relativity.DataExchange.NUnit
 		[SetUp]
 		public void Setup()
 		{
+			this.serviceNotification = new Mock<IServiceNotification>();
 			this.publishedProgressArgs = new ConcurrentBag<LongTextStreamProgressEventArgs>();
 			this.progress = new Progress<LongTextStreamProgressEventArgs>(args => { this.publishedProgressArgs.Add(args); });
 			this.tempDirectory = new TempDirectory2();
@@ -114,6 +116,7 @@ namespace Relativity.DataExchange.NUnit
 			this.sut = new LongTextStreamService(
 				this.factory.Object,
 				new KeplerRetryPolicyFactory(this.settings.Object),
+				this.serviceNotification.Object,
 				this.settings.Object,
 				this.fileSystem,
 				this.logger.Object);
@@ -155,6 +158,7 @@ namespace Relativity.DataExchange.NUnit
 			this.VerifyProgressEventsArePublished(result.Length);
 			this.VerifyNoErrorsAreLogged();
 			this.VerifyNoWarningsAreLogged();
+			this.VerifyNoNotificationMessagesArePublished();
 		}
 
 		[Test]
@@ -178,6 +182,7 @@ namespace Relativity.DataExchange.NUnit
 			this.VerifyTheStreamLongTextMethodIsCalled(1);
 			this.VerifyNoErrorsAreLogged();
 			this.VerifyTheWarningsAreLogged(1);
+			this.VerifyNoNotificationMessagesArePublished();
 		}
 
 		[TestCaseSource(
@@ -202,8 +207,9 @@ namespace Relativity.DataExchange.NUnit
 			this.VerifyTheNonFatalLongTextResult(request, result, 0);
 			this.VerifyTheStreamLongTextMethodIsCalled(1);
 			this.VerifyProgressEventsAreNotPublished();
-			this.VerifyTheErrorsAreLogged(0);
+			this.VerifyNoErrorsAreLogged();
 			this.VerifyTheWarningsAreLogged(1);
+			this.VerifyNoNotificationMessagesArePublished();
 		}
 
 		[Test]
@@ -218,6 +224,7 @@ namespace Relativity.DataExchange.NUnit
 			this.sut = new LongTextStreamService(
 				this.factory.Object,
 				new KeplerRetryPolicyFactory(this.settings.Object),
+				this.serviceNotification.Object,
 				this.settings.Object,
 				mockFileSystem.Object,
 				this.logger.Object);
@@ -241,6 +248,9 @@ namespace Relativity.DataExchange.NUnit
 			this.VerifyProgressEventsArePublished(result.Length);
 			this.VerifyTheErrorsAreLogged(1);
 			this.VerifyTheWarningsAreLogged(1);
+			this.VerifyTheStatusNotificationMessagesArePublished(1);
+			this.VerifyNoWarningNotificationMessagesArePublished();
+			this.VerifyNoErrorNotificationMessagesArePublished();
 		}
 
 		[Test]
@@ -262,6 +272,7 @@ namespace Relativity.DataExchange.NUnit
 			this.VerifyProgressEventsAreNotPublished();
 			this.VerifyNoErrorsAreLogged();
 			this.VerifyNoWarningsAreLogged();
+			this.VerifyNoNotificationMessagesArePublished();
 		}
 
 		[Test]
@@ -272,6 +283,7 @@ namespace Relativity.DataExchange.NUnit
 			this.sut = new LongTextStreamService(
 				this.factory.Object,
 				new KeplerRetryPolicyFactory(this.settings.Object),
+				this.serviceNotification.Object,
 				this.settings.Object,
 				this.fileSystem,
 				this.logger.Object);
@@ -290,6 +302,7 @@ namespace Relativity.DataExchange.NUnit
 			this.VerifyProgressEventsAreNotPublished();
 			this.VerifyNoErrorsAreLogged();
 			this.VerifyNoWarningsAreLogged();
+			this.VerifyNoNotificationMessagesArePublished();
 		}
 
 		[Test]
@@ -315,6 +328,9 @@ namespace Relativity.DataExchange.NUnit
 			this.VerifyProgressEventsArePublished(result.Length);
 			this.VerifyTheErrorsAreLogged(2);
 			this.VerifyNoWarningsAreLogged();
+			this.VerifyTheStatusNotificationMessagesArePublished(2);
+			this.VerifyNoWarningNotificationMessagesArePublished();
+			this.VerifyNoErrorNotificationMessagesArePublished();
 		}
 
 		[Test]
@@ -342,6 +358,9 @@ namespace Relativity.DataExchange.NUnit
 			this.VerifyProgressEventsArePublished(result.Length);
 			this.VerifyTheErrorsAreLogged(2);
 			this.VerifyNoWarningsAreLogged();
+			this.VerifyTheStatusNotificationMessagesArePublished(2);
+			this.VerifyNoWarningNotificationMessagesArePublished();
+			this.VerifyNoErrorNotificationMessagesArePublished();
 		}
 
 		[Test]
@@ -357,6 +376,7 @@ namespace Relativity.DataExchange.NUnit
 					            .SaveLongTextStreamAsync(request, this.cancellationTokenSource.Token, this.progress));
 			this.VerifyNoErrorsAreLogged();
 			this.VerifyNoWarningsAreLogged();
+			this.VerifyNoNotificationMessagesArePublished();
 		}
 
 		[Test]
@@ -377,6 +397,7 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.targetExtractedTextFile, Does.Not.Exist);
 			this.VerifyNoErrorsAreLogged();
 			this.VerifyNoWarningsAreLogged();
+			this.VerifyNoNotificationMessagesArePublished();
 		}
 
 		[TestCaseSource(nameof(InvalidRequestParameters))]
@@ -405,6 +426,7 @@ namespace Relativity.DataExchange.NUnit
 					            .SaveLongTextStreamAsync(request, this.cancellationTokenSource.Token, this.progress));
 			this.VerifyNoErrorsAreLogged();
 			this.VerifyNoWarningsAreLogged();
+			this.VerifyNoNotificationMessagesArePublished();
 		}
 
 		[Test]
@@ -419,6 +441,7 @@ namespace Relativity.DataExchange.NUnit
 					.SaveLongTextStreamAsync(request, this.cancellationTokenSource.Token, this.progress));
 			this.VerifyNoErrorsAreLogged();
 			this.VerifyNoWarningsAreLogged();
+			this.VerifyNoNotificationMessagesArePublished();
 		}
 
 		private static Encoding GetFileEncoding(string file)
@@ -517,6 +540,49 @@ namespace Relativity.DataExchange.NUnit
 		{
 			this.logger.Verify(
 				x => x.LogWarning(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()),
+				Times.Exactly(expectedCallCount));
+		}
+
+		private void VerifyNoNotificationMessagesArePublished()
+		{
+			this.VerifyNoStatusNotificationMessagesArePublished();
+			this.VerifyNoWarningNotificationMessagesArePublished();
+			this.VerifyNoErrorNotificationMessagesArePublished();
+		}
+
+		private void VerifyNoStatusNotificationMessagesArePublished()
+		{
+			this.VerifyTheStatusNotificationMessagesArePublished(0);
+		}
+
+		private void VerifyNoWarningNotificationMessagesArePublished()
+		{
+			this.VerifyTheWarningNotificationMessagesArePublished(0);
+		}
+
+		private void VerifyNoErrorNotificationMessagesArePublished()
+		{
+			this.VerifyTheErrorNotificationMessagesArePublished(0);
+		}
+
+		private void VerifyTheErrorNotificationMessagesArePublished(int expectedCallCount)
+		{
+			this.serviceNotification.Verify(
+				x => x.NotifyError(It.IsAny<string>()),
+				Times.Exactly(expectedCallCount));
+		}
+
+		private void VerifyTheStatusNotificationMessagesArePublished(int expectedCallCount)
+		{
+			this.serviceNotification.Verify(
+				x => x.NotifyStatus(It.IsAny<string>()),
+				Times.Exactly(expectedCallCount));
+		}
+
+		private void VerifyTheWarningNotificationMessagesArePublished(int expectedCallCount)
+		{
+			this.serviceNotification.Verify(
+				x => x.NotifyWarning(It.IsAny<string>()),
 				Times.Exactly(expectedCallCount));
 		}
 	}

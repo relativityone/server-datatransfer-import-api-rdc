@@ -129,7 +129,7 @@
 		{
 			container.Register(Component.For<ExportFile>().Instance(ExportSettings));
 			container.Register(Component.For<IExportManager>().Instance(_exporter.ExportManager));
-			container.Register(Component.For<IStatus>().Instance(_exporter));
+			container.Register(Component.For<IStatus, IServiceNotification>().Instance(_exporter));
 			container.Register(Component.For<IFileNameProvider>().Instance(_exporter.FileNameProvider));
 			container.Register(Component.For<IUserNotification>().Instance(_exporter.InteractionManager));
 			container.Register(Component.For<IFile>().Instance(_exporter.FileHelper));

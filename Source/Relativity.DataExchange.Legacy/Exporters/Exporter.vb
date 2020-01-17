@@ -21,6 +21,7 @@ Namespace kCura.WinEDDS
 	Public Class Exporter
 		Implements IExporter
 		Implements IStatus
+		Implements IServiceNotification
 
 #Region "Members"
 
@@ -1380,6 +1381,18 @@ Namespace kCura.WinEDDS
 		Sub UpdateDocumentExportedCount(count As Int32) Implements IStatus.UpdateDocumentExportedCount
 			DocumentsExported = count
 			UpdateStatisticsSnapshot(DateTime.Now)
+		End Sub
+
+		Sub NotifyError(message As String) Implements IServiceNotification.NotifyError
+			Me.WriteError(message)
+		End Sub
+
+		Sub NotifyStatus(message As String) Implements IServiceNotification.NotifyStatus
+			Me.WriteStatusLineWithoutDocCount(EventType2.Status, message, True)
+		End Sub
+
+		Sub NotifyWarning(message As String) Implements IServiceNotification.NotifyWarning
+			Me.WriteWarningWithoutDocCount(message)
 		End Sub
 
 #End Region

@@ -28,9 +28,10 @@ namespace Relativity.DataExchange.Transfer
 	/// </summary>
 	internal class LongTextStreamService : ILongTextStreamService
 	{
-		private const string RetryCountKey = "RetryCount";
-		private const string RequestKey = "Request";
+		private const string LongTextRetryCountKey = "LongTextRetryCount";
+		private const string LongTextRequestKey = "LongTextRequest";
 		private readonly IServiceProxyFactory serviceProxyFactory;
+		private readonly IServiceNotification serviceNotification;
 		private readonly IAppSettings settings;
 		private readonly IFileSystem fileSystem;
 		private readonly ILog logger;
@@ -50,6 +51,9 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="serviceRetryPolicyFactory">
 		/// The factory used to create service retry policies.
 		/// </param>
+		/// <param name="serviceNotification">
+		/// The object used to provide service notification messages.
+		/// </param>
 		/// <param name="settings">
 		/// The settings.
 		/// </param>
@@ -62,11 +66,13 @@ namespace Relativity.DataExchange.Transfer
 		public LongTextStreamService(
 			IServiceProxyFactory serviceProxyFactory,
 			IServiceRetryPolicyFactory serviceRetryPolicyFactory,
+			IServiceNotification serviceNotification,
 			IAppSettings settings,
 			IFileSystem fileSystem,
 			ILog logger)
 		{
 			this.serviceProxyFactory = serviceProxyFactory.ThrowIfNull(nameof(serviceProxyFactory));
+			this.serviceNotification = serviceNotification.ThrowIfNull(nameof(serviceNotification));
 			this.settings = settings.ThrowIfNull(nameof(settings));
 			this.fileSystem = fileSystem.ThrowIfNull(nameof(fileSystem));
 			this.logger = logger.ThrowIfNull(nameof(logger));
@@ -92,7 +98,11 @@ namespace Relativity.DataExchange.Transfer
 		{
 			request.ThrowIfNull(nameof(request));
 			ValidateRequest(request);
-			Context context = new Context("LongTextExecutionKey") { { RetryCountKey, 0 } };
+			Context context = new Context("LongTextExecutionKey")
+				                  {
+					                  { LongTextRequestKey, request },
+					                  { LongTextRetryCountKey, 0 },
+				                  };
 			return this.asyncRetryPolicy.ExecuteAsync(
 				(ctx, ct) => this.OnExecuteSaveLongTextStream(request, context, token, progress),
 				context,
@@ -101,12 +111,12 @@ namespace Relativity.DataExchange.Transfer
 
 		private static int GetRetryCount(Context context)
 		{
-			return context.TryGetValue(RetryCountKey, out var value) ? Convert.ToInt32(value) : 0;
+			return context.TryGetValue(LongTextRetryCountKey, out var value) ? Convert.ToInt32(value) : 0;
 		}
 
 		private static LongTextStreamRequest GetLongTextStreamRequest(Context context)
 		{
-			return context.TryGetValue(RequestKey, out var value)
+			return context.TryGetValue(LongTextRequestKey, out var value)
 				       ? value as LongTextStreamRequest
 				       : new LongTextStreamRequest();
 		}
@@ -172,7 +182,6 @@ namespace Relativity.DataExchange.Transfer
 
 			try
 			{
-				context[RequestKey] = request;
 				RelativityObjectRef exportObject =
 					new RelativityObjectRef { ArtifactID = request.SourceObjectArtifactId };
 				FieldRef longTextField = new FieldRef { ArtifactID = request.SourceFieldArtifactId };
@@ -228,11 +237,19 @@ namespace Relativity.DataExchange.Transfer
 				retryCount,
 				this.settings.HttpErrorNumberOfRetries,
 				duration.TotalSeconds);
+			this.serviceNotification.NotifyStatus(
+				ErrorMessageFormatter.FormatWebServiceRetryMessage(
+					"Long Text Proxy Request",
+					exception.Message,
+					duration,
+					retryCount,
+					this.settings.HttpErrorNumberOfRetries));
 		}
 
 		private void OnRetrySaveLongTextStream(Exception exception, TimeSpan duration, int retryCount, Context context)
 		{
-			context[RetryCountKey] = retryCount;
+			// Intentionally limit notifications to status messages to avoid a large numbers of warning messages and total warning counts.
+			context[LongTextRetryCountKey] = retryCount;
 			LongTextStreamRequest request = GetLongTextStreamRequest(context);
 			this.logger.LogError(
 				exception,
@@ -242,6 +259,13 @@ namespace Relativity.DataExchange.Transfer
 				retryCount,
 				this.settings.HttpErrorNumberOfRetries,
 				duration.TotalSeconds);
+			this.serviceNotification.NotifyStatus(
+				ErrorMessageFormatter.FormatWebServiceRetryMessage(
+					"Long Text Stream Request",
+					exception.Message,
+					duration,
+					retryCount,
+					this.settings.HttpErrorNumberOfRetries));
 		}
 
 		private LongTextStreamResult CopySourceStreamData(
