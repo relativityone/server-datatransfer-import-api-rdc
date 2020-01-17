@@ -1,4 +1,4 @@
-﻿using System.Threading;
+﻿using OpenQA.Selenium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
 using Relativity.Logging;
@@ -78,7 +78,9 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public ProgressWindow RunExport()
 		{
-			menuBar.ClickMenuItem("File").ClickMenuItem("Run");
+            menuBar.SendKeys(Keys.Alt + "F");
+			SendKeys(Keys.Enter);
+
 			return WindowsManager.SwitchToProgressWindow(profile.ProgressWindow);
 		}
 
