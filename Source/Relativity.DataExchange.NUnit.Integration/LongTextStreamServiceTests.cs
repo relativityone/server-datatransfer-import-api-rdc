@@ -23,6 +23,8 @@ namespace Relativity.DataExchange.NUnit.Integration
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
+	using Moq;
+
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
@@ -44,6 +46,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	{
 		private IServiceProxyFactory serviceProxyFactory;
 		private ILongTextStreamService longTextStreamService;
+		private Mock<IServiceNotification> serviceNotification;
 		private TestDirectory testDirectory;
 		private string controlNumber;
 		private string sourceExtractedTextFile;
@@ -164,9 +167,11 @@ namespace Relativity.DataExchange.NUnit.Integration
 			this.AppSettings.ExportLongTextLargeFileProgressRateSeconds = 0;
 			this.AppSettings.HttpErrorWaitTimeInSeconds = 12;
 			this.AppSettings.HttpErrorNumberOfRetries = 5;
+			this.serviceNotification = new Mock<IServiceNotification>();
 			this.longTextStreamService = new LongTextStreamService(
 				this.serviceProxyFactory,
 				new KeplerRetryPolicyFactory(this.AppSettings),
+				this.serviceNotification.Object,
 				this.AppSettings,
 				FileSystem.Instance,
 				this.Logger.Object);
@@ -180,7 +185,10 @@ namespace Relativity.DataExchange.NUnit.Integration
 			this.testDirectory?.Dispose();
 		}
 
-		private static void VerifyTheNonFatalLongTextResult(LongTextStreamRequest request, LongTextStreamResult result, int expectedRetryCount)
+		private static void VerifyTheNonFatalLongTextResult(
+			LongTextStreamRequest request,
+			LongTextStreamResult result,
+			int expectedRetryCount)
 		{
 			Assert.That(result.Request, Is.Not.Null);
 			Assert.That(result.Request, Is.SameAs(request));

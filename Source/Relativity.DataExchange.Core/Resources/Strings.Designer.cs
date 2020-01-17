@@ -550,6 +550,24 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Retrying in {0} second(s) - {1} retry(s) left..
+        /// </summary>
+        internal static string RetryIssueAppendMessage {
+            get {
+                return ResourceManager.GetString("RetryIssueAppendMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No more retry attempts left..
+        /// </summary>
+        internal static string RetryIssueNoAttemptsLeftAppendMessage {
+            get {
+                return ResourceManager.GetString("RetryIssueNoAttemptsLeftAppendMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Retrying transfer job - attempt {0} of {1}..
         /// </summary>
         internal static string RetryJobMessage {
@@ -717,24 +735,6 @@ namespace Relativity.DataExchange.Resources {
         internal static string TransferFileUploadWarningNoRetryMessage {
             get {
                 return ResourceManager.GetString("TransferFileUploadWarningNoRetryMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Retrying in {0} second(s) - {1} retry(s) left.
-        /// </summary>
-        internal static string TransferIssueRetryingAppendMessage {
-            get {
-                return ResourceManager.GetString("TransferIssueRetryingAppendMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No more retry attempts left.
-        /// </summary>
-        internal static string TransferIssueRetryingNoAttemptsLeftAppendMessage {
-            get {
-                return ResourceManager.GetString("TransferIssueRetryingNoAttemptsLeftAppendMessage", resourceCulture);
             }
         }
         
@@ -919,6 +919,15 @@ namespace Relativity.DataExchange.Resources {
         internal static string WebModeFallbackWarningMessage {
             get {
                 return ResourceManager.GetString("WebModeFallbackWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A non-fatal issue occurred attempting to call the &apos;{0}&apos; web service: {1}..
+        /// </summary>
+        internal static string WebServiceNotFatalRetryMessage {
+            get {
+                return ResourceManager.GetString("WebServiceNotFatalRetryMessage", resourceCulture);
             }
         }
         

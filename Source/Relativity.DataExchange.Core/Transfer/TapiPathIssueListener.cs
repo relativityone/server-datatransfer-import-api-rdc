@@ -103,25 +103,12 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			sb.Append(".");
-			if (retryable)
+			if (!retryable)
 			{
-				sb.Append(" ");
-				if (retriesLeft > 0)
-				{
-					sb.AppendFormat(
-						Strings.TransferIssueRetryingAppendMessage,
-						retryTimeSpan.TotalSeconds,
-						retriesLeft);
-				}
-				else
-				{
-					sb.Append(Strings.TransferIssueRetryingNoAttemptsLeftAppendMessage);
-				}
-
-				sb.Append(".");
+				return sb.ToString();
 			}
 
-			return sb.ToString();
+			return ErrorMessageFormatter.AppendRetryDetails(sb.ToString(), retryTimeSpan, retriesLeft);
 		}
 
 		/// <inheritdoc />
