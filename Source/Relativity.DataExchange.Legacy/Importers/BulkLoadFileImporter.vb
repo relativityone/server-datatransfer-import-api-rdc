@@ -1415,7 +1415,15 @@ Namespace kCura.WinEDDS
 						Dim batchDuration As TimeSpan = New TimeSpan(numberOfTicks)
 						
 					    Statistics.SqlTime += numberOfTicks
-					    Statistics.BatchCount += 1
+						Statistics.BatchCount += 1
+
+						Dim batchInformation As New BatchInformation With {
+									.OrdinalNumber = Statistics.BatchCount,
+									.NumberOfRecords = runResults.FilesProcessed,
+									.MassImportDuration = batchDuration
+								}
+						MyBase.OnBatchCompleted(batchInformation)
+
 					    Logger.LogInformation("Duration of mass import processing: {durationInMilliseconds}, batch: {numberOfBatch}", batchDuration.TotalMilliseconds, Statistics.BatchCount)
 					    UpdateStatisticsSnapshot(DateTime.Now)
 					    Me.ManageErrors(_artifactTypeID)

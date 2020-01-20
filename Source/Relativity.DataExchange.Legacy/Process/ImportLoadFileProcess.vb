@@ -399,6 +399,10 @@ Namespace kCura.WinEDDS
 			Me.AuditRun(True, runID)
 		End Sub
 
+		Private Sub _loadFileImporter_OnBatchCompleted(batchInformation As BatchInformation) Handles _loadFileImporter.BatchCompleted
+			MyBase.SendMetricJobBatch(batchInformation)
+		End Sub
+
 		Dim isDisposed as Boolean
 		Protected Overrides Sub Dispose(disposing As Boolean)
 			If Not isDisposed

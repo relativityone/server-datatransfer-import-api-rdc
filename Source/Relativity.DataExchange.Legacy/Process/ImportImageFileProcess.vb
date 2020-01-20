@@ -268,5 +268,9 @@ Namespace kCura.WinEDDS
 		Private Sub _imageFileImporter_EndRun(ByVal success As Boolean, ByVal runID As String) Handles _imageFileImporter.EndRun
 			Me.AuditRun(success, runID)
 		End Sub
+
+		Private Sub _imageFileImporter_OnBatchCompleted(batchInformation As BatchInformation) Handles _imageFileImporter.BatchCompleted
+			MyBase.SendMetricJobBatch(batchInformation)
+		End Sub
 	End Class
 End Namespace

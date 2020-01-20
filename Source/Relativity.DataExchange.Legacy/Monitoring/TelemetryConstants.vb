@@ -8,6 +8,7 @@
 			Public Const METRIC_JOB_STARTED As String = "RDC.MetricJobStarted"
 			Public Const METRIC_JOB_PROGRESS As String = "RDC.MetricJobProgress"
 			Public Const METRIC_JOB_END_REPORT As String = "RDC.MetricJobEndReport"
+			Public Const METRIC_JOB_BATCH As String = "RDC.MetricJobBatch"
 			' This bucket name starts with "RDC" because that's registered prefix for our metrics. Authentication metrics are only send from ImportAPI class.
 			Public Const METRIC_AUTHENTICATION_TYPE As String = "RDC.MetricImportAPIAuthenticationType"
 		End Class
@@ -57,6 +58,9 @@
 			Public Const JOB_DURATION As String = "JobDurationInSeconds"
 			Public Const IMPORT_API_VERSION As String = "ImportApiVersion"
 			Public Const RELATIVITY_VERSION As String = "RelativityVersion"
+			Public Const BATCH_NUMBER As String = "BatchNumber"
+			Public Const MASS_IMPORT_DURATION As String = "MassImportDurationMilliseconds"
+			Public Const NUMBER_OF_RECORDS As String = "NumberOfRecords"
 		End Class
 
 		''' <summary>

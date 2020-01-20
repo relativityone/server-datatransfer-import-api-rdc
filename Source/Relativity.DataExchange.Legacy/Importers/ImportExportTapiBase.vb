@@ -8,6 +8,7 @@ Imports System.Net
 Imports System.Threading
 
 Imports kCura.WinEDDS.Helpers
+Imports Monitoring
 Imports Polly
 
 Imports Relativity.DataExchange
@@ -46,6 +47,7 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Event UploadModeChangeEvent(ByVal statusBarText As String)
+		Friend Event BatchCompleted(ByVal batchInformation As BatchInformation)
 
 #Region "Constructor"
 		Public Sub New(ByVal reporter As IIoReporter, ByVal logger As ILog, cancellationTokenSource As CancellationTokenSource)
@@ -185,6 +187,10 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 #End Region
+
+		Protected Overridable Sub OnBatchCompleted(ByVal batchInformation As BatchInformation)
+			RaiseEvent BatchCompleted(batchInformation)
+		End Sub
 
 		Protected Shared Function IsTimeoutException(ByVal ex As Exception) As Boolean
 			If TypeOf ex Is Service.BulkImportManager.BulkImportSqlTimeoutException Then

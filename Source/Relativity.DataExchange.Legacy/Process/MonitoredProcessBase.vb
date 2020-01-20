@@ -136,6 +136,17 @@ Public MustInherit Class MonitoredProcessBase
 		MetricService.Log(metric)
 	End Sub
 
+	Protected Sub SendMetricJobBatch(batchInformation As BatchInformation)
+		Dim metric As MetricJobBatch = New MetricJobBatch() With {
+					.ImportObjectType = Statistics.ImportObjectType,
+					.MassImportDurationMilliseconds = batchInformation.MassImportDuration.Milliseconds,
+					.BatchNumber = batchInformation.OrdinalNumber,
+					.NumberOfRecords = batchInformation.NumberOfRecords
+				}
+		BuildMetricBase(metric)
+		MetricService.Log(metric)
+	End Sub
+
 	Protected Sub SendMetricJobProgress(statistics As Statistics, checkThrottling As Boolean)
 		' Don't send metrics with no transfer mode
 		If TapiClient = TapiClient.None Then Return
