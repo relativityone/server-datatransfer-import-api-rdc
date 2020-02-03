@@ -17,6 +17,7 @@ properties {
     $SdkBinariesArtifactsDir = Join-Path $BinariesArtifactsDir "sdk"
     $ScriptsDir = Join-Path $Root "Scripts"
     $BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
+    $BuildPackagesDirGold = "\\bld-pkgs\Release\Import-Api-RDC\"
     $TestReportsDir = Join-Path $Root "TestReports"
     $CodeCoverageReportDir = Join-Path $TestReportsDir "code-coverage"        
     $DotCoverConfigFile = Join-Path $ScriptsDir "code-coverage-report.xml"
@@ -53,6 +54,7 @@ properties {
     $TestVMName = $Null
     $PackageTemplateRegex = $Null
     $ILMerge = $Null
+    $PublishToRelease = $Null
     $Sign = $Null
     $SkipPublishRdcPackage = $Null
     $SkipPublishSdkPackage = $Null
@@ -275,6 +277,27 @@ task CheckSdkDependencies -Description "Checks if the references in ..\.paket\pa
     } -errorMessage "References in ..\.paket\paket.template.relativity.dataexchange.client.sdk are not equal to ..\paket.dependencies."
 }
 
+task CheckFolderAccess -Description "Checks if we can write to the destination path"{
+    $testpath = Join-Path -Path $BuildPackagesDir -ChildPath "empty.txt"
+	Try { 
+		Set-Content $testpath ''
+		Remove-Item $testpath
+	}
+	Catch { 
+		Write-Warning "Unable to write to output file $testpath" 
+		throw
+	}
+	$testpath = Join-Path -Path $BuildPackagesDirGold -ChildPath "Releases\empty.txt"
+	Try { 
+		Set-Content $testpath ''
+		Remove-Item $testpath
+	}
+	Catch { 
+		Write-Warning "Unable to write to output file $testpath" 
+		throw
+	}
+}
+
 task BuildRdcPackage -Description "Builds the RDC NuGet package" {
     Initialize-Folder $LogsDir -Safe
     Initialize-Folder $PackagesArtifactsDir -Safe
@@ -454,8 +477,10 @@ task PackageVersion -Description "Retrieves the package version from powershell"
 
 task PublishBuildArtifacts -Description "Publish build artifacts" {
     Assert ($Branch -ne "") "Branch is a required argument for saving build artifacts."
-    Assert ($Version -ne "") "Version is a required argument for saving build artifacts."    
-    $targetDir = "$BuildPackagesDir\$Branch\$Version"
+    Assert ($Version -ne "") "Version is a required argument for saving build artifacts."
+    Assert ($PublishToRelease -ne $Null) "Determination of the type of build, gold or not, is required for saving the build artifacts."
+    $BranchClean = [System.IO.Path]::GetInvalidFileNameChars() | % {$Branch = $Branch.replace($_,'_')}
+    $targetDir = if ($PublishToRelease) { "$BuildPackagesDirGold\Releases\$Version" } else { "$BuildPackagesDir\$BranchClean\$Version" }  
     Copy-Folder -SourceDir $LogsDir -TargetDir "$targetDir\logs"
     Copy-Folder -SourceDir $BinariesArtifactsDir -TargetDir "$targetDir\binaries"
     Copy-Folder -SourceDir $InstallersArtifactsDir -TargetDir "$targetDir\installers"

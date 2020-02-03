@@ -139,6 +139,8 @@ param(
     [Parameter()]
     [String]$PackageTemplateRegex = "paket.template.*$",
     [Parameter()]
+    [nullable[bool]]$PublishToRelease,
+    [Parameter()]
     [Switch]$ILMerge,
     [Parameter()]
     [Switch]$Sign,
@@ -215,6 +217,7 @@ $Params = @{
         TestEnvironment = $TestEnvironment
         TestVMName = $TestVMName
         ILMerge = $ILMerge
+        PublishToRelease = $PublishToRelease
         Sign = $Sign
         ForcePublishRdcPackage = $ForcePublishRdcPackage
         Simulate = $Simulate
