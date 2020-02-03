@@ -35,6 +35,7 @@ if(branchName.startsWith('PR-'))
 }
 def isReleaseBranch = branchName.startsWith('release-')
 def isGoldBuild = (params.buildType != 'DEV')
+def publishToRelease = (isGoldBuild && isReleaseBranch)
 def publishRdc =(!isReleaseBranch || (isReleaseBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseBranch && params.buildType == 'GOLD - RDC ONLY'))
 def publishSdk =(!isReleaseBranch || (isReleaseBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseBranch && params.buildType == 'GOLD - SDK ONLY'))
 def publishSdkAndRdc = (publishSdk && publishRdc)
@@ -79,11 +80,17 @@ timestamps
 
                 try
                 {
+				    stage('Check access to destination path')
+					{
+						powershell ".\\build.ps1 CheckFolderAccess"
+					}
+					
                     stage('Retrieve version')
                     { 
                         echo "Is release branch = $isReleaseBranch"
                         echo "Run integration tests = ${shouldRunIntegrationTests}"
-                        echo "Is isGoldBuild = $isGoldBuild"
+                        echo "Is gold build = $isGoldBuild"
+                        echo "Publishing to release? \$$publishToRelease"
                         echo "Retrieving the semantic versions"
                         echo "Using new build strategy"
                         def outputString = runCommandWithOutput(".\\build.ps1 BuildVersion  -Branch '${branchName}'")
@@ -294,7 +301,7 @@ timestamps
 								try
 								{
 									echo "Publishing build artifacts"
-									output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${branchName}'"
+									output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${branchName}' -PublishToRelease \$${publishToRelease}"
 									echo output
 								}
 								catch(err)
