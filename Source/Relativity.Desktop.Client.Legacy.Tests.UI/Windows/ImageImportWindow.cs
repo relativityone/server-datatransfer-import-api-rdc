@@ -1,4 +1,5 @@
-﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+﻿using OpenQA.Selenium;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
 using Relativity.Logging;
 
@@ -37,13 +38,17 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public void LoadSettings(string settingsFilePath)
 		{
-			menuBar.ClickMenuItem("Import").ClickMenuItem("Load Settings\tCtrl+O");
+			// Import|Load Settings
+			menuBar.SendKeys(Keys.Alt + "I");
+			menuBar.SendKeys("L");
 			openSettingsDialog.OpenSettingsFile(settingsFilePath);
 		}
 
 		public ProgressWindow RunImport()
 		{
-			menuBar.ClickMenuItem("Import").ClickMenuItem("Import File...\tF5");
+			// Import|Import File...
+			menuBar.SendKeys(Keys.Alt + "I");
+			menuBar.SendKeys("I");
 			return WindowsManager.SwitchToProgressWindow(profile.ProgressWindow);
 		}
 

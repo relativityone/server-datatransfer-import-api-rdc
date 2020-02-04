@@ -1,4 +1,5 @@
 ﻿using System;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 using Relativity.Logging;
@@ -22,8 +23,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public void LoadKweFile(string kweFile, string datFile)
 		{
-			fileNameEdit.SendKeys(kweFile);
-			openButton.Click();
+			fileNameEdit.SendKeys(kweFile + Keys.Enter);
 			confirmationDialog.ClickOkButton();
 			chooseLoadFileDialog.LoadDatFile(datFile);
 			WaitToNotExist(TimeSpan.FromSeconds(10));

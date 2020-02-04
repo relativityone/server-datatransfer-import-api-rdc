@@ -416,7 +416,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			Assert.That(this.exporterTestJobResult.FatalErrors, Has.Count.Zero);
 			Assert.That(this.exporterTestJobResult.StatusMessages, Has.Count.Positive);
 			Assert.That(this.exporterTestJobResult.TotalDocumentsProcessed, Is.EqualTo(expectedDocsProcessed));
-			Assert.That(this.exporterTestJobResult.TransferModes, Has.All.AnyOf(TapiClient.Direct, TapiClient.Web));
+			Assert.That(this.exporterTestJobResult.TransferModes, Has.All.AnyOf(TapiClient.Direct, TapiClient.Web, TapiClient.Aspera));
 		}
 
 		protected void ThenTheExportJobIsNotSuccessful(int expectedDocsProcessed, int expectedErrorsCount)

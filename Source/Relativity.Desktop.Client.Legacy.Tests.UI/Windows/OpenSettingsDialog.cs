@@ -1,4 +1,5 @@
 ﻿using System;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 using Relativity.Logging;
@@ -18,8 +19,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public void OpenSettingsFile(string settingsFile)
 		{
-			fileNameEdit.SendKeys(settingsFile);
-			openButton.Click();
+			fileNameEdit.SendKeys(settingsFile + Keys.Enter);
 			//Waiting for dialog to be closed and settings loaded
 			WaitToNotExist(TimeSpan.FromSeconds(5));
 		}
