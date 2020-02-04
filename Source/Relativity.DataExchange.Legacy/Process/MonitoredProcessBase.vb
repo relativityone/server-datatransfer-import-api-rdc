@@ -119,16 +119,18 @@ Public MustInherit Class MonitoredProcessBase
 		Dim totalRecordsCount As Long = GetTotalRecordsCount()
 		Dim completedRecordsCount As Long = GetCompletedRecordsCount()
 		Dim jobDuration As Double = (EndTime - StartTime).TotalSeconds
+		Dim totalTransferredBytes As Long = Statistics.FileTransferredBytes + Statistics.MetadataTransferredBytes
 		Dim metric As MetricJobEndReport = New MetricJobEndReport() With {
 				.JobStatus = jobStatus,
-				.TotalSizeBytes = (Statistics.TotalBytes),
-				.FileSizeBytes = Statistics.FileBytes,
-				.MetadataSizeBytes = Statistics.MetadataBytes,
+				.TotalSizeBytes = totalTransferredBytes,
+				.FileSizeBytes = Statistics.FileTransferredBytes,
+				.MetadataSizeBytes = Statistics.MetadataTransferredBytes,
 				.TotalRecords = totalRecordsCount,
 				.CompletedRecords = completedRecordsCount,
-				.ThroughputBytesPerSecond = Statistics.CalculateThroughput(Statistics.TotalBytes, jobDuration),
+				.RecordsWithErrors = Statistics.RecordsWithErrorsCount,
+				.ThroughputBytesPerSecond = Statistics.CalculateThroughput(totalTransferredBytes, jobDuration),
 				.ThroughputRecordsPerSecond = Statistics.CalculateThroughput(completedRecordsCount, jobDuration),
-				.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(Statistics.DocumentsCreated + Statistics.DocumentsUpdated, Statistics.SqlTime / TimeSpan.TicksPerSecond),
+				.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(Statistics.DocumentsCreated + Statistics.DocumentsUpdated, Statistics.MassImportDuration.TotalSeconds),
 				.ImportObjectType = Statistics.ImportObjectType,
 				.JobDurationInSeconds = jobDuration,
 				.InitialTransferMode = _initialTapiClient}
@@ -141,7 +143,8 @@ Public MustInherit Class MonitoredProcessBase
 					.ImportObjectType = Statistics.ImportObjectType,
 					.MassImportDurationMilliseconds = batchInformation.MassImportDuration.Milliseconds,
 					.BatchNumber = batchInformation.OrdinalNumber,
-					.NumberOfRecords = batchInformation.NumberOfRecords
+					.NumberOfRecords = batchInformation.NumberOfRecords,
+					.NumberOfRecordsWithErrors = batchInformation.NumberOfRecordsWithErrors
 				}
 		BuildMetricBase(metric)
 		MetricService.Log(metric)
@@ -156,9 +159,9 @@ Public MustInherit Class MonitoredProcessBase
 			_lastSendTime = currentTime
 		End SyncLock
 		Dim metric As MetricJobProgress = New MetricJobProgress With {
-			.MetadataThroughputBytesPerSecond = statistics.MetadataThroughput,
-			.FileThroughputBytesPerSecond = statistics.FileThroughput,
-			.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.SqlTime/TimeSpan.TicksPerSecond),
+			.MetadataThroughputBytesPerSecond = statistics.MetadataTransferThroughput,
+			.FileThroughputBytesPerSecond = statistics.FileTransferThroughput,
+			.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(statistics.DocumentsCreated + statistics.DocumentsUpdated, statistics.MassImportDuration.TotalSeconds),
 			.ImportObjectType = statistics.ImportObjectType}
 		BuildMetricBase(metric)
 		MetricService.Log(metric)

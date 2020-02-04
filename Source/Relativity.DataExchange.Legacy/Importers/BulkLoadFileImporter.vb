@@ -649,7 +649,7 @@ Namespace kCura.WinEDDS
 										FileTapiProgressCount += 1
 									Else
 										Using Timekeeper.CaptureTime("ReadFile_GetLine")
-											Statistics.DocCount += 1
+											Statistics.DocumentsCount += 1
 											'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
 											' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
 											' -Phil S. 06/12/2012
@@ -1241,7 +1241,7 @@ Namespace kCura.WinEDDS
 						Me.PushNativeBatch(outputNativePath, shouldCompleteMetadataJob, lastRun)
 					End If
 
-					Me.Statistics.FileWaitTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
+					Me.Statistics.FileWaitDuration += New TimeSpan(System.Math.Max((System.DateTime.Now.Ticks - start), 1))
 				Catch ex As Exception
 					If BatchResizeEnabled AndAlso IsTimeoutException(ex) AndAlso ShouldImport Then
 						Me.LogWarning(ex, "A SQL or HTTP timeout error has occurred bulk importing the native batch and the batch will be resized.")
@@ -1331,7 +1331,7 @@ Namespace kCura.WinEDDS
 
 		protected Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
 			If _lastRunMetadataImport > 0 Then
-				Me.Statistics.MetadataWaitTime += System.DateTime.Now.Ticks - _lastRunMetadataImport
+				Me.Statistics.MetadataWaitDuration += New TimeSpan(System.DateTime.Now.Ticks - _lastRunMetadataImport)
 			End If
 
 			If _batchCounter = 0 OrElse Not ShouldImport Then
@@ -1410,24 +1410,24 @@ Namespace kCura.WinEDDS
 					    Dim start As Int64 = DateTime.Now.Ticks
 					    Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
-					    Statistics.ProcessRunResults(runResults)
+					    Statistics.ProcessMassImportResults(runResults)
 						Dim numberOfTicks As Long = DateTime.Now.Ticks - start
 						Dim batchDuration As TimeSpan = New TimeSpan(numberOfTicks)
 						
-					    Statistics.SqlTime += numberOfTicks
+					    Statistics.MassImportDuration += batchDuration
 						Statistics.BatchCount += 1
-
-						Dim batchInformation As New BatchInformation With {
-									.OrdinalNumber = Statistics.BatchCount,
-									.NumberOfRecords = runResults.FilesProcessed,
-									.MassImportDuration = batchDuration
-								}
-						MyBase.OnBatchCompleted(batchInformation)
 
 					    Logger.LogInformation("Duration of mass import processing: {durationInMilliseconds}, batch: {numberOfBatch}", batchDuration.TotalMilliseconds, Statistics.BatchCount)
 					    UpdateStatisticsSnapshot(DateTime.Now)
-					    Me.ManageErrors(_artifactTypeID)
-				    End Sub
+						Me.ManageErrors(_artifactTypeID)
+
+						Dim batchInformation As New BatchInformation With {
+								.OrdinalNumber = Statistics.BatchCount,
+								.NumberOfRecords = runResults.FilesProcessed,
+								.MassImportDuration = batchDuration
+								}
+						MyBase.OnBatchCompleted(batchInformation)
+					End Sub
 			If _usePipeliningForNativeAndObjectImports Then
 				Dim f As New System.Threading.Tasks.TaskFactory()
 				_task = f.StartNew(makeServiceCalls)

@@ -15,6 +15,7 @@ Namespace kCura.WinEDDS
 		Protected WithEvents _loadFileImporter As BulkLoadFileImporter
 		Protected WithEvents _IoReporterContext As IoReporterContext
 		Private _errorCount As Int32
+		Private _perBatchErrorCount As Int32
 		Private _warningCount As Int32
 		Private _timeZoneOffset As Int32
 
@@ -172,6 +173,7 @@ Namespace kCura.WinEDDS
 			MyBase.Initialize()
 			_warningCount = 0
 			_errorCount = 0
+			_perBatchErrorCount = 0
 			_loadFileImporter = Me.GetImporter()
 
 			If _disableNativeValidation.HasValue Then _loadFileImporter.DisableNativeValidation = _disableNativeValidation.Value
@@ -283,11 +285,11 @@ Namespace kCura.WinEDDS
 						Case TapiClient.Web
 							retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Web
 					End Select
-					retval.TotalFileSize = _loadFileImporter.Statistics.FileBytes
+					retval.TotalFileSize = _loadFileImporter.Statistics.FileTransferredBytes
 				End If
 				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(StartTime).TotalMilliseconds, Int32)
 				retval.StartLine = CType(System.Math.Min(LoadFile.StartLineNumber, Int32.MaxValue), Int32)
-				retval.TotalMetadataBytes = _loadFileImporter.Statistics.MetadataBytes
+				retval.TotalMetadataBytes = _loadFileImporter.Statistics.MetadataTransferredBytes
 				retval.SendNotification = LoadFile.SendEmailOnLoadCompletion
 				Dim auditManager As New kCura.WinEDDS.Service.AuditManager(LoadFile.Credentials, LoadFile.CookieContainer)
 
@@ -306,22 +308,24 @@ Namespace kCura.WinEDDS
 				If Not e.AdditionalInfo Is Nothing Then statisticsDictionary = DirectCast(e.AdditionalInfo, IDictionary)
 				Select Case e.EventType
 					Case EventType2.End
-						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, System.DateTime.Now, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, System.DateTime.Now, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-						Me.Context.PublishProcessEnded(e.Statistics.FileBytes, e.Statistics.MetadataBytes)
+						Me.Context.PublishProcessEnded(e.Statistics.FileTransferredBytes, e.Statistics.MetadataTransferredBytes)
 					Case EventType2.Error
 						_errorCount += 1
-						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						_perBatchErrorCount += 1
+						Statistics.RecordsWithErrorsCount = _errorCount
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Progress
 						Me.Context.PublishRecordProcessed(e.CurrentRecordIndex)
-						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Statistics
 						SendMetricJobProgress(e.Statistics, checkThrottling := True)
 					Case EventType2.ResetProgress
 						' Do NOT raise RaiseRecordProcessed for this event. 
-						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Status
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
@@ -400,6 +404,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _loadFileImporter_OnBatchCompleted(batchInformation As BatchInformation) Handles _loadFileImporter.BatchCompleted
+			batchInformation.NumberOfRecordsWithErrors = _perBatchErrorCount
+			_perBatchErrorCount = 0
 			MyBase.SendMetricJobBatch(batchInformation)
 		End Sub
 

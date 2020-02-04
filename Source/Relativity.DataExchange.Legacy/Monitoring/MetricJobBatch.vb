@@ -43,5 +43,18 @@
 				CustomData.Item(TelemetryConstants.KeyName.NUMBER_OF_RECORDS) = Value
 			End Set
 		End Property
+		
+		''' <summary>
+		''' Gets or sets number of records with errors in batch.
+		''' </summary>
+		''' <returns>Number of records with errors in batch.</returns>
+		Public Property NumberOfRecordsWithErrors As Integer
+			Get
+				Return GetValueOrDefault(Of Integer)(TelemetryConstants.KeyName.RECORDS_WITH_ERRORS)
+			End Get
+			Set
+				CustomData.Item(TelemetryConstants.KeyName.RECORDS_WITH_ERRORS) = Value
+			End Set
+		End Property
 	End Class
 End NameSpace

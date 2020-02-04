@@ -220,12 +220,12 @@ Namespace kCura.WinEDDS
 		Public Property DocumentsExported As Integer Implements IExporter.DocumentsExported
 			Get
 				SyncLock _syncLock
-					Return Me.Statistics.DocCount
+					Return Me.Statistics.DocumentsCount
 				End SyncLock
 			End Get
 			Set
 				SyncLock _syncLock
-					Me.Statistics.DocCount = value
+					Me.Statistics.DocumentsCount = value
 				End SyncLock
 			End Set
 		End Property
@@ -435,7 +435,7 @@ Namespace kCura.WinEDDS
 
 			Me.TotalExportArtifactCount -= Me.Settings.StartAtDocumentNumber
 
-			Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
+			Statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1))
 
 			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport, _loadFileFormatterFactory)
 				Dim batch As IBatch = Nothing
@@ -501,7 +501,7 @@ Namespace kCura.WinEDDS
 					End If
 
 					lastRecordCount = records.Length
-					Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
+					Statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1))
 					_timekeeper.MarkEnd("Exporter_GetDocumentBlock")
 					Dim artifactIDs As New List(Of Int32)
 					Dim artifactIdOrdinal As Int32 = FieldLookupService.GetOrdinalIndex("ArtifactID")
@@ -730,7 +730,7 @@ Namespace kCura.WinEDDS
 									natives.Table = dt
 								End If
 							End If
-							Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+							Statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - start, 1))
 							_timekeeper.MarkEnd("Exporter_GetNativesForDocumentBlock")
 						End If
 						Return natives
@@ -748,7 +748,7 @@ Namespace kCura.WinEDDS
 
 						images.Table = CallServerWithRetry(Function() Me.RetrieveImagesForDocuments(documentArtifactIDs), maxTries)
 
-						Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+						Statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - start, 1))
 						_timekeeper.MarkEnd("Exporter_GetImagesForDocumentBlock")
 					End If
 					Return images
@@ -766,7 +766,7 @@ Namespace kCura.WinEDDS
 
 						productionImages.Table = CallServerWithRetry(Function() Me.RetrieveProductionImagesForDocuments(documentArtifactIDs, Me.Settings.ImagePrecedence), maxTries)
 
-						Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+						Statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - start, 1))
 						_timekeeper.MarkEnd("Exporter_GetProductionsForDocumentBlock")
 					End If
 					Return productionImages
@@ -1245,8 +1245,8 @@ Namespace kCura.WinEDDS
 					End If
 				Next
 			End If
-			args.TotalFileBytesExported = Statistics.FileBytes
-			args.TotalMetadataBytesExported = Statistics.MetadataBytes
+			args.TotalFileBytesExported = Statistics.FileTransferredBytes
+			args.TotalMetadataBytesExported = Statistics.MetadataTransferredBytes
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.AncestorSearch
 					args.Type = "Folder and Subfolders"

@@ -13,12 +13,12 @@ Namespace kCura.WinEDDS
 		''' </returns>
 		Public Overrides Function ToDictionary() As IDictionary
 			Dim retval As New System.Collections.Specialized.HybridDictionary
-			If Not Me.FileTime = 0 Then
-				retval.Add("Average file transfer rate", ToFileSizeSpecification(Me.FileBytes / TimeSpan.FromTicks(Me.FileTime).TotalSeconds) & "/sec")
+			If Not Me.FileTransferDuration.Equals(TimeSpan.Zero) Then
+				retval.Add("Average file transfer rate", ToFileSizeSpecification(Me.FileTransferredBytes / Me.FileTransferDuration.TotalSeconds) & "/sec")
 			End If
 
-			If Not Me.MetadataTime = 0 AndAlso Not Me.MetadataBytes = 0 Then
-				retval.Add("Average long text transfer rate", ToFileSizeSpecification(Me.MetadataBytes / TimeSpan.FromTicks(Me.MetadataTime).TotalHours) & "/hr")
+			If Not Me.MetadataTransferDuration.Equals(TimeSpan.Zero) AndAlso Not Me.MetadataTransferredBytes = 0 Then
+				retval.Add("Average long text transfer rate", ToFileSizeSpecification(Me.MetadataTransferredBytes / Me.MetadataTransferDuration.TotalHours) & "/hr")
 			End If
 
 			Return retval
@@ -36,14 +36,14 @@ Namespace kCura.WinEDDS
 			Dim statisticsDict As System.Collections.Generic.Dictionary(Of String, Object) = New System.Collections.Generic.Dictionary(Of String, Object) From
 				    {
 					    {BatchCountKey, Me.BatchCount},
-					    {DocsCountKey, Me.DocCount},
-					    {MetadataBytesKey, Me.MetadataBytes},
+					    {DocsCountKey, Me.DocumentsCount},
+					    {MetadataBytesKey, Me.MetadataTransferredBytes},
 					    {MetadataFilesTransferredKey, Me.MetadataFilesTransferredCount},
-					    {MetadataThroughputKey, Me.MetadataThroughput},
-					    {MetadataTimeKey, TimeSpan.FromTicks(Me.MetadataTime)},
-					    {NativeFileBytesKey, Me.FileBytes},
-					    {NativeFileThroughputKey, Me.FileThroughput},
-					    {NativeFileTimeKey, TimeSpan.FromTicks(Me.FileTime)},
+					    {MetadataThroughputKey, Me.MetadataTransferThroughput},
+					    {MetadataTimeKey, Me.MetadataTransferDuration},
+					    {NativeFileBytesKey, Me.FileTransferredBytes},
+					    {NativeFileThroughputKey, Me.FileTransferThroughput},
+					    {NativeFileTimeKey, Me.FileTransferDuration},
 					    {NativeFilesTransferredKey, Me.NativeFilesTransferredCount}
 				    }
 

@@ -458,7 +458,7 @@ Namespace kCura.WinEDDS
 					PushImageBatch(bulkLoadFilePath, dataGridFilePath, shouldCompleteMetadataJob, isFinal)
 				End If
 
-				Me.Statistics.FileWaitTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
+				Me.Statistics.FileWaitDuration += New TimeSpan(System.Math.Max((System.DateTime.Now.Ticks - start), 1))
 			Catch ex As Exception
 				If BatchResizeEnabled AndAlso IsTimeoutException(ex) AndAlso ShouldImport Then
 					Me.LogWarning(ex, "A SQL or HTTP timeout error has occurred bulk importing the image batch and the batch will be resized.")
@@ -582,7 +582,7 @@ Namespace kCura.WinEDDS
 
 		Public Sub PushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
 			If _lastRunMetadataImport > 0 Then
-				Me.Statistics.MetadataWaitTime += System.DateTime.Now.Ticks - _lastRunMetadataImport
+				Me.Statistics.MetadataWaitDuration += New TimeSpan(System.DateTime.Now.Ticks - _lastRunMetadataImport)
 			End If
 
 			If _batchCount = 0 Then
@@ -600,7 +600,7 @@ Namespace kCura.WinEDDS
 
 			_batchCount = 0
 			Const retry As Boolean = True
-			Me.Statistics.MetadataBytes += (Me.GetFileLength(bulkLoadFilePath, retry) + Me.GetFileLength(dataGridFilePath, retry))
+			Me.Statistics.MetadataTransferredBytes += (Me.GetFileLength(bulkLoadFilePath, retry) + Me.GetFileLength(dataGridFilePath, retry))
 			
 			_uploadKey = Me.BulkLoadTapiBridge.AddPath(bulkLoadFilePath, Guid.NewGuid().ToString(), 1)
 			_uploadDataGridKey = Me.BulkLoadTapiBridge.AddPath(dataGridFilePath, Guid.NewGuid().ToString(), 2)
@@ -630,12 +630,17 @@ Namespace kCura.WinEDDS
 			If ShouldImport Then
 				Dim start As Int64 = System.DateTime.Now.Ticks
 				Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.RunBulkImport(overwrite, True)
-				Me.Statistics.ProcessRunResults(runResults)
+				Me.Statistics.ProcessMassImportResults(runResults)
 				_runId = runResults.RunID
 				Dim numberOfTicks As Long = System.DateTime.Now.Ticks - start
 				Dim batchDuration As TimeSpan = New TimeSpan(numberOfTicks)
-				Me.Statistics.SqlTime += System.Math.Max(numberOfTicks, 1)
+				Me.Statistics.MassImportDuration += batchDuration
 				Me.Statistics.BatchCount += 1
+
+				Logger.LogInformation("Duration of mass import processing: {durationInMilliseconds}, batch: {numberOfBatch}", batchDuration.TotalMilliseconds, Me.Statistics.BatchCount)
+				ManageErrors()
+
+				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount
 
 				Dim batchInformation As New BatchInformation With {
 						.OrdinalNumber = Statistics.BatchCount,
@@ -643,11 +648,6 @@ Namespace kCura.WinEDDS
 						.MassImportDuration = batchDuration
 						}
 				MyBase.OnBatchCompleted(batchInformation)
-
-				Logger.LogInformation("Duration of mass import processing: {durationInMilliseconds}, batch: {numberOfBatch}", batchDuration.TotalMilliseconds, Me.Statistics.BatchCount)
-				ManageErrors()
-
-				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount
 			End If
 		End Sub
 
@@ -816,7 +816,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub ProcessDocument(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int64)
 			GetImagesForDocument(al, status)
-			Me.Statistics.DocCount += 1
+			Me.Statistics.DocumentsCount += 1
 		End Sub
 
 #End Region

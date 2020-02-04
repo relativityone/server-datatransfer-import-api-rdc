@@ -49,6 +49,7 @@
 			Public Const METADATA_SIZE_BYTES As String = "MetadataSizeBytes"
 			Public Const TOTAL_RECORDS As String = "TotalRecords"
 			Public Const COMPLETED_RECORDS As String = "CompletedRecords"
+			Public Const RECORDS_WITH_ERRORS As String = "RecordsWithErrors"
 			Public Const THROUGHPUT_BYTES_PER_SECOND As String = "ThroughputBytesPerSecond"
 			Public Const THROUGHPUT_RECORDS_PER_SECOND As String = "ThroughputRecordsPerSecond"
 			Public Const AUTHENTICATION_METHOD As String = "AuthenticationMethod"

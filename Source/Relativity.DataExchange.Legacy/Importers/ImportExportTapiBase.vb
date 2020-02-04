@@ -512,9 +512,9 @@ Namespace kCura.WinEDDS
 
 		Private Sub BulkLoadOnTapiStatistics(ByVal sender As Object, ByVal e As TapiStatisticsEventArgs)
 			SyncLock _syncRoot
-				_statistics.MetadataTime = e.TotalTransferTicks
-				_statistics.MetadataBytes = e.TotalBytes
-				_statistics.MetadataThroughput = e.TransferRateBytes
+				_statistics.MetadataTransferDuration = New TimeSpan(e.TotalTransferTicks)
+				_statistics.MetadataTransferredBytes = e.TotalBytes
+				_statistics.MetadataTransferThroughput = e.TransferRateBytes
 				Me.UpdateStatisticsSnapshot(System.DateTime.Now)
 			End SyncLock
 		End Sub
@@ -549,9 +549,9 @@ Namespace kCura.WinEDDS
 
 		Private Sub FileOnTapiStatistics(ByVal sender As Object, ByVal e As TapiStatisticsEventArgs)
 			SyncLock _syncRoot
-				_statistics.FileTime = e.TotalTransferTicks
-				_statistics.FileBytes = e.TotalBytes
-				_statistics.FileThroughput = e.TransferRateBytes
+				_statistics.FileTransferDuration = New TimeSpan(e.TotalTransferTicks)
+				_statistics.FileTransferredBytes = e.TotalBytes
+				_statistics.FileTransferThroughput = e.TransferRateBytes
 				Me.UpdateStatisticsSnapshot(System.DateTime.Now)
 			End SyncLock
 		End Sub

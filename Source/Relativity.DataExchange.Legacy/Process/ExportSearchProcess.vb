@@ -143,6 +143,7 @@ Namespace kCura.WinEDDS
 			Select Case e.EventType
 				Case EventType2.Error
 					Interlocked.Increment(_errorCount)
+					Statistics.RecordsWithErrorsCount = _errorCount
 					Me.Context.PublishErrorEvent(e.DocumentsExported.ToString, e.Message)
 				Case EventType2.Progress
 					SendMetricJobProgress(e.Statistics, checkThrottling := True)
@@ -162,7 +163,7 @@ Namespace kCura.WinEDDS
 				statDict = DirectCast(e.AdditionalInfo, IDictionary)
 			End If
 
-			Me.Context.PublishProgress(e.TotalDocuments, e.DocumentsExported, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statDict)
+			Me.Context.PublishProgress(e.TotalDocuments, e.DocumentsExported, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, statDict)
 		End Sub
 
 		Private Sub _productionExporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _searchExporter.FatalErrorEvent

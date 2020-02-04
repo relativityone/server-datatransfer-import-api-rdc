@@ -58,8 +58,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.RestoreLastState();
 
 			// ASSERT
-			Assert.That(this._statistics.MetadataBytes, Is.EqualTo(size1));
-			Assert.That(this._statistics.MetadataTime, Is.EqualTo(end.Ticks - start.Ticks));
+			Assert.That(this._statistics.MetadataTransferredBytes, Is.EqualTo(size1));
+			Assert.That(this._statistics.MetadataTransferDuration.Ticks, Is.EqualTo(end.Ticks - start.Ticks));
 			Assert.That(this._statistics.MetadataFilesTransferredCount, Is.EqualTo(2));
 			Assert.That(this._statistics.NativeFilesTransferredCount, Is.EqualTo(0));
 		}
@@ -82,8 +82,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, string.Empty, true, true, 0, sizeDownload2, start, end));
 
 			// ASSERT
-			Assert.That(this._statistics.MetadataBytes, Is.EqualTo(sizeDownload1 + sizeDownload2));
-			Assert.That(this._statistics.MetadataTime, Is.EqualTo((end.Ticks - start.Ticks) * 2));
+			Assert.That(this._statistics.MetadataTransferredBytes, Is.EqualTo(sizeDownload1 + sizeDownload2));
+			Assert.That(this._statistics.MetadataTransferDuration.Ticks, Is.EqualTo((end.Ticks - start.Ticks) * 2));
 		}
 
 		[Test]
@@ -105,8 +105,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, string.Empty, true, true, 0, size2, start, end));
 
 			// ASSERT
-			Assert.That(this._statistics.MetadataBytes, Is.EqualTo(size1));
-			Assert.That(this._statistics.MetadataTime, Is.EqualTo(end.Ticks - start.Ticks));
+			Assert.That(this._statistics.MetadataTransferredBytes, Is.EqualTo(size1));
+			Assert.That(this._statistics.MetadataTransferDuration.Ticks, Is.EqualTo(end.Ticks - start.Ticks));
 		}
 
 		[Test]
@@ -125,7 +125,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.UpdateStatisticsForFile(fileName);
 
 			// ASSERT
-			Assert.That(this._statistics.MetadataBytes, Is.EqualTo(newFileSize));
+			Assert.That(this._statistics.MetadataTransferredBytes, Is.EqualTo(newFileSize));
 		}
 
 		[Test]

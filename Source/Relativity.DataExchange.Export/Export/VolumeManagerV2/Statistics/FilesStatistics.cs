@@ -1,5 +1,7 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Statistics
 {
+	using System;
+
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
@@ -8,7 +10,7 @@
 	{
 		private double _savedThroughput;
 		private long _savedFileBytes;
-		private long _savedFileTime;
+		private TimeSpan _savedFileTime;
 
 		private readonly kCura.WinEDDS.Statistics _statistics;
 		private readonly IFile _fileWrapper;
@@ -35,7 +37,7 @@
 		{
 			lock (_lock)
 			{
-				_statistics.FileThroughput = e.TransferRateBytes;
+				_statistics.FileTransferThroughput = e.TransferRateBytes;
 			}
 		}
 
@@ -46,8 +48,8 @@
 			{
 				lock (_lock)
 				{
-					_statistics.FileBytes += e.FileBytes;
-					_statistics.FileTime += e.EndTime.Ticks - e.StartTime.Ticks;
+					_statistics.FileTransferredBytes += e.FileBytes;
+					_statistics.FileTransferDuration += (e.EndTime - e.StartTime);
 					_statistics.NativeFilesTransferredCount++;
 				}
 			}
@@ -67,7 +69,7 @@
 			{
 				if (_fileWrapper.Exists(path))
 				{
-					_statistics.FileBytes += _fileWrapper.GetFileSize(path);
+					_statistics.FileTransferredBytes += _fileWrapper.GetFileSize(path);
 				}
 				else
 				{
@@ -80,9 +82,9 @@
 		{
 			lock (_lock)
 			{
-				_savedThroughput = _statistics.FileThroughput;
-				_savedFileBytes = _statistics.FileBytes;
-				_savedFileTime = _statistics.FileTime;
+				_savedThroughput = _statistics.FileTransferThroughput;
+				_savedFileBytes = _statistics.FileTransferredBytes;
+				_savedFileTime = _statistics.FileTransferDuration;
 			}
 		}
 
@@ -90,9 +92,9 @@
 		{
 			lock (_lock)
 			{
-				_statistics.FileThroughput = _savedThroughput;
-				_statistics.FileBytes = _savedFileBytes;
-				_statistics.FileTime = _savedFileTime;
+				_statistics.FileTransferThroughput = _savedThroughput;
+				_statistics.FileTransferredBytes = _savedFileBytes;
+				_statistics.FileTransferDuration = _savedFileTime;
 			}
 		}
 	}

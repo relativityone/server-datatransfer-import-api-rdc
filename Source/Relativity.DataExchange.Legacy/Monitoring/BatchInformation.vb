@@ -14,8 +14,14 @@
 		''' <summary>
 		''' Gets or sets number of records in batch.
 		''' </summary>
-		''' <returns>Number of records</returns>
+		''' <returns>Number of records.</returns>
 		Public Property NumberOfRecords As Integer
+
+		''' <summary>
+		''' Gets or sets number of records with errors in batch.
+		''' </summary>
+		''' <returns>Number of records with errors.</returns>
+		Public Property NumberOfRecordsWithErrors As Integer
 
 		''' <summary>
 		''' Gets or sets duration of mass import.

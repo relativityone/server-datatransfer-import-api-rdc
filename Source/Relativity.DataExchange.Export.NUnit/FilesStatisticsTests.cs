@@ -57,8 +57,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.RestoreLastState();
 
 			// ASSERT
-			Assert.That(this._statistics.FileBytes, Is.EqualTo(size1));
-			Assert.That(this._statistics.FileTime, Is.EqualTo(end.Ticks - start.Ticks));
+			Assert.That(this._statistics.FileTransferredBytes, Is.EqualTo(size1));
+			Assert.That(this._statistics.FileTransferDuration.Ticks, Is.EqualTo(end.Ticks - start.Ticks));
 		}
 
 		[Test]
@@ -79,8 +79,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, string.Empty, true, true, 0, sizeDownload2, start, end));
 
 			// ASSERT
-			Assert.That(this._statistics.FileBytes, Is.EqualTo(sizeDownload1 + sizeDownload2));
-			Assert.That(this._statistics.FileTime, Is.EqualTo((end.Ticks - start.Ticks) * 2));
+			Assert.That(this._statistics.FileTransferredBytes, Is.EqualTo(sizeDownload1 + sizeDownload2));
+			Assert.That(this._statistics.FileTransferDuration.Ticks, Is.EqualTo((end.Ticks - start.Ticks) * 2));
 			Assert.That(this._statistics.NativeFilesTransferredCount, Is.EqualTo(2));
 			Assert.That(this._statistics.MetadataFilesTransferredCount, Is.EqualTo(0));
 		}
@@ -104,8 +104,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, string.Empty, true, true, 0, size2, start, end));
 
 			// ASSERT
-			Assert.That(this._statistics.FileBytes, Is.EqualTo(size1));
-			Assert.That(this._statistics.FileTime, Is.EqualTo(end.Ticks - start.Ticks));
+			Assert.That(this._statistics.FileTransferredBytes, Is.EqualTo(size1));
+			Assert.That(this._statistics.FileTransferDuration.Ticks, Is.EqualTo(end.Ticks - start.Ticks));
 		}
 
 		[Test]
@@ -121,7 +121,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.UpdateStatisticsForFile(fileName);
 
 			// ASSERT
-			Assert.That(this._statistics.FileBytes, Is.EqualTo(fileSize));
+			Assert.That(this._statistics.FileTransferredBytes, Is.EqualTo(fileSize));
 		}
 
 		[Test]

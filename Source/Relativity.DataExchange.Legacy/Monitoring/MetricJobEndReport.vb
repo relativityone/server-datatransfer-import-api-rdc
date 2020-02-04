@@ -86,6 +86,19 @@ Namespace Monitoring
 		End Property
 
 		''' <summary>
+		''' Gets or sets total number of records processed with errors.
+		''' </summary>
+		''' <returns>The total number of records processed with errors.</returns>
+		Public Property RecordsWithErrors As Long
+			Get
+				Return GetValueOrDefault (Of Long)(TelemetryConstants.KeyName.RECORDS_WITH_ERRORS)
+			End Get
+			Set
+				CustomData.Item(TelemetryConstants.KeyName.RECORDS_WITH_ERRORS) = Value
+			End Set
+		End Property
+
+		''' <summary>
 		''' Gets or sets total transfer rate in bytes per second
 		''' </summary>
 		''' <returns>Transfer rate in bytes per second</returns>

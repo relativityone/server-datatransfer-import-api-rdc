@@ -1,5 +1,6 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Statistics
 {
+	using System;
 	using System.Collections.Generic;
 
 	using Relativity.DataExchange.Io;
@@ -10,7 +11,7 @@
 	{
 		private double _savedThroughput;
 		private long _savedMetadataBytes;
-		private long _savedMetadataTime;
+		private TimeSpan _savedMetadataTransferDuration;
 		private Dictionary<string, long> _savedFilesSize;
 
 		private readonly kCura.WinEDDS.Statistics _statistics;
@@ -31,7 +32,7 @@
 			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
-		public long MetadataTime => this._statistics.MetadataTime;
+		public long MetadataTime => this._statistics.MetadataTransferDuration.Ticks;
 
 		public void Subscribe(ITapiBridge tapiBridge)
 		{
@@ -45,7 +46,7 @@
 		{
 			lock (_lock)
 			{
-				_statistics.MetadataThroughput = e.TransferRateBytes;
+				_statistics.MetadataTransferThroughput = e.TransferRateBytes;
 			}
 		}
 
@@ -56,8 +57,8 @@
 			{
 				lock (_lock)
 				{
-					_statistics.MetadataBytes += e.FileBytes;
-					_statistics.MetadataTime += e.EndTime.Ticks - e.StartTime.Ticks;
+					_statistics.MetadataTransferredBytes += e.FileBytes;
+					_statistics.MetadataTransferDuration += (e.EndTime - e.StartTime);
 					_statistics.MetadataFilesTransferredCount++;
 				}
 			}
@@ -84,7 +85,7 @@
 					}
 
 					long newSize = _fileWrapper.GetFileSize(path);
-					_statistics.MetadataBytes += newSize - oldSize;
+					_statistics.MetadataTransferredBytes += newSize - oldSize;
 					_filesSize[path] = newSize;
 				}
 				else
@@ -106,11 +107,11 @@
 				{
 					// Note: the ticks continually replaces the metadata time instead of adding to the existing value.
 					_statistics.MetadataFilesTransferredCount++;
-					_statistics.MetadataBytes += transferredBytes;
-					_statistics.MetadataTime = totalTicks;
-					_statistics.MetadataThroughput = kCura.WinEDDS.Statistics.CalculateThroughput(
-						_statistics.MetadataBytes,
-						_statistics.MetadataTime);
+					_statistics.MetadataTransferredBytes += transferredBytes;
+					_statistics.MetadataTransferDuration = new TimeSpan(totalTicks);
+					_statistics.MetadataTransferThroughput = kCura.WinEDDS.Statistics.CalculateThroughput(
+						_statistics.MetadataTransferredBytes,
+						_statistics.MetadataTransferDuration.TotalSeconds);
 				}
 			}
 		}
@@ -119,9 +120,9 @@
 		{
 			lock (_lock)
 			{
-				_savedThroughput = _statistics.MetadataThroughput;
-				_savedMetadataBytes = _statistics.MetadataBytes;
-				_savedMetadataTime = _statistics.MetadataTime;
+				_savedThroughput = _statistics.MetadataTransferThroughput;
+				_savedMetadataBytes = _statistics.MetadataTransferredBytes;
+				_savedMetadataTransferDuration = _statistics.MetadataTransferDuration;
 				_savedFilesSize = new Dictionary<string, long>(_filesSize);
 			}
 		}
@@ -130,9 +131,9 @@
 		{
 			lock (_lock)
 			{
-				_statistics.MetadataThroughput = _savedThroughput;
-				_statistics.MetadataBytes = _savedMetadataBytes;
-				_statistics.MetadataTime = _savedMetadataTime;
+				_statistics.MetadataTransferThroughput = _savedThroughput;
+				_statistics.MetadataTransferredBytes = _savedMetadataBytes;
+				_statistics.MetadataTransferDuration = _savedMetadataTransferDuration;
 				_filesSize.Clear();
 				foreach (KeyValuePair<string, long> keyValuePair in _savedFilesSize)
 				{

@@ -593,7 +593,7 @@ Namespace kCura.WinEDDS
 							End Try
 						End While
 					End If
-					_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+					_statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - start, 1))
 				Else
 					If tempLocalFullTextFilePath <> String.Empty Then
 						tempLocalIproFullTextFilePath = String.Copy(tempLocalFullTextFilePath)
@@ -652,8 +652,8 @@ Namespace kCura.WinEDDS
 				Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Errors, ex)
 			End Try
 			_totalExtractedTextFileLength += extractedTextFileLength
-			_statistics.MetadataBytes = _totalExtractedTextFileLength
-			_statistics.FileBytes += totalFileSize - extractedTextFileSizeForVolume
+			_statistics.MetadataTransferredBytes = _totalExtractedTextFileLength
+			_statistics.FileTransferredBytes += totalFileSize - extractedTextFileSizeForVolume
 			Dim deletor As New TempTextFileDeletor(New String() {tempLocalIproFullTextFilePath, tempLocalFullTextFilePath})
 			Dim t As New System.Threading.Thread(AddressOf deletor.DeleteFiles)
 			t.Start()
@@ -710,7 +710,7 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
-			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+			_statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - start, 1))
 			Return tempLocalFullTextFilePath
 		End Function
 
@@ -876,7 +876,7 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
-			_statistics.FileTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+			_statistics.FileTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - start, 1))
 			Return _fileHelper.GetFileSize(tempFile)
 		End Function
 
@@ -1039,7 +1039,7 @@ Namespace kCura.WinEDDS
 				End Try
 			End While
 			
-			_statistics.FileTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+			_statistics.FileTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - start, 1))
 			Return _fileHelper.GetFileSize(tempFile)
 		End Function
 
@@ -1264,7 +1264,7 @@ Namespace kCura.WinEDDS
 				End If
 
 				'Store statistics
-				_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
+				_statistics.MetadataTransferredBytes = loadFileBytes + _totalExtractedTextFileLength
 			Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
 				_parent.WriteWarning($"Error writing metadata for artifact {lastArtifactId}")
 				_parent.WriteWarning($"Actual error: {ex.ToString}")
@@ -1316,7 +1316,7 @@ Namespace kCura.WinEDDS
 				End If
 
 				'Store statistics
-				_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
+				_statistics.MetadataTransferredBytes = loadFileBytes + _totalExtractedTextFileLength
 
 			Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
 				_parent.WriteWarning($"Error writing .opt file entry for artifact {lastArtifactId}")

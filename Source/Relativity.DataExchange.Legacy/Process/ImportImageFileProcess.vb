@@ -14,6 +14,7 @@ Namespace kCura.WinEDDS
 		Private WithEvents _imageFileImporter As kCura.WinEDDS.BulkImageFileImporter
 		Protected WithEvents _ioReporterContext As IoReporterContext
 		Private _errorCount As Int32
+		Private _perBatchErrorCount As Int32
 		Private _warningCount As Int32
 		Private _uploadModeText As String = Nothing
 
@@ -124,6 +125,7 @@ Namespace kCura.WinEDDS
 			MyBase.Initialize()
 			_warningCount = 0
 			_errorCount = 0
+			_perBatchErrorCount = 0
 			Me.Context.InputArgs = ImageLoadFile.FileName
 			_imageFileImporter = Me.GetImageFileImporter
 
@@ -200,8 +202,8 @@ Namespace kCura.WinEDDS
 				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(StartTime).TotalMilliseconds, Int32)
 				retval.SupportImageAutoNumbering = ImageLoadFile.AutoNumberImages
 				retval.StartLine = CType(System.Math.Min(ImageLoadFile.StartLineNumber, Int32.MaxValue), Int32)
-				retval.TotalFileSize = _imageFileImporter.Statistics.FileBytes
-				retval.TotalMetadataBytes = _imageFileImporter.Statistics.MetadataBytes
+				retval.TotalFileSize = _imageFileImporter.Statistics.FileTransferredBytes
+				retval.TotalMetadataBytes = _imageFileImporter.Statistics.MetadataTransferredBytes
 				retval.SendNotification = ImageLoadFile.SendEmailOnLoadCompletion
 				Dim auditmanager As New kCura.WinEDDS.Service.AuditManager(ImageLoadFile.Credential, ImageLoadFile.CookieContainer)
 
@@ -216,12 +218,16 @@ Namespace kCura.WinEDDS
 				If Not e.AdditionalInfo Is Nothing Then additionalInfo = DirectCast(e.AdditionalInfo, IDictionary)
 				Select Case e.EventType
 					Case EventType2.Error
-						If e.CountsTowardsTotal Then _errorCount += 1
-						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
+						If e.CountsTowardsTotal Then
+							_errorCount += 1
+							_perBatchErrorCount += 1
+							Statistics.RecordsWithErrorsCount = _errorCount
+						End If
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 						Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Progress
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 						Me.Context.PublishRecordProcessed(e.CurrentRecordIndex)
 					Case EventType2.Statistics
 						SendMetricJobProgress(e.Statistics, checkThrottling := True)
@@ -270,6 +276,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _imageFileImporter_OnBatchCompleted(batchInformation As BatchInformation) Handles _imageFileImporter.BatchCompleted
+			batchInformation.NumberOfRecordsWithErrors = _perBatchErrorCount
+			_perBatchErrorCount = 0
 			MyBase.SendMetricJobBatch(batchInformation)
 		End Sub
 	End Class
