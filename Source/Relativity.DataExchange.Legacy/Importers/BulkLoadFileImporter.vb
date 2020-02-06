@@ -104,11 +104,11 @@ Namespace kCura.WinEDDS
 		''' Gets total number of records. This property is used in our telemetry system.
 		''' </summary>
 		''' <returns>Total number of records.</returns>
-		Friend Readonly Property TotalRecords As Long
+		Friend ReadOnly Property TotalRecords As Long
 			Get
 				' check if RecordCount has already been updated to avoid unnecessary file I/O operation
-					If RecordCount = -1 OrElse RecordCount = 0 Then Return _artifactReader.CountRecords()
-					Return RecordCount
+				If RecordCount <= 0 Then RecordCount = _artifactReader.CountRecords.GetValueOrDefault()
+				Return RecordCount
 			End Get
 		End Property
 
@@ -768,7 +768,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function InitializeMembers() As Boolean
-			RecordCount = _artifactReader.CountRecords
+			RecordCount = _artifactReader.CountRecords.GetValueOrDefault()
 			If RecordCount = -1 Then
 				OnStatusMessage(New StatusEventArgs(EventType2.Progress, CurrentLineNumber, CurrentLineNumber, CancelEventMsg, CurrentStatisticsSnapshot, Statistics))
 				Return False

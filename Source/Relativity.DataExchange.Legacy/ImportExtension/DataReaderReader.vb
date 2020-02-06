@@ -40,9 +40,9 @@ Namespace kCura.WinEDDS.ImportExtension
 				fileSettings = New FileSettings() With {.FileNameColumn = Nothing, .FileSizeColumn = Nothing, .FileSizeMapped = False, .IDColumnName = Nothing, .OIFileIdMapped = False, .TypeColumnName = Nothing}
 			End If
 			_FileSettings = fileSettings
-
-			If _reader Is Nothing Then Throw New NullReferenceException("The reader being passed into this IDataReaderReader is null")
-			If _reader.IsClosed = True OrElse _reader.FieldCount = 0 Then Throw New ArgumentException("The reader being passed into this IDataReaderReader is empty")
+			
+			_reader.ThrowIfNull(nameof(_reader))
+			If _reader.IsClosed = True OrElse _reader.FieldCount = 0 Then Throw New ArgumentException("The reader is closed or empty")
 			_loadFileSettings = fieldMap
 			_allFields = args.AllFields
 			If args.TemporaryLocalDirectory Is Nothing Then
@@ -106,14 +106,17 @@ Namespace kCura.WinEDDS.ImportExtension
 			End Get
 		End Property
 
-        ''' <summary>
-        ''' Returns total records count, but only when <see cref="_reader"/> already read all the records, otherwise returns 0.
-        ''' This is because <see cref="_reader"/> is a forward-only record viewer and does not contain information about total number of rows.
-        ''' To calculate total number of records we need to iterate through all the rows and increment <see cref="_currentLineNumber"/>
-        ''' </summary>
-        ''' <returns>Total records count if <see cref="_reader"/> is closed, 0 otherwise</returns>
-		Public Function CountRecords() As Long Implements kCura.WinEDDS.Api.IArtifactReader.CountRecords
-		    Return CLng(IIf(_reader.IsClosed, _currentLineNumber, 0))
+		''' <summary>
+		''' Returns total records count, but only when <see cref="_reader"/> already read all the records, otherwise returns null.
+		''' This is because <see cref="_reader"/> is a forward-only record viewer and does not contain information about total number of rows.
+		''' To calculate total number of records we need to iterate through all the rows and increment <see cref="_currentLineNumber"/>
+		''' </summary>
+		''' <returns>Total records count if <see cref="_reader"/> is closed, null otherwise</returns>
+		Public Function CountRecords() As Long? Implements kCura.WinEDDS.Api.IArtifactReader.CountRecords
+			If _reader.IsClosed Then
+				Return CurrentLineNumber
+			End If
+			Return Nothing
 		End Function
 
 		Public ReadOnly Property CurrentLineNumber() As Integer Implements kCura.WinEDDS.Api.IArtifactReader.CurrentLineNumber

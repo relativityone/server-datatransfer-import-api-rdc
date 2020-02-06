@@ -5,7 +5,7 @@ Imports Relativity.DataExchange
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class ImageDataReader
 		Implements kCura.WinEDDS.Api.IImageReader
-		Private _currentRecordNumber As Int32 = -1
+		Private _currentRecordNumber As Int32 = 0
 		Private ReadOnly _reader As System.Data.IDataReader
 		Private ReadOnly _imageSettings As ImageSettings
 		Private _batesNumberColumnIndex As Integer
@@ -19,9 +19,8 @@ Namespace kCura.WinEDDS.ImportExtension
 			_imageSettings = imageSettings
 
 			_reader.ThrowIfNull(nameof(_reader))
-			If _reader.IsClosed = True Then Throw New ArgumentException("The reader being passed into this IDataReaderReader is closed")
+			If _reader.IsClosed = True Then Throw New ArgumentException("The reader is closed")
 
-			_currentRecordNumber = 0
 			AdvanceRecord()
 			ReadColumnIndexes()
 		End Sub
@@ -44,7 +43,9 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' Reads all remaining rows and then closes <see cref="IDataReader"/>. This is because the only way to get the total number of records is to read all the rows.
 		''' </summary>
 		Public Sub Close() Implements IImageReader.Close
-			_reader.Close()
+			While Not _reader.IsClosed
+				AdvanceRecord
+			End While
 		End Sub
 
 		Public Sub Initialize() Implements IImageReader.Initialize
@@ -52,13 +53,16 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Sub
 
 		''' <summary>
-		''' Returns total records count, but only when <see cref="_reader"/> already read all the records, otherwise returns 0.
+		''' Returns total records count, but only when <see cref="_reader"/> already read all the records, otherwise returns null.
 		''' This is because <see cref="_reader"/> is a forward-only record viewer and does not contain information about total number of rows.
 		''' To calculate total number of records we need to iterate through all the rows and increment <see cref="_currentRecordNumber"/>
 		''' </summary>
-		''' <returns>Total records count if <see cref="_reader"/> is closed, -1 otherwise</returns>
-		Public Function CountRecords() As Long Implements IImageReader.CountRecords
-			Return CLng(IIf(_reader.IsClosed, _currentRecordNumber, -1))
+		''' <returns>Total records count if <see cref="_reader"/> is closed, null otherwise</returns>
+		Public Function CountRecords() As Long? Implements IImageReader.CountRecords
+			If _reader.IsClosed Then
+				Return _currentRecordNumber
+			End If
+			Return Nothing
 		End Function
 
 		Public ReadOnly Property CurrentRecordNumber As Integer Implements IImageReader.CurrentRecordNumber

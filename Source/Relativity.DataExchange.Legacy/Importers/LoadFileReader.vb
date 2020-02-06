@@ -281,7 +281,7 @@ Namespace kCura.WinEDDS
 			Me.Context.RetryOptions = RetryOptions.None
 		End Sub
 
-		Public Function CountRecords() As Int64 Implements Api.IArtifactReader.CountRecords
+		Public Function CountRecords() As Long? Implements Api.IArtifactReader.CountRecords
 			_loadFilePreProcessor = New kCura.WinEDDS.LoadFilePreProcessor(_settings, _trackErrorsInFieldValues)
 			_loadFilePreProcessor.CountLines()
 			Return _recordCount

@@ -169,13 +169,13 @@ namespace Relativity.DataExchange.Import.NUnit
 
 			// act
 			this.reader.AdvanceRecord();
-			long recordCountBeforeClose = this.reader.CountRecords();
+			long? recordCountBeforeClose = this.reader.CountRecords();
 			this.dataReaderMock.Setup(dataReader => dataReader.IsClosed).Returns(true);
-			long recordCountAfterClose = this.reader.CountRecords();
+			long? recordCountAfterClose = this.reader.CountRecords();
 
 			// assert
-			Assert.AreEqual(-1, recordCountBeforeClose);
-			Assert.AreEqual(2, recordCountAfterClose);
+			Assert.IsNull(recordCountBeforeClose);
+			Assert.AreEqual(2, recordCountAfterClose.GetValueOrDefault());
 		}
 
 		[Test]

@@ -82,10 +82,10 @@ Namespace kCura.WinEDDS
 		''' Gets total number of records. This property is used in our telemetry system.
 		''' </summary>
 		''' <returns>Total number of records.</returns>
-		Friend ReadOnly Property TotalRecords As Long
+		Friend ReadOnly Overridable Property TotalRecords As Long
 			Get
 				' check if _recordCount has already been updated to avoid unnecessary file I/O operation
-				If _recordCount = 0 Then Return _imageReader.CountRecords()
+				If _recordCount <= 0 Then _recordCount = _imageReader.CountRecords.GetValueOrDefault()
 				Return _recordCount
 			End Get
 		End Property
@@ -677,7 +677,7 @@ Namespace kCura.WinEDDS
 				_filePath = path
 				_imageReader = Me.GetImageReader
 				_imageReader.Initialize()
-				_recordCount = _imageReader.CountRecords
+				_recordCount = _imageReader.CountRecords.GetValueOrDefault()
 
 				If (_enforceDocumentLimit AndAlso _overwrite = ImportOverwriteType.Append) Then
 

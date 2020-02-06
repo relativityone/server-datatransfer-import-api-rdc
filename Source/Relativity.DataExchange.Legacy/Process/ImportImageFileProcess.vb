@@ -107,7 +107,7 @@ Namespace kCura.WinEDDS
 
 		''' <inheritdoc/>
 		Protected Overrides Function GetCompletedRecordsCount() As Long
-			Return __imageFileImporter.CompletedRecords
+			Return _imageFileImporter.CompletedRecords
 		End Function
 
 		Protected Overrides Sub OnSuccess()

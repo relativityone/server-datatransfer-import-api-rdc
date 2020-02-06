@@ -42,7 +42,14 @@ Namespace kCura.WinEDDS.ImportExtension
 			Return New ImageDataReader(Reader, _imageSettings)
 		End Function
 
-        Public ReadOnly Property Reader() As IDataReader
+		Friend Overrides ReadOnly Property TotalRecords As Long
+			Get
+				' This is temporary workaround for REL-394161
+				Return _imageReader.CountRecords.GetValueOrDefault() - 1
+			End Get
+		End Property
+
+		Public ReadOnly Property Reader() As IDataReader
             Get
                 Return _reader
             End Get
