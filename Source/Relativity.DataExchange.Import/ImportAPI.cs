@@ -177,18 +177,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </exception>
 		public static ImportAPI CreateByRsaBearerToken(string webServiceUrl)
 		{
-			string token = System.Security.Claims.ClaimsPrincipal.Current.Claims.AccessToken();
-			if (string.IsNullOrEmpty(token))
-			{
-				throw new InvalidLoginException("The current claims principal does not have a bearer token.");
-			}
-
-
-			ImportAPI importApi = CreateByBearerToken(webServiceUrl, token);
-			
-			// Here we override token provider so Tapi can refresh credentials on token expiration event
-			importApi.webApiCredential.TokenProvider = new RsaBearerTokenAuthenticationProvider();
-			return importApi;
+			return CreateByTokenProvider(webServiceUrl, new RsaBearerTokenAuthenticationProvider());
 		}
 
 		/// <summary>
@@ -443,6 +432,26 @@ namespace kCura.Relativity.ImportAPI
 						Name = (string)singleRow["Name"]
 					}).ToList();
 		}
+
+		#region "Protected items"
+
+		public static ImportAPI CreateByTokenProvider(string webServiceUrl, IRelativityTokenProvider relativityTokenProvider)
+		{
+			string token = relativityTokenProvider.GetToken();
+			if (string.IsNullOrEmpty(token))
+			{
+				throw new InvalidLoginException("The current claims principal does not have a bearer token.");
+			}
+
+
+			ImportAPI importApi = CreateByBearerToken(webServiceUrl, token);
+
+			// Here we override token provider so Tapi can refresh credentials on token expiration event
+			importApi.webApiCredential.TokenProvider = new AuthTokenProviderAdapter(relativityTokenProvider);
+			return importApi;
+		}
+
+		#endregion "Protected items"
 
 		#region "Private items"
 

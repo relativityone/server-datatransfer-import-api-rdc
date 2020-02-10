@@ -3,6 +3,8 @@ using kCura.Relativity.DataReaderClient;
 using kCura.WinEDDS.Service;
 
 namespace kCura.Relativity.ImportAPI {
+	using kCura.WinEDDS;
+
 	public class ExtendedImportAPI : ImportAPI, IExtendedImportAPI
 	{
 		public ExtendedImportAPI(string userName, string password)
@@ -15,6 +17,18 @@ namespace kCura.Relativity.ImportAPI {
 
 		public ExtendedImportAPI(string webServiceUrl)
 			: base(webServiceUrl) {
+		}
+
+		/// <summary>
+		/// This factory method returns new <see cref="ImportAPI"/> object initialized with <see cref="IRelativityTokenProvider"/>
+		/// </summary>
+		/// <param name="webServiceUrl">RelativityWebApi url</param>
+		/// <param name="relativityTokenProvider">Relativity token provider object</param>
+		/// <returns></returns>
+		public new static ImportAPI CreateByTokenProvider(
+			string webServiceUrl, IRelativityTokenProvider relativityTokenProvider)
+		{
+			return ImportAPI.CreateByTokenProvider(webServiceUrl, relativityTokenProvider);
 		}
 
 		public void CleanUpAfterJobWithSpoofing(string onBehalfOfUserToken) {

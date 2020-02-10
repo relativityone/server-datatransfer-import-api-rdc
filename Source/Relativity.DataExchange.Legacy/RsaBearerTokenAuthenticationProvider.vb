@@ -1,14 +1,14 @@
-﻿Imports Relativity.DataExchange.Service
+﻿Imports kCura.WinEDDS
+Imports Relativity.DataExchange.Service
 Imports Relativity.Transfer
 
 ''' <summary>
-''' This class represents method of refreshing the token credentials on the expiration event
-''' Instance of this class is injected to Tapi
+''' This class obtains current claims principal token that can be used by Relativity Service Account hosted processes
 ''' </summary>
 Friend Class RsaBearerTokenAuthenticationProvider
-	 Implements IAuthenticationTokenProvider
+	Implements IRelativityTokenProvider
 
-	Public Function GenerateToken() As String Implements IAuthenticationTokenProvider.GenerateToken
+	Public Function GetToken() As String Implements IRelativityTokenProvider.GetToken
 		Return System.Security.Claims.ClaimsPrincipal.Current.Claims.AccessToken()
 	End Function
 End Class
