@@ -16,6 +16,8 @@ using Relativity.DataExchange.Service;
 namespace kCura.Relativity.ImportAPI
 {
 	using global::Relativity.DataExchange;
+	using global::Relativity.DataExchange.Helpers;
+	using global::Relativity.Logging;
 
 	using IAuthenticationTokenProvider = global::Relativity.Transfer.IAuthenticationTokenProvider;
 	using Monitoring.Sinks;
@@ -52,6 +54,11 @@ namespace kCura.Relativity.ImportAPI
 		/// Authentication token provider
 		/// </summary>
 		private IAuthenticationTokenProvider _authenticationTokenProvider = new NullAuthTokenProvider();
+
+		/// <summary>
+		/// logger
+		/// </summary>
+		private ILog _logger = RelativityLogger.Instance;
 
 		/// <summary>
 		/// Holds cookies for the current session.
@@ -309,16 +316,9 @@ namespace kCura.Relativity.ImportAPI
 		public IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID)
 		{
 			var fm = new WinEDDS.Service.FieldManager(_credentials, _cookieMonster);
-			//This returned collection contains fields excluding those with one of the following FieldCategories:
-			// FieldCategory.AutoCreate
-			// FieldCategory.Batch
-			// FieldCategory.FileInfo
-			// FieldCategory.FileSize
-			// FieldCategory.MarkupSetMarker
-			// FieldCategory.MultiReflected
-			// FieldCategory.ProductionMarker
-			// FieldCategory.Reflected
-			// See kCura.WinEDDS.Service.FieldQuery.RetrieveAllAsArray -Phil S. 10/19/2011
+
+			this._logger.LogInformationForAuthToken($"Call {nameof(ImportAPI)}.{nameof(GetWorkspaceFields)} with {{@jwtAuthToken}}", (this._credentials as NetworkCredential)?.Password);
+
 			var fields = fm.Query.RetrieveAllAsDocumentFieldCollection(workspaceArtifactID, artifactTypeID);
 
 			return (from DocumentField docField in fields
@@ -473,6 +473,9 @@ namespace kCura.Relativity.ImportAPI
 			}
 
 			_credentials = credentials.Credentials;
+
+			this._logger.LogInformationForAuthToken($"Initialized {nameof(ImportAPI)} with {{@jwtAuthToken}}", (this._credentials as NetworkCredential)?.Password);
+
 			this.webApiCredential = new WebApiCredential()
 			{
 				Credential = credentials.TapiCredential,
@@ -484,6 +487,7 @@ namespace kCura.Relativity.ImportAPI
 				throw new kCura.WinEDDS.Exceptions.InvalidLoginException("Login failed.");
 			}
 		}
+
 
 		/// <summary>
 		/// Create a repository path based on the given workspace ArtifactID and
@@ -513,7 +517,7 @@ namespace kCura.Relativity.ImportAPI
 			{
 				_caseManager = new CaseManager(_credentials, _cookieMonster);
 			}
-
+			this._logger.LogInformationForAuthToken($"Get {nameof(CaseManager)} with {{@jwtAuthToken}}", (this._credentials as NetworkCredential)?.Password);
 			return _caseManager;
 		}
 
@@ -523,7 +527,7 @@ namespace kCura.Relativity.ImportAPI
 			{
 				_objectTypeManager = new ObjectTypeManager(_credentials, _cookieMonster);
 			}
-
+			this._logger.LogInformationForAuthToken($"Get {nameof(ObjectTypeManager)} with {{@jwtAuthToken}}", (this._credentials as NetworkCredential)?.Password);
 			return _objectTypeManager;
 		}
 
@@ -533,7 +537,7 @@ namespace kCura.Relativity.ImportAPI
 			{
 				_productionManager = new ProductionManager(_credentials, _cookieMonster);
 			}
-
+			this._logger.LogInformationForAuthToken($"Get {nameof(ProductionManager)} with {{@jwtAuthToken}}", (this._credentials as NetworkCredential)?.Password);
 			return _productionManager;
 		}
 

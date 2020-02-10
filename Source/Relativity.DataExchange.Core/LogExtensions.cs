@@ -14,6 +14,9 @@ namespace Relativity.DataExchange
 	using System.Linq;
 	using System.Reflection;
 
+	using Relativity.DataExchange.Helpers;
+	using Relativity.Logging;
+
 	/// <summary>
 	/// Defines extension methods for <see cref="Relativity.Logging.ILog"/>.
 	/// </summary>
@@ -86,6 +89,24 @@ namespace Relativity.DataExchange
 				}
 
 				logger.LogWarning(e, "Failed to log {SettingType} as a dictionary.", value.GetType());
+			}
+		}
+
+		/// <summary>
+		/// It logs jwt token claims on information logging level according to provided message template.
+		/// </summary>
+		/// <param name="logger">logger instance.</param>
+		/// <param name="messageTemplate">logged message template.</param>
+		/// <param name="jwtEncodedToken">encoded relativity auth token.</param>
+		public static void LogInformationForAuthToken(this ILog logger, string messageTemplate, string jwtEncodedToken)
+		{
+			if (JwtTokenHelper.TryParse(jwtEncodedToken, out var jwtAuthToken))
+			{
+				logger.LogInformation(messageTemplate, jwtAuthToken);
+			}
+			else
+			{
+				logger.LogInformation(messageTemplate, $"Can't parse token: {jwtEncodedToken}");
 			}
 		}
 	}
