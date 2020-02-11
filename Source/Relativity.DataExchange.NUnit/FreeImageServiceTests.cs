@@ -66,6 +66,8 @@ namespace Relativity.DataExchange.NUnit
 		[TestCase("CCITT_5.TIF")]
 		[TestCase("CCITT_6.TIF")]
 		[TestCase("CCITT_7.TIF")]
+		[TestCase("G4.TIF")]
+		[TestCase("G4S.TIF")]
 		[Category(TestCategories.Framework)]
 		public void ShouldValidateAndIdentifyTheTiffImage(string fileName)
 		{
@@ -80,8 +82,6 @@ namespace Relativity.DataExchange.NUnit
 		[TestCase("G31DS.TIF")]
 		[TestCase("G32D.TIF")]
 		[TestCase("G32DS.TIF")]
-		[TestCase("G4.TIF")]
-		[TestCase("G4S.TIF")]
 		[Category(TestCategories.Framework)]
 		public void ShouldThrowWhenTheTiffEncodingIsNotSupported(string fileName)
 		{

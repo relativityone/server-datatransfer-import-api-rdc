@@ -295,11 +295,11 @@ namespace Relativity.DataExchange.Media
 				case ByteOrdering.BigEndian:
 					start = 0;
 					end = length - 1;
-					while (end <= start)
+					while (end >= start)
 					{
 						offsetPosition += Convert.ToInt64(byteArray[end + offset])
 						                  * (long)Math.Round(System.Math.Pow(256.0, length - 1 - end));
-						end++;
+						end--;
 					}
 
 					break;
