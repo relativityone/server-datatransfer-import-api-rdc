@@ -87,12 +87,7 @@ namespace Relativity.DataExchange.Helpers
 
 			// Get payload part
 			string payloadEncoded = token.Split('.')[PayloadIndex];
-			if (!TryDecode(payloadEncoded, out payloadDecoded))
-			{
-				return false;
-			}
-
-			return true;
+			return TryDecode(payloadEncoded, out payloadDecoded);
 		}
 
 		private static bool TryDecode(string encoded, out string decoded)

@@ -3,7 +3,7 @@ using kCura.Relativity.DataReaderClient;
 using kCura.WinEDDS.Service;
 
 namespace kCura.Relativity.ImportAPI {
-	using kCura.WinEDDS;
+	using global::Relativity.DataExchange;
 
 	public class ExtendedImportAPI : ImportAPI, IExtendedImportAPI
 	{

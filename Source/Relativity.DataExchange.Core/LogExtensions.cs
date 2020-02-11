@@ -12,6 +12,7 @@ namespace Relativity.DataExchange
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net;
 	using System.Reflection;
 
 	using Relativity.DataExchange.Helpers;
@@ -97,16 +98,31 @@ namespace Relativity.DataExchange
 		/// </summary>
 		/// <param name="logger">logger instance.</param>
 		/// <param name="messageTemplate">logged message template.</param>
-		/// <param name="jwtEncodedToken">encoded relativity auth token.</param>
-		public static void LogInformationForAuthToken(this ILog logger, string messageTemplate, string jwtEncodedToken)
+		/// <param name="credentials">User credentials.</param>
+		public static void LogUserContextInformation(this ILog logger, string messageTemplate, ICredentials credentials)
 		{
-			if (JwtTokenHelper.TryParse(jwtEncodedToken, out var jwtAuthToken))
+			if (credentials is NetworkCredential networkCredentials)
 			{
-				logger.LogInformation(messageTemplate, jwtAuthToken);
+				if (networkCredentials.UserName == Constants.OAuthWebApiBearerTokenUserName)
+				{
+					LogInformationForAuthToken(logger, messageTemplate, networkCredentials);
+				}
+				else
+				{
+					logger.LogInformation(messageTemplate + " with User Id: {userId}", networkCredentials.UserName);
+				}
+			}
+		}
+
+		private static void LogInformationForAuthToken(ILog logger, string messageTemplate, NetworkCredential networkCredentials)
+		{
+			if (JwtTokenHelper.TryParse(networkCredentials.Password, out var jwtAuthToken))
+			{
+				logger.LogInformation(messageTemplate + " with {@jwtAuthToken}", jwtAuthToken);
 			}
 			else
 			{
-				logger.LogInformation(messageTemplate, $"Can't parse token: {jwtEncodedToken}");
+				logger.LogWarning("Can't parse bearer token!");
 			}
 		}
 	}

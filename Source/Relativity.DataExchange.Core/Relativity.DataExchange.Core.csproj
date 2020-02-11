@@ -95,7 +95,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthTokenProviderAdapter.cs" />
     <Compile Include="CacheKeys.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Data\BooleanImporterException.cs" />
     <Compile Include="Data\CellImporterException.cs" />
     <Compile Include="Data\ConditionalArrayList.cs" />
@@ -131,6 +133,7 @@
     <Compile Include="Io\OutsideInFileTypeIdentifierService.cs" />
     <Compile Include="Io\TempFileBuilder.cs" />
     <Compile Include="Io\TempFileConstants.cs" />
+    <Compile Include="IRelativityTokenProvider.cs" />
     <Compile Include="JwtAuthToken.cs" />
     <Compile Include="LogExtensions.cs" />
     <Compile Include="Media\ByteOrdering.cs" />
@@ -181,6 +184,7 @@
     <Compile Include="Process\ExportErrorEventArgs.cs" />
     <Compile Include="Process\RecordNumberEventArgs.cs" />
     <Compile Include="Process\ShowReportEventArgs.cs" />
+    <Compile Include="RsaBearerTokenAuthenticationProvider.cs" />
     <Compile Include="UrlHelper.cs" />
     <Compile Include="SerializationHelper.cs" />
     <Compile Include="Service\ArtifactType.cs" />

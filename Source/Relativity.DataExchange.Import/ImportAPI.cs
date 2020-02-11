@@ -11,12 +11,9 @@ using kCura.WinEDDS.Service;
 using kCura.Relativity.DataReaderClient;
 using kCura.WinEDDS.Exceptions;
 
-using Relativity.DataExchange.Service;
-
 namespace kCura.Relativity.ImportAPI
 {
 	using global::Relativity.DataExchange;
-	using global::Relativity.DataExchange.Helpers;
 	using global::Relativity.Logging;
 
 	using IAuthenticationTokenProvider = global::Relativity.Transfer.IAuthenticationTokenProvider;
@@ -306,7 +303,7 @@ namespace kCura.Relativity.ImportAPI
 		{
 			var fm = new WinEDDS.Service.FieldManager(_credentials, _cookieMonster);
 
-			this._logger.LogInformationForAuthToken($"Call {nameof(ImportAPI)}.{nameof(GetWorkspaceFields)} with {{@jwtAuthToken}}", (this._credentials as NetworkCredential)?.Password);
+			this._logger.LogUserContextInformation($"Call {nameof(ImportAPI)}.{nameof(GetWorkspaceFields)}", this._credentials);
 
 			var fields = fm.Query.RetrieveAllAsDocumentFieldCollection(workspaceArtifactID, artifactTypeID);
 
@@ -435,14 +432,9 @@ namespace kCura.Relativity.ImportAPI
 
 		#region "Protected items"
 
-		public static ImportAPI CreateByTokenProvider(string webServiceUrl, IRelativityTokenProvider relativityTokenProvider)
+		protected static ImportAPI CreateByTokenProvider(string webServiceUrl, IRelativityTokenProvider relativityTokenProvider)
 		{
-			string token = relativityTokenProvider.GetToken();
-			if (string.IsNullOrEmpty(token))
-			{
-				throw new InvalidLoginException("The current claims principal does not have a bearer token.");
-			}
-
+			var token = GetToken(relativityTokenProvider);
 
 			ImportAPI importApi = CreateByBearerToken(webServiceUrl, token);
 
@@ -454,6 +446,26 @@ namespace kCura.Relativity.ImportAPI
 		#endregion "Protected items"
 
 		#region "Private items"
+
+		private static string GetToken(IRelativityTokenProvider relativityTokenProvider)
+		{
+			string token;
+			try
+			{
+				token = relativityTokenProvider.GetToken();
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidLoginException("Error when retrieving authentication token.", ex);
+			}
+
+			if (string.IsNullOrEmpty(token))
+			{
+				throw new InvalidLoginException("The generated token should not be null or empty!");
+			}
+
+			return token;
+		}
 
 		private void PerformLogin(string userName, string password, string webServiceURL)
 		{
@@ -483,7 +495,7 @@ namespace kCura.Relativity.ImportAPI
 
 			_credentials = credentials.Credentials;
 
-			this._logger.LogInformationForAuthToken($"Initialized {nameof(ImportAPI)} with {{@jwtAuthToken}}", (this._credentials as NetworkCredential)?.Password);
+			this._logger.LogUserContextInformation($"Initialized {nameof(ImportAPI)}", this._credentials);
 
 			this.webApiCredential = new WebApiCredential()
 			{
@@ -526,7 +538,7 @@ namespace kCura.Relativity.ImportAPI
 			{
 				_caseManager = new CaseManager(_credentials, _cookieMonster);
 			}
-			this._logger.LogInformationForAuthToken($"Get {nameof(CaseManager)} with {{@jwtAuthToken}}", (this._credentials as NetworkCredential)?.Password);
+			this._logger.LogUserContextInformation($"Get {nameof(CaseManager)}", this._credentials);
 			return _caseManager;
 		}
 
@@ -536,7 +548,7 @@ namespace kCura.Relativity.ImportAPI
 			{
 				_objectTypeManager = new ObjectTypeManager(_credentials, _cookieMonster);
 			}
-			this._logger.LogInformationForAuthToken($"Get {nameof(ObjectTypeManager)} with {{@jwtAuthToken}}", (this._credentials as NetworkCredential)?.Password);
+			this._logger.LogUserContextInformation($"Get {nameof(ObjectTypeManager)}", this._credentials);
 			return _objectTypeManager;
 		}
 
@@ -546,7 +558,7 @@ namespace kCura.Relativity.ImportAPI
 			{
 				_productionManager = new ProductionManager(_credentials, _cookieMonster);
 			}
-			this._logger.LogInformationForAuthToken($"Get {nameof(ProductionManager)} with {{@jwtAuthToken}}", (this._credentials as NetworkCredential)?.Password);
+			this._logger.LogUserContextInformation($"Get {nameof(ProductionManager)}", this._credentials);
 			return _productionManager;
 		}
 
