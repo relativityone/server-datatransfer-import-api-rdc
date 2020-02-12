@@ -13,6 +13,8 @@ namespace Relativity.DataExchange.TestFramework
 	/// <summary>
 	/// Represents the parameters used by all integration tests.
 	/// </summary>
+	/// <remarks>This class needs to be serializable because it is used across AppDomains.</remarks>
+	[Serializable]
 	public class IntegrationTestParameters
 	{
 		/// <summary>

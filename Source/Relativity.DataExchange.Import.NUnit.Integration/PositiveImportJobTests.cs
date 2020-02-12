@@ -18,21 +18,18 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using kCura.Relativity.DataReaderClient;
 
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
-	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
+	using Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
+	using Relativity.DataExchange.TestFramework.ImportDataSource;
+	using Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSources;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-	public class PositiveImportJobTests : ImportJobTestBase<ImportBulkArtifactJob, Settings>
+	public class PositiveImportJobTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
-		public PositiveImportJobTests()
-			: base(new NativeImportApiSetUp())
-		{
-		}
-
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
@@ -51,16 +48,16 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 
-			this.InitializeImportApiWithUserAndPassword(NativeImportSettingsProvider.GetNativeFilePathSourceDocumentImportSettings());
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, NativeImportSettingsProvider.NativeFilePathSourceDocumentImportSettings);
 
 			const int NumberOfFilesToImport = 5;
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport);
 
 			// ACT
-			ImportTestJobResult results = this.Execute(importData);
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
 
 			// ASSERT
-			this.ThenTheImportJobIsSuccessful(NumberOfFilesToImport);
+			this.ThenTheImportJobIsSuccessful(results, NumberOfFilesToImport);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfFilesToImport));
 		}
@@ -73,9 +70,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// ARRANGE
 			ForceClient(TapiClient.Direct);
 
-			Settings settings = NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings();
+			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
-			this.InitializeImportApiWithUserAndPassword(settings);
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 			var randomFolderGenerator = RandomPathGenerator.GetFolderGenerator(
 				numOfDifferentElements: 25,
@@ -89,10 +86,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.Select((p, i) => new FolderImportDto($"{i}-{nameof(this.ShouldImportFolders)}", p));
 
 			// ACT
-			ImportTestJobResult results = this.Execute(importData);
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
 
 			// ASSERT
-			this.ThenTheImportJobIsSuccessful(NumberOfDocumentsToImport);
+			this.ThenTheImportJobIsSuccessful(results, NumberOfDocumentsToImport);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfDocumentsToImport));
 		}
@@ -105,23 +102,23 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// ARRANGE
 			ForceClient(TapiClient.Direct);
 
-			Settings settings = NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings();
+			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
 			settings.MoveDocumentsInAppendOverlayMode = true;
 			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
-			this.InitializeImportApiWithUserAndPassword(settings);
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 			int numberOfDocumentsToImport = TestData.SampleDocFiles.Count();
 			IEnumerable<FolderImportDto> importData =
 				TestData.SampleDocFiles.Select(p => new FolderImportDto(Path.GetFileName(p), @"\aaa \cc"));
 
 			// ACT
-			ImportTestJobResult results = this.Execute(importData);
+			ImportTestJobResult result = this.JobExecutionContext.Execute(importData);
 
 			// ASSERT
-			this.ThenTheImportJobIsSuccessful(numberOfDocumentsToImport);
-			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
-			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToImport));
+			this.ThenTheImportJobIsSuccessful(result, numberOfDocumentsToImport);
+			Assert.That(result.NumberOfJobMessages, Is.GreaterThan(0));
+			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToImport));
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -131,10 +128,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode)
 		{
 			// ARRANGE
-			Settings settings = NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings();
+			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
 			settings.OverwriteMode = overwriteMode;
 
-			this.InitializeImportApiWithUserAndPassword(settings);
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 			char multiValueDelimiter = settings.MultiValueDelimiter;
 			char nestedValueDelimiter = settings.NestedValueDelimiter;
@@ -152,7 +149,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					maxPathDepth: 1,
 					multiValueDelimiter: multiValueDelimiter,
 					nestedValueDelimiter: nestedValueDelimiter)
-				.ToEnumerable(int.MaxValue);
+				.ToEnumerable();
 
 			// Overlay replace.
 			IEnumerable<string> privilegeDesignation = RandomPathGenerator.GetChoiceGenerator(
@@ -162,7 +159,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					maxPathDepth: 4,
 					multiValueDelimiter: multiValueDelimiter,
 					nestedValueDelimiter: nestedValueDelimiter)
-				.ToEnumerable(int.MaxValue, nestedValueDelimiter)
+				.ToEnumerable(nestedValueDelimiter)
 				.RandomUniqueBatch(4, multiValueDelimiter);
 
 			// Overlay append.
@@ -173,23 +170,21 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					maxPathDepth: 4,
 					multiValueDelimiter: multiValueDelimiter,
 					nestedValueDelimiter: nestedValueDelimiter)
-				.ToEnumerable(int.MaxValue, nestedValueDelimiter)
+				.ToEnumerable(nestedValueDelimiter)
 				.RandomUniqueBatch(4, multiValueDelimiter);
 
-			ImportTestJobResult results;
-			using (var dataReader = new ZipDataReader())
-			{
-				dataReader.Add(WellKnownFields.ControlNumber, controlNumber);
-				dataReader.Add(WellKnownFields.ConfidentialDesignation, confidentialDesignation);
-				dataReader.Add(WellKnownFields.PrivilegeDesignation, privilegeDesignation);
-				dataReader.Add(WellKnownFields.ClassificationIndex, classificationIndex);
+			var importDataSourceBuilder = new ImportDataSourceBuilder();
+			importDataSourceBuilder.AddField(WellKnownFields.ControlNumber, controlNumber);
+			importDataSourceBuilder.AddField(WellKnownFields.ConfidentialDesignation, confidentialDesignation);
+			importDataSourceBuilder.AddField(WellKnownFields.PrivilegeDesignation, privilegeDesignation);
+			importDataSourceBuilder.AddField(WellKnownFields.ClassificationIndex, classificationIndex);
+			ImportDataSource<object[]> importDataSource = importDataSourceBuilder.Build();
 
-				// ACT
-				results = this.Execute(dataReader);
-			}
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
 
 			// ASSERT
-			this.ThenTheImportJobIsSuccessful(numberOfDocumentsToImport);
+			this.ThenTheImportJobIsSuccessful(results, numberOfDocumentsToImport);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToImport));
 		}
@@ -200,10 +195,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldImportDocumentWithChoices2()
 		{
 			// ARRANGE
-			Settings settings = NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings();
+			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
 			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 
-			this.InitializeImportApiWithUserAndPassword(settings);
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 			DocumentWithChoicesImportDto[] importData =
 			{
@@ -212,10 +207,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			};
 
 			// ACT
-			ImportTestJobResult results = this.Execute(importData);
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
 
 			// ASSERT
-			this.ThenTheImportJobIsSuccessful(importData.Length);
+			this.ThenTheImportJobIsSuccessful(results, importData.Length);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(importData.Length));
 		}
@@ -227,10 +222,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode)
 		{
 			// ARRANGE
-			Settings settings = NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings();
+			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
 			settings.OverwriteMode = overwriteMode;
 
-			this.InitializeImportApiWithUserAndPassword(settings);
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 			char multiValueDelimiter = settings.MultiValueDelimiter;
 
@@ -246,7 +241,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				numOfDifferentPaths: 100,
 				maxPathDepth: 1,
 				multiValueDelimiter: multiValueDelimiter)
-			.ToEnumerable(int.MaxValue);
+			.ToEnumerable();
 
 			IEnumerable<string> domainsEmailTo = RandomPathGenerator.GetObjectGenerator(
 				numOfDifferentElements: 300,
@@ -254,7 +249,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				numOfDifferentPaths: 100,
 				maxPathDepth: 1,
 				multiValueDelimiter: multiValueDelimiter)
-			.ToEnumerable(int.MaxValue)
+			.ToEnumerable()
 			.RandomUniqueBatch(2, multiValueDelimiter);
 
 			IEnumerable<string> domainsEmailFrom = RandomPathGenerator.GetObjectGenerator(
@@ -263,23 +258,21 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				numOfDifferentPaths: 100,
 				maxPathDepth: 1,
 				multiValueDelimiter: multiValueDelimiter)
-			.ToEnumerable(int.MaxValue)
+			.ToEnumerable()
 			.RandomUniqueBatch(5, multiValueDelimiter);
 
-			ImportTestJobResult results;
-			using (var dataReader = new ZipDataReader())
-			{
-				dataReader.Add(WellKnownFields.ControlNumber, controlNumber);
-				dataReader.Add(WellKnownFields.OriginatingImagingDocumentError, originatingImagingDocumentError);
-				dataReader.Add(WellKnownFields.DomainsEmailTo, domainsEmailTo);
-				dataReader.Add(WellKnownFields.DomainsEmailFrom, domainsEmailFrom);
+			var importDataSourceBuilder = new ImportDataSourceBuilder();
+			importDataSourceBuilder.AddField(WellKnownFields.ControlNumber, controlNumber);
+			importDataSourceBuilder.AddField(WellKnownFields.OriginatingImagingDocumentError, originatingImagingDocumentError);
+			importDataSourceBuilder.AddField(WellKnownFields.DomainsEmailTo, domainsEmailTo);
+			importDataSourceBuilder.AddField(WellKnownFields.DomainsEmailFrom, domainsEmailFrom);
+			ImportDataSource<object[]> importDataSource = importDataSourceBuilder.Build();
 
-				// ACT
-				results = this.Execute(dataReader);
-			}
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
 
 			// ASSERT
-			this.ThenTheImportJobIsSuccessful(numberOfDocumentsToImport);
+			this.ThenTheImportJobIsSuccessful(results, numberOfDocumentsToImport);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToImport));
 		}

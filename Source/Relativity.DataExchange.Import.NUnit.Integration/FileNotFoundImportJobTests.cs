@@ -14,23 +14,16 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	using global::NUnit.Framework;
 
-	using kCura.Relativity.DataReaderClient;
-
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
-	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
+	using Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-	public class FileNotFoundImportJobTests : ImportJobTestBase<ImportBulkArtifactJob, Settings>
+	public class FileNotFoundImportJobTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
-		public FileNotFoundImportJobTests()
-			: base(new NativeImportApiSetUp())
-		{
-		}
-
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
@@ -52,20 +45,20 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 
-			this.InitializeImportApiWithUserAndPassword(NativeImportSettingsProvider.GetNativeFilePathSourceDocumentImportSettings());
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, NativeImportSettingsProvider.NativeFilePathSourceDocumentImportSettings);
 
 			// Intentionally provide an invalid file before adding valid ones.
 			const int NumberOfFilesToImport = 5;
 			string missingFileName = $@"C:\abcdefghijklmnop\out{client}{disableNativeLocationValidation}{disableNativeValidation}.txt";
 			IEnumerable<DefaultImportDto> importData =
 				Enumerable.Repeat(new DefaultImportDto(missingFileName), 1)
-				.Concat(DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport));
+				.Concat(DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport)).ToArray();
 
 			// ACT
-			ImportTestJobResult results = this.Execute(importData);
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
 
 			// ASSERT
-			this.ThenTheImportJobCompletedWithErrors(disableNativeLocationValidation ? 0 : 1, NumberOfFilesToImport + 1);
+			this.ThenTheImportJobCompletedWithErrors(results, disableNativeLocationValidation ? 0 : 1, NumberOfFilesToImport + 1);
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfFilesToImport + 1));
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			if (disableNativeLocationValidation)

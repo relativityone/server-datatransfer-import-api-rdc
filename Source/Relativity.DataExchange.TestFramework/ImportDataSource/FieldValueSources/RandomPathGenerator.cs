@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.Import.NUnit.Integration
+namespace Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSources
 {
 	using System;
 	using System.Collections.Generic;
@@ -39,23 +39,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		public static IEnumerable<string> GetElements(List<char> characters, int numOfDifferentElements, int maxElementLength)
-		{
-			var random = new Random(42);
-
-			for (int i = 0; i < numOfDifferentElements; i++)
-			{
-				int folderLength = random.NextBiased(1, maxElementLength);
-				var builder = new StringBuilder(folderLength);
-				for (int j = 0; j < folderLength; j++)
-				{
-					builder.Append(random.NextElement(characters));
-				}
-
-				yield return builder.ToString();
-			}
-		}
-
 		public static RandomPathGenerator GetFolderGenerator(int numOfDifferentElements, int maxElementLength, int numOfDifferentPaths, int maxPathDepth)
 		{
 			const string Special = @"*/:?<>""|$ ";
@@ -85,37 +68,63 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			return new RandomPathGenerator(elements, numOfDifferentPaths, maxPathDepth);
 		}
 
+		/// <summary>
+		/// This method calculates folder paths.
+		/// </summary>
+		/// <returns>Infinite enumerable of folders.</returns>
+		public IEnumerable<string> ToFolders()
+		{
+			return this.ToEnumerable(Path.DirectorySeparatorChar.ToString());
+		}
+
+		/// <summary>
+		/// This method calculates folder paths.
+		/// </summary>
+		/// <param name="numOfPaths">Number of paths to return.</param>
+		/// <returns>It returns <paramref name="numOfPaths"/> folder paths.</returns>
 		public IEnumerable<string> ToFolders(int numOfPaths)
 		{
-			return this.ToEnumerable(numOfPaths, Path.DirectorySeparatorChar);
+			return this.ToFolders().Take(numOfPaths);
+		}
+
+		public IEnumerable<string> ToEnumerable()
+		{
+			return this.ToEnumerable(separator: string.Empty);
 		}
 
 		public IEnumerable<string> ToEnumerable(int numOfPaths)
 		{
-			return this.ToEnumerable(numOfPaths, string.Empty);
+			return this.ToEnumerable(string.Empty).Take(numOfPaths);
 		}
 
-		public IEnumerable<string> ToEnumerable(int numOfPaths, char separator)
+		public IEnumerable<string> ToEnumerable(char separator)
 		{
-			return this.ToEnumerable(numOfPaths, separator.ToString());
+			return this.ToEnumerable(separator.ToString());
 		}
 
-		public IEnumerable<string> ToEnumerable(int numOfPaths, string separator)
+		public IEnumerable<string> ToEnumerable(char separator, int numOfPaths)
 		{
-			// Create the random object with the same seed to make the IEnumerable repeatable for validation purposes.
-			var random = new Random(42 * 42);
-			List<Func<string, string>> modifiers = GetModifiers();
+			return this.ToEnumerable(separator).Take(numOfPaths);
+		}
 
-			for (int i = 0; i < numOfPaths; i++)
+		private static IEnumerable<string> GetElements(List<char> characters, int numOfDifferentElements, int maxElementLength)
+		{
+			var random = new Random(42);
+
+			for (int i = 0; i < numOfDifferentElements; i++)
 			{
-				IEnumerable<string> selectedFolders = random.NextElement(this.paths)
-					.Select(p => random.NextElement(modifiers)(this.elements[p]));
+				int folderLength = random.NextBiased(1, maxElementLength);
+				var builder = new StringBuilder(folderLength);
+				for (int j = 0; j < folderLength; j++)
+				{
+					builder.Append(random.NextElement(characters));
+				}
 
-				string path = string.Join(separator, selectedFolders);
-				yield return path;
+				yield return builder.ToString();
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "todo")]
 		private static List<Func<string, string>> GetModifiers()
 		{
 			var modifiers = new List<Func<string, string>>
@@ -163,6 +172,22 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 
 			return characters;
+		}
+
+		private IEnumerable<string> ToEnumerable(string separator)
+		{
+			// Create the random object with the same seed to make the IEnumerable repeatable for validation purposes.
+			var random = new Random(42 * 42);
+			List<Func<string, string>> modifiers = GetModifiers();
+
+			while (true)
+			{
+				IEnumerable<string> selectedFolders = random.NextElement(this.paths)
+					.Select(p => random.NextElement(modifiers)(this.elements[p]));
+
+				string path = string.Join(separator, selectedFolders);
+				yield return path;
+			}
 		}
 	}
 }

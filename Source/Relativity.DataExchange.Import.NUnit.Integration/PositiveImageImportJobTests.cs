@@ -18,10 +18,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	using global::NUnit.Framework;
 
-	using kCura.Relativity.DataReaderClient;
-
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
-	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
+	using Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext;
 	using Relativity.DataExchange.Media;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
@@ -31,13 +29,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-	public class PositiveImageImportJobTests : ImportJobTestBase<ImageImportBulkArtifactJob, ImageSettings>
+	public class PositiveImageImportJobTests : ImportJobTestBase<ImageImportExecutionContext>
 	{
-		public PositiveImageImportJobTests()
-			: base(new ImageImportApiSetUp())
-		{
-		}
-
 		[Category(TestCategories.ImportImage)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
@@ -51,20 +44,20 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			ForceClient(client);
 
-			this.InitializeImportApiWithUserAndPassword(ImageImportSettingsProvider.GetImageFilePathSourceDocumentImportSettings(true));
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, ImageImportSettingsProvider.GetImageFilePathSourceDocumentImportSettings(true));
 
 			const int NumberOfDocumentsToImport = 5;
 			const int NumberOfImagesPerDocument = 3;
-			this.ImportApiSetUp<ImageImportApiSetUp>().UseFileNames = true;
+			this.JobExecutionContext.UseFileNames = true;
 
 			IEnumerable<ImageImportWithFileNameDto> importData = GetRandomImageFiles(this.TempDirectory.Directory, NumberOfDocumentsToImport, NumberOfImagesPerDocument, ImageFormat.Jpeg);
 
 			// ACT
-			this.Execute(importData);
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
 
 			// ASSERT
 			const int ExpectedNumberOfImportedImages = NumberOfDocumentsToImport * NumberOfImagesPerDocument;
-			this.ThenTheImportJobIsSuccessful(ExpectedNumberOfImportedImages);
+			this.ThenTheImportJobIsSuccessful(results, ExpectedNumberOfImportedImages);
 		}
 
 		[Test]
@@ -79,7 +72,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			[Values(true, false)] bool useDataTableSource,
 			[Values(ImageFormat.Jpeg, ImageFormat.Tiff)] ImageFormat imageFormat)
 		{
-			this.InitializeImportApiWithUserAndPassword(ImageImportSettingsProvider.GetImageFilePathSourceDocumentImportSettings(useDefaultFieldNames || !useDataTableSource));
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, ImageImportSettingsProvider.GetImageFilePathSourceDocumentImportSettings(useDefaultFieldNames || !useDataTableSource));
 
 			// ARRANGE
 			const int ExpectedNumberOfImportedImages = 1;
@@ -96,26 +89,27 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			ImageImportDto imageImportDto;
 
-			this.ImportApiSetUp<ImageImportApiSetUp>().UseFileNames = useFileNames;
-			this.ImportApiSetUp<ImageImportApiSetUp>().UseDataTableSource = useDataTableSource;
-			this.ImportApiSetUp<ImageImportApiSetUp>().UseDefaultFieldNames = useDefaultFieldNames;
+			this.JobExecutionContext.UseFileNames = useFileNames;
+			this.JobExecutionContext.UseDataTableSource = useDataTableSource;
+			this.JobExecutionContext.UseDefaultFieldNames = useDefaultFieldNames;
 
 			// ACT
+			ImportTestJobResult testResult;
 			if (useFileNames)
 			{
 				string fileName = AddSpecialCharacters($"{RandomHelper.NextString(10, 10)}.{Path.GetExtension(fileLocation)}");
 				var imageImportWithFileNameDto = new ImageImportWithFileNameDto(batesNumber, documentIdentifier, fileLocation, fileName);
 				imageImportDto = imageImportWithFileNameDto;
-				this.Execute(new List<ImageImportWithFileNameDto>() { imageImportWithFileNameDto });
+				testResult = this.JobExecutionContext.Execute(new List<ImageImportWithFileNameDto>() { imageImportWithFileNameDto });
 			}
 			else
 			{
 				imageImportDto = new ImageImportDto(batesNumber, documentIdentifier, fileLocation);
-				this.Execute(new List<ImageImportDto>() { imageImportDto });
+				testResult = this.JobExecutionContext.Execute(new List<ImageImportDto>() { imageImportDto });
 			}
 
 			// ASSERT
-			this.ThenTheImportJobIsSuccessful(ExpectedNumberOfImportedImages);
+			this.ThenTheImportJobIsSuccessful(testResult, ExpectedNumberOfImportedImages);
 			ThenRelativityObjectCountsIsCorrect(ExpectedNumberOfImportedImages);
 			ThenTheImportedDocumentIsCorrect(imageImportDto, useFileNames);
 		}

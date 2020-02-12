@@ -10,6 +10,8 @@ namespace Relativity.DataExchange.TestFramework.Extensions
 	using System.Collections.Generic;
 	using System.Text;
 
+	using Relativity.DataExchange.TestFramework.ImportDataSource;
+
 	public static class EnumerableExtensions
 	{
 		public static IEnumerable<TResult> Zip<T1, T2, T3, TResult>(
@@ -85,6 +87,12 @@ namespace Relativity.DataExchange.TestFramework.Extensions
 					yield return builder.ToString();
 				}
 			}
+		}
+
+		public static ImportDataSource<T> AsImportDataSource<T>(this IEnumerable<T> enumerable)
+		{
+			enumerable = enumerable ?? throw new ArgumentNullException(nameof(enumerable));
+			return DtoBasedDataSourceConverter.ConvertDtoCollectionToImportDataSource(enumerable);
 		}
 	}
 }

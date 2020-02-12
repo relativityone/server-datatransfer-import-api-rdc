@@ -15,6 +15,7 @@ namespace Relativity.DataExchange.TestFramework
 	using System.Linq;
 	using System.Net;
 	using System.Reflection;
+	using System.Runtime.CompilerServices;
 
 	using kCura.Relativity.ImportAPI;
 
@@ -258,6 +259,46 @@ END";
 			return parameters;
 		}
 
+		public static void SetupLogger(IntegrationTestParameters parameters)
+		{
+			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+
+			var loggerOptions = new LoggerOptions
+				                    {
+					                    Application = "8A1A6418-29B3-4067-8C9E-51E296F959DE",
+					                    ConfigurationFileLocation = Path.Combine(ResourceFileHelper.GetBasePath(), "LogConfig.xml"),
+					                    System = "Import-API",
+					                    SubSystem = "Samples",
+				                    };
+
+			// Configure the optional SEQ sink to periodically send logs to the local SEQ server for improved debugging.
+			// See https://getseq.net/ for more details.
+			loggerOptions.AddSinkParameter(
+				Relativity.Logging.Configuration.SeqSinkConfig.ServerUrlSinkParameterKey,
+				new Uri("http://localhost:5341"));
+
+			// Configure the optional HTTP sink to periodically send logs to Relativity.
+			loggerOptions.AddSinkParameter(
+				Logging.Configuration.RelativityHttpSinkConfig.CredentialSinkParameterKey,
+				new NetworkCredential(parameters.RelativityUserName, parameters.RelativityPassword));
+			loggerOptions.AddSinkParameter(
+				Logging.Configuration.RelativityHttpSinkConfig.InstanceUrlSinkParameterKey,
+				parameters.RelativityUrl);
+			ILog logger = Logging.Factory.LogFactory.GetLogger(loggerOptions);
+
+			if (parameters.WriteLogsToConsole)
+			{
+				// Note: Wrapping the ILog instance to ensure all logs written via tests are dumped to the console.
+				logger = new RelativityTestLogger(logger);
+			}
+
+			// Until Import API supports passing a logger instance via constructor, the API
+			// internally uses the Logger singleton instance if defined.
+			Log.Logger = logger;
+
+			Logger = logger;
+		}
+
 		private static string GetConfigurationStringValue(string key)
 		{
 			string envVariable = $"IAPI_INTEGRATION_{key.ToUpperInvariant()}";
@@ -307,42 +348,6 @@ END";
 				ServicePointManager.ServerCertificateValidationCallback +=
 					(sender, certificate, chain, sslPolicyErrors) => true;
 			}
-		}
-
-		private static void SetupLogger(IntegrationTestParameters parameters)
-		{
-			var loggerOptions = new LoggerOptions
-			{
-				Application = "8A1A6418-29B3-4067-8C9E-51E296F959DE",
-				ConfigurationFileLocation = Path.Combine(ResourceFileHelper.GetBasePath(), "LogConfig.xml"),
-				System = "Import-API",
-				SubSystem = "Samples",
-			};
-
-			// Configure the optional SEQ sink to periodically send logs to the local SEQ server for improved debugging.
-			// See https://getseq.net/ for more details.
-			loggerOptions.AddSinkParameter(
-				Relativity.Logging.Configuration.SeqSinkConfig.ServerUrlSinkParameterKey,
-				new Uri("http://localhost:5341"));
-
-			// Configure the optional HTTP sink to periodically send logs to Relativity.
-			loggerOptions.AddSinkParameter(
-				Logging.Configuration.RelativityHttpSinkConfig.CredentialSinkParameterKey,
-				new NetworkCredential(parameters.RelativityUserName, parameters.RelativityPassword));
-			loggerOptions.AddSinkParameter(
-				Logging.Configuration.RelativityHttpSinkConfig.InstanceUrlSinkParameterKey,
-				parameters.RelativityUrl);
-			Logger = Logging.Factory.LogFactory.GetLogger(loggerOptions);
-
-			if (parameters.WriteLogsToConsole)
-			{
-				// Note: Wrapping the ILog instance to ensure all logs written via tests are dumped to the console.
-				Logger = new RelativityTestLogger(Logger);
-			}
-
-			// Until Import API supports passing a logger instance via constructor, the API
-			// internally uses the Logger singleton instance if defined.
-			Log.Logger = Logger;
 		}
 	}
 }

@@ -6,7 +6,7 @@
 //   Represents an abstract load-file base class.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
-namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
+namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
 {
 	using kCura.Relativity.DataReaderClient;
 
@@ -14,19 +14,25 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
 
 	public static class NativeImportSettingsProvider
 	{
-		public static Settings GetNativeFilePathSourceDocumentImportSettings()
+		public static Settings NativeFilePathSourceDocumentImportSettings
 		{
-			Settings settings = new Settings();
-			SetDefaultNativeDocumentImportSettings(settings);
-			SetNativeFilePathSourceDocumentImportSettings(settings);
-			return settings;
+			get
+			{
+				Settings settings = new Settings();
+				SetDefaultNativeDocumentImportSettings(settings);
+				SetNativeFilePathSourceDocumentImportSettings(settings);
+				return settings;
+			}
 		}
 
-		public static Settings GetDefaultNativeDocumentImportSettings()
+		public static Settings DefaultNativeDocumentImportSettings
 		{
-			Settings settings = new Settings();
-			SetDefaultNativeDocumentImportSettings(settings);
-			return settings;
+			get
+			{
+				Settings settings = new Settings();
+				SetDefaultNativeDocumentImportSettings(settings);
+				return settings;
+			}
 		}
 
 		private static void SetDefaultNativeDocumentImportSettings(Settings settings)

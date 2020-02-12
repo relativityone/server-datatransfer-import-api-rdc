@@ -91,10 +91,20 @@
     <Compile Include="CollationStringComparer.cs" />
     <Compile Include="DataReaderBase.cs" />
     <Compile Include="DummyTest.cs" />
-    <Compile Include="EnumerableDataReader.cs" />
+    <Compile Include="ImportDataSource\FieldValueSources\ChoicesSource.cs" />
+    <Compile Include="ImportDataSource\DtoBasedDataSourceConverter.cs" />
+    <Compile Include="ImportDataSource\ImportDataSourceToDataReaderAdapter.cs" />
     <Compile Include="Extensions\CopySettingsExtenstion.cs" />
     <Compile Include="Extensions\DataRowExtensions.cs" />
     <Compile Include="Extensions\DataTableExtensions.cs" />
+    <Compile Include="ImportDataSource\FieldValueSources\FoldersSource.cs" />
+    <Compile Include="ImportDataSource\FieldValueSources\IdentifierSource.cs" />
+    <Compile Include="ImportDataSource\FieldValueSources\IFieldValueSource.cs" />
+    <Compile Include="ImportDataSource\ImportDataSourceBuilder.cs" />
+    <Compile Include="ImportDataSource\ImportDataSource.cs" />
+    <Compile Include="ImportDataSource\FieldValueSources\RandomPathGenerator.cs" />
+    <Compile Include="ImportDataSource\ISettingsBuilder.cs" />
+    <Compile Include="ImportDataSource\NativeImportSettingsBuilder.cs" />
     <Compile Include="NUnitExtensions\CollectDeadlocksAttribute.cs" />
     <Compile Include="ObjectManagers\ClientManager.cs" />
     <Compile Include="ObjectManagers\FileShareServerManager.cs" />
@@ -153,7 +163,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryFieldFactory.cs" />
-    <Compile Include="ZipDataReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\buildtools\stylecop.json">
@@ -572,4 +581,5 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
 </Project>

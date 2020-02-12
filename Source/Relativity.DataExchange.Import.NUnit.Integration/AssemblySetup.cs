@@ -24,7 +24,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public static IntegrationTestParameters TestParameters
 		{
 			get;
-			private set;
+			set;
 		}
 
 		[OneTimeSetUp]
@@ -46,6 +46,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public static void TearDown()
 		{
 			IntegrationTestHelper.Destroy(TestParameters);
+		}
+
+		public static async Task<IntegrationTestParameters> ResetContextAsync()
+		{
+			TearDown();
+			await SetupAsync().ConfigureAwait(false);
+			return TestParameters;
 		}
 
 		private static async Task UserSetup()

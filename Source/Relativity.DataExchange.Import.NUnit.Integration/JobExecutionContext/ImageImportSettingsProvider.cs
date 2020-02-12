@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.Import.NUnit.Integration.SetUp
+namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
 {
 	using kCura.Relativity.DataReaderClient;
 

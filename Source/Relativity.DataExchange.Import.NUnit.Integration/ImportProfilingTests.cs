@@ -12,9 +12,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using kCura.Relativity.DataReaderClient;
 
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
-	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
+	using Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
+	using Relativity.DataExchange.TestFramework.ImportDataSource;
+	using Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSources;
 	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
@@ -22,13 +24,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	[TestFixture]
 	[Explicit]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-	public class ImportProfilingTests : ImportJobTestBase<ImportBulkArtifactJob, Settings>
+	public class ImportProfilingTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
-		public ImportProfilingTests()
-			: base(new NativeImportApiSetUp())
-		{
-		}
-
 		[CollectWebApiExecutionPlans]
 		[CollectWebApiSql]
 		[Category(TestCategories.ImportDoc)]
@@ -49,15 +46,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = DisableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = DisableNativeValidation;
 
-			this.InitializeImportApiWithUserAndPassword(NativeImportSettingsProvider.GetNativeFilePathSourceDocumentImportSettings());
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, NativeImportSettingsProvider.NativeFilePathSourceDocumentImportSettings);
 
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, numberOfDocuments);
 
 			// ACT
-			this.Execute(importData);
+			ImportTestJobResult result = this.JobExecutionContext.Execute(importData);
 
 			// ASSERT
-			this.ThenTheImportJobIsSuccessful(numberOfDocuments);
+			this.ThenTheImportJobIsSuccessful(result, numberOfDocuments);
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "2*numberOfDocuments", Justification = "It won't overflow for values used in test")]
@@ -79,7 +76,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = DisableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = DisableNativeValidation;
 
-			Settings settings = NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings();
+			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
 			char multiValueDelimiter = settings.MultiValueDelimiter;
 			char nestedValueDelimiter = settings.NestedValueDelimiter;
 
@@ -106,22 +103,20 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				multiValueDelimiter: multiValueDelimiter,
 				nestedValueDelimiter: nestedValueDelimiter);
 
-			this.InitializeImportApiWithUserAndPassword(NativeImportSettingsProvider.GetDefaultNativeDocumentImportSettings());
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, NativeImportSettingsProvider.DefaultNativeDocumentImportSettings);
 
-			using (var dataReader = new ZipDataReader())
-			{
-				dataReader.Add(WellKnownFields.ControlNumber, Enumerable.Range((2 * numberOfDocuments) + 1, numberOfDocuments).Select(p => p.ToString()));
+			var dataSourceBuilder = new ImportDataSourceBuilder();
+			dataSourceBuilder.AddField(WellKnownFields.ControlNumber, Enumerable.Range((2 * numberOfDocuments) + 1, numberOfDocuments).Select(p => p.ToString()));
+			dataSourceBuilder.AddField(WellKnownFields.FolderName, randomFolderGenerator.ToFolders());
+			dataSourceBuilder.AddField(WellKnownFields.ConfidentialDesignation, confidentialDesignation.ToEnumerable());
+			dataSourceBuilder.AddField(WellKnownFields.PrivilegeDesignation, privilegeDesignation.ToEnumerable(nestedValueDelimiter).RandomUniqueBatch(4, multiValueDelimiter));
+			ImportDataSource<object[]> dataSource = dataSourceBuilder.Build();
 
-				dataReader.Add(WellKnownFields.FolderName, randomFolderGenerator.ToFolders(numberOfDocuments));
-				dataReader.Add(WellKnownFields.ConfidentialDesignation, confidentialDesignation.ToEnumerable(numberOfDocuments));
-				dataReader.Add(WellKnownFields.PrivilegeDesignation, privilegeDesignation.ToEnumerable(int.MaxValue, nestedValueDelimiter).RandomUniqueBatch(4, multiValueDelimiter));
+			// ACT
+			ImportTestJobResult result = this.JobExecutionContext.Execute(dataSource);
 
-				// ACT
-				this.Execute(dataReader);
-			}
-
-			// ASSERT
-			this.ThenTheImportJobIsSuccessful(numberOfDocuments);
+				// ASSERT
+			this.ThenTheImportJobIsSuccessful(result, numberOfDocuments);
 		}
 	}
 }

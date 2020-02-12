@@ -11,7 +11,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using System.Collections.Concurrent;
 	using System.Collections.Generic;
 
-	public class ImportTestJobResult
+	/// <summary>
+	/// This class represents results of import test.
+	/// </summary>
+	/// <remarks>It can be accessed across App Domain boundaries.</remarks>
+	public class ImportTestJobResult : MarshalByRefObject
 	{
 		private const int JobMessagesLimit = 10000; // that value is referenced in doc comments
 
@@ -30,7 +34,21 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		public long NumberOfCompletedRows { get; set; }
 
-		public JobReport CompletedJobReport { get; set; }
+		public DateTime StartTime => CompletedJobReport.StartTime;
+
+		public DateTime EndTime => CompletedJobReport.EndTime;
+
+		public int JobReportTotalRows => CompletedJobReport.TotalRows;
+
+		public int JobReportErrorsCount => CompletedJobReport.ErrorRows.Count;
+
+		public Exception FatalException => CompletedJobReport.FatalException;
+
+		/// <summary>
+		/// Sets completed job report.
+		/// </summary>
+		/// <remarks>It is not safe to use that property across App Domains.</remarks>
+		internal JobReport CompletedJobReport { private get; set; }
 
 		/// <summary>
 		/// It adds job message to test result object.

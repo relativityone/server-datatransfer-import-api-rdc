@@ -17,23 +17,16 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	using global::NUnit.Framework;
 
-	using kCura.Relativity.DataReaderClient;
-
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
-	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
+	using Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-	public class FileLockedImportJobTests : ImportJobTestBase<ImportBulkArtifactJob, Settings>
+	public class FileLockedImportJobTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
-		public FileLockedImportJobTests()
-			: base(new NativeImportApiSetUp())
-		{
-		}
-
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
@@ -52,7 +45,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 
-			this.InitializeImportApiWithUserAndPassword(NativeImportSettingsProvider.GetNativeFilePathSourceDocumentImportSettings());
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, NativeImportSettingsProvider.NativeFilePathSourceDocumentImportSettings);
 
 			const int NumberOfFilesToImport = 5;
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport)
@@ -60,9 +53,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.Select(DenyAccessToFile);
 
 			// ACT
-			ImportTestJobResult results = this.Execute(importData);
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
 
-			this.ThenTheImportJobFailedWithFatalError(0, NumberOfFilesToImport);
+			this.ThenTheImportJobFailedWithFatalError(results, 0, NumberOfFilesToImport);
 
 			// ASSERT
 			// The exact value is impossible to predict.

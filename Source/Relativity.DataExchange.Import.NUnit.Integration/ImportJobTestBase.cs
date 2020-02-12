@@ -10,36 +10,34 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
-	using System.Collections.Generic;
-	using System.Data;
 	using System.Net;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
-
-	using kCura.Relativity.DataReaderClient;
-	using kCura.Relativity.ImportAPI;
 
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 
-	public abstract class ImportJobTestBase<TImportJob, TSettings> : IDisposable
-		where TImportJob : IImportNotifier
-		where TSettings : ImportSettingsBase
+	public abstract class ImportJobTestBase<TJobExecutionContext> : IDisposable
+		where TJobExecutionContext : class, IDisposable, new()
 	{
-		private readonly ImportApiSetUp<TImportJob, TSettings> importApiSetUp;
-
-		protected ImportJobTestBase(ImportApiSetUp<TImportJob, TSettings> importApiSetUp)
+		protected ImportJobTestBase()
+			: this(AssemblySetup.TestParameters)
 		{
-			importApiSetUp.ThrowIfNull(nameof(importApiSetUp));
+		}
 
-			Assume.That(AssemblySetup.TestParameters.WorkspaceId, Is.Positive, "The test workspace must be created or specified in order to run this integration test.");
+		private ImportJobTestBase(IntegrationTestParameters testParameters)
+		{
+			this.SetTestParameters(testParameters);
 
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
-
-			this.importApiSetUp = importApiSetUp;
 		}
+
+		protected IntegrationTestParameters TestParameters { get; private set; }
+
+		protected TJobExecutionContext JobExecutionContext { get; private set; }
 
 		protected TempDirectory2 TempDirectory { get; private set; }
 
@@ -59,6 +57,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			this.TempDirectory = new TempDirectory2();
 			this.TempDirectory.Create();
+
+			this.JobExecutionContext = new TJobExecutionContext();
 		}
 
 		[TearDown]
@@ -71,38 +71,20 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				this.TempDirectory = null;
 			}
 
-			this.importApiSetUp.Dispose();
-		}
-
-		public virtual void InitializeImportApiWithUserAndPassword(TSettings settings)
-		{
-			this.importApiSetUp.SetUpImportApi(this.CreateImportApiWithUserAndPwd, settings);
-		}
-
-		public virtual void InitializeImportApiWithIntegratedAuthentication(TSettings settings)
-		{
-			this.importApiSetUp.SetUpImportApi(this.CreateImportApiWithIntegratedAuthentication, settings);
-		}
-
-		public ImportTestJobResult Execute<T>(IEnumerable<T> importData)
-		{
-			using (var dataReader = new EnumerableDataReader<T>(importData))
-			{
-				return this.Execute(dataReader);
-			}
-		}
-
-		public ImportTestJobResult Execute(IDataReader dataReader)
-		{
-			this.importApiSetUp.Execute(dataReader);
-
-				// At this point all results should be setup
-			return this.importApiSetUp.TestJobResult;
+			this.JobExecutionContext?.Dispose();
+			this.JobExecutionContext = null;
 		}
 
 		public void Dispose()
 		{
 			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		public async Task ResetContextAsync()
+		{
+			IntegrationTestParameters newParameters = await AssemblySetup.ResetContextAsync().ConfigureAwait(false);
+			this.SetTestParameters(newParameters);
 		}
 
 		protected static void ForceClient(TapiClient tapiClient)
@@ -120,63 +102,57 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		protected void ThenTheImportJobIsSuccessful(int expectedTotalRows)
+		protected void ThenTheImportJobIsSuccessful(ImportTestJobResult testjobResult, int expectedTotalRows) // TODO create extension method for that
 		{
-			this.ValidateTotalRowsCount(expectedTotalRows);
-			this.ValidateFatalExceptionsNotExist();
-			Assert.That(this.importApiSetUp.TestJobResult.ErrorRows, Has.Count.Zero);
-			Assert.That(this.importApiSetUp.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.Zero);
+			testjobResult = testjobResult ?? throw new ArgumentNullException(nameof(testjobResult));
+
+			this.ValidateTotalRowsCount(testjobResult, expectedTotalRows);
+			this.ValidateFatalExceptionsNotExist(testjobResult);
+			Assert.That(testjobResult.ErrorRows, Has.Count.Zero);
+			Assert.That(testjobResult.JobReportErrorsCount, Is.Zero);
 		}
 
-		protected void ThenTheImportJobFailedWithFatalError(int expectedErrorRows, int expectedTotalRows)
+		protected void ThenTheImportJobFailedWithFatalError(ImportTestJobResult testjobResult, int expectedErrorRows, int expectedTotalRows)
 		{
+			testjobResult = testjobResult ?? throw new ArgumentNullException(nameof(testjobResult));
+
 			// Note: the exact number of expected rows can vary over a range when expecting an error.
-			Assert.That(this.importApiSetUp.TestJobResult.CompletedJobReport, Is.Not.Null);
-			Assert.That(this.importApiSetUp.TestJobResult.CompletedJobReport.TotalRows, Is.Positive.And.LessThanOrEqualTo(expectedTotalRows));
-			Assert.That(this.importApiSetUp.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(expectedErrorRows));
-			Assert.That(this.importApiSetUp.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(this.importApiSetUp.TestJobResult.ErrorRows.Count));
-			Assert.That(this.importApiSetUp.TestJobResult.JobFatalExceptions, Has.Count.Positive);
-			Assert.That(this.importApiSetUp.TestJobResult.CompletedJobReport.FatalException, Is.Not.Null);
+			Assert.That(testjobResult.JobReportTotalRows, Is.Positive.And.LessThanOrEqualTo(expectedTotalRows));
+			Assert.That(testjobResult.JobReportErrorsCount, Is.EqualTo(expectedErrorRows));
+			Assert.That(testjobResult.JobReportErrorsCount, Is.EqualTo(testjobResult.ErrorRows.Count));
+			Assert.That(testjobResult.JobFatalExceptions, Has.Count.Positive);
+			Assert.That(testjobResult.FatalException, Is.Not.Null);
 		}
 
-		protected void ThenTheImportJobCompletedWithErrors(int expectedErrorRows, int expectedTotalRows)
+		protected void ThenTheImportJobCompletedWithErrors(ImportTestJobResult testjobResult, int expectedErrorRows, int expectedTotalRows)
 		{
-			this.ValidateTotalRowsCount(expectedTotalRows);
-			this.ValidateFatalExceptionsNotExist();
-			Assert.That(this.importApiSetUp.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(expectedErrorRows));
-			Assert.That(this.importApiSetUp.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.EqualTo(this.importApiSetUp.TestJobResult.ErrorRows.Count));
+			testjobResult = testjobResult ?? throw new ArgumentNullException(nameof(testjobResult));
+
+			this.ValidateTotalRowsCount(testjobResult, expectedTotalRows);
+			this.ValidateFatalExceptionsNotExist(testjobResult);
+			Assert.That(testjobResult.JobReportErrorsCount, Is.EqualTo(expectedErrorRows));
+			Assert.That(testjobResult.JobReportErrorsCount, Is.EqualTo(testjobResult.ErrorRows.Count));
 		}
 
-		protected virtual void ValidateTotalRowsCount(int expectedTotalRows)
+		protected virtual void ValidateTotalRowsCount(ImportTestJobResult testjobResult, int expectedTotalRows)
 		{
-			Assert.That(this.importApiSetUp.TestJobResult.CompletedJobReport, Is.Not.Null);
-			Assert.That(this.importApiSetUp.TestJobResult.CompletedJobReport.TotalRows, Is.EqualTo(expectedTotalRows));
+			testjobResult = testjobResult ?? throw new ArgumentNullException(nameof(testjobResult));
+
+			Assert.That(testjobResult.JobReportTotalRows, Is.EqualTo(expectedTotalRows));
 		}
 
-		protected virtual void ValidateFatalExceptionsNotExist()
+		protected virtual void ValidateFatalExceptionsNotExist(ImportTestJobResult testjobResult)
 		{
-			Assert.That(this.importApiSetUp.TestJobResult.CompletedJobReport.FatalException, Is.Null);
-			Assert.That(this.importApiSetUp.TestJobResult.JobFatalExceptions, Has.Count.Zero);
+			testjobResult = testjobResult ?? throw new ArgumentNullException(nameof(testjobResult));
+
+			Assert.That(testjobResult.FatalException, Is.Null);
+			Assert.That(testjobResult.JobFatalExceptions, Has.Count.Zero);
 		}
 
-		protected ImportAPI CreateImportApiWithUserAndPwd()
+		private void SetTestParameters(IntegrationTestParameters testParameters)
 		{
-			return new ImportAPI(
-				AssemblySetup.TestParameters.RelativityUserName,
-				AssemblySetup.TestParameters.RelativityPassword,
-				AssemblySetup.TestParameters.RelativityWebApiUrl.ToString());
-		}
-
-		protected ImportAPI CreateImportApiWithIntegratedAuthentication()
-		{
-			return new ImportAPI(
-				AssemblySetup.TestParameters.RelativityWebApiUrl.ToString());
-		}
-
-		protected TSetUp ImportApiSetUp<TSetUp>()
-			where TSetUp : ImportApiSetUp<TImportJob, TSettings>
-		{
-			return this.importApiSetUp as TSetUp;
+			this.TestParameters = testParameters ?? throw new ArgumentNullException(nameof(testParameters));
+			Assume.That(testParameters.WorkspaceId, Is.Positive, "The test workspace must be created or specified in order to run this integration test.");
 		}
 	}
 }

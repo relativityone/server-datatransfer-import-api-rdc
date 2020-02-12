@@ -15,12 +15,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 
 	using global::NUnit.Framework;
 
-	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 	using kCura.WinEDDS.Exceptions;
 
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
-	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
+	using Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.Transfer;
@@ -28,8 +27,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Authentication]
-	[Explicit("These tests don't work on Trident, because they are executed there in an non-interactive process.")]
-	public class IntegratedAuthenticationTests : ImportJobTestBase<ImportBulkArtifactJob, Settings>
+	[Explicit("These tests don't work on Trident, because they are executed there in a non-interactive process.")]
+	public class IntegratedAuthenticationTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const int _WAIT_TIME_FOR_INSTANCE_SETTING_CHANGE_IN_MS = 30 * 1000;
 
@@ -39,11 +38,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 		/// in positive cases 40s seems to be reasonable limit for importing 5 small files.
 		/// </summary>
 		private const int _TIMEOUT_IN_MS = 70 * 1000;
-
-		public IntegratedAuthenticationTests()
-			: base(new NativeImportApiSetUp())
-		{
-		}
 
 		[OneTimeTearDown]
 		public static Task OneTimeTearDown()
@@ -90,16 +84,16 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = true;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = true;
 
-			this.InitializeImportApiWithIntegratedAuthentication(NativeImportSettingsProvider.GetNativeFilePathSourceDocumentImportSettings());
+			this.JobExecutionContext.InitializeImportApiWithIntegratedAuthentication(this.TestParameters, NativeImportSettingsProvider.NativeFilePathSourceDocumentImportSettings);
 
 			const int NumberOfFilesToImport = 5;
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport);
 
 			// ACT
-			ImportTestJobResult results = this.Execute(importData);
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
 
 			// ASSERT
-			this.ThenTheImportJobIsSuccessful(NumberOfFilesToImport);
+			this.ThenTheImportJobIsSuccessful(results, NumberOfFilesToImport);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfFilesToImport));
 		}
