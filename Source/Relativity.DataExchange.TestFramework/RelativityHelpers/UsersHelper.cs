@@ -15,7 +15,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Text;
 	using System.Threading.Tasks;
 
-	using Newtonsoft.Json;
 	using Newtonsoft.Json.Linq;
 
 	using Relativity.Services.Security;
@@ -126,7 +125,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 				if (response.StatusCode != HttpStatusCode.Created)
 				{
-					throw new HttpServiceException($"{nameof(CreateNewUser)} failed." + Environment.NewLine + JsonConvert.SerializeObject(
+					throw new HttpServiceException($"{nameof(CreateNewUser)} failed." + Environment.NewLine +
 							  new
 							  {
 								  request,
@@ -134,7 +133,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 								  url,
 								  basicAuth,
 								  httpClient.DefaultRequestHeaders,
-							  }));
+							  });
 				}
 
 				JObject resultObject = JObject.Parse(result);

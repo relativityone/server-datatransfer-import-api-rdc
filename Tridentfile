@@ -127,8 +127,6 @@ timestamps
 							vmInfo = utils.createHopper(config.hopperApiUrl, hopperTrustedAppToken, config.hopperApiUsername, config.sutTemplate, vmName, vmDescription, bldSvcUsername, bldSvcPassword, buildOwner, productName)
 							utils.createHopperTestSettings(vmInfo)
 							utils.renewInstanceLease(config.hopperApiUrl, hopperTrustedAppToken, config.hopperApiUsername, vmInfo.Id, bldSvcUsername, bldSvcPassword)
-							utils.renewInstanceLease(config.hopperApiUrl, hopperTrustedAppToken, config.hopperApiUsername, vmInfo.Id, bldSvcUsername, bldSvcPassword)
-							utils.renewInstanceLease(config.hopperApiUrl, hopperTrustedAppToken, config.hopperApiUsername, vmInfo.Id, bldSvcUsername, bldSvcPassword)
 						}
 					}	
 					
