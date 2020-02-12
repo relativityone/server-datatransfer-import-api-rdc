@@ -155,6 +155,7 @@
     <Compile Include="ByteSize\ToStringMethod.cs" />
     <Compile Include="ChoiceInfoTests.cs" />
     <Compile Include="FreeImageServiceTests.cs" />
+    <Compile Include="Helpers\JwtTokenHelperTests.cs" />
     <Compile Include="HttpServiceExceptionTests.cs" />
     <Compile Include="ImageConverterServiceTests.cs" />
     <Compile Include="ImageLoadFileDeserializationTests.cs" />

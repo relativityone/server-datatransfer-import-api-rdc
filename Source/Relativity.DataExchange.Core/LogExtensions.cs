@@ -12,7 +12,11 @@ namespace Relativity.DataExchange
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net;
 	using System.Reflection;
+
+	using Relativity.DataExchange.Helpers;
+	using Relativity.Logging;
 
 	/// <summary>
 	/// Defines extension methods for <see cref="Relativity.Logging.ILog"/>.
@@ -86,6 +90,39 @@ namespace Relativity.DataExchange
 				}
 
 				logger.LogWarning(e, "Failed to log {SettingType} as a dictionary.", value.GetType());
+			}
+		}
+
+		/// <summary>
+		/// It logs jwt token claims on information logging level according to provided message template.
+		/// </summary>
+		/// <param name="logger">logger instance.</param>
+		/// <param name="messageTemplate">logged message template.</param>
+		/// <param name="credentials">User credentials.</param>
+		public static void LogUserContextInformation(this ILog logger, string messageTemplate, ICredentials credentials)
+		{
+			if (credentials is NetworkCredential networkCredentials)
+			{
+				if (networkCredentials.UserName == Constants.OAuthWebApiBearerTokenUserName)
+				{
+					LogInformationForAuthToken(logger, messageTemplate, networkCredentials);
+				}
+				else
+				{
+					logger.LogInformation(messageTemplate + " with User Id: {userId}", networkCredentials.UserName);
+				}
+			}
+		}
+
+		private static void LogInformationForAuthToken(ILog logger, string messageTemplate, NetworkCredential networkCredentials)
+		{
+			if (JwtTokenHelper.TryParse(networkCredentials.Password, out var jwtAuthToken))
+			{
+				logger.LogInformation(messageTemplate + " with {@jwtAuthToken}", jwtAuthToken);
+			}
+			else
+			{
+				logger.LogWarning("Can't parse bearer token!");
 			}
 		}
 	}
