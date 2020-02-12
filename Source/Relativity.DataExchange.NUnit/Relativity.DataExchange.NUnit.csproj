@@ -186,7 +186,6 @@
     <Compile Include="TapiTotalsTests.cs" />
     <Compile Include="ViewFieldInfoTests.cs" />
     <Compile Include="CaseInfoTests.cs" />
-    <Compile Include="CryptoHelperTests.cs" />
     <Compile Include="ProcessEventWriterTests.cs" />
     <Compile Include="ProcessErrorWriterTests.cs" />
     <Compile Include="SqlDataViewTests.cs" />

@@ -1141,10 +1141,10 @@ namespace Relativity.DataExchange.NUnit
 
 				// The kCura.Utility section asserts go here.
 				Assert.That(this.settings.CreateErrorForInvalidDate, Is.True);
-				Assert.That(this.settings.ExportErrorNumberOfRetries, Is.EqualTo(5));
-				Assert.That(this.settings.ExportErrorWaitTimeInSeconds, Is.EqualTo(15));
-				Assert.That(this.settings.IoErrorNumberOfRetries, Is.EqualTo(8));
-				Assert.That(this.settings.IoErrorWaitTimeInSeconds, Is.EqualTo(16));
+				Assert.That(this.settings.ExportErrorNumberOfRetries, Is.EqualTo(2));
+				Assert.That(this.settings.ExportErrorWaitTimeInSeconds, Is.EqualTo(1));
+				Assert.That(this.settings.IoErrorNumberOfRetries, Is.EqualTo(2));
+				Assert.That(this.settings.IoErrorWaitTimeInSeconds, Is.EqualTo(1));
 
 				// The kCura.WinEDDS section asserts go here.
 				Assert.That(this.settings.ApplicationName, Is.EqualTo("Custom App"));
@@ -1215,10 +1215,10 @@ namespace Relativity.DataExchange.NUnit
 
 				// The kCura.Utility section asserts go here.
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.CreateErrorForInvalidDateKey], Is.True);
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportErrorNumberOfRetriesKey], Is.EqualTo(5));
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportErrorWaitTimeInSecondsKey], Is.EqualTo(15));
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.IoErrorNumberOfRetriesKey], Is.EqualTo(8));
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.IoErrorWaitTimeInSecondsKey], Is.EqualTo(16));
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportErrorNumberOfRetriesKey], Is.EqualTo(2));
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportErrorWaitTimeInSecondsKey], Is.EqualTo(1));
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.IoErrorNumberOfRetriesKey], Is.EqualTo(2));
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.IoErrorWaitTimeInSecondsKey], Is.EqualTo(1));
 
 				// The kCura.WinEDDS section asserts go here.
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ApplicationNameKey], Is.EqualTo("Custom App"));

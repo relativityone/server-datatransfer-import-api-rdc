@@ -42,16 +42,16 @@ Skips building the solution, setup the integration test parameters using the spe
 Skips building the solution, setup the integration test parameters using the specified JSON file, and executes all unit and integration tests.
 
 .EXAMPLE
-.\build.ps1 UnitTests,IntegrationTests,TestReports -TestEnvironment "hyperv"
-Skips building the solution, setup the integration test parameters using the hyperv test environment, executes all unit and integration tests, and creates test reports within the ".\Reports" sub-folder.
+.\build.ps1 UnitTests,IntegrationTests,TestReports -TestEnvironment "Hopper"
+Skips building the solution, setup the integration test parameters using the Hopper test environment, executes all unit and integration tests, and creates test reports within the ".\Reports" sub-folder.
 
 .EXAMPLE
 .\build.ps1 UIAutomationTests
 Skips building the solution and executes all UI tests.
 
 .EXAMPLE
-.\build.ps1 CodeCoverageReport -TestEnvironment "hyperv"
-Skips building the solution, setup the integration test parameters using the hyperv test environment, executes a code coverage report, and creates the code coverage report within the ".\Reports" sub-folder.
+.\build.ps1 CodeCoverageReport -TestEnvironment "Hopper"
+Skips building the solution, setup the integration test parameters using the Hopper test environment, executes a code coverage report, and creates the code coverage report within the ".\Reports" sub-folder.
 
 .PARAMETER Target
 The target to build (e.g. Build, Rebuild).
@@ -128,11 +128,13 @@ param(
     [String]$BuildPlatform = "Any CPU",
     [Parameter()]
     [string]$BuildUrl = "localhost",
+	[Parameter()]
+    [string]$TestTarget,
     [int]$TestTimeoutInMS = 300000,
     [Parameter()]
     [String]$TestParametersFile,
     [Parameter()]
-    [ValidateSet("hyperv","e2e")]
+    [ValidateSet("Hopper")]
     [String]$TestEnvironment,
     [Parameter()]
     [String]$TestVMName,
@@ -205,6 +207,7 @@ $Params = @{
     }
     properties = @{
         Target = $Target
+		TestTarget = $TestTarget
         Configuration = $Configuration
         Version = $Version
         Branch = $Branch

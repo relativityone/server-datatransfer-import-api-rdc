@@ -21,23 +21,8 @@ namespace Relativity.DataExchange.TestFramework
 		/// <see langword="true" /> if the test parameter is mapped; otherwise, <see langword="false" />.
 		/// </param>
 		public IntegrationTestParameterAttribute(bool mapped)
-			: this(mapped, false)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="IntegrationTestParameterAttribute"/> class.
-		/// </summary>
-		/// <param name="mapped">
-		/// <see langword="true" /> if the test parameter is mapped; otherwise, <see langword="false" />.
-		/// </param>
-		/// <param name="secret">
-		/// <see langword="true" /> if the test parameter represents a secret that should be obfuscated; otherwise, <see langword="false" />.
-		/// </param>
-		public IntegrationTestParameterAttribute(bool mapped, bool secret)
 		{
 			this.IsMapped = mapped;
-			this.IsSecret = secret;
 		}
 
 		/// <summary>
@@ -47,17 +32,6 @@ namespace Relativity.DataExchange.TestFramework
 		/// <see langword="true" /> if the test parameter is mapped; otherwise, <see langword="false" />.
 		/// </value>
 		public bool IsMapped
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether the associated parameter represents a secret that should be obfuscated.
-		/// </summary>
-		/// <value>
-		/// <see langword="true" /> if the test parameter represents a secret; otherwise, <see langword="false" />.
-		/// </value>
-		public bool IsSecret
 		{
 			get;
 		}

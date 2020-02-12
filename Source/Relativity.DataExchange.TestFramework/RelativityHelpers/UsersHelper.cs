@@ -15,10 +15,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Text;
 	using System.Threading.Tasks;
 
-	using kCura.Relativity.Client;
-	using kCura.WinEDDS.Exceptions;
-
-	using Newtonsoft.Json;
 	using Newtonsoft.Json.Linq;
 
 	using Relativity.Services.Security;
@@ -129,7 +125,15 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 				if (response.StatusCode != HttpStatusCode.Created)
 				{
-					throw new HttpServiceException($"{nameof(CreateNewUser)} failed.");
+					throw new HttpServiceException($"{nameof(CreateNewUser)} failed." + Environment.NewLine +
+							  new
+							  {
+								  request,
+								  response,
+								  url,
+								  basicAuth,
+								  httpClient.DefaultRequestHeaders,
+							  });
 				}
 
 				JObject resultObject = JObject.Parse(result);
