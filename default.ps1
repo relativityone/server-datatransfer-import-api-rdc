@@ -48,6 +48,7 @@ properties {
     $Branch = $Null
     $BuildNumber = $Null
     $Verbosity = $Null
+	$TestTarget = $Null
     $TestTimeoutInMS = $Null
     $TestParametersFile = $Null
     $TestEnvironment = $Null
@@ -68,6 +69,30 @@ enum BranchType
     Develop
     FeatureBranch
 }
+
+$code = @"
+using System;
+namespace Paths
+{
+	public class UriScheme
+	{
+		public static string AddHttpsIfMissing(string s)
+		{
+			var x = new UriBuilder(s);
+			x.Scheme = Uri.UriSchemeHttps;
+			x.Port = -1;
+			return x.Uri.ToString().TrimEnd('/');	
+		}
+		public static string GetHost(string s)
+		{
+			var x = new UriBuilder(s);
+			return x.Host;	
+		}
+	}
+}
+"@
+ 
+Add-Type -TypeDefinition $code -Language CSharp	
 
 Function Get-CurrentBranchType{
     param(
@@ -456,10 +481,6 @@ task UIAutomationTests -Description "Runs all UI tests" {
     } -errorMessage "There was an error running the UI tests."
 }
 
-task IntegrationTestResults -Description "Retrieve the integration test results from the Xml file" {
-    Write-TestResultsOutput $IntegrationTestsResultXmlFile
-}
-
 task PackageVersion -Description "Retrieves the package version from powershell" {
 
     $localPackageVersion = Get-ReleaseVersion "$Branch"
@@ -479,8 +500,7 @@ task PublishBuildArtifacts -Description "Publish build artifacts" {
     Assert ($Branch -ne "") "Branch is a required argument for saving build artifacts."
     Assert ($Version -ne "") "Version is a required argument for saving build artifacts."
     Assert ($PublishToRelease -ne $Null) "Determination of the type of build, gold or not, is required for saving the build artifacts."
-    $BranchClean = [System.IO.Path]::GetInvalidFileNameChars() | % {$Branch = $Branch.replace($_,'_')}
-    $targetDir = if ($PublishToRelease) { "$BuildPackagesDirGold\Releases\$Version" } else { "$BuildPackagesDir\$BranchClean\$Version" }  
+    $targetDir = if ($PublishToRelease) { Join-Path $BuildPackagesDirGold "\Releases\$Version" } else { Join-Path $BuildPackagesDir "\$Branch\$Version" }  
     Copy-Folder -SourceDir $LogsDir -TargetDir "$targetDir\logs"
     Copy-Folder -SourceDir $BinariesArtifactsDir -TargetDir "$targetDir\binaries"
     Copy-Folder -SourceDir $InstallersArtifactsDir -TargetDir "$targetDir\installers"
@@ -610,8 +630,25 @@ task UnitTests -Description "Run all unit tests" {
     } -errorMessage "There was an error running the unit tests."
 }
 
+task IntegrationTestResults -Description "Retrieve the integration test results from the Xml file" {
+    Write-TestResultsOutput $IntegrationTestsResultXmlFile
+}
+
 task UnitTestResults -Description "Retrieve the unit test results from the Xml file" {
     Write-TestResultsOutput $UnitTestsResultXmlFile
+}
+
+task ReplaceTestVariables -Description "Replace test variables in file" {
+$pathToFile = ".\Source\Relativity.DataExchange.TestFramework\Resources\test-parameters-hopper.json"
+     $replaceTarget = [Paths.UriScheme]::AddHttpsIfMissing($TestTarget)
+     $sqlserveraddress = [Paths.UriScheme]::GetHost($TestTarget)
+    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_instance_name>',$sqlserveraddress) | Set-Content -Path $pathToFile
+    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_user_name>','eddsdbo') | Set-Content -Path $pathToFile
+    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_password>','P@ssw0rd@1') | Set-Content -Path $pathToFile
+    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_relativity_password>','Test1234!') | Set-Content -Path $pathToFile
+    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_relativity_user_name>','relativity.admin@kcura.com') | Set-Content -Path $pathToFile
+    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_target_to_test>', $replaceTarget) | Set-Content -Path $pathToFile
+	Write-Host (Get-Content -path $pathToFile -Raw)
 }
 
 task UpdateAssemblyInfo -Depends UpdateSdkAssemblyInfo,UpdateRdcAssemblyInfo -Description "Update the version contained within the SDK and RDC assembly shared info source files" {

@@ -166,8 +166,8 @@ The build scripts extend the testing framework to include code coverage using th
 ```
 
 ```bash
-# Same as above but use The hyper-v internal test environment for all integration test parameters.
-.\build.ps1 CodeCoverageReport -TestEnvironment "hyperv"
+# Same as above but use The Hopper internal test environment for all integration test parameters.
+.\build.ps1 CodeCoverageReport -TestEnvironment "Hopper"
 ```
 
 ### Test categories
@@ -246,7 +246,7 @@ Given the ability to use a JSON-based test parameters file, the repo includes te
 
 ```bash
 # Runs the integration tests using the Hyper-V test environment
-.\build.ps1 IntegrationTests -TestEnvironment hyperv
+.\build.ps1 IntegrationTests -TestEnvironment Hopper
 ```
 
 ### AssemblySetup
@@ -281,7 +281,7 @@ The project structure is similar to other repos. Important folders and files are
 │   │   Local.runsettings
 │   │   Local_x64.runsettings
 │   │   Test-PackageUpgrade.ps1
-│   │   test-parameters-hyperv.json
+│   │   test-parameters-hopper.json
 │   │   test-parameters-sample.json
 │   │   TestParameters-Template.reg
 ├───Source

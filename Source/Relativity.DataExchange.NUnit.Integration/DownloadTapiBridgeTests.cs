@@ -35,7 +35,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 
 		protected override TapiBridgeBase2 TapiBridge => this.tapiBridge;
 
-		[IdentifiedTestCase("b892be9b-c0cb-4e0b-aea8-9c1c9a601834", TapiClient.None, false)]
 		[IdentifiedTestCase("8c7a5c0c-77eb-40c5-beb7-0a3f009a2472", TapiClient.Aspera, true)]
 		[IdentifiedTestCase("74777b4f-24dc-4772-9ae9-4ef4b442da89", TapiClient.Aspera, false)]
 		[IdentifiedTestCase("1616a14a-f239-42d4-b90d-c7c25d67d149", TapiClient.Direct, true)]

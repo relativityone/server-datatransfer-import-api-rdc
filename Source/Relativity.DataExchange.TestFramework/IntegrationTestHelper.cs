@@ -180,7 +180,6 @@ END";
 		public static IntegrationTestParameters ReadIntegrationTestParameters()
 		{
 			Console.WriteLine("Retrieving and dumping all integration test parameters...");
-			bool decryptParameters = false;
 			IntegrationTestParameters parameters = new IntegrationTestParameters();
 			string testEnvironment = GetEnvironmentVariable("IAPI_INTEGRATION_TEST_ENV");
 			string jsonFile = GetEnvironmentVariable("IAPI_INTEGRATION_TEST_JSON_FILE");
@@ -189,12 +188,8 @@ END";
 				string resourceFile;
 				switch (testEnvironment.ToUpperInvariant())
 				{
-					case "HYPERV":
-						resourceFile = "test-parameters-hyperv.json";
-						break;
-
-					case "E2E":
-						resourceFile = "test-parameters-e2e.json";
+					case "HOPPER":
+						resourceFile = "test-parameters-hopper.json";
 						break;
 
 					default:
@@ -208,13 +203,11 @@ END";
 					StreamReader reader = new StreamReader(stream);
 					JsonSerializer serializer = new JsonSerializer();
 					parameters = serializer.Deserialize<IntegrationTestParameters>(new JsonTextReader(reader));
-					decryptParameters = true;
 				}
 			}
 			else if (!string.IsNullOrWhiteSpace(jsonFile))
 			{
 				parameters = JsonConvert.DeserializeObject<IntegrationTestParameters>(File.ReadAllText(jsonFile));
-				decryptParameters = true;
 			}
 			else
 			{
@@ -249,11 +242,6 @@ END";
 				}
 			}
 
-			if (decryptParameters)
-			{
-				DecryptTestParameters(parameters);
-			}
-
 			foreach (var prop in parameters.GetType().GetProperties())
 			{
 				IntegrationTestParameterAttribute attribute =
@@ -263,41 +251,11 @@ END";
 					continue;
 				}
 
-				if (attribute.IsSecret)
-				{
-					Console.WriteLine("{0}=[Obfuscated]", prop.Name);
-				}
-				else
-				{
-					Console.WriteLine("{0}={1}", prop.Name, prop.GetValue(parameters, null));
-				}
+				Console.WriteLine("{0}={1}", prop.Name, prop.GetValue(parameters, null));
 			}
 
 			Console.WriteLine("Retrieved and dumped all integration test parameters.");
 			return parameters;
-		}
-
-		private static void DecryptTestParameters(IntegrationTestParameters parameters)
-		{
-			if (!string.IsNullOrWhiteSpace(parameters.RelativityPassword))
-			{
-				parameters.RelativityPassword = CryptoHelper.Decrypt(parameters.RelativityPassword);
-			}
-
-			if (!string.IsNullOrWhiteSpace(parameters.RelativityUserName))
-			{
-				parameters.RelativityUserName = CryptoHelper.Decrypt(parameters.RelativityUserName);
-			}
-
-			if (!string.IsNullOrWhiteSpace(parameters.SqlAdminPassword))
-			{
-				parameters.SqlAdminPassword = CryptoHelper.Decrypt(parameters.SqlAdminPassword);
-			}
-
-			if (!string.IsNullOrWhiteSpace(parameters.SqlAdminUserName))
-			{
-				parameters.SqlAdminUserName = CryptoHelper.Decrypt(parameters.SqlAdminUserName);
-			}
 		}
 
 		private static string GetConfigurationStringValue(string key)

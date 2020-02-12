@@ -1,5 +1,6 @@
 #!groovy
-
+import groovy.json.JsonOutput 
+library 'ProjectMayhem@v1'
 library 'SlackHelpers@5.2.0-Trident'
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30']],
@@ -9,9 +10,9 @@ properties([
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
         booleanParam(defaultValue: true, description: "Enable or disable running unit tests", name: 'runUnitTests'),
-        booleanParam(defaultValue: false, description: "Enable or disable running integration tests", name: 'runIntegrationTests'),
+        booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests'),
         booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport'),
-        choice(defaultValue: 'hyperv', choices: ["hyperv"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment'),
+        choice(defaultValue: 'Hopper', choices: ["Hopper"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment'),
         booleanParam(defaultValue: true, description: """Enable or disable publishing NuGet packages, default true, but can be blocked by type of build and branch type.
         This is only for debug purposes.""", name: 'publishPackages')
     ])
@@ -41,8 +42,18 @@ def publishSdk =(!isReleaseBranch || (isReleaseBranch && params.buildType == 'GO
 def publishSdkAndRdc = (publishSdk && publishRdc)
 build = params.build
 
+def config = [
+    slackChannel: params.slackChannel,
+	sutTemplate: "aio-juniper-ea",
+	hopperApiUrl: "https://api.hopper.relativity.com/",
+	hopperApiUsername: "homeimprovement@relativity.com"
+]
 
-
+String buildOwner = ""
+String productName = utils.retrieveProductNameFromGitURL(scm.getUserRemoteConfigs()[0].getUrl())
+String buildIdentifier = "$productName-${UUID.randomUUID().toString()}"
+def vmInfo = null
+	
 // The code coverage report runs the integration tests + unit tests.
 def shouldRuncodeCoverageReport = params.createCodeCoverageReport && params.runIntegrationTests && params.runUnitTests
 
@@ -52,7 +63,8 @@ def shouldRunUnitTests = params.runUnitTests && !shouldRuncodeCoverageReport
 // Disable running integration tests if we already run the code coverage report (that invokes the integration tests as well)
 def shouldRunIntegrationTests = params.runIntegrationTests && !shouldRuncodeCoverageReport
 						
-						
+
+	
 timestamps
 {
     timeout(time: 3, unit: 'HOURS')
@@ -77,20 +89,15 @@ timestamps
                      ])
                     notifyBitbucket()
                 }
-
+				
                 try
-                {
-				    stage('Check access to destination path')
-					{
-						powershell ".\\build.ps1 CheckFolderAccess"
-					}
-					
+                {					
                     stage('Retrieve version')
                     { 
                         echo "Is release branch = $isReleaseBranch"
                         echo "Run integration tests = ${shouldRunIntegrationTests}"
                         echo "Is gold build = $isGoldBuild"
-                        echo "Publishing to release? \$$publishToRelease"
+                        echo "Publishing to release? $publishToRelease"
                         echo "Retrieving the semantic versions"
                         echo "Using new build strategy"
                         def outputString = runCommandWithOutput(".\\build.ps1 BuildVersion  -Branch '${branchName}'")
@@ -98,29 +105,76 @@ timestamps
                         currentBuild.displayName = "$outputStringParsed"
                         buildVersion = outputStringParsed
                     }
-					
-					stage('Check sdk dependencies')
+									
+					withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) 
 					{
-					    echo "checking dependencies of the .sdk .nuspec file"
-						powershell ".\\build.ps1 CheckSdkDependencies"
+						buildOwner = utils.getBuildOwner(username, password)
 					}
 
+					stage('Get hopper instance') 
+					{
+						echo "Hopper variables will be printed"
+						def output = JsonOutput.toJson(config)
+						echo JsonOutput.prettyPrint(output)
+						echo "End of hopper variables"
+						withCredentials([
+							usernamePassword(credentialsId: 'jenkins_build_svc', passwordVariable: 'bldSvcPassword', usernameVariable: 'bldSvcUsername'),
+							string(credentialsId: 'HopperTrustedAppToken', variable: 'hopperTrustedAppToken')
+						]) 
+						{
+							String vmName = buildIdentifier
+							String vmDescription = "$productName - ${branchName} - ${currentBuild.displayName}"
+							vmInfo = utils.createHopper(config.hopperApiUrl, hopperTrustedAppToken, config.hopperApiUsername, config.sutTemplate, vmName, vmDescription, bldSvcUsername, bldSvcPassword, buildOwner, productName)
+							utils.createHopperTestSettings(vmInfo)
+							utils.renewInstanceLease(config.hopperApiUrl, hopperTrustedAppToken, config.hopperApiUsername, vmInfo.Id, bldSvcUsername, bldSvcPassword)
+							utils.renewInstanceLease(config.hopperApiUrl, hopperTrustedAppToken, config.hopperApiUsername, vmInfo.Id, bldSvcUsername, bldSvcPassword)
+							utils.renewInstanceLease(config.hopperApiUrl, hopperTrustedAppToken, config.hopperApiUsername, vmInfo.Id, bldSvcUsername, bldSvcPassword)
+						}
+					}	
+					
+					stage('Replace variables in build')
+					{
+					    echo "replacing test variables in build"
+					    echo "vmInfo url ${vmInfo.Url}"
+					    echo "vmInfo id ${vmInfo.Id}"
+                        output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmInfo.Url)).getHost()}'"
+                        echo output
+					}
+					
                     stage('Build binaries') 
                     {
                         echo "Building the binaries for version $buildVersion"
                         output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge -Sign -Branch '${branchName}'"
                         echo output
                     }
+					
+					stage('Build install packages and check sdk dependencies')
+					{
+						parallel(
+							"Check sdk dependencies":
+							{
+								echo "checking dependencies of the .sdk .nuspec file"
+								powershell ".\\build.ps1 CheckSdkDependencies"
+							},
 
-                    stage('Build install packages')
-                    {
-                        echo "Building the installers for version $buildVersion"
-                        output = powershell ".\\build.ps1 BuildInstallPackages -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -Sign -Branch '${branchName}'"
-                        echo output
-                    }
+							"Check access to destination path":
+							{
+								powershell ".\\build.ps1 CheckFolderAccess"
+							},
+
+							"Build install packages":
+							{
+								echo "Building the installers for version $buildVersion"
+								output = powershell ".\\build.ps1 BuildInstallPackages -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -Sign -Branch '${branchName}'"
+								echo output
+							},
+							failFast: true
+						)
+					}
 
                     try
-                    {						
+                    {
+						
                         stage('Tests and Static analysis')
                         {
                             parallel(
@@ -139,6 +193,10 @@ timestamps
                                         output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${branchName}'"
                                         echo output
                                     }
+									else
+									{
+                                        echo "Skip running unit tests due to configuration parameters."
+									}
                                 },
 
                                 "Run integration tests":
@@ -146,9 +204,13 @@ timestamps
                                     if (shouldRunIntegrationTests)
                                     {
                                         echo "Running the integration tests"
-                                        output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment $params.testEnvironment -Branch '${branchName}'"
+                                        output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
                                         echo output
                                     }
+									else
+									{
+                                        echo "Skip running integration tests due to configuration parameters."
+									}
                                 },
                                 
                                 "Code coverage report":
@@ -156,7 +218,7 @@ timestamps
                                     if (shouldRuncodeCoverageReport)
                                     {
                                         echo "Creating a code coverage report"
-                                        output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment $params.testEnvironment -Branch '${branchName}'"
+                                        output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
                                         echo output
                                     }
                                     else
@@ -169,8 +231,8 @@ timestamps
                         }
                     }
                     finally
-                    {
-                        if (shouldRunUnitTests || shouldRunIntegrationTests)
+                    { 
+                        if (shouldRunUnitTests || shouldRunIntegrationTests || shouldRuncodeCoverageReport)
                         {
                             stage('Test results report')
                             {
@@ -179,75 +241,78 @@ timestamps
                             }
                         }
 
-                        if (shouldRunUnitTests || shouldRunIntegrationTests)
+                        if (shouldRunUnitTests || shouldRunIntegrationTests || shouldRuncodeCoverageReport)
                         {
-                            parallel(
-                                "Retrieve test results":
-                                {
-                                    def taskCandidates = []
-                                    if (shouldRunUnitTests)
-                                    {
-                                        taskCandidates.add("UnitTestResults")
-                                    }
+						    stage('Retrieve test results and create NuGet packages')
+                            {
+								parallel(
+									"Retrieve test results":
+									{
+										def taskCandidates = []
+										if (shouldRunUnitTests)
+										{
+											taskCandidates.add("UnitTestResults")
+										}
 
-                                    if (shouldRunIntegrationTests)
-                                    {
-                                        taskCandidates.add("IntegrationTestResults")
-                                    }
+										if (shouldRunIntegrationTests)
+										{
+											taskCandidates.add("IntegrationTestResults")
+										}
 
-                                    taskCandidates.eachWithIndex { task, index ->
-                                        def testDescription = ""
-                                        switch (index)
-                                        {
-                                            case 0:
-                                                testDescription = "unit"
-                                                break
+										taskCandidates.eachWithIndex { task, index ->
+											def testDescription = ""
+											switch (index)
+											{
+												case 0:
+													testDescription = "unit"
+													break
 
-                                            case 1:
-                                                testDescription = "integration"
-                                                break
+												case 1:
+													testDescription = "integration"
+													break
 
-                                            default:
-                                                throw new Exception("The test result type $index is not mapped.")
-                                        }
+												default:
+													throw new Exception("The test result type $index is not mapped.")
+											}
 
-                                        // Let the build script retrieve the unit test result values.
-                                        echo "Retrieving the $testDescription-test results"
-                                        def testResultOutputString = runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'")
-                                        echo "Retrieved the $testDescription-test results"
+											// Let the build script retrieve the unit test result values.
+											echo "Retrieving the $testDescription-test results"
+											def testResultOutputString = runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'")
+											echo "Retrieved the $testDescription-test results"
 
-                                        // Search for specific tokens within the response.
-                                        echo "Extracting the $testDescription-test result parameters"
-                                        def int passed = extractValue("testResultsPassed", testResultOutputString)
-                                        def int failed = extractValue("testResultsFailed", testResultOutputString)
-                                        def int skipped = extractValue("testResultsSkipped", testResultOutputString)
-                                        echo "Extracted the $testDescription-test result parameters"
+											// Search for specific tokens within the response.
+											echo "Extracting the $testDescription-test result parameters"
+											def int passed = extractValue("testResultsPassed", testResultOutputString)
+											def int failed = extractValue("testResultsFailed", testResultOutputString)
+											def int skipped = extractValue("testResultsSkipped", testResultOutputString)
+											echo "Extracted the $testDescription-test result parameters"
 
-                                        // Dump the individual test results
-                                        echo "$testDescription-test passed: $passed"
-                                        echo "$testDescription-test failed: $failed"
-                                        echo "$testDescription-test skipped: $skipped"
-                                        
-                                        // Now add to the final test results
-                                        testResultsPassed += passed
-                                        testResultsFailed += failed
-                                        testResultsSkipped += skipped
-                                    }
+											// Dump the individual test results
+											echo "$testDescription-test passed: $passed"
+											echo "$testDescription-test failed: $failed"
+											echo "$testDescription-test skipped: $skipped"
+											
+											// Now add to the final test results
+											testResultsPassed += passed
+											testResultsFailed += failed
+											testResultsSkipped += skipped
+										}
 
-                                    // Dump the final test results
-                                    echo "Total passed: $testResultsPassed"
-                                    echo "Total failed: $testResultsFailed"
-                                    echo "Total skipped: $testResultsSkipped"
-                                },
-                                
-                                "Create NuGet packages":
-                                {
-                                    echo "Build number: ${currentBuild.number}"
-                                    echo "Building all SDK and RDC packages"
-                                    powershell ".\\build.ps1 BuildPackages -Branch '${branchName}' -BuildNumber '${currentBuild.number}'"
-                                },
-                                failFast: true
-                            )
+										// Dump the final test results
+										echo "Total passed: $testResultsPassed"
+										echo "Total failed: $testResultsFailed"
+										echo "Total skipped: $testResultsSkipped"
+									},
+									
+									"Create NuGet packages":
+									{
+										echo "Build number: ${currentBuild.number}"
+										echo "Building all SDK and RDC packages"
+										powershell ".\\build.ps1 BuildPackages -Branch '${branchName}' -BuildNumber '${currentBuild.number}'"
+									},
+									failFast: true
+								)
+							}
                         }
                     }
 
@@ -355,6 +420,19 @@ timestamps
             {
                 try
                 {
+					stage('Delete the hopper instance') 
+					{
+						if(vmInfo != null) 
+						{
+							withCredentials([
+								usernamePassword(credentialsId: 'jenkins_build_svc', passwordVariable: 'bldSvcPassword', usernameVariable: 'bldSvcUsername'),
+								string(credentialsId: 'HopperTrustedAppToken', variable: 'hopperTrustedAppToken')
+							]) 
+							{
+								utils.removeHopper(config.hopperApiUrl, hopperTrustedAppToken, config.hopperApiUsername, vmInfo.Id, bldSvcUsername, bldSvcPassword)
+							}
+						}
+					}    
                     stage('Reporting and Cleanup')
                     {
                         parallel(

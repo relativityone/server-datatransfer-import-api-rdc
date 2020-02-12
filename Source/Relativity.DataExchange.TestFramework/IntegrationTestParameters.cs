@@ -93,12 +93,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// The password.
 		/// </value>
 		[JsonProperty("RelativityPassword")]
-#if DEBUG
-		[IntegrationTestParameter(true, false)]
-#else
-		[IntegrationTestParameter(true, true)]
-		[System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
-#endif
+		[IntegrationTestParameter(true)]
 		public string RelativityPassword
 		{
 			get;
@@ -210,12 +205,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// The password.
 		/// </value>
 		[JsonProperty("SqlAdminPassword")]
-#if DEBUG
-		[IntegrationTestParameter(true, false)]
-#else
-		[IntegrationTestParameter(true, true)]
-		[System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
-#endif
+		[IntegrationTestParameter(true)]
 		public string SqlAdminPassword
 		{
 			get;

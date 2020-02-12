@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\packages\NUnit\build\NUnit.props" Condition="Exists('..\..\packages\NUnit\build\NUnit.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -89,7 +89,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollationStringComparer.cs" />
-    <Compile Include="CryptoHelper.cs" />
     <Compile Include="DataReaderBase.cs" />
     <Compile Include="DummyTest.cs" />
     <Compile Include="EnumerableDataReader.cs" />
@@ -165,8 +164,7 @@
     </None>
     <None Include="app.manifest" />
     <None Include="paket.references" />
-    <EmbeddedResource Include="Resources\test-parameters-hyperv.json" />
-    <EmbeddedResource Include="Resources\test-parameters-e2e.json" />
+    <EmbeddedResource Include="Resources\test-parameters-hopper.json" />
     <None Include="Resources\CreateInput.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
