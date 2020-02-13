@@ -641,23 +641,10 @@ End Sub
 		Private Sub _processContext_OnProcessFatalException(ByVal sender As Object, ByVal e As FatalExceptionEventArgs) Handles _processContext.FatalException
 			If _lastEvent IsNot Nothing Then BuildOutSummary(_lastEvent)
 			Dim errorFriendlyMessage As String = e.FatalException.Message
-			Dim errorFullMessage As String = e.FatalException.ToString
 			Me.FatalException = e.FatalException
 
-			If errorFullMessage.ToLower.IndexOf("soapexception") <> -1 Then
-				errorFullMessage = System.Web.HttpUtility.HtmlDecode(errorFullMessage)
-			End If
-			_outputTextBox.WriteLine(errorFullMessage)
-
-			_errorsOutputTextBox.WriteLine(errorFriendlyMessage, " ............")
-			_errorsOutputTextBox.WriteErrorDetails()
-
-			If _Tabs.SelectedTab.Equals(ErrorsTab) Then
-				_errorsOutputTextBox.PositionDetailsLink()
-			End If
-
-			AddHandler _errorsOutputTextBox.DetailsLink.LinkClicked, AddressOf OpenDetailsPane
-
+			_outputTextBox.WriteLine(errorFriendlyMessage)
+			_errorsOutputTextBox.WriteLine(errorFriendlyMessage)
 
 			_currentRecordLabel.Text = "Fatal Exception Encountered"
 			ShowWarningPopup = False
@@ -668,14 +655,7 @@ End Sub
 			_summaryOutput.ForeColor = System.Drawing.Color.Red
 			Me.ShowDetail()
 		End Sub
-
 #End Region
-
-		Private Sub OpenDetailsPane(ByVal sender As Object, ByVal e As LinkLabelLinkClickedEventArgs)
-			Dim x As New ErrorDialog With {.Text = "Relativity Desktop Client Error"}
-			x.Initialize(Me.FatalException, True)
-			x.ShowDialog()
-		End Sub
 
 		Private Sub WriteSummaryLine(ByVal what As String)
 			SummaryString.Append(what + vbCrLf)
@@ -767,10 +747,6 @@ End Sub
 
 		Private Sub _observer_ShutdownEvent(ByVal sender As Object, ByVal e As System.EventArgs) Handles _processContext.Shutdown
 			Me.Close()
-		End Sub
-
-		Private Sub ErrorsTab_GotFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles ErrorsTab.GotFocus
-			_errorsOutputTextBox.PositionDetailsLink()
 		End Sub
 	End Class
 End Namespace
