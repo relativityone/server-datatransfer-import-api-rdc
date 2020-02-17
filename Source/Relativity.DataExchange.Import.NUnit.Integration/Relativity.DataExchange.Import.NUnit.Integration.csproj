@@ -88,9 +88,9 @@
   <ItemGroup>
     <Compile Include="Dto\ImageImportDto.cs" />
     <Compile Include="JobExecutionContext\IImportApiSetup.cs" />
-    <Compile Include="JobExecutionContext\ImageImportSettingsProvider.cs" />
     <Compile Include="JobExecutionContext\BaseExecutionContext.cs" />
     <Compile Include="Dto\ImageImportWithFileNameDto.cs" />
+    <Compile Include="ImageImportProfilingTests.cs" />
     <Compile Include="ImportProfilingTests.cs" />
     <Compile Include="JobExecutionContext\ImportApiSetupExtensions.cs" />
     <Compile Include="JobExecutionContext\NativeImportExecutionContext.cs" />

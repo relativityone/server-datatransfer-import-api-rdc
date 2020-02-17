@@ -93,6 +93,7 @@
     <Compile Include="DummyTest.cs" />
     <Compile Include="ImportDataSource\FieldValueSources\ChoicesSource.cs" />
     <Compile Include="ImportDataSource\DtoBasedDataSourceConverter.cs" />
+    <Compile Include="ImportDataSource\ImageSettingsBuilder.cs" />
     <Compile Include="ImportDataSource\ImportDataSourceToDataReaderAdapter.cs" />
     <Compile Include="Extensions\CopySettingsExtenstion.cs" />
     <Compile Include="Extensions\DataRowExtensions.cs" />

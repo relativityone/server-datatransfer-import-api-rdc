@@ -15,20 +15,26 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
+	using global::NUnit.Framework.Constraints;
+
+	using kCura.Relativity.DataReaderClient;
 
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
 	using Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext;
 	using Relativity.DataExchange.Media;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.ImportDataSource;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Services.Objects.DataContracts;
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
-	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[Feature.DataTransfer.ImportApi.Operations.ImportImages]
 	public class PositiveImageImportJobTests : ImportJobTestBase<ImageImportExecutionContext>
 	{
 		[Category(TestCategories.ImportImage)]
@@ -36,21 +42,26 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("9db2e7f4-0bc8-46a8-9e95-621ca9bcc5c1")]
 		[Pairwise]
-		public void ShouldImportManyImagesUsingDifferentTransferModes(
-			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
+		public async Task ShouldImportManyImages()
 		{
 			// ARRANGE
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
+			await this.ResetContextAsync().ConfigureAwait(false);
 
-			ForceClient(client);
+			const int NumberOfDocumentsToImport = 20;
+			const int NumberOfImagesPerDocument = 10;
 
-			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, ImageImportSettingsProvider.GetImageFilePathSourceDocumentImportSettings(true));
+			IEnumerable<ImageImportWithFileNameDto> importData = ImageImportWithFileNameDto.GetRandomImageFiles(
+				this.TempDirectory.Directory,
+				NumberOfDocumentsToImport,
+				NumberOfImagesPerDocument,
+				ImageFormat.Jpeg);
 
-			const int NumberOfDocumentsToImport = 5;
-			const int NumberOfImagesPerDocument = 3;
+			var imageSettingsBuilder = new ImageSettingsBuilder()
+				.WithDefaultFieldNames()
+				.WithOverlayMode(OverwriteModeEnum.AppendOverlay);
+
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, imageSettingsBuilder);
 			this.JobExecutionContext.UseFileNames = true;
-
-			IEnumerable<ImageImportWithFileNameDto> importData = GetRandomImageFiles(this.TempDirectory.Directory, NumberOfDocumentsToImport, NumberOfImagesPerDocument, ImageFormat.Jpeg);
 
 			// ACT
 			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
@@ -60,21 +71,103 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(results, ExpectedNumberOfImportedImages);
 		}
 
+		[Category(TestCategories.ImportImage)]
+		[Category(TestCategories.Integration)]
+		[Category(TestCategories.TransferApi)]
+		[IdentifiedTest("577e9faa-31e6-4bd8-b406-7a066cc0aeb4")]
+		[Pairwise]
+		public async Task ShouldReturnAppendErrorsWhenImagesAlreadyExists()
+		{
+			// ARRANGE
+			await this.ResetContextAsync().ConfigureAwait(false);
+
+			const int NumberOfDocumentsToImport = 20;
+			const int NumberOfImagesPerDocument = 10;
+
+			IEnumerable<ImageImportWithFileNameDto> importData = ImageImportWithFileNameDto.GetRandomImageFiles(
+				this.TempDirectory.Directory,
+				NumberOfDocumentsToImport,
+				NumberOfImagesPerDocument,
+				ImageFormat.Jpeg);
+
+			var imageSettingsBuilder = new ImageSettingsBuilder()
+				.WithDefaultFieldNames()
+				.WithOverlayMode(OverwriteModeEnum.Append);
+
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, imageSettingsBuilder);
+			this.JobExecutionContext.UseFileNames = true;
+
+			this.JobExecutionContext.Execute(importData);
+
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
+
+			// ASSERT
+			const int ExpectedNumberOfImportedImages = NumberOfDocumentsToImport * NumberOfImagesPerDocument;
+			const int ExpectedNumberOfErrors = ExpectedNumberOfImportedImages;
+			this.ThenTheImportJobCompletedWithErrors(results, ExpectedNumberOfErrors, ExpectedNumberOfImportedImages);
+		}
+
+		[Category(TestCategories.ImportImage)]
+		[Category(TestCategories.Integration)]
+		[Category(TestCategories.TransferApi)]
+		[IdentifiedTest("6bfb799e-5c8f-4a5c-8092-c9042af62072")]
+		[Pairwise]
+		public async Task ShouldReturnOverlayErrorsWhenNoImagesExists()
+		{
+			// ARRANGE
+			await this.ResetContextAsync().ConfigureAwait(false);
+
+			const int NumberOfDocumentsToImport = 20;
+			const int NumberOfImagesPerDocument = 10;
+
+			IEnumerable<ImageImportWithFileNameDto> importData = ImageImportWithFileNameDto.GetRandomImageFiles(this.TempDirectory.Directory, NumberOfDocumentsToImport, NumberOfImagesPerDocument, ImageFormat.Jpeg);
+
+			var imageSettingsBuilder = new ImageSettingsBuilder();
+			imageSettingsBuilder.WithDefaultFieldNames();
+			imageSettingsBuilder.WithOverlayMode(OverwriteModeEnum.Overlay);
+
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, imageSettingsBuilder);
+			this.JobExecutionContext.UseFileNames = true;
+
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
+
+			// ASSERT
+			const int ExpectedNumberOfImportedImages = NumberOfDocumentsToImport * NumberOfImagesPerDocument;
+			const int ExpectedNumberOfErrors = ExpectedNumberOfImportedImages;
+			this.ThenTheImportJobCompletedWithErrors(results, ExpectedNumberOfErrors, ExpectedNumberOfImportedImages);
+		}
+
 		[Test]
 		[Category(TestCategories.ImportImage)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("f5b4a1d7-9dfc-4931-ba55-0fb0d56564ad")]
 		[Pairwise]
-		public void ShouldImportTheImage(
+		public async Task ShouldImportTheImage(
 			[Values(true, false)] bool useFileNames,
 			[Values(true, false)] bool useDefaultFieldNames,
 			[Values(true, false)] bool useDataTableSource,
-			[Values(ImageFormat.Jpeg, ImageFormat.Tiff)] ImageFormat imageFormat)
+			[Values(ImageFormat.Jpeg, ImageFormat.Tiff)] ImageFormat imageFormat,
+			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
-			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, ImageImportSettingsProvider.GetImageFilePathSourceDocumentImportSettings(useDefaultFieldNames || !useDataTableSource));
-
 			// ARRANGE
+			await this.ResetContextAsync().ConfigureAwait(false);
+
+			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
+			ForceClient(client);
+
+			var imageSettingsBuilder = new ImageSettingsBuilder();
+			if (useDefaultFieldNames || !useDataTableSource)
+			{
+				imageSettingsBuilder.WithDefaultFieldNames();
+			}
+
+			imageSettingsBuilder.WithOverlayMode(OverwriteModeEnum.AppendOverlay);
+
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, imageSettingsBuilder);
+
 			const int ExpectedNumberOfImportedImages = 1;
 			RdoHelper.DeleteAllObjectsByType(AssemblySetup.TestParameters, WellKnownArtifactTypes.DocumentArtifactTypeId).Wait();
 
@@ -97,7 +190,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ImportTestJobResult testResult;
 			if (useFileNames)
 			{
-				string fileName = AddSpecialCharacters($"{RandomHelper.NextString(10, 10)}.{Path.GetExtension(fileLocation)}");
+				string fileName = ImageImportWithFileNameDto.AddSpecialCharacters($"{RandomHelper.NextString(10, 10)}.{Path.GetExtension(fileLocation)}");
 				var imageImportWithFileNameDto = new ImageImportWithFileNameDto(batesNumber, documentIdentifier, fileLocation, fileName);
 				imageImportDto = imageImportWithFileNameDto;
 				testResult = this.JobExecutionContext.Execute(new List<ImageImportWithFileNameDto>() { imageImportWithFileNameDto });
@@ -112,29 +205,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(testResult, ExpectedNumberOfImportedImages);
 			ThenRelativityObjectCountsIsCorrect(ExpectedNumberOfImportedImages);
 			ThenTheImportedDocumentIsCorrect(imageImportDto, useFileNames);
-		}
-
-		private static IEnumerable<ImageImportWithFileNameDto> GetRandomImageFiles(string directory, int numberOfDocumentsToImport, int numberOfImagesPerDocument, ImageFormat imageFormat)
-		{
-			int imageWidth = 200;
-			int imageHeight = 200;
-
-			for (int documentIndex = 1; documentIndex <= numberOfDocumentsToImport; documentIndex++)
-			{
-				string documentIdentifier = Guid.NewGuid().ToString();
-				for (int imageIndex = 1; imageIndex <= numberOfImagesPerDocument; imageIndex++)
-				{
-					string batesNumber = $"{documentIdentifier}_{imageIndex}";
-					string fileLocation = RandomHelper.NextImageFile(imageFormat, directory, imageWidth, imageHeight);
-					string fileName = AddSpecialCharacters($"{RandomHelper.NextString(10, 10)}.{Path.GetExtension(fileLocation)}");
-					yield return new ImageImportWithFileNameDto(batesNumber, documentIdentifier, fileLocation, fileName);
-				}
-			}
-		}
-
-		private static string AddSpecialCharacters(string text)
-		{
-			return $"ႝ\\ /:*?{text}";
 		}
 
 		private static void ThenRelativityObjectCountsIsCorrect(int expectedNumberOfImportedDocuments)

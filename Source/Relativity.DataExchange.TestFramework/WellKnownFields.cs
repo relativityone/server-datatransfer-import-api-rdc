@@ -120,5 +120,10 @@ namespace Relativity.DataExchange.TestFramework
 		/// The document identifier.
 		/// </summary>
 		public const string DocumentIdentifier = "Document Identifier";
+
+		/// <summary>
+		/// Maximum number of errors.
+		/// </summary>
+		public const int MaximumErrorCount = 1000;
 	}
 }

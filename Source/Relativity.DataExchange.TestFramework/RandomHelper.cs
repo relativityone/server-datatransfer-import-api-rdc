@@ -357,7 +357,32 @@ namespace Relativity.DataExchange.TestFramework
 		public static string NextImageFile(Relativity.DataExchange.Media.ImageFormat imageFormat, string directory, int width, int height)
 		{
 			var fileName = GetRandomFileName;
+			return NextImageFile(imageFormat, directory, width, height, fileName);
+		}
 
+		/// <summary>
+		/// Creates a new random image file.
+		/// </summary>
+		/// <param name="imageFormat">
+		/// The image format. Jpeg and Tiff are supported.
+		/// </param>
+		/// <param name="directory">
+		/// The directory to create the file.
+		/// </param>
+		/// <param name="width">
+		/// The image width.
+		/// </param>
+		/// <param name="height">
+		/// The image height.
+		/// </param>
+		/// <param name="fileName">
+		/// File name.
+		/// </param>
+		/// <returns>
+		/// The file.
+		/// </returns>
+		public static string NextImageFile(Relativity.DataExchange.Media.ImageFormat imageFormat, string directory, int width, int height, string fileName)
+		{
 			switch (imageFormat)
 			{
 				case Relativity.DataExchange.Media.ImageFormat.Jpeg:
