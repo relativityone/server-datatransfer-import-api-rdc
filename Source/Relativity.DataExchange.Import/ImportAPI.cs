@@ -11,13 +11,13 @@ using kCura.WinEDDS.Service;
 using kCura.Relativity.DataReaderClient;
 using kCura.WinEDDS.Exceptions;
 
-using Relativity.DataExchange.Service;
-
 namespace kCura.Relativity.ImportAPI
 {
 	using global::Relativity.DataExchange;
+	using global::Relativity.Logging;
 
 	using IAuthenticationTokenProvider = global::Relativity.Transfer.IAuthenticationTokenProvider;
+	using Constants = global::Relativity.DataExchange.Constants;
 	using Monitoring;
 
 	/// <summary>
@@ -52,6 +52,11 @@ namespace kCura.Relativity.ImportAPI
 		/// Authentication token provider
 		/// </summary>
 		private IAuthenticationTokenProvider _authenticationTokenProvider = new NullAuthTokenProvider();
+
+		/// <summary>
+		/// logger
+		/// </summary>
+		private ILog _logger = RelativityLogger.Instance;
 
 		/// <summary>
 		/// Holds cookies for the current session.
@@ -170,18 +175,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </exception>
 		public static ImportAPI CreateByRsaBearerToken(string webServiceUrl)
 		{
-			string token = System.Security.Claims.ClaimsPrincipal.Current.Claims.AccessToken();
-			if (string.IsNullOrEmpty(token))
-			{
-				throw new InvalidLoginException("The current claims principal does not have a bearer token.");
-			}
-
-
-			ImportAPI importApi = CreateByBearerToken(webServiceUrl, token);
-			
-			// Here we override token provider so Tapi can refresh credentials on token expiration event
-			importApi.webApiCredential.TokenProvider = new RsaBearerTokenAuthenticationProvider();
-			return importApi;
+			return CreateByTokenProvider(webServiceUrl, new RsaBearerTokenAuthenticationProvider());
 		}
 
 		/// <summary>
@@ -205,7 +199,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </exception>
 		public static ImportAPI CreateByBearerToken(string webServiceUrl, string bearerToken)
 		{
-			return new ImportAPI(kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName, bearerToken, webServiceUrl);
+			return new ImportAPI(Constants.OAuthWebApiBearerTokenUserName, bearerToken, webServiceUrl);
 		}
 
 		/// <summary>
@@ -309,16 +303,9 @@ namespace kCura.Relativity.ImportAPI
 		public IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID)
 		{
 			var fm = new WinEDDS.Service.FieldManager(_credentials, _cookieMonster);
-			//This returned collection contains fields excluding those with one of the following FieldCategories:
-			// FieldCategory.AutoCreate
-			// FieldCategory.Batch
-			// FieldCategory.FileInfo
-			// FieldCategory.FileSize
-			// FieldCategory.MarkupSetMarker
-			// FieldCategory.MultiReflected
-			// FieldCategory.ProductionMarker
-			// FieldCategory.Reflected
-			// See kCura.WinEDDS.Service.FieldQuery.RetrieveAllAsArray -Phil S. 10/19/2011
+
+			this._logger.LogUserContextInformation($"Call {nameof(ImportAPI)}.{nameof(GetWorkspaceFields)}", this._credentials);
+
 			var fields = fm.Query.RetrieveAllAsDocumentFieldCollection(workspaceArtifactID, artifactTypeID);
 
 			return (from DocumentField docField in fields
@@ -444,7 +431,42 @@ namespace kCura.Relativity.ImportAPI
 					}).ToList();
 		}
 
+		#region "Protected items"
+
+		protected static ImportAPI CreateByTokenProvider(string webServiceUrl, IRelativityTokenProvider relativityTokenProvider)
+		{
+			var token = GetToken(relativityTokenProvider);
+
+			ImportAPI importApi = CreateByBearerToken(webServiceUrl, token);
+
+			// Here we override token provider so Tapi can refresh credentials on token expiration event
+			importApi.webApiCredential.TokenProvider = new AuthTokenProviderAdapter(relativityTokenProvider);
+			return importApi;
+		}
+
+		#endregion "Protected items"
+
 		#region "Private items"
+
+		private static string GetToken(IRelativityTokenProvider relativityTokenProvider)
+		{
+			string token;
+			try
+			{
+				token = relativityTokenProvider.GetToken();
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidLoginException("Error when retrieving authentication token.", ex);
+			}
+
+			if (string.IsNullOrEmpty(token))
+			{
+				throw new InvalidLoginException("The generated token should not be null or empty!");
+			}
+
+			return token;
+		}
 
 		private void PerformLogin(string userName, string password, string webServiceURL)
 		{
@@ -473,6 +495,9 @@ namespace kCura.Relativity.ImportAPI
 			}
 
 			_credentials = credentials.Credentials;
+
+			this._logger.LogUserContextInformation($"Initialized {nameof(ImportAPI)}", this._credentials);
+
 			this.webApiCredential = new WebApiCredential()
 			{
 				Credential = credentials.Credentials,
@@ -491,7 +516,7 @@ namespace kCura.Relativity.ImportAPI
 		{
 			return (string.IsNullOrEmpty(username)
 				        ? TelemetryConstants.AuthenticationMethod.Windows
-				        : (username == kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName
+				        : (username == Constants.OAuthWebApiBearerTokenUserName
 					           ? TelemetryConstants.AuthenticationMethod.BearerToken
 					           : TelemetryConstants.AuthenticationMethod.UsernamePassword));
 		}
@@ -510,6 +535,7 @@ namespace kCura.Relativity.ImportAPI
 				             };
 			metricService.Log(metric);
 		}
+
 
 		/// <summary>
 		/// Create a repository path based on the given workspace ArtifactID and
@@ -539,7 +565,7 @@ namespace kCura.Relativity.ImportAPI
 			{
 				_caseManager = new CaseManager(_credentials, _cookieMonster);
 			}
-
+			this._logger.LogUserContextInformation($"Get {nameof(CaseManager)}", this._credentials);
 			return _caseManager;
 		}
 
@@ -549,7 +575,7 @@ namespace kCura.Relativity.ImportAPI
 			{
 				_objectTypeManager = new ObjectTypeManager(_credentials, _cookieMonster);
 			}
-
+			this._logger.LogUserContextInformation($"Get {nameof(ObjectTypeManager)}", this._credentials);
 			return _objectTypeManager;
 		}
 
@@ -559,7 +585,7 @@ namespace kCura.Relativity.ImportAPI
 			{
 				_productionManager = new ProductionManager(_credentials, _cookieMonster);
 			}
-
+			this._logger.LogUserContextInformation($"Get {nameof(ProductionManager)}", this._credentials);
 			return _productionManager;
 		}
 

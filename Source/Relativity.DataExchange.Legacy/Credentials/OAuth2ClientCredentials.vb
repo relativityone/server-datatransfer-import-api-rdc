@@ -1,6 +1,7 @@
 ﻿Imports System.Net
 Imports System.Threading
 Imports System.Threading.Tasks
+Imports Relativity.DataExchange
 Imports Relativity.OAuth2Client.TokenProviders.ProviderFactories
 
 Namespace kCura.WinEDDS.Credentials
@@ -35,7 +36,7 @@ Namespace kCura.WinEDDS.Credentials
 		Public Async Function GetCredentialsAsync(Optional cancellationToken As CancellationToken = Nothing) As Task(Of System.Net.NetworkCredential) Implements ICredentialsProvider.GetCredentialsAsync
 			
 			dim token As String = Await _tokenProvider.GetAccessTokenAsync(cancellationToken).ConfigureAwait(False)
-			Dim creds As System.Net.NetworkCredential = New NetworkCredential(kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName, token)
+			Dim creds As System.Net.NetworkCredential = New NetworkCredential(Constants.OAuthWebApiBearerTokenUserName, token)
 			Return creds
 
 		End Function

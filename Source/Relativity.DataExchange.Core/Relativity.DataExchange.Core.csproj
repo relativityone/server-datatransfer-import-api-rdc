@@ -99,6 +99,8 @@
   <ItemGroup>
     <Compile Include="ByteSize.cs" />
     <Compile Include="CacheKeys.cs" />
+    <Compile Include="AuthTokenProviderAdapter.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Data\BooleanImporterException.cs" />
     <Compile Include="Data\CellImporterException.cs" />
     <Compile Include="Data\ConditionalArrayList.cs" />
@@ -115,6 +117,7 @@
     <Compile Include="Data\TrimOption.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="ExceptionHelper.cs" />
+    <Compile Include="Helpers\JwtTokenHelper.cs" />
     <Compile Include="Io\ErrorBeforeMassImportArgs.cs" />
     <Compile Include="Io\ErrorDuringMassImportArgs.cs" />
     <Compile Include="Io\ErrorMessageWriter.cs" />
@@ -133,6 +136,8 @@
     <Compile Include="Io\OutsideInFileTypeIdentifierService.cs" />
     <Compile Include="Io\TempFileBuilder.cs" />
     <Compile Include="Io\TempFileConstants.cs" />
+    <Compile Include="IRelativityTokenProvider.cs" />
+    <Compile Include="JwtAuthToken.cs" />
     <Compile Include="LogExtensions.cs" />
     <Compile Include="Media\ByteOrdering.cs" />
     <Compile Include="Media\FreeImageService.cs" />
@@ -196,6 +201,7 @@
     <Compile Include="Transfer\LongTextStreamRequest.cs" />
     <Compile Include="Transfer\LongTextStreamResult.cs" />
     <Compile Include="Transfer\LongTextStreamService.cs" />
+    <Compile Include="RsaBearerTokenAuthenticationProvider.cs" />
     <Compile Include="UrlHelper.cs" />
     <Compile Include="SerializationHelper.cs" />
     <Compile Include="Service\ArtifactType.cs" />
@@ -577,4 +583,5 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
 </Project>
