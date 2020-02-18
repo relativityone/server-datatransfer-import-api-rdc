@@ -44,6 +44,7 @@ properties {
     $Configuration = $Null
     $BuildPlatform = $Null
     $BuildUrl = $Null
+    $EinsteinSecret = $Null
     $Version = $Null
     $Branch = $Null
     $BuildNumber = $Null
@@ -326,22 +327,7 @@ task CheckFolderAccess -Description "Checks if we can write to the destination p
 task BuildRdcPackage -Description "Builds the RDC NuGet package" {
     Initialize-Folder $LogsDir -Safe
     Initialize-Folder $PackagesArtifactsDir -Safe
-
-    $majorMinorPatchVersion = Get-RdcWixVersion 
-    $postFix = Get-ReleaseVersion "$Branch" -postFixOnly
-    
-    
-    [BranchType]$typeOfBranch = Get-CurrentBranchType "$branch"
-    # Means its not a release branch
-    if(-Not ($typeOfBranch -eq [BranchType]::HotfixRelease -or $typeOfBranch -eq [BranchType]::Release))
-    {
-        Write-Host "PostFix: $postFix"
-        $commitsSince = Get-ReleaseVersion "$Branch" -returnCommitsSinceOnly
-        Write-Host "commitsSince: $commitsSince"
-        $postFix = ".$commitsSince$postFix"
-        Write-Host "PostFix: $postFix"
-    }
-    $packageVersion = "$majorMinorPatchVersion$postFix"
+    $packageVersion = Get-RdcVersion
     Write-Host "Package version: $packageVersion"
     Write-Host "Working directory: $PSScriptRoot"
     $packageLogFile = Join-Path $LogsDir "rdc-package-build.log"
@@ -651,6 +637,16 @@ $pathToFile = ".\Source\Relativity.DataExchange.TestFramework\Resources\test-par
 	Write-Host (Get-Content -path $pathToFile -Raw)
 }
 
+task PostReleasePageOnEinstein -Description "Post the releae page on Einstein"{
+    $localSdkVersion = Get-ReleaseVersion "$Branch"
+	$localRdcVersion = Get-RdcVersion
+	$localPathToRdcExe = "$InstallersArtifactsDir\Relativity.Desktop.Client.Setup.exe"
+    exec { 
+        & $ScriptsDir\Invoke-EinsteinUpdate.ps1 -Secret $EinsteinSecret -SdkVersion $localSdkVersion -RdcVersion "$localRdcVersion" -branch "$Branch" -BuildPackagesDir "$BuildPackagesDir" -BuildPackagesDirGold "$BuildPackagesDirGold" -PathToLocalRdcExe "$localPathToRdcExe" -publishToRelease $PublishToRelease
+    } -errorMessage "Failed to publish the release page on einstein."
+
+}
+
 task UpdateAssemblyInfo -Depends UpdateSdkAssemblyInfo,UpdateRdcAssemblyInfo -Description "Update the version contained within the SDK and RDC assembly shared info source files" {
 }
 
@@ -668,6 +664,25 @@ task UpdateRdcAssemblyInfo -Description "Update the version contained within the
         $ScriptPath = Join-Path $VersionPath "Update-RdcAssemblySharedInfo.ps1"
         & $ScriptPath -Version "$majorMinorPatchVersion.0" -InformationalVersion $InformationalVersion -VersionFolderPath $VersionPath
    } -errorMessage "There was an error updating the RDC assembly info."
+}
+
+Function Get-RdcVersion {
+	$majorMinorPatchVersion = Get-RdcWixVersion 
+    $postFix = Get-ReleaseVersion "$Branch" -postFixOnly
+    
+    
+    [BranchType]$typeOfBranch = Get-CurrentBranchType "$branch"
+    # Means its not a release branch
+    if(-Not ($typeOfBranch -eq [BranchType]::HotfixRelease -or $typeOfBranch -eq [BranchType]::Release))
+    {
+        Write-Host "PostFix: $postFix"
+        $commitsSince = Get-ReleaseVersion "$Branch" -returnCommitsSinceOnly
+        Write-Host "commitsSince: $commitsSince"
+        $postFix = ".$commitsSince$postFix"
+        Write-Host "PostFix: $postFix"
+    }
+    $packageVersion = "$majorMinorPatchVersion$postFix"
+	return $packageVersion
 }
 
 Function Copy-Folder {
@@ -918,6 +933,7 @@ Function Get-ReleaseVersion {
         [switch]$omitPostFix = $false,
         [switch]$returnCommitsSinceOnly = $false
     )
+	Write-Host $branchNameJenkins
     $host.UI.RawUI.WindowTitle = "Getting release version"
 
     function gitBranchName {

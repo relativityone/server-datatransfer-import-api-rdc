@@ -93,14 +93,14 @@ timestamps
                 try
                 {					
                     stage('Retrieve version')
-                    { 
+                    {
                         echo "Is release branch = $isReleaseBranch"
                         echo "Run integration tests = ${shouldRunIntegrationTests}"
                         echo "Is gold build = $isGoldBuild"
                         echo "Publishing to release? $publishToRelease"
                         echo "Retrieving the semantic versions"
                         echo "Using new build strategy"
-                        def outputString = runCommandWithOutput(".\\build.ps1 BuildVersion  -Branch '${branchName}'")
+                        def outputString = runCommandWithOutput(".\\build.ps1 BuildVersion -Branch '${branchName}'")
                         def outputStringParsed = extractValue("buildVersion", outputString)
                         currentBuild.displayName = "$outputStringParsed"
                         buildVersion = outputStringParsed
@@ -377,6 +377,15 @@ timestamps
                         )
                         currentBuild.result = 'SUCCESS'
                     }
+					stage('Create einstein page')
+					{	
+						def secrets = [ 
+						[ secretType: 'Secret', name: 'Einstein-token', envVariable: 'EinsteinToken' ]
+						]
+						withAzureKeyvault(azureKeyVaultSecrets: secrets, keyVaultURLOverride: 'https://KV-DATATRANSFER-GBU.vault.azure.net') { 
+							powershell ".\\build.ps1 PostReleasePageOnEinstein -EinsteinSecret '${EinsteinToken}' -Branch '${branchName}' -PublishToRelease \$${publishToRelease} "
+						}
+					}
                 }
                 finally
                 {

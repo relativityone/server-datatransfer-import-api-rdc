@@ -139,6 +139,8 @@ param(
     [Parameter()]
     [String]$TestVMName,
     [Parameter()]
+    [String]$EinsteinSecret,
+    [Parameter()]
     [String]$PackageTemplateRegex = "paket.template.*$",
     [Parameter()]
     [nullable[bool]]$PublishToRelease,
@@ -214,6 +216,7 @@ $Params = @{
         BuildNumber = $BuildNumber
         BuildPlatform = $BuildPlatform
         BuildUrl = $BuildUrl
+		EinsteinSecret = $EinsteinSecret
         Verbosity = $Verbosity
         TestTimeoutInMS = $TestTimeoutInMS
         TestParametersFile = $TestParametersFile
