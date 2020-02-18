@@ -1208,7 +1208,6 @@ Namespace kCura.WinEDDS
 						AddHandler sr.Context.IoWarningEvent, AddressOf Me.IoWarningHandler
 						Dim line As String() = sr.ReadLine
 						While Not line Is Nothing
-							_errorCount += 1
 							Dim originalIndex As Int64 = Int64.Parse(line(0))
 							Dim ht As New System.Collections.Hashtable
 							ht.Add("Line Number", Ctype(originalIndex,Int32))

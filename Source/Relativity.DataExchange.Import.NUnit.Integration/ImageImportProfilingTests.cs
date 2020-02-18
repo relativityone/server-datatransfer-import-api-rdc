@@ -93,7 +93,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			int expectedNumberOfImportedImages = numberOfDocumentsToImport * numberOfImagesPerDocument;
-			int expectedNumberOfErrors = Math.Min(expectedNumberOfImportedImages, WellKnownFields.MaximumErrorCount / 2);  // TODO: there is a bug with error count, see Jira REL-395765
+			int expectedNumberOfErrors = Math.Min(expectedNumberOfImportedImages, WellKnownFields.MaximumErrorCount + 1);  // extra one error includes information that error limit was reached
 			this.ThenTheImportJobCompletedWithErrors(results, expectedNumberOfErrors, expectedNumberOfImportedImages);
 		}
 	}
