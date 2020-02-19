@@ -1,0 +1,111 @@
+<p>&nbsp;</p>
+<p class="auto-cursor-target">
+    <br />
+</p>
+<table class="relative-table wrapped confluenceTable" style="width: 56.994%;">
+    <colgroup>
+        <col style="width: 10.79%;" />
+        <col style="width: 89.21%;" />
+    </colgroup>
+    <tbody>
+        <tr>
+            <td class="confluenceTd">
+                <p>SDK Version</p>
+            </td>
+            <td class="confluenceTd">
+                <p><sdk_version_in_build></p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="1" class="confluenceTd">RDC Version</td>
+            <td colspan="1" class="confluenceTd"><rdc_version_in_build></td>
+        </tr>
+        <tr>
+            <td class="confluenceTd">
+                <p>Release Date</p>
+            </td>
+            <td class="confluenceTd">
+                <p><creation_date_of_build></p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="1" class="confluenceTd">
+                <p>Artifactory Links</p>
+            </td>
+            <td colspan="1" class="confluenceTd">
+                <p><a href="<link_to_sdk_nuget>" style="letter-spacing: 0.0px;"><link_to_sdk_nuget></a></p>
+                <p><a href="<link_to_rdc_nuget>"><link_to_rdc_nuget></a></p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="1" class="confluenceTd">RDC Installer</td>
+            <td colspan="1" class="confluenceTd">
+                <p><link_to_setup_exe_in_bld_pkg></p>
+                <p>SHA256: <SHA256_of_build></p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="1" class="confluenceTd">Dependencies</td>
+            <td colspan="1" class="confluenceTd">
+                <p><p><section_with_dependencies></p></p>
+                <p>
+                    <br />
+                </p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<h1>Added Features</h1>
+
+
+<b>Needs manual work</b>
+
+<h1>Compatibility</h1>
+<hr />
+<table class="wrapped confluenceTable">
+    <colgroup>
+        <col />
+        <col style="width: 82.0px;" />
+        <col style="width: 78.0px;" />
+        <col style="width: 94.0px;" />
+        <col style="width: 80.0px;" />
+        <col style="width: 96.0px;" />
+        <col />
+    </colgroup>
+    <thead>
+        <tr>
+            <th colspan="1" class="confluenceTh">9.6.284.6</th>
+            <th class="confluenceTh">
+                <p>Bluestem</p>
+            </th>
+            <th colspan="1" class="confluenceTh">
+                <p>Larkspur</p>
+            </th>
+            <th colspan="1" class="confluenceTh">
+                <p>Blazingstar</p>
+            </th>
+            <th colspan="1" class="confluenceTh">
+                <p>Foxglove</p>
+            </th>
+            <th colspan="1" class="confluenceTh">
+                <p>Goatsbeard</p>
+            </th>
+            <th colspan="1" class="confluenceTh">Indigo</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="text-align: center;" colspan="1" class="confluenceTd"><img class="emoticon emoticon-cross" title="(error)" border="0" src="https://einstein.kcura.com/s/en_US/7901/82d1878e5453caf898e8095ad2298b41f59676da/_/images/icons/emoticons/error.svg" alt="(error)" /></td>
+            <td style="text-align: center;" class="confluenceTd"><img class="emoticon emoticon-tick" title="(tick)" border="0" src="https://einstein.kcura.com/s/en_US/7901/82d1878e5453caf898e8095ad2298b41f59676da/_/images/icons/emoticons/check.svg" alt="(tick)" /></td>
+            <td style="text-align: center;" colspan="1" class="confluenceTd"><img class="emoticon emoticon-tick" title="(tick)" border="0" src="https://einstein.kcura.com/s/en_US/7901/82d1878e5453caf898e8095ad2298b41f59676da/_/images/icons/emoticons/check.svg" alt="(tick)" /></td>
+            <td style="text-align: center;" colspan="1" class="confluenceTd"><img class="emoticon emoticon-tick" title="(tick)" border="0" src="https://einstein.kcura.com/s/en_US/7901/82d1878e5453caf898e8095ad2298b41f59676da/_/images/icons/emoticons/check.svg" alt="(tick)" /></td>
+            <td style="text-align: center;" colspan="1" class="confluenceTd"><img class="emoticon emoticon-tick" title="(tick)" border="0" src="https://einstein.kcura.com/s/en_US/7901/82d1878e5453caf898e8095ad2298b41f59676da/_/images/icons/emoticons/check.svg" alt="(tick)" /></td>
+            <td style="text-align: center;" colspan="1" class="confluenceTd"><img class="emoticon emoticon-tick" title="(tick)" border="0" src="https://einstein.kcura.com/s/en_US/7901/82d1878e5453caf898e8095ad2298b41f59676da/_/images/icons/emoticons/check.svg" alt="(tick)" /></td>
+            <td style="text-align: center;" colspan="1" class="confluenceTd"><img class="emoticon emoticon-tick" title="(tick)" border="0" src="https://einstein.kcura.com/s/en_US/7901/82d1878e5453caf898e8095ad2298b41f59676da/_/images/icons/emoticons/check.svg" alt="(tick)" /></td>
+        </tr>
+    </tbody>
+</table>
+<p class="auto-cursor-target">
+    <br />
+</p>
+<p>&nbsp;</p>
