@@ -145,6 +145,7 @@
     <Compile Include="Windows\ImageImportWindow.cs" />
     <Compile Include="Windows\Names\ImportWindowName.cs" />
     <Compile Include="Windows\OpenSettingsDialog.cs" />
+    <Compile Include="Workflow\ExportMenuItems.cs" />
     <Compile Include="Workflow\ExportProfile.cs" />
     <Compile Include="ExportTests.cs" />
     <Compile Include="RdcTestBase.cs" />
@@ -180,6 +181,7 @@
     <Compile Include="Appium\WindowsManager.cs" />
     <Compile Include="Windows\SelectWorkspaceWindow.cs" />
     <Compile Include="Workflow\ImageImportProfile.cs" />
+    <Compile Include="Workflow\ImportMenuItems.cs" />
     <Compile Include="Workflow\ImportProfile.cs" />
     <Compile Include="Workflow\ImageImportWindowSetupParameters.cs" />
     <Compile Include="Workflow\RdoImportProfile.cs" />
