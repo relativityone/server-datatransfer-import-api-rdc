@@ -1044,7 +1044,7 @@ namespace Relativity.DataExchange.Transfer
 		private void CreateHttpClient()
 		{
 			this.CreateTransferClient(
-				new HttpClientConfiguration { CookieContainer = this.parameters.WebCookieContainer });
+				new Relativity.Transfer.Http.HttpClientConfiguration { CookieContainer = this.parameters.WebCookieContainer });
 		}
 
 		/// <summary>

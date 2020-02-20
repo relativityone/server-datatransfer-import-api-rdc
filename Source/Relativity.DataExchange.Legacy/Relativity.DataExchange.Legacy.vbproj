@@ -186,9 +186,7 @@
     <Compile Include="Monitoring\MetricAuthenticationType.vb" />
     <Compile Include="Monitoring\MetricJobBase.vb" />
     <Compile Include="Monitoring\MetricJobBatch.vb" />
-    <Compile Include="RsaBearerTokenAuthenticationProvider.vb" />
     <Compile Include="Config.vb" />
-    <Compile Include="Credentials\Constants.vb" />
     <Compile Include="Credentials\CredentialsNotSetException.vb" />
     <Compile Include="Credentials\ICredentialsProvider.vb" />
     <Compile Include="Credentials\IntegratedAuthenticationOAuthCredentialsProvider.vb" />

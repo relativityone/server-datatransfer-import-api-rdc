@@ -52,7 +52,7 @@ Namespace kCura.WinEDDS.Credentials
 				_logInLock.Release()
 			End Try
 
-			Dim creds As System.Net.NetworkCredential = New NetworkCredential(kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName, token)
+			Dim creds As System.Net.NetworkCredential = New NetworkCredential(Constants.OAuthWebApiBearerTokenUserName, token)
 			Return creds
 		End Function
 

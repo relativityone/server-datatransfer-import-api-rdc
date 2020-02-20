@@ -28,11 +28,11 @@ Friend Class ImportCredentialManager
 	''' <summary>
 	''' Authenticates in Relativity and returns credentials.
 	''' When <paramref name="UserName"/> is empty then Integrated Windows Authentication is used.
-	''' When <paramref name="UserName"/> is equal to <see cref="kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName"/>
+	''' When <paramref name="UserName"/> is equal to <see cref="Constants.OAuthWebApiBearerTokenUserName"/>
 	''' then bearer token authentication is used.
 	''' Otherwise it uses standard username and password authentication
 	'''  </summary>
-	''' <param name="UserName">username or <see cref="kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName"/></param>
+	''' <param name="UserName">username or <see cref="Constants.OAuthWebApiBearerTokenUserName"/></param>
 	''' <param name="Password">password or bearer token</param>
 	''' <param name="runningContext">Contains information about the context in which jobs are executed.</param>
 	''' <returns>Credentials <see cref="SessionCredentials"/></returns>
