@@ -8,8 +8,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 {
 	using System.ComponentModel;
 
-	using Relativity.DataExchange.TestFramework;
-
 	public class ImageImportDto
 	{
 		public ImageImportDto(string batesNumber, string documentIdentifier, string fileLocation)

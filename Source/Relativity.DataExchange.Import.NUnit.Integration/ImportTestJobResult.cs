@@ -62,7 +62,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.NumberOfJobMessages++;
 			while (this.jobMessages.Count > JobMessagesLimit)
 			{
-				_ = this.jobMessages.TryDequeue(out string _);
+				this.jobMessages.TryDequeue(out string _);
 			}
 
 			// When messages are added concurrently, we can end up with slightly more messages than we should, but it is acceptable in case of tests

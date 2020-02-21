@@ -32,12 +32,15 @@ namespace kCura.Relativity.ImportAPI {
 		}
 
 		public void CleanUpAfterJobWithSpoofing(string onBehalfOfUserToken) {
-			if (!String.IsNullOrWhiteSpace(onBehalfOfUserToken)) {
-				var am = new AuditManager(_credentials, _cookieMonster);
-
-				try {
-					am.DeleteAuditToken(onBehalfOfUserToken);
-				} catch {
+			if (!String.IsNullOrWhiteSpace(onBehalfOfUserToken))
+			{
+				using (var am = new AuditManager(_credentials, _cookieMonster))
+				{
+					try
+					{
+						am.DeleteAuditToken(onBehalfOfUserToken);
+					}
+					catch { }
 				}
 			}
 		}
@@ -52,7 +55,7 @@ namespace kCura.Relativity.ImportAPI {
 
 		public ImportBulkArtifactJob NewArtifactImportJob(string token, int artifactTypeID)
 		{
-			var returnJob =   NewObjectImportJob(artifactTypeID);
+			var returnJob = NewObjectImportJob(artifactTypeID);
 
 			returnJob.Settings.OnBehalfOfUserToken = token;
 

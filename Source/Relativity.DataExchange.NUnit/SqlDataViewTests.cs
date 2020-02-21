@@ -33,8 +33,7 @@ namespace Relativity.DataExchange.NUnit
 			Assert.Throws<ArgumentNullException>(
 				() =>
 					{
-						DataSet dataset = null;
-						SqlDataView view = new SqlDataView(dataset);
+						SqlDataView view = new SqlDataView((DataSet)null);
 						Assert.That(view, Is.Null);
 					});
 			Assert.Throws<ArgumentException>(
@@ -50,8 +49,7 @@ namespace Relativity.DataExchange.NUnit
 			Assert.Throws<ArgumentNullException>(
 				() =>
 					{
-						DataTable table = null;
-						SqlDataView view = new SqlDataView(table);
+						SqlDataView view = new SqlDataView((DataTable)null);
 						Assert.That(view, Is.Null);
 					});
 		}

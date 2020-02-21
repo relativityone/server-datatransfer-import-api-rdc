@@ -23,7 +23,6 @@ namespace Relativity.DataExchange.Transfer
 	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 	using Relativity.Transfer;
-	using Relativity.Transfer.Http;
 
 	/// <summary>
 	/// Represents a class object to provide a bridge from the Transfer API to existing Import/Export code.

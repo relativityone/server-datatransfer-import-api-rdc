@@ -6,7 +6,6 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 {
-	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.IO;
@@ -31,8 +30,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 
 		public static IEnumerable<ImageImportWithFileNameDto> GetRandomImageFiles(string directory, int numberOfDocumentsToImport, int numberOfImagesPerDocument, ImageFormat imageFormat)
 		{
-			int imageWidth = 200;
-			int imageHeight = 200;
+			const int imageWidth = 200;
+			const int imageHeight = 200;
 
 			for (int documentIndex = 1; documentIndex <= numberOfDocumentsToImport; documentIndex++)
 			{

@@ -15,7 +15,6 @@ namespace Relativity.DataExchange.TestFramework
 	using System.Linq;
 	using System.Net;
 	using System.Reflection;
-	using System.Runtime.CompilerServices;
 
 	using kCura.Relativity.ImportAPI;
 

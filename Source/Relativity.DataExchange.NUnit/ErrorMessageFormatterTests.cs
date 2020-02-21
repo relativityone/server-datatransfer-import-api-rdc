@@ -11,7 +11,6 @@ namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.Collections;
-	using System.Text;
 
 	using global::NUnit.Framework;
 

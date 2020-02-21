@@ -5,9 +5,6 @@
 namespace Relativity.DataExchange.NUnit.Helpers
 {
 	using global::NUnit.Framework;
-
-	using Moq;
-
 	using Relativity.DataExchange.Helpers;
 
 	public class JwtTokenHelperTests

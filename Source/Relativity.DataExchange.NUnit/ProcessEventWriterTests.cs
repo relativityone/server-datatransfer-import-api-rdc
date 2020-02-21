@@ -54,9 +54,7 @@ namespace Relativity.DataExchange.NUnit
 			Assert.Throws<ArgumentNullException>(
 				() =>
 					{
-						IFileSystem fileSystemCopy = this.fileSystem;
-						fileSystemCopy = null;
-						using (new ProcessEventWriter(fileSystemCopy))
+						using (new ProcessEventWriter(null))
 						{
 						}
 					});
