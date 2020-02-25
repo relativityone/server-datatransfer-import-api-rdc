@@ -410,6 +410,10 @@ task CodeCoverageReport -Description "Create a code coverage report" {
             ("/ReportType=""DetailedXML"""),
             ("/Filters=""+:Relativity*;-:*NUnit*;-:*TestFramework*;-:*Controls*;"""))
 
+		if ( -not $? ) {
+			Throw "At least one test did not pass. The script cannot continue."
+		}
+		
         Write-Output "Generating a code coverage report..."
         & $ReportGeneratorExe @(
             ("-reports:""$DotCoverReportXmlFile"""),
