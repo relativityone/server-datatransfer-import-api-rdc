@@ -15,7 +15,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class FromFileToLoadFileWriterTests
@@ -40,7 +40,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				QuoteDelimiter = _QUOTE_DELIMITER,
 				NewlineDelimiter = _NEWLINE_DELIMITER
 			};
-			this._instance = new FromFileToLoadFileWriter(new NullLogger(), new DelimitedFileLongTextStreamFormatterFactory(exportSettings));
+			this._instance = new FromFileToLoadFileWriter(new TestNullLogger(), new DelimitedFileLongTextStreamFormatterFactory(exportSettings));
 		}
 
 		[TearDown]

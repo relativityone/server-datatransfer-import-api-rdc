@@ -17,7 +17,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	public class FieldFileExportRequestBuilderTests : ExportRequestBuilderTests
 	{
@@ -47,7 +47,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				fileNameProvider,
 				exportFileValidator,
 				fileProcessingStatistics,
-				new NullLogger(),
+				new TestNullLogger(),
 				new FieldFileExportRequestFactory(exportSettings));
 		}
 

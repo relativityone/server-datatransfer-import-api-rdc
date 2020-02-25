@@ -20,6 +20,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
 	[TestFixture]
@@ -30,6 +31,8 @@ namespace Relativity.DataExchange.Export.NUnit
 		private Mock<IAppSettings> _appSettings;
 		private Mock<ILog> _logger;
 
+		private TestNullLogger _testLogger;
+
 		protected Mock<IErrorFileWriter> ErrorFileWriter { get; set; }
 
 		protected Mock<IFile> FileHelper { get; set; }
@@ -39,9 +42,11 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			this.ErrorFileWriter = new Mock<IErrorFileWriter>();
 			this.FileHelper = new Mock<IFile>();
+			_testLogger = new TestNullLogger();
+
 			this._status = new Mock<IStatus>();
 			this._appSettings = new Mock<IAppSettings>();
-			this._logger = new Mock<ILog>();
+			this._logger = _testLogger.NullLoggerMock;
 			this._instance = this.CreateSut();
 		}
 
@@ -51,7 +56,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				this.ErrorFileWriter.Object,
 				this.FileHelper.Object,
 				this._appSettings.Object,
-				this._logger.Object);
+				_testLogger);
 		}
 
 		[Test]

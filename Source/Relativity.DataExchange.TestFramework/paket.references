@@ -1,6 +1,7 @@
 castle.core
 castle.windsor
 kCura.relativity.client
+Moq
 nbuilder
 NUnit
 newtonsoft.json

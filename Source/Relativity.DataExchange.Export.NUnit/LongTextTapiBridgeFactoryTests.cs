@@ -17,29 +17,30 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.Logging;
 
 	[TestFixture]
 	public class LongTextTapiBridgeFactoryTests
 	{
 		private Mock<IAppSettings> _appSettings;
 		private TapiBridgeParametersFactory _tapiBridgeParametersFactory;
-		private Mock<ILog> _logger;
+		private TestNullLogger _logger;
 		private LongTextTapiBridgeFactory _instance;
 
 		[SetUp]
 		public void SetUp()
 		{
 			this._appSettings = new Mock<IAppSettings>();
-			this._logger = new Mock<ILog>();
+			var testLogger = new TestNullLogger();
+			this._logger = testLogger;
 			this._tapiBridgeParametersFactory = new TapiBridgeParametersFactory(
 				new ExportFile(12) { Credential = new NetworkCredential(), CaseInfo = new CaseInfo { ArtifactID = 1 } },
 				new ExportConfig(),
 				this._appSettings.Object);
 			this._instance = new LongTextTapiBridgeFactory(
 				this._tapiBridgeParametersFactory,
-				this._logger.Object,
+				this._logger,
 				this._appSettings.Object,
 				CancellationToken.None);
 		}

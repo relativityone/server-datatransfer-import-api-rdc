@@ -17,7 +17,6 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Settings;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.Logging;
 
 	[TestFixture]
 	public class FieldServiceFactoryTests
@@ -34,7 +33,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._columnsOrdinalLookup = new Mock<IColumnsOrdinalLookupFactory>();
 			this._columnsFactory = new Mock<IColumnsFactory>();
 
-			this._instance = new FieldServiceFactory(this._formatter.Object, this._columnsOrdinalLookup.Object, this._columnsFactory.Object, new NullLogger());
+			this._instance = new FieldServiceFactory(this._formatter.Object, this._columnsOrdinalLookup.Object, this._columnsFactory.Object, new TestNullLogger());
 		}
 
 		[Test]

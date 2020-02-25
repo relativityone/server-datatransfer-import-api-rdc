@@ -9,13 +9,13 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	public class FileDownloadProgressHandlerTests : ProgressHandlerTests
 	{
 		protected override ProgressHandler CreateInstance(IDownloadProgressManager downloadProgressManager)
 		{
-			return new FileDownloadProgressHandler(downloadProgressManager, new NullLogger());
+			return new FileDownloadProgressHandler(downloadProgressManager, new TestNullLogger());
 		}
 
 		protected override void VerifyFileMarkedAsCompleted(Mock<IDownloadProgressManager> downloadProgressManager, string targetFile, int lineNumber, bool transferResult)

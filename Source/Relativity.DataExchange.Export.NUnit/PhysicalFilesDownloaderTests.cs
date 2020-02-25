@@ -22,6 +22,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 	using Relativity.Transfer;
 
@@ -44,7 +45,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void SetUp()
 		{
 			this._fileShareSettingsCache = new Dictionary<string, IRelativityFileShareSettings>();
-			this._logger = new NullLogger();
+			this._logger = new TestNullLogger();
 			this._safeIncrement = new SafeIncrement();
 			this._availableFileShares = new[] { @"\\fileShare.one", @"\\fileShare.two", @"\\fileShare.three" };
 			this._fileshareSettingsService = new Mock<IFileShareSettingsService>();

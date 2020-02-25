@@ -13,6 +13,7 @@ namespace Relativity.DataExchange.Import.NUnit
 	using kCura.WinEDDS;
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Process;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 
@@ -54,7 +55,7 @@ namespace Relativity.DataExchange.Import.NUnit
 			this.ImportBatchSize = 500;
 			this.ImportBatchVolume = 1000000;
 			this.OutputFileWriter = new OutputFileWriter(
-				new NullLogger(),
+				new TestNullLogger(),
 				Relativity.DataExchange.Io.FileSystem.Instance);
 			this.OutputFileWriter.Open(true);
 		}

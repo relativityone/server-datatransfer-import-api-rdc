@@ -16,7 +16,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class LoadFileLineTests
@@ -34,12 +34,12 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fieldsValue = new Mock<ILineFieldsValue>();
 			this._nativeFilePath = new Mock<ILineNativeFilePath>();
 
-			NullLogger nullLogger = new NullLogger();
-			LinePrefix linePrefix = new LinePrefix(this._loadFileCellFormatter.Object, nullLogger);
-			LineImageField lineImageField = new LineImageField(this._loadFileCellFormatter.Object, nullLogger);
-			LineSuffix lineSuffix = new LineSuffix(this._loadFileCellFormatter.Object, nullLogger);
+			var testNullLogger = new TestNullLogger();
+			LinePrefix linePrefix = new LinePrefix(this._loadFileCellFormatter.Object, testNullLogger);
+			LineImageField lineImageField = new LineImageField(this._loadFileCellFormatter.Object, testNullLogger);
+			LineSuffix lineSuffix = new LineSuffix(this._loadFileCellFormatter.Object, testNullLogger);
 
-			this._instance = new LoadFileLine(linePrefix, this._fieldsValue.Object, lineImageField, this._nativeFilePath.Object, lineSuffix, new LineNewLine(), nullLogger);
+			this._instance = new LoadFileLine(linePrefix, this._fieldsValue.Object, lineImageField, this._nativeFilePath.Object, lineSuffix, new LineNewLine(), testNullLogger);
 		}
 
 		[Test]

@@ -15,28 +15,25 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.Logging;
 	using Relativity.Transfer;
 
 	[TestFixture]
 	public class DownloadTapiBridgeWithEncodingConversionTests : DownloadTapiBridgeAdapterTests
 	{
-		private Mock<ILog> _logger;
-
 		[SetUp]
 		public void SetUp()
 		{
 			this.SetUpMocks();
-
-			this._logger = new Mock<ILog>();
+			var logger = new TestNullLogger();
 
 			this.Instance = new DownloadTapiBridgeWithEncodingConversion(
 				this.TapiBridge.Object,
 				this.ProgressHandler.Object,
 				this.MessagesHandler.Object,
 				this.TransferStatistics.Object,
-				this._logger.Object);
+				logger);
 		}
 
 		[Test]

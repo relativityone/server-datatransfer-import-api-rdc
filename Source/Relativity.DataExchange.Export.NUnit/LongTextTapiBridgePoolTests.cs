@@ -13,7 +13,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class LongTextTapiBridgePoolTests
@@ -31,7 +31,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._factory.Setup(x => x.Create(CancellationToken.None)).Returns(this._bridge.Object);
 
-			this._instance = new LongTextTapiBridgePool(this._factory.Object, new NullLogger());
+			this._instance = new LongTextTapiBridgePool(this._factory.Object, new TestNullLogger());
 		}
 
 		[Test]

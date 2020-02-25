@@ -80,7 +80,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		public void ShouldCreateTheRelativityTransferHost()
 		{
 			RelativityConnectionInfo connectionInfo = this.service.CreateRelativityConnectionInfo(this.parameters);
-			using (IRelativityTransferHost transferHost = this.service.CreateRelativityTransferHost(connectionInfo, new NullLogger()))
+			using (IRelativityTransferHost transferHost = this.service.CreateRelativityTransferHost(connectionInfo, new TestNullLogger()))
 			{
 				Assert.That(transferHost, Is.Not.Null);
 			}

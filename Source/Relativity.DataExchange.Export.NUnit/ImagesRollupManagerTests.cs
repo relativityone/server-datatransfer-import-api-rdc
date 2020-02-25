@@ -16,6 +16,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
 	public class ImagesRollupManagerTests
@@ -33,9 +34,10 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			this._imagesRollup = new Mock<IImagesRollup>();
 			this._status = new Mock<IStatus>();
-			this._logger = new Mock<ILog>();
+			var testLogger = new TestNullLogger();
+			this._logger = testLogger.NullLoggerMock;
 
-			this._subjectUnderTest = new ImagesRollupManager(this._imagesRollup.Object, this._status.Object, this._logger.Object);
+			this._subjectUnderTest = new ImagesRollupManager(this._imagesRollup.Object, this._status.Object, testLogger);
 		}
 
 		[Test]

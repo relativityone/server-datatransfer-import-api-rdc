@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class NativeRepositoryBuilderTests
@@ -37,7 +37,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._labelManager = new Mock<ILabelManagerForArtifact>();
 			this._exportRequestBuilder = new Mock<IExportRequestBuilder>();
 
-			this._instance = new NativeRepositoryBuilder(this._nativeRepository, this._labelManager.Object, this._exportRequestBuilder.Object, new NullLogger());
+			this._instance = new NativeRepositoryBuilder(this._nativeRepository, this._labelManager.Object, this._exportRequestBuilder.Object, new TestNullLogger());
 		}
 
 		[Test]

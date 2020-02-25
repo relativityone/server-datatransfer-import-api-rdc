@@ -26,7 +26,6 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.Logging;
 
 	using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
@@ -42,7 +41,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		private Mock<ILongTextRepository> longTextRepository;
 		private Mock<IDownloadProgressManager> downloadProgressManager;
 		private Mock<IStatus> status;
-		private Mock<ILog> logger;
+		private TestNullLogger logger;
 		private Mock<IAppSettings> appSettings;
 		private Mock<ILongTextStreamService> longTextStreamService;
 
@@ -62,7 +61,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			longTextRepository = new Mock<ILongTextRepository>();
 			downloadProgressManager = new Mock<IDownloadProgressManager>();
 			status = new Mock<IStatus>();
-			logger = new Mock<ILog>();
+			var testLogger = new TestNullLogger();
+			logger = testLogger;
 			appSettings = new Mock<IAppSettings>();
 			appSettings.SetupGet(a => a.ExportLongTextDataGridThreadCount).Returns(1);
 			appSettings.SetupGet(a => a.ExportLongTextSqlThreadCount).Returns(1);
@@ -80,7 +80,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				longTextRepository.Object,
 				downloadProgressManager.Object,
 				status.Object,
-				logger.Object,
+				logger,
 				appSettings.Object,
 				longTextStreamService.Object);
 		}

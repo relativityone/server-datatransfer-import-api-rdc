@@ -21,6 +21,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 
@@ -76,7 +77,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._nativeRepository = new NativeRepository();
 			this._imageRepository = new ImageRepository();
 			this._fileHelper = new Mock<IFile>();
-			this._logger = new Mock<ILog>();
+			var testNullLogger = new TestNullLogger();
+			this._logger = testNullLogger.NullLoggerMock;
 			this._longTextRepository = new LongTextRepository(this._fileHelper.Object, this._logger.Object);
 			this._status = new Mock<IStatus>();
 			this._downloadProgressManager = new DownloadProgressManager(
@@ -84,7 +86,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				this._imageRepository,
 				this._longTextRepository,
 				this._status.Object,
-				this._logger.Object);
+				testNullLogger);
 
 			this._statistics = new kCura.WinEDDS.Statistics();
 			this._filesStatistics = new FilesStatistics(this._statistics, this._fileHelper.Object, this._logger.Object);
@@ -102,7 +104,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				this._filesStatistics,
 				this._messageHandler.Object,
 				this._transferClientHandler.Object,
-				this._logger.Object,
+				testNullLogger,
 				ForceCreatesTransferClient);
 		}
 

@@ -13,7 +13,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using kCura.WinEDDS;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class ErrorFileDestinationPathTests
@@ -25,7 +25,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			ExportFile exportSettings = new ExportFile(1);
 
-			this._instance = new ErrorFileDestinationPath(exportSettings, new NullLogger());
+			this._instance = new ErrorFileDestinationPath(exportSettings, new TestNullLogger());
 		}
 
 		[Test]

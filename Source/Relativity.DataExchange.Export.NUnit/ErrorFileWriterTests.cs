@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class ErrorFileWriterTests
@@ -46,7 +46,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			destinationPath.Setup(x => x.Encoding).Returns(Encoding.Default);
 
 			this._status = new Mock<IStatus>();
-			this._instance = new ErrorFileWriter(streamFactory.Object, destinationPath.Object, this._status.Object, new NullLogger());
+			this._instance = new ErrorFileWriter(streamFactory.Object, destinationPath.Object, this._status.Object, new TestNullLogger());
 		}
 
 		[Test]

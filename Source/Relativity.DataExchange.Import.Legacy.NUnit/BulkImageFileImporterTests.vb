@@ -12,6 +12,7 @@ Imports Moq
 Imports NUnit.Framework
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.TestFramework
 
 Imports Relativity.Logging
 
@@ -42,7 +43,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 			Dim mockLogger = New Mock(Of ILog)()
 			_context = New ProcessContext(mockProcessEventWriter.Object, mockProcessErrorWriter.Object, mockAppSettings.Object, mockLogger.Object)
 			
-		    _logger = New NullLogger()
+		    _logger = New TestNullLogger()
 			tokenSource = New CancellationTokenSource()
             Dim ioReporterContext As New IoReporterContext()
 		    _ioReporter = New IoReporter(ioReporterContext, _logger, tokenSource.Token)

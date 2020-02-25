@@ -20,7 +20,6 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.Logging;
 
 	[TestFixture]
 	public class NotTooLongTextToLoadFileTests
@@ -42,11 +41,11 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 
 			this._fieldService = new Mock<IFieldService>();
-			LongTextRepository longTextRepository = new LongTextRepository(null, new NullLogger());
+			LongTextRepository longTextRepository = new LongTextRepository(null, new TestNullLogger());
 			ILongTextStreamFormatterFactory formatterFactory = new DelimitedFileLongTextStreamFormatterFactory(exportSettings);
-			FromFieldToLoadFileWriter fileWriter = new FromFieldToLoadFileWriter(new NullLogger(), formatterFactory);
+			FromFieldToLoadFileWriter fileWriter = new FromFieldToLoadFileWriter(new TestNullLogger(), formatterFactory);
 
-			this._instance = new NotTooLongTextToLoadFile(new LongTextHelper(exportSettings, this._fieldService.Object, longTextRepository), fileWriter, new NullLogger(), exportSettings);
+			this._instance = new NotTooLongTextToLoadFile(new LongTextHelper(exportSettings, this._fieldService.Object, longTextRepository), fileWriter, new TestNullLogger(), exportSettings);
 		}
 
 		[Test]

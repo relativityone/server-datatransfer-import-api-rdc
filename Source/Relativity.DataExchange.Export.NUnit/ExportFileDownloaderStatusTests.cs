@@ -13,8 +13,8 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.Logging;
 
 	[TestFixture]
 	public class ExportFileDownloaderStatusTests
@@ -26,7 +26,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void SetUp()
 		{
 			this._tapiBridge = new Mock<ITapiBridge>();
-			this._instance = new ExportFileDownloaderStatus(new NullLogger());
+			this._instance = new ExportFileDownloaderStatus(new TestNullLogger());
 		}
 
 		[Test]

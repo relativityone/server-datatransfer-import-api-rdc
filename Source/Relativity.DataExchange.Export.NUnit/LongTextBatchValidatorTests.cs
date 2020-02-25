@@ -22,7 +22,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Io;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class LongTextBatchValidatorTests
@@ -47,7 +47,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		protected virtual IBatchValidator CreateValidator()
 		{
-			return new LongTextBatchValidator(this.LongTextRepository.Object, this.FileHelper.Object, this.Status.Object, new NullLogger());
+			return new LongTextBatchValidator(this.LongTextRepository.Object, this.FileHelper.Object, this.Status.Object, new TestNullLogger());
 		}
 
 		[Test]

@@ -16,6 +16,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Validation;
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
 	[TestFixture]
@@ -44,7 +45,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._loadFileDestinationPath = new LoadFileDestinationPath(exportSettings);
 			this._imageLoadFileDestinationPath = new ImageLoadFileDestinationPath(exportSettings);
 
-			this._instance = new FilesOverwriteValidator(userNotificationMock.Object, this._fileHelperMock.Object, new Mock<ILog>().Object);
+			this._instance = new FilesOverwriteValidator(userNotificationMock.Object, this._fileHelperMock.Object, new TestNullLogger());
 		}
 
 		[Test]

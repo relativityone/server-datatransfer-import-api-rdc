@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
 	using Relativity.DataExchange.Io;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class ImageLoadFileBatchValidatorTests
@@ -37,7 +37,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._fileHelper = new Mock<IFile>();
 			this._status = new Mock<IStatus>();
-			this._instance = new ImageLoadFileBatchValidator(this._destinationPath.Object, this._fileHelper.Object, this._status.Object, new NullLogger());
+			this._instance = new ImageLoadFileBatchValidator(this._destinationPath.Object, this._fileHelper.Object, this._status.Object, new TestNullLogger());
 		}
 
 		[Test]

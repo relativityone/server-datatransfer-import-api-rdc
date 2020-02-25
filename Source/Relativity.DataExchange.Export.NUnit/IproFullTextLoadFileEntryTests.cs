@@ -22,7 +22,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Service;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public abstract class IproFullTextLoadFileEntryTests
@@ -50,7 +50,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fullTextLineWriter = new Mock<IFullTextLineWriter>();
 			this._writer = new Mock<IRetryableStreamWriter>();
 
-			this.LongTextRepository = new LongTextRepository(new Mock<IFile>().Object, new NullLogger());
+			this.LongTextRepository = new LongTextRepository(new Mock<IFile>().Object, new TestNullLogger());
 
 			LongTextHelper longTextHelper = new LongTextHelper(exportSettings, this.FieldService.Object, this.LongTextRepository);
 

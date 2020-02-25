@@ -43,13 +43,14 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._exportFile.CaseInfo = new CaseInfo();
 			this._exportFile.CaseInfo.ArtifactID = RandomHelper.NextInt(1000, 100000);
 			this._exportFile.Credential = new NetworkCredential();
-			this._logger = new Mock<ILog>();
+			var testNullLogger = new TestNullLogger();
+			_logger = testNullLogger.NullLoggerMock;
 			this._status = new Mock<IStatus>();
 			this._tapiObjectService = new Mock<ITapiObjectService>();
 			this._instance = new FileShareSettingsService(
 				this._status.Object,
 				this._tapiObjectService.Object,
-				this._logger.Object,
+				testNullLogger,
 				this._exportFile);
 		}
 

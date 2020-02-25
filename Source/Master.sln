@@ -53,6 +53,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Sam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Import.NUnit.LoadTests", "Relativity.DataExchange.Import.NUnit.LoadTests\Relativity.DataExchange.Import.NUnit.LoadTests.csproj", "{F86E3808-81B9-41F5-9B11-220910715EB8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7EB74D02-898F-47E4-B0BF-D72E58A1AC29}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

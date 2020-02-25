@@ -17,7 +17,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
 	using Relativity.DataExchange.Service;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class ImagesRollupFactoryTests
@@ -40,7 +40,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			var windsorContainerMock = new Mock<IWindsorContainer>();
 
-			var instance = new ImagesRollupFactory(new NullLogger());
+			var instance = new ImagesRollupFactory(new TestNullLogger());
 
 			// ACT
 			instance.Create(exportSettings, windsorContainerMock.Object);

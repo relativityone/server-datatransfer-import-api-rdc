@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Service;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class LongTextIproFullTextBuilderTests
@@ -36,7 +36,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				LogFileFormat = LoadFileType.FileFormat.IPRO_FullText
 			};
 			this._fieldService = new Mock<IFieldService>();
-			this._instance = new LongTextIproFullTextBuilder(new LongTextHelper(exportSettings, this._fieldService.Object, new LongTextRepository(null, new NullLogger())), new NullLogger());
+			this._instance = new LongTextIproFullTextBuilder(new LongTextHelper(exportSettings, this._fieldService.Object, new LongTextRepository(null, new TestNullLogger())), new TestNullLogger());
 		}
 
 		[Test]

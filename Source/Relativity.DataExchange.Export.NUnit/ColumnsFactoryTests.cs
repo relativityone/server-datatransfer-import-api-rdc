@@ -15,7 +15,6 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Settings;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.Logging;
 
 	[TestFixture]
 	public class ColumnsFactoryTests
@@ -25,7 +24,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			this._instance = new ColumnsFactory(new NullLogger());
+			this._instance = new ColumnsFactory(new TestNullLogger());
 		}
 
 		[Test]

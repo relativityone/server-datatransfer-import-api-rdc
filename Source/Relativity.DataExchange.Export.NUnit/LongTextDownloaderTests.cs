@@ -20,7 +20,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Transfer;
 
 	[TestFixture]
@@ -46,7 +46,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				new SafeIncrement(),
 				this._longTextTapiBridgePool.Object,
 				this._downloadProgressManager.Object,
-				new NullLogger());
+				new TestNullLogger());
 		}
 
 		[Test]

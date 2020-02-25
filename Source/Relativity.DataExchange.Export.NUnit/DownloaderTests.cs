@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Transfer;
 
 	[TestFixture]
@@ -43,7 +43,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			this._nativeRepository = new NativeRepository();
 			this._imageRepository = new ImageRepository();
-			this._longTextRepository = new LongTextRepository(null, new NullLogger());
+			this._longTextRepository = new LongTextRepository(null, new TestNullLogger());
 			this._exportRequestRetriever = new ExportRequestRetriever(this._nativeRepository, this._imageRepository, this._longTextRepository);
 
 			this._physicalFilesDownloader = new Mock<IPhysicalFilesDownloader>();
@@ -59,7 +59,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				this._longTextFileDownloadSubscriber.Object,
 				this._errorFileWriter.Object,
 				this._fileDownloadSubscriber.Object,
-				new NullLogger());
+				new TestNullLogger());
 		}
 
 		[Test]

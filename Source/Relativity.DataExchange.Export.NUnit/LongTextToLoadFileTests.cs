@@ -17,7 +17,6 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.Logging;
 
 	using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
@@ -42,7 +41,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._tooLongTextToLoadFile = new Mock<ILongTextHandler>();
 			this._notTooLongTextToLoadFile = new Mock<ILongTextHandler>();
 
-			this._instance = new LongTextToLoadFile(longTextHelper, this._tooLongTextToLoadFile.Object, this._notTooLongTextToLoadFile.Object, new NullLogger());
+			this._instance = new LongTextToLoadFile(longTextHelper, this._tooLongTextToLoadFile.Object, this._notTooLongTextToLoadFile.Object, new TestNullLogger());
 		}
 
 		[Test]

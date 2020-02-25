@@ -117,6 +117,7 @@
     <Compile Include="RelativityHelpers\ImportHelper.cs" />
     <Compile Include="ObjectManagers\ServiceProxyFactory.cs" />
     <Compile Include="RelativityHelpers\SqlQueryHelper.cs" />
+    <Compile Include="TestNullLogger.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\CollectDeadlockProfilerReportSession.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\CollectedDeadlockProfilerReportBuilder.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\DeadlockReportRowDto.cs" />
@@ -286,6 +287,17 @@
       <ItemGroup>
         <Reference Include="kCura.Relativity.Client">
           <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Moq">
+          <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -582,5 +594,4 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <ItemGroup />
 </Project>

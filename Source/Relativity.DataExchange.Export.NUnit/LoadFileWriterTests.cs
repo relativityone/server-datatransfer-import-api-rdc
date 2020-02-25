@@ -20,7 +20,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class LoadFileWriterTests
@@ -36,7 +36,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._memoryStream = new MemoryStream(1);
 			this._streamWriter = new StreamWriter(this._memoryStream, Encoding.Default);
 
-			this._instance = new LoadFileWriter(new NullLogger());
+			this._instance = new LoadFileWriter(new TestNullLogger());
 		}
 
 		[Test]

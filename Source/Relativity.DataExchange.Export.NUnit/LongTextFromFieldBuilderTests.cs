@@ -21,7 +21,6 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.Logging;
 
 	[TestFixture]
 	public class LongTextFromFieldBuilderTests
@@ -41,8 +40,8 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._instance = new LongTextFromFieldBuilder(
 				this._fieldService.Object,
-				new LongTextHelper(exportSettings, this._fieldService.Object, new LongTextRepository(null, new NullLogger())),
-				new NullLogger());
+				new LongTextHelper(exportSettings, this._fieldService.Object, new LongTextRepository(null, new TestNullLogger())),
+				new TestNullLogger());
 		}
 
 		[Test]

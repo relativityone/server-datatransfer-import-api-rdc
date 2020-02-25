@@ -14,7 +14,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using kCura.WinEDDS;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class IproLoadFileEntryTests
@@ -28,7 +28,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			this._exportSettings = new ExportFile(1);
 
-			this._instance = new IproLoadFileEntry(this._exportSettings, new NullLogger());
+			this._instance = new IproLoadFileEntry(this._exportSettings, new TestNullLogger());
 		}
 
 		[Test]

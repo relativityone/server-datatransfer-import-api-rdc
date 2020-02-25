@@ -16,7 +16,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class BatchCleanUpTests
@@ -35,7 +35,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				new Mock<IClearable>()
 			};
 
-			this._instance = new BatchCleanUp(this._repositoryMocks.Select(x => x.Object).ToList(), new NullLogger());
+			this._instance = new BatchCleanUp(this._repositoryMocks.Select(x => x.Object).ToList(), new TestNullLogger());
 		}
 
 		[Test]

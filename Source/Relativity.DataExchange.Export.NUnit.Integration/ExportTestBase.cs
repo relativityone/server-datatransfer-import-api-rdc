@@ -41,7 +41,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.Logging;
 
 	using FieldType = Relativity.DataExchange.Service.FieldType;
 
@@ -78,7 +77,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		{
 			// This registers all components.
 			this.testContainer = new WindsorContainer();
-			ContainerFactoryProvider.ContainerFactory = new TestContainerFactory(this.testContainer, new NullLogger());
+			ContainerFactoryProvider.ContainerFactory = new TestContainerFactory(this.testContainer, new TestNullLogger());
 
 			this.cookieContainer = new CookieContainer();
 			this.credentials = new NetworkCredential(TestParameters.RelativityUserName, TestParameters.RelativityPassword);
@@ -285,7 +284,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			using (var folderManager = new FolderManager(this.credentials, this.cookieContainer))
 			{
-				FolderCache folderCache = new FolderCache(new NullLogger(), folderManager, caseInfo.RootFolderID, caseInfo.ArtifactID);
+				FolderCache folderCache = new FolderCache(new TestNullLogger(), folderManager, caseInfo.RootFolderID, caseInfo.ArtifactID);
 				int folderArtifactId = folderCache.GetFolderId(folderPath);
 				return folderArtifactId;
 			}
@@ -353,7 +352,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				new WebApiServiceFactory(this.ExtendedExportFile),
 				new ExportFileFormatterFactory(),
 				new ExportConfig(),
-				new NullLogger(),
+				new TestNullLogger(),
 				this.cancellationTokenSource.Token);
 			try
 			{

@@ -22,6 +22,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
 	[TestFixture]
@@ -39,16 +40,14 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		private Mock<IFileTransferProducer> _fileTransferProducerMock;
 
-		private Mock<ILog> _logger;
-
 		private Subject<string> _fileDownloadSubject;
 
 		[SetUp]
 		public void SetUp()
 		{
 			this._cancellationTokenSource = new CancellationTokenSource();
-			this._logger = new Mock<ILog>();
-			this._longTextRepository = new LongTextRepository(null, this._logger.Object);
+			var testLogger = new TestNullLogger();
+			this._longTextRepository = new LongTextRepository(null, testLogger);
 			this._fileEncodingConverter = new Mock<IFileEncodingConverter>();
 			this._fileTransferProducerMock = new Mock<IFileTransferProducer>();
 
@@ -58,7 +57,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				this._longTextRepository,
 				this._fileEncodingConverter.Object,
 				this._status.Object,
-				this._logger.Object);
+				testLogger);
 
 			this._fileDownloadSubject = new Subject<string>();
 

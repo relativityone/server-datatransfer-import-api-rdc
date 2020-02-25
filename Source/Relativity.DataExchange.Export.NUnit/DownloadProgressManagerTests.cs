@@ -16,7 +16,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.DataExchange.Process;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class DownloadProgressManagerTests
@@ -32,14 +32,14 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			this._nativeRepository = new NativeRepository();
 			this._imageRepository = new ImageRepository();
-			this._longTextRepository = new LongTextRepository(null, new NullLogger());
+			this._longTextRepository = new LongTextRepository(null, new TestNullLogger());
 			this._status = new Mock<IStatus>();
 			this._instance = new DownloadProgressManager(
 				this._nativeRepository,
 				this._imageRepository,
 				this._longTextRepository,
 				this._status.Object,
-				new NullLogger());
+				new TestNullLogger());
 		}
 
 		[Test]

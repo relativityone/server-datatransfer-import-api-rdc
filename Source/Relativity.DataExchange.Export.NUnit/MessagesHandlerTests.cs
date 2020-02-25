@@ -14,8 +14,8 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.DataExchange.Process;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.Logging;
 
 	[TestFixture]
 	public class MessagesHandlerTests
@@ -31,7 +31,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._status = new Mock<IStatus>();
 			this._tapiBridge = new Mock<ITapiBridge>();
 
-			this._instance = new MessagesHandler(this._status.Object, new NullLogger());
+			this._instance = new MessagesHandler(this._status.Object, new TestNullLogger());
 		}
 
 		[Test]

@@ -25,7 +25,6 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.Logging;
 
 	using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
@@ -66,7 +65,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
 			this._fieldService.Setup(x => x.GetOrdinalIndex(ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(1);
 
-			LongTextHelper longTextHelper = new LongTextHelper(this._exportSettings, this._fieldService.Object, new LongTextRepository(null, new NullLogger()));
+			LongTextHelper longTextHelper = new LongTextHelper(this._exportSettings, this._fieldService.Object, new LongTextRepository(null, new TestNullLogger()));
 
 			this._instance = new LongTextPrecedenceBuilder(
 				this._exportSettings,
@@ -74,7 +73,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				this._fieldService.Object,
 				longTextHelper,
 				this._fileNameProvider.Object,
-				new NullLogger(),
+				new TestNullLogger(),
 				this._exportFileValidator.Object,
 				this._metadataProcessingStatistics.Object);
 		}

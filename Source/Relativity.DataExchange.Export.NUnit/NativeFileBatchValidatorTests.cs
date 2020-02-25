@@ -18,7 +18,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.DataExchange.Io;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class NativeFileBatchValidatorTests
@@ -35,7 +35,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		protected Mock<IStatus> Status { get; private set; }
 
-		protected Mock<ILog> Logger { get; private set; }
+		protected TestNullLogger Logger { get; private set; }
 
 		[SetUp]
 		public void SetUp()
@@ -44,7 +44,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.ErrorFileWriter = new Mock<IErrorFileWriter>();
 			this.FileHelper = new Mock<IFile>();
 			this.Status = new Mock<IStatus>();
-			this.Logger = new Mock<ILog>();
+			this.Logger = new TestNullLogger();
 			this.Instance = this.CreateValidator();
 		}
 
@@ -54,7 +54,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				this.ErrorFileWriter.Object,
 				this.FileHelper.Object,
 				this.AppSettings.Object,
-				this.Logger.Object);
+				this.Logger);
 		}
 
 		[Test]

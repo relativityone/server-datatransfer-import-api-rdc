@@ -18,7 +18,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class LoadFileMetadataBuilderTests
@@ -32,11 +32,11 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void SetUp()
 		{
 			this._fieldLookupService = new Mock<IFieldService>();
-			LoadFileHeader loadFileHeader = new LoadFileHeader(this._fieldLookupService.Object, new NullLogger());
+			LoadFileHeader loadFileHeader = new LoadFileHeader(this._fieldLookupService.Object, new TestNullLogger());
 
 			this._loadFileLine = new Mock<ILoadFileLine>();
 
-			this._instance = new LoadFileMetadataBuilder(loadFileHeader, this._loadFileLine.Object, new NullLogger());
+			this._instance = new LoadFileMetadataBuilder(loadFileHeader, this._loadFileLine.Object, new TestNullLogger());
 		}
 
 		[Test]

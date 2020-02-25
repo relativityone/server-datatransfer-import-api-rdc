@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class BatchInitializationTests
@@ -53,7 +53,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		protected virtual IBatchInitialization CreateBatchInitialization()
 		{
-			return new BatchInitialization(this.RepositoryBuilderMocks.Select(x => x.Object).ToList(), this.DirectoryManager.Object, new NullLogger());
+			return new BatchInitialization(this.RepositoryBuilderMocks.Select(x => x.Object).ToList(), this.DirectoryManager.Object, new TestNullLogger());
 		}
 
 		[Test]

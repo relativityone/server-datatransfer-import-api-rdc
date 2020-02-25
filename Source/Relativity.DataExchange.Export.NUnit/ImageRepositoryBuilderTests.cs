@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class ImageRepositoryBuilderTests
@@ -37,7 +37,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._imageExportRequestBuilder = new Mock<IExportRequestBuilder>();
 
-			this._instance = new ImageRepositoryBuilder(this._imageRepository, this._imageExportRequestBuilder.Object, new NullLogger());
+			this._instance = new ImageRepositoryBuilder(this._imageRepository, this._imageExportRequestBuilder.Object, new TestNullLogger());
 		}
 
 		[Test]

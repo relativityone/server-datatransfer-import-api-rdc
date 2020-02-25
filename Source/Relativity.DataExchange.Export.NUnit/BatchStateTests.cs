@@ -15,7 +15,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class BatchStateTests
@@ -32,7 +32,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				new Mock<IStateful>(),
 				new Mock<IStateful>()
 			};
-			this._instance = new BatchState(this._statefulComponentMocks.Select(x => x.Object).ToList(), new NullLogger());
+			this._instance = new BatchState(this._statefulComponentMocks.Select(x => x.Object).ToList(), new TestNullLogger());
 		}
 
 		[Test]

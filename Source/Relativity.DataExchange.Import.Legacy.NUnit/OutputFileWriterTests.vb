@@ -9,6 +9,7 @@ Imports kCura.WinEDDS
 Imports Moq
 
 Imports NUnit.Framework
+Imports Relativity.DataExchange.TestFramework
 Imports Relativity.Logging
 
 Namespace Relativity.DataExchange.Import.NUnit
@@ -34,7 +35,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		Public Shared Sub ConstructorShouldThrowWhenTheFileSystemIsNull()
 			Assert.Throws(Of System.ArgumentNullException)(
 				Sub()
-					Using writer As New OutputFileWriter(New NullLogger(), Nothing)
+					Using writer As New OutputFileWriter(New TestNullLogger(), Nothing)
 						Assert.That(writer, [Is].Not.Null)
 					End Using
 				End Sub)

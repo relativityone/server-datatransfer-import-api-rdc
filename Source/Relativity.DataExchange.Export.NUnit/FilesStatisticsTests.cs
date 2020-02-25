@@ -14,8 +14,8 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.Logging;
 
 	[TestFixture]
 	public class FilesStatisticsTests
@@ -33,7 +33,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileHelper = new Mock<IFile>();
 			this._tapiBridge = new Mock<ITapiBridge>();
 
-			this._instance = new FilesStatistics(this._statistics, this._fileHelper.Object, new NullLogger());
+			this._instance = new FilesStatistics(this._statistics, this._fileHelper.Object, new TestNullLogger());
 		}
 
 		[Test]

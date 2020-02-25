@@ -17,7 +17,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	public class NativeFileExportRequestBuilderTests : ExportRequestBuilderTests
 	{
@@ -27,7 +27,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			IExportFileValidator exportFileValidator,
 			IFileProcessingStatistics fileProcessingStatistics)
 		{
-			return new NativeFileExportRequestBuilder(filePathProvider, fileNameProvider, exportFileValidator, fileProcessingStatistics, new NullLogger());
+			return new NativeFileExportRequestBuilder(filePathProvider, fileNameProvider, exportFileValidator, fileProcessingStatistics, new TestNullLogger());
 		}
 
 		[Test]

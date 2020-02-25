@@ -9,7 +9,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class FilePathHelperTests
@@ -20,7 +20,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		[TestCase(@"X:\ROOT", @"X:\ROOT\X1\X2\", @"ROOT\X1\X2\", Description = "Missing slash")]
 		public void ItShouldReturnRelativePath(string root, string path, string result)
 		{
-			var instance = new FilePathHelper(new NullLogger());
+			var instance = new FilePathHelper(new TestNullLogger());
 
 			// ACT
 			string relativePath = instance.MakeRelativePath(root, path);

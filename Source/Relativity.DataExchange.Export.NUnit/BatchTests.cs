@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class BatchTests
@@ -42,7 +42,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			Mock<IMessenger> messenger = new Mock<IMessenger>();
 
-			this._instance = new Batch(this._batchExporter.Object, this._batchInitialization.Object, this._batchCleanUp.Object, this._batchValidator.Object, this._batchState.Object, messenger.Object, new NullLogger());
+			this._instance = new Batch(this._batchExporter.Object, this._batchInitialization.Object, this._batchCleanUp.Object, this._batchValidator.Object, this._batchState.Object, messenger.Object, new TestNullLogger());
 		}
 
 		[Test]

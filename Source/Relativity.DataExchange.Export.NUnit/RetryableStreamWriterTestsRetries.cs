@@ -24,7 +24,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class RetryableStreamWriterTestsRetries
@@ -63,7 +63,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._hasRetryBeenExecuted = false;
 
-			this._instance = new RetryableStreamWriter(this._writersRetryPolicy.Object, this._streamFactory.Object, destinationPath.Object, this._processingStatistics.Object, status.Object, new NullLogger());
+			this._instance = new RetryableStreamWriter(this._writersRetryPolicy.Object, this._streamFactory.Object, destinationPath.Object, this._processingStatistics.Object, status.Object, new TestNullLogger());
 		}
 
 		private void OnRetry(Exception arg1, int arg2)

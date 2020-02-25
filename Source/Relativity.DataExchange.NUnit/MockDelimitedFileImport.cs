@@ -15,7 +15,7 @@ namespace Relativity.DataExchange.NUnit
 
 	using Relativity.DataExchange.Data;
 	using Relativity.DataExchange.Io;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents a mock <see cref="DelimitedFileImporter2" /> implementation for testing purposes.
@@ -39,12 +39,12 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		public MockDelimitedFileImport(char delimiter, char bound)
-			: this(delimiter, bound, DefaultNewline, new IoReporterContext(), new NullLogger(), CancellationToken.None)
+			: this(delimiter, bound, DefaultNewline, new IoReporterContext(), new TestNullLogger(), CancellationToken.None)
 		{
 		}
 
 		public MockDelimitedFileImport(char delimiter, char bound, char newlineProxy)
-			: this(delimiter, bound, newlineProxy, new IoReporterContext(), new NullLogger(), CancellationToken.None)
+			: this(delimiter, bound, newlineProxy, new IoReporterContext(), new TestNullLogger(), CancellationToken.None)
 		{
 		}
 

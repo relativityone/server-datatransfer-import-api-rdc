@@ -21,7 +21,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Io;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class LongTextRepositoryTests
@@ -39,7 +39,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._fileHelper = new Mock<IFile>();
 
-			this._instance = new LongTextRepository(this._fileHelper.Object, new NullLogger());
+			this._instance = new LongTextRepository(this._fileHelper.Object, new TestNullLogger());
 			this._instance.Add(this._longTexts);
 		}
 
