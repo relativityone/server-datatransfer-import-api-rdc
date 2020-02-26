@@ -46,6 +46,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public static void TearDown()
 		{
 			IntegrationTestHelper.Destroy(TestParameters);
+			TestParameters = null;
 		}
 
 		public static async Task<IntegrationTestParameters> ResetContextAsync()

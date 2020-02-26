@@ -42,11 +42,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("9db2e7f4-0bc8-46a8-9e95-621ca9bcc5c1")]
 		[Pairwise]
-		public async Task ShouldImportManyImages()
+		public void ShouldImportManyImages()
 		{
-			// ARRANGE
-			await this.ResetContextAsync().ConfigureAwait(false);
-
 			const int NumberOfDocumentsToImport = 20;
 			const int NumberOfImagesPerDocument = 10;
 
@@ -76,11 +73,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("577e9faa-31e6-4bd8-b406-7a066cc0aeb4")]
 		[Pairwise]
-		public async Task ShouldReturnAppendErrorsWhenImagesAlreadyExists()
+		public void ShouldReturnAppendErrorsWhenImagesAlreadyExists()
 		{
-			// ARRANGE
-			await this.ResetContextAsync().ConfigureAwait(false);
-
 			const int NumberOfDocumentsToImport = 20;
 			const int NumberOfImagesPerDocument = 10;
 
@@ -113,11 +107,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("6bfb799e-5c8f-4a5c-8092-c9042af62072")]
 		[Pairwise]
-		public async Task ShouldReturnOverlayErrorsWhenNoImagesExists()
+		public void ShouldReturnOverlayErrorsWhenNoImagesExists()
 		{
-			// ARRANGE
-			await this.ResetContextAsync().ConfigureAwait(false);
-
 			const int NumberOfDocumentsToImport = 20;
 			const int NumberOfImagesPerDocument = 10;
 
@@ -145,16 +136,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("f5b4a1d7-9dfc-4931-ba55-0fb0d56564ad")]
 		[Pairwise]
-		public async Task ShouldImportTheImage(
+		public void ShouldImportTheImage(
 			[Values(true, false)] bool useFileNames,
 			[Values(true, false)] bool useDefaultFieldNames,
 			[Values(true, false)] bool useDataTableSource,
 			[Values(ImageFormat.Jpeg, ImageFormat.Tiff)] ImageFormat imageFormat,
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
-			// ARRANGE
-			await this.ResetContextAsync().ConfigureAwait(false);
-
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 
@@ -205,6 +193,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(testResult, ExpectedNumberOfImportedImages);
 			ThenRelativityObjectCountsIsCorrect(ExpectedNumberOfImportedImages);
 			ThenTheImportedDocumentIsCorrect(imageImportDto, useFileNames);
+		}
+
+		protected override Task OnSetUpAsync()
+		{
+			return this.ResetContextAsync();
 		}
 
 		private static void ThenRelativityObjectCountsIsCorrect(int expectedNumberOfImportedDocuments)

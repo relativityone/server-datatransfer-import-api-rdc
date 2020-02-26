@@ -42,8 +42,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		protected TempDirectory2 TempDirectory { get; private set; }
 
 		[SetUp]
-		public void Setup()
+		public async Task SetupAsync()
 		{
+			await this.OnSetUpAsync().ConfigureAwait(false);
 			kCura.WinEDDS.Config.ConfigSettings["BadPathErrorsRetry"] = false;
 			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobRetryAttempts"] = 1;
 			AppSettings.Instance.TapiMaxJobParallelism = 1;
@@ -92,6 +93,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			AppSettings.Instance.TapiForceAsperaClient = tapiClient == TapiClient.Aspera;
 			AppSettings.Instance.TapiForceFileShareClient = tapiClient == TapiClient.Direct;
 			AppSettings.Instance.TapiForceHttpClient = tapiClient == TapiClient.Web;
+		}
+
+		protected virtual Task OnSetUpAsync()
+		{
+			return Task.CompletedTask;
 		}
 
 		protected virtual void Dispose(bool disposing)
