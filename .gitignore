@@ -305,3 +305,4 @@ errors.xml
 # Test files
 TestInput/
 TestOutput/
+/Source/Output-Build.txt
