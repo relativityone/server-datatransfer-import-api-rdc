@@ -11,6 +11,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using System.Net;
 
 	using global::NUnit.Framework;
@@ -114,8 +115,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			this.ValidateTotalRowsCount(expectedTotalRows);
 			this.ValidateFatalExceptionsNotExist();
-			Assert.That(this.importApiSetUp.TestJobResult.ErrorRows, Has.Count.Zero);
-			Assert.That(this.importApiSetUp.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.Zero);
+			Assert.That(this.importApiSetUp.TestJobResult.ErrorRows, Has.Count.Zero, () =>
+				string.Join(Environment.NewLine, this.importApiSetUp.TestJobResult.CompletedJobReport.ErrorRows.Select(a => a.Message).ToArray()));
+			Assert.That(this.importApiSetUp.TestJobResult.CompletedJobReport.ErrorRows, Has.Count.Zero, () =>
+				string.Join(Environment.NewLine, this.importApiSetUp.TestJobResult.CompletedJobReport.ErrorRows.Select(a => a.Message).ToArray()));
 		}
 
 		protected void ThenTheImportJobFailedWithFatalError(int expectedErrorRows, int expectedTotalRows)

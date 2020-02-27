@@ -19,6 +19,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
 	using Relativity.DataExchange.Import.NUnit.Integration.SetUp;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSources;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
@@ -75,16 +76,16 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
 			this.InitializeImportApiWithUserAndPassword(settings);
 
-			const int NumberOfDocumentsToImport = 2000;
-			var randomFolderGenerator = new RandomFolderGenerator(
-				numOfPaths: NumberOfDocumentsToImport,
-				maxDepth: 100,
-				numOfDifferentFolders: 25,
+			var randomFolderGenerator = RandomPathGenerator.GetFolderGenerator(
+				numOfDifferentElements: 25,
+				maxElementLength: 255,
 				numOfDifferentPaths: 100,
-				maxFolderLength: 255,
-				percentOfSpecial: 15);
+				maxPathDepth: 100);
 
-			IEnumerable<FolderImportDto> importData = randomFolderGenerator.ToEnumerable();
+			const int NumberOfDocumentsToImport = 2010;
+			IEnumerable<FolderImportDto> importData = randomFolderGenerator
+				.ToFolders(NumberOfDocumentsToImport)
+				.Select((p, i) => new FolderImportDto($"{i}-{nameof(this.ShouldImportFolders)}", p));
 
 			// ACT
 			ImportTestJobResult results = this.Execute(importData);
@@ -118,8 +119,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(numberOfDocumentsToImport);
-			Assert.That(results, Has.Count.Positive);
-			Assert.That(results, Has.Count.EqualTo(numberOfDocumentsToImport));
+			Assert.That(results.ErrorRows, Has.Count.Zero);
+			Assert.That(results.JobFatalExceptions, Has.Count.Zero);
+			Assert.That(results.ProgressCompletedRows, Has.Count.EqualTo(numberOfDocumentsToImport));
 		}
 
 		[Category(TestCategories.ImportDoc)]

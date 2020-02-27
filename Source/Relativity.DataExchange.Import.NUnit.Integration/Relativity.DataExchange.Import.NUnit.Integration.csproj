@@ -87,7 +87,7 @@
   <ItemGroup>
     <Compile Include="SetUp\ImportApiSetUp.cs" />
     <Compile Include="ImportProfilingTests.cs" />
-    <Compile Include="RandomFolderGenerator.cs" />
+    <Compile Include="RandomPathGenerator.cs" />
     <Compile Include="SetUp\NativeImportApiSetUp.cs" />
     <Compile Include="SetUp\NativeImportSettingsProvider.cs" />
     <Compile Include="Dto\DocumentWithChoicesImportDto.cs" />

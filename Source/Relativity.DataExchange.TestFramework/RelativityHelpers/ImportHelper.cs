@@ -35,7 +35,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		public static IEnumerable<string> ImportDocuments(IntegrationTestParameters parameters)
 		{
-			return ImportDocuments(parameters, SetupColumns, SetValues);
+			return ImportDocuments(parameters, SetupColumns, SetValues, true);
 
 			void SetupColumns(DataTable dataTable)
 			{
@@ -54,36 +54,13 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			IntegrationTestParameters parameters,
 			IEnumerable<string> documentsControlNumbers)
 		{
-			ImportImagesForDocuments(parameters, GetImportJob, SetData);
+			ImportImagesForDocuments(parameters, GetImportJob, documentsControlNumbers);
 
 			ImageImportBulkArtifactJob GetImportJob(ImportAPI importApi)
 			{
 				var job = importApi.NewImageImportJob();
 				ApplyDefaultsForImageImport(job.Settings);
 				return job;
-			}
-
-			void SetData(DataTable dataSource)
-			{
-				var images = TestData.SampleImageFiles.ToList();
-
-				foreach (var documentControlNumber in documentsControlNumbers)
-				{
-					var batesNumber = documentControlNumber;
-					var batesNumberSuffix = 1;
-
-					foreach (var image in images)
-					{
-						var row = dataSource.NewRow()
-							.SetControlNumber(documentControlNumber)
-							.SetFileLocation(image)
-							.SetBatesNumber(batesNumber);
-
-						dataSource.Rows.Add(row);
-						batesNumber = $"{documentControlNumber}-{batesNumberSuffix:D2}";
-						batesNumberSuffix++;
-					}
-				}
 			}
 		}
 
@@ -92,10 +69,10 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			string productionName,
 			IEnumerable<string> documentsControlNumbers)
 		{
-			var productionId =
+			int productionId =
 				ProductionHelper.CreateProduction(parameters, productionName, "BATES", IntegrationTestHelper.Logger);
 
-			ImportImagesForDocuments(parameters, GetImportJob, SetData);
+			ImportImagesForDocuments(parameters, GetImportJob, documentsControlNumbers);
 
 			ImageImportBulkArtifactJob GetImportJob(ImportAPI importApi)
 			{
@@ -103,36 +80,13 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				ApplyDefaultsForProductionImport(job.Settings);
 				return job;
 			}
-
-			void SetData(DataTable dataSource)
-			{
-				var images = TestData.SampleImageFiles.ToList();
-				var docNumber = 1;
-
-				foreach (var documentControlNumber in documentsControlNumbers)
-				{
-					var batesNumberSuffix = 1;
-
-					foreach (var image in images)
-					{
-						var row = dataSource.NewRow()
-							.SetControlNumber(documentControlNumber)
-							.SetFileLocation(image)
-							.SetBatesNumber($"PROD{docNumber:D4}-{batesNumberSuffix:D4}");
-
-						dataSource.Rows.Add(row);
-						batesNumberSuffix++;
-					}
-
-					docNumber++;
-				}
-			}
 		}
 
 		private static IEnumerable<string> ImportDocuments(
 			IntegrationTestParameters parameters,
 			Action<DataTable> setupColumns,
-			Action<DataRow, string> setValues)
+			Action<DataRow, string> setValues,
+			bool generateControlNumber = false)
 		{
 			parameters.ThrowIfNull(nameof(parameters));
 
@@ -144,7 +98,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			ApplyDefaultsForDocuments(settings);
 			ConfigureJobErrorEvents(job);
 
-			using (var dataSource = new DataTable("Input Data"))
+			using (DataTable dataSource = new DataTable("Input Data"))
 			{
 				dataSource.Locale = CultureInfo.InvariantCulture;
 				dataSource.WithControlNumber()
@@ -154,11 +108,19 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 				var controlNumbers = new List<string>();
 
-				foreach (var file in TestData.SampleDocFiles)
+				foreach (string file in TestData.SampleDocFiles)
 				{
-					var dr = dataSource.NewRow()
-						.SetControlNumber(System.IO.Path.GetFileName(file))
-						.SetFilePath(file);
+					DataRow dr = dataSource.NewRow().SetFilePath(file);
+					var fileName = System.IO.Path.GetFileName(file);
+
+					if (generateControlNumber)
+					{
+						dr.GenerateControlNumber();
+					}
+					else
+					{
+						dr.SetControlNumber(fileName);
+					}
 
 					setValues(dr, file);
 
@@ -176,24 +138,47 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		private static void ImportImagesForDocuments(
 			IntegrationTestParameters parameters,
 			Func<ImportAPI, ImageImportBulkArtifactJob> getImportJob,
-			Action<DataTable> setData)
+			IEnumerable<string> documentsControlNumbers)
 		{
 			var importApi = CreateImportApi(parameters);
 			var job = getImportJob(importApi);
 			job.Settings.CaseArtifactId = parameters.WorkspaceId;
 			ConfigureJobErrorEvents(job);
 
-			using (var dataSource = new DataTable("Input Data"))
+			using (DataTable dataSource = new DataTable("Input Data"))
 			{
 				dataSource.Locale = CultureInfo.InvariantCulture;
 				dataSource.WithControlNumber()
 					.WithFileLocation()
 					.WithBatesNumber();
 
-				setData(dataSource);
+				SetImagesData(dataSource, documentsControlNumbers);
 
 				job.SourceData.SourceData = dataSource;
 				job.Execute();
+			}
+		}
+
+		private static void SetImagesData(DataTable dataSource, IEnumerable<string> documentsControlNumbers)
+		{
+			var imagePaths = TestData.SampleImageFiles.ToList();
+
+			foreach (string documentControlNumber in documentsControlNumbers)
+			{
+				string batesNumber = documentControlNumber;
+				int batesNumberSuffix = 1;
+
+				foreach (string imagePath in imagePaths)
+				{
+					DataRow row = dataSource.NewRow()
+						.SetControlNumber(documentControlNumber)
+						.SetFileLocation(imagePath)
+						.SetBatesNumber(batesNumber);
+
+					dataSource.Rows.Add(row);
+					batesNumber = $"{documentControlNumber}-{batesNumberSuffix:D2}";
+					batesNumberSuffix++;
+				}
 			}
 		}
 
@@ -271,7 +256,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			settings.FolderPathSourceFieldName = null;
 			settings.ImageFilePathSourceFieldName = WellKnownFields.FileLocation;
 			settings.OverlayBehavior = OverlayBehavior.MergeAll;
-			settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
+			settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
 		}
 
 		private static void ApplyDefaultBaseSettings(ImportSettingsBase settings)
