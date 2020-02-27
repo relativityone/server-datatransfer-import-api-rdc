@@ -17,9 +17,9 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 	using kCura.Relativity.ImportAPI;
 
 	using Relativity.DataExchange.Import.NUnit.Integration;
-	using Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.DataExchange.TestFramework.ImportDataSource;
+	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 
 	public class ParallelNativeImportExecutionContext : IDisposable, IImportApiSetup<Settings>
 	{
@@ -64,7 +64,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 			this.TestJobResult = new ImportTestJobResult();
 
 			this.ValidateImportApiInstanceInitialization();
-			IntegrationTestParameters testParameters = IntegrationTestHelper.ReadIntegrationTestParameters();
+			IntegrationTestParameters testParameters = IntegrationTestHelper.IntegrationTestParameters;
 			for (int index = 0; index < this.nativeImportExecutionContexts.Count; index++)
 			{
 				NativeImportExecutionContext context = this.nativeImportExecutionContexts[index];

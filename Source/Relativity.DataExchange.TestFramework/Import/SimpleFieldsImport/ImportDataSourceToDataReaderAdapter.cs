@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.TestFramework.ImportDataSource
+namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 {
 	using System;
 	using System.Collections.Generic;

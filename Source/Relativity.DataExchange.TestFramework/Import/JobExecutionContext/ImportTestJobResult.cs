@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.Import.NUnit.Integration
+namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 {
 	using System;
 	using System.Collections;
@@ -34,15 +34,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		public long NumberOfCompletedRows { get; set; }
 
-		public DateTime StartTime => CompletedJobReport.StartTime;
+		public DateTime StartTime => this.CompletedJobReport.StartTime;
 
-		public DateTime EndTime => CompletedJobReport.EndTime;
+		public DateTime EndTime => this.CompletedJobReport.EndTime;
 
-		public int JobReportTotalRows => CompletedJobReport.TotalRows;
+		public int JobReportTotalRows => this.CompletedJobReport.TotalRows;
 
-		public int JobReportErrorsCount => CompletedJobReport.ErrorRows.Count;
+		public int JobReportErrorsCount => this.CompletedJobReport.ErrorRows.Count;
 
-		public Exception FatalException => CompletedJobReport.FatalException;
+		public Exception FatalException => this.CompletedJobReport.FatalException;
 
 		/// <summary>
 		/// Sets completed job report.

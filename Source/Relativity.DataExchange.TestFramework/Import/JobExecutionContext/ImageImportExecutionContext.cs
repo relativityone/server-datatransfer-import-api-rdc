@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
+namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 {
 	using System;
 	using System.Data;
@@ -65,8 +65,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
 			var importJob = this.ImportApi.NewImageImportJob();
 
 			settings.CopyTo(importJob.Settings);
-			importJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();
-			importJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
+
+			IntegrationTestParameters testParameters = IntegrationTestHelper.IntegrationTestParameters;
+			importJob.Settings.WebServiceURL = testParameters.RelativityWebApiUrl.ToString();
+			importJob.Settings.CaseArtifactId = testParameters.WorkspaceId;
 
 			return importJob;
 		}

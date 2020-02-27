@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSources
+namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources
 {
 	using System;
 	using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSourc
 		private readonly string[] elements;
 		private readonly List<List<int>> paths;
 
-		public RandomPathGenerator(IEnumerable<string> elements, int numOfDifferentPaths, int maxPathDepth)
+		private RandomPathGenerator(IEnumerable<string> elements, int numOfDifferentPaths, int maxPathDepth)
 		{
 			this.elements = elements.ToArray();
 
@@ -89,7 +89,7 @@ namespace Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSourc
 
 		public IEnumerable<string> ToEnumerable()
 		{
-			return this.ToEnumerable(separator: string.Empty);
+			return this.ToEnumerable(nestedValuesDelimeter: string.Empty);
 		}
 
 		public IEnumerable<string> ToEnumerable(int numOfPaths)
@@ -102,9 +102,9 @@ namespace Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSourc
 			return this.ToEnumerable(separator.ToString());
 		}
 
-		public IEnumerable<string> ToEnumerable(char separator, int numOfPaths)
+		public IEnumerable<string> ToEnumerable(char nestedValuesDelimiter, int maxNumberOfMultiValues, char multiValuesDelimiter)
 		{
-			return this.ToEnumerable(separator).Take(numOfPaths);
+			return this.ToEnumerable(nestedValuesDelimiter.ToString(), multiValuesDelimiter.ToString(), maxNumberOfMultiValues);
 		}
 
 		private static IEnumerable<string> GetElements(List<char> characters, int numOfDifferentElements, int maxElementLength)
@@ -174,7 +174,7 @@ namespace Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSourc
 			return characters;
 		}
 
-		private IEnumerable<string> ToEnumerable(string separator)
+		private IEnumerable<string> ToEnumerable(string nestedValuesDelimeter)
 		{
 			// Create the random object with the same seed to make the IEnumerable repeatable for validation purposes.
 			var random = new Random(42 * 42);
@@ -183,10 +183,34 @@ namespace Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSourc
 			while (true)
 			{
 				IEnumerable<string> selectedFolders = random.NextElement(this.paths)
-					.Select(p => random.NextElement(modifiers)(this.elements[p]));
+						.Select(p => random.NextElement(modifiers)(this.elements[p]));
 
-				string path = string.Join(separator, selectedFolders);
+				string path = string.Join(nestedValuesDelimeter, selectedFolders);
 				yield return path;
+			}
+		}
+
+		private IEnumerable<string> ToEnumerable(string nestedValuesDelimeter, string multiValuesDelimeter, int maxNumberOfMultiValues)
+		{
+			// Create the random object with the same seed to make the IEnumerable repeatable for validation purposes.
+			var random = new Random(42 * 42);
+			List<Func<string, string>> modifiers = GetModifiers();
+
+			while (true)
+			{
+				int numberOfMultiValues = random.Next(1, maxNumberOfMultiValues + 1);
+
+				var multiValues = new string[numberOfMultiValues];
+				for (int i = 0; i < numberOfMultiValues; i++)
+				{
+					IEnumerable<string> selectedFolders = random.NextElement(this.paths)
+						.Select(p => random.NextElement(modifiers)(this.elements[p])).Distinct();
+
+					string path = string.Join(nestedValuesDelimeter, selectedFolders);
+					multiValues[i] = path;
+				}
+
+				yield return string.Join(multiValuesDelimeter, multiValues.Distinct());
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 //   Represents an abstract load-file base class.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
-namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
+namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 {
 	using System;
 	using System.Data;
@@ -16,7 +16,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
 
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
-	using Relativity.DataExchange.TestFramework.ImportDataSource;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 
 	/// <summary>
 	/// Execution context for native import tests.
@@ -55,11 +55,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
 		protected override ImportBulkArtifactJob CreateJobWithSettings(Settings settings)
 		{
 			settings.ThrowIfNull(nameof(settings));
-			ImportBulkArtifactJob importJob = this.ImportApi.NewNativeDocumentImportJob();
+			ImportBulkArtifactJob importJob = settings.ArtifactTypeId == (int)ArtifactType.Document | settings.ArtifactTypeId == 0
+				? this.ImportApi.NewNativeDocumentImportJob()
+				: this.ImportApi.NewObjectImportJob(settings.ArtifactTypeId);
 
 			settings.CopyTo(importJob.Settings);
-			importJob.Settings.WebServiceURL = AssemblySetup.TestParameters.RelativityWebApiUrl.ToString();
-			importJob.Settings.CaseArtifactId = AssemblySetup.TestParameters.WorkspaceId;
+
+			IntegrationTestParameters testParameters = IntegrationTestHelper.IntegrationTestParameters;
+			importJob.Settings.WebServiceURL = testParameters.RelativityWebApiUrl.ToString();
+			importJob.Settings.CaseArtifactId = testParameters.WorkspaceId;
 			return importJob;
 		}
 	}

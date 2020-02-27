@@ -2,7 +2,7 @@
 // © Relativity All Rights Reserved.
 // </copyright>
 
-namespace Relativity.DataExchange.TestFramework.ImportDataSource
+namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 {
 	using System;
 
@@ -18,6 +18,9 @@ namespace Relativity.DataExchange.TestFramework.ImportDataSource
 		private bool withDefaultSettings;
 		private bool withNativeFilePath;
 		private string folderPathSourceFieldName;
+		private string identifierField;
+
+		private int destinationArtifactTypeId = (int)ArtifactType.Document;
 
 		public Settings Build()
 		{
@@ -38,6 +41,9 @@ namespace Relativity.DataExchange.TestFramework.ImportDataSource
 				settings.FolderPathSourceFieldName = this.folderPathSourceFieldName;
 			}
 
+			settings.ArtifactTypeId = this.destinationArtifactTypeId;
+			settings.SelectedIdentifierFieldName = this.identifierField;
+
 			return settings;
 		}
 
@@ -50,6 +56,13 @@ namespace Relativity.DataExchange.TestFramework.ImportDataSource
 		public NativeImportSettingsBuilder WithNativeFilePath()
 		{
 			this.withNativeFilePath = true;
+			return this;
+		}
+
+		public NativeImportSettingsBuilder WithDestinationType(int artifactTypeId, string identifierFieldName)
+		{
+			this.destinationArtifactTypeId = artifactTypeId;
+			this.identifierField = identifierFieldName;
 			return this;
 		}
 

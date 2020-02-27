@@ -197,6 +197,7 @@
     <Compile Include="Service\IServiceRetryPolicyFactory.cs" />
     <Compile Include="Service\KeplerRetryPolicyFactory.cs" />
     <Compile Include="Service\KeplerServiceProxyFactory.cs" />
+    <Compile Include="SettingsConstants.cs" />
     <Compile Include="Transfer\ILongTextStreamService.cs" />
     <Compile Include="Transfer\LongTextStreamProgressEventArgs.cs" />
     <Compile Include="Transfer\LongTextStreamRequest.cs" />

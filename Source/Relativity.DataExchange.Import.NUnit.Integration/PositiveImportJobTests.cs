@@ -18,11 +18,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using kCura.Relativity.DataReaderClient;
 
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
-	using Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
-	using Relativity.DataExchange.TestFramework.ImportDataSource;
-	using Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSources;
+	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 

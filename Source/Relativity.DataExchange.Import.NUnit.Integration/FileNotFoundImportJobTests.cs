@@ -15,8 +15,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
-	using Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 

@@ -17,7 +17,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 	{
 		public TestCommand Wrap(TestCommand command)
 		{
-			return IntegrationTestHelper.ReadIntegrationTestParameters().SqlCaptureProfiling
+			return IntegrationTestHelper.IntegrationTestParameters.SqlCaptureProfiling
 					   ? CreateTestCommandWithProfiling(command)
 					   : command;
 		}
@@ -25,7 +25,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 		private static TestCommand CreateTestCommandWithProfiling(TestCommand command)
 		{
 			string connectionString = IntegrationTestHelper.GetSqlConnectionStringBuilder().ConnectionString;
-			string outputPath = IntegrationTestHelper.ReadIntegrationTestParameters().SqlProfilingReportsOutputPath;
+			string outputPath = IntegrationTestHelper.IntegrationTestParameters.SqlProfilingReportsOutputPath;
 
 			return new ProfilingSessionTestCommand(command, new CollectSqlStatementsProfilingSession(connectionString), outputPath);
 		}

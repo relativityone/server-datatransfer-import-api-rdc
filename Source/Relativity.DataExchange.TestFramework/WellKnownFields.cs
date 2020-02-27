@@ -125,5 +125,10 @@ namespace Relativity.DataExchange.TestFramework
 		/// Maximum number of errors.
 		/// </summary>
 		public const int MaximumErrorCount = 1000;
+
+		/// <summary>
+		/// Default name of an RDO identifier field.
+		/// </summary>
+		public const string RdoIdentifier = "Name";
 	}
 }

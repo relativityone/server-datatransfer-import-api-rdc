@@ -2,7 +2,7 @@
 // © Relativity All Rights Reserved.
 // </copyright>
 
-namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
+namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 {
 	using System;
 
@@ -10,7 +10,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
 	using kCura.Relativity.ImportAPI;
 
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.DataExchange.TestFramework.ImportDataSource;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 
 	public static class ImportApiSetupExtensions
 	{

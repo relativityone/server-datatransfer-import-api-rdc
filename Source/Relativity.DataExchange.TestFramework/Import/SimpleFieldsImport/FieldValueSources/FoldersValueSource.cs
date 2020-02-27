@@ -1,16 +1,16 @@
-﻿// <copyright file="FoldersSource.cs" company="Relativity ODA LLC">
+﻿// <copyright file="FoldersValueSource.cs" company="Relativity ODA LLC">
 // © Relativity All Rights Reserved.
 // </copyright>
 
-namespace Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSources
+namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources
 {
 	using System;
 	using System.Collections;
 
 	[Serializable]
-	public class FoldersSource : IFieldValueSource
+	public class FoldersValueSource : IFieldValueSource
 	{
-		public FoldersSource(
+		public FoldersValueSource(
 			int numberOfDifferentPaths,
 			int maximumPathDepth,
 			int numberOfDifferentElements,
@@ -33,10 +33,10 @@ namespace Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSourc
 		public IEnumerable CreateValuesEnumerator()
 		{
 			RandomPathGenerator randomFolderGenerator = RandomPathGenerator.GetFolderGenerator(
-				maxPathDepth: 5,
-				numOfDifferentElements: 100,
-				numOfDifferentPaths: 1000,
-				maxElementLength: 50);
+				maxPathDepth: this.MaximumPathDepth,
+				numOfDifferentElements: this.NumberOfDifferentElements,
+				numOfDifferentPaths: this.NumberOfDifferentPaths,
+				maxElementLength: this.MaximumElementLength);
 			return randomFolderGenerator.ToFolders();
 		}
 	}

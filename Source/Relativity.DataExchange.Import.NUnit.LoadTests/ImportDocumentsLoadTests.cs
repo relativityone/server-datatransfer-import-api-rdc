@@ -19,11 +19,11 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	using kCura.Relativity.DataReaderClient;
 
 	using Relativity.DataExchange.Import.NUnit.Integration;
-	using Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext;
 	using Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.DataExchange.TestFramework.ImportDataSource;
-	using Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSources;
+	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
 	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
@@ -55,15 +55,15 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 				.WithDefaultSettings()
 				.WithFolderPath(WellKnownFields.FolderName);
 
-			FoldersSource foldersSource = new FoldersSource(
+			FoldersValueSource foldersValueSource = new FoldersValueSource(
 				numberOfDifferentPaths: 1000,
 				maximumPathDepth: 10,
 				numberOfDifferentElements: 100,
 				maximumElementLength: 100);
 
 			var dataSourceBuilder = new ImportDataSourceBuilder();
-			dataSourceBuilder.AddField(WellKnownFields.ControlNumber, new IdentifierSource());
-			dataSourceBuilder.AddField(WellKnownFields.FolderName, foldersSource);
+			dataSourceBuilder.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource());
+			dataSourceBuilder.AddField(WellKnownFields.FolderName, foldersValueSource);
 
 			this.InitializeImportApiWithUserAndPwd(settingsBuilder, parallelIApiClientCount);
 
@@ -95,28 +95,20 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			var settingsBuilder = new NativeImportSettingsBuilder();
 			settingsBuilder = settingsBuilder.WithDefaultSettings();
 
-			var settings = settingsBuilder.Build();
-			char multiValueDelimiter = settings.MultiValueDelimiter;
-			char nestedValueDelimiter = settings.NestedValueDelimiter;
-
-			var confidentialDesignationSource = new ChoicesSource(
+			var confidentialDesignationSource = new ChoicesValueSource(
 				numberOfDifferentPaths: 4,
 				maximumPathDepth: 1,
 				numberOfDifferentElements: 4,
-				maximumElementLength: 200,
-				multiValueDelimiter: multiValueDelimiter,
-				nestedValueDelimiter: nestedValueDelimiter);
+				maximumElementLength: 200);
 
-			var privilegeDesignationSource = new ChoicesSource(
+			var privilegeDesignationSource = new ChoicesValueSource(
 				numberOfDifferentPaths: 100,
 				maximumPathDepth: 4,
 				numberOfDifferentElements: 250,
-				maximumElementLength: 50,
-				multiValueDelimiter: multiValueDelimiter,
-				nestedValueDelimiter: nestedValueDelimiter);
+				maximumElementLength: 50);
 
 			var dataSourceBuilder = new ImportDataSourceBuilder();
-			dataSourceBuilder.AddField(WellKnownFields.ControlNumber, new IdentifierSource());
+			dataSourceBuilder.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource());
 			dataSourceBuilder.AddField(WellKnownFields.ConfidentialDesignation, confidentialDesignationSource);
 			dataSourceBuilder.AddField(WellKnownFields.PrivilegeDesignation, privilegeDesignationSource);
 
@@ -151,34 +143,26 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 				.WithDefaultSettings()
 				.WithFolderPath(WellKnownFields.FolderName);
 
-			var settings = settingsBuilder.Build();
-			char multiValueDelimiter = settings.MultiValueDelimiter;
-			char nestedValueDelimiter = settings.NestedValueDelimiter;
-
-			var foldersSource = new FoldersSource(
+			var foldersSource = new FoldersValueSource(
 				numberOfDifferentPaths: 1000,
 				maximumPathDepth: 5,
 				numberOfDifferentElements: 100,
 				maximumElementLength: 50);
 
-			var confidentialDesignationSource = new ChoicesSource(
+			var confidentialDesignationSource = new ChoicesValueSource(
 				numberOfDifferentPaths: 4,
 				maximumPathDepth: 1,
 				numberOfDifferentElements: 4,
-				maximumElementLength: 200,
-				multiValueDelimiter: multiValueDelimiter,
-				nestedValueDelimiter: nestedValueDelimiter);
+				maximumElementLength: 200);
 
-			var privilegeDesignationSource = new ChoicesSource(
+			var privilegeDesignationSource = new ChoicesValueSource(
 				numberOfDifferentPaths: 100,
 				maximumPathDepth: 4,
 				numberOfDifferentElements: 250,
-				maximumElementLength: 50,
-				multiValueDelimiter: multiValueDelimiter,
-				nestedValueDelimiter: nestedValueDelimiter);
+				maximumElementLength: 50);
 
 			var dataSourceBuilder = new ImportDataSourceBuilder();
-			dataSourceBuilder.AddField(WellKnownFields.ControlNumber, new IdentifierSource());
+			dataSourceBuilder.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource());
 			dataSourceBuilder.AddField(WellKnownFields.FolderName, foldersSource);
 			dataSourceBuilder.AddField(WellKnownFields.ConfidentialDesignation, confidentialDesignationSource);
 			dataSourceBuilder.AddField(WellKnownFields.PrivilegeDesignation, privilegeDesignationSource);

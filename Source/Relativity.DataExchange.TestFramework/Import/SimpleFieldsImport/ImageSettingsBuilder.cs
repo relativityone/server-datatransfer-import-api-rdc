@@ -2,7 +2,7 @@
 // © Relativity All Rights Reserved.
 // </copyright>
 
-namespace Relativity.DataExchange.TestFramework.ImportDataSource
+namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 {
 	using System;
 

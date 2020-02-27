@@ -6,7 +6,7 @@
 //   Represents an abstract load-file base class.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
-namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
+namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 {
 	using kCura.Relativity.DataReaderClient;
 

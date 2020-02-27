@@ -22,6 +22,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 			ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
 			AssemblySetup.TestParameters = parameters;
+			IntegrationTestHelper.IntegrationTestParameters = parameters;
 			IntegrationTestHelper.SetupLogger(parameters);
 		}
 	}

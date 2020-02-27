@@ -6,7 +6,7 @@
 //   Represents an abstract load-file base class.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
-namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
+namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 {
 	using System;
 	using System.Collections;
@@ -20,7 +20,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
 
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
-	using Relativity.DataExchange.TestFramework.ImportDataSource;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 	using Relativity.Logging;
 
 	/// <summary>
@@ -73,7 +73,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
 			importApiFactory = importApiFactory ?? throw new ArgumentNullException(nameof(importApiFactory));
 			settingsBuilder = settingsBuilder ?? throw new ArgumentNullException(nameof(settingsBuilder));
 
-			SetUpImportApi(importApiFactory, settingsBuilder.Build());
+			this.SetUpImportApi(importApiFactory, settingsBuilder.Build());
 		}
 
 		public ImportTestJobResult Execute<T>(IEnumerable<T> importData) => this.Execute(importData.AsImportDataSource());
@@ -99,7 +99,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
 
 		public void Dispose()
 		{
-			Dispose(true);
+			this.Dispose(true);
 			GC.SuppressFinalize(this);
 		}
 

@@ -14,6 +14,10 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using kCura.Relativity.Client;
 	using kCura.Relativity.Client.DTOs;
 
+	using Relativity.Services.Interfaces.ObjectType;
+	using Relativity.Services.Interfaces.ObjectType.Models;
+	using Relativity.Services.Interfaces.Shared;
+	using Relativity.Services.Interfaces.Shared.Models;
 	using Relativity.Services.Objects;
 	using Relativity.Services.Objects.DataContracts;
 
@@ -22,6 +26,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	/// </summary>
 	public static class RdoHelper
 	{
+		private const int WorkspaceArtifactTypeId = 8;
+
 		public static int CreateObjectType(IntegrationTestParameters parameters, string objectTypeName)
 		{
 			if (parameters == null)
@@ -57,6 +63,23 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				};
 				int artifactId = client.Repositories.ObjectType.CreateSingle(objectTypeDto);
 				return artifactId;
+			}
+		}
+
+		public static async Task<int> CreateObjectTypeAsync(IntegrationTestParameters parameters, string objectTypeName)
+		{
+			using (var objectManager = ServiceHelper.GetServiceProxy<IObjectTypeManager>(parameters))
+			{
+				var request = new ObjectTypeRequest
+				{
+					Name = objectTypeName,
+					ParentObjectType = new Securable<ObjectTypeIdentifier>(new ObjectTypeIdentifier { ArtifactTypeID = WorkspaceArtifactTypeId }),
+				};
+
+				int newObjectId = await objectManager.CreateAsync(parameters.WorkspaceId, request).ConfigureAwait(false);
+
+				ObjectTypeResponse objectTypeResponse = await objectManager.ReadAsync(parameters.WorkspaceId, newObjectId).ConfigureAwait(false);
+				return objectTypeResponse.ArtifactTypeID;
 			}
 		}
 
@@ -252,11 +275,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			using (IObjectManager client = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
 			{
 				QueryRequest queryRequest = new QueryRequest
-					                            {
-						                            Fields = fields?.Select(x => new FieldRef { Name = x }),
-						                            ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId },
-						                            Condition = condition,
-					                            };
+				{
+					Fields = fields?.Select(x => new FieldRef { Name = x }),
+					ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId },
+					Condition = condition,
+				};
 
 				Relativity.Services.Objects.DataContracts.QueryResult result = client.QueryAsync(
 					parameters.WorkspaceId,

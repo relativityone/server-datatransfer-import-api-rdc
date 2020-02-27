@@ -1,4 +1,5 @@
 Imports kCura.WinEDDS
+Imports Relativity.DataExchange
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -11,8 +12,8 @@ Namespace kCura.Relativity.DataReaderClient
 #Region "Constructors"
 		Friend Sub New()
 			MyBase.New()
-			MultiValueDelimiter = CType(";", Char)
-			NestedValueDelimiter = CType("\", Char)
+			MultiValueDelimiter = SettingsConstants.DefaultMultiValueDelimiter
+			NestedValueDelimiter = SettingsConstants.DefaultNestedValueDelimiter
 		End Sub
 #End Region
 

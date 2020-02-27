@@ -19,8 +19,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 	using kCura.WinEDDS.Exceptions;
 
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
-	using Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;

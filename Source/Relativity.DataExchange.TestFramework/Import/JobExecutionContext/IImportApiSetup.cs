@@ -2,14 +2,14 @@
 // © Relativity All Rights Reserved.
 // </copyright>
 
-namespace Relativity.DataExchange.Import.NUnit.Integration.JobExecutionContext
+namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 {
 	using System;
 
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
-	using Relativity.DataExchange.TestFramework.ImportDataSource;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 
 	public interface IImportApiSetup<in TSettings>
 		where TSettings : ImportSettingsBase

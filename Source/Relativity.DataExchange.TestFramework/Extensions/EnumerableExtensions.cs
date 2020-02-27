@@ -8,9 +8,10 @@ namespace Relativity.DataExchange.TestFramework.Extensions
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using System.Text;
 
-	using Relativity.DataExchange.TestFramework.ImportDataSource;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 
 	public static class EnumerableExtensions
 	{
@@ -93,6 +94,26 @@ namespace Relativity.DataExchange.TestFramework.Extensions
 		{
 			enumerable = enumerable ?? throw new ArgumentNullException(nameof(enumerable));
 			return DtoBasedDataSourceConverter.ConvertDtoCollectionToImportDataSource(enumerable);
+		}
+
+		public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> items, int batchSize)
+		{
+			var batch = new List<T>(batchSize);
+			foreach (var item in items)
+			{
+				batch.Add(item);
+
+				if (batch.Count == batchSize)
+				{
+					yield return batch;
+					batch = new List<T>(batchSize);
+				}
+			}
+
+			if (batch.Any())
+			{
+				yield return batch;
+			}
 		}
 	}
 }

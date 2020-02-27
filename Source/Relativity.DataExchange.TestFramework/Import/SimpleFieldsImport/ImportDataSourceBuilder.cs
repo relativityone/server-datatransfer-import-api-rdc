@@ -2,14 +2,14 @@
 // © Relativity All Rights Reserved.
 // </copyright>
 
-namespace Relativity.DataExchange.TestFramework.ImportDataSource
+namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 {
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
 
-	using Relativity.DataExchange.TestFramework.ImportDataSource.FieldValueSources;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
 
 	public sealed class ImportDataSourceBuilder : MarshalByRefObject
 	{
@@ -68,8 +68,8 @@ namespace Relativity.DataExchange.TestFramework.ImportDataSource
 			for (int i = 0; i < this.fieldNames.Count; i++)
 			{
 				IFieldValueSource fieldsValueSource = this.fieldValuesSource[i];
-				IFieldValueSource newFieldsValuesSource = fieldsValueSource is IdentifierSource
-					? new IdentifierSource(newIdentifierPrefix)
+				IFieldValueSource newFieldsValuesSource = fieldsValueSource is IdentifierValueSource
+					? new IdentifierValueSource(newIdentifierPrefix)
 					: fieldsValueSource;
 				destinationDataSourceBuilder.AddField(this.fieldNames[i], newFieldsValuesSource);
 			}

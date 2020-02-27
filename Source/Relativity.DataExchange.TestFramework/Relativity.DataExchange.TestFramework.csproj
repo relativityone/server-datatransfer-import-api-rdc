@@ -73,6 +73,9 @@
     <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
     <Optimize>true</Optimize>
   </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="itextsharp, Version=5.1.2.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -91,25 +94,41 @@
     <Compile Include="CollationStringComparer.cs" />
     <Compile Include="DataReaderBase.cs" />
     <Compile Include="DummyTest.cs" />
-    <Compile Include="ImportDataSource\FieldValueSources\ChoicesSource.cs" />
-    <Compile Include="ImportDataSource\DtoBasedDataSourceConverter.cs" />
-    <Compile Include="ImportDataSource\ImageSettingsBuilder.cs" />
-    <Compile Include="ImportDataSource\ImportDataSourceToDataReaderAdapter.cs" />
+    <Compile Include="Import\JobExecutionContext\ImportTestJobResult.cs" />
+    <Compile Include="Import\SimpleFieldsImport\SingleObjectImporter.cs" />
+    <Compile Include="Import\RdoStructureImport\FieldDefinition.cs" />
+    <Compile Include="Import\RdoStructureImport\RdoStructureDefinition.cs" />
+    <Compile Include="Import\RdoStructureImport\ObjectFieldDefinition.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\ChoicesValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\DtoBasedDataSourceConverter.cs" />
+    <Compile Include="Import\SimpleFieldsImport\ImageSettingsBuilder.cs" />
+    <Compile Include="Import\SimpleFieldsImport\ImportDataSourceToDataReaderAdapter.cs" />
     <Compile Include="Extensions\CopySettingsExtenstion.cs" />
     <Compile Include="Extensions\DataRowExtensions.cs" />
     <Compile Include="Extensions\DataTableExtensions.cs" />
-    <Compile Include="ImportDataSource\FieldValueSources\FoldersSource.cs" />
-    <Compile Include="ImportDataSource\FieldValueSources\IdentifierSource.cs" />
-    <Compile Include="ImportDataSource\FieldValueSources\IFieldValueSource.cs" />
-    <Compile Include="ImportDataSource\ImportDataSourceBuilder.cs" />
-    <Compile Include="ImportDataSource\ImportDataSource.cs" />
-    <Compile Include="ImportDataSource\FieldValueSources\RandomPathGenerator.cs" />
-    <Compile Include="ImportDataSource\ISettingsBuilder.cs" />
-    <Compile Include="ImportDataSource\NativeImportSettingsBuilder.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\FoldersValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\IdentifierValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\IFieldValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\ObjectNameValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\TextValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\WholeNumberValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\ImportDataSourceBuilder.cs" />
+    <Compile Include="Import\SimpleFieldsImport\ImportDataSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\RandomPathGenerator.cs" />
+    <Compile Include="Import\SimpleFieldsImport\ISettingsBuilder.cs" />
+    <Compile Include="Import\SimpleFieldsImport\NativeImportSettingsBuilder.cs" />
+    <Compile Include="Import\RdoStructureImport\RdoStructureImporter.cs" />
+    <Compile Include="Import\JobExecutionContext\BaseExecutionContext.cs" />
+    <Compile Include="Import\JobExecutionContext\IImportApiSetup.cs" />
+    <Compile Include="Import\JobExecutionContext\ImageImportExecutionContext.cs" />
+    <Compile Include="Import\JobExecutionContext\ImportApiSetupExtensions.cs" />
+    <Compile Include="Import\JobExecutionContext\NativeImportExecutionContext.cs" />
+    <Compile Include="Import\JobExecutionContext\NativeImportSettingsProvider.cs" />
     <Compile Include="NUnitExtensions\CollectDeadlocksAttribute.cs" />
     <Compile Include="ObjectManagers\ClientManager.cs" />
     <Compile Include="ObjectManagers\FileShareServerManager.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="RelativityHelpers\ChoiceHelper.cs" />
     <Compile Include="RelativityHelpers\FolderHelper.cs" />
     <Compile Include="NUnitExtensions\CollectWebApiExecutionPlansAttribute.cs" />
     <Compile Include="NUnitExtensions\CollectWebApiSqlAttribute.cs" />
