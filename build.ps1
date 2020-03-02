@@ -183,7 +183,7 @@ if ("Clean" -in $TaskList) {
 
 if (-Not (Test-Path $PaketExe -PathType Leaf)) {
 	[Net.ServicePointManager]::SecurityProtocol = ([Net.SecurityProtocolType]::Tls12)
-    Invoke-WebRequest "https://github.com/fsprojects/Paket/releases/download/5.196.2/paket.exe" -OutFile $PaketExe
+    Invoke-WebRequest "https://relativity.jfrog.io/relativity/misc-files-local/paket.exe" -OutFile $PaketExe
 }
 
 $PaketVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "--verbose" } else { "" }
