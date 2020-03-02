@@ -6,25 +6,26 @@
 
 namespace Relativity.DataExchange.Import.NUnit.LoadTests
 {
+	using System.Threading.Tasks;
+
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Import.NUnit.Integration;
 
 	[SetUpFixture]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1053:StaticHolderTypesShouldNotHaveConstructors", Justification = "It is a NUnit requirement that setup class is not static.")]
 	public class LoadTestsAssemblySetup
 	{
-		private readonly AssemblySetup _assemblySetup = new AssemblySetup();
-
 		[OneTimeSetUp]
-		public void Setup()
+		public static async Task Setup()
 		{
-			this._assemblySetup.Setup();
+			await AssemblySetup.SetupAsync().ConfigureAwait(false);
 		}
 
 		[OneTimeTearDown]
-		public void TearDown()
+		public static void TearDown()
 		{
-			this._assemblySetup.TearDown();
+			AssemblySetup.TearDown();
 		}
 	}
 }

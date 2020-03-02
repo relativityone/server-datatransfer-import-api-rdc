@@ -27,7 +27,7 @@
     <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DocumentationFile>bin\Relativity.DataExchange.Import.NUnit.LoadTests.xml</DocumentationFile>
-    <NoWarn>1591;0618</NoWarn>
+    <NoWarn>1591;0618;1822</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
