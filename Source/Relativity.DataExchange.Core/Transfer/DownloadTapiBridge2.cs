@@ -24,6 +24,8 @@ namespace Relativity.DataExchange.Transfer
 	{
 		private readonly TapiBridgeParameters2 parameters;
 
+		private readonly ITransferLog transferLog;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DownloadTapiBridge2"/> class.
 		/// </summary>
@@ -92,6 +94,7 @@ namespace Relativity.DataExchange.Transfer
 			: base(factory, parameters, TransferDirection.Download, context, logger, token)
 		{
 			this.parameters = parameters;
+			this.transferLog = new RelativityTransferLog(this.Logger);
 		}
 
 		/// <summary>
@@ -140,14 +143,11 @@ namespace Relativity.DataExchange.Transfer
 			switch (this.ClientId.ToString().ToUpperInvariant())
 			{
 				case TransferClientConstants.AsperaClientId:
-					// TODO: add transferLog for new TAPI version
-					// using (var transferLog = new RelativityTransferLog(this.Logger))
-					{
-						resolver = new AsperaUncPathResolver(
-							this.parameters.FileShare,
-							this.parameters.AsperaDocRootLevels);
-						break;
-					}
+					resolver = new AsperaUncPathResolver(
+						this.parameters.FileShare,
+						this.parameters.AsperaDocRootLevels,
+						this.transferLog);
+					break;
 			}
 
 			request.SourcePathResolver = resolver;

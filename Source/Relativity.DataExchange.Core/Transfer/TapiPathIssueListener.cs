@@ -194,7 +194,7 @@ namespace Relativity.DataExchange.Transfer
 				this.Logger.LogError(
 					"A serious transfer file-level error has occurred on line {LineNumber}. Message={Message}, Code={Code}, SourcePath={SourcePath}, Attributes={Attributes}, IsRetryable={IsRetryable}",
 					lineNumber,
-					issue.Message.Secure(), // TODO: message should be free of any sensitive data.
+					issue.Message,
 					issue.Code,
 					issue.Path.SourcePath.Secure(),
 					issue.Attributes,
@@ -215,7 +215,7 @@ namespace Relativity.DataExchange.Transfer
 				this.Logger.LogWarning(
 					"A transfer file-level warning has occurred on line {LineNumber}. Message={Message}, Code={Code}, SourcePath={SourcePath}, Attributes={Attributes}, IsRetryable={IsRetryable}",
 					lineNumber,
-					issue.Message.Secure(), // TODO: message should be free of any sensitive data.
+					issue.Message,
 					issue.Code,
 					issue.Path.SourcePath.Secure(),
 					issue.Attributes,

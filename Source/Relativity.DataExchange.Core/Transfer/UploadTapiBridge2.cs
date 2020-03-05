@@ -34,6 +34,11 @@ namespace Relativity.DataExchange.Transfer
 		private readonly UploadTapiBridgeParameters2 parameters;
 
 		/// <summary>
+		/// ILog adapter for transferApi.
+		/// </summary>
+		private readonly ITransferLog transferLog;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="UploadTapiBridge2"/> class.
 		/// </summary>
 		/// <param name="parameters">
@@ -108,6 +113,7 @@ namespace Relativity.DataExchange.Transfer
 
 			this.parameters = parameters;
 			this.pathManager = new FileSharePathManager(parameters.MaxFilesPerFolder);
+			this.transferLog = new RelativityTransferLog(this.Logger);
 		}
 
 		/// <summary>
@@ -216,23 +222,17 @@ namespace Relativity.DataExchange.Transfer
 					IRemotePathResolver resolver;
 					if (this.parameters.BcpFileTransfer)
 					{
-						// TODO: add transferLog for new TAPI version
-						// using (var transferLog = new RelativityTransferLog(this.Logger))
-						{
-							resolver = new AsperaUncBcpPathResolver(
-								this.parameters.FileShare,
-								this.parameters.AsperaBcpRootFolder);
-						}
+						resolver = new AsperaUncBcpPathResolver(
+							this.parameters.FileShare,
+							this.parameters.AsperaBcpRootFolder,
+							this.transferLog);
 					}
 					else
 					{
-						// TODO: add transferLog for new TAPI version
-						// using (var transferLog = new RelativityTransferLog(this.Logger))
-						{
-							resolver = new AsperaUncPathResolver(
-								this.parameters.FileShare,
-								this.parameters.AsperaDocRootLevels);
-						}
+						resolver = new AsperaUncPathResolver(
+							this.parameters.FileShare,
+							this.parameters.AsperaDocRootLevels,
+							this.transferLog);
 					}
 
 					request.TargetPathResolver = resolver;
