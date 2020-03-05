@@ -96,6 +96,7 @@ namespace Relativity.DataExchange.TestFramework.Extensions
 			return DtoBasedDataSourceConverter.ConvertDtoCollectionToImportDataSource(enumerable);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Nesting cannot be avoided for that method.")]
 		public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> items, int batchSize)
 		{
 			var batch = new List<T>(batchSize);

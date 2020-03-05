@@ -10,6 +10,9 @@ namespace Relativity.DataExchange.TestFramework.Import.RdoStructureImport
 
 	public class RdoStructureDefinition
 	{
+		private const string DoNotNestGenericTypesJustification = "This design is better than creating a lot of new types.";
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = DoNotNestGenericTypesJustification)]
 		public RdoStructureDefinition(
 			int numberOfRecordsToImport,
 			string identifierFieldName,
@@ -42,12 +45,16 @@ namespace Relativity.DataExchange.TestFramework.Import.RdoStructureImport
 
 		public FoldersValueSource FoldersValueSource { get; }
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = DoNotNestGenericTypesJustification)]
 		public IEnumerable<FieldDefinition<ChoicesValueSource>> SingleChoiceFieldDefinitions { get; }
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = DoNotNestGenericTypesJustification)]
 		public IEnumerable<FieldDefinition<ChoicesValueSource>> MultiChoiceFieldDefinitions { get; }
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = DoNotNestGenericTypesJustification)]
 		public IEnumerable<FieldDefinition<TextValueSource>> LongTextFieldDefinitions { get; }
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = DoNotNestGenericTypesJustification)]
 		public IEnumerable<FieldDefinition<WholeNumberValueSource>> WholeNumberFieldDefinitions { get; }
 
 		public IEnumerable<ObjectFieldDefinition> SingleObjectsFieldDefinitions { get; }
