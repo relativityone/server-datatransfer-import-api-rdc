@@ -8,6 +8,7 @@
 	using Relativity.DataExchange.Process;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class DownloadProgressManager : IDownloadProgress, IDownloadProgressManager
@@ -81,7 +82,7 @@
 		{
 			lock (_syncObject)
 			{
-				_logger.LogVerbose("Marking {TargetFile} {LineNumber} file as completed.", targetFile, lineNumber);
+				_logger.LogVerbose("Marking {TargetFile} {LineNumber} file as completed.", targetFile.Secure(), lineNumber);
 				IList<Native> natives = _nativeRepository.GetNativesByTargetFile(targetFile);
 				if (natives.Count > 0)
 				{
@@ -103,7 +104,7 @@
 		{
 			lock (_syncObject)
 			{
-				_logger.LogVerbose("Marking {TargetFile} long text as completed.", targetFile);
+				_logger.LogVerbose("Marking {TargetFile} long text as completed.", targetFile.Secure());
 				LongText longText = _longTextRepository.GetByLineNumber(lineNumber);
 				if (longText != null)
 				{
@@ -114,7 +115,7 @@
 				{
 					_logger.LogWarning(
 						"The process count isn't incremented for {TargetFile} because the long text file doesn't exist in the long text repository.",
-						targetFile);
+						targetFile.Secure());
 				}
 			}
 		}
@@ -135,7 +136,7 @@
 			{
 				_logger.LogWarning(
 					"The process count isn't incremented for {TargetFile} because the native or image file doesn't exist in any repository.",
-					targetFile);
+					targetFile.Secure());
 			}
 		}
 

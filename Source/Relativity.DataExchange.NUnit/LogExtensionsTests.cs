@@ -47,7 +47,9 @@ namespace Relativity.DataExchange.NUnit
 		{
 			Relativity.DataExchange.Service.CaseInfo value =
 				new Relativity.DataExchange.Service.CaseInfo { Name = "MyWorkspace", ArtifactID = 1234567 };
+#pragma warning disable CS0618 // Type or member is obsolete
 			this.logger.Object.LogObjectAsDictionary("The {@Value}", value);
+#pragma warning restore CS0618 // Type or member is obsolete
 			Assert.That(this.dictionary["Name"], Is.EqualTo("MyWorkspace"));
 			Assert.That(this.dictionary["ArtifactID"], Is.EqualTo("1234567"));
 		}
@@ -58,10 +60,12 @@ namespace Relativity.DataExchange.NUnit
 		{
 			Relativity.DataExchange.Service.ErrorFileKey value =
 				new Relativity.DataExchange.Service.ErrorFileKey { LogKey = "1", OpticonKey = "2" };
+#pragma warning disable CS0618 // Type or member is obsolete
 			this.logger.Object.LogObjectAsDictionary(
 				"The {@Value}",
 				value,
 				info => !info.Name.Equals(nameof(value.OpticonKey)));
+#pragma warning restore CS0618 // Type or member is obsolete
 			Assert.That(this.dictionary["LogKey"], Is.EqualTo("1"));
 			Assert.That(this.dictionary.ContainsKey("OpticonKey"), Is.False);
 		}
@@ -71,7 +75,9 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldLogTheAnonymousObjectAsDictionary()
 		{
 			var value = new { FirstName = "Bob", LastName = "Smith" };
+#pragma warning disable CS0618 // Type or member is obsolete
 			this.logger.Object.LogObjectAsDictionary("The {@Value}", value);
+#pragma warning restore CS0618 // Type or member is obsolete
 			Assert.That(this.dictionary["FirstName"], Is.EqualTo("Bob"));
 			Assert.That(this.dictionary["LastName"], Is.EqualTo("Smith"));
 		}
@@ -81,7 +87,9 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldLogTheStructAsDictionary()
 		{
 			DateTime value = new DateTime(2000, 3, 9, 6, 10, 33);
+#pragma warning disable CS0618 // Type or member is obsolete
 			this.logger.Object.LogObjectAsDictionary("The {@Value}", value);
+#pragma warning restore CS0618 // Type or member is obsolete
 			Assert.That(this.dictionary["Year"], Is.EqualTo("2000"));
 			Assert.That(this.dictionary["Month"], Is.EqualTo("3"));
 			Assert.That(this.dictionary["Day"], Is.EqualTo("9"));
@@ -105,11 +113,15 @@ namespace Relativity.DataExchange.NUnit
 			if (fatal)
 			{
 				Assert.Throws<OutOfMemoryException>(
+#pragma warning disable CS0618 // Type or member is obsolete
 					() => this.logger.Object.LogObjectAsDictionary("The {@Value}", DateTime.Now));
+#pragma warning restore CS0618 // Type or member is obsolete
 			}
 			else
 			{
+#pragma warning disable CS0618 // Type or member is obsolete
 				this.logger.Object.LogObjectAsDictionary("The {@Value}", DateTime.Now);
+#pragma warning restore CS0618 // Type or member is obsolete
 				this.logger.Verify(x => x.LogWarning(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()));
 			}
 		}

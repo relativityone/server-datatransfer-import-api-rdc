@@ -5,6 +5,7 @@
 
 	using kCura.WinEDDS;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Service;
 	using Relativity.Logging;
 
@@ -39,19 +40,19 @@
 				if (fieldToRemove != null)
 				{
 					int index = columns.IndexOf(fieldToRemove);
-					_logger.LogVerbose("Found field {fieldToReplace} at index {index} to replace with long text field {longTextField}.", fieldToRemove.AvfColumnName, index,
-						textFields.First().AvfColumnName);
+					_logger.LogVerbose("Found field {fieldToReplace} at index {index} to replace with long text field {longTextField}.", fieldToRemove.AvfColumnName.Secure(), index,
+						textFields.First().AvfColumnName.Secure());
 					columns[index] = new CoalescedTextViewField(textFields.First(), true);
 				}
 				else
 				{
-					_logger.LogVerbose("Adding missing CoalescedTextViewField for selected long text field {field}.", textFields.First().AvfColumnName);
+					_logger.LogVerbose("Adding missing CoalescedTextViewField for selected long text field {field}.", textFields.First().AvfColumnName.Secure());
 					columns.Add(new CoalescedTextViewField(textFields.First(), false));
 				}
 			}
 			else
 			{
-				_logger.LogVerbose("Adding missing CoalescedTextViewField for selected long text field {field}.", textFields.First().AvfColumnName);
+				_logger.LogVerbose("Adding missing CoalescedTextViewField for selected long text field {field}.", textFields.First().AvfColumnName.Secure());
 				columns.Add(new CoalescedTextViewField(textFields.First(), false));
 			}
 

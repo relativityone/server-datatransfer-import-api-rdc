@@ -7,6 +7,7 @@ Imports Monitoring
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Data
 Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Media
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
@@ -850,11 +851,11 @@ Namespace kCura.WinEDDS
 				Me.RaiseStatusEvent(EventType2.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 			Catch ex As Exception
 				If TypeOf ex Is ImageValidationException Then
-				Me.LogError(ex, "Failed to validate the {Path} image.", imageFilePath)
+				Me.LogError(ex, "Failed to validate the {Path} image.", imageFilePath.Secure())
 					retval = ImportStatus.InvalidImageFormat
 					_verboseErrorCollection.AddError(imageRecord.OriginalIndex, ex)
 				Else
-				Me.LogFatal(ex, "Unexpected failure to validate the {Path} image file.", imageFilePath)
+				Me.LogFatal(ex, "Unexpected failure to validate the {Path} image file.", imageFilePath.Secure())
 					Throw
 				End If
 			End Try

@@ -2,6 +2,7 @@
 Imports System.Collections.Generic
 Imports System.Threading
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logger
 
 Friend Class ImportCredentialManager
 

@@ -8,6 +8,7 @@
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class LongTextFromFieldBuilder : ILongTextBuilder
@@ -38,7 +39,7 @@
 				ViewFieldInfo field = _fieldService.GetColumns()[i];
 				if (_longTextHelper.IsLongTextField(field))
 				{
-					_logger.LogVerbose("Creating LongText from field {field}.", field.AvfColumnName);
+					_logger.LogVerbose("Creating LongText from field {field}.", field.AvfColumnName.Secure());
 					if (_longTextHelper.IsTextTooLong(artifact, field.AvfColumnName))
 					{
 						//We can assume that CoalescedTextViewField fields have been handled in LongTextPrecedenceBuilder

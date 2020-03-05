@@ -1,5 +1,6 @@
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Process
 
 Namespace kCura.WinEDDS

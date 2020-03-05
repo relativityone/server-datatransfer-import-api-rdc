@@ -10,6 +10,7 @@ namespace Relativity.DataExchange.Process
 	using System.Threading;
 
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	/// <summary>

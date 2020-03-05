@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<kCuraLogging masterLoggingConfiguration="LOCAL">
+	<rules enabled="true">
+		<rule system="*" loggingLevel="Error" sink="Splunk1"/>
+	</rules>
+	<sinks>
+		<splunkSink name="Splunk1" collectorUrl="http://localhost:8088/" hecToken ="hecToken" />
+	</sinks>
+</kCuraLogging>

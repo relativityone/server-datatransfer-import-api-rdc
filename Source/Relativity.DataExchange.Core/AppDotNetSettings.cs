@@ -655,6 +655,17 @@ namespace Relativity.DataExchange
 
 		/// <inheritdoc />
 		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.LogHashingEnabledKey,
+			AppSettingsConstants.LogHashingEnabledDefaultValue)]
+		public bool LogHashingEnabled
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.MaximumReloginTriesKey,
 			AppSettingsConstants.MaximumReloginTriesDefaultValue)]

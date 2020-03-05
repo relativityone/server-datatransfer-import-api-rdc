@@ -35,6 +35,7 @@ namespace Relativity.DataExchange
 		/// <param name="value">
 		/// The object to log.
 		/// </param>
+		[Obsolete("Please use ILog instance directly. In this method, it is impossible to hash sensitive data")]
 		public static void LogObjectAsDictionary(
 			this Relativity.Logging.ILog logger,
 			string messageTemplate,
@@ -58,6 +59,7 @@ namespace Relativity.DataExchange
 		/// <param name="filter">
 		/// The optional filter used to exclude specific properties. This can be <see langword="null" /> if no filtering is required.
 		/// </param>
+		[Obsolete("Please use ILog instance directly. In this method, it is impossible to hash sensitive data")]
 		public static void LogObjectAsDictionary(
 			this Relativity.Logging.ILog logger,
 			string messageTemplate,
@@ -80,7 +82,7 @@ namespace Relativity.DataExchange
 				Dictionary<string, string> dictionary = properties.ToDictionary(
 					info => info.Name,
 					info => Convert.ToString(info.GetValue(value, null)));
-				logger.LogInformation(messageTemplate, dictionary);
+				logger.LogInformation(messageTemplate, dictionary); // impossible to hash
 			}
 			catch (Exception e)
 			{
@@ -109,7 +111,7 @@ namespace Relativity.DataExchange
 				}
 				else
 				{
-					logger.LogInformation(messageTemplate + " with User Id: {userId}", networkCredentials.UserName);
+					logger.LogInformation(messageTemplate + " with User Id: {userId}", HashingHelper.CalculateSHA256Hash(networkCredentials.UserName));
 				}
 			}
 		}

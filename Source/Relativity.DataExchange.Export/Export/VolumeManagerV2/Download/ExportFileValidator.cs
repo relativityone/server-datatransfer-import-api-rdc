@@ -6,6 +6,7 @@
 	using kCura.WinEDDS;
 
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Process;
 
 	public class ExportFileValidator : IExportFileValidator
@@ -31,14 +32,14 @@
 			{
 				if (_exportSettings.Overwrite)
 				{
-					_logger.LogVerbose($"Overwriting document {destinationLocation}. Removing already existing file.");
+					_logger.LogVerbose("Overwriting document {destinationLocation}. Removing already existing file.", destinationLocation.Secure());
 					_fileWrapper.Delete(destinationLocation);
 					_status.WriteStatusLine(EventType2.Status, warningUserMessage, false);
 					return true;
 				}
 				else
 				{
-					_logger.LogWarning($"{destinationLocation} already exists. Skipping file export.");
+					_logger.LogWarning("{destinationLocation} already exists. Skipping file export.", destinationLocation.Secure());
 					_status.WriteWarning($"{destinationLocation} already exists. Skipping file export.");
 					return false;
 				}
@@ -48,12 +49,12 @@
 			{
 				if (_exportSettings.Overwrite)
 				{
-					_logger.LogVerbose($"Document {destinationLocation} already exists in current export requests for batch. Skipping file.");
+					_logger.LogVerbose("Document {destinationLocation} already exists in current export requests for batch. Skipping file.", destinationLocation.Secure());
 					_status.WriteStatusLine(EventType2.Status, warningUserMessage, false);
 				}
 				else
 				{
-					_logger.LogWarning($"{destinationLocation} already exists. Skipping file export.");
+					_logger.LogWarning("{destinationLocation} already exists. Skipping file export.", destinationLocation.Secure());
 					_status.WriteWarning($"{destinationLocation} already exists. Skipping file export.");
 				}
 

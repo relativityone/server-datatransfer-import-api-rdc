@@ -9,6 +9,7 @@
 	using kCura.WinEDDS.Container;
 	using kCura.WinEDDS.Exporters;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	/// <summary>

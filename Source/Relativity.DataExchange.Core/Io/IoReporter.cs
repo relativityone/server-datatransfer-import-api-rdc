@@ -13,6 +13,7 @@ namespace Relativity.DataExchange.Io
 	using System.Globalization;
 	using System.Threading;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 
@@ -372,7 +373,7 @@ namespace Relativity.DataExchange.Io
 				CultureInfo.CurrentCulture,
 				Strings.ImportInvalidPathCharactersExceptionMessage,
 				fileName);
-			this.Logger.LogError(exception, message);
+			this.Logger.LogError(exception, "{message}", message.Secure());
 			return new FileInfoInvalidPathException(message);
 		}
 
@@ -392,8 +393,7 @@ namespace Relativity.DataExchange.Io
 
 		private void LogCancellation(int lineNumber, string fileName, string description)
 		{
-			this.Logger.LogInformation(
-				$"The {description} I/O operation for file {fileName} and line number {lineNumber} has been canceled.");
+			this.Logger.LogInformation("The {description} I/O operation for file {fileName} and line number {lineNumber} has been canceled.", description, fileName.Secure(), lineNumber);
 		}
 
 		private T Exec<T>(

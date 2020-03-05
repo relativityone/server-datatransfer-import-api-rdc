@@ -9,6 +9,7 @@ Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.IO
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Media
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service

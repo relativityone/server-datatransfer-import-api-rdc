@@ -7,6 +7,7 @@
 	using kCura.WinEDDS.LoadFileEntry;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text.Delimiter;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class LongTextHandler : ILongTextHandler
@@ -43,12 +44,12 @@
 
 			if (field is CoalescedTextViewField)
 			{
-				_logger.LogVerbose("Handling LongText using TextPrecedence handler for field {fieldName}.", field.AvfColumnName);
+				_logger.LogVerbose("Handling LongText using TextPrecedence handler for field {fieldName}.", field.AvfColumnName.Secure());
 				_textPrecedenceHandler.HandleLongText(artifact, field, lineEntry);
 			}
 			else
 			{
-				_logger.LogVerbose("Writing LongText to load file for field {fieldName}.", field.AvfColumnName);
+				_logger.LogVerbose("Writing LongText to load file for field {fieldName}.", field.AvfColumnName.Secure());
 				_textToLoadFile.HandleLongText(artifact, field, lineEntry);
 			}
 

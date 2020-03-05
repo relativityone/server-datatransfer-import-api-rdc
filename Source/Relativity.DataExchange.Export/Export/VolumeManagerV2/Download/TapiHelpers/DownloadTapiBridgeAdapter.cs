@@ -7,6 +7,7 @@
 
 	using Relativity.DataExchange.Transfer;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 	using Relativity.Transfer;
 
@@ -86,7 +87,7 @@
 		{
 			_logger.LogVerbose(
 				"Long text encoding conversion progress event for file {FileName} with status {Successful}.",
-				arg.FileName,
+				arg.FileName.Secure(),
 				arg.Successful);
 			return arg.Successful;
 		}

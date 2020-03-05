@@ -12,6 +12,7 @@
 
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class ErrorFileWriter : IErrorFileWriter
@@ -86,7 +87,7 @@
 		{
 			if (_streamWriter == null)
 			{
-				_logger.LogVerbose("Creating stream for error file in {destination}.", _errorFileDestinationPath.Path);
+				_logger.LogVerbose("Creating stream for error file in {destination}.", _errorFileDestinationPath.Path.Secure());
 				_streamWriter = _streamFactory.Create(_streamWriter, 0, _errorFileDestinationPath.Path, _errorFileDestinationPath.Encoding, false);
 				await WriteHeaderAsync().ConfigureAwait(false);
 			}
@@ -101,7 +102,13 @@
 		private Task WriteLineAsync(ExportFileType type, string recordIdentifier, string fileLocation, string errorText)
 		{
 			string line = FormatErrorLine(type.ToString(), recordIdentifier, fileLocation, errorText.ToCsvCellContents());
-			_logger.LogError(line);
+			_logger.LogError(
+				"{fileType},{documentIdentifier},{fileGuid},{errorDescription}",
+				type.ToString(),
+				recordIdentifier,
+				fileLocation.Secure(),
+				errorText.ToCsvCellContents());
+		
 			return _streamWriter.WriteLineAsync(line);
 		}
 

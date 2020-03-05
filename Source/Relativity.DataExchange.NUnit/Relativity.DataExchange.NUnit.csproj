@@ -87,11 +87,24 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Reactive, Version=4.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Logger\LogConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logger\TestLogConfigFile.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logger\TestLogConfigSplunk.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
       <Paket>True</Paket>
     </Content>
@@ -157,6 +170,8 @@
     <Compile Include="ByteSize\ToStringMethod.cs" />
     <Compile Include="ChoiceInfoTests.cs" />
     <Compile Include="FreeImageServiceTests.cs" />
+    <Compile Include="Helpers\HashingHelperTestCases.cs" />
+    <Compile Include="Helpers\HashingHelperTests.cs" />
     <Compile Include="Helpers\JwtTokenHelperTests.cs" />
     <Compile Include="HttpServiceExceptionTests.cs" />
     <Compile Include="ImageConverterServiceTests.cs" />
@@ -165,6 +180,14 @@
     <Compile Include="KeplerServiceConnectionInfoTests.cs" />
     <Compile Include="LogExtensionsTests.cs" />
     <Compile Include="ExceptionHelperTests.cs" />
+    <Compile Include="Logger\AggregatingLoggerDecoratorTestCases.cs" />
+    <Compile Include="Logger\AggregatingLoggerDecoratorTests.cs" />
+    <Compile Include="Logger\HashingLoggerDecoratorTestCases.cs" />
+    <Compile Include="Logger\HashingLoggerDecoratorTests.cs" />
+    <Compile Include="Logger\ImportApiSecureLogFactoryTests.cs" />
+    <Compile Include="Logger\RelativityLoggerTests.cs" />
+    <Compile Include="Logger\RdcSecureLogFactoryTests.cs" />
+    <Compile Include="Logger\SecurePropertyValueTests.cs" />
     <Compile Include="ObjectManagerExceptionTestData.cs" />
     <Compile Include="ObjectManagerExceptionHelperTests.cs" />
     <Compile Include="LongTextStreamServiceTests.cs" />
@@ -606,7 +629,6 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

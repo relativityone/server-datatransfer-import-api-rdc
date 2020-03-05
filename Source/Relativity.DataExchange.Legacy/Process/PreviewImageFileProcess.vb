@@ -1,4 +1,5 @@
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Media
 Imports Relativity.DataExchange.Process
 

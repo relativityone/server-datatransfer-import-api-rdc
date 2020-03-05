@@ -5,6 +5,7 @@
 	using kCura.WinEDDS;
 
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public abstract class FilePathProvider : IFilePathProvider
@@ -32,7 +33,7 @@
 
 			if (!_directoryHelper.Exists(destinationDirectory))
 			{
-				_logger.LogInformation("Creating directory {directory}.", destinationDirectory);
+				_logger.LogInformation("Creating directory {directory}.", destinationDirectory.Secure());
 				_directoryHelper.CreateDirectory(destinationDirectory);
 			}
 

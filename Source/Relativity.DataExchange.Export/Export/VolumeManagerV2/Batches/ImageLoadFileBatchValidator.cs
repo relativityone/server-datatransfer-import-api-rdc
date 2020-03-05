@@ -10,6 +10,7 @@
 
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class ImageLoadFileBatchValidator : IBatchValidator
@@ -45,14 +46,14 @@
 		{
 			if (!_fileWrapper.Exists(_destinationPath.Path))
 			{
-				_logger.LogError("Image load file {file} is missing.", _destinationPath.Path);
+				_logger.LogError("Image load file {file} is missing.", _destinationPath.Path.Secure());
 				_status.WriteError($"Image load file {_destinationPath.Path} is missing.");
 			}
 			else if (_fileWrapper.GetFileSize(_destinationPath.Path) == 0)
 			{
 				if (artifacts.Any(x => x.Images != null && x.Images.Count > 0))
 				{
-					_logger.LogError("Image load file {file} is empty.", _destinationPath.Path);
+					_logger.LogError("Image load file {file} is empty.", _destinationPath.Path.Secure());
 					_status.WriteError($"Image load file {_destinationPath.Path} is empty.");
 				}
 			}

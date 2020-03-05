@@ -28,6 +28,7 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 		public int ArtifactId => this._fileShare.ArtifactId;
 
 		/// <inheritdoc />
+		// TODO: change to AsperaCredential for new version of TAPI
 		public Credential TransferCredential =>
 			_fileShare.TransferCredential == null ? null : _fileShare.TransferCredential.CreateCredential();
 

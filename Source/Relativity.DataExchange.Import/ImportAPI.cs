@@ -14,6 +14,7 @@ using kCura.WinEDDS.Exceptions;
 namespace kCura.Relativity.ImportAPI
 {
 	using global::Relativity.DataExchange;
+	using global::Relativity.DataExchange.Logger;
 	using global::Relativity.Logging;
 
 	using IAuthenticationTokenProvider = global::Relativity.Transfer.IAuthenticationTokenProvider;
@@ -86,10 +87,8 @@ namespace kCura.Relativity.ImportAPI
 		/// <exception cref="RelativityNotSupportedException">
 		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
 		/// </exception>
-		public ImportAPI(string webServiceUrl)
+		public ImportAPI(string webServiceUrl) : this(null, null, webServiceUrl)
 		{
-			this.ExecutionSource = ExecutionSourceEnum.ImportAPI;
-			this.PerformLogin(null, null, webServiceUrl);
 		}
 
 		/// <summary>
@@ -115,10 +114,8 @@ namespace kCura.Relativity.ImportAPI
 		/// <exception cref="RelativityNotSupportedException">
 		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
 		/// </exception>
-		public ImportAPI(string userName, string password)
+		public ImportAPI(string userName, string password) : this(userName, password, string.Empty)
 		{
-			this.ExecutionSource = ExecutionSourceEnum.ImportAPI;
-			PerformLogin(userName, password, string.Empty);
 		}
 
 		/// <summary>
@@ -151,6 +148,7 @@ namespace kCura.Relativity.ImportAPI
 		{
 			ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			this.PerformLogin(userName, password, webServiceUrl);
+			this.SetUpSecureLogger();
 		}
 
 		/// <summary>
@@ -447,6 +445,12 @@ namespace kCura.Relativity.ImportAPI
 		#endregion "Protected items"
 
 		#region "Private items"
+
+		private void SetUpSecureLogger()
+		{
+			ISecureLogFactory secureLogFactory = new ImportApiSecureLogFactory();
+			RelativityLogger.Instance = secureLogFactory.CreateSecureLogger();
+		}
 
 		private static string GetToken(IRelativityTokenProvider relativityTokenProvider)
 		{

@@ -12,6 +12,7 @@ namespace Relativity.DataExchange.Service
 	using System;
 	using System.Net;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	/// <summary>
@@ -24,7 +25,7 @@ namespace Relativity.DataExchange.Service
 		/// <summary>
 		/// The logger instance.
 		/// </summary>
-		private readonly Relativity.Logging.ILog logger;
+		private readonly ILog logger;
 
 		/// <summary>
 		/// The initialized backing.
@@ -89,7 +90,7 @@ namespace Relativity.DataExchange.Service
 			this.AppSettings = appSettings;
 			this.CacheRepository = repository;
 			this.InstanceInfo = instanceInfo;
-			this.logger = Relativity.Logging.Log.Logger ?? new NullLogger();
+			this.logger = RelativityLogger.Instance;
 		}
 
 		/// <summary>

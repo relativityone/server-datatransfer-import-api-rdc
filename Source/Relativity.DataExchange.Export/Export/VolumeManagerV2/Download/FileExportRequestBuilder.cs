@@ -9,6 +9,7 @@
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public abstract class ExportRequestBuilder : IExportRequestBuilder
@@ -51,12 +52,12 @@
 			string warningInCaseOfOverwriting = $"Overwriting document {destinationLocation}.";
 			if (!_validator.CanExport(destinationLocation, warningInCaseOfOverwriting))
 			{
-				_logger.LogVerbose("File {file} already exists - updating statistics.", destinationLocation);
+				_logger.LogVerbose("File {file} already exists - updating statistics.", destinationLocation.Secure());
 				_fileProcessingStatistics.UpdateStatisticsForFile(destinationLocation);
 				return new List<ExportRequest>();
 			}
 
-			_logger.LogVerbose("Native file for artifact {artifactId} will be export to {destinationLocation}.", artifact.ArtifactID, destinationLocation);
+			_logger.LogVerbose("Native file for artifact {artifactId} will be export to {destinationLocation}.", artifact.ArtifactID, destinationLocation.Secure());
 
 			ExportRequest exportRequest = CreateExportRequest(artifact, destinationLocation);
 			return exportRequest.InList();

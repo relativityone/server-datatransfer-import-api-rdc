@@ -216,15 +216,23 @@ namespace Relativity.DataExchange.Transfer
 					IRemotePathResolver resolver;
 					if (this.parameters.BcpFileTransfer)
 					{
-						resolver = new AsperaUncBcpPathResolver(
-							this.parameters.FileShare,
-							this.parameters.AsperaBcpRootFolder);
+						// TODO: add transferLog for new TAPI version
+						// using (var transferLog = new RelativityTransferLog(this.Logger))
+						{
+							resolver = new AsperaUncBcpPathResolver(
+								this.parameters.FileShare,
+								this.parameters.AsperaBcpRootFolder);
+						}
 					}
 					else
 					{
-						resolver = new AsperaUncPathResolver(
-							this.parameters.FileShare,
-							this.parameters.AsperaDocRootLevels);
+						// TODO: add transferLog for new TAPI version
+						// using (var transferLog = new RelativityTransferLog(this.Logger))
+						{
+							resolver = new AsperaUncPathResolver(
+								this.parameters.FileShare,
+								this.parameters.AsperaDocRootLevels);
+						}
 					}
 
 					request.TargetPathResolver = resolver;

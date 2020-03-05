@@ -12,6 +12,8 @@
 	using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS;
 
+	using Relativity.DataExchange.Logger;
+
 	public abstract class ImageLoadFileMetadataForArtifactBuilder : IImageLoadFileMetadataForArtifactBuilder
 	{
 		private readonly IImageLoadFileEntry _imageLoadFileEntry;
@@ -48,7 +50,7 @@
 
 				ImageExportInfo image = images[i];
 
-				_logger.LogVerbose("Processing image {image}.", image.FileName);
+				_logger.LogVerbose("Processing image {image}.", image.FileName.Secure());
 
 				long pageOffset;
 				int currPageNumber = i + 1;
@@ -65,7 +67,7 @@
 				_fullTextLoadFileEntry.WriteFullTextLine(artifact, image.BatesNumber, i, pageOffset, writer, cancellationToken);
 
 				string localFilePath = GetLocalFilePath(images, i);
-				_logger.LogVerbose("Creating image load file entry using image file path {path}.", localFilePath);
+				_logger.LogVerbose("Creating image load file entry using image file path {path}.", localFilePath.Secure());
 				string loadFileEntry = _imageLoadFileEntry.Create(this.CreateUniqueBates(image.BatesNumber, currPageNumber, autoGeneratePageNumbers), 
 					localFilePath, artifact.DestinationVolume, currPageNumber, numberOfPages);
 				writer.WriteEntry(loadFileEntry, cancellationToken);

@@ -8,6 +8,7 @@ Imports Monitoring
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Data
 Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
@@ -711,7 +712,7 @@ Namespace kCura.WinEDDS
 									Me.LogError("OI Configuration Info")
 									Me.LogError("OI version: {Version}", fileTypeConfiguration.Version)
 									Me.LogError("OI idle worker timeout: {Timeout} seconds", fileTypeConfiguration.Timeout)
-									Me.LogError("OI install path: {InstallPath}", fileTypeConfiguration.InstallDirectory)
+									Me.LogError("OI install path: {InstallPath}", fileTypeConfiguration.InstallDirectory.Secure())
 									If Not fileTypeConfiguration.Exception Is Nothing Then
 										Me.LogError(fileTypeConfiguration.Exception, "OI runtime exception.", fileTypeConfiguration.Exception)
 									End If
@@ -719,7 +720,7 @@ Namespace kCura.WinEDDS
 									Me.LogInformation("OI Configuration Info")
 									Me.LogInformation("OI version: {Version}", fileTypeConfiguration.Version)
 									Me.LogInformation("OI idle worker timeout: {Timeout}", fileTypeConfiguration.Timeout)
-									Me.LogInformation("OI install path: {InstallPath}", fileTypeConfiguration.InstallDirectory)
+									Me.LogInformation("OI install path: {InstallPath}", fileTypeConfiguration.InstallDirectory.Secure())
 								End If
 							Catch ex As FileTypeIdentifyException
 								Me.LogError(ex, "Failed to retrieve OI configuration info.")
@@ -1105,16 +1106,16 @@ Namespace kCura.WinEDDS
 				End Using
 			Catch ex As ImporterException
 				WriteError(metaDoc.LineNumber, ex.Message)
-				Me.LogError(ex, "A serious import error has occurred managing document {file} metadata.", metaDoc.FullFilePath)
+				Me.LogError(ex, "A serious import error has occurred managing document {file} metadata.", metaDoc.FullFilePath.Secure())
 			Catch ex As FileInfoInvalidPathException
 				WriteError(metaDoc.LineNumber, ex.Message)
-				Me.LogError(ex, "An import error has occured because of invalid document path - illegal characters in path {0}", metaDoc.FullFilePath)
+				Me.LogError(ex, "An import error has occured because of invalid document path - illegal characters in path {0}", metaDoc.FullFilePath.Secure())
 			Catch ex As System.UnauthorizedAccessException
 				WriteFatalError(metaDoc.LineNumber, ex)
-				Me.LogFatal(ex, "A fatal import error has occurred because the user doesn't have authorized access to the document {file} metadata.", metaDoc.FullFilePath)
+				Me.LogFatal(ex, "A fatal import error has occurred because the user doesn't have authorized access to the document {file} metadata.", metaDoc.FullFilePath.Secure())
 			Catch ex As System.Exception
 				WriteFatalError(metaDoc.LineNumber, ex)
-				Me.LogFatal(ex, "A fatal unexpected error has occurred managing document {file} metadata.", metaDoc.FullFilePath)
+				Me.LogFatal(ex, "A fatal unexpected error has occurred managing document {file} metadata.", metaDoc.FullFilePath.Secure())
 			End Try
 
 			' Let TAPI handle progress as long as we're transferring the native. See the TAPI progress event below.

@@ -3,6 +3,7 @@
 	using System.Collections.Generic;
 
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 
@@ -51,7 +52,7 @@
 
 		private void OnProgress(object sender, TapiProgressEventArgs e)
 		{
-			_logger.LogVerbose("Progress event for file {FileName} with status {Successful}.", e.FileName, e.Successful);
+			_logger.LogVerbose("Progress event for file {FileName} with status {Successful}.", e.FileName.Secure(), e.Successful);
 			if (e.Successful)
 			{
 				lock (_lock)
@@ -89,7 +90,7 @@
 				}
 				else
 				{
-					_logger.LogWarning("Trying to add statistics for file {path}, but file doesn't exist.", path);
+					_logger.LogWarning("Trying to add statistics for file {path}, but file doesn't exist.", path.Secure());
 				}
 			}
 		}
@@ -98,7 +99,7 @@
 		{
 			_logger.LogVerbose(
 				"Progress event for file {FileName} with status {Successful}.",
-				fileName,
+				fileName.Secure(),
 				transferResult);
 			if (transferResult)
 			{

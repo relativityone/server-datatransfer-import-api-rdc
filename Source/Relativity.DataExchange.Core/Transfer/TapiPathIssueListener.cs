@@ -9,6 +9,7 @@ namespace Relativity.DataExchange.Transfer
 	using System;
 	using System.Text;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 	using Relativity.Transfer;
@@ -193,9 +194,9 @@ namespace Relativity.DataExchange.Transfer
 				this.Logger.LogError(
 					"A serious transfer file-level error has occurred on line {LineNumber}. Message={Message}, Code={Code}, SourcePath={SourcePath}, Attributes={Attributes}, IsRetryable={IsRetryable}",
 					lineNumber,
-					issue.Message,
+					issue.Message.Secure(), // TODO: message should be free of any sensitive data.
 					issue.Code,
-					issue.Path.SourcePath,
+					issue.Path.SourcePath.Secure(),
 					issue.Attributes,
 					issue.IsRetryable);
 			}
@@ -214,9 +215,9 @@ namespace Relativity.DataExchange.Transfer
 				this.Logger.LogWarning(
 					"A transfer file-level warning has occurred on line {LineNumber}. Message={Message}, Code={Code}, SourcePath={SourcePath}, Attributes={Attributes}, IsRetryable={IsRetryable}",
 					lineNumber,
-					issue.Message,
+					issue.Message.Secure(), // TODO: message should be free of any sensitive data.
 					issue.Code,
-					issue.Path.SourcePath,
+					issue.Path.SourcePath.Secure(),
 					issue.Attributes,
 					issue.IsRetryable);
 			}

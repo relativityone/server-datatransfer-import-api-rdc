@@ -4,6 +4,7 @@ Imports kCura.WinEDDS.Service.Export
 Imports Monitoring
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Transfer
 Imports Relativity.Logging

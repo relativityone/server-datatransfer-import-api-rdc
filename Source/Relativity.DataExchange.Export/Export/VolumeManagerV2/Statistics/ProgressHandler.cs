@@ -2,6 +2,7 @@
 {
 	using System;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 
@@ -35,7 +36,7 @@
 
 		private void OnFileProgress(object sender, TapiProgressEventArgs e)
 		{
-            _logger.LogVerbose("Tapi progress event for {FileName} with status {Successful} ({LineNumber}).", e.FileName, e.Successful, e.LineNumber);
+            _logger.LogVerbose("Tapi progress event for {FileName} with status {Successful} ({LineNumber}).", e.FileName.Secure(), e.Successful, e.LineNumber);
             if (e.Completed)
 			{
 				try
@@ -44,7 +45,7 @@
 				}
 				catch (Exception ex)
 				{
-					_logger.LogError(ex, "Error while handling Tapi progress event for {FileName} with status {Successful} ({LineNumber})", e.FileName, e.Successful, e.LineNumber);
+					_logger.LogError(ex, "Error while handling Tapi progress event for {FileName} with status {Successful} ({LineNumber})", e.FileName.Secure(), e.Successful, e.LineNumber);
 				}
 			}
 		}

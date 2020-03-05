@@ -10,6 +10,7 @@
 	using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS.LoadFileEntry;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class TooLongTextToLoadFile : ILongTextHandler
@@ -52,8 +53,8 @@
 				fieldToGetValueFrom = field;
 			}
 
-			_logger.LogVerbose("Passing LongText file location to writer for future processing. Field {fieldName} (field used for Text Precedence {name}.", field.AvfColumnName,
-				fieldToGetValueFrom.AvfColumnName);
+			_logger.LogVerbose("Passing LongText file location to writer for future processing. Field {fieldName} (field used for Text Precedence {name}.", field.AvfColumnName.Secure(),
+				fieldToGetValueFrom.AvfColumnName.Secure());
 			string longTextFileLocation = _longTextHelper.GetLongTextFileLocation(artifact, fieldToGetValueFrom.FieldArtifactId);
 			LongText longText = _longTextRepository.GetLongText(artifact.ArtifactID, fieldToGetValueFrom.FieldArtifactId);
 			lineEntry.AddPartialEntry(new LongTextWriteDeferredEntry(longTextFileLocation, longText.DestinationEncoding, _fileWriter));

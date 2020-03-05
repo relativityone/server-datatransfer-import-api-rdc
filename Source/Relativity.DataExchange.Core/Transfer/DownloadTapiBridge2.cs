@@ -136,13 +136,18 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			IRemotePathResolver resolver = null;
+
 			switch (this.ClientId.ToString().ToUpperInvariant())
 			{
 				case TransferClientConstants.AsperaClientId:
-					resolver = new AsperaUncPathResolver(
+					// TODO: add transferLog for new TAPI version
+					// using (var transferLog = new RelativityTransferLog(this.Logger))
+					{
+						resolver = new AsperaUncPathResolver(
 							this.parameters.FileShare,
 							this.parameters.AsperaDocRootLevels);
-					break;
+						break;
+					}
 			}
 
 			request.SourcePathResolver = resolver;

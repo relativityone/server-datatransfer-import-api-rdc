@@ -20,6 +20,7 @@ namespace Relativity.DataExchange.Transfer
 
 	using Polly;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 	using Relativity.Transfer;
@@ -478,14 +479,14 @@ namespace Relativity.DataExchange.Transfer
 				this.Logger.LogWarning(
 					e,
 					"There was a problem adding the '{SourceFile}' source file to the {TransferJobId} transfer job.",
-					path.SourcePath,
+					path.SourcePath.Secure(),
 					this.jobRequest?.JobId);
 				throw new FileNotFoundException(e.Message, path.SourcePath);
 			}
 			catch (FileNotFoundException e)
 			{
 				// Ensure this exception is accounted for.
-				this.Logger.LogWarning(e, "The '{SourceFile}' source file doesn't exist.", path.SourcePath);
+				this.Logger.LogWarning(e, "The '{SourceFile}' source file doesn't exist.", path.SourcePath.Secure());
 				throw;
 			}
 			catch (OperationCanceledException)
@@ -591,7 +592,7 @@ namespace Relativity.DataExchange.Transfer
 			this.Logger.LogInformation("Client request id: {ClientRequestId}", this.parameters.ClientRequestId);
 			this.Logger.LogInformation("Aspera doc root level: {AsperaDocRootLevels}", this.parameters.AsperaDocRootLevels);
 			this.Logger.LogInformation("Aspera datagram size: {AsperaDatagramSize}", this.parameters.AsperaDatagramSize);
-			this.Logger.LogInformation("File share: {FileShare}", this.parameters.FileShare);
+			this.Logger.LogInformation("File share: {FileShare}", this.parameters.FileShare.Secure());
 			this.Logger.LogInformation("Force Aspera client: {ForceAsperaClient}", this.parameters.ForceAsperaClient);
 			this.Logger.LogInformation("Force Fileshare client: {ForceFileShareClient}", this.parameters.ForceFileShareClient);
 			this.Logger.LogInformation("Force HTTP client: {ForceHttpClient}", this.parameters.ForceHttpClient);
@@ -603,7 +604,7 @@ namespace Relativity.DataExchange.Transfer
 			this.Logger.LogInformation("Min data rate: {MinDataRateMbps} Mbps", this.parameters.MinDataRateMbps);
 			this.Logger.LogInformation("Preserve file timestamps: {PreserveFileTimestamps}", this.parameters.PreserveFileTimestamps);
 			this.Logger.LogInformation("Retry on file permission error: {PermissionErrorsRetry}", this.parameters.PermissionErrorsRetry);
-			this.Logger.LogInformation("Retry on bad path error: {BadPathErrorsRetry}", this.parameters.BadPathErrorsRetry);
+			this.Logger.LogInformation("Retry on bad path error: {BadPathErrorsRetry}", this.parameters.BadPathErrorsRetry.Secure());
 			this.Logger.LogInformation("Submit APM metrics: {SubmitApmMetrics}", this.parameters.SubmitApmMetrics);
 			this.Logger.LogInformation("Target data rate: {TargetDataRateMbps} Mbps", this.parameters.TargetDataRateMbps);
 			this.Logger.LogInformation("Wait time between retry attempts: {WaitTimeBetweenRetryAttempts}", this.parameters.WaitTimeBetweenRetryAttempts);

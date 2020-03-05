@@ -9,6 +9,7 @@
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class PhysicalFilesDownloader : IPhysicalFilesDownloader
@@ -90,7 +91,7 @@
 					_logger.LogVerbose(
 						"Adding export request for downloading file for artifact {artifactId} to {destination}.",
 						fileExportRequest.ArtifactId,
-						fileExportRequest.DestinationLocation);
+						fileExportRequest.DestinationLocation.Secure());
 					fileExportRequest.FileName =
 						bridge.QueueDownload(fileExportRequest.CreateTransferPath(_safeIncrement.GetNext()));
 				}

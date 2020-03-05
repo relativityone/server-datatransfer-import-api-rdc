@@ -1,5 +1,6 @@
 ﻿Imports System.Collections.Generic
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logger
 Imports Relativity.Services.ServiceProxy
 
 Namespace Monitoring.Sinks

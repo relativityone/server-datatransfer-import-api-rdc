@@ -11,6 +11,7 @@
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class LongTextEncodingConverter : IFileDownloadSubscriber
@@ -69,16 +70,16 @@
 			try
 			{
 				this._logger.LogVerbose(
-					"Preparing to check whether the '{LongTextFileName}' file requires an encoding conversion...", longTextFileName);
+					"Preparing to check whether the '{LongTextFileName}' file requires an encoding conversion...", longTextFileName.Secure());
 				LongText longText = this.GetLongTextForFile(longTextFileName);
 				if (this.ConversionRequired(longText))
 				{
-					this._logger.LogVerbose("Long text encoding conversion required for file {longTextFileName}.", longTextFileName);
+					this._logger.LogVerbose("Long text encoding conversion required for file {longTextFileName}.", longTextFileName.Secure());
 					this._conversionTasks.Add(Task.Run(() => ConvertLongText(longText), this._cancellationToken));
 				}
 				else
 				{
-					this._logger.LogVerbose("Long text encoding conversion NOT required for file {longTextFileName}.", longTextFileName);
+					this._logger.LogVerbose("Long text encoding conversion NOT required for file {longTextFileName}.", longTextFileName.Secure());
 				}
 			}
 			catch (OperationCanceledException ex)
@@ -87,7 +88,7 @@
 			}
 			catch (Exception ex)
 			{
-				this._logger.LogError(ex, "Encoding conversion task creation issue for {longTextFileName} file", longTextFileName);
+				this._logger.LogError(ex, "Encoding conversion task creation issue for {longTextFileName} file", longTextFileName.Secure());
 				this._status.WriteError($"Encoding conversion task creation issue for {longTextFileName} file");
 			}
 		}
@@ -101,7 +102,7 @@
 			catch (Exception ex)
 			{
 				this._status.WriteError($"Encoding conversion task creation issue for {longText.Location} file");
-				this._logger.LogError(ex, "The error happened when converting {longTextFileName} file", longText.Location);
+				this._logger.LogError(ex, "The error happened when converting {longTextFileName} file", longText.Location.Secure());
 			}
 		}
 
@@ -117,7 +118,7 @@
 				}
 			}
 
-			this._logger.LogError("Failed to find the LongText file {LongTextFileName} in the repository.", longTextFileName);
+			this._logger.LogError("Failed to find the LongText file {LongTextFileName} in the repository.", longTextFileName.Secure());
 			throw new ArgumentException($"The long text file {longTextFileName} cannot be converted because it doesn't exist within the export request.");
 		}
 
@@ -130,7 +131,7 @@
 		{
 			this._logger.LogVerbose(
 				"Preparing to convert LongText file {LongTextFile} from {SourceEncoding} to {DestinationEncoding}.",
-				longText.Location,
+				longText.Location.Secure(),
 				longText.SourceEncoding,
 				longText.DestinationEncoding);
 			this._fileEncodingConverter.Convert(
@@ -140,7 +141,7 @@
 				_cancellationToken);
 			this._logger.LogVerbose(
 				"Successfully converted LongText file {LongTextFile} from {SourceEncoding} to {DestinationEncoding}.",
-				longText.Location,
+				longText.Location.Secure(),
 				longText.SourceEncoding,
 				longText.DestinationEncoding);
 			longText.SourceEncoding = longText.DestinationEncoding;
