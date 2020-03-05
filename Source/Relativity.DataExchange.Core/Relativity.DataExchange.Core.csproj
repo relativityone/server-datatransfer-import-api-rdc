@@ -140,12 +140,12 @@
     <Compile Include="IRelativityTokenProvider.cs" />
     <Compile Include="JwtAuthToken.cs" />
     <Compile Include="LogExtensions.cs" />
+    <Compile Include="Media\ByteArrayConverter.cs" />
     <Compile Include="Media\ByteOrdering.cs" />
-    <Compile Include="Media\FreeImageService.cs" />
+    <Compile Include="Media\IByteArrayConverter.cs" />
+    <Compile Include="Media\ImageValidator.cs" />
     <Compile Include="Media\IImageConverter.cs" />
     <Compile Include="Media\IImageValidator.cs" />
-    <Compile Include="Media\IImageFormatIdentifier.cs" />
-    <Compile Include="Media\ImageConstants.cs" />
     <Compile Include="Media\ImageConversionException.cs" />
     <Compile Include="Media\ImageConverterService.cs" />
     <Compile Include="Media\ImageFormat.cs" />

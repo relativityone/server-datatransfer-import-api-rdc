@@ -1,9 +1,9 @@
 ﻿// -----------------------------------------------------------------------------------------------------
-// <copyright file="FreeImageServiceTests.cs" company="Relativity ODA LLC">
+// <copyright file="ImageValidatorTests.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents <see cref="FreeImageService"/> tests.
+//   Represents <see cref="ImageValidator"/> tests.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
@@ -19,23 +19,23 @@ namespace Relativity.DataExchange.NUnit
 	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
-	/// Represents <see cref="FreeImageService"/> tests.
+	/// Represents <see cref="ImageValidator"/> tests.
 	/// </summary>
 	[TestFixture]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
 		Justification = "The test class handles the disposal.")]
-	public class FreeImageServiceTests
+	public class ImageValidatorTests
 	{
 		private TempDirectory2 tempDirectory;
-		private FreeImageService service;
+		private ImageValidator validator;
 
 		[SetUp]
 		public void Setup()
 		{
 			this.tempDirectory = new TempDirectory2();
-			this.service = new FreeImageService();
+			this.validator = new ImageValidator(new ByteArrayConverter());
 		}
 
 		[TearDown]
@@ -53,9 +53,7 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldValidateAndIdentifyTheJpegImage(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Jpeg", fileName);
-			this.service.Validate(file);
-			ImageFormat format = this.service.Identify(file);
-			Assert.That(format, Is.EqualTo(ImageFormat.Jpeg));
+			this.validator.Validate(file);
 		}
 
 		[Test]
@@ -72,9 +70,7 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldValidateAndIdentifyTheTiffImage(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Tiff", fileName);
-			this.service.Validate(file);
-			ImageFormat format = this.service.Identify(file);
-			Assert.That(format, Is.EqualTo(ImageFormat.Tiff));
+			this.validator.Validate(file);
 		}
 
 		[Test]
@@ -86,9 +82,7 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldThrowWhenTheTiffEncodingIsNotSupported(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Tiff", fileName);
-			ImageFormat format = this.service.Identify(file);
-			Assert.That(format, Is.EqualTo(ImageFormat.Tiff));
-			ImageValidationException exception = Assert.Throws<ImageValidationException>(() => this.service.Validate(file));
+			ImageValidationException exception = Assert.Throws<ImageValidationException>(() => this.validator.Validate(file));
 			Assert.That(exception.Message, Contains.Substring("is encoded"));
 		}
 
@@ -102,9 +96,7 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldThrowWhenTheTiffHeaderBitCountIsGreaterThanOne(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Tiff", fileName);
-			ImageFormat format = this.service.Identify(file);
-			Assert.That(format, Is.EqualTo(ImageFormat.Tiff));
-			ImageValidationException exception = Assert.Throws<ImageValidationException>(() => this.service.Validate(file));
+			ImageValidationException exception = Assert.Throws<ImageValidationException>(() => this.validator.Validate(file));
 			Assert.That(exception.Message, Contains.Substring("bits"));
 		}
 
@@ -117,9 +109,7 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldThrowWhenThePngImageFormatIsNotSupported(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Png", fileName);
-			ImageFormat format = this.service.Identify(file);
-			Assert.That(format, Is.EqualTo(ImageFormat.Png));
-			ImageValidationException exception = Assert.Throws<ImageValidationException>(() => this.service.Validate(file));
+			ImageValidationException exception = Assert.Throws<ImageValidationException>(() => this.validator.Validate(file));
 			Assert.That(exception.Message, Contains.Substring("isn't a valid TIFF or JPEG"));
 		}
 
@@ -129,7 +119,7 @@ namespace Relativity.DataExchange.NUnit
 		[Category(TestCategories.Framework)]
 		public void ShouldThrowWhenTheFileIsNullOrEmpty(string file)
 		{
-			Assert.Throws<System.ArgumentNullException>(() => this.service.Validate(file));
+			Assert.Throws<System.ArgumentException>(() => this.validator.Validate(file));
 		}
 
 		[Test]
@@ -137,7 +127,7 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldThrowWhenTheImageFileDoesNotExist()
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Png", $"{Guid.NewGuid()}.png");
-			Assert.Throws<FileNotFoundException>(() => this.service.Validate(file));
+			Assert.Throws<FileNotFoundException>(() => this.validator.Validate(file));
 		}
 
 		[Test]
@@ -145,9 +135,7 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldThrowWhenTheImageFileIsEmptyFile()
 		{
 			string file = RandomHelper.NextBinaryFile(0, 0, this.tempDirectory.Directory);
-			ImageFormat format = this.service.Identify(file);
-			Assert.That(format, Is.EqualTo(ImageFormat.Unknown));
-			Assert.Throws<ImageValidationException>(() => this.service.Validate(file));
+			Assert.Throws<ImageValidationException>(() => this.validator.Validate(file));
 		}
 	}
 }

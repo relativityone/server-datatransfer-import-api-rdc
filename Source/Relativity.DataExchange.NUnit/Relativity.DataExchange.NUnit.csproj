@@ -151,12 +151,13 @@
     </Compile>
     <Compile Include="AppSettingsTests.cs" />
     <Compile Include="ArtifactFieldCollectionTests.cs" />
+    <Compile Include="ByteArrayConverterTest.cs" />
     <Compile Include="ByteSize\ArithmeticMethods.cs" />
     <Compile Include="ByteSize\CreatingMethods.cs" />
     <Compile Include="ByteSize\ParsingMethods.cs" />
     <Compile Include="ByteSize\ToStringMethod.cs" />
     <Compile Include="ChoiceInfoTests.cs" />
-    <Compile Include="FreeImageServiceTests.cs" />
+    <Compile Include="ImageValidatorTests.cs" />
     <Compile Include="Helpers\JwtTokenHelperTests.cs" />
     <Compile Include="HttpServiceExceptionTests.cs" />
     <Compile Include="ImageConverterServiceTests.cs" />

@@ -850,7 +850,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			Dim retval As ImportStatus = ImportStatus.Pending
-			Dim imageValidator As IImageValidator = New FreeImageService
+			Dim imageValidator As IImageValidator = New ImageValidator(New ByteArrayConverter)
 
 			Try
 				If Not Me.DisableImageTypeValidation Then
