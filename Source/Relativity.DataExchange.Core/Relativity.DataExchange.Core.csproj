@@ -90,6 +90,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Reactive">
+      <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
@@ -117,6 +120,7 @@
     <Compile Include="Data\TrimOption.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="ExceptionHelper.cs" />
+    <Compile Include="Helpers\HashingHelper.cs" />
     <Compile Include="Helpers\JwtTokenHelper.cs" />
     <Compile Include="Io\ErrorBeforeMassImportArgs.cs" />
     <Compile Include="Io\ErrorDuringMassImportArgs.cs" />
@@ -140,7 +144,16 @@
     <Compile Include="IRelativityTokenProvider.cs" />
     <Compile Include="JwtAuthToken.cs" />
     <Compile Include="LogExtensions.cs" />
+    <Compile Include="Logger\AggregatingLoggerDecorator.cs" />
     <Compile Include="Media\ByteArrayConverter.cs" />
+    <Compile Include="Logger\ImportApiSecureLogFactory.cs" />
+    <Compile Include="Logger\ISecureLogFactory.cs" />
+    <Compile Include="Logger\SecurePropertyValueBase.cs" />
+    <Compile Include="Logger\HashingLoggerDecorator.cs" />
+    <Compile Include="Logger\LoggerDecoratorBase.cs" />
+    <Compile Include="Logger\RdcSecureLogFactory.cs" />
+    <Compile Include="Logger\SecurePropertyValue.cs" />
+    <Compile Include="Logger\SecurePropertyValueExtensions.cs" />
     <Compile Include="Media\ByteOrdering.cs" />
     <Compile Include="Media\IByteArrayConverter.cs" />
     <Compile Include="Media\ImageValidator.cs" />
@@ -160,7 +173,7 @@
     <Compile Include="Process\NullProcessErrorWriter.cs" />
     <Compile Include="Process\ProcessPool2.cs" />
     <Compile Include="RdcFileSerializationBinder.cs" />
-    <Compile Include="RelativityLogger.cs" />
+    <Compile Include="Logger\RelativityLogger.cs" />
     <Compile Include="RestClient.cs" />
     <Compile Include="AppSettingsDictionary.cs" />
     <Compile Include="AppSettingsConstants.cs" />
@@ -484,6 +497,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Logging">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Logging.Interfaces">
           <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
           <Private>True</Private>
@@ -517,6 +541,11 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.Nodes">
+          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.Transfer.Client">
           <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
           <Private>True</Private>
@@ -586,5 +615,4 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <ItemGroup />
 </Project>

@@ -1,4 +1,5 @@
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logger
 
 Namespace kCura.WinEDDS.Service
 	Public Module WebServiceExtensions
@@ -69,12 +70,12 @@ Namespace kCura.WinEDDS.Service
                     message + " Currently on attempt {tries} out of {maxRetries}, using token {token}",
                     tries,
                     maxRetries,
-                    token)
+                    token.Secure())
             Else
                 _logger.LogError(
                     exception,
                     message + " Will not retry, using token {token}",
-                    token)
+                    token.Secure())
             End If
         End Sub
 

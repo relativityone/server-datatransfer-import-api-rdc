@@ -8,6 +8,7 @@
 	using kCura.WinEDDS.LoadFileEntry;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class LineFieldsValue : ILineFieldsValue
@@ -37,7 +38,7 @@
 			{
 				ViewFieldInfo field = fields[i];
 
-				_logger.LogVerbose("Adding field {field} value to load file entry.", field.AvfColumnName);
+				_logger.LogVerbose("Adding field {field} value to load file entry.", field.AvfColumnName.Secure());
 
 				if (_longTextHelper.IsLongTextField(field))
 				{

@@ -218,13 +218,15 @@ namespace Relativity.DataExchange.Transfer
 					{
 						resolver = new AsperaUncBcpPathResolver(
 							this.parameters.FileShare,
-							this.parameters.AsperaBcpRootFolder);
+							this.parameters.AsperaBcpRootFolder,
+							this.TransferLog);
 					}
 					else
 					{
 						resolver = new AsperaUncPathResolver(
 							this.parameters.FileShare,
-							this.parameters.AsperaDocRootLevels);
+							this.parameters.AsperaDocRootLevels,
+							this.TransferLog);
 					}
 
 					request.TargetPathResolver = resolver;

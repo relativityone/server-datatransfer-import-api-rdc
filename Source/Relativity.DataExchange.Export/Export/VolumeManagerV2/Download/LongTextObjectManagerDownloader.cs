@@ -12,6 +12,7 @@
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Process;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
@@ -203,7 +204,7 @@
 			_logger.LogVerbose(
 				"Adding export request for downloading long text {FieldArtifactId} to {DestinationLocation}.",
 				request.FieldArtifactId,
-				request.DestinationLocation);
+				request.DestinationLocation.Secure());
 			LongText longText = _longTextRepository.GetLongText(
 				request.ArtifactId,
 				request.FieldArtifactId);
@@ -245,7 +246,7 @@
 				originalTicks + stopwatch.ElapsedTicks);
 			_logger.LogVerbose(
 				"Long text progress event for {FileName} with completion status {Status} and duration {Duration} ({LineNumber}).",
-				request.FileName,
+				request.FileName.Secure(),
 				result.Issue == null,
 				result.Duration,
 				request.Order);

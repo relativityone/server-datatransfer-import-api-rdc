@@ -514,6 +514,15 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to hash sensitive data.
+		/// </summary>
+		bool LogHashingEnabled
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the maximum number of WebAPI login attempts.
 		/// </summary>
 		/// <value>

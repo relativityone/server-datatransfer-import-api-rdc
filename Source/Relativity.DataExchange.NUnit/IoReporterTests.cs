@@ -459,7 +459,7 @@ namespace Relativity.DataExchange.NUnit
 
 		private void ThenTheLoggerInformationShouldBeInvoked(int expectedCount)
 		{
-			this.mockLogger.Verify(logger => logger.LogInformation(It.IsAny<string>()), Times.Exactly(expectedCount));
+			this.mockLogger.Verify(logger => logger.LogInformation(It.IsAny<string>(), It.IsAny<object[]>()), Times.Exactly(expectedCount));
 			Assert.That(
 				this.actualLoggedInformationMessage,
 				expectedCount == 0 ? Is.Null.Or.Empty : Is.Not.Null.Or.Empty);

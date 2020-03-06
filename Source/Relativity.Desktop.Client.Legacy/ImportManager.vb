@@ -2,6 +2,7 @@
 Imports kCura.WinEDDS.Exporters
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Export
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Service
 
 Namespace Relativity.Desktop.Client

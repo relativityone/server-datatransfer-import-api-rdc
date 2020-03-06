@@ -17,6 +17,7 @@ namespace Relativity.DataExchange
 
 	using Polly;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 
@@ -278,7 +279,7 @@ namespace Relativity.DataExchange
 													   methodName = "GET";
 													   this.logger.LogDebug(
 														   "Preparing to call the HTTP '{Endpoint}' ({HttpMethod}) endpoint...",
-														   endpointUri,
+														   endpointUri.Secure(),
 														   methodName);
 													   response = await client.GetAsync(endpointUri, token)
 																	  .ConfigureAwait(false);
@@ -288,7 +289,7 @@ namespace Relativity.DataExchange
 													   methodName = "POST";
 													   this.logger.LogDebug(
 														   "Preparing to call the HTTP '{Endpoint}' ({HttpMethod}) endpoint...",
-														   endpointUri,
+														   endpointUri.Secure(),
 														   methodName);
 													   response = await client.PostAsync(
 																	  endpointUri,
@@ -300,7 +301,7 @@ namespace Relativity.DataExchange
 													   methodName = "DELETE";
 													   this.logger.LogDebug(
 														   "Preparing to call the HTTP '{Endpoint}' ({HttpMethod}) endpoint...",
-														   endpointUri,
+														   endpointUri.Secure(),
 														   methodName);
 													   response = await client.DeleteAsync(endpointUri, token)
 																	  .ConfigureAwait(false);
@@ -439,7 +440,7 @@ namespace Relativity.DataExchange
 				response.EnsureSuccessStatusCode();
 				this.logger.LogDebug(
 					"Successfully called the HTTP '{Endpoint}' ({HttpMethod}) endpoint.",
-					endpoint,
+					endpoint.Secure(),
 					methodName);
 				return json;
 			}
@@ -448,7 +449,7 @@ namespace Relativity.DataExchange
 				this.logger.LogInformation(
 					e,
 					"The user cancelled the HTTP '{Endpoint}' ({HttpMethod}) endpoint operation.",
-					endpoint,
+					endpoint.Secure(),
 					methodName);
 				throw;
 			}
@@ -510,7 +511,7 @@ namespace Relativity.DataExchange
 			this.logger.LogError(
 				exception,
 				fatal ? "Fatal attempt to call the HTTP '{Endpoint}' ({HttpMethod}) endpoint operation. HTTP StatusCode={StatusCode}, Response={JsonResponse}" : "Failed to call the HTTP '{Endpoint}' ({HttpMethod}) endpoint operation. HTTP StatusCode={StatusCode}, Response={JsonResponse}",
-				endpoint,
+				endpoint.Secure(),
 				methodName,
 				statusCode,
 				json);
@@ -599,7 +600,7 @@ namespace Relativity.DataExchange
 			this.logger.LogError(
 				exception,
 				fatal ? "Fatal attempt to call the HTTP '{Endpoint}' ({HttpMethod}) endpoint operation. Web Response Status={WebResponseStatus}, Response={JsonResponse}" : "Failed to call the HTTP '{Endpoint}' ({HttpMethod}) endpoint operation. Web Response Status={WebResponseStatus}, Response={JsonResponse}",
-				endpoint,
+				endpoint.Secure(),
 				methodName,
 				exception.Status,
 				json);
@@ -670,7 +671,7 @@ namespace Relativity.DataExchange
 			this.logger.LogError(
 				exception,
 				"Failed to call the HTTP '{Endpoint}' ({HttpMethod}) endpoint operation because it exceeded the {HttpTimeoutSeconds} second timeout.",
-				endpoint,
+				endpoint.Secure(),
 				methodName,
 				this.TimeoutSeconds);
 			var endpointTitle = onEndpointErrorTitle(HttpStatusCode.RequestTimeout);
@@ -720,7 +721,7 @@ namespace Relativity.DataExchange
 		{
 			this.logger.LogError(
 				"Failed to call the HTTP '{Endpoint}' endpoint operation because the supplied Transfer API credential object '{CredentialType}' is not supported.",
-				endpoint,
+				endpoint.Secure(),
 				this.instance.Credentials.GetType());
 			var endpointTitle = onEndpointErrorTitle(HttpStatusCode.Unauthorized);
 			if (string.IsNullOrEmpty(endpointTitle))

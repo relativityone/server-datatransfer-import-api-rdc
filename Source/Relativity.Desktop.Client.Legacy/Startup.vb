@@ -1,7 +1,8 @@
 Imports kCura.WinEDDS.Container
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Export.VolumeManagerV2.Container
-
+Imports Relativity.DataExchange.Logger
+Imports Relativity.Logging
 
 Namespace Relativity.Desktop.Client
 
@@ -163,46 +164,11 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Private Sub SetupRelativityLogging()
-			Const RdcLoggingApplication = "626BD889-2BFF-4407-9CE5-5CF3712E1BB7"
-			Const RdcLoggingSystem = "Relativity.Desktop.Client"
-			Const RdcLoggingSubSystem = "Relativity.DataExchange"
-
-			Try
-				Dim options As Relativity.Logging.LoggerOptions = New Relativity.Logging.LoggerOptions()
-				options.Application = RdcLoggingApplication
-				options.System = RdcLoggingSystem
-				options.SubSystem = RdcLoggingSubSystem
-				Dim configFileName As String = AppSettings.Instance.LogConfigXmlFileName
-				If String.IsNullOrWhiteSpace(configFileName) Then
-					configFileName = "LogConfig.xml"
-				End If
-
-				If (Not String.IsNullOrEmpty(configFileName) AndAlso (System.IO.Path.IsPathRooted(configFileName) AndAlso System.IO.File.Exists(configFileName))) Then
-					options.ConfigurationFileLocation = configFileName
-				Else 
-					Dim assembly As System.Reflection.Assembly = System.Reflection.Assembly.GetEntryAssembly()
-					Dim directory As String = System.IO.Directory.GetParent(assembly.Location).FullName
-					Dim file = System.IO.Path.Combine(directory, configFileName)
-					If (System.IO.File.Exists(file)) Then
-						options.ConfigurationFileLocation = file
-					End If
-				End If
-
-				' Storing the logger reference on the singleton ensures it will be used throughout (see RelativityLogFactory).
-				_logger = Relativity.Logging.Factory.LogFactory.GetLogger(options)
-			Catch ex As Exception
-				Try
-					Relativity.Logging.Tools.InternalLogger.WriteFromExternal(
-						$"Failed to setup Relativity logging and reverting to a NullLogger. Exception: {ex.ToString()}",
-						New Relativity.Logging.LoggerOptions With { .System = RdcLoggingSystem, .SubSystem = RdcLoggingSubSystem })
-				Catch ex2 As Exception
-					' Being overly cautious to ensure no fatal errors occur due to logging.
-				End Try
-
-				_logger = New Relativity.Logging.NullLogger()
-			Finally
-				Relativity.Logging.Log.Logger = _logger
-			End Try
+			Dim secureLogFactory As ISecureLogFactory = new RdcSecureLogFactory()
+			Dim secureLogger As ILog = secureLogFactory.CreateSecureLogger()
+			' Storing the logger reference on the singleton ensures it will be used throughout (see RelativityLogFactory).
+			Log.Logger = secureLogger
+			RelativityLogger.Instance = secureLogger
 		End Sub
 
 #Region " Utility "

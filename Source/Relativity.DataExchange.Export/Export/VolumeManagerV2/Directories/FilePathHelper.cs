@@ -3,6 +3,7 @@
 	using System;
 	using System.IO;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class FilePathHelper
@@ -16,7 +17,7 @@
 
 		public string MakeRelativePath(string fromPath, string toPath)
 		{
-			_logger.LogVerbose("Trying to make path {toPath} relative to path {fromPath}.", toPath, fromPath);
+			_logger.LogVerbose("Trying to make path {toPath} relative to path {fromPath}.", toPath.Secure(), fromPath.Secure());
 			if (string.IsNullOrEmpty(fromPath))
 			{
 				throw new ArgumentNullException(nameof(fromPath));
@@ -44,7 +45,7 @@
 				relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 			}
 
-			_logger.LogVerbose("Relative path result {relativePath}.", relativePath);
+			_logger.LogVerbose("Relative path result {relativePath}.", relativePath.Secure());
 			return relativePath;
 		}
 	}

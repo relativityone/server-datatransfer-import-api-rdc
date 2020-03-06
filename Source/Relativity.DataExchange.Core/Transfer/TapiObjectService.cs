@@ -14,6 +14,7 @@ namespace Relativity.DataExchange.Transfer
 	using System.Threading;
 	using System.Threading.Tasks;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Resources;
 	using Relativity.DataExchange.Service;
 	using Relativity.Logging;

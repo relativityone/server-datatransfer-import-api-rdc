@@ -16,6 +16,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 	using Polly;
 
+	using Relativity.DataExchange.Logger;
+
 	/// <summary>
 	/// Defines static helper methods to manage workspaces.
 	/// </summary>
@@ -50,7 +52,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 						{
 							logger.LogInformation(
 								"Retrieving the {TemplateName} workspace template...",
-								parameters.WorkspaceTemplate);
+								parameters.WorkspaceTemplate.Secure());
 							client.APIOptions.WorkspaceID = -1;
 							QueryResultSet<Workspace> resultSet = QueryWorkspaceTemplate(
 								client,
@@ -70,7 +72,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 							int templateWorkspaceId = resultSet.Results[0].Artifact.ArtifactID;
 							logger.LogInformation(
 								"Retrieved the {TemplateName} workspace template. TemplateWorkspaceId={TemplateWorkspaceId}.",
-								parameters.WorkspaceTemplate,
+								parameters.WorkspaceTemplate.Secure(),
 								templateWorkspaceId);
 
 							var workspace = new Workspace
@@ -86,7 +88,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 							parameters.WorkspaceName = workspace.Name;
 							logger.LogInformation(
 								"Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
-								workspace.Name,
+								workspace.Name.Secure(),
 								parameters.WorkspaceId);
 						}
 					});

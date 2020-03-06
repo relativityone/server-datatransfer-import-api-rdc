@@ -25,7 +25,7 @@ namespace Relativity.DataExchange.Service
 		/// The action called when performing the retry.
 		/// </param>
 		/// <returns>
-		/// The <see cref="ISyncPolicy"/> instance.
+		/// The <see cref="T:ISyncPolicy"/> instance.
 		/// </returns>
 		ISyncPolicy CreatePolicy(Action<Exception, TimeSpan, int, Context> onRetry);
 
@@ -36,7 +36,7 @@ namespace Relativity.DataExchange.Service
 		/// The action called when performing the retry.
 		/// </param>
 		/// <returns>
-		/// The <see cref="IAsyncPolicy"/> instance.
+		/// The <see cref="T:IAsyncPolicy"/> instance.
 		/// </returns>
 		IAsyncPolicy CreateAsyncPolicy(Action<Exception, TimeSpan, int, Context> onRetry);
 	}

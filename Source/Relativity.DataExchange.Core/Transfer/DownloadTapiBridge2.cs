@@ -136,12 +136,14 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			IRemotePathResolver resolver = null;
+
 			switch (this.ClientId.ToString().ToUpperInvariant())
 			{
 				case TransferClientConstants.AsperaClientId:
 					resolver = new AsperaUncPathResolver(
-							this.parameters.FileShare,
-							this.parameters.AsperaDocRootLevels);
+						this.parameters.FileShare,
+						this.parameters.AsperaDocRootLevels,
+						this.TransferLog);
 					break;
 			}
 

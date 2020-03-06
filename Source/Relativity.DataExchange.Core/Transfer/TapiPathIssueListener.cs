@@ -9,6 +9,7 @@ namespace Relativity.DataExchange.Transfer
 	using System;
 	using System.Text;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 	using Relativity.Transfer;
@@ -195,7 +196,7 @@ namespace Relativity.DataExchange.Transfer
 					lineNumber,
 					issue.Message,
 					issue.Code,
-					issue.Path.SourcePath,
+					issue.Path.SourcePath.Secure(),
 					issue.Attributes,
 					issue.IsRetryable);
 			}
@@ -216,7 +217,7 @@ namespace Relativity.DataExchange.Transfer
 					lineNumber,
 					issue.Message,
 					issue.Code,
-					issue.Path.SourcePath,
+					issue.Path.SourcePath.Secure(),
 					issue.Attributes,
 					issue.IsRetryable);
 			}

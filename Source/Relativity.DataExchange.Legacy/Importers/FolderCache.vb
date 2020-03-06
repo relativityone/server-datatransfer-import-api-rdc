@@ -3,6 +3,7 @@ Imports System.Collections.Generic
 Imports kCura.WinEDDS.Importers
 Imports kCura.WinEDDS.Service
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logger
 
 Namespace kCura.WinEDDS
 
@@ -141,7 +142,7 @@ Namespace kCura.WinEDDS
 						Throw
 					End If
 
-					_logger.LogFatal(ex, "Failed to create the {FolderPath} folder path for workspace {WorkspaceId}.", folderPath, _workspaceId)
+					_logger.LogFatal(ex, "Failed to create the {FolderPath} folder path for workspace {WorkspaceId}.", folderPath.Secure(), _workspaceId)
 					Dim message As String = $"A fatal error occurred creating the '{folderPath}' folder path for workspace {_workspaceId}."
 					message = ExceptionHelper.AppendTryAgainAdminFatalMessage(message)
 					Throw New kCura.WinEDDS.Exceptions.WebApiException(message, ex)

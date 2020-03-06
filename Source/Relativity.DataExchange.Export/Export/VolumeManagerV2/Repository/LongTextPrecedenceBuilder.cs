@@ -17,6 +17,7 @@
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Logger;
 
 	public class LongTextPrecedenceBuilder : ILongTextBuilder
 	{
@@ -71,7 +72,7 @@
 
 			kCura.WinEDDS.ViewFieldInfo field = GetFieldForLongTextPrecedenceDownload(artifact);
 
-			_logger.LogVerbose("Text Precedence is stored in field {fieldName}:{fieldId}.", field.AvfColumnName, field.FieldArtifactId);
+			_logger.LogVerbose("Text Precedence is stored in field {fieldName}:{fieldId}.", field.AvfColumnName.Secure(), field.FieldArtifactId);
 
 			if (_longTextHelper.IsTextTooLong(artifact, ServiceConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
 			{
@@ -95,7 +96,7 @@
 					return LongText.CreateFromMissingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest, sourceEncoding, _exportSettings.TextFileEncoding, artifact.LongTextLength);
 				}
 
-				_logger.LogVerbose("File {file} exists and won't be overwritten - updating statistics.", destinationLocation);
+				_logger.LogVerbose("File {file} exists and won't be overwritten - updating statistics.", destinationLocation.Secure());
 				_metadataProcessingStatistics.UpdateStatisticsForFile(destinationLocation);
 
 				_logger.LogWarning("LongText file already exists and cannot overwrite - creating ExportRequest from existing file. Assuming that file encoding is the same as selected.");
@@ -115,7 +116,7 @@
 				string destinationLocation = GetDestinationLocation(artifact);
 				if (CanExport(destinationLocation))
 				{
-					_logger.LogVerbose("LongText value exists - writing it to destination file {location}.", destinationLocation);
+					_logger.LogVerbose("LongText value exists - writing it to destination file {location}.", destinationLocation.Secure());
 					using (StreamWriter streamWriter = new StreamWriter(destinationLocation, false, _exportSettings.TextFileEncoding))
 					{
 						streamWriter.Write(longTextValue);
@@ -123,10 +124,10 @@
 				}
 				else
 				{
-					_logger.LogVerbose("LongText file already exists and cannot overwrite - using existing file {location}.", destinationLocation);
+					_logger.LogVerbose("LongText file already exists and cannot overwrite - using existing file {location}.", destinationLocation.Secure());
 				}
 
-				_logger.LogVerbose("File {file} exists or has been created from metadata - updating statistics.", destinationLocation);
+				_logger.LogVerbose("File {file} exists or has been created from metadata - updating statistics.", destinationLocation.Secure());
 				_metadataProcessingStatistics.UpdateStatisticsForFile(destinationLocation);
 				return LongText.CreateFromExistingFile(artifact.ArtifactID, field.FieldArtifactId, destinationLocation, _exportSettings.TextFileEncoding, artifact.LongTextLength);
 			}

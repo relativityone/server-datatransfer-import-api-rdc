@@ -6,6 +6,7 @@
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Service;
 	using Relativity.Logging;
 
@@ -41,7 +42,7 @@
 		private void DecideIfExportingFullText(ExportFile exportSettings)
 		{
 			exportSettings.ExportFullText = exportSettings.ExportFullText || exportSettings.SelectedViewFields.Any(x => x.Category == FieldCategory.FullText);
-			_logger.LogVerbose("Exporting full text: {value}.", exportSettings.ExportFullText);
+			_logger.LogVerbose("Exporting full text: {value}.", exportSettings.ExportFullText.Secure());
 		}
 	}
 }

@@ -14,6 +14,7 @@ namespace Relativity.DataExchange.Transfer
 	using System.Linq;
 	using System.Text;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Resources;
 
 	/// <summary>

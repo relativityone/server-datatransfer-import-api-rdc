@@ -6,6 +6,7 @@
 	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class FromFileToLoadFileWriter : ToLoadFileWriter
@@ -21,7 +22,7 @@
 
 		public override void WriteLongTextFileToDatFile(StreamWriter fileWriter, string longTextPath, Encoding encoding)
 		{
-			_logger.LogVerbose("Writing entry from file {path} to load file.", longTextPath);
+			_logger.LogVerbose("Writing entry from file {path} to load file.", longTextPath.Secure());
 			using (TextReader source = new StreamReader(longTextPath, encoding))
 			{
 				ILongTextStreamFormatter formatter = _formatterFactory.Create(source);

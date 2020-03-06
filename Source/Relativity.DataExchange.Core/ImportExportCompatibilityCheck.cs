@@ -14,6 +14,7 @@ namespace Relativity.DataExchange
 	using System.Threading;
 	using System.Threading.Tasks;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 
@@ -122,14 +123,14 @@ namespace Relativity.DataExchange
 		{
 			this.log.LogInformation(
 				"Retrieving the Relativity version for Relativity instance {RelativityHost}...",
-				this.instanceInfo.Host);
+				this.instanceInfo.Host.Secure());
 			Version relativityVersion = await this.applicationVersionService
 											.GetRelativityVersionAsync(token).ConfigureAwait(false);
 			this.runningContext.RelativityVersion = relativityVersion;
 			this.log.LogInformation(
 				"Successfully retrieved Relativity version {RelativityVersion} for Relativity instance {RelativityHost}.",
 				relativityVersion,
-				this.instanceInfo.Host);
+				this.instanceInfo.Host.Secure());
 			this.VerifyRelativityVersionFormat(relativityVersion);
 			await this.PerformValidationAsync(token, relativityVersion).ConfigureAwait(false);
 		}
@@ -155,21 +156,21 @@ namespace Relativity.DataExchange
 		{
 			this.log.LogInformation(
 				"Retrieving the import/export WebAPI version for Relativity instance {RelativityHost}...",
-				this.instanceInfo.Host);
+				this.instanceInfo.Host.Secure());
 			Version importExportWebApiVersion = await this.applicationVersionService
 													.GetImportExportWebApiVersionAsync(token).ConfigureAwait(false);
 			this.runningContext.ImportExportWebApiVersion = importExportWebApiVersion;
 			this.log.LogInformation(
 				"Successfully retrieved the import/export WebAPI version {ImportExportWebApiVersion} for Relativity instance {RelativityHost}.",
 				importExportWebApiVersion,
-				this.instanceInfo.Host);
+				this.instanceInfo.Host.Secure());
 			this.log.LogInformation(
 				"Preparing to perform the client/server API version compatibility check for Relativity instance {RelativityHost}...",
-				this.instanceInfo.Host);
+				this.instanceInfo.Host.Secure());
 			this.VerifyImportExportWebApiVersion(relativityVersion, importExportWebApiVersion);
 			this.log.LogInformation(
 				"Successfully performed the client/server API version compatibility check for Relativity instance {RelativityHost}.",
-				this.instanceInfo.Host);
+				this.instanceInfo.Host.Secure());
 		}
 
 		private void VerifyRelativityVersionFormat(Version relativityVersion)
@@ -180,7 +181,7 @@ namespace Relativity.DataExchange
 				this.log.LogError(
 					"The Relativity version {RelativityVersion} is invalid and import/export service cannot be used for Relativity instance {RelativityHost}.",
 					relativityVersion,
-					this.instanceInfo.Host);
+					this.instanceInfo.Host.Secure());
 				string message = Strings
 					.RelativtyMinVersionInvalidNoAppNameExceptionMessage;
 				if (!string.IsNullOrEmpty(this.appSettings.ApplicationName))

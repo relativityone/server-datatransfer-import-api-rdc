@@ -32,6 +32,7 @@
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Media;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.Transfer;

@@ -9,6 +9,7 @@
 
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 
@@ -87,7 +88,7 @@
 				{
 					this._logger.LogVerbose(
 						"Image file {File} contains zero bytes for artifact {ArtifactId} but the export is configured to skip creating an error.",
-						artifact.NativeTempLocation,
+						artifact.NativeTempLocation.Secure(),
 						artifact.ArtifactID);
 					return;
 				}
