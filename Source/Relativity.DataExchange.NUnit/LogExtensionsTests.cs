@@ -16,6 +16,7 @@ namespace Relativity.DataExchange.NUnit
 
 	using Moq;
 
+	using Relativity.DataExchange.Logging;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
@@ -124,6 +125,23 @@ namespace Relativity.DataExchange.NUnit
 #pragma warning restore CS0618 // Type or member is obsolete
 				this.logger.Verify(x => x.LogWarning(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()));
 			}
+		}
+
+		[Test]
+		[Category(TestCategories.Framework)]
+		public void ItShouldTrackCorrelationId()
+		{
+			// Arrange
+			const int WkspId = 1234;
+			const string CorrelationId = "SomeId";
+
+			// Act
+			var logContext = new LogContext(CorrelationId, WkspId);
+			this.logger.Object.LogImportContextPushProperties(logContext);
+
+			// Assert
+			this.logger.Verify(x => x.LogContextPushProperty($"DataExchange.Import.{nameof(logContext.RunId)}", CorrelationId), Times.Once);
+			this.logger.Verify(x => x.LogContextPushProperty($"DataExchange.Import.{nameof(logContext.WorkspaceId)}", WkspId.ToString()), Times.Once);
 		}
 	}
 }

@@ -12,6 +12,7 @@ Imports kCura.WinEDDS.FileNaming.CustomFileNaming
 Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.Service.Export
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logging
 Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service

@@ -15,6 +15,7 @@ namespace kCura.Relativity.ImportAPI
 {
 	using global::Relativity.DataExchange;
 	using global::Relativity.DataExchange.Logger;
+	using global::Relativity.DataExchange.Logging;
 	using global::Relativity.Logging;
 
 	using IAuthenticationTokenProvider = global::Relativity.Transfer.IAuthenticationTokenProvider;

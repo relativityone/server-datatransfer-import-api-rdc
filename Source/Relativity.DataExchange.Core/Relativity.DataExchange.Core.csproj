@@ -142,7 +142,9 @@
     <Compile Include="Io\TempFileConstants.cs" />
     <Compile Include="IRelativityTokenProvider.cs" />
     <Compile Include="JwtAuthToken.cs" />
-    <Compile Include="LogExtensions.cs" />
+    <Compile Include="Logging\LogExtensions.cs" />
+    <Compile Include="Logging\LogContext.cs" />
+    <Compile Include="Logging\StackOfDisposables.cs" />
     <Compile Include="Logger\AggregatingLoggerDecorator.cs" />
     <Compile Include="Logger\ImportApiSecureLogFactory.cs" />
     <Compile Include="Logger\ISecureLogFactory.cs" />
