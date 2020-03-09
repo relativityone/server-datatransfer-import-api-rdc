@@ -10,7 +10,7 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.SqlStatement
 			@"ACTION(sqlserver.client_app_name,sqlserver.database_id,sqlserver.query_hash,sqlserver.sql_text,sqlserver.request_id,sqlserver.session_id)";
 
 		private const string Where =
-			@"WHERE ([package0].[greater_than_uint64]([sqlserver].[database_id],(4)) AND [package0].[equal_boolean]([sqlserver].[is_system],(0)) AND [sqlserver].[client_app_name]=N'RelativityWebAPI')";
+			@"WHERE ([package0].[greater_than_uint64]([sqlserver].[database_id],(4)) AND [package0].[equal_boolean]([sqlserver].[is_system],(0)) AND [sqlserver].[like_i_sql_unicode_string]([sqlserver].[client_app_name],N'RelativityWebAPI%'))";
 
 		public CollectSqlStatementsProfilingSession(string connectionString)
 			: base(
