@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.DataExchange
+namespace Relativity.DataExchange.Logging
 {
 	using System;
 	using System.Collections.Generic;
@@ -18,11 +18,16 @@ namespace Relativity.DataExchange
 	using Relativity.DataExchange.Helpers;
 	using Relativity.Logging;
 
+	using Constants = Relativity.DataExchange.Constants;
+
 	/// <summary>
 	/// Defines extension methods for <see cref="Relativity.Logging.ILog"/>.
 	/// </summary>
 	internal static class LogExtensions
 	{
+		private const string DataExchangeLogPrefix = "DataExchange";
+		private const string ImportLogPrefix = "Import";
+
 		/// <summary>
 		/// Write an informational log message and transforms <paramref name="value"/> into a dictionary that's supplied to the logging framework.
 		/// </summary>
@@ -114,6 +119,38 @@ namespace Relativity.DataExchange
 					logger.LogInformation(messageTemplate + " with User Name: {userName}", HashingHelper.CalculateSHA256Hash(networkCredentials.UserName));
 				}
 			}
+		}
+
+		/// <summary>
+		/// This method pushes all public properties from given object to ILog instance logging context.
+		/// </summary>
+		/// <param name="logger">logger instance.</param>
+		/// <param name="value">logging context object.</param>
+		/// <returns>instance of of the <see cref="IDisposable"/>. </returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Reliability",
+			"CA2000:Dispose objects before losing scope",
+			Justification = "It wraps LogContextPushProperty ILog method execution so the calling code is responsible for disposing the returned object.")]
+		public static IDisposable LogImportContextPushProperties(this ILog logger, object value)
+		{
+			logger.ThrowIfNull(nameof(logger));
+			value.ThrowIfNull(nameof(value));
+
+			var stackOfDisposables = new StackOfDisposables();
+
+			Type type = value.GetType();
+			PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+			foreach (PropertyInfo property in properties)
+			{
+				string propertyName = property.Name;
+				string propertyValue = property.GetValue(value, null)?.ToString() ?? string.Empty;
+
+				IDisposable disposable = logger.LogContextPushProperty($"{DataExchangeLogPrefix}.{ImportLogPrefix}.{propertyName}", propertyValue);
+				stackOfDisposables.Push(disposable);
+			}
+
+			return stackOfDisposables;
 		}
 
 		private static void LogInformationForAuthToken(ILog logger, string messageTemplate, NetworkCredential networkCredentials)

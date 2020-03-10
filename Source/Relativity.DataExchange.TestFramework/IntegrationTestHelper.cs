@@ -205,12 +205,12 @@ END";
 
 			// Configure the optional HTTP sink to periodically send logs to Relativity.
 			loggerOptions.AddSinkParameter(
-				Logging.Configuration.RelativityHttpSinkConfig.CredentialSinkParameterKey,
+				Relativity.Logging.Configuration.RelativityHttpSinkConfig.CredentialSinkParameterKey,
 				new NetworkCredential(parameters.RelativityUserName, parameters.RelativityPassword));
 			loggerOptions.AddSinkParameter(
-				Logging.Configuration.RelativityHttpSinkConfig.InstanceUrlSinkParameterKey,
+				Relativity.Logging.Configuration.RelativityHttpSinkConfig.InstanceUrlSinkParameterKey,
 				parameters.RelativityUrl);
-			ILog logger = Logging.Factory.LogFactory.GetLogger(loggerOptions);
+			ILog logger = Relativity.Logging.Factory.LogFactory.GetLogger(loggerOptions);
 
 			if (parameters.WriteLogsToConsole)
 			{

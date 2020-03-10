@@ -1,3 +1,4 @@
+Imports System.Runtime.InteropServices
 Imports System.Threading
 
 Imports kCura.WinEDDS.Service
@@ -7,6 +8,7 @@ Imports Monitoring
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Data
 Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Logging
 Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Media
 Imports Relativity.DataExchange.Process
@@ -59,6 +61,7 @@ Namespace kCura.WinEDDS
 		Private _errorMessageFileLocation As String = ""
 		Private _errorRowsFileLocation As String = ""
 		Private _fileIdentifierLookup As System.Collections.Hashtable
+		Private _loggerIntialized As Boolean
 
 		Private _processID As Guid
 		Public Property MaxNumberOfErrorsInGrid As Int32 = AppSettings.Instance.DefaultMaxErrorCount
@@ -348,13 +351,18 @@ Namespace kCura.WinEDDS
 			Me.ReadFile(_filePath)
 		End Sub
 
-		Private Sub ProcessList(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByRef status As Int64, ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
+		Private Sub ProcessList(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByRef status As Int64, ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String, <Out()> ByRef logContextDisposable As IDisposable)
 			If al.Count = 0 Then Exit Sub
 			Me.ProcessDocument(al, status)
 			al.Clear()
 			status = 0
 			If (_bulkLoadFileWriter.BaseStream.Length + _dataGridFileWriter.BaseStream.Length > ImportBatchVolume) OrElse _batchCount > ImportBatchSize - 1 Then
 				Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, False, _jobCompleteImageCount >= JobCompleteBatchSize, _jobCompleteMetadataCount >= JobCompleteBatchSize)
+				If Not _loggerIntialized
+					_loggerIntialized = true
+					' At this point we get Run Id
+					logContextDisposable = _logger.LogImportContextPushProperties(New LogContext(_runId, _settings.CaseInfo.ArtifactID))
+				End If
 			End If
 		End Sub
 
@@ -662,8 +670,11 @@ Namespace kCura.WinEDDS
 
 		Public Sub ReadFile(ByVal path As String)
 			_timekeeper.MarkStart("TOTAL")
+			_logger.LogUserContextInformation("Start import process", _settings.Credential)
+
 			Dim bulkLoadFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.NativeLoadFileNameSuffix)
 			Dim dataGridFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.DatagridLoadFileNameSuffix)
+			Dim logContextDisposable As IDisposable = Nothing
 			_fileIdentifierLookup = New System.Collections.Hashtable
 			_totalProcessed = 0
 			_totalValidated = 0
@@ -740,12 +751,12 @@ Namespace kCura.WinEDDS
 						Dim record As Api.ImageRecord = _imageReader.GetImageRecord
 						record.OriginalIndex = _imageReader.CurrentRecordNumber
 						If (record.IsNewDoc) Then
-							Me.ProcessList(al, status, bulkLoadFilePath, dataGridFilePath)
+							Me.ProcessList(al, status, bulkLoadFilePath, dataGridFilePath, logContextDisposable)
 						End If
 						status = status Or Me.ProcessImageLine(record)
 						al.Add(record)
 						If Not Me.[Continue] Then
-							Me.ProcessList(al, status, bulkLoadFilePath, dataGridFilePath)
+							Me.ProcessList(al, status, bulkLoadFilePath, dataGridFilePath, logContextDisposable)
 							Exit While
 						End If
 					End If
@@ -767,6 +778,8 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
 				DestroyTapiBridges()
 				CleanupTempTables()
+				_logger.LogUserContextInformation("Import process completed", _settings.Credential)
+				logContextDisposable?.Dispose()
 				_timekeeper.MarkEnd("ReadFile_CleanupTempTables")
 			End Try
 		End Sub

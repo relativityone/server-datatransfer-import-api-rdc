@@ -41,7 +41,7 @@ Namespace kCura.WinEDDS
 		Private _fileTapiClientName As String
 		Private _statisticsLastUpdated As DateTime = DateTime.Now
 		Private _batchFileTapiProgressCount As Int32 = 0
-		Private ReadOnly _logger As ILog
+		Protected ReadOnly _logger As ILog
 		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 		Private _waitAndRetryPolicy As IWaitAndRetryPolicy
 #End Region

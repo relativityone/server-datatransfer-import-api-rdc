@@ -9,6 +9,7 @@ Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Data
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Logger
+Imports Relativity.DataExchange.Logging
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
@@ -606,165 +607,168 @@ Namespace kCura.WinEDDS
 		Public Overridable Function ReadFile(ByVal path As String) As Object Implements IImportJob.ReadFile
 			Dim line As Api.ArtifactFieldCollection
 			_filePath = path
-			Try
-				Using Timekeeper.CaptureTime("TOTAL")
-					OnStartFileImport()
-					Using Timekeeper.CaptureTime("ReadFile_InitializeMembers")
-						If Not InitializeMembers() Then
-							Return False
-						End If
-						ProcessedDocumentIdentifiers = New Dictionary(Of String,Integer)
-					End Using
-
-					If (_enforceDocumentLimit) Then
-						If (Overwrite = ImportOverwriteType.Append And _artifactTypeID = ArtifactType.Document) Then
-							Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
-							Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
-							Dim fileLineStart As Long = _startLineNumber
-							If _startLineNumber <= 0 Then fileLineStart = 1
-							Dim countAfterJob As Long = currentDocCount + (RecordCount - (fileLineStart - 1))
-							If (docLimit <> 0 And countAfterJob > docLimit) Then
-								Dim errorMessage As String = String.Format("The document import was canceled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
-								Throw New Exception(errorMessage)
+			Using _logger.LogImportContextPushProperties(New LogContext(RunId, _settings.CaseInfo.ArtifactID))
+				Try
+					_logger.LogUserContextInformation("Start import process", _settings.Credentials)
+					Using Timekeeper.CaptureTime("TOTAL")
+						OnStartFileImport()
+						Using Timekeeper.CaptureTime("ReadFile_InitializeMembers")
+							If Not InitializeMembers() Then
+								Return False
 							End If
-						End If
-					End If
-
-					Me.LogInformation("Preparing to import documents via WinEDDS.")
-					Using Timekeeper.CaptureTime("ReadFile_ProcessDocuments")
-						_columnHeaders = _artifactReader.GetColumnNames(_settings)
-						If _firstLineContainsColumnNames Then Offset = -1
-						Statistics.BatchSize = Me.ImportBatchSize
-						JobCounter = 1
-						Me.TotalTransferredFilesCount = 0
-
-						' This will safely force the status bar to update immediately.
-						Me.OnTapiClientChanged()
-						Using fileTypeIdentifier As IFileTypeIdentifier = New OutsideInFileTypeIdentifierService(AppSettings.Instance.FileTypeIdentifyTimeoutSeconds)
-							While ShouldImport AndAlso _artifactReader.HasMoreRecords
-								Try
-									If Me.CurrentLineNumber < _startLineNumber Then
-										Me.AdvanceLine()
-
-										' This will ensure progress takes into account the start line number
-										FileTapiProgressCount += 1
-									Else
-										Using Timekeeper.CaptureTime("ReadFile_GetLine")
-											Statistics.DocumentsCount += 1
-											'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
-											' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
-											' -Phil S. 06/12/2012
-											WriteStatusLine(EventType2.Count, String.Empty)
-											line = _artifactReader.ReadArtifact
-										End Using
-										Dim lineStatus As Int32 = 0
-										'If line.Count <> _columnHeaders.Length Then
-										'	lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
-										'End If
-
-										Dim id As String
-										Using Timekeeper.CaptureTime("ReadFile_ManageDocument")
-											id = ManageDocument(fileTypeIdentifier, line, lineStatus)
-										End Using
-
-										Using Timekeeper.CaptureTime("ReadFile_IdTrack")
-											ProcessedDocumentIdentifiers.Add(id, CurrentLineNumber)
-										End Using
-									End If
-								Catch ex As LoadFileBase.CodeCreationException
-									If ex.IsFatal Then
-										WriteFatalError(Me.CurrentLineNumber, ex)
-										Me.LogFatal(ex, "A fatal code operation error has occurred managing an import document.")
-									Else
-										WriteError(Me.CurrentLineNumber, ex.Message)
-										Me.LogError(ex, "A serious code operation error has occurred managing an import document.")
-									End If
-								Catch ex As System.IO.PathTooLongException
-									WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
-									Me.LogError(ex, "An import error has occured because of invalid document path - the path is too long.")
-								Catch ex As ImporterException
-									WriteError(Me.CurrentLineNumber, ex.Message)
-									Me.LogError(ex, "An import data error has occurred managing an import document.")
-								Catch ex As FileInfoInvalidPathException
-									WriteError(Me.CurrentLineNumber, ex.Message)
-									Me.LogError(ex, "An import error has occured because of invalid document path - illegal characters in path.")
-								Catch ex As System.IO.FileNotFoundException
-									WriteError(Me.CurrentLineNumber, ex.Message)
-									Me.LogError(ex, "A file not found error has occurred managing an import document.")
-								Catch ex As FileTypeIdentifyException
-									WriteError(Me.CurrentLineNumber, ex.Message)
-									Me.LogError(ex, "An error occured identifying type of native file.")
-								Catch ex As System.UnauthorizedAccessException
-									WriteFatalError(Me.CurrentLineNumber, ex)
-									Me.LogFatal(ex, "A fatal import error has occurred because the user doesn't have authorized access to the document.")
-								Catch ex As System.Exception
-									WriteFatalError(Me.CurrentLineNumber, ex)
-									Me.LogFatal(ex, "A fatal unexpected error has occurred managing an import document.")
-								End Try
-							End While
-
-							' Dump OI details.
-							' Preserving existing behavior where this can never fail.
-							Try
-								Dim fileTypeConfiguration As IFileTypeConfiguration = fileTypeIdentifier.Configuration
-								If fileTypeConfiguration.HasError Then
-									Me.LogError("OI Configuration Info")
-									Me.LogError("OI version: {Version}", fileTypeConfiguration.Version)
-									Me.LogError("OI idle worker timeout: {Timeout} seconds", fileTypeConfiguration.Timeout)
-									Me.LogError("OI install path: {InstallPath}", fileTypeConfiguration.InstallDirectory.Secure())
-									If Not fileTypeConfiguration.Exception Is Nothing Then
-										Me.LogError(fileTypeConfiguration.Exception, "OI runtime exception.", fileTypeConfiguration.Exception)
-									End If
-								Else
-									Me.LogInformation("OI Configuration Info")
-									Me.LogInformation("OI version: {Version}", fileTypeConfiguration.Version)
-									Me.LogInformation("OI idle worker timeout: {Timeout}", fileTypeConfiguration.Timeout)
-									Me.LogInformation("OI install path: {InstallPath}", fileTypeConfiguration.InstallDirectory.Secure())
-								End If
-							Catch ex As FileTypeIdentifyException
-								Me.LogError(ex, "Failed to retrieve OI configuration info.")
-							End Try
+							ProcessedDocumentIdentifiers = New Dictionary(Of String,Integer)
 						End Using
 
-						If Not _task Is Nothing AndAlso _task.Status.In(
-							Threading.Tasks.TaskStatus.Running,
-							Threading.Tasks.TaskStatus.WaitingForActivation,
-							Threading.Tasks.TaskStatus.WaitingForChildrenToComplete,
-							Threading.Tasks.TaskStatus.WaitingToRun) Then
-							WaitOnPushBatchTask()
+						If (_enforceDocumentLimit) Then
+							If (Overwrite = ImportOverwriteType.Append And _artifactTypeID = ArtifactType.Document) Then
+								Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
+								Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
+								Dim fileLineStart As Long = _startLineNumber
+								If _startLineNumber <= 0 Then fileLineStart = 1
+								Dim countAfterJob As Long = currentDocCount + (RecordCount - (fileLineStart - 1))
+								If (docLimit <> 0 And countAfterJob > docLimit) Then
+									Dim errorMessage As String = String.Format("The document import was canceled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
+									Throw New Exception(errorMessage)
+								End If
+							End If
 						End If
-					End Using
-					Using Timekeeper.CaptureTime("ReadFile_OtherFinalization")
-						Me.TryPushNativeBatch(True, True, True)
-						WaitOnPushBatchTask()
-						RaiseEvent EndFileImport(RunId)
-						WriteEndImport("Finish")
-						_artifactReader.Close()
-					End Using
-				End Using
-				Timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
-				Me.LogInformation("Successfully imported {ImportCount} documents via WinEDDS.", Me.FileTapiProgressCount)
-				Me.LogStatistics()
-				Return True
-			Catch ex As System.Exception
-				Me.WriteFatalError(Me.CurrentLineNumber, ex)
-				Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
-				Me.LogStatistics()
-			Finally
-				Using Timekeeper.CaptureTime("ReadFile_CleanupTempTables")
-					DestroyTapiBridges()
-					CleanupTempTables()
 
-					If Not Me.OutputFileWriter Is Nothing Then
-						Dim numberOfNotDeletedFiles As Integer = Me.OutputFileWriter.TryCloseAndDeleteAllTempFiles()
-						If numberOfNotDeletedFiles > 0
-							WriteStatusLine(EventType2.Warning, $"Process was not able to delete {numberOfNotDeletedFiles} temporary file(s).", lineNumber := 0)
+						Me.LogInformation("Preparing to import documents via WinEDDS.")
+						Using Timekeeper.CaptureTime("ReadFile_ProcessDocuments")
+							_columnHeaders = _artifactReader.GetColumnNames(_settings)
+							If _firstLineContainsColumnNames Then Offset = -1
+							Statistics.BatchSize = Me.ImportBatchSize
+							JobCounter = 1
+							Me.TotalTransferredFilesCount = 0
+
+							' This will safely force the status bar to update immediately.
+							Me.OnTapiClientChanged()
+							Using fileTypeIdentifier As IFileTypeIdentifier = New OutsideInFileTypeIdentifierService(AppSettings.Instance.FileTypeIdentifyTimeoutSeconds)
+								While ShouldImport AndAlso _artifactReader.HasMoreRecords
+									Try
+										If Me.CurrentLineNumber < _startLineNumber Then
+											Me.AdvanceLine()
+
+											' This will ensure progress takes into account the start line number
+											FileTapiProgressCount += 1
+										Else
+											Using Timekeeper.CaptureTime("ReadFile_GetLine")
+												Statistics.DocumentsCount += 1
+												'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
+												' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
+												' -Phil S. 06/12/2012
+												WriteStatusLine(EventType2.Count, String.Empty)
+												line = _artifactReader.ReadArtifact
+											End Using
+											Dim lineStatus As Int32 = 0
+											'If line.Count <> _columnHeaders.Length Then
+											'	lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
+											'End If
+
+											Dim id As String
+											Using Timekeeper.CaptureTime("ReadFile_ManageDocument")
+												id = ManageDocument(fileTypeIdentifier, line, lineStatus)
+											End Using
+
+											Using Timekeeper.CaptureTime("ReadFile_IdTrack")
+												ProcessedDocumentIdentifiers.Add(id, CurrentLineNumber)
+											End Using
+										End If
+									Catch ex As LoadFileBase.CodeCreationException
+										If ex.IsFatal Then
+											WriteFatalError(Me.CurrentLineNumber, ex)
+											Me.LogFatal(ex, "A fatal code operation error has occurred managing an import document.")
+										Else
+											WriteError(Me.CurrentLineNumber, ex.Message)
+											Me.LogError(ex, "A serious code operation error has occurred managing an import document.")
+										End If
+									Catch ex As System.IO.PathTooLongException
+										WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
+										Me.LogError(ex, "An import error has occured because of invalid document path - the path is too long.")
+									Catch ex As ImporterException
+										WriteError(Me.CurrentLineNumber, ex.Message)
+										Me.LogError(ex, "An import data error has occurred managing an import document.")
+									Catch ex As FileInfoInvalidPathException
+										WriteError(Me.CurrentLineNumber, ex.Message)
+										Me.LogError(ex, "An import error has occured because of invalid document path - illegal characters in path.")
+									Catch ex As System.IO.FileNotFoundException
+										WriteError(Me.CurrentLineNumber, ex.Message)
+										Me.LogError(ex, "A file not found error has occurred managing an import document.")
+									Catch ex As FileTypeIdentifyException
+										WriteError(Me.CurrentLineNumber, ex.Message)
+										Me.LogError(ex, "An error occured identifying type of native file.")
+									Catch ex As System.UnauthorizedAccessException
+										WriteFatalError(Me.CurrentLineNumber, ex)
+										Me.LogFatal(ex, "A fatal import error has occurred because the user doesn't have authorized access to the document.")
+									Catch ex As System.Exception
+										WriteFatalError(Me.CurrentLineNumber, ex)
+										Me.LogFatal(ex, "A fatal unexpected error has occurred managing an import document.")
+									End Try
+								End While
+
+								' Dump OI details.
+								' Preserving existing behavior where this can never fail.
+								Try
+									Dim fileTypeConfiguration As IFileTypeConfiguration = fileTypeIdentifier.Configuration
+									If fileTypeConfiguration.HasError Then
+										Me.LogError("OI Configuration Info")
+										Me.LogError("OI version: {Version}", fileTypeConfiguration.Version)
+										Me.LogError("OI idle worker timeout: {Timeout} seconds", fileTypeConfiguration.Timeout)
+										Me.LogError("OI install path: {InstallPath}", fileTypeConfiguration.InstallDirectory.Secure())
+										If Not fileTypeConfiguration.Exception Is Nothing Then
+											Me.LogError(fileTypeConfiguration.Exception, "OI runtime exception.", fileTypeConfiguration.Exception)
+										End If
+									Else
+										Me.LogInformation("OI Configuration Info")
+										Me.LogInformation("OI version: {Version}", fileTypeConfiguration.Version)
+										Me.LogInformation("OI idle worker timeout: {Timeout}", fileTypeConfiguration.Timeout)
+										Me.LogInformation("OI install path: {InstallPath}", fileTypeConfiguration.InstallDirectory.Secure())
+									End If
+								Catch ex As FileTypeIdentifyException
+									Me.LogError(ex, "Failed to retrieve OI configuration info.")
+								End Try
+							End Using
+
+							If Not _task Is Nothing AndAlso _task.Status.In(
+								Threading.Tasks.TaskStatus.Running,
+								Threading.Tasks.TaskStatus.WaitingForActivation,
+								Threading.Tasks.TaskStatus.WaitingForChildrenToComplete,
+								Threading.Tasks.TaskStatus.WaitingToRun) Then
+								WaitOnPushBatchTask()
+							End If
+						End Using
+						Using Timekeeper.CaptureTime("ReadFile_OtherFinalization")
+							Me.TryPushNativeBatch(True, True, True)
+							WaitOnPushBatchTask()
+							RaiseEvent EndFileImport(RunId)
+							WriteEndImport("Finish")
+							_artifactReader.Close()
+						End Using
+					End Using
+					Timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
+					Me.LogInformation("Successfully imported {ImportCount} documents via WinEDDS.", Me.FileTapiProgressCount)
+					Me.LogStatistics()
+					Return True
+				Catch ex As System.Exception
+					Me.WriteFatalError(Me.CurrentLineNumber, ex)
+					Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
+					Me.LogStatistics()
+				Finally
+					Using Timekeeper.CaptureTime("ReadFile_CleanupTempTables")
+						DestroyTapiBridges()
+						CleanupTempTables()
+
+						If Not Me.OutputFileWriter Is Nothing Then
+							Dim numberOfNotDeletedFiles As Integer = Me.OutputFileWriter.TryCloseAndDeleteAllTempFiles()
+							If numberOfNotDeletedFiles > 0
+								WriteStatusLine(EventType2.Warning, $"Process was not able to delete {numberOfNotDeletedFiles} temporary file(s).", lineNumber := 0)
+							End If
+							Me.OutputFileWriter.Dispose()
+							Me.OutputFileWriter = Nothing
 						End If
-						Me.OutputFileWriter.Dispose()
-						Me.OutputFileWriter = Nothing
-					End If
-				End Using
-			End Try
+					End Using
+				End Try
+			End Using
 			Return Nothing
 		End Function
 

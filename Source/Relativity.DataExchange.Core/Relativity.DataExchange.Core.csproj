@@ -143,8 +143,10 @@
     <Compile Include="IRunningContext.cs" />
     <Compile Include="IRelativityTokenProvider.cs" />
     <Compile Include="JwtAuthToken.cs" />
-    <Compile Include="LogExtensions.cs" />
+    <Compile Include="Logging\LogExtensions.cs" />
     <Compile Include="Logger\AggregatingLoggerDecorator.cs" />
+    <Compile Include="Logging\LogContext.cs" />
+    <Compile Include="Logging\StackOfDisposables.cs" />
     <Compile Include="Media\ByteArrayConverter.cs" />
     <Compile Include="Logger\ImportApiSecureLogFactory.cs" />
     <Compile Include="Logger\ISecureLogFactory.cs" />
@@ -615,4 +617,5 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
 </Project>
