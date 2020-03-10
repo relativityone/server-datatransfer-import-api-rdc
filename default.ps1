@@ -1000,18 +1000,20 @@ Function Get-ReleaseVersion {
     $gitVersion = git describe --tags --always
     Write-Host $gitVersion
     $gitVersionSplit = $gitVersion.ToString().Split('-')
-    $version = $gitVersionSplit[0]
-    $commitsSince = $gitVersionSplit[1]
-
-    Write-Host "Version = $version"
-    $major = $version.Split('.')[0]
-    $minor = $version.Split('.')[1]
-    
+    $version = $gitVersionSplit[0] # 1.9.0
+    $commitsSinceLastTag = $gitVersionSplit[1] # 95
     # git describe does not give the commits since tag if the numer of commits since tag is null.
-    if("$commitsSince" -eq "")
+    if("$commitsSinceLastTag" -eq "")
     {
-        $commitsSince = "0"
+        $commitsSinceLastTag = "0"
     }
+	$commitsSince = [int]$commitsSinceLastTag + [int]$version.Split('.')[2]
+	
+    Write-Host "Version = $version"
+    $major = $version.Split('.')[0] # 1
+    $minor = $version.Split('.')[1] # 9
+    
+
     Write-Host "Commits since version was created = $commitsSince"
     if($returnCommitsSinceOnly)
     {

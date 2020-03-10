@@ -105,6 +105,14 @@ timestamps
                         currentBuild.displayName = "$outputStringParsed"
                         buildVersion = outputStringParsed
                     }
+					
+					stage('Tag version in GIT')
+                    {
+                        echo "Is release branch = $isReleaseBranch"
+                        echo "Tagging git"
+						runCommandWithOutput("git tag $buildVersion; git push origin --all; git push origin --tags")
+                        echo "Tagging git success."
+                    }
 									
 					withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) 
 					{
