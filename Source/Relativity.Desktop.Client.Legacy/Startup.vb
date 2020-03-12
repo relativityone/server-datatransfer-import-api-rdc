@@ -20,7 +20,6 @@ Namespace Relativity.Desktop.Client
 		Friend _application As Global.Relativity.Desktop.Client.Application
 		Private _importOptions As ImportOptions = New ImportOptions()
 		Private _authOptions As AuthenticationOptions = New AuthenticationOptions()
-		Private _logger As Relativity.Logging.ILog
 #End Region
 
 #Region " Enumerations "
@@ -37,7 +36,7 @@ Namespace Relativity.Desktop.Client
 
 		Public Sub Main()
 			SetupRelativityLogging()
-			ContainerFactoryProvider.ContainerFactory = New ContainerFactory(_logger)
+			ContainerFactoryProvider.ContainerFactory = New ContainerFactory(RelativityLogger.Instance)
 			Dim handler As ThreadExceptionHandler = New ThreadExceptionHandler()
 			AddHandler System.Windows.Forms.Application.ThreadException, AddressOf handler.Application_ThreadException
 
@@ -72,7 +71,7 @@ Namespace Relativity.Desktop.Client
 		Private Async Function RunInConsoleMode() As Task
 			Try
 				_application = Global.Relativity.Desktop.Client.Application.Instance
-				Dim _import As ImportManager = New ImportManager(_logger)
+				Dim _import As ImportManager = New ImportManager(RelativityLogger.Instance)
 
 				Dim commandList As CommandList = CommandLineParser.Parse
 				For Each command As Command In commandList
