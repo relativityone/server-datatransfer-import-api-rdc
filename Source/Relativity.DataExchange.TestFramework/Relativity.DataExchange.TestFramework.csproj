@@ -94,7 +94,9 @@
     <Compile Include="CollationStringComparer.cs" />
     <Compile Include="DataReaderBase.cs" />
     <Compile Include="DummyTest.cs" />
+    <Compile Include="Import\JobExecutionContext\IExecutionContext.cs" />
     <Compile Include="Import\JobExecutionContext\ImportTestJobResult.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\IFieldValueSourceWithPrefix.cs" />
     <Compile Include="Import\SimpleFieldsImport\SingleObjectImporter.cs" />
     <Compile Include="Import\RdoStructureImport\FieldDefinition.cs" />
     <Compile Include="Import\RdoStructureImport\RdoStructureDefinition.cs" />
@@ -103,6 +105,8 @@
     <Compile Include="Import\SimpleFieldsImport\DtoBasedDataSourceConverter.cs" />
     <Compile Include="Import\SimpleFieldsImport\ImageSettingsBuilder.cs" />
     <Compile Include="Import\SimpleFieldsImport\ImportDataSourceToDataReaderAdapter.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\FileNameValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\ImageLocationValueSource.cs" />
     <Compile Include="Extensions\CopySettingsExtenstion.cs" />
     <Compile Include="Extensions\DataRowExtensions.cs" />
     <Compile Include="Extensions\DataTableExtensions.cs" />

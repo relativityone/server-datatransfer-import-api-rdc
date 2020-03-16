@@ -9,9 +9,6 @@
 
 namespace Relativity.DataExchange.Import.NUnit.LoadTests
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
@@ -19,7 +16,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	using kCura.Relativity.DataReaderClient;
 
 	using Relativity.DataExchange.Import.NUnit.Integration;
-	using Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
@@ -31,24 +27,21 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	[Explicit]
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-	public class ImportDocumentsLoadTests : ImportJobTestBase<ParallelNativeImportExecutionContext>
+	public class ImportDocumentsLoadTests : ImportLoadTestsBase<NativeImportExecutionContext, Settings>
 	{
-		[TearDown]
-		public Task TearDownAsync()
-		{
-			return this.ResetContextAsync();
-		}
-
 		[CollectDeadlocks]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
-		[IdentifiedTestCase("b9b6897f-ea3f-4694-80d2-db08529387AB", 8, 50 * 1000)]
-		[IdentifiedTestCase("68322B14-8BFA-49D2-9B00-6501DBAA2452", 16, 100 * 1000)]
-		public async Task ShouldImportFoldersParallelAsync(int parallelIApiClientCount, int numberOfDocumentsPerIApiClient)
+		[IdentifiedTestCase("b9b6897f-ea3f-4694-80d2-db08529387AB")]
+		public async Task ShouldImportFoldersParallelAsync(
+			[Values(16, 8)] int parallelIApiClientCount,
+			[Values(100_000)] int numberOfDocumentsPerIApiClient,
+			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
-			ForceClient(TapiClient.Direct);
+			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
+			ForceClient(client);
 
 			var settingsBuilder = new NativeImportSettingsBuilder();
 			settingsBuilder = settingsBuilder
@@ -74,9 +67,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 
 			// ASSERT
 			int expectedNumberOfRows = numberOfDocumentsPerIApiClient * parallelIApiClientCount;
-			this.ValidateTotalRowsCount(expectedNumberOfRows);
-			this.ValidateFatalExceptionsNotExist();
-			this.ValidateErrorRowsNotExist(results);
+			this.ThenTheImportJobIsSuccessful(results, expectedNumberOfRows);
 			Assert.That(results.NumberOfJobMessages, Is.Positive);
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(expectedNumberOfRows));
 		}
@@ -85,13 +76,15 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
-		[IdentifiedTestCase("cb760ab7-2b37-4bf0-afbf-67267744910c", 8, 250 * 1000)]
-		[IdentifiedTestCase("cb760ab7-2b37-4bf0-afbf-67267744910c", 16, 100 * 1000)]
-		public async Task ShouldImportChoicesInParallelAsync(int parallelIApiClientCount, int numberOfDocumentsPerIApiClient)
+		[IdentifiedTestCase("bbbc5de9-f6a4-4a4c-97a7-6f1f88d96c93")]
+		public async Task ShouldImportChoicesInParallelAsync(
+			[Values(16, 8)] int parallelIApiClientCount,
+			[Values(100_000)] int numberOfDocumentsPerIApiClient,
+			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
-			ForceClient(TapiClient.Direct);
-
+			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
+			ForceClient(client);
 			var settingsBuilder = new NativeImportSettingsBuilder();
 			settingsBuilder = settingsBuilder.WithDefaultSettings();
 
@@ -121,9 +114,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 
 			// ASSERT
 			int expectedNumberOfDocuments = numberOfDocumentsPerIApiClient * parallelIApiClientCount;
-			this.ValidateTotalRowsCount(expectedNumberOfDocuments);
-			this.ValidateFatalExceptionsNotExist();
-			this.ValidateErrorRowsNotExist(results);
+			this.ThenTheImportJobIsSuccessful(results, expectedNumberOfDocuments);
 			Assert.That(results.NumberOfJobMessages, Is.Positive);
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(expectedNumberOfDocuments));
 		}
@@ -132,11 +123,15 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
-		[IdentifiedTestCase("cb760ab7-2b37-4bf0-afbf-67267744910c", 8, 500 * 1000)]
-		public async Task ShouldImportChoicesAndFoldersInParallelAsync(int parallelIApiClientCount, int numberOfDocumentsPerIApiClient)
+		[IdentifiedTestCase("9f2f532e-7a16-4199-87ec-1308dbff27a7")]
+		public async Task ShouldImportChoicesAndFoldersInParallelAsync(
+			[Values(16, 8)] int parallelIApiClientCount,
+			[Values(100_000)] int numberOfDocumentsPerIApiClient,
+			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
-			ForceClient(TapiClient.Direct);
+			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
+			ForceClient(client);
 
 			var settingsBuilder = new NativeImportSettingsBuilder();
 			settingsBuilder = settingsBuilder
@@ -176,42 +171,9 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 
 			// ASSERT
 			int expectedNumberOfDocuments = numberOfDocumentsPerIApiClient * parallelIApiClientCount;
-			this.ValidateTotalRowsCount(expectedNumberOfDocuments);
-			this.ValidateFatalExceptionsNotExist();
-			this.ValidateErrorRowsNotExist(results);
+			this.ThenTheImportJobIsSuccessful(results, expectedNumberOfDocuments);
 			Assert.That(results.NumberOfJobMessages, Is.Positive);
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(expectedNumberOfDocuments));
-		}
-
-		private void ValidateTotalRowsCount(int expectedTotalRows)
-		{
-			int totalDocCount = this.JobExecutionContext.CompletedTotalRowsCountFromReport;
-
-			Assert.That(totalDocCount, Is.EqualTo(expectedTotalRows));
-		}
-
-		private void ValidateFatalExceptionsNotExist()
-		{
-			IEnumerable<Exception> fatalExceptions =
-				this.JobExecutionContext.FatalExceptionsFromReport;
-
-			Assert.That(fatalExceptions.All(item => item == null));
-			Assert.That(this.JobExecutionContext.TestJobResult.JobFatalExceptions, Has.Count.Zero);
-		}
-
-		private void ValidateErrorRowsNotExist(ImportTestJobResult jobResult)
-		{
-			int numberOfErrorRows = this.JobExecutionContext.ErrorRowsCountFromReport;
-
-			Assert.That(numberOfErrorRows, Is.Zero);
-			Assert.That(jobResult.ErrorRows, Has.Count.Zero);
-		}
-
-		private void InitializeImportApiWithUserAndPwd(ISettingsBuilder<Settings> settingsBuilder, int instanceCount)
-		{
-			this.JobExecutionContext
-				.ConfigureImportApiInstanceCount(instanceCount)
-				.InitializeImportApiWithUserAndPassword(this.TestParameters, settingsBuilder);
 		}
 	}
 }

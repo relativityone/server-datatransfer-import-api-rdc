@@ -16,7 +16,9 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 
 	/// <summary>
 	/// Execution context for image import tests.

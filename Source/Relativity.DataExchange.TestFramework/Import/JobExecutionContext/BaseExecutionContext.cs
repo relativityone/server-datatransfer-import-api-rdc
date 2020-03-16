@@ -29,7 +29,7 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 	/// <remarks>Instances of that class can be used across AppDomains.</remarks>
 	/// <typeparam name="TImportJob">Type of the job to test.</typeparam>
 	/// <typeparam name="TSettings">Type of settings used for import job.</typeparam>
-	public abstract class BaseExecutionContext<TImportJob, TSettings> : MarshalByRefObject, IDisposable, IImportApiSetup<TSettings>
+	public abstract class BaseExecutionContext<TImportJob, TSettings> : MarshalByRefObject, IExecutionContext, IImportApiSetup<TSettings>
 		where TImportJob : IImportNotifier
 		where TSettings : ImportSettingsBase
 	{
@@ -66,6 +66,14 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 			this.ImportJob.OnComplete += this.ImportJobOnComplete;
 			this.ImportJob.OnProgress += this.ImportJobOnProgress;
 			this.ImportJob.OnFatalException += this.ImportJobOnFatalException;
+		}
+
+		public virtual void SetUpImportApi(IntegrationTestParameters parameters, ISettingsBuilder<TSettings> settingsBuilder)
+		{
+			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+			settingsBuilder = settingsBuilder ?? throw new ArgumentNullException(nameof(settingsBuilder));
+
+			this.InitializeImportApiWithUserAndPassword(parameters, settingsBuilder.Build());
 		}
 
 		public virtual void SetUpImportApi(Func<ImportAPI> importApiFactory, ISettingsBuilder<TSettings> settingsBuilder)

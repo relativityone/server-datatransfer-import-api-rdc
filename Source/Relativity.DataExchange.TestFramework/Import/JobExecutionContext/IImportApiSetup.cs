@@ -17,5 +17,7 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 		void SetUpImportApi(Func<ImportAPI> importApiFactory, TSettings settings);
 
 		void SetUpImportApi(Func<ImportAPI> importApiFactory, ISettingsBuilder<TSettings> settingsBuilder);
+
+		void SetUpImportApi(IntegrationTestParameters parameters, ISettingsBuilder<TSettings> settingsBuilder);
 	}
 }

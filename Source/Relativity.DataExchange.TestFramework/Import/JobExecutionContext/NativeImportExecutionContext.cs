@@ -24,14 +24,6 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 	/// <remarks>Instances of that class can be used across AppDomains.</remarks>
 	public class NativeImportExecutionContext : BaseExecutionContext<ImportBulkArtifactJob, Settings>
 	{
-		public void SetUpImportApi(IntegrationTestParameters parameters, ISettingsBuilder<Settings> settingsBuilder)
-		{
-			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
-			settingsBuilder = settingsBuilder ?? throw new ArgumentNullException(nameof(settingsBuilder));
-
-			this.InitializeImportApiWithUserAndPassword(parameters, settingsBuilder.Build());
-		}
-
 		public override void SetUpImportApi(Func<ImportAPI> importApiFactory, Settings settings)
 		{
 			base.SetUpImportApi(importApiFactory, settings);

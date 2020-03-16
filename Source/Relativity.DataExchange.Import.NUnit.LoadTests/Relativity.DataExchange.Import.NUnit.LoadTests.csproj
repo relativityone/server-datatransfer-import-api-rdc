@@ -84,10 +84,12 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ImportImagesLoadTests.cs" />
+    <Compile Include="ImportLoadTestsBase.cs" />
     <Compile Include="JobExecutionContext\AppDomainSetup.cs" />
+    <Compile Include="JobExecutionContext\ParallelImportExecutionContext.cs" />
     <Compile Include="LoadTestsAssemblySetup.cs" />
     <Compile Include="ImportDocumentsLoadTests.cs" />
-    <Compile Include="JobExecutionContext\ParallelNativeImportExecutionContext.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
       <Paket>True</Paket>
     </Content>
@@ -156,7 +158,9 @@
     <AdditionalFiles Include="..\..\buildtools\stylecop.json">
       <Link>stylecop.json</Link>
     </AdditionalFiles>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="app.manifest" />
     <None Include="paket.references" />
   </ItemGroup>

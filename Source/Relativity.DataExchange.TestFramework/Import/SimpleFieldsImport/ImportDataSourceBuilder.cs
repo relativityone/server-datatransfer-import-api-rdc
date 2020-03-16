@@ -8,7 +8,6 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
-
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
 
 	public sealed class ImportDataSourceBuilder : MarshalByRefObject
@@ -68,9 +67,8 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 			for (int i = 0; i < this.fieldNames.Count; i++)
 			{
 				IFieldValueSource fieldsValueSource = this.fieldValuesSource[i];
-				IFieldValueSource newFieldsValuesSource = fieldsValueSource is IdentifierValueSource
-					? new IdentifierValueSource(newIdentifierPrefix)
-					: fieldsValueSource;
+				IFieldValueSource newFieldsValuesSource = fieldsValueSource is IFieldValueSourceWithPrefix fieldValueSourceWithPrefix ? fieldValueSourceWithPrefix.CreateFieldValueSourceWithPrefix(newIdentifierPrefix) : fieldsValueSource;
+
 				destinationDataSourceBuilder.AddField(this.fieldNames[i], newFieldsValuesSource);
 			}
 		}

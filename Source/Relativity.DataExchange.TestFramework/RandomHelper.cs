@@ -465,7 +465,8 @@ namespace Relativity.DataExchange.TestFramework
 			using (var graphics = Graphics.FromImage(bitmap))
 			{
 				// adding anything to bitmap
-				graphics.Clear(System.Drawing.Color.Orange);
+				graphics.Clear(System.Drawing.Color.Black);
+				graphics.FillEllipse(System.Drawing.Brushes.White, width / 2, height / 2, width / 4, height / 4);
 
 				// there is some special logic as Relativity requires Tiff Group4 compression
 				ImageCodecInfo encoder = GetEncoder("image/tiff");

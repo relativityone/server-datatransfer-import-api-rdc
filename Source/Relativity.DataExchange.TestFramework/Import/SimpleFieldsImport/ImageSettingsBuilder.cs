@@ -16,6 +16,7 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 	public class ImageSettingsBuilder : ISettingsBuilder<ImageSettings>
 	{
 		private bool withDefaultFieldNames;
+		private bool withWellKnownFieldNames;
 		private OverwriteModeEnum overwriteMode = OverwriteModeEnum.Append;
 
 		public ImageSettings Build()
@@ -26,10 +27,20 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 
 			settings.OverwriteMode = this.overwriteMode;
 
-			settings.BatesNumberField = this.withDefaultFieldNames ? null : "Bates_Number";
-			settings.DocumentIdentifierField = this.withDefaultFieldNames ? null : "Document_Identifier";
-			settings.FileLocationField = this.withDefaultFieldNames ? null : "File_Location";
-			settings.FileNameField = this.withDefaultFieldNames ? null : "File_Name";
+			settings.BatesNumberField = "Bates_Number";
+			settings.DocumentIdentifierField = "Document_Identifier";
+			settings.FileLocationField = "File_Location";
+			settings.FileNameField = "File_Name";
+
+			if (this.withDefaultFieldNames)
+			{
+				SetDefaultFieldNames(settings);
+			}
+
+			if (this.withWellKnownFieldNames)
+			{
+				SetWellKnownFieldNames(settings);
+			}
 
 			return settings;
 		}
@@ -40,9 +51,17 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 			return this;
 		}
 
+		public ImageSettingsBuilder WithWellKnownFieldNames()
+		{
+			this.withWellKnownFieldNames = true;
+			this.withDefaultFieldNames = false;
+			return this;
+		}
+
 		public ImageSettingsBuilder WithDefaultFieldNames()
 		{
 			this.withDefaultFieldNames = true;
+			this.withWellKnownFieldNames = false;
 			return this;
 		}
 
@@ -55,6 +74,22 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 			settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
 			settings.IdentityFieldId = WellKnownFields.ControlNumberId;
 			settings.MaximumErrorCount = WellKnownFields.MaximumErrorCount;
+		}
+
+		private static void SetDefaultFieldNames(ImageSettings settings)
+		{
+			settings.BatesNumberField = null;
+			settings.DocumentIdentifierField = null;
+			settings.FileLocationField = null;
+			settings.FileNameField = null;
+		}
+
+		private static void SetWellKnownFieldNames(ImageSettings settings)
+		{
+			settings.BatesNumberField = WellKnownFields.BatesNumber;
+			settings.DocumentIdentifierField = WellKnownFields.DocumentIdentifier;
+			settings.FileLocationField = WellKnownFields.FileLocation;
+			settings.FileNameField = WellKnownFields.FileName;
 		}
 	}
 }

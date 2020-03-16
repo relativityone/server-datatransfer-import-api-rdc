@@ -109,51 +109,56 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		protected void ThenTheImportJobIsSuccessful(ImportTestJobResult testjobResult, int expectedTotalRows) // TODO create extension method for that
+		protected void ThenTheImportJobIsSuccessful(ImportTestJobResult testJobResult, int expectedTotalRows) // TODO create extension method for that
 		{
-			testjobResult = testjobResult ?? throw new ArgumentNullException(nameof(testjobResult));
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
-			this.ValidateTotalRowsCount(testjobResult, expectedTotalRows);
-			this.ValidateFatalExceptionsNotExist(testjobResult);
-			Assert.That(testjobResult.ErrorRows, Has.Count.Zero);
-			Assert.That(testjobResult.JobReportErrorsCount, Is.Zero);
+			this.ValidateTotalRowsCount(testJobResult, expectedTotalRows);
+			this.ValidateFatalExceptionsNotExist(testJobResult);
+			this.ValidateErrorRowsCount(testJobResult, 0);
 		}
 
-		protected void ThenTheImportJobFailedWithFatalError(ImportTestJobResult testjobResult, int expectedErrorRows, int expectedTotalRows)
+		protected void ThenTheImportJobFailedWithFatalError(ImportTestJobResult testJobResult, int expectedErrorRows, int expectedTotalRows)
 		{
-			testjobResult = testjobResult ?? throw new ArgumentNullException(nameof(testjobResult));
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
 			// Note: the exact number of expected rows can vary over a range when expecting an error.
-			Assert.That(testjobResult.JobReportTotalRows, Is.Positive.And.LessThanOrEqualTo(expectedTotalRows));
-			Assert.That(testjobResult.JobReportErrorsCount, Is.EqualTo(expectedErrorRows));
-			Assert.That(testjobResult.JobReportErrorsCount, Is.EqualTo(testjobResult.ErrorRows.Count));
-			Assert.That(testjobResult.JobFatalExceptions, Has.Count.Positive);
-			Assert.That(testjobResult.FatalException, Is.Not.Null);
+			Assert.That(testJobResult.JobReportTotalRows, Is.Positive.And.LessThanOrEqualTo(expectedTotalRows));
+			this.ValidateErrorRowsCount(testJobResult, expectedErrorRows);
+			Assert.That(testJobResult.JobFatalExceptions, Has.Count.Positive);
+			Assert.That(testJobResult.FatalException, Is.Not.Null);
 		}
 
-		protected void ThenTheImportJobCompletedWithErrors(ImportTestJobResult testjobResult, int expectedErrorRows, int expectedTotalRows)
+		protected void ThenTheImportJobCompletedWithErrors(ImportTestJobResult testJobResult, int expectedErrorRows, int expectedTotalRows)
 		{
-			testjobResult = testjobResult ?? throw new ArgumentNullException(nameof(testjobResult));
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
-			this.ValidateTotalRowsCount(testjobResult, expectedTotalRows);
-			this.ValidateFatalExceptionsNotExist(testjobResult);
-			Assert.That(testjobResult.JobReportErrorsCount, Is.EqualTo(expectedErrorRows));
-			Assert.That(testjobResult.JobReportErrorsCount, Is.EqualTo(testjobResult.ErrorRows.Count));
+			this.ValidateTotalRowsCount(testJobResult, expectedTotalRows);
+			this.ValidateFatalExceptionsNotExist(testJobResult);
+			this.ValidateErrorRowsCount(testJobResult, expectedErrorRows);
 		}
 
-		protected virtual void ValidateTotalRowsCount(ImportTestJobResult testjobResult, int expectedTotalRows)
+		protected virtual void ValidateTotalRowsCount(ImportTestJobResult testJobResult, int expectedTotalRows)
 		{
-			testjobResult = testjobResult ?? throw new ArgumentNullException(nameof(testjobResult));
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
-			Assert.That(testjobResult.JobReportTotalRows, Is.EqualTo(expectedTotalRows));
+			Assert.That(testJobResult.JobReportTotalRows, Is.EqualTo(expectedTotalRows));
 		}
 
-		protected virtual void ValidateFatalExceptionsNotExist(ImportTestJobResult testjobResult)
+		protected virtual void ValidateErrorRowsCount(ImportTestJobResult testJobResult, int expectedErrorRows)
 		{
-			testjobResult = testjobResult ?? throw new ArgumentNullException(nameof(testjobResult));
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
-			Assert.That(testjobResult.FatalException, Is.Null);
-			Assert.That(testjobResult.JobFatalExceptions, Has.Count.Zero);
+			Assert.That(testJobResult.JobReportErrorsCount, Is.EqualTo(expectedErrorRows));
+			Assert.That(testJobResult.JobReportErrorsCount, Is.EqualTo(testJobResult.ErrorRows.Count));
+		}
+
+		protected virtual void ValidateFatalExceptionsNotExist(ImportTestJobResult testJobResult)
+		{
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
+
+			Assert.That(testJobResult.FatalException, Is.Null);
+			Assert.That(testJobResult.JobFatalExceptions, Has.Count.Zero);
 		}
 
 		private void SetTestParameters(IntegrationTestParameters testParameters)
