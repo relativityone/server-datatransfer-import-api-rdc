@@ -5,6 +5,7 @@
 namespace Relativity.DataExchange.TestFramework.Import.RdoStructureImport
 {
 	using System.Collections.Generic;
+	using System.Linq;
 
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
 
@@ -60,5 +61,26 @@ namespace Relativity.DataExchange.TestFramework.Import.RdoStructureImport
 		public IEnumerable<ObjectFieldDefinition> SingleObjectsFieldDefinitions { get; }
 
 		public IEnumerable<ObjectFieldDefinition> MultiObjectsFieldDefinitions { get; }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = DoNotNestGenericTypesJustification)]
+		public static RdoStructureDefinition CreateForChoices(
+			int numberOfRecordsToImport,
+			string identifierFieldName,
+			IdentifierValueSource identifierValueSource,
+			IEnumerable<FieldDefinition<ChoicesValueSource>> singleChoiceFieldDefinitions,
+			IEnumerable<FieldDefinition<ChoicesValueSource>> multiChoiceFieldDefinitions)
+		{
+			return new RdoStructureDefinition(
+				numberOfRecordsToImport,
+				identifierFieldName,
+				identifierValueSource,
+				foldersValueSource: null,
+				singleChoiceFieldDefinitions,
+				multiChoiceFieldDefinitions,
+				textFieldDefinitions: Enumerable.Empty<FieldDefinition<TextValueSource>>(),
+				wholeNumberFieldDefinitions: Enumerable.Empty<FieldDefinition<WholeNumberValueSource>>(),
+				singleObjectsFieldDefinitions: Enumerable.Empty<ObjectFieldDefinition>(),
+				multiObjectsFieldDefinitions: Enumerable.Empty<ObjectFieldDefinition>());
+		}
 	}
 }

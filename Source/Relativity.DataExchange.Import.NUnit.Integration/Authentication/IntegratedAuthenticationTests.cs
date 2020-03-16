@@ -78,7 +78,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 			// ARRANGE
 			await ChangeStateOfIntegratedAuthentication(true).ConfigureAwait(false);
 			await UsersHelper.SwitchIntegratedAuthenticationForCurrentUser(AssemblySetup.TestParameters, isEnabled: true).ConfigureAwait(false);
-			await RdoHelper.DeleteAllObjectsByType(AssemblySetup.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
+			await RdoHelper.DeleteAllObjectsByTypeAsync(AssemblySetup.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
 
 			ForceClient(client);
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = true;

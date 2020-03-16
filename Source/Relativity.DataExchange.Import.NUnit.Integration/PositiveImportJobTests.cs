@@ -173,12 +173,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.ToEnumerable(nestedValueDelimiter)
 				.RandomUniqueBatch(4, multiValueDelimiter);
 
-			var importDataSourceBuilder = new ImportDataSourceBuilder();
-			importDataSourceBuilder.AddField(WellKnownFields.ControlNumber, controlNumber);
-			importDataSourceBuilder.AddField(WellKnownFields.ConfidentialDesignation, confidentialDesignation);
-			importDataSourceBuilder.AddField(WellKnownFields.PrivilegeDesignation, privilegeDesignation);
-			importDataSourceBuilder.AddField(WellKnownFields.ClassificationIndex, classificationIndex);
-			ImportDataSource<object[]> importDataSource = importDataSourceBuilder.Build();
+			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, controlNumber)
+				.AddField(WellKnownFields.ConfidentialDesignation, confidentialDesignation)
+				.AddField(WellKnownFields.PrivilegeDesignation, privilegeDesignation)
+				.AddField(WellKnownFields.ClassificationIndex, classificationIndex)
+				.Build();
 
 			// ACT
 			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
@@ -261,12 +261,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			.ToEnumerable()
 			.RandomUniqueBatch(5, multiValueDelimiter);
 
-			var importDataSourceBuilder = new ImportDataSourceBuilder();
-			importDataSourceBuilder.AddField(WellKnownFields.ControlNumber, controlNumber);
-			importDataSourceBuilder.AddField(WellKnownFields.OriginatingImagingDocumentError, originatingImagingDocumentError);
-			importDataSourceBuilder.AddField(WellKnownFields.DomainsEmailTo, domainsEmailTo);
-			importDataSourceBuilder.AddField(WellKnownFields.DomainsEmailFrom, domainsEmailFrom);
-			ImportDataSource<object[]> importDataSource = importDataSourceBuilder.Build();
+			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, controlNumber)
+				.AddField(WellKnownFields.OriginatingImagingDocumentError, originatingImagingDocumentError)
+				.AddField(WellKnownFields.DomainsEmailTo, domainsEmailTo)
+				.AddField(WellKnownFields.DomainsEmailFrom, domainsEmailFrom)
+				.Build();
 
 			// ACT
 			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);

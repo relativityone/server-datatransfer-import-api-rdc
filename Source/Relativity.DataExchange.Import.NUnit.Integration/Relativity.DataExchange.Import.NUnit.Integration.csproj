@@ -91,6 +91,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChoicesTests.cs" />
+    <Compile Include="DevTests\ChoicesProfilingTests.cs" />
     <Compile Include="Dto\ImageImportDto.cs" />
     <Compile Include="Dto\ImageImportWithFileNameDto.cs" />
     <Compile Include="DevTests\ImageImportProfilingTests.cs" />

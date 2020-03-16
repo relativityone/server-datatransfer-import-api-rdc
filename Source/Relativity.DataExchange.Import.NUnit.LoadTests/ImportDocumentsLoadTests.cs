@@ -43,8 +43,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 
-			var settingsBuilder = new NativeImportSettingsBuilder();
-			settingsBuilder = settingsBuilder
+			var settingsBuilder = NativeImportSettingsBuilder.New()
 				.WithDefaultSettings()
 				.WithFolderPath(WellKnownFields.FolderName);
 
@@ -54,9 +53,9 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 				numberOfDifferentElements: 100,
 				maximumElementLength: 100);
 
-			var dataSourceBuilder = new ImportDataSourceBuilder();
-			dataSourceBuilder.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource());
-			dataSourceBuilder.AddField(WellKnownFields.FolderName, foldersValueSource);
+			var dataSourceBuilder = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource())
+				.AddField(WellKnownFields.FolderName, foldersValueSource);
 
 			this.InitializeImportApiWithUserAndPwd(settingsBuilder, parallelIApiClientCount);
 
@@ -85,8 +84,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			// ARRANGE
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
-			var settingsBuilder = new NativeImportSettingsBuilder();
-			settingsBuilder = settingsBuilder.WithDefaultSettings();
+			var settingsBuilder = NativeImportSettingsBuilder.New().WithDefaultSettings();
 
 			var confidentialDesignationSource = new ChoicesValueSource(
 				numberOfDifferentPaths: 4,
@@ -100,10 +98,10 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 				numberOfDifferentElements: 250,
 				maximumElementLength: 50);
 
-			var dataSourceBuilder = new ImportDataSourceBuilder();
-			dataSourceBuilder.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource());
-			dataSourceBuilder.AddField(WellKnownFields.ConfidentialDesignation, confidentialDesignationSource);
-			dataSourceBuilder.AddField(WellKnownFields.PrivilegeDesignation, privilegeDesignationSource);
+			var dataSourceBuilder = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource())
+				.AddField(WellKnownFields.ConfidentialDesignation, confidentialDesignationSource)
+				.AddField(WellKnownFields.PrivilegeDesignation, privilegeDesignationSource);
 
 			this.InitializeImportApiWithUserAndPwd(settingsBuilder, parallelIApiClientCount);
 
@@ -133,8 +131,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 
-			var settingsBuilder = new NativeImportSettingsBuilder();
-			settingsBuilder = settingsBuilder
+			var settingsBuilder = NativeImportSettingsBuilder.New()
 				.WithDefaultSettings()
 				.WithFolderPath(WellKnownFields.FolderName);
 
@@ -156,11 +153,11 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 				numberOfDifferentElements: 250,
 				maximumElementLength: 50);
 
-			var dataSourceBuilder = new ImportDataSourceBuilder();
-			dataSourceBuilder.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource());
-			dataSourceBuilder.AddField(WellKnownFields.FolderName, foldersSource);
-			dataSourceBuilder.AddField(WellKnownFields.ConfidentialDesignation, confidentialDesignationSource);
-			dataSourceBuilder.AddField(WellKnownFields.PrivilegeDesignation, privilegeDesignationSource);
+			var dataSourceBuilder = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource())
+				.AddField(WellKnownFields.FolderName, foldersSource)
+				.AddField(WellKnownFields.ConfidentialDesignation, confidentialDesignationSource)
+				.AddField(WellKnownFields.PrivilegeDesignation, privilegeDesignationSource);
 
 			this.InitializeImportApiWithUserAndPwd(settingsBuilder, parallelIApiClientCount);
 

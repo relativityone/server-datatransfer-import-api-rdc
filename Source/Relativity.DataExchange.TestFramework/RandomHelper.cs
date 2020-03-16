@@ -673,10 +673,11 @@ namespace Relativity.DataExchange.TestFramework
 		/// <summary>
 		/// Gets a random index of a list.
 		/// </summary>
+		/// <typeparam name="T">The type of elements in the list.</typeparam>
 		/// <param name="random">The random instance.</param>
 		/// <param name="list">The list instance.</param>
 		/// <returns>Random index for the list.</returns>
-		public static int NextIndex(this Random random, IList list)
+		public static int NextIndex<T>(this Random random, IList<T> list)
 		{
 			if (random == null)
 			{
@@ -698,7 +699,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// <param name="random">The random instance.</param>
 		/// <param name="list">The list instance.</param>
 		/// <returns>Random element from the list.</returns>
-		public static T NextElement<T>(this Random random, List<T> list)
+		public static T NextElement<T>(this Random random, IList<T> list)
 		{
 			if (random == null)
 			{

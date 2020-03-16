@@ -15,21 +15,22 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 	[Serializable]
 	public class NativeImportSettingsBuilder : ISettingsBuilder<Settings>
 	{
-		private bool withDefaultSettings;
 		private bool withNativeFilePath;
 		private string folderPathSourceFieldName;
 		private string identifierField;
+		private kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior? overlayBehavior;
+		private OverwriteModeEnum? overwriteMode;
 
 		private int destinationArtifactTypeId = (int)ArtifactType.Document;
+
+		public static NativeImportSettingsBuilder New()
+		{
+			return new NativeImportSettingsBuilder();
+		}
 
 		public Settings Build()
 		{
 			var settings = new Settings();
-
-			if (this.withDefaultSettings)
-			{
-				SetDefaultSettings(settings);
-			}
 
 			if (this.withNativeFilePath)
 			{
@@ -39,6 +40,16 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 			if (this.folderPathSourceFieldName != null)
 			{
 				settings.FolderPathSourceFieldName = this.folderPathSourceFieldName;
+			}
+
+			if (this.overlayBehavior.HasValue)
+			{
+				settings.OverlayBehavior = this.overlayBehavior.Value;
+			}
+
+			if (this.overwriteMode.HasValue)
+			{
+				settings.OverwriteMode = this.overwriteMode.Value;
 			}
 
 			settings.ArtifactTypeId = this.destinationArtifactTypeId;
@@ -59,9 +70,26 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 			return this;
 		}
 
-		public NativeImportSettingsBuilder WithDestinationType(int artifactTypeId, string identifierFieldName)
+		public NativeImportSettingsBuilder WithDestinationType(int artifactTypeId)
 		{
 			this.destinationArtifactTypeId = artifactTypeId;
+			return this;
+		}
+
+		public NativeImportSettingsBuilder WithOverwriteMode(OverwriteModeEnum overwriteModeValue)
+		{
+			this.overwriteMode = overwriteModeValue;
+			return this;
+		}
+
+		public NativeImportSettingsBuilder WithFieldOverlayMode(kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior overlayType)
+		{
+			this.overlayBehavior = overlayType;
+			return this;
+		}
+
+		public NativeImportSettingsBuilder WithIdentifierField(string identifierFieldName)
+		{
 			this.identifierField = identifierFieldName;
 			return this;
 		}
@@ -72,14 +100,9 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 		/// <returns>settings builder.</returns>
 		public NativeImportSettingsBuilder WithDefaultSettings()
 		{
-			this.withDefaultSettings = true;
-			return this;
-		}
-
-		private static void SetDefaultSettings(Settings settings)
-		{
-			settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
-			settings.OverwriteMode = OverwriteModeEnum.Append;
+			return this
+				.WithOverwriteMode(OverwriteModeEnum.Append)
+				.WithIdentifierField(WellKnownFields.ControlNumber);
 		}
 
 		private static void SetFilePathSource(Settings settings)

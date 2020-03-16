@@ -176,6 +176,16 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
+		public static async Task DeleteFieldAsync(
+			IntegrationTestParameters parameters,
+			int fieldId)
+		{
+			using (IFieldManager fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(parameters))
+			{
+				await fieldManager.DeleteAsync(parameters.WorkspaceId, fieldId).ConfigureAwait(false);
+			}
+		}
+
 		public static int QueryIdentifierFieldId(IntegrationTestParameters parameters, string artifactTypeName)
 		{
 			if (parameters == null)

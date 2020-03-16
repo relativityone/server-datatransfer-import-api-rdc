@@ -25,7 +25,12 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 			this.enumerators = new List<IEnumerator>();
 		}
 
-		public void AddField(string fieldName, IEnumerable enumerable)
+		public static ImportDataSourceBuilder New()
+		{
+			return new ImportDataSourceBuilder();
+		}
+
+		public ImportDataSourceBuilder AddField(string fieldName, IEnumerable enumerable)
 		{
 			fieldName = fieldName ?? throw new ArgumentNullException(nameof(fieldName));
 			enumerable = enumerable ?? throw new ArgumentNullException(nameof(enumerable));
@@ -34,9 +39,11 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 
 			this.fieldNames.Add(fieldName);
 			this.enumerators.Add(enumerable.GetEnumerator());
+
+			return this;
 		}
 
-		public void AddField(string fieldName, IFieldValueSource fieldValueSource)
+		public ImportDataSourceBuilder AddField(string fieldName, IFieldValueSource fieldValueSource)
 		{
 			fieldName = fieldName ?? throw new ArgumentNullException(nameof(fieldName));
 			fieldValueSource = fieldValueSource ?? throw new ArgumentNullException(nameof(fieldValueSource));
@@ -46,6 +53,8 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 			this.fieldNames.Add(fieldName);
 			this.enumerators.Add(enumerable.GetEnumerator());
 			this.fieldValuesSource.Add(fieldValueSource);
+
+			return this;
 		}
 
 		/// <summary>

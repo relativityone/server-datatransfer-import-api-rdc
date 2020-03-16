@@ -148,7 +148,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		/// <param name="parameters">Test context parameters.</param>
 		/// <param name="artifactTypeID">Type of objects to delete.</param>
 		/// <returns><see cref="Task"/> which completes when all RDOs are deleted.</returns>
-		public static async Task DeleteAllObjectsByType(IntegrationTestParameters parameters, int artifactTypeID)
+		public static async Task DeleteAllObjectsByTypeAsync(IntegrationTestParameters parameters, int artifactTypeID)
 		{
 			using (var objectManager = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
 			{

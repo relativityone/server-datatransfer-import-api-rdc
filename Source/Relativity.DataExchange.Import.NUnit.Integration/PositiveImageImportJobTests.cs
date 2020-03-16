@@ -156,7 +156,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, imageSettingsBuilder);
 
 			const int ExpectedNumberOfImportedImages = 1;
-			RdoHelper.DeleteAllObjectsByType(AssemblySetup.TestParameters, WellKnownArtifactTypes.DocumentArtifactTypeId).Wait();
+			RdoHelper.DeleteAllObjectsByTypeAsync(AssemblySetup.TestParameters, WellKnownArtifactTypes.DocumentArtifactTypeId).Wait();
 
 			string documentIdentifier = RandomHelper.NextString(10, 10);
 			string batesNumber = RandomHelper.NextString(10, 10);

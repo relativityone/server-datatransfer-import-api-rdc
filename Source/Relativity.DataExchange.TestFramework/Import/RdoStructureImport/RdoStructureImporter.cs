@@ -84,7 +84,8 @@ namespace Relativity.DataExchange.TestFramework.Import.RdoStructureImport
 			var settingsBuilder = new NativeImportSettingsBuilder();
 			settingsBuilder = settingsBuilder
 				.WithDefaultSettings()
-				.WithDestinationType(this.rdoArtifactTypeId, importDataDefinition.IdentifierFieldName);
+				.WithDestinationType(this.rdoArtifactTypeId)
+				.WithIdentifierField(importDataDefinition.IdentifierFieldName);
 
 			if (areFoldersPresent)
 			{

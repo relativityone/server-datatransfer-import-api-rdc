@@ -105,17 +105,17 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, NativeImportSettingsProvider.DefaultNativeDocumentImportSettings);
 
-			var dataSourceBuilder = new ImportDataSourceBuilder();
-			dataSourceBuilder.AddField(WellKnownFields.ControlNumber, Enumerable.Range((2 * numberOfDocuments) + 1, numberOfDocuments).Select(p => p.ToString()));
-			dataSourceBuilder.AddField(WellKnownFields.FolderName, randomFolderGenerator.ToFolders());
-			dataSourceBuilder.AddField(WellKnownFields.ConfidentialDesignation, confidentialDesignation.ToEnumerable());
-			dataSourceBuilder.AddField(WellKnownFields.PrivilegeDesignation, privilegeDesignation.ToEnumerable(nestedValueDelimiter).RandomUniqueBatch(4, multiValueDelimiter));
-			ImportDataSource<object[]> dataSource = dataSourceBuilder.Build();
+			ImportDataSource<object[]> dataSource = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, Enumerable.Range((2 * numberOfDocuments) + 1, numberOfDocuments).Select(p => p.ToString()))
+				.AddField(WellKnownFields.FolderName, randomFolderGenerator.ToFolders())
+				.AddField(WellKnownFields.ConfidentialDesignation, confidentialDesignation.ToEnumerable())
+				.AddField(WellKnownFields.PrivilegeDesignation, privilegeDesignation.ToEnumerable(nestedValueDelimiter).RandomUniqueBatch(4, multiValueDelimiter))
+				.Build();
 
 			// ACT
 			ImportTestJobResult result = this.JobExecutionContext.Execute(dataSource);
 
-				// ASSERT
+			// ASSERT
 			this.ThenTheImportJobIsSuccessful(result, numberOfDocuments);
 		}
 	}
