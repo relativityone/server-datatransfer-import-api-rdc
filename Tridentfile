@@ -20,6 +20,7 @@ properties([
 
 def buildVersion = ""
 def packageVersion = ""
+String commitHash = null
 def int testResultsPassed = 0
 def int testResultsFailed = 0
 def int testResultsSkipped = 0
@@ -76,13 +77,14 @@ timestamps
 				
                 stage('Checkout')
                 {
-                    checkout([
+                    commitHash = checkout([
                         $class: 'GitSCM',
                         branches: scm.branches,
                         doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
                         extensions: [[$class: 'CloneOption', noTags: false, shallow: false, reference: '']] + [[$class: 'CleanCheckout']],
                         userRemoteConfigs: scm.userRemoteConfigs,
-                     ])
+                     ]).GIT_COMMIT
+					echo "GIT_COMMIT is ${commitHash}"
                     notifyBitbucket()
                 }
 				
@@ -100,6 +102,23 @@ timestamps
                         def outputStringParsed = extractValue("buildVersion", outputString)
                         currentBuild.displayName = "$outputStringParsed"
                         buildVersion = outputStringParsed
+                    }
+					
+					stage('Tag version in GIT')
+                    {
+                        echo "Publishing to release? $publishToRelease"
+						if(publishToRelease)
+						{
+							echo "Tagging git"
+							withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) {
+								tagGitCommit(commitHash, buildVersion, username, password)
+							}
+							echo "Tagging git success."
+						}
+						else
+						{
+							echo "Not a gold build that is pushed to release, so no tagging GIT"
+						}
                     }
 									
 					withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) 
@@ -559,4 +578,21 @@ def runCommandWithOutput(String command)
     }
 
     return outputString
+}
+
+def tagGitCommit(String commitHash, String tag, String username, String password) {
+    try {
+        powershell """
+            \$GitServer = "https://git.kcura.com"
+            \$Headers = @{"Authorization" = "Basic \$([System.Convert]::ToBase64String(([System.Text.Encoding]::UTF8.GetBytes(""$username:$password""))))"}
+            \$URI = "\$GitServer/rest/api/1.0/projects/DTX/repos/import-api-rdc/tags"
+            Invoke-RestMethod -Method POST -URI \$URI -Headers \$Headers -ContentType "application/json" -Body (@{"name" = "$tag"; "startPoint" = "$commitHash"} | ConvertTo-Json)
+            if(!\$?) {throw "An error ocurred while tagging git. Please check the logs."}
+        """
+    } catch (InterruptedException err) {
+        error (err.toString())
+    } catch (err) {
+        error (err.toString())
+    }
+
 }
