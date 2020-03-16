@@ -44,8 +44,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Friend Overrides ReadOnly Property TotalRecords As Long
 			Get
-				' This is temporary workaround for REL-394161
-				Return _imageReader.CountRecords.GetValueOrDefault() - 1
+				Return _imageReader.CountRecords.GetValueOrDefault()
 			End Get
 		End Property
 

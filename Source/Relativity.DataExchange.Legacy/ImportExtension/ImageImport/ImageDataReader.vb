@@ -19,20 +19,19 @@ Namespace kCura.WinEDDS.ImportExtension
 			_imageSettings = imageSettings
 
 			_reader.ThrowIfNull(nameof(_reader))
-			If _reader.IsClosed = True Then Throw New ArgumentException("The reader is closed")
-
-			AdvanceRecord()
-			ReadColumnIndexes()
+			If _reader.IsClosed Then Throw New ArgumentException("The reader is closed")
+			If _reader.Read Then
+				InitializeColumnIndexes
+			Else 
+				_reader.Close
+			End If
 		End Sub
 
 		Public Sub AdvanceRecord() Implements IImageReader.AdvanceRecord
-			Try
-				If Not _reader.Read() Then
-					_reader.Close()
-				End If
-			Finally
-				_currentRecordNumber += 1
-			End Try
+			_currentRecordNumber += 1
+			If Not _reader.Read Then
+				_reader.Close
+			End If
 		End Sub
 
 		Public Sub Cancel() Implements IImageReader.Cancel
@@ -86,7 +85,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 				Return imageRecord
 			Finally
-				AdvanceRecord()
+				AdvanceRecord
 			End Try
 		End Function
 
@@ -97,7 +96,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			End Get
 		End Property
 
-		Private Sub ReadColumnIndexes()
+		Private Sub InitializeColumnIndexes()
 			_batesNumberColumnIndex = -1
 			_documentIdentifierColumnIndex = -1
 			_fileLocationColumnIndex = -1
@@ -126,7 +125,6 @@ Namespace kCura.WinEDDS.ImportExtension
 				Throw New ArgumentException($"Reader does not contains field named {_imageSettings.FileLocationField}")
 			End If
 			'File name column is not required in data source
-
 		End Sub
 	End Class
 End Namespace

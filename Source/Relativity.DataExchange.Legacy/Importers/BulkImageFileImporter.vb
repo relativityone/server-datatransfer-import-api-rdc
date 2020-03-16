@@ -423,10 +423,6 @@ Namespace kCura.WinEDDS
 			Me.BatchSizeHistoryList.Add(Me.ImportBatchSize)
 			Me.LogWarning("Lowered the image batch limits from {OldBatchSize} to {NewBatchSize}.", oldBatchSize, Me.ImportBatchSize)
 		End Sub
-		
-		Protected Function GetImageRecord() As Api.ImageRecord
-			Return _imageReader.GetImageRecord
-		End Function
 
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo
 			Dim settings As New kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo With {

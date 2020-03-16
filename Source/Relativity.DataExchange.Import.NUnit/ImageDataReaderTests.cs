@@ -129,9 +129,9 @@ namespace Relativity.DataExchange.Import.NUnit
 			int recordNumberAfterSecondAdvance = this.reader.CurrentRecordNumber;
 
 			// assert
-			Assert.AreEqual(1, recordNumberBeforeFirstAdvance);
-			Assert.AreEqual(2, recordNumberAfterFirstAdvance);
-			Assert.AreEqual(3, recordNumberAfterSecondAdvance);
+			Assert.AreEqual(0, recordNumberBeforeFirstAdvance);
+			Assert.AreEqual(1, recordNumberAfterFirstAdvance);
+			Assert.AreEqual(2, recordNumberAfterSecondAdvance);
 		}
 
 		[Test]
@@ -162,20 +162,39 @@ namespace Relativity.DataExchange.Import.NUnit
 		}
 
 		[Test]
-		public void CountRecordsTest()
+		public void CountRecordsOpenedReaderTest()
 		{
 			// arrange
 			this.reader = new ImageDataReader(this.dataReaderMock.Object, this.imageSettings);
 
 			// act
+			long? recordCountBeforeAdvance = this.reader.CountRecords();
 			this.reader.AdvanceRecord();
-			long? recordCountBeforeClose = this.reader.CountRecords();
-			this.dataReaderMock.Setup(dataReader => dataReader.IsClosed).Returns(true);
-			long? recordCountAfterClose = this.reader.CountRecords();
+			long? recordCountAfterAdvance = this.reader.CountRecords();
 
 			// assert
-			Assert.IsNull(recordCountBeforeClose);
-			Assert.AreEqual(2, recordCountAfterClose.GetValueOrDefault());
+			Assert.IsNull(recordCountBeforeAdvance);
+			Assert.IsNull(recordCountAfterAdvance);
+		}
+
+		[Test]
+		public void CountRecordsClosedReaderTest()
+		{
+			// arrange
+			this.reader = new ImageDataReader(this.dataReaderMock.Object, this.imageSettings);
+			this.reader.AdvanceRecord();
+			this.reader.AdvanceRecord();
+
+			// act
+			this.dataReaderMock.Setup(dataReader => dataReader.IsClosed).Returns(true);
+			this.dataReaderMock.Setup(dataReader => dataReader.Read()).Returns(false);
+			long? recordCountBeforeAdvance = this.reader.CountRecords();
+			this.reader.AdvanceRecord();
+			long? recordCountAfterAdvance = this.reader.CountRecords();
+
+			// assert
+			Assert.AreEqual(2, recordCountBeforeAdvance.GetValueOrDefault());
+			Assert.AreEqual(3, recordCountAfterAdvance.GetValueOrDefault());
 		}
 
 		[Test]
