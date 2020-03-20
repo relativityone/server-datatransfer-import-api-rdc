@@ -4,6 +4,7 @@ kCura.relativity.client
 Moq
 nbuilder
 NUnit
+reportunit
 newtonsoft.json
 relativity.kepler.client
 relativity.logging

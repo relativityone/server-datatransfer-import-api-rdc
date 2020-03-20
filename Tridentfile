@@ -271,6 +271,12 @@ timestamps
 										{
 											taskCandidates.add("IntegrationTestResults")
 										}
+										
+										if (shouldRuncodeCoverageReport)
+										{
+											taskCandidates.add("UnitTestResults")
+											taskCandidates.add("IntegrationTestResults")
+										}
 
 										taskCandidates.eachWithIndex { task, index ->
 											def testDescription = ""
@@ -411,6 +417,9 @@ timestamps
                 }
                 finally
                 {
+					echo "Remove redundant test output files that should not be added to Trident logs"
+					powershell ".\\build.ps1 RemoveRedundantTestOutputFiles -Branch '${branchName}'"				
+					
                     echo "Publishing the build logs"
                     archiveArtifacts artifacts: 'Logs/**/*.*'
                     if (shouldRunUnitTests)
@@ -427,6 +436,12 @@ timestamps
 
                     if (shouldRuncodeCoverageReport)
                     {
+						echo "Publishing the unit tests report"
+                        archiveArtifacts artifacts: 'TestReports/unit-tests/**/*.*'
+						
+						echo "Publishing the integration tests report"
+                        archiveArtifacts artifacts: 'TestReports/integration-tests/**/*.*'
+						
                         echo "Publishing the code coverage report"
                         archiveArtifacts artifacts: 'TestReports/code-coverage/**/*.*'
                     }

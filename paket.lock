@@ -71,6 +71,7 @@ NUGET
       relativity.faspmanager (>= 3.7.2)
       SSH.NET (>= 2016.0)
     ReportGenerator (4.1.2)
+	ReportUnit (1.2.1)
     RhinoMocks (3.6.1)
     Serilog (2.6)
     SSH.NET (2016.0)
