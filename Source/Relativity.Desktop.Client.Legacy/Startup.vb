@@ -37,7 +37,7 @@ Namespace Relativity.Desktop.Client
 		Public Sub Main()
 			SetupRelativityLogging()
 			ContainerFactoryProvider.ContainerFactory = New ContainerFactory(RelativityLogger.Instance)
-			Dim handler As ThreadExceptionHandler = New ThreadExceptionHandler()
+			Dim handler As ThreadExceptionHandler = New ThreadExceptionHandler(RelativityLogger.Instance)
 			AddHandler System.Windows.Forms.Application.ThreadException, AddressOf handler.Application_ThreadException
 
 			Dim args As String() = System.Environment.GetCommandLineArgs

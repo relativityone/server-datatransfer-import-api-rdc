@@ -474,7 +474,6 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Public Async Function ShowCaseSelectDialogAsync() As Task
-
 			Try
 				Using frm As New CaseSelectForm
 					frm.MultiSelect = False
@@ -496,6 +495,7 @@ Namespace Relativity.Desktop.Client
 				Select Case MrSoapy.Detail("ExceptionType").InnerText
 					Case "Relativity.Core.Exception.WorkspaceVersion"
 						Dim x As New ErrorDialog With {.Text = "Relativity Desktop Client Error"}
+						_logger.LogError(MrSoapy, "Soap exception")
 						x.Initialize(MrSoapy)
 						If x.ShowDialog() <> DialogResult.OK Then
 							Environment.Exit(1)
@@ -505,8 +505,6 @@ Namespace Relativity.Desktop.Client
 					Case Else
 						Me.ChangeWebServiceURL()
 				End Select
-			Catch ex As System.Exception
-				Throw
 			End Try
 		End Function
 
@@ -1487,6 +1485,7 @@ Namespace Relativity.Desktop.Client
 				End Using
 			Catch ex As System.Exception
 				Dim errorDialog As New ErrorDialog
+				_logger.LogError(ex, "Unexpected exception")
 				If IsAccessDisabledException(ex) Then
 					errorDialog.Text = "Account Disabled"
 					errorDialog.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException),
