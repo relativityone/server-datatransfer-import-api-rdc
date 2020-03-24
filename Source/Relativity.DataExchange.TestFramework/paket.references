@@ -3,6 +3,7 @@ castle.windsor
 kCura.relativity.client
 nbuilder
 NUnit
+reportunit
 newtonsoft.json
 relativity.kepler.client
 relativity.logging

@@ -20,7 +20,6 @@ properties {
     $BuildPackagesDirGold = "\\bld-pkgs\Release\Import-Api-RDC\"
     $TestReportsDir = Join-Path $Root "TestReports"
     $CodeCoverageReportDir = Join-Path $TestReportsDir "code-coverage"        
-    $DotCoverConfigFile = Join-Path $ScriptsDir "code-coverage-report.xml"
     $DotCoverReportXmlFile = Join-Path $CodeCoverageReportDir "code-coverage-report.xml"
     $IntegrationTestsReportDir = Join-Path $TestReportsDir "integration-tests"
     $UIAutomationTestsReportDir = Join-Path $TestReportsDir "ui-automation-tests"
@@ -32,6 +31,7 @@ properties {
     $NunitExe = Join-Path $PackagesDir "NUnit.ConsoleRunner\tools\nunit3-console.exe"
     $DotCoverExe = Join-Path $PackagesDir "JetBrains.dotCover.CommandLineTools\tools\dotCover.exe"
     $ReportGeneratorExe = Join-Path $PackagesDir "ReportGenerator\tools\net47\ReportGenerator.exe"
+    $ReportUnitExe = Join-Path $PackagesDir "ReportUnit\tools\ReportUnit.exe"
     $PaketExe = Join-Path $PaketDir "paket.exe"
     $ProgetUrl = "https://proget.kcura.corp/nuget/NuGet"
 
@@ -384,41 +384,117 @@ task CodeCoverageReport -Description "Create a code coverage report" {
     exec {
         Initialize-Folder $TestReportsDir -Safe
         Initialize-Folder $CodeCoverageReportDir
-        $targetArgument = $Null
+        Initialize-Folder $UnitTestsReportDir
+        Initialize-Folder $IntegrationTestsReportDir
+
+        ###
+        # Step 1: We have x assemblies
+        #     Output: x snapshos for dotcover
+        #             x xml results from nunit
+        #             x txt output from nunit
+        # Step 2: merge x snapshots from dotcover
+        #     Output: MergedCoverageSnapshots.dcvr
+        # Step 3: Convert MergedCoverageSnapshots.dcvr - > CoverageReport.html (detailed report with classes and methods)
+        # Step 4: Convert MergedCoverageSnapshots.dcvr - > .xml - > index.html (summary report for coverage)
+        # Step 5: Convert x xml reports from nunit info one .html report (one of last task in Tridentfile)
+        ###
+
         Write-Output "Searching for code coverage test assemblies..."
 
-        # Exclude all RDC related test assemblies because they're empty and will cause the CLI to fail.
-        $assemblies = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit*.dll -Exclude *Desktop*.dll,*TestFramework*.dll | Where-Object { $_.FullName -Match "\\bin" }
+        ### 0. Get tests list to execute
+        $UnitTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.dll -Exclude *Desktop*.dll,*TestFramework*.dll | Where-Object { $_.FullName -Match "\\*NUnit\\bin" }        
+        $IntegrationTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.Integration.dll -Exclude *Desktop*.dll,*TestFramework*.dll | Where-Object { $_.FullName -Match "\\*NUnit.Integration\\bin" }        
+        $LoadTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.LoadTests.dll -Exclude *Desktop*.dll,*TestFramework*.dll | Where-Object { $_.FullName -Match "\\*NUnit.LoadTests\\bin" }        
+
+        $assemblies = @()
+        $assemblies += $UnitTests
+        $assemblies += $IntegrationTests
+        $assemblies += $LoadTests
+
         $assemblyCount = $assemblies.Length
         if ($assemblyCount -le 0) {
             Throw "The cover coverage report cannot be created because no NUnit test assemblies were found."
         }
 
-        foreach ($assembly in $assemblies) {
-           $targetArgument += " " + $assembly.FullName
+        Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
+         
+        ### 1. Execute each Unit tests project separately, 
+        #      Store results from NUnit execution  (used to summary of test execution in 'Write-TestResultsOutput') 
+        #      Store snapshots from dotcover        (used to create merged report from all assembies execution)
+        Write-Host "=======================================================================================================" 
+        Write-Host " STEP 1: Execute tests, create NUnit and coverage reports" -ForegroundColor Yellow
+        Write-Host "======================================================================================================="
+
+        foreach ($assembly in $assemblies){
+            [string]$fileName  = ($assembly.Name).Replace("Relativity.DataExchange.", "")
+            [string]$ReportDir = ""
+
+            if ($fileName.Contains("Integration")) { $ReportDir = $IntegrationTestsReportDir } else { $ReportDir = $UnitTestsReportDir}
+
+            Write-Host
+            Write-Host " Execute tests for '$assembly'"
+            Write-Host " Details in file: '\\code-coverage\dotcover-execute-$fileName.txt'"
+            
+            & $DotCoverExe @(
+                        ("cover"),
+                        ("/TargetExecutable=""$NunitExe"""),
+                        ("/Output=""$CodeCoverageReportDir\$fileName.dcvr"""),
+                        ("/TargetArguments=""$assembly"" --result=""$ReportDir\$fileName.xml"" --output=""$ReportDir\$fileName.txt"""),
+                        ("/Filters=""+:Relativity*;-:*NUnit*;-:*TestFramework*;-:*Controls*;""")) | Out-File "$CodeCoverageReportDir\dotcover-execute-$fileName.txt"
         }
 
-        Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
+        ### 2. Merge all dotcover snapshot logs into one report
+        Write-Host "=======================================================================================================" 
+        Write-Host " STEP 2: Merge dotcover snapshots" -ForegroundColor Yellow
+        Write-Host "=======================================================================================================" 
+        
+        $CoverageSnapshots = Get-ChildItem -Path $CodeCoverageReportDir -Filter "*.dcvr" -Force     
+        [string]$CoverageSnapshotList = ""
+        foreach ($snapshot in $CoverageSnapshots){ $CoverageSnapshotList += $snapshot.FullName + ";" }
 
-        # TODO: A strange issue exists attempting to use the configuration file. Using command line params for now...
-        Write-Output "Running code coverage on $assemblyCount test assemblies..."
         & $DotCoverExe @(
-            ("cover"),
-            ("/TargetExecutable=""$NunitExe"""),
-            ("/TargetArguments=""$targetArgument"""),
-            ("/Output=""$DotCoverReportXmlFile"""),
-            ("/ReportType=""DetailedXML"""),
-            ("/Filters=""+:Relativity*;-:*NUnit*;-:*TestFramework*;-:*Controls*;"""))
+                        ("m"),
+                        ("/Source=$CoverageSnapshotList"),
+                        ("/Output=""$CodeCoverageReportDir\MergedCoverageSnapshots.dcvr"""))
 
-		if ( -not $? ) {
-			Throw "At least one test did not pass. The script cannot continue."
-		}
-		
-        Write-Output "Generating a code coverage report..."
+        # Remove part snapshots
+        foreach ($snapshot in $CoverageSnapshots){ Remove-Item -LiteralPath $snapshot.FullName -Force }
+
+        # 3. Convert merged coverage snapshots into html(detailed html showing each methos individually)
+        Write-Host "=======================================================================================================" 
+        Write-Host " STEP 3: Convert merged coverage snapshots into html(detailed html showing each methos individually)" -ForegroundColor Yellow
+        Write-Host "=======================================================================================================" 
+        & $DotCoverExe @(
+                        ("r"),
+                        ("/Source=""$CodeCoverageReportDir\MergedCoverageSnapshots.dcvr"""),
+                        ("/Output=""$CodeCoverageReportDir\CoverageReport.html"""),
+                        ("/ReportType=html"))
+
+        ### 4. Convert merged coverage snapshots into html(overview for classes)
+        Write-Host "=======================================================================================================" 
+        Write-Host " STEP 4: Convert merged coverage snapshots into html(overview for classes)" -ForegroundColor Yellow
+        Write-Host "=======================================================================================================" 
+        
+        # Convert to xml report
+        & $DotCoverExe @(
+                        ("r"),
+                        ("/Source=""$CodeCoverageReportDir\MergedCoverageSnapshots.dcvr"""),
+                        ("/Output=""$DotCoverReportXmlFile"""),
+                        ("/ReportType=DetailedXML"))
+        
+        Write-Host "Details in file: \\code-coverage\dotcover-generate-html-report.txt" 
+
+        # Convert to html report (index.html)
         & $ReportGeneratorExe @(
             ("-reports:""$DotCoverReportXmlFile"""),
             ("-targetdir:""$CodeCoverageReportDir"""),
-            ("-reporttypes:Html"))
+            ("-reporttypes:Html")) | Out-File "$CodeCoverageReportDir\dotcover-generate-html-report.txt"
+
+        # Remove not used file
+        Remove-Item -LiteralPath "$CodeCoverageReportDir\MergedCoverageSnapshots.dcvr" -Force
+
+        ### 5. Convert NUnit reports from tests to html: It is done in Trident file after all tests in 'TestReports' task
+
     } -errorMessage "There was an error creating a code coverage report."
 }
 
@@ -550,6 +626,28 @@ task TestReports -Description "Create the test reports" {
         if (Test-Path $IntegrationTestsResultXmlFile -PathType Leaf) {
             & $ExtentCliExe -i "$IntegrationTestsResultXmlFile" -o "$IntegrationTestsReportDir/" -r v3html
         }
+
+        # Convert reports using ReportUnit(only if exist files not converted above)
+        $filesToConvert = Get-ChildItem -LiteralPath $UnitTestsReportDir -Include "*.xml" -Exclude $UnitTestsResultXmlFile -Force
+        if ($filesToConvert) {
+            Write-Host "Convert Unit tests results to html"
+            Write-Host "Details in file: '\\unit-tests\create-html-report-from-unit-tests.txt'"
+
+            & $ReportUnitExe @(
+                        ("$UnitTestsReportDir"), 
+                        ("$UnitTestsReportDir")) | Out-File "$UnitTestsReportDir\create-html-report-from-unit-tests.txt"
+        }
+        
+        $filesToConvert = Get-ChildItem -LiteralPath $IntegrationTestsReportDir -Include "*.xml" -Exclude $IntegrationTestsResultXmlFile -Force
+        if ($filesToConvert) {
+            Write-Host "Convert Unit tests results to html"
+            Write-Host "Details in file: '\\integration-tests\create-html-report-from-integration-tests.txt'"
+
+            & $ReportUnitExe @(
+                    ("$IntegrationTestsReportDir"), 
+                    ("$IntegrationTestsReportDir")) | Out-File "$IntegrationTestsReportDir\create-html-report-from-integration-tests.txt"
+        }
+
     } -errorMessage "There was an error creating the test reports."
 }
 
@@ -621,11 +719,11 @@ task UnitTests -Description "Run all unit tests" {
 }
 
 task IntegrationTestResults -Description "Retrieve the integration test results from the Xml file" {
-    Write-TestResultsOutput $IntegrationTestsResultXmlFile
+    Write-TestResultsOutput $IntegrationTestsReportDir
 }
 
 task UnitTestResults -Description "Retrieve the unit test results from the Xml file" {
-    Write-TestResultsOutput $UnitTestsResultXmlFile
+    Write-TestResultsOutput $UnitTestsReportDir
 }
 
 task ReplaceTestVariables -Description "Replace test variables in file" {
@@ -668,6 +766,28 @@ task UpdateRdcAssemblyInfo -Description "Update the version contained within the
         $ScriptPath = Join-Path $VersionPath "Update-RdcAssemblySharedInfo.ps1"
         & $ScriptPath -Version "$majorMinorPatchVersion.0" -InformationalVersion $InformationalVersion -VersionFolderPath $VersionPath
    } -errorMessage "There was an error updating the RDC assembly info."
+}
+
+task RemoveRedundantTestOutputFiles -Description "Remove redundant test output files that should not be added to Trident logs" {
+    # Remove .xml files only if .html reports exist
+    
+    [array]$UnitTestsList,$IntegrationTestsList = @()
+
+    if(Test-Path -LiteralPath $UnitTestsReportDir) {
+        $UnitTestsList = Get-ChildItem -LiteralPath $UnitTestsReportDir -Filter "*.xml" -Recurse -Force  
+    }
+
+    if(Test-Path -LiteralPath $IntegrationTestsReportDir) {
+        $IntegrationTestsList = Get-ChildItem -LiteralPath $IntegrationTestsReportDir -Filter "*.xml" -Recurse -Force
+    }
+
+    $filesList = $UnitTestsList + $IntegrationTestsList
+
+    if($filesList) {
+        foreach($file in $filesList) {
+            if(Test-Path -Path ($file.FullName).Replace(".xml", ".html") -PathType Leaf) { Remove-Item -LiteralPath $file.FullName -Force }
+        }
+    } 
 }
 
 Function Get-RdcVersion {
@@ -893,21 +1013,28 @@ Function Remove-EmptyLogFile {
 
 Function Write-TestResultsOutput {
     param(
-        [String] $TestResultsXmlFile
+        [string] $FolderWithTestResults
     )
 
-    if (!$TestResultsXmlFile) {
+    if (!$FolderWithTestResults) { 
         Throw "You must specify a non-null path to retrieve the test results XML file. Check to make sure the path value or variable passed to this method is valid."
     }
 
-    if (-Not (Test-Path $TestResultsXmlFile -PathType Leaf)) {
-        Throw "The test results cannot be retrieved because the Xml tests file '$TestResultsXmlFile' doesn't exist."
-    }
+    $TestResultFiles = Get-ChildItem -Path $FolderWithTestResults -Include "*.xml" -Recurse -Force
 
-    $xml = [xml] (Get-Content $TestResultsXmlFile)
-    $passed = $xml.'test-run'.passed
-    $failed = $xml.'test-run'.failed
-    $skipped = $xml.'test-run'.skipped
+    [int]$passed,$failed,$skipped = 0
+
+    foreach($TestResultsXmlFile in $TestResultFiles) {
+
+        if (-Not (Test-Path $TestResultsXmlFile.FullName -PathType Leaf)) {
+            Throw "The test results cannot be retrieved because the Xml tests file '" + $TestResultsXmlFile.FullName + "' doesn't exist."
+        }
+
+        $xml = [xml] (Get-Content $TestResultsXmlFile)
+        $passed   += [convert]::ToInt32($xml.'test-run'.passed)
+        $failed   += [convert]::ToInt32($xml.'test-run'.failed)
+        $skipped  += [convert]::ToInt32($xml.'test-run'.skipped)
+    }
 
     # So Jenkins can get the results
     Write-Output "testResultsPassed=$passed"

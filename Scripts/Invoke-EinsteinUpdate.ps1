@@ -167,8 +167,16 @@ $BodyJSONParsed.title = $TitleToUse
 $BodyJSONParsed.body.storage.value = $MessageToUse
 $BodyJSON = ConvertTo-Json $BodyJSONParsed 
 
-$Returned = Invoke-WebRequest -Uri $PublishNewPageURL -Method Post -Headers $Headers  -body $BodyJSON -ContentType 'application/json' -UseBasicParsing
-Write-Host $Returned.Content
+try{
+    $Returned = Invoke-WebRequest -Uri $PublishNewPageURL -Method Post -Headers $Headers  -body $BodyJSON -ContentType 'application/json' -UseBasicParsing
+    Write-Host $Returned.Content
+}
+catch [System.Net.WebException] {   
+        $respStream = $_.Exception.Response.GetResponseStream()
+        $reader = New-Object System.IO.StreamReader($respStream)
+        $respBody = $reader.ReadToEnd() | ConvertFrom-Json
+        $respBody;
+ }
 
 
 
