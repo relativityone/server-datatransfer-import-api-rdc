@@ -75,9 +75,7 @@ NUGET
     RhinoMocks (3.6.1)
     Serilog (2.6)
     SSH.NET (2016.0)
-    StyleCop.Analyzers (1.1.1-rc.114)
-      StyleCop.Analyzers.Unstable (>= 1.1.1.114)
-    StyleCop.Analyzers.Unstable (1.1.1.114)
+    StyleCop.Analyzers (1.1.118)
     System.Reactive (4.0)
     System.ValueTuple (4.5)
 

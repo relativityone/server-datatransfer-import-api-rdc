@@ -31,7 +31,7 @@ nuget reportgenerator = 4.1.2
 # Serilog is only used to format the DSL message templates for integration tests.
 nuget serilog = 2.6.0
 nuget rhinomocks  = 3.6.1
-nuget stylecop.analyzers = 1.1.1-rc.114
+nuget stylecop.analyzers = 1.1.118
 
 # Be careful with this library because there are several similarly named packages.
 # This represents the most current and actively developed version.
