@@ -65,61 +65,59 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.createdFieldsIds = new List<int>();
 		}
 
-		[IdentifiedTestCase("0e72e6f1-6c53-45ca-9d5d-d9ccb46f2195", OverlayBehavior.MergeAll)]
-		[IdentifiedTestCase("5fa9f2a6-3a8a-47c3-aeac-b558f3ad0c02", OverlayBehavior.ReplaceAll)]
-		[IdentifiedTestCase("dc3a8ee9-dbcc-4444-b480-4c2912f4ff1f", OverlayBehavior.UseRelativityDefaults)]
-		public async Task ShouldReplaceExistingValuesForSingleChoiceFieldAsync(OverlayBehavior overlayBehavior)
-		{
-			// ARRANGE
-			this.InitializeExecutionContext(overlayBehavior);
+		[IdentifiedTestCase("0e72e6f1-6c53-45ca-9d5d-d9ccb46f2195", new[] { "a", "b", "c", "d" }, OverlayBehavior.MergeAll)]
+		[IdentifiedTestCase("5fa9f2a6-3a8a-47c3-aeac-b558f3ad0c02", new[] { "a", "b", "c", "d" }, OverlayBehavior.ReplaceAll)]
+		[IdentifiedTestCase("dc3a8ee9-dbcc-4444-b480-4c2912f4ff1f", new[] { "a", "b", "c", "d" }, OverlayBehavior.UseRelativityDefaults)]
+		[IdentifiedTestCase("1008c5c7-fd88-4315-9c02-5fe0413dace6", new[] { "a", "" }, OverlayBehavior.UseRelativityDefaults)]
+		public Task ShouldReplaceExistingValuesForSingleChoiceFieldAsync(string[] initialUniqueChoices, OverlayBehavior overlayBehavior)
+			=> this.SingleChoiceTestAsync(overlayBehavior, initialUniqueChoices, uniqueChoices: new[] { "e", "f", "g", "h" });
 
-			string choiceName = "SINGLE_CHOICE_FIELD";
-			await this.CreateSingleChoiceFieldAsync(choiceName).ConfigureAwait(false);
+		[IdentifiedTest("14c4060d-51da-4187-b41a-3de675684239")]
+		public Task ShouldUnlinkExistingValuesForSingleChoiceFieldAsync()
+			=> this.SingleChoiceTestAsync(OverlayBehavior.ReplaceAll, initialUniqueChoices: new[] { "a", "b", "c", "d" }, uniqueChoices: new[] { string.Empty });
 
-			List<string> documentIdsList = GenerateIdsForDocuments(NumberOfDocumentsToImport);
-
-			// import initial data to workspace
-			string[] initialUniqueChoices = { "a", "b", "c", "d" };
-			IEnumerable<string[]> initialChoicesList = GenerateChoicesForDocuments(initialUniqueChoices, NumberOfDocumentsToImport, maxNumberOfMultiValues: 1);
-
-			ImportDataSource<object[]> initialDataSource = this.GenerateImportDataSourceForSingleField(documentIdsList, choiceName, initialChoicesList);
-			ImportTestJobResult firstImportResult = this.JobExecutionContext.Execute(initialDataSource);
-			this.ThenTheImportJobIsSuccessful(firstImportResult, NumberOfDocumentsToImport);
-
-			// prepare data for import under test
-			string[] uniqueChoices = { "e", "f", "g", "h" };
-			IList<string[]> choicesList = GenerateChoicesForDocuments(uniqueChoices, NumberOfDocumentsToImport, maxNumberOfMultiValues: 1).ToList();
-
-			ImportDataSource<object[]> dataSource = this.GenerateImportDataSourceForSingleField(documentIdsList, choiceName, choicesList);
-
-			IEnumerable<DocumentChoicesDto> expectedChoiceToDocumentMapping = documentIdsList
-				.Zip(choicesList, (id, choices) => new DocumentChoicesDto(id, choices));
-
-			// ACT
-			ImportTestJobResult secondImportResult = this.JobExecutionContext.Execute(dataSource);
-
-			// ASSERT
-			this.ThenTheImportJobIsSuccessful(secondImportResult, NumberOfDocumentsToImport);
-			await this.ThenTheChoiceFieldHasExpectedValues(choiceName, expectedChoiceToDocumentMapping).ConfigureAwait(false);
-		}
-
-		[IdentifiedTest("51c1ea5f-ffd3-43d4-b074-cd3db72c9301")]
-		public Task ShouldReplaceExistingMultiChoicesValues() => this.MultiChoiceTestAsync(
+		[IdentifiedTestCase("51c1ea5f-ffd3-43d4-b074-cd3db72c9301", new[] { "a", "b", "c", "d" }, Services.Interfaces.Field.Models.OverlayBehavior.MergeValues)]
+		[IdentifiedTestCase("2b265e75-c753-485d-bf9d-fe5e4568e752", new[] { "a", "" }, Services.Interfaces.Field.Models.OverlayBehavior.ReplaceValues)]
+		public Task ShouldReplaceExistingMultiChoicesValues(string[] initialUniqueChoices, Services.Interfaces.Field.Models.OverlayBehavior fieldOverlayBehavior) => this.MultiChoiceTestAsync(
 			importOverlayBehavior: OverlayBehavior.ReplaceAll,
-			fieldOverlayBehavior: Services.Interfaces.Field.Models.OverlayBehavior.MergeValues,
+			fieldOverlayBehavior,
+			initialUniqueChoices,
+			uniqueChoices: new[] { "e", "f", "g", "h" },
 			expectedShouldMergeValues: false);
 
-		[IdentifiedTest("507a2802-7003-442f-8715-a3d1539410a8")]
-		public Task ShouldMergeExistingMultiChoicesWithNewValues()
-			=> this.MultiChoiceTestAsync(OverlayBehavior.MergeAll, Services.Interfaces.Field.Models.OverlayBehavior.ReplaceValues, expectedShouldMergeValues: true);
+		[IdentifiedTestCase("51c1ea5f-ffd3-43d4-b074-cd3db72c9301", new[] { "a", "b", "c", "d" }, new[] { "" })]
+		[IdentifiedTestCase("a8b602ba-c305-4185-8c31-b901388a15c4", new[] { "a", "b", "c", "d" }, new[] { "a", "" })]
+		[IdentifiedTestCase("72dbd4e1-48d4-431e-89d9-5107cf096b85", new[] { "a", "" }, new[] { "e", "" })]
+		public Task ShouldUnlinkExistingMultiChoicesValuesWhenNewValueInEmpty(string[] initialUniqueChoices, string[] uniqueChoices) => this.MultiChoiceTestAsync(
+			importOverlayBehavior: OverlayBehavior.ReplaceAll,
+			fieldOverlayBehavior: Services.Interfaces.Field.Models.OverlayBehavior.ReplaceValues,
+			initialUniqueChoices,
+			uniqueChoices,
+			expectedShouldMergeValues: false);
+
+		[IdentifiedTestCase("507a2802-7003-442f-8715-a3d1539410a8", new[] { "a", "b", "c", "d" }, Services.Interfaces.Field.Models.OverlayBehavior.ReplaceValues)]
+		[IdentifiedTestCase("9c5e6380-cdf9-44c5-b730-148b22043ce9", new[] { "a", "" }, Services.Interfaces.Field.Models.OverlayBehavior.MergeValues)]
+		public Task ShouldMergeExistingMultiChoicesWithNewValues(string[] initialUniqueChoices, Services.Interfaces.Field.Models.OverlayBehavior fieldOverlayBehavior)
+			=> this.MultiChoiceTestAsync(
+				importOverlayBehavior: OverlayBehavior.MergeAll,
+				fieldOverlayBehavior,
+				initialUniqueChoices,
+				uniqueChoices: new[] { "e", "f", "g", "h" },
+				expectedShouldMergeValues: true);
 
 		[IdentifiedTestCase("ee4acebb-e5bd-4d70-a7b1-8474258972e6", Services.Interfaces.Field.Models.OverlayBehavior.MergeValues, true)]
 		[IdentifiedTestCase("67aa07ba-12ea-4a48-b615-3f767114a0d1", Services.Interfaces.Field.Models.OverlayBehavior.ReplaceValues, false)]
 		public Task ShouldUseDefaultMergeBehaviorForMultiChoices(Services.Interfaces.Field.Models.OverlayBehavior fieldOverlayBehavior, bool expectedShouldMergeValues)
-			=> this.MultiChoiceTestAsync(OverlayBehavior.UseRelativityDefaults, fieldOverlayBehavior, expectedShouldMergeValues);
+			=> this.MultiChoiceTestAsync(
+				importOverlayBehavior: OverlayBehavior.UseRelativityDefaults,
+				fieldOverlayBehavior,
+				initialUniqueChoices: new[] { "a", "b", "c", "d" },
+				uniqueChoices: new[] { "e", "f", "g", "h" },
+				expectedShouldMergeValues);
 
-		[IdentifiedTest("d3809802-e166-49a2-a30b-30b0cb53eef2")]
-		public async Task ShouldImportSingleAndMultiChoiceInOneJob()
+		[IdentifiedTestCase("d3809802-e166-49a2-a30b-30b0cb53eef2", NumberOfDocumentsToImport)]
+		[IdentifiedTestCase("9c5952f2-5098-4ad4-876c-79109a369ae2", NumberOfDocumentsToImport / 2)]
+		public async Task ShouldImportSingleAndMultiChoiceInOneJob(int numberOfDocumentToImportInImportUnderTest)
 		{
 			// ARRANGE
 			this.InitializeExecutionContext(OverlayBehavior.MergeAll);
@@ -134,7 +132,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// import initial data to workspace
 			string[] initialUniqueSingleChoices = { "a", "b", "c", "d" };
-			IEnumerable<string[]> initialSingleChoicesList = GenerateChoicesForDocuments(initialUniqueSingleChoices, NumberOfDocumentsToImport, maxNumberOfMultiValues: 1);
+			IEnumerable<string[]> initialSingleChoicesList = GenerateChoicesForDocuments(initialUniqueSingleChoices, NumberOfDocumentsToImport, maxNumberOfMultiValues: 1).ToList();
 
 			string[] initialUniqueMultiChoices = { "1", "2", "3", "4" };
 			IEnumerable<string[]> initialMultiChoicesList = GenerateChoicesForDocuments(initialUniqueMultiChoices, NumberOfDocumentsToImport, maxNumberOfMultiValues: 3).ToList();
@@ -150,15 +148,21 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// prepare data for import under test
 			string[] uniqueSingleChoices = { "e", "f", "g", "h" };
-			IList<string[]> singleChoicesList = GenerateChoicesForDocuments(uniqueSingleChoices, NumberOfDocumentsToImport, 1).ToList();
+			IList<string[]> singleChoicesList = GenerateChoicesForDocuments(uniqueSingleChoices, numberOfDocumentToImportInImportUnderTest, 1).ToList();
 
 			string[] uniqueMultiChoices = { "5", "6", "7", "8" };
-			IList<string[]> multiChoicesList = GenerateChoicesForDocuments(uniqueMultiChoices, NumberOfDocumentsToImport, 3).ToList();
+			IList<string[]> multiChoicesList = GenerateChoicesForDocuments(uniqueMultiChoices, numberOfDocumentToImportInImportUnderTest, 3).ToList();
 
-			IEnumerable<DocumentChoicesDto> expectedSingleChoiceToDocumentMapping = documentIdsList
+			IEnumerable<DocumentChoicesDto> expectedSingleChoiceToDocumentMappingForOverlaidDocuments = documentIdsList
+				.Take(numberOfDocumentToImportInImportUnderTest)
 				.Zip(singleChoicesList, (id, choices) => new DocumentChoicesDto(id, choices));
 
-			IEnumerable<DocumentChoicesDto> expectedMultiChoiceToDocumentMapping = documentIdsList
+			IEnumerable<DocumentChoicesDto> expectedSingleChoiceToDocumentMappingForNotModifiedDocuments = documentIdsList
+				.Skip(numberOfDocumentToImportInImportUnderTest)
+				.Zip(initialSingleChoicesList.Skip(numberOfDocumentToImportInImportUnderTest), (id, choices) => new DocumentChoicesDto(id, choices));
+
+			IEnumerable<DocumentChoicesDto> expectedMultiChoiceToDocumentMappingForOverlaidDocuments = documentIdsList
+				.Take(numberOfDocumentToImportInImportUnderTest)
 				.Zip(
 					multiChoicesList,
 					(id, choices) => new DocumentChoicesDto(id, choices))
@@ -166,8 +170,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					initialMultiChoicesList,
 					(expectedChoices, initialChoicesNames) => expectedChoices.AddChoicesNames(initialChoicesNames));
 
+			IEnumerable<DocumentChoicesDto> expectedMultiChoiceToDocumentMappingForNotModifiedDocuments = documentIdsList
+				.Skip(numberOfDocumentToImportInImportUnderTest)
+				.Zip(
+					initialMultiChoicesList.Skip(numberOfDocumentToImportInImportUnderTest),
+					(id, choices) => new DocumentChoicesDto(id, choices));
+
 			ImportDataSource<object[]> dataSource = ImportDataSourceBuilder.New()
-				.AddField(WellKnownFields.ControlNumber, documentIdsList)
+				.AddField(WellKnownFields.ControlNumber, documentIdsList.Take(numberOfDocumentToImportInImportUnderTest))
 				.AddField(singleChoiceFieldName, this.ConvertToChoicesListToImportApiFormat(singleChoicesList))
 				.AddField(multiChoiceFieldName, this.ConvertToChoicesListToImportApiFormat(multiChoicesList))
 				.Build();
@@ -176,9 +186,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ImportTestJobResult secondImportResult = this.JobExecutionContext.Execute(dataSource);
 
 			// ASSERT
-			this.ThenTheImportJobIsSuccessful(secondImportResult, NumberOfDocumentsToImport);
-			await this.ThenTheChoiceFieldHasExpectedValues(singleChoiceFieldName, expectedSingleChoiceToDocumentMapping).ConfigureAwait(false);
-			await this.ThenTheChoiceFieldHasExpectedValues(multiChoiceFieldName, expectedMultiChoiceToDocumentMapping).ConfigureAwait(false);
+			this.ThenTheImportJobIsSuccessful(secondImportResult, numberOfDocumentToImportInImportUnderTest);
+
+			// overlaid documents
+			await this.ThenTheChoiceFieldHasExpectedValues(singleChoiceFieldName, expectedSingleChoiceToDocumentMappingForOverlaidDocuments).ConfigureAwait(false);
+			await this.ThenTheChoiceFieldHasExpectedValues(multiChoiceFieldName, expectedMultiChoiceToDocumentMappingForOverlaidDocuments).ConfigureAwait(false);
+
+			// not modified documents
+			await this.ThenTheChoiceFieldHasExpectedValues(singleChoiceFieldName, expectedSingleChoiceToDocumentMappingForNotModifiedDocuments).ConfigureAwait(false);
+			await this.ThenTheChoiceFieldHasExpectedValues(multiChoiceFieldName, expectedMultiChoiceToDocumentMappingForNotModifiedDocuments).ConfigureAwait(false);
 		}
 
 		private static List<string> GenerateIdsForDocuments(int numberOfDocuments)
@@ -206,7 +222,45 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		private async Task MultiChoiceTestAsync(OverlayBehavior importOverlayBehavior, Services.Interfaces.Field.Models.OverlayBehavior fieldOverlayBehavior, bool expectedShouldMergeValues)
+		private async Task SingleChoiceTestAsync(OverlayBehavior overlayBehavior, string[] initialUniqueChoices, string[] uniqueChoices)
+		{
+			// ARRANGE
+			this.InitializeExecutionContext(overlayBehavior);
+
+			string choiceName = "SINGLE_CHOICE_FIELD";
+			await this.CreateSingleChoiceFieldAsync(choiceName).ConfigureAwait(false);
+
+			List<string> documentIdsList = GenerateIdsForDocuments(NumberOfDocumentsToImport);
+
+			// import initial data to workspace
+			IEnumerable<string[]> initialChoicesList = GenerateChoicesForDocuments(initialUniqueChoices, NumberOfDocumentsToImport, maxNumberOfMultiValues: 1);
+
+			ImportDataSource<object[]> initialDataSource = this.GenerateImportDataSourceForSingleField(documentIdsList, choiceName, initialChoicesList);
+			ImportTestJobResult firstImportResult = this.JobExecutionContext.Execute(initialDataSource);
+			this.ThenTheImportJobIsSuccessful(firstImportResult, NumberOfDocumentsToImport);
+
+			// prepare data for import under test
+			IList<string[]> choicesList = GenerateChoicesForDocuments(uniqueChoices, NumberOfDocumentsToImport, maxNumberOfMultiValues: 1).ToList();
+
+			ImportDataSource<object[]> dataSource = this.GenerateImportDataSourceForSingleField(documentIdsList, choiceName, choicesList);
+
+			IEnumerable<DocumentChoicesDto> expectedChoiceToDocumentMapping = documentIdsList
+				.Zip(choicesList, (id, choices) => new DocumentChoicesDto(id, choices));
+
+			// ACT
+			ImportTestJobResult secondImportResult = this.JobExecutionContext.Execute(dataSource);
+
+			// ASSERT
+			this.ThenTheImportJobIsSuccessful(secondImportResult, NumberOfDocumentsToImport);
+			await this.ThenTheChoiceFieldHasExpectedValues(choiceName, expectedChoiceToDocumentMapping).ConfigureAwait(false);
+		}
+
+		private async Task MultiChoiceTestAsync(
+			OverlayBehavior importOverlayBehavior,
+			Services.Interfaces.Field.Models.OverlayBehavior fieldOverlayBehavior,
+			string[] initialUniqueChoices,
+			string[] uniqueChoices,
+			bool expectedShouldMergeValues)
 		{
 			// ARRANGE
 			this.InitializeExecutionContext(importOverlayBehavior);
@@ -217,7 +271,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			List<string> documentIdsList = GenerateIdsForDocuments(NumberOfDocumentsToImport);
 
 			// import initial data to workspace
-			string[] initialUniqueChoices = { "a", "b", "c", "d" };
 			IList<string[]> initialChoicesList = GenerateChoicesForDocuments(initialUniqueChoices, NumberOfDocumentsToImport, maxNumberOfMultiValues: 3).ToList();
 
 			var initialDataSource = this.GenerateImportDataSourceForSingleField(documentIdsList, choiceName, initialChoicesList);
@@ -225,7 +278,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(firstImportResult, NumberOfDocumentsToImport);
 
 			// prepare data for import under test
-			string[] uniqueChoices = { "e", "f", "g", "h" };
 			IList<string[]> choicesList = GenerateChoicesForDocuments(uniqueChoices, NumberOfDocumentsToImport, maxNumberOfMultiValues: 3).ToList();
 
 			IEnumerable<DocumentChoicesDto> expectedChoiceToDocumentMapping = documentIdsList.Zip(
@@ -355,7 +407,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			public DocumentChoicesDto(string controlNumber, IEnumerable<string> choicesNames)
 			{
 				this.ControlNumber = controlNumber;
-				this.ChoicesNames = choicesNames.ToList();
+				this.ChoicesNames = RemoveEmptyChoices(choicesNames).ToList();
 			}
 
 			public string ControlNumber { get; }
@@ -364,9 +416,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			public DocumentChoicesDto AddChoicesNames(IEnumerable<string> choicesNames)
 			{
-				this.ChoicesNames.AddRange(choicesNames);
+				this.ChoicesNames.AddRange(RemoveEmptyChoices(choicesNames));
 				return this;
 			}
+
+			private static IEnumerable<string> RemoveEmptyChoices(IEnumerable<string> choices) =>
+				choices.Where(choice => !string.IsNullOrEmpty(choice));
 		}
 	}
 }
