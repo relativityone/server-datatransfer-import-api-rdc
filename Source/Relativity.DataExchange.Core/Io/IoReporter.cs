@@ -250,14 +250,10 @@ namespace Relativity.DataExchange.Io
 			{
 				throw new ArgumentOutOfRangeException(
 					nameof(lineNumber),
-					string.Format(Resources.Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumber)));
+					string.Format(Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumber)));
 			}
 
-			this.Exec(lineNumber, sourceFileName, "Copy File", () =>
-			{
-				this.Context.FileSystem.File.Copy(sourceFileName, destFileName, overwrite);
-				return 0;
-			});
+			this.Context.FileSystem.File.Copy(sourceFileName, destFileName, overwrite);
 		}
 
 		/// <inheritdoc />

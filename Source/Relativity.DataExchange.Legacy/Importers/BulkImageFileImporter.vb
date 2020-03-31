@@ -1037,18 +1037,18 @@ Namespace kCura.WinEDDS
 					Me.FileTapiProgressCount = Me.FileTapiProgressCount + 1
 				End If
 
-				If Me.GetFileExists(imageFile, retry) Then
+				If Me.GetFileExists(imageFile) Then
 					fileSize = Me.GetFileLength(imageFile, retry)
 				End If
-				If _replaceFullText AndAlso Me.GetFileExists(extractedTextFileName, retry) AndAlso Not fullTextFiles Is Nothing Then
+				If _replaceFullText AndAlso Me.GetFileExists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
 					fullTextFiles.Add(extractedTextFileName)
 				Else
-					If _replaceFullText AndAlso Not Me.GetFileExists(extractedTextFileName, retry) Then
+					If _replaceFullText AndAlso Not Me.GetFileExists(extractedTextFileName) Then
 						RaiseStatusEvent(EventType2.Warning, $"File '{extractedTextFileName}' not found.  No text updated.", CType((_totalValidated + _totalProcessed) / 2, Int64), originalLineNumber)
 					End If
 				End If
 			End If
-			If _replaceFullText AndAlso Me.GetFileExists(extractedTextFileName, retry) AndAlso Not fullTextFiles Is Nothing Then
+			If _replaceFullText AndAlso Me.GetFileExists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
 				offset += Me.GetFileLength(extractedTextFileName, retry)
 			End If
 			_bulkLoadFileWriter.Write(If(isStartRecord, "1,", "0,"))
@@ -1327,29 +1327,25 @@ Namespace kCura.WinEDDS
 			Dim datetimeNow As System.DateTime = System.DateTime.Now
 			Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
 			Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
-			Const retry As Boolean = True
-			Me.CopyFile(_errorRowsFileLocation, errorFilePath, retry)
-			Me.CopyFile(_errorMessageFileLocation, errorReportPath, retry)
+			Me.CopyFile(_errorRowsFileLocation, errorFilePath)
+			Me.CopyFile(_errorMessageFileLocation, errorReportPath)
 		End Sub
 
 		Private Sub _processContext_ExportErrorFileEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles _processContext.ExportErrorFile
-			Const retry As Boolean = True
-
 			Try
-				If Me.GetFileExists(_errorRowsFileLocation, retry) Then
-					Me.CopyFile(_errorRowsFileLocation, e.Path, True, retry)
+				If Me.GetFileExists(_errorRowsFileLocation) Then
+					Me.CopyFile(_errorRowsFileLocation, e.Path, True)
 				End If
 			Catch ex As Exception
 				Me.LogWarning(ex, "Failed to copy the image import error rows file. Going to retry the copy...")
-				If Me.GetFileExists(_errorRowsFileLocation, retry) Then
-					Me.CopyFile(_errorRowsFileLocation, e.Path, True, retry)
+				If Me.GetFileExists(_errorRowsFileLocation) Then
+					Me.CopyFile(_errorRowsFileLocation, e.Path, True)
 					Me.LogInformation("Successfully copied the image import error rows file on retry.")
 				End If
 			End Try
 		End Sub
 
 		Private Sub _processContext_ExportErrorReportEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles _processContext.ExportErrorReport
-			Const retry As Boolean = True
 			If String.IsNullOrEmpty(_errorMessageFileLocation) Then
 				' write out a blank file if there is no error message file
 				Dim fileWriter As System.IO.StreamWriter = System.IO.File.CreateText(e.Path)
@@ -1358,13 +1354,13 @@ Namespace kCura.WinEDDS
 				Exit Sub
 			End If
 			Try
-				If Me.GetFileExists(_errorMessageFileLocation, retry) Then
-					Me.CopyFile(_errorMessageFileLocation, e.Path, True, retry)
+				If Me.GetFileExists(_errorMessageFileLocation) Then
+					Me.CopyFile(_errorMessageFileLocation, e.Path, True)
 				End If
 			Catch ex As Exception
 				Me.LogWarning(ex, "Failed to copy the image import error location file. Going to retry the copy...")
-				If Me.GetFileExists(_errorMessageFileLocation, retry) Then
-					Me.CopyFile(_errorMessageFileLocation, e.Path, True, retry)
+				If Me.GetFileExists(_errorMessageFileLocation) Then
+					Me.CopyFile(_errorMessageFileLocation, e.Path, True)
 					Me.LogInformation("Successfully copied the image import error location file.")
 				End If
 			End Try

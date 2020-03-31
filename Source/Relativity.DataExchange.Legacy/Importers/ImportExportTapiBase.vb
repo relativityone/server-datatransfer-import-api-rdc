@@ -211,12 +211,9 @@ Namespace kCura.WinEDDS
 		''' <param name="destFileName">
 		''' The name of the destination file. This cannot be a directory.
 		''' </param>
-		''' <param name="retry">
-		''' <see langword="true" /> to retry <see cref="T:System.IO.IOException"/> and publish error messages; otherwise, <see langword="false" />.
-		''' </param>
-		Protected Sub CopyFile(sourceFileName As String, destFileName As String, retry As Boolean)
+		Protected Sub CopyFile(sourceFileName As String, destFileName As String)
 			Const overwrite As Boolean = False
-			Me.CopyFile(sourceFileName, destFileName, overwrite, retry)
+			Me.CopyFile(sourceFileName, destFileName, overwrite)
 		End Sub
 
 		''' <summary>
@@ -244,15 +241,8 @@ Namespace kCura.WinEDDS
 		''' <param name="overwrite">
 		''' <see langword="true" /> if the destination file can be overwritten; otherwise, <see langword="false" />.
 		''' </param>
-		''' <param name="retry">
-		''' <see langword="true" /> to retry <see cref="T:System.IO.IOException"/> and publish error messages; otherwise, <see langword="false" />.
-		''' </param>
-		Protected Sub CopyFile(sourceFileName As String, destFileName As String, overwrite As Boolean, retry As Boolean)
-			If Not retry
-				_fileSystem.File.Copy(sourceFileName, destFileName, overwrite)
-			Else
-				_ioReporter.CopyFile(sourceFileName, destFileName, overwrite, Me.CurrentLineNumber)
-			End If
+		Protected Sub CopyFile(sourceFileName As String, destFileName As String, overwrite As Boolean)
+			_ioReporter.CopyFile(sourceFileName, destFileName, overwrite, Me.CurrentLineNumber)
 		End Sub
 
 		''' <summary>
@@ -298,18 +288,11 @@ Namespace kCura.WinEDDS
 		''' <param name="path">
 		''' The file to check.
 		''' </param>
-		''' <param name="retry">
-		''' <see langword="true" /> to retry <see cref="T:System.IO.IOException"/> and publish error messages; otherwise, <see langword="false" />.
-		''' </param>
 		''' <returns>
 		''' <see langword="true" /> if the caller has the required permissions and path contains the name of an existing file; otherwise, <see langword="false" />.
 		''' </returns>
-		Protected Function GetFileExists(path As String, retry As Boolean) As Boolean
-			If Not retry
-				Return _fileSystem.File.Exists(path)
-			Else
-				Return _ioReporter.GetFileExists(path, Me.CurrentLineNumber)
-			End If
+		Protected Function GetFileExists(path As String) As Boolean
+			Return _ioReporter.GetFileExists(path, Me.CurrentLineNumber)
 		End Function
 
 		''' <summary>
