@@ -2071,7 +2071,7 @@ Namespace kCura.WinEDDS
 		Protected Overridable Sub _processContext_HaltProcessEvent(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles Context.CancellationRequest
 			If e.ProcessId.ToString = _processId.ToString Then
 				_cancelledByUser = e.RequestByUser
-				StopImport()
+				StopImport(_cancelledByUser)
 			End If
 		End Sub
 

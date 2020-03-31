@@ -478,8 +478,11 @@ Namespace kCura.WinEDDS
 			Logger.LogFatal($"Fatal error occured in line {CurrentLineNumber}, exception message {exception.Message}")
 		End Sub
 
-		Protected Sub StopImport()
+		Protected Sub StopImport(Optional userCancelRequest As Boolean = False)
 			Try
+				if userCancelRequest Then
+					_logger.LogInformation("Import process has been canceled on user request")
+				End If
 				ShouldImport = False
 				OnStopImport()
 				_cancellationTokenSource.Cancel()
@@ -642,19 +645,25 @@ Namespace kCura.WinEDDS
 		''' <summary>
 		''' Awaits completion of all pending physical file uploads for the current batch and optimize file transfers by not disposing the transfer job.
 		''' </summary>
-		''' <remarks>
-		''' Migrating to WaitForTransfers was avoided to address risk/SOI concerns but should be done in a future release.
-		''' </remarks>
 		Protected Sub AwaitPendingPhysicalFileUploadsForBatch()
-			WaitForRetry(
-				Function()
-					Return _batchFileTapiProgressCount >= Me.ImportFilesCount
-				End Function,
-				My.Resources.Strings.PhysicalFileUploadsWaitMessage,
-				My.Resources.Strings.PhysicalFileUploadsSuccessMessage,
-				My.Resources.Strings.PhysicalFileUploadsErrorMessage,
-				_fileCheckRetryCount,
-				_fileCheckWaitBetweenRetriesMilliseconds)
+			If AppSettings.Instance.UseSynchronizedImportBatchMode Then
+				Const KeepJobAlive As Boolean = True
+				Me.FileTapiBridge.WaitForTransfers(
+					My.Resources.Strings.PhysicalFileUploadsWaitMessage,
+					My.Resources.Strings.PhysicalFileUploadsSuccessMessage,
+					My.Resources.Strings.PhysicalFileUploadsErrorMessage,
+					KeepJobAlive)
+			Else
+				WaitForRetry(
+					Function()
+						Return _batchFileTapiProgressCount >= Me.ImportFilesCount
+					End Function,
+					My.Resources.Strings.PhysicalFileUploadsWaitMessage,
+					My.Resources.Strings.PhysicalFileUploadsSuccessMessage,
+					My.Resources.Strings.PhysicalFileUploadsErrorMessage,
+					_fileCheckRetryCount,
+					_fileCheckWaitBetweenRetriesMilliseconds)
+			End If
 
 			_batchFileTapiProgressCount = 0
 			Me.ImportFilesCount = 0
@@ -704,5 +713,6 @@ Namespace kCura.WinEDDS
 
 			Return waitSuccess
 		End Function
+
 	End Class
 End Namespace

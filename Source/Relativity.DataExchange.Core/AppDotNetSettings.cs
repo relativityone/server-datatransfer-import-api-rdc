@@ -1242,6 +1242,17 @@ namespace Relativity.DataExchange
 			set => this.webBasedFileDownloadChunkSize = value;
 		}
 
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionLegacyWinEdds,
+			AppSettingsConstants.UseSynchronizedImportBatchModeKey,
+			AppSettingsConstants.UseSynchronizedImportBatchModeDefaultValue)]
+		bool IAppSettings.UseSynchronizedImportBatchMode
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Validates that the URI is valid and returns a properly formatted URI string.
 		/// </summary>

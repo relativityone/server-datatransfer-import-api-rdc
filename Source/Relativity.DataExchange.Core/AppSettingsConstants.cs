@@ -192,6 +192,8 @@ namespace Relativity.DataExchange
 		public const int WebBasedFileDownloadChunkSizeMinValue = 1024;
 		public const string WebApiServiceUrlKey = "WebServiceURL";
 		public const string WebApiServiceUrlDefaultValue = "";
+		public const string UseSynchronizedImportBatchModeKey = "UseSynchronizedImportBatchMode";
+		public const bool UseSynchronizedImportBatchModeDefaultValue = true;
 #pragma warning restore SA1600
 	}
 }

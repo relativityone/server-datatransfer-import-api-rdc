@@ -101,6 +101,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property UseSynchronizedImportBatchMode() As Boolean      'Boolean
+			Get
+				Return AppSettings.Instance.UseSynchronizedImportBatchMode
+			End Get
+		End Property
+
 		Public Shared ReadOnly Property JobCompleteBatchSize() As Int32     'Number of records
 			Get
 				Return AppSettings.Instance.JobCompleteBatchSize
