@@ -932,7 +932,7 @@ Namespace kCura.WinEDDS
 							End If
 
 							If _copyFileToRepository Then
-								If Not Me.DisableNativeLocationValidation AndAlso fileExists OrElse Me.GetFileExists(filename, retry) Then
+								If Not Me.DisableNativeLocationValidation AndAlso fileExists OrElse Me.GetFileExists(filename) Then
 									Dim guid As String = System.Guid.NewGuid().ToString()
 									Me.ImportFilesCount += 1
 									_jobCompleteNativeCount += 1
@@ -1530,7 +1530,7 @@ Namespace kCura.WinEDDS
 				Dim fileSizeExtractor As Api.IHasFileSize = TryCast(mdoc, Api.IHasFileSize)
 				If (fileSizeExtractor Is Nothing) Then
 					Const retry As Boolean = True
-					If Me.GetFileExists(mdoc.FullFilePath, retry) Then
+					If Me.GetFileExists(mdoc.FullFilePath) Then
 						OutputFileWriter.OutputNativeFileWriter.Write(Me.GetFileLength(mdoc.FullFilePath, retry) & BulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
 					Else
 						OutputFileWriter.OutputNativeFileWriter.Write(0 & BulkLoadFileFieldDelimiter)
@@ -1929,7 +1929,7 @@ Namespace kCura.WinEDDS
 			Dim localFilePath As String = fileField.Value.ToString
 			Dim fileSize As Int64
 			Const retry As Boolean = True
-			If Me.GetFileExists(localFilePath, retry) Then
+			If Me.GetFileExists(localFilePath) Then
 				fileSize = Me.GetFileLength(localFilePath, retry)
 				Dim fileName As String = System.IO.Path.GetFileName(localFilePath).Replace(ChrW(11), "_")
 				Dim location As String
@@ -2112,7 +2112,7 @@ Namespace kCura.WinEDDS
 			Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
 			Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
 			Const retry As Boolean = True
-			If Not _errorLinesFileLocation Is Nothing AndAlso Not _errorLinesFileLocation = String.Empty AndAlso Me.GetFileExists(_errorLinesFileLocation, retry) Then
+			If Not _errorLinesFileLocation Is Nothing AndAlso Not _errorLinesFileLocation = String.Empty AndAlso Me.GetFileExists(_errorLinesFileLocation) Then
 				Me.CopyFile(_errorLinesFileLocation, errorFilePath, retry)
 			End If
 			Dim errorMessageLocation As String = errorMessageFileWriter.FilePath
@@ -2130,25 +2130,23 @@ Namespace kCura.WinEDDS
 				Exit Sub
 			End If
 
-			Const retry As Boolean = True
-			Me.CopyFile(errorMessageFileWriter.FilePath, e.Path, True, retry)
+			Me.CopyFile(errorMessageFileWriter.FilePath, e.Path, True)
 		End Sub
 
 		Private Sub _processContext_ExportErrorFileEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportErrorFile
 			errorMessageFileWriter.ReleaseLock()
 			prePushErrorWriter.ReleaseLock()
-			Const retry As Boolean = True
 			If Not errorMessageFileWriter.FileCreated Then Exit Sub
 			'' logic downstream is going to expect string.empty if the file is not there physically on disk
 			Dim prePushErrorWriterFilePath As String = If(prePushErrorWriter.FileCreated, prePushErrorWriter.FilePath, String.Empty)
-			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not Me.GetFileExists(_errorLinesFileLocation, retry) Then
+			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not Me.GetFileExists(_errorLinesFileLocation) Then
 				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriter.FilePath, prePushErrorWriterFilePath)
 			End If
 			If _errorLinesFileLocation Is Nothing Then
 				Exit Sub
 			End If
 
-			Me.CopyFile(_errorLinesFileLocation, e.Path, True, retry)
+			Me.CopyFile(_errorLinesFileLocation, e.Path, True)
 		End Sub
 
 #End Region
