@@ -1,5 +1,7 @@
 Imports System.Web
+Imports kCura.WinEDDS.Api
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Data
 Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS.Service
@@ -125,17 +127,28 @@ Namespace kCura.WinEDDS.Service
 			Return DirectCast(retval.ToArray(GetType(ChoiceInfo)), ChoiceInfo())
 		End Function
 
-		Public Shadows Function RetrieveCodeByNameAndTypeID(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32, ByVal name As String) As ChoiceInfo
+		Public Shadows Function RetrieveCodeByNameAndTypeID(ByVal caseContextArtifactID As Int32, ByVal codeType As Api.ArtifactField, ByVal name As String) As ChoiceInfo
 			Dim tries As Int32 = 0
 			Dim encode As Boolean = True
+			
+			ValidateChoiceName(name, codeType)
+
 			While tries < AppSettings.Instance.MaxReloginTries
 				tries += 1
 				Try
 					If encode Then
-						Return Convert(MyBase.RetrieveCodeByNameAndTypeIDEncoded(caseContextArtifactID, codeTypeID, HttpServerUtility.UrlTokenEncode(System.Text.Encoding.UTF8.GetBytes(name))))
+						Return Convert(MyBase.RetrieveCodeByNameAndTypeIDEncoded(caseContextArtifactID, codeType.CodeTypeID, HttpServerUtility.UrlTokenEncode(System.Text.Encoding.UTF8.GetBytes(name))))
 					Else
-						Return Convert(MyBase.RetrieveCodeByNameAndTypeID(caseContextArtifactID, codeTypeID, name))
+						Return Convert(MyBase.RetrieveCodeByNameAndTypeID(caseContextArtifactID, codeType.CodeTypeID, name))
 					End If
+
+				Catch ex As System.InvalidOperationException
+					' InvalidOperationException is very generic type of exception. At this point we need to handle issues like in here: https://jira.kcura.com/browse/REL-416161
+					' The clients may have already inserted NUL bytes inside Name column in Code table
+					If ex.ToString.IndexOf("invalid character") <> -1 Then
+						Throw new ImporterException($"Invalid character occured in service response when importing data to the target choice field {{ Code Type Id: {codeType.CodeTypeID} }}. Please check Code table.", ex)
+					End If
+					Throw
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
@@ -149,6 +162,13 @@ Namespace kCura.WinEDDS.Service
 			End While
 			Return Nothing
 		End Function
+
+		Private Sub ValidateChoiceName(name As String, codeType As ArtifactField)
+			
+			if name.Contains(vbNullChar) Then
+				Throw new ImporterException($"Invalid character occured when importing data to the target choice field {{ Code Type Id: {codeType.CodeTypeID} }}'. Please check your source data.")
+			End If
+		End Sub
 
 		Public Shadows Function GetChoiceLimitForUI() As Int32
 			Return RetryOnReLoginException(Function() MyBase.GetChoiceLimitForUI())

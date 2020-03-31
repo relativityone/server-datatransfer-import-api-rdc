@@ -25,12 +25,11 @@ Namespace kCura.WinEDDS.CodeValidator
 
 		Public Function ValidateSingleCode(ByVal field As Api.ArtifactField, ByVal codeName As String) As Nullable(Of Int32)
 			If codeName.Trim = String.Empty Then Return Nothing
-			'TODO: Is this ever actually hit? ------ 'If field.CodeTypeID.IsNull Then Throw New kCura.WinEDDS.LoadFileBase.MissingCodeTypeException(Me.CurrentLineNumber, column)
 			If Not _lookup.Contains(field.CodeTypeID) Then Me.InitializeLookupForCodeType(field.CodeTypeID)
 			Dim typeLookup As kCura.WinEDDS.Types.SingleChoiceCollection = DirectCast(_lookup(field.CodeTypeID), kCura.WinEDDS.Types.SingleChoiceCollection)
 			Dim choice As ChoiceInfo = typeLookup(codeName)
 			If Not choice Is Nothing Then Return New Nullable(Of Int32)(choice.ArtifactID)
-			If Me.DoRealtimeDatabaseLookup Then choice = Me.CodeManager.RetrieveCodeByNameAndTypeID(Me.CaseInfo.ArtifactID, field.CodeTypeID, codeName.Trim)
+			If Me.DoRealtimeDatabaseLookup Then choice = Me.CodeManager.RetrieveCodeByNameAndTypeID(Me.CaseInfo.ArtifactID, field, codeName.Trim)
 			If choice Is Nothing Then
 				Return Me.GetNewSingleCodeId(field, codeName)
 			Else
