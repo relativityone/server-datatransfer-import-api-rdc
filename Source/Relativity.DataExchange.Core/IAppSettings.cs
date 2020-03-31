@@ -1021,6 +1021,19 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether Native File Transfer and Metadata import operations are synchronized in the batch.
+		/// If set to True than Metadata import operation is not triggered until Native File transfer finishes.
+		/// </summary>
+		/// <value>
+		/// The total number of bytes.
+		/// </value>
+		bool UseSynchronizedImportBatchMode
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Performs a deep copy of this instance.
 		/// </summary>
 		/// <returns>

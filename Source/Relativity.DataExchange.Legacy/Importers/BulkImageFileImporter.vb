@@ -1097,7 +1097,7 @@ Namespace kCura.WinEDDS
 		Private Sub _processObserver_CancelImport(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles _processContext.CancellationRequest
 			If e.ProcessId.ToString = _processID.ToString Then
 				_cancelledByUser = e.RequestByUser
-				StopImport()
+				StopImport(_cancelledByUser)
 			End If
 		End Sub
 		Protected Sub OnStatusMessage(args As StatusEventArgs)
