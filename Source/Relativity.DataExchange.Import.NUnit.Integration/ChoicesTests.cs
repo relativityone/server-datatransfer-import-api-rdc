@@ -120,7 +120,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public async Task ShouldImportSingleAndMultiChoiceInOneJob(int numberOfDocumentToImportInImportUnderTest)
 		{
 			// ARRANGE
-			this.InitializeExecutionContext(OverlayBehavior.MergeAll);
+			this.InitializeExecutionContext(OverlayBehavior.MergeAll, OverwriteModeEnum.Append);
 
 			string singleChoiceFieldName = "SINGLE_CHOICE_FIELD";
 			await this.CreateSingleChoiceFieldAsync(singleChoiceFieldName).ConfigureAwait(false);
@@ -147,6 +147,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(firstImportResult, NumberOfDocumentsToImport);
 
 			// prepare data for import under test
+			this.InitializeExecutionContext(OverlayBehavior.MergeAll, OverwriteModeEnum.AppendOverlay);
 			string[] uniqueSingleChoices = { "e", "f", "g", "h" };
 			IList<string[]> singleChoicesList = GenerateChoicesForDocuments(uniqueSingleChoices, numberOfDocumentToImportInImportUnderTest, 1).ToList();
 
@@ -225,7 +226,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private async Task SingleChoiceTestAsync(OverlayBehavior overlayBehavior, string[] initialUniqueChoices, string[] uniqueChoices)
 		{
 			// ARRANGE
-			this.InitializeExecutionContext(overlayBehavior);
+			this.InitializeExecutionContext(overlayBehavior, OverwriteModeEnum.Append);
 
 			string choiceName = "SINGLE_CHOICE_FIELD";
 			await this.CreateSingleChoiceFieldAsync(choiceName).ConfigureAwait(false);
@@ -240,6 +241,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(firstImportResult, NumberOfDocumentsToImport);
 
 			// prepare data for import under test
+			this.InitializeExecutionContext(overlayBehavior, OverwriteModeEnum.AppendOverlay);
 			IList<string[]> choicesList = GenerateChoicesForDocuments(uniqueChoices, NumberOfDocumentsToImport, maxNumberOfMultiValues: 1).ToList();
 
 			ImportDataSource<object[]> dataSource = this.GenerateImportDataSourceForSingleField(documentIdsList, choiceName, choicesList);
@@ -263,7 +265,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			bool expectedShouldMergeValues)
 		{
 			// ARRANGE
-			this.InitializeExecutionContext(importOverlayBehavior);
+			this.InitializeExecutionContext(importOverlayBehavior, OverwriteModeEnum.Append);
 
 			string choiceName = "MULTI_CHOICE_FIELD";
 			await this.CreateMultiChoiceFieldAsync(choiceName, fieldOverlayBehavior).ConfigureAwait(false);
@@ -278,6 +280,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(firstImportResult, NumberOfDocumentsToImport);
 
 			// prepare data for import under test
+			this.InitializeExecutionContext(importOverlayBehavior, OverwriteModeEnum.AppendOverlay);
 			IList<string[]> choicesList = GenerateChoicesForDocuments(uniqueChoices, NumberOfDocumentsToImport, maxNumberOfMultiValues: 3).ToList();
 
 			IEnumerable<DocumentChoicesDto> expectedChoiceToDocumentMapping = documentIdsList.Zip(
@@ -301,12 +304,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			await this.ThenTheChoiceFieldHasExpectedValues(choiceName, expectedChoiceToDocumentMapping).ConfigureAwait(false);
 		}
 
-		private void InitializeExecutionContext(OverlayBehavior overlayBehavior)
+		private void InitializeExecutionContext(OverlayBehavior overlayBehavior, OverwriteModeEnum overwriteMode)
 		{
 			var settings = NativeImportSettingsBuilder
 				.New()
 				.WithDefaultSettings()
-				.WithOverwriteMode(OverwriteModeEnum.AppendOverlay)
+				.WithOverwriteMode(overwriteMode)
 				.WithFieldOverlayMode(overlayBehavior)
 				.Build();
 
