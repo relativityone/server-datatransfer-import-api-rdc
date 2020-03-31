@@ -46,6 +46,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			var rootFolder = treeView.FindTreeItem().WaitFor(TimeSpan.FromSeconds(10));
 			rootFolder.Click();
 			rootFolder.WaitToBeSelected(TimeSpan.FromSeconds(2));
+			CaptureWindowScreenshot();
 		}
 
 		public RdoImportWindow ImportDocumentLoadFile()

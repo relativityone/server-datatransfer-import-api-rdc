@@ -60,6 +60,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		{
 			dataSourceTab.Click();
 			SelectView(parameters);
+			
+			CaptureWindowScreenshot();
 
 			destinationFilesTab.Click();
 			SetExportPath(parameters.ExportPath);
@@ -74,6 +76,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			SetExportFullTextAsFile(parameters);
 			SetTextFileEncoding(parameters);
 			SetTextFieldPrecedence(parameters);
+
+			CaptureWindowScreenshot();
 		}
 
 		public ProgressWindow RunExport()
@@ -169,6 +173,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			{
 				selectFieldsSourceButton.Click();
 				selectFieldsSourceDialog.SelectView(parameters.FieldSourceName);
+				this.SwitchToWindow();
 			}
 		}
 	}

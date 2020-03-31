@@ -34,6 +34,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			SetImportFilePath(parameters.ImportFilePath);
 			SetOverwriteMode(parameters);
 			SetProduction(parameters);
+			CaptureWindowScreenshot();
 		}
 
 		public void LoadSettings(string settingsFilePath)

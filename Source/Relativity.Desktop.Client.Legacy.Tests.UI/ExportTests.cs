@@ -147,15 +147,18 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			var rdcWindow = workspaceSelectWindow.ChooseWorkspace(TestParameters.WorkspaceName);
 			rdcWindow.SelectRootFolder();
 			rdcWindow.WaitForTransferModeDetection();
+			rdcWindow.CaptureWindowScreenshot();
 
 			var exportWindow = getExportWindow(rdcWindow);
 			exportWindow.SetupExport(exportParameters);
+
 			var progressWindow = exportWindow.RunExport();
 
 			var allRecordsProcessed = progressWindow.WaitForAllRecordsToBeProcessed(TimeSpan.FromMinutes(5));
 
 			if (RdcWindowsManager.TryGetRdcConfirmationDialog(out DialogWindow confirmationDialog))
 			{
+				confirmationDialog.CaptureWindowScreenshot();
 				confirmationDialog.ClickButton("Cancel");
 				progressWindow.SwitchToWindow();
 			}

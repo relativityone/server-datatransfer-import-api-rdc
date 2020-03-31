@@ -38,9 +38,13 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			
 			LoadSettings(parameters);
 
+			CaptureWindowScreenshot();
+
 			fieldMapTab.Click();
 
 			AutoMapFields(parameters);
+
+			CaptureWindowScreenshot();
 		}
 
 		public void ClickImportFileMenuItem()

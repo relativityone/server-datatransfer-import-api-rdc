@@ -119,6 +119,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +143,7 @@
     <Compile Include="Appium\TreeUIElement.cs" />
     <Compile Include="Appium\Wait.cs" />
     <Compile Include="Appium\WindowDetails.cs" />
+    <Compile Include="Windows\CaptureScreenshot.cs" />
     <Compile Include="Windows\ImageImportWindow.cs" />
     <Compile Include="Windows\Names\ImportWindowName.cs" />
     <Compile Include="Windows\OpenSettingsDialog.cs" />

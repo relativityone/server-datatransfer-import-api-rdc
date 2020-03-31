@@ -27,8 +27,9 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			{
 				securityAlertDialog.ClickYesButton();
 			}
-
+		
 			EnterEmail(email);
+			CaptureWindowScreenshot();
 			ClickContinueButton();
 			EnterPassword(password);
 			ClickLoginButton();

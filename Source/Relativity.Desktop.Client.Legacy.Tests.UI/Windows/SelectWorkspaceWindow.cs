@@ -25,6 +25,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			EnterSearchText(workspaceName);
 			workspaceList.WaitToHaveSingleElement();
 			SelectWorkspace(workspaceName);
+			CaptureWindowScreenshot();
 			ClickOkButton();
 			return WindowsManager.SwitchToRelativityDesktopClientWindow();
 		}

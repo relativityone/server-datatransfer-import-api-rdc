@@ -15,6 +15,9 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		private static readonly string TestOutputDirectory =
 			GetFullPath(ConfigurationManager.AppSettings["TestOutputDirectory"]);
 
+		private static readonly string TestReportsDirectory =
+			GetFullPath(ConfigurationManager.AppSettings["TestOutputDirectory"]).Replace("TestOutput", "TestReports");
+
 		public string RdcPath { get; } = GetFullPath(ConfigurationManager.AppSettings["RdcPath"]);
 
 		public string GetTestInputFilePath(string relativePath)
@@ -25,6 +28,11 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		public string GetTestOutputPath(string relativePath)
 		{
 			return Path.Combine(TestOutputDirectory, relativePath);
+		}
+
+		public static string GetTestReportsDirectory()
+		{
+			return TestReportsDirectory;
 		}
 
 		private static string GetFullPath(string pathFromConfig)

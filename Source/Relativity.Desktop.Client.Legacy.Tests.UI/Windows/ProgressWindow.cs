@@ -30,13 +30,20 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		private bool AreAllRecordsProcessed()
 		{
-			return currentRecordLabel.Text == "All records have been processed";
+			if (currentRecordLabel.Text == "All records have been processed")
+			{
+				CaptureWindowScreenshot();
+				return true;
+			}
+
+			return false;
 		}
 
 		public string GetErrorsText()
 		{
 			var errorsTab = tabs.FindTabItem("Errors");
 			errorsTab.Click();
+			CaptureWindowScreenshot();
 			errorsTab.WaitToBeSelected();
 			return tabs.FindEditWithAutomationId("TextBox").Text;
 		}
