@@ -21,8 +21,8 @@ Namespace kCura.WinEDDS.ImportExtension
 		               ByVal processID As System.Guid, _
 		               ByVal enforceDocumentLimit As Boolean, _
 		               ByVal tokenSource As CancellationTokenSource,
-                       ByVal reader As IDataReader,
-					   ByVal imageSettings As ImageSettings, _
+		               ByVal reader As IDataReader,
+		               ByVal imageSettings As ImageSettings, _
 		               Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
 			MyBase.New(folderId, _
 			           imageLoadFile, _
@@ -49,9 +49,9 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Property
 
 		Public ReadOnly Property Reader() As IDataReader
-            Get
-                Return _reader
-            End Get
-        End Property
+			Get
+				Return _reader
+			End Get
+		End Property
 	End Class
 End Namespace

@@ -52,6 +52,9 @@ Namespace kCura.WinEDDS
 		Private _dataGridFileWriter As System.IO.StreamWriter
 		Private _uploadKey As String = ""
 		Private _uploadDataGridKey As String = ""
+
+		'TODO: rmove _localRunId  https://jira.kcura.com/browse/REL-414969
+		Private _localRunId As String = System.Guid.NewGuid.ToString.Replace("-", "_") 
 		Private _runId As String = ""
 		Private _settings As ImageLoadFile
 		Private _batchCount As Int32 = 0
@@ -61,7 +64,6 @@ Namespace kCura.WinEDDS
 		Private _errorMessageFileLocation As String = ""
 		Private _errorRowsFileLocation As String = ""
 		Private _fileIdentifierLookup As System.Collections.Hashtable
-		Private _loggerIntialized As Boolean
 
 		Private _processID As Guid
 		Public Property MaxNumberOfErrorsInGrid As Int32 = AppSettings.Instance.DefaultMaxErrorCount
@@ -233,6 +235,10 @@ Namespace kCura.WinEDDS
 			MyBase.New(reporter, logger, tokenSource)
 
 			_executionSource = executionSource
+			
+			'TODO: generate runId  https://jira.kcura.com/browse/REL-414969
+			'_runId = System.Guid.NewGuid.ToString.Replace("-", "_")
+
 			_enforceDocumentLimit = enforceDocumentLimit
 			_doRetryLogic = doRetryLogic
 			InitializeManagers(args)
@@ -351,18 +357,13 @@ Namespace kCura.WinEDDS
 			Me.ReadFile(_filePath)
 		End Sub
 
-		Private Sub ProcessList(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByRef status As Int64, ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String, <Out()> ByRef logContextDisposable As IDisposable)
+		Private Sub ProcessList(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByRef status As Int64, ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
 			If al.Count = 0 Then Exit Sub
 			Me.ProcessDocument(al, status)
 			al.Clear()
 			status = 0
 			If (_bulkLoadFileWriter.BaseStream.Length + _dataGridFileWriter.BaseStream.Length > ImportBatchVolume) OrElse _batchCount > ImportBatchSize - 1 Then
 				Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, False, _jobCompleteImageCount >= JobCompleteBatchSize, _jobCompleteMetadataCount >= JobCompleteBatchSize)
-				If Not _loggerIntialized
-					_loggerIntialized = true
-					' At this point we get Run Id
-					logContextDisposable = _logger.LogImportContextPushProperties(New LogContext(_runId, _settings.CaseInfo.ArtifactID))
-				End If
 			End If
 		End Sub
 
@@ -636,7 +637,13 @@ Namespace kCura.WinEDDS
 				Dim start As Int64 = System.DateTime.Now.Ticks
 				Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.RunBulkImport(overwrite, True)
 				Me.Statistics.ProcessMassImportResults(runResults)
-				_runId = runResults.RunID
+
+				'TODO: remove runId set up and mapping log https://jira.kcura.com/browse/REL-414969
+				If String.IsNullOrWhiteSpace(_runId) Then
+					_runId = runResults.RunID
+					Logger.LogWarning("CorrelationId mapping [{localId}] - [{runId}]", _localRunId, _runId)
+				End If
+
 				Dim numberOfTicks As Long = System.DateTime.Now.Ticks - start
 				Dim batchDuration As TimeSpan = New TimeSpan(numberOfTicks)
 				Me.Statistics.MassImportDuration += batchDuration
@@ -666,118 +673,121 @@ Namespace kCura.WinEDDS
 
 		Public Sub ReadFile(ByVal path As String)
 			_timekeeper.MarkStart("TOTAL")
-			_logger.LogUserContextInformation("Start import process", _settings.Credential)
 
-			Dim bulkLoadFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.NativeLoadFileNameSuffix)
-			Dim dataGridFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.DatagridLoadFileNameSuffix)
-			Dim logContextDisposable As IDisposable = Nothing
-			_fileIdentifierLookup = New System.Collections.Hashtable
-			_totalProcessed = 0
-			_totalValidated = 0
-			Me.TotalTransferredFilesCount = 0
-			Me.JobCounter = 1
-			Me.FileTapiProgressCount = 0
-			DeleteFiles(bulkLoadFilePath, dataGridFilePath)
-			_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
-			_dataGridFileWriter = New System.IO.StreamWriter(dataGridFilePath, False, System.Text.Encoding.Unicode)
-			Try
-				_timekeeper.MarkStart("ReadFile_Init")
-				_filePath = path
-				_imageReader = Me.GetImageReader
-				_imageReader.Initialize()
-				_recordCount = _imageReader.CountRecords.GetValueOrDefault()
+			Using _logger.LogImportContextPushProperties(New LogContext(_localRunId, _settings.CaseInfo.ArtifactID))
+				_logger.LogUserContextInformation("Start import process", _settings.Credential)
 
-				If (_enforceDocumentLimit AndAlso _overwrite = ImportOverwriteType.Append) Then
+				Dim bulkLoadFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.NativeLoadFileNameSuffix)
+				Dim dataGridFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.DatagridLoadFileNameSuffix)
 
-					Me.LogInformation("Preparing to determine the number of images to import...")
-					Dim tempImageReader As OpticonFileReader = New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
-					tempImageReader.Initialize()
-					Dim newDocCount As Int32 = 0
+				_fileIdentifierLookup = New System.Collections.Hashtable
+				_totalProcessed = 0
+				_totalValidated = 0
+				Me.TotalTransferredFilesCount = 0
+				Me.JobCounter = 1
+				Me.FileTapiProgressCount = 0
+				DeleteFiles(bulkLoadFilePath, dataGridFilePath)
+				_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
+				_dataGridFileWriter = New System.IO.StreamWriter(dataGridFilePath, False, System.Text.Encoding.Unicode)
 
-					While tempImageReader.HasMoreRecords AndAlso tempImageReader.CurrentRecordNumber < _startLineNumber
-						tempImageReader.AdvanceRecord()
-					End While
+				Try
+					_timekeeper.MarkStart("ReadFile_Init")
+					_filePath = path
+					_imageReader = Me.GetImageReader
+					_imageReader.Initialize()
+					_recordCount = _imageReader.CountRecords.GetValueOrDefault()
 
-					While tempImageReader.HasMoreRecords
+					If (_enforceDocumentLimit AndAlso _overwrite = ImportOverwriteType.Append) Then
 
-						Dim record As Api.ImageRecord = tempImageReader.GetImageRecord
-						If record.IsNewDoc Then
-							newDocCount += 1
+						Me.LogInformation("Preparing to determine the number of images to import...")
+						Dim tempImageReader As OpticonFileReader = New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
+						tempImageReader.Initialize()
+						Dim newDocCount As Int32 = 0
+
+						While tempImageReader.HasMoreRecords AndAlso tempImageReader.CurrentRecordNumber < _startLineNumber
+							tempImageReader.AdvanceRecord()
+						End While
+
+						While tempImageReader.HasMoreRecords
+
+							Dim record As Api.ImageRecord = tempImageReader.GetImageRecord
+							If record.IsNewDoc Then
+								newDocCount += 1
+							End If
+
+						End While
+						tempImageReader.Close()
+
+						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
+						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
+
+
+						Dim countAfterJob As Long = currentDocCount + newDocCount
+						Me.LogInformation("Successfully calculated the number of images to import: {ImageCount}, Doc limit: {DocLimit}", countAfterJob, docLimit)
+						If (docLimit <> 0 And countAfterJob > docLimit) Then
+							Dim errorMessage As String = $"The document import was canceled.  It would have exceeded the workspace's document limit of {docLimit} by {(countAfterJob - docLimit)} documents."
+							Throw New Exception(errorMessage)
 						End If
-
-					End While
-					tempImageReader.Close()
-
-					Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
-					Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
-
-
-					Dim countAfterJob As Long = currentDocCount + newDocCount
-					Me.LogInformation("Successfully calculated the number of images to import: {ImageCount}, Doc limit: {DocLimit}", countAfterJob, docLimit)
-					If (docLimit <> 0 And countAfterJob > docLimit) Then
-						Dim errorMessage As String = $"The document import was canceled.  It would have exceeded the workspace's document limit of {docLimit} by {(countAfterJob - docLimit)} documents."
-						Throw New Exception(errorMessage)
 					End If
-				End If
 
-				RaiseStatusEvent(EventType2.Progress, "Begin Image Upload", 0)
-				RaiseStatusEvent(EventType2.ResetStartTime, "", 0)
-				Dim al As New System.Collections.Generic.List(Of Api.ImageRecord)
-				Dim status As Int64 = 0
-				_timekeeper.MarkEnd("ReadFile_Init")
+					RaiseStatusEvent(EventType2.Progress, "Begin Image Upload", 0)
+					RaiseStatusEvent(EventType2.ResetStartTime, "", 0)
+					Dim al As New System.Collections.Generic.List(Of Api.ImageRecord)
+					Dim status As Int64 = 0
+					_timekeeper.MarkEnd("ReadFile_Init")
 
-				_timekeeper.MarkStart("ReadFile_Main")
+					_timekeeper.MarkStart("ReadFile_Main")
 				
-				' This will safely force the status bar to update immediately.
-				Me.OnTapiClientChanged()
-				Me.LogInformation("Preparing to import images via WinEDDS.")
-				Me.Statistics.BatchSize = Me.ImportBatchSize
-				If _productionArtifactID <> 0 Then _productionManager.DoPreImportProcessing(_caseInfo.ArtifactID, _productionArtifactID)
-				While Me.[Continue]
-					If Me.CurrentLineNumber < _startLineNumber Then
-						Me.AdvanceRecord()
+					' This will safely force the status bar to update immediately.
+					Me.OnTapiClientChanged()
+					Me.LogInformation("Preparing to import images via WinEDDS.")
+					Me.Statistics.BatchSize = Me.ImportBatchSize
+					If _productionArtifactID <> 0 Then _productionManager.DoPreImportProcessing(_caseInfo.ArtifactID, _productionArtifactID)
+					While Me.[Continue]
+						If Me.CurrentLineNumber < _startLineNumber Then
+							Me.AdvanceRecord()
 
-						' This will ensure progress takes into account the start line number
-						Me.FileTapiProgressCount = Me.FileTapiProgressCount + 1
-					Else
-						'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
-						' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
-						' -Phil S. 06/12/2012
-						RaiseStatusEvent(EventType2.Count, String.Empty, 0)
-						Dim record As Api.ImageRecord = _imageReader.GetImageRecord
-						record.OriginalIndex = _imageReader.CurrentRecordNumber
-						If (record.IsNewDoc) Then
-							Me.ProcessList(al, status, bulkLoadFilePath, dataGridFilePath, logContextDisposable)
+							' This will ensure progress takes into account the start line number
+							Me.FileTapiProgressCount = Me.FileTapiProgressCount + 1
+						Else
+							'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
+							' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
+							' -Phil S. 06/12/2012
+							RaiseStatusEvent(EventType2.Count, String.Empty, 0)
+							Dim record As Api.ImageRecord = _imageReader.GetImageRecord
+							record.OriginalIndex = _imageReader.CurrentRecordNumber
+							If (record.IsNewDoc) Then
+								Me.ProcessList(al, status, bulkLoadFilePath, dataGridFilePath)
+							End If
+							status = status Or Me.ProcessImageLine(record)
+							al.Add(record)
+							If Not Me.[Continue] Then
+								Me.ProcessList(al, status, bulkLoadFilePath, dataGridFilePath)
+								Exit While
+							End If
 						End If
-						status = status Or Me.ProcessImageLine(record)
-						al.Add(record)
-						If Not Me.[Continue] Then
-							Me.ProcessList(al, status, bulkLoadFilePath, dataGridFilePath, logContextDisposable)
-							Exit While
-						End If
-					End If
-				End While
-				_timekeeper.MarkEnd("ReadFile_Main")
-				_timekeeper.MarkStart("ReadFile_Cleanup")
-				Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, True, True, False)
-				Me.LogInformation("Successfully imported {ImportCount} images via WinEDDS.", Me.FileTapiProgressCount)
-				Me.LogStatistics()
-				Me.CompleteSuccess()
-				_timekeeper.MarkEnd("ReadFile_Cleanup")
-				_timekeeper.MarkEnd("TOTAL")
-				_timekeeper.GenerateCsvReportItemsAsRows("_winedds_image", "C:\")
-			Catch ex As Exception
-				Me.LogFatal(ex, "A serious unexpected error has occurred importing images.")
-				Me.LogStatistics()
-				Me.CompleteError(ex)
-			Finally
-				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
-				DestroyTapiBridges()
-				CleanupTempTables()
-				_logger.LogUserContextInformation("Import process completed", _settings.Credential)
-				logContextDisposable?.Dispose()
-				_timekeeper.MarkEnd("ReadFile_CleanupTempTables")
-			End Try
+					End While
+					_timekeeper.MarkEnd("ReadFile_Main")
+					_timekeeper.MarkStart("ReadFile_Cleanup")
+					Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, True, True, False)
+					Me.LogInformation("Successfully imported {ImportCount} images via WinEDDS.", Me.FileTapiProgressCount)
+					Me.LogStatistics()
+					Me.CompleteSuccess()
+					_timekeeper.MarkEnd("ReadFile_Cleanup")
+					_timekeeper.MarkEnd("TOTAL")
+					_timekeeper.GenerateCsvReportItemsAsRows("_winedds_image", "C:\")
+				Catch ex As Exception
+					Me.LogFatal(ex, "A serious unexpected error has occurred importing images.")
+					Me.LogStatistics()
+					Me.CompleteError(ex)
+				Finally
+					_timekeeper.MarkStart("ReadFile_CleanupTempTables")
+					DestroyTapiBridges()
+					CleanupTempTables()
+					_logger.LogUserContextInformation("Import process completed", _settings.Credential)
+					_timekeeper.MarkEnd("ReadFile_CleanupTempTables")
+				End Try
+			End Using
 		End Sub
 
 		Public Event EndRun(ByVal success As Boolean, ByVal runID As String)
