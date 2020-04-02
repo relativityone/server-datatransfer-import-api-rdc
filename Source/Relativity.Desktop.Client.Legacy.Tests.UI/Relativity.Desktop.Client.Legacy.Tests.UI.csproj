@@ -104,6 +104,10 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Polly, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Kepler">
       <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
@@ -115,6 +119,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -123,25 +128,26 @@
     <Compile Include="Appium\ComboBoxUIElement.cs" />
     <Compile Include="Appium\DefaultTimeouts.cs" />
     <Compile Include="Appium\EditUIElement.cs" />
-    <Compile Include="Appium\Extensions\AppiumWebElementExtensions.cs" />
     <Compile Include="Appium\ElementClass.cs" />
     <Compile Include="Appium\ElementType.cs" />
-    <Compile Include="Appium\Extensions\TextElementExtensions.cs" />
     <Compile Include="Appium\GroupUIElement.cs" />
     <Compile Include="Appium\ListItemUIElement.cs" />
     <Compile Include="Appium\ListUIElement.cs" />
     <Compile Include="Appium\MenuItemUIElement.cs" />
     <Compile Include="Appium\PaneUIElement.cs" />
     <Compile Include="Appium\SpinnerComboBoxUIElement.cs" />
+    <Compile Include="Appium\StatusBarUIElement.cs" />
     <Compile Include="Appium\TabItemUIElement.cs" />
     <Compile Include="Appium\TabsUIElement.cs" />
     <Compile Include="Appium\TextUIElement.cs" />
     <Compile Include="Appium\TreeUIElement.cs" />
     <Compile Include="Appium\Wait.cs" />
     <Compile Include="Appium\WindowDetails.cs" />
+    <Compile Include="Windows\CaptureScreenshot.cs" />
     <Compile Include="Windows\ImageImportWindow.cs" />
     <Compile Include="Windows\Names\ImportWindowName.cs" />
     <Compile Include="Windows\OpenSettingsDialog.cs" />
+    <Compile Include="Workflow\ExportMenuItems.cs" />
     <Compile Include="Workflow\ExportProfile.cs" />
     <Compile Include="ExportTests.cs" />
     <Compile Include="RdcTestBase.cs" />
@@ -177,6 +183,7 @@
     <Compile Include="Appium\WindowsManager.cs" />
     <Compile Include="Windows\SelectWorkspaceWindow.cs" />
     <Compile Include="Workflow\ImageImportProfile.cs" />
+    <Compile Include="Workflow\ImportMenuItems.cs" />
     <Compile Include="Workflow\ImportProfile.cs" />
     <Compile Include="Workflow\ImageImportWindowSetupParameters.cs" />
     <Compile Include="Workflow\RdoImportProfile.cs" />

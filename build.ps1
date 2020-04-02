@@ -22,6 +22,10 @@ Build the solution and creates the install packages.
 Build the solution, creates the install packages, and digitally signs all associated binaries.
 
 .EXAMPLE
+.\build.ps1 BuildUIAutomation
+Builds the solution for UIAutomation.
+
+.EXAMPLE
 .\build.ps1 Build,UnitTests
 Builds the solution and then executes all unit tests.
 

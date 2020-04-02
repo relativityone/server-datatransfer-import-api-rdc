@@ -1,10 +1,12 @@
 ﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
 	internal sealed class DialogWindow : RdcWindowBase<DialogWindow>
 	{
-		public DialogWindow(RdcWindowsManager windowsManager, WindowDetails window) : base(windowsManager, window)
+		public DialogWindow(ILog logger, RdcWindowsManager windowsManager, WindowDetails window) : base(logger,
+			windowsManager, window)
 		{
 		}
 

@@ -20,8 +20,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 
 				var parameters = new RdoImportWindowSetupParameters
 				{
-					ImportFilePath = PathsProvider.GetTestInputFilePath(@"ImportTests\Documents_export.dat"),
-					SettingsFilePath = PathsProvider.GetTestInputFilePath(@"ImportTests\Documents_export.kwe")
+					ImportFilePath = PathsProvider.GetTestInputFilePath(@"Production\Documents.dat"),
+					SettingsFilePath = PathsProvider.GetTestInputFilePath(@"Production\Documents.kwe")
 				};
 
 				importWindow.SetupImport(parameters);
@@ -37,7 +37,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			var parameters = new ImageImportWindowSetupParameters
 			{
 				ImportFilePath =
-					PathsProvider.GetTestInputFilePath(@"ProductionSet\Production-Set-To-Export_export.opt"),
+					PathsProvider.GetTestInputFilePath(@"Production\Production.opt"),
 				ProductionName = "Imported-Production-Set",
 				OverwriteMode = "Append Only"
 			};
@@ -95,14 +95,23 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 
 			var rdcWindow = workspaceSelectWindow.ChooseWorkspace(TestParameters.WorkspaceName);
 			rdcWindow.SelectRootFolder();
+			rdcWindow.WaitForTransferModeDetection();
 
 			var progressWindow = runImport(rdcWindow);
-			var allRecordsProcessed = progressWindow.WaitForAllRecordsToBeProcessed(TimeSpan.FromMinutes(2));
+			var allRecordsProcessed = progressWindow.WaitForAllRecordsToBeProcessed(TimeSpan.FromMinutes(5));
+
+			if (RdcWindowsManager.TryGetRdcConfirmationDialog(out DialogWindow confirmationDialog))
+			{
+				confirmationDialog.ClickButton("Cancel");
+				progressWindow.SwitchToWindow();
+			}
+
+			var progressStatus = progressWindow.StatusText;
 			var errors = progressWindow.GetErrorsText();
 
 			// Assert
-			Assert.IsTrue(allRecordsProcessed, "Failed to process all records");
 			Assert.IsTrue(string.IsNullOrEmpty(errors), $"Import failed with errors: {errors}");
+			Assert.IsTrue(allRecordsProcessed, $"Failed to process all records. Status: {progressStatus}");
 		}
 
 		protected override void OnSetUp()

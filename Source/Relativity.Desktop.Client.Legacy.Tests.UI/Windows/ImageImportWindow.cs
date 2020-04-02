@@ -1,5 +1,7 @@
-﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+﻿using OpenQA.Selenium;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -12,10 +14,10 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly ComboBoxUIElement productionComboBox;
 		private readonly ImageImportProfile profile;
 
-		public ImageImportWindow(RdcWindowsManager windowsManager,
+		public ImageImportWindow(ILog logger, RdcWindowsManager windowsManager,
 			WindowDetails window,
 			ImageImportProfile profile) :
-			base(windowsManager, window)
+			base(logger, windowsManager, window)
 		{
 			this.profile = profile;
 
@@ -23,7 +25,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			filePathEdit = FindEditWithAutomationId("_filePath");
 			overwriteComboBox = FindComboBoxWithAutomationId("_overwriteDropdown");
 			productionComboBox = FindComboBoxWithAutomationId("_productionDropdown");
-			openSettingsDialog = new OpenSettingsDialog(FindWindow("Open"));
+			openSettingsDialog = new OpenSettingsDialog(logger, FindWindow("Open"));
 		}
 
 		public void SetupImport(ImageImportWindowSetupParameters parameters)
@@ -32,17 +34,22 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			SetImportFilePath(parameters.ImportFilePath);
 			SetOverwriteMode(parameters);
 			SetProduction(parameters);
+			CaptureWindowScreenshot();
 		}
 
 		public void LoadSettings(string settingsFilePath)
 		{
-			menuBar.ClickMenuItem("Import").ClickMenuItem("Load Settings\tCtrl+O");
+			// Import|Load Settings
+			menuBar.SendKeys(Keys.Alt + "I");
+			menuBar.SendKeys("L");
 			openSettingsDialog.OpenSettingsFile(settingsFilePath);
 		}
 
 		public ProgressWindow RunImport()
 		{
-			menuBar.ClickMenuItem("Import").ClickMenuItem("Import File...\tF5");
+			// Import|Import File...
+			menuBar.SendKeys(Keys.Alt + "I");
+			menuBar.SendKeys("I");
 			return WindowsManager.SwitchToProgressWindow(profile.ProgressWindow);
 		}
 

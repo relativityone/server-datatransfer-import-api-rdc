@@ -9,6 +9,7 @@ properties {
     $InstallersSolution = Join-Path $SourceDir "Installers.sln"
     $MasterSolution = Join-Path $SourceDir "Master.sln"
     $MasterILMergeSolution = Join-Path $SourceDir "Master-ILMerge.sln"
+    $UIAutomationSolution = Join-Path $SourceDir "UIAutomation.sln"
     $NumberOfProcessors = (Get-ChildItem env:"NUMBER_OF_PROCESSORS").Value
     $BuildArtifactsDir = Join-Path $Root "Artifacts"
     $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
@@ -294,6 +295,47 @@ task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
         exec {
              & $PaketExe pack --template `"$packageTemplateFile`" --version $version --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" 
         } -errorMessage "There was an error creating the SDK NUGet package."
+    }
+}
+
+task BuildUIAutomation -Description "Builds the source code for UI Automation"  {
+    Initialize-Folder $LogsDir -Safe
+    $SolutionFile = $UIAutomationSolution
+    $SolutionConfiguration = $Configuration
+    if (!$BuildPlatform) {
+        $BuildPlatform = "Any CPU"
+    }
+
+
+    Write-Output "Solution: $SolutionFile"
+    Write-Output "Configuration: $SolutionConfiguration"
+    Write-Output "Build platform: $BuildPlatform"
+    Write-Output "Target: $Target"
+    Write-Output "Verbosity: $Verbosity"
+    $lwrConfiguration = $SolutionConfiguration.ToLower()
+    $LogFilePath = Join-Path $LogsDir "UIAutomation-buildsummary-$lwrConfiguration.log"
+    $ErrorFilePath = Join-Path $LogsDir "UIAutomation-builderrors-$lwrConfiguration.log"
+
+    try
+    {
+        exec {            
+            msbuild @(($SolutionFile),
+                    ("-t:$Target"),
+                    ("-v:$Verbosity"),
+                    ("-p:Platform=$BuildPlatform"),
+                    ("-p:Configuration=$SolutionConfiguration"),
+                    ("-p:BuildProjectReferences=true"),
+                    ("-p:CopyArtifacts=true"),
+                    ("-clp:Summary"),
+                    ("-nodeReuse:false"),
+                    ("-nologo"),
+                    ("-maxcpucount"),
+                    ("-flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity"),
+                    ("-flp2:errorsonly;LogFile=`"$ErrorFilePath`""))
+        } -errorMessage "There was an error building the master solution."
+    }
+    finally {
+        Remove-EmptyLogFile $ErrorFilePath
     }
 }
 

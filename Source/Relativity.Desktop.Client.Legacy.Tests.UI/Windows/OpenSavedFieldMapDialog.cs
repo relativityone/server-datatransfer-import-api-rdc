@@ -1,6 +1,8 @@
 ﻿using System;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -11,20 +13,20 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly EditUIElement fileNameEdit;
 		private readonly ButtonUIElement openButton;
 
-		public OpenSavedFieldMapDialog(Func<AppiumWebElement> create) : base(create)
+		public OpenSavedFieldMapDialog(ILog logger, Func<AppiumWebElement> create) : base(logger, create)
 		{
 			fileNameEdit = FindEdit("File name:");
 			openButton = FindButtonWithClass("Open");
-			chooseLoadFileDialog = new ChooseLoadFileDialog(FindWindow("Choose Load File")).WaitFor();
-			confirmationDialog = new RelativityConfirmationDialog(FindWindow("Relativity.Desktop.Client")).WaitFor();
+			chooseLoadFileDialog = new ChooseLoadFileDialog(logger, FindWindow("Choose Load File")).WaitFor(TimeSpan.FromSeconds(10));
+			confirmationDialog = new RelativityConfirmationDialog(logger, FindWindow("Relativity.Desktop.Client")).WaitFor(TimeSpan.FromSeconds(10));
 		}
 
 		public void LoadKweFile(string kweFile, string datFile)
 		{
-			fileNameEdit.SendKeys(kweFile);
-			openButton.Click();
+			fileNameEdit.SendKeys(kweFile + Keys.Enter);
 			confirmationDialog.ClickOkButton();
 			chooseLoadFileDialog.LoadDatFile(datFile);
+			WaitToNotExist(TimeSpan.FromSeconds(10));
 		}
 	}
 }

@@ -14,6 +14,8 @@
 
 		public const string Tree = "Tree";
 
+		public const string TreeItem = "TreeItem";
+
 		public const string MenuBar = "MenuBar";
 
 		public const string MenuItem = "MenuItem";
@@ -33,5 +35,7 @@
 		public const string CheckBox = "CheckBox";
 
 		public const string Pane = "Pane";
+
+		public const string StatusBar = "StatusBar";
 	}
 }

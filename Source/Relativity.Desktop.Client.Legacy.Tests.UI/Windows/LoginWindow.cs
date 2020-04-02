@@ -1,4 +1,5 @@
 ﻿using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -10,14 +11,14 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly EditUIElement passwordEdit;
 		private readonly SecurityAlertDialog securityAlertDialog;
 
-		public LoginWindow(RdcWindowsManager windowsManager, WindowDetails window)
-			: base(windowsManager, window)
+		public LoginWindow(ILog logger, RdcWindowsManager windowsManager, WindowDetails window)
+			: base(logger, windowsManager, window)
 		{
-			emailEdit = FindEditWithAutomationId("_email");
+			emailEdit = FindEditWithAutomationId("_email").WaitFor();
 			continueButton = FindButton("Continue");
 			loginButton = FindButtonWithAutomationId("_login");
-			passwordEdit = FindEditWithAutomationId("_password__password_TextBox");
-			securityAlertDialog = new SecurityAlertDialog(FindWindow("Security Alert")).WaitFor();
+			passwordEdit = FindEditWithAutomationId("_password__password_TextBox").WaitFor();
+			securityAlertDialog = new SecurityAlertDialog(logger, FindWindow("Security Alert")).WaitFor();
 		}
 
 		public SelectWorkspaceWindow Login(string email, string password)
@@ -26,8 +27,9 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			{
 				securityAlertDialog.ClickYesButton();
 			}
-
+		
 			EnterEmail(email);
+			CaptureWindowScreenshot();
 			ClickContinueButton();
 			EnterPassword(password);
 			ClickLoginButton();

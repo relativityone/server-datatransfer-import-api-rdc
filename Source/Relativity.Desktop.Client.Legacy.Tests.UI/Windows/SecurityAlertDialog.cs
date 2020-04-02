@@ -1,6 +1,7 @@
 ﻿using System;
 using OpenQA.Selenium.Appium;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Appium;
+using Relativity.Logging;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 {
@@ -8,7 +9,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 	{
 		private readonly ButtonUIElement yesButton;
 
-		public SecurityAlertDialog(Func<AppiumWebElement> create) : base(create)
+		public SecurityAlertDialog(ILog logger, Func<AppiumWebElement> create) : base(logger, create)
 		{
 			yesButton = FindButton("Yes");
 		}

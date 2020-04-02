@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -13,7 +14,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 	internal class ExportTests : RdcTestBase
 	{
 		private const string ProductionName = "Production-For-Export";
-		private readonly string exportPath = PathsProvider.GetTestOutputPath(@"Export");
+		private readonly string exportRootPath = PathsProvider.GetTestOutputPath(@"Export");
+		private readonly string allDocumentsViewName = ConfigurationManager.AppSettings["AllDocumentsViewName"];
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -37,8 +39,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		{
 			var exportParameters = new ExportWindowSetupParameters
 			{
-				FieldSourceName = "Documents - All Metadata",
-				ExportPath = exportPath,
+				FieldSourceName = allDocumentsViewName,
+				ExportPath = CreateExportPath(),
 				VolumeInformationDigitPadding = 3,
 				FilesNamedAfter = "Identifier",
 				ExportImages = false,
@@ -50,7 +52,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				TextFieldPrecedence = "Extracted Text"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 31, 3627);
+			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 21);
 		}
 
 		[Test]
@@ -58,8 +60,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		{
 			var exportParameters = new ExportWindowSetupParameters
 			{
-				FieldSourceName = "Documents - All Metadata",
-				ExportPath = exportPath,
+				FieldSourceName = allDocumentsViewName,
+				ExportPath = CreateExportPath(),
 				VolumeInformationDigitPadding = 3,
 				FilesNamedAfter = "Identifier",
 				ExportImages = true,
@@ -71,7 +73,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				ImageFileType = "Multi-page TIF"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 12, 1452);
+			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 12);
 		}
 
 		[Test]
@@ -80,7 +82,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			var exportParameters = new ExportWindowSetupParameters
 			{
 				FieldSourceName = ProductionName,
-				ExportPath = exportPath,
+				ExportPath = CreateExportPath(),
 				VolumeInformationDigitPadding = 3,
 				FilesNamedAfter = "Begin production number",
 				ExportImages = true,
@@ -94,7 +96,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				ImageFileType = "Single-page TIF/JPG"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportProductionSet(), 52, 5186);
+			RunExportTest(exportParameters, x => x.ExportProductionSet(), 52);
 		}
 
 		[Test]
@@ -103,7 +105,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			var exportParameters = new ExportWindowSetupParameters
 			{
 				FieldSourceName = "All Documents",
-				ExportPath = exportPath,
+				ExportPath = CreateExportPath(),
 				VolumeInformationDigitPadding = 3,
 				FilesNamedAfter = "Identifier",
 				ExportImages = true,
@@ -117,7 +119,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				ImageFileType = "PDF"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportSavedSearch(), 42, 4972);
+			RunExportTest(exportParameters, x => x.ExportSavedSearch(), 32);
 		}
 
 		[Test]
@@ -126,62 +128,67 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			var exportParameters = new ExportWindowSetupParameters
 			{
 				FieldSourceName = "All Imaging Profiles",
-				ExportPath = exportPath,
+				ExportPath = CreateExportPath(),
 				VolumeInformationDigitPadding = 3,
 				FilesNamedAfter = "Identifier",
 				MetadataFileFormat = "Concordance (.dat)",
 				MetadataFileEncoding = "Unicode (UTF-8)"
 			};
 
-			RunExportTest(exportParameters, x => x.ExportImagingProfileObjects(), 1, 92);
+			RunExportTest(exportParameters, x => x.ExportImagingProfileObjects(), 1);
 		}
 
 		private void RunExportTest(ExportWindowSetupParameters exportParameters,
 			Func<RelativityDesktopClientWindow, ExportWindow> getExportWindow,
-			int expectedFilesCount,
-			int expectedFilesSize)
+			int expectedFilesCount)
 		{
-			EnsureExportPathExists();
-
 			var workspaceSelectWindow = Login();
 
 			var rdcWindow = workspaceSelectWindow.ChooseWorkspace(TestParameters.WorkspaceName);
 			rdcWindow.SelectRootFolder();
+			rdcWindow.WaitForTransferModeDetection();
+			rdcWindow.CaptureWindowScreenshot();
 
 			var exportWindow = getExportWindow(rdcWindow);
 			exportWindow.SetupExport(exportParameters);
+
 			var progressWindow = exportWindow.RunExport();
 
-			var allRecordsProcessed = progressWindow.WaitForAllRecordsToBeProcessed(TimeSpan.FromMinutes(2));
+			var allRecordsProcessed = progressWindow.WaitForAllRecordsToBeProcessed(TimeSpan.FromMinutes(5));
+
+			if (RdcWindowsManager.TryGetRdcConfirmationDialog(out DialogWindow confirmationDialog))
+			{
+				confirmationDialog.CaptureWindowScreenshot();
+				confirmationDialog.ClickButton("Cancel");
+				progressWindow.SwitchToWindow();
+			}
+
+			var progressStatus = progressWindow.StatusText;
 			var errors = progressWindow.GetErrorsText();
-			var files = Directory.GetFiles(exportPath, "*.*", SearchOption.AllDirectories);
-			var filesSize = files.Sum(x => x.Length);
-			Directory.Delete(exportPath, true);
+			var files = Directory.GetFiles(exportParameters.ExportPath, "*.*", SearchOption.AllDirectories);
+
+			if (string.IsNullOrEmpty(errors) && allRecordsProcessed)
+			{
+				CloseSession();
+				Directory.Delete(exportParameters.ExportPath, true);
+			}
 
 			// Assert
-			Assert.IsTrue(allRecordsProcessed, "Failed to process all records");
 			Assert.IsTrue(string.IsNullOrEmpty(errors), $"Export failed with errors: {errors}");
+			Assert.IsTrue(allRecordsProcessed, $"Failed to process all records. Status: {progressStatus}");
 			Assert.AreEqual(expectedFilesCount, files.Length);
-			Assert.AreEqual(expectedFilesSize, filesSize);
 		}
 
-		private void EnsureExportPathExists()
+		private string CreateExportPath()
 		{
-			var exportFolder = new DirectoryInfo(exportPath);
-			if (exportFolder.Exists)
-			{
-				exportFolder.Delete(true);
-				exportFolder.Create();
-			}
-			else
-			{
-				exportFolder.Create();
-			}
+			var exportPath =  Path.Combine(exportRootPath, DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
+			Directory.CreateDirectory(exportPath);
+			return exportPath;
 		}
 
 		private void ImportDataForExport()
 		{
-			var documents = ImportHelper.ImportDocuments(TestParameters);
+			var documents = ImportHelper.ImportDocuments(TestParameters).ToList();
 			ImportHelper.ImportImagesForDocuments(TestParameters, documents);
 			ImportHelper.ImportProduction(TestParameters, ProductionName, documents);
 		}
