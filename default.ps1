@@ -19,15 +19,24 @@ properties {
     $ScriptsDir = Join-Path $Root "Scripts"
     $BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
     $BuildPackagesDirGold = "\\bld-pkgs\Release\Import-Api-RDC\"
-    $TestReportsDir = Join-Path $Root "TestReports"
+#----------- testreports ------------	
+    $TestReportsDir = Join-Path $Root "TestReports" | Join-Path -ChildPath $TestReportFolderName
+
     $CodeCoverageReportDir = Join-Path $TestReportsDir "code-coverage"        
     $DotCoverReportXmlFile = Join-Path $CodeCoverageReportDir "code-coverage-report.xml"
-    $IntegrationTestsReportDir = Join-Path $TestReportsDir "integration-tests"
-    $UIAutomationTestsReportDir = Join-Path $TestReportsDir "ui-automation-tests"
-    $IntegrationTestsResultXmlFile = Join-Path $IntegrationTestsReportDir "test-results-integration.xml"
-    $UIAutomationTestsResultXmlFile = Join-Path $UIAutomationTestsReportDir "test-results-ui-automation.xml"
-    $UnitTestsReportDir = Join-Path $TestReportsDir "unit-tests"
+	
+	$UnitTestsReportDir = Join-Path $TestReportsDir "unit-tests"
     $UnitTestsResultXmlFile = Join-Path $UnitTestsReportDir "test-results-unit.xml"
+    $UnitTestsOutputFile = Join-Path $UnitTestsReportDir "unit-test-output.txt"
+
+    $IntegrationTestsReportDir = Join-Path $TestReportsDir "integration-tests"
+	$IntegrationTestsResultXmlFile = Join-Path $IntegrationTestsReportDir "test-results-integration.xml"
+    $IntegrationTestsOutputFile =  Join-Path $IntegrationTestsReportDir "integration-test-output.txt"
+
+    $UIAutomationTestsReportDir = Join-Path $TestReportsDir "ui-automation-tests"
+    $UIAutomationTestsResultXmlFile = Join-Path $UIAutomationTestsReportDir "test-results-ui-automation.xml"
+    $UIAutomationTestsOutputFile = Join-Path $UIAutomationTestsReportDir "ui-automation-test-output.txt"
+#----------- end testreports ------------	
     $ExtentCliExe = Join-Path $PackagesDir "extent\tools\extent.exe"
     $NunitExe = Join-Path $PackagesDir "NUnit.ConsoleRunner\tools\nunit3-console.exe"
     $DotCoverExe = Join-Path $PackagesDir "JetBrains.dotCover.CommandLineTools\tools\dotCover.exe"
@@ -37,7 +46,6 @@ properties {
     $ProgetUrl = "https://proget.kcura.corp/nuget/NuGet"
 
     # Installer paths
-    $SignToolPath = "${Env:ProgramFiles(x86)}\Windows Kits\8.1\bin\x86\signtool.exe"
     $SignScriptPath = Join-Path $ScriptsDir "Sign.bat"
 
     # Properties below this line are defined in build.ps1
@@ -64,13 +72,6 @@ properties {
     $Simulate = $Null
     $ProgetApiKey = $Null
 }
-enum BranchType 
-{
-    Release
-    HotfixRelease
-    Develop
-    FeatureBranch
-}
 
 $code = @"
 using System;
@@ -94,46 +95,16 @@ namespace Paths
 }
 "@
  
-Add-Type -TypeDefinition $code -Language CSharp	
+Add-Type -TypeDefinition $code -Language CSharp
 
-Function Get-CurrentBranchType{
-    param(
-        [string]$currentBranch
-    )
-    
-    $jiraVersionNumber = Get-JiraTicketNumberFromBranchName
-    If ($currentBranch.ToString() -eq "develop" ) 
-    {
-       return [BranchType]::Develop
-    }    
-    elseif ($currentBranch.ToString().StartsWith("release-")) 
-    {
-        if(-Not ($currentBranch.Contains("$major.$minor")))
-        {
-            $(Throw New-Object System.ArgumentException "Current branch should contain the latest tag : currentbranch = $currentBranch, last tag = $version, string to find = $major.$minor", "tag not found")
-        }
-        if($currentBranch -like "*hotfix*")
-        {
-             return [BranchType]::HotfixRelease
-        }
-        return [BranchType]::Release
-    }
-    elseif (![string]::IsNullOrEmpty($jiraVersionNumber)) 
-    {
-        if(!$currentBranch.StartsWith($jiraVersionNumber))
-        {
-            throw "Branch should start with the jira version number, detected jira version number = '$jiraVersionNumber', and branch = '$Branch'"
-        }
-        return [BranchType]::FeatureBranch
-    }
-    else
-    {
-        $(Throw New-Object System.ArgumentException "The branch name is not 'develop', or starts with 'release-' or starts with a Jira number (like 'REL-123456'). The branchname supplied is '$currentBranch'", "branch name")
-    }
-}
+Import-Module ".\DevelopmentScripts\branches.psm1"
+Import-Module ".\DevelopmentScripts\testing.psm1"
+Import-Module ".\DevelopmentScripts\folders.psm1"
+Import-Module ".\DevelopmentScripts\versioning.psm1"
+Import-Module ".\DevelopmentScripts\external.psm1"
 
 task Build -Description "Builds the source code"  {
-    Initialize-Folder $LogsDir -Safe
+    folders\Initialize-Folder $LogsDir -Safe
     $SolutionFile = $MasterSolution
     $SolutionConfiguration = $Configuration
     if (!$BuildPlatform) {
@@ -141,7 +112,7 @@ task Build -Description "Builds the source code"  {
     }
 
     if ($ILMerge) {
-        Initialize-Folder $SdkBinariesArtifactsDir
+        folders\Initialize-Folder $SdkBinariesArtifactsDir
         $SolutionFile = $MasterILMergeSolution
         $SolutionConfiguration = "$SolutionConfiguration-ILMerge"
     }
@@ -174,7 +145,7 @@ task Build -Description "Builds the source code"  {
         } -errorMessage "There was an error building the master solution."
     }
     finally {
-        Remove-EmptyLogFile $ErrorFilePath
+        testing\Remove-EmptyLogFile $ErrorFilePath
     }
 
     if ($Sign) {
@@ -187,13 +158,13 @@ task Build -Description "Builds the source code"  {
             (Join-Path $BinariesArtifactsDir "sdk")
         )
 
-        Invoke-SignDirectoryFiles -DirectoryCandidates $directoryCandidates
+        external\Invoke-SignDirectoryFiles -DirectoryCandidates $directoryCandidates
     }
 }
 
 task BuildInstallPackages -Description "Builds all install packages" {
-    Initialize-Folder $InstallersArtifactsDir
-    Initialize-Folder $LogsDir -Safe
+    folders\Initialize-Folder $InstallersArtifactsDir
+    folders\Initialize-Folder $LogsDir -Safe
     Write-Output "Building all RDC MSI and bootstrapper packages..."
     
     # Note: Digitally signing MSI/bootstrapper relies on MSBuild targets and a special sign script.
@@ -219,7 +190,7 @@ task BuildInstallPackages -Description "Builds all install packages" {
                         ("-p:BuildProjectReferences=false"),
                         ("-p:CopyArtifacts=true"),
                         ("/property:SignOutput=$Sign"),
-                        ("/property:SignToolPath=`"$SignToolPath`""),
+                        ("/property:SignToolPath=`"$global:SignToolPath`""),
                         ("/property:SignScriptPath=`"$SignScriptPath`""),
                         ("-clp:Summary"),
                         ("-nodeReuse:false"),
@@ -231,7 +202,7 @@ task BuildInstallPackages -Description "Builds all install packages" {
             } -errorMessage "There was an error building the RDC MSI."
         }
         finally {
-            Remove-EmptyLogFile $ErrorFilePath
+            testing\Remove-EmptyLogFile $ErrorFilePath
         }
     }
 
@@ -253,7 +224,7 @@ task BuildInstallPackages -Description "Builds all install packages" {
                     ("-p:BuildProjectReferences=false"),
                     ("-p:CopyArtifacts=true"),
                     ("/property:SignOutput=$Sign"),
-                    ("/property:SignToolPath=`"$SignToolPath`""),
+                    ("/property:SignToolPath=`"$global:SignToolPath`""),
                     ("/property:SignScriptPath=`"$SignScriptPath`""),
                     ("-clp:Summary"),
                     ("-nodeReuse:false"),
@@ -267,7 +238,7 @@ task BuildInstallPackages -Description "Builds all install packages" {
         Write-Output "Successfuly built all RDC MSI and bootstrapper packages."
     }
     finally {
-        Remove-EmptyLogFile $ErrorFilePath
+        testing\Remove-EmptyLogFile $ErrorFilePath
     }
 }
 
@@ -275,9 +246,9 @@ task BuildPackages -Depends BuildRdcPackage,BuildSdkPackages -Description "Build
 }
 
 task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
-    Initialize-Folder $LogsDir -Safe
-    Initialize-Folder $PackagesArtifactsDir -Safe
-    $version = Get-ReleaseVersion "$Branch"
+    folders\Initialize-Folder $LogsDir -Safe
+    folders\Initialize-Folder $PackagesArtifactsDir -Safe
+    $version = versioning\Get-ReleaseVersion "$Branch"
 
     Write-Host "Package version: $version"
     Write-Host "Working directory: $PSScriptRoot"
@@ -299,7 +270,7 @@ task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
 }
 
 task BuildUIAutomation -Description "Builds the source code for UI Automation"  {
-    Initialize-Folder $LogsDir -Safe
+    folders\Initialize-Folder $LogsDir -Safe
     $SolutionFile = $UIAutomationSolution
     $SolutionConfiguration = $Configuration
     if (!$BuildPlatform) {
@@ -335,7 +306,7 @@ task BuildUIAutomation -Description "Builds the source code for UI Automation"  
         } -errorMessage "There was an error building the master solution."
     }
     finally {
-        Remove-EmptyLogFile $ErrorFilePath
+        testing\Remove-EmptyLogFile $ErrorFilePath
     }
 }
 
@@ -367,9 +338,10 @@ task CheckFolderAccess -Description "Checks if we can write to the destination p
 }
 
 task BuildRdcPackage -Description "Builds the RDC NuGet package" {
-    Initialize-Folder $LogsDir -Safe
-    Initialize-Folder $PackagesArtifactsDir -Safe
-    $packageVersion = Get-RdcVersion
+    folders\Initialize-Folder $LogsDir -Safe
+    folders\Initialize-Folder $PackagesArtifactsDir -Safe
+    $rdcVersionWixFile = Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Setup") "Version.wxi"
+    $packageVersion = versioning\Get-RdcVersion -rdcVersionWixFile $rdcVersionWixFile -branch $Branch
     Write-Host "Package version: $packageVersion"
     Write-Host "Working directory: $PSScriptRoot"
     $packageLogFile = Join-Path $LogsDir "rdc-package-build.log"
@@ -384,7 +356,7 @@ task BuildVersion -Description "Retrieves the build version from powershell" {
     Assert ($BuildUrl -ne $null -and $BuildUrl -ne "") "BuildUrl must be provided"
     Write-Host "Importing powershell properties.."
 
-    $majorMinorIncrease = Get-ReleaseVersion "$Branch" -omitPostFix
+    $majorMinorIncrease = versioning\Get-ReleaseVersion "$Branch" -omitPostFix
     
     Write-Output "Build Url: $BuildUrl"
     $maxVersionLength = 50
@@ -401,9 +373,9 @@ task BuildVersion -Description "Retrieves the build version from powershell" {
 
 task Clean -Description "Clean solution" {
     Write-Output "Removing all build artifacts"
-    Initialize-Folder $BuildArtifactsDir
-    Initialize-Folder $LogsDir
-    Initialize-Folder $TestReportsDir
+    folders\Initialize-Folder $BuildArtifactsDir
+    folders\Initialize-Folder $LogsDir
+    folders\Initialize-Folder $TestReportsDir
     Write-Output "Running Clean target on $MasterSolution"
     exec { 
         msbuild $MasterSolution `
@@ -424,10 +396,11 @@ task Clean -Description "Clean solution" {
 
 task CodeCoverageReport -Description "Create a code coverage report" {
     exec {
-        Initialize-Folder $TestReportsDir -Safe
-        Initialize-Folder $CodeCoverageReportDir
-        Initialize-Folder $UnitTestsReportDir
-        Initialize-Folder $IntegrationTestsReportDir
+		folders\Initialize-Folder $LogsDir -Safe
+        folders\Initialize-Folder $CodeCoverageReportDir
+
+        folders\Initialize-Folder $UnitTestsReportDir
+        folders\Initialize-Folder $IntegrationTestsReportDir
 
         ###
         # Step 1: We have x assemblies
@@ -458,7 +431,7 @@ task CodeCoverageReport -Description "Create a code coverage report" {
             Throw "The cover coverage report cannot be created because no NUnit test assemblies were found."
         }
 
-        Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
+        testing\Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
          
         ### 1. Execute each Unit tests project separately, 
         #      Store results from NUnit execution  (used to summary of test execution in 'Write-TestResultsOutput') 
@@ -551,47 +524,44 @@ task Help -Alias ? -Description "Display task information" {
 }
 
 task IntegrationTests -Description "Run all integration tests" {
-    Initialize-Folder $TestReportsDir -Safe
-    Initialize-Folder $IntegrationTestsReportDir
+    folders\Initialize-Folder $TestReportsDir -Safe
+    folders\Initialize-Folder $IntegrationTestsReportDir
+
     $SolutionFile = $MasterSolution
     if ($ILMerge) {
         $SolutionFile = $MasterILMergeSolution
     }
 
-    $OutputFile = Join-Path $IntegrationTestsReportDir "integration-test-output.txt"
     $testCategoryFilter = "--where=`"cat==Integration`""
-    Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
+    testing\Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
     exec { & $NunitExe $SolutionFile `
             "--labels=All" `
             "--agents=$NumberOfProcessors" `
             "--skipnontestassemblies" `
             "--timeout=$TestTimeoutInMS" `
             "--result=$IntegrationTestsResultXmlFile" `
-            "--out=$OutputFile" `
+            "--out=$IntegrationTestsOutputFile" `
             $testCategoryFilter `
     } -errorMessage "There was an error running the integration tests."
 }
 
 task UIAutomationTests -Description "Runs all UI tests" {
-    Initialize-Folder $TestReportsDir -Safe
-    Initialize-Folder $UIAutomationTestsReportDir
+    folders\Initialize-Folder $TestReportsDir -Safe
+    folders\Initialize-Folder $UIAutomationTestsReportDir
 
-    $testDllPath = Join-Path $SourceDir "\Relativity.Desktop.Client.Legacy.Tests.UI\bin\Release\Relativity.Desktop.Client.Legacy.Tests.UI.dll"
-    $OutputFile = Join-Path $UIAutomationTestsReportDir "ui-automation-test-output.txt"
-    
     exec { & $NunitExe $testDllPath `
         "--labels=All" `
         "--agents=$NumberOfProcessors" `
         "--skipnontestassemblies" `
         "--timeout=$TestTimeoutInMS" `
         "--result=$UIAutomationTestsResultXmlFile" `
-        "--out=$OutputFile"
+        "--out=$UIAutomationTestsOutputFile"
     } -errorMessage "There was an error running the UI tests."
 }
 
 task PackageVersion -Description "Retrieves the package version from powershell" {
 
-    $localPackageVersion = Get-ReleaseVersion "$Branch"
+    $localPackageVersion = versioning\Get-ReleaseVersion "$Branch"
 
     $maxVersionLength = 255
     if ($localPackageVersion.Length -gt $maxVersionLength) {
@@ -609,11 +579,11 @@ task PublishBuildArtifacts -Description "Publish build artifacts" {
     Assert ($Version -ne "") "Version is a required argument for saving build artifacts."
     Assert ($PublishToRelease -ne $Null) "Determination of the type of build, gold or not, is required for saving the build artifacts."
     $targetDir = if ($PublishToRelease) { Join-Path $BuildPackagesDirGold "\Releases\$Version" } else { Join-Path $BuildPackagesDir "\$Branch\$Version" }  
-    Copy-Folder -SourceDir $LogsDir -TargetDir "$targetDir\logs"
-    Copy-Folder -SourceDir $BinariesArtifactsDir -TargetDir "$targetDir\binaries"
-    Copy-Folder -SourceDir $InstallersArtifactsDir -TargetDir "$targetDir\installers"
-    Copy-Folder -SourceDir $PackagesArtifactsDir -TargetDir "$targetDir\packages"
-    Copy-Folder -SourceDir $TestReportsDir -TargetDir "$targetDir\test-reports"
+    folders\Copy-Folder -SourceDir $LogsDir -TargetDir "$targetDir\logs"
+    folders\Copy-Folder -SourceDir $BinariesArtifactsDir -TargetDir "$targetDir\binaries"
+    folders\Copy-Folder -SourceDir $InstallersArtifactsDir -TargetDir "$targetDir\installers"
+    folders\Copy-Folder -SourceDir $PackagesArtifactsDir -TargetDir "$targetDir\packages"
+    folders\Copy-Folder -SourceDir $TestReportsDir -TargetDir "$targetDir\test-reports"
 }
 
 task PublishPackages -Description "Publishes packages to the NuGet feed" {
@@ -659,6 +629,9 @@ task SemanticVersions -Depends BuildVersion, PackageVersion -Description "Calcul
 }
 
 task TestReports -Description "Create the test reports" {
+
+    folders\Initialize-Folder $UnitTestsReportDir -Safe
+    folders\Initialize-Folder $IntegrationTestsReportDir -Safe
     exec {
         # See this page for CLI docs: https://github.com/extent-framework/extentreports-dotnet-cli
         if (Test-Path $UnitTestsResultXmlFile -PathType Leaf) {
@@ -739,37 +712,40 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
 }
 
 task UnitTests -Description "Run all unit tests" {
-    Initialize-Folder $TestReportsDir -Safe
-    Initialize-Folder $UnitTestsReportDir
+    folders\Initialize-Folder $TestReportsDir -Safe
+    folders\Initialize-Folder $UnitTestsReportDir
+
     $SolutionFile = $MasterSolution
     if ($ILMerge) {
         $SolutionFile = $MasterILMergeSolution
     }
 
-    $OutputFile = Join-Path $UnitTestsReportDir "unit-test-output.txt"
     $testCategoryFilter = "--where=`"cat!=Integration`""
-    Invoke-SetTestParameters -SkipIntegrationTests $true -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
+    testing\Invoke-SetTestParameters -SkipIntegrationTests $true -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
     exec { & $NunitExe $SolutionFile `
             "--labels=All" `
             "--agents=$NumberOfProcessors" `
             "--skipnontestassemblies" `
             "--timeout=$TestTimeoutInMS" `
             "--result=$UnitTestsResultXmlFile" `
-            "--out=$OutputFile" `
+            "--out=$UnitTestsOutputFile" `
             $testCategoryFilter `
     } -errorMessage "There was an error running the unit tests."
 }
 
 task IntegrationTestResults -Description "Retrieve the integration test results from the Xml file" {
-    Write-TestResultsOutput $IntegrationTestsReportDir
+    testing\Write-TestResultsOutput $IntegrationTestsReportDir
 }
 
 task UnitTestResults -Description "Retrieve the unit test results from the Xml file" {
-    Write-TestResultsOutput $UnitTestsReportDir
+    testing\Write-TestResultsOutput $UnitTestsReportDir
 }
 
 task ReplaceTestVariables -Description "Replace test variables in file" {
 $pathToFile = ".\Source\Relativity.DataExchange.TestFramework\Resources\test-parameters-hopper.json"
+if ($TestParametersFile) {
+    $pathToFile = $TestParametersFile
+}
      $replaceTarget = [Paths.UriScheme]::AddHttpsIfMissing($TestTarget)
      $sqlserveraddress = [Paths.UriScheme]::GetHost($TestTarget)
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_instance_name>',$sqlserveraddress) | Set-Content -Path $pathToFile
@@ -782,8 +758,9 @@ $pathToFile = ".\Source\Relativity.DataExchange.TestFramework\Resources\test-par
 }
 
 task PostReleasePageOnEinstein -Description "Post the releae page on Einstein"{
-    $localSdkVersion = Get-ReleaseVersion "$Branch"
-	$localRdcVersion = Get-RdcVersion
+    $localSdkVersion = versioning\Get-ReleaseVersion "$Branch"
+    $rdcVersionWixFile = Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Setup") "Version.wxi"
+	$localRdcVersion = versioning\Get-RdcVersion -rdcVersionWixFile $rdcVersionWixFile -branch $Branch
 	$localPathToRdcExe = "$InstallersArtifactsDir\Relativity.Desktop.Client.Setup.exe"
     exec { 
         & $ScriptsDir\Invoke-EinsteinUpdate.ps1 -Secret $EinsteinSecret -SdkVersion $localSdkVersion -RdcVersion "$localRdcVersion" -branch "$Branch" -BuildPackagesDir "$BuildPackagesDir" -BuildPackagesDirGold "$BuildPackagesDirGold" -PathToLocalRdcExe "$localPathToRdcExe" -publishToRelease $PublishToRelease
@@ -795,14 +772,15 @@ task UpdateAssemblyInfo -Depends UpdateSdkAssemblyInfo,UpdateRdcAssemblyInfo -De
 }
 
 task UpdateSdkAssemblyInfo -Description "Update the version contained within the SDK assembly shared info source file" {
-    $version = Get-ReleaseVersion "$Branch" -omitPostFix
-    Update-AssemblyInfo "$version.0"
+    $version = versioning\Get-ReleaseVersion "$Branch" -omitPostFix
+    versioning\Update-AssemblyInfo "$version.0"
 }
 
 task UpdateRdcAssemblyInfo -Description "Update the version contained within the RDC assembly shared info source file" {    
     exec { 
-        $majorMinorPatchVersion = Get-RdcWixVersion
-        $postFix = Get-ReleaseVersion "$Branch" -postFixOnly
+        $rdcVersionWixFile = Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Setup") "Version.wxi"
+        $majorMinorPatchVersion = versioning\Get-RdcWixVersion -rdcVersionWixFile $rdcVersionWixFile
+        $postFix = versioning\Get-ReleaseVersion "$Branch" -postFixOnly
         $InformationalVersion = "$majorMinorPatchVersion$postFix"
         $VersionPath = Join-Path $Root "Version"
         $ScriptPath = Join-Path $VersionPath "Update-RdcAssemblySharedInfo.ps1"
@@ -832,359 +810,10 @@ task RemoveRedundantTestOutputFiles -Description "Remove redundant test output f
     } 
 }
 
-Function Get-RdcVersion {
-	$majorMinorPatchVersion = Get-RdcWixVersion 
-    $postFix = Get-ReleaseVersion "$Branch" -postFixOnly
-    
-    
-    [BranchType]$typeOfBranch = Get-CurrentBranchType "$branch"
-    # Means its not a release branch
-    if(-Not ($typeOfBranch -eq [BranchType]::HotfixRelease -or $typeOfBranch -eq [BranchType]::Release))
-    {
-        Write-Host "PostFix: $postFix"
-        $commitsSince = Get-ReleaseVersion "$Branch" -returnCommitsSinceOnly
-        Write-Host "commitsSince: $commitsSince"
-        $postFix = ".$commitsSince$postFix"
-        Write-Host "PostFix: $postFix"
+task CreateTemplateTestParametersFile -Description "Create template of test parameters file" {
+    if (-Not $TestParametersFile) {
+        Throw "You need to specify path to new test parameters file (including file name and extension)"
     }
-    $packageVersion = "$majorMinorPatchVersion$postFix"
-	return $packageVersion
-}
-
-Function Copy-Folder {
-    param(
-        [String] $SourceDir,
-        [String] $TargetDir
-    )
-
-    $robocopy = "robocopy.exe"
-    Write-Output "Copying the build artifacts from $SourceDir to $TargetDir"
-    & $robocopy "$SourceDir" "$TargetDir" /MIR /is /R:6 /W:10 /FP /MT
-
-    # https://ss64.com/nt/robocopy-exit.html
-    if ($LASTEXITCODE -ge 8) {
-        Throw "An error occured while copying the build artifacts from $SourceDir to $TargetDir. Robocopy exit code = $LASTEXITCODE"
-    }
-}
-
-Function Get-JiraTicketNumberFromBranchName {
-    # Remove the REL number to reduce the version length.
-    $options = [Text.RegularExpressions.RegexOptions]::IgnoreCase
-    $regexMatch = [regex]::Match($Branch, "(?<jira>REL-\d+).*", $options)
-    if (!$regexMatch.Success) {
-        return $null
-    }
-
-    if (!$regexMatch.Groups["jira"]) {
-        return $null
-    }
-
-    $jiraTicketNumber = $regexMatch.Groups["jira"].Value
-    if ($jiraTicketNumber -and $jiraTicketNumber.Length -gt 0) {
-        return $jiraTicketNumber
-    }
-
-    return $null
-}
-
-Function Get-RdcWixVersion {
-    $rdcVersionWixFile = Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Setup") "Version.wxi"
-    if (-Not (Test-Path $rdcVersionWixFile -PathType Leaf)) {
-        Throw "The RDC version cannot be determined because the WIX RCD version source file '$rdcVersionWixFile' doesn't exist."
-    }
-
-    [xml]$xml = Get-Content $rdcVersionWixFile
-    $selector = "//processing-instruction('define')[starts-with(., 'ProductVersion')]"
-    $node = $xml.SelectSingleNode($selector)
-    if (!$node) {
-        Throw "The RDC version cannot be determined because the WIX RDC version source file '$rdcVersionWixFile' doesn't define the expected ProductVersion variable."
-    }
-
-    $options = [Text.RegularExpressions.RegexOptions]::IgnoreCase
-    $regexMatch = [regex]::Match($node.InnerText, "ProductVersion[ ]*=[ ]*""(?<value>.*)\""", $options)
-    if (!$regexMatch.Success) {
-        Throw "The RDC version cannot be determined because the WIX RDC version source file '$rdcVersionWixFile' defines the ProductionVersion variable but the regular expression match failed."
-    }
-
-    if (!$regexMatch.Groups["value"]) {
-        Throw "The RDC version cannot be determined because the WIX RDC version source file '$rdcVersionWixFile' defines the ProductionVersion variable but the value cannot be determined from the regular expresssion match."
-    }
-
-    [string]$productVersion = $regexMatch.Groups["value"].Value
-    if (!$productVersion -or $productVersion.Length -le 0) {
-        Throw "The RDC version cannot be determined because the WIX RDC version source file '$rdcVersionWixFile' defines the ProductionVersion variable but the version is empty."
-    }
-
-    return $productVersion.Trim()
-}
-
-Function Initialize-Folder {
-    param(
-        [Parameter(Mandatory = $true, Position = 0)]
-        [String] $Path,
-        [Parameter()]
-        [switch] $Safe
-    )
-
-    if (!$Path) {
-        Throw "You must specify a non-null path to initialize a folder. Check to make sure the path value or variable passed to this method is valid."
-    }
-
-    if ((Test-Path $Path) -and $Safe) {
-        Write-Host "The directory '$Path' already exists."
-        Return
-    }
-
-    if (Test-Path $Path) {
-        Remove-Item -Recurse -Force $Path -ErrorAction Stop
-        Write-Host "Deleted the '$Path' directory."
-    }
-
-    New-Item -Type Directory $Path -Force -ErrorAction Stop | Out-Null
-    Write-Host "Created the '$Path' directory."
-}
-
-Function Invoke-SignDirectoryFiles {
-    param(
-        [String[]] $DirectoryCandidates
-    )
-
-    $retryAttempts = 3
-    $sites = @(
-        "http://timestamp.comodoca.com/authenticode",
-        "http://timestamp.verisign.com/scripts/timstamp.dll",
-        "http://tsa.starfieldtech.com"
-    )
-    
-    foreach ($directory in $DirectoryCandidates) {
-        if (-Not (Test-Path $directory -PathType Container)) {
-            Throw "The '$directory' can't be digitally signed because the directory doesn't exist. Verify the build script and project files are in agreement."
-        }
-
-        $filesToSign = Get-ChildItem -Path $directory -Recurse -Include *.dll, *.exe, *.msi | Where-Object { $_.Name -Match ".*Relativity.*|.*kCura.*" }
-        $totalFilesToSign = $filesToSign.Length
-        if ($totalFilesToSign -eq 0) {
-            Throw "The '$directory' can't be digitally signed because there aren't any candidate files within the directory. Verify the build script and project files are in agreement."
-        }
-
-        Write-Output "Signing $totalFilesToSign total files in $directory"
-        foreach ($FileToSign in $filesToSign) {
-            Invoke-SignFile $FileToSign.FullName
-        }
-    }
-}
-
-Function Invoke-SignFile {
-    param(
-        [String] $File
-    )
-
-    if (!$File) {
-        Throw "You must specify a non-null path to digitally sign a file. Check to make sure the path value or variable passed to this method is valid."
-    }
-    
-    $RetryAttempts = 3
-    $SignSites = @(
-        "http://timestamp.comodoca.com/authenticode",
-        "http://timestamp.verisign.com/scripts/timstamp.dll",
-        "http://tsa.starfieldtech.com"
-    )
-
-    $Signed = $false
-    & $SigntoolPath verify /pa /q $File
-    $Signed = $?
-    if (-not $Signed) {
-        For ($i = 0; $i -lt $RetryAttempts; $i++) {
-            ForEach ($Site in $SignSites) {
-                Write-Host "Attempting to sign" $File "using" $Site "..."
-                & $SigntoolPath sign /a /t $Site /d "Relativity" /du "http://www.kcura.com" $File
-                $Signed = $?
-                if ($Signed) {
-                    Write-Host "Signed $File Successfully!"
-                    break
-                }
-            }  
-                    
-            if ($Signed) {
-                break
-            }
-        }
-        
-        if (-not $Signed) {
-            Throw "Failed to sign $File. See the error above."
-        }
-    }
-    else {
-        Write-Host $File "is already signed."
-    }
-}
-
-Function Invoke-SetTestParameters {
-    param(
-        [bool] $SkipIntegrationTests,
-        [String] $TestParametersFile,
-        [String] $TestEnvironment
-    )
-
-    [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", $SkipIntegrationTests, "Process")
-    if ($TestParametersFile) {
-        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_TEST_JSON_FILE", $TestParametersFile , "Process")
-    }
-
-    if ($TestEnvironment) {
-        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_TEST_ENV", $TestEnvironment , "Process")
-    }
-}
-
-Function Remove-EmptyLogFile {
-    param(
-        [String] $LogFile
-    )
-
-    if (!$LogFile) {
-        Throw "You must specify a non-null path to remove the empty logfile. Check to make sure the path value or variable passed to this method is valid."
-    }
-
-    # Remove the error log when none exist.
-    if (Test-Path $LogFile -PathType Leaf) {
-        if ((Get-Item $LogFile).length -eq 0) {
-            Remove-Item $LogFile
-        }
-    }
-}
-
-Function Write-TestResultsOutput {
-    param(
-        [string] $FolderWithTestResults
-    )
-
-    if (!$FolderWithTestResults) { 
-        Throw "You must specify a non-null path to retrieve the test results XML file. Check to make sure the path value or variable passed to this method is valid."
-    }
-
-    $TestResultFiles = Get-ChildItem -Path $FolderWithTestResults -Include "*.xml" -Recurse -Force
-
-    [int]$passed,$failed,$skipped = 0
-
-    foreach($TestResultsXmlFile in $TestResultFiles) {
-
-        if (-Not (Test-Path $TestResultsXmlFile.FullName -PathType Leaf)) {
-            Throw "The test results cannot be retrieved because the Xml tests file '" + $TestResultsXmlFile.FullName + "' doesn't exist."
-        }
-
-        $xml = [xml] (Get-Content $TestResultsXmlFile)
-        $passed   += [convert]::ToInt32($xml.'test-run'.passed)
-        $failed   += [convert]::ToInt32($xml.'test-run'.failed)
-        $skipped  += [convert]::ToInt32($xml.'test-run'.skipped)
-    }
-
-    # So Jenkins can get the results
-    Write-Output "testResultsPassed=$passed"
-    Write-Output "testResultsFailed=$failed"
-    Write-Output "testResultsSkipped=$skipped"
-}
-
-Function Update-AssemblyInfo {
-    param(
-    [string]$NewVersion
-    )
-    cd .\Version
-
-    Get-ChildItem -Include AssemblySharedInfo.cs, AssemblySharedInfo.vb -Recurse | 
-        ForEach-Object {
-            $_.IsReadOnly = $false
-            (Get-Content -Path $_) -replace '(?<=Assembly(?:(File|Informational))?Version\(")[^"]*(?="\))', $NewVersion |
-                Set-Content -Path $_
-        }
-    cd .. 
-}
-
-Function Get-ReleaseVersion {
-    param(
-        [string]$branchNameJenkins,
-        [switch]$postFixOnly = $false,
-        [switch]$omitPostFix = $false,
-        [switch]$returnCommitsSinceOnly = $false
-    )
-	Write-Host $branchNameJenkins
-    $host.UI.RawUI.WindowTitle = "Getting release version"
-
-    function gitBranchName {
-        $branchName = git rev-parse --abbrev-ref HEAD
-        If($branchName -eq 'HEAD')
-        {
-            if ($TestResultsXmlFile -eq 'HEAD') {
-                Throw "The branchname is not given, it is currently HEAD (meaning the code is checked out at a commit, not at a branch)"
-            }
-            return $branchNameJenkins
-        }
-        else
-        {
-            return $branchName
-        }
-    }
-
-    $gitVersion = git describe --tags --always
-    Write-Host $gitVersion
-    $gitVersionSplit = $gitVersion.ToString().Split('-')
-    $version = $gitVersionSplit[0] # 1.9.0
-    $commitsSinceLastTag = $gitVersionSplit[1] # 95
-    # git describe does not give the commits since tag if the numer of commits since tag is null.
-    if("$commitsSinceLastTag" -eq "")
-    {
-        $commitsSinceLastTag = "0"
-    }
-	$commitsSince = [int]$commitsSinceLastTag + [int]$version.Split('.')[2]
-	
-    Write-Host "Version = $version"
-    $major = $version.Split('.')[0] # 1
-    $minor = $version.Split('.')[1] # 9
-    
-
-    Write-Host "Commits since version was created = $commitsSince"
-    if($returnCommitsSinceOnly)
-    {
-        return $commitsSince
-    }
-    $currentBranch = gitBranchName
-    Write-Host "Current branch is $currentBranch"
-    
-    [BranchType]$typeOfBranch = Get-CurrentBranchType "$currentBranch"
-    
-    Write-Host "Type of branch = $typeOfBranch"
-    
-    # Different branches get different postfixes
-    switch ($typeOfBranch) {
-        ([BranchType]::Develop) {$postfix = "-dev"}
-        ([BranchType]::FeatureBranch) {$postfix = "-$currentBranch"}
-        ([BranchType]::Release) {$postfix = ""}
-        ([BranchType]::HotfixRelease) {
-            $numbersAtTheEnd = $currentBranch | Foreach {if ($_ -match '(\d+)$') {$matches[1]}}
-            $postfix = "-Hotfix-$numbersAtTheEnd"
-        }
-        default { Throw "Branch type is unknown" }
-    }
-    
-    #Escape as version numbers should not contain anything special, like underscores. Dashes are fine tough
-    $pattern = '[^a-zA-Z0-9]'
-    $postfix = $postfix -replace $pattern ,"-"
-
-    If($omitPostFix)
-    {
-        $majorMinorCommits = "$major.$minor.$commitsSince"
-        Write-Host "MajorMinorCommitsSince = $majorMinorCommits"
-        Write-Output $majorMinorCommits    
-    }
-    elseif($postFixOnly)
-    {
-        $newVersion = "$postfix"
-        Write-Host "Postfix = $newVersion"
-        Write-Output $newVersion
-    }    
-    else
-    {
-        $newVersion = "$major.$minor.$commitsSince$postfix"
-        Write-Host "New complete version should be = $newVersion"
-        Write-Output $newVersion
-    }
+    $pathToTemplateFile = ".\Scripts\test-parameters-template.json"
+    Copy-Item $pathToTemplateFile $TestParametersFile
 }
