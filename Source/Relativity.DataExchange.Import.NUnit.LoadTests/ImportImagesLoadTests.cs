@@ -22,11 +22,13 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
+	[Explicit]
+	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportImages]
 	public class ImportImagesLoadTests : ImportLoadTestsBase<ImageImportExecutionContext, ImageSettings>
 	{
 		[CollectDeadlocks]
 		[Category(TestCategories.ImportImage)]
-		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
 		[IdentifiedTestCase("6a32530b-a6ca-4f78-9ee9-0875f90ae49e")]
 		public async Task ShouldImportImagesParallelAsync(

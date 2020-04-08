@@ -48,7 +48,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 		}
 
 		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IdentifiedTest("9ad67f7d-d2f0-4a32-96ca-ea40c1631c74")]
 		[Timeout(_TIMEOUT_IN_MS)]
 		public static async Task ShouldFailWhenIntegratedAuthenticationIsDisabled()
@@ -66,7 +65,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 		}
 
 		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IdentifiedTestCase("511fb3d4-4f31-42d2-90a6-f70d17dce82f", TapiClient.Direct)]
 		[IdentifiedTestCase("2f1bd998-e5bf-40be-93d1-5274f53c6aa5", TapiClient.Aspera)]
 		[IdentifiedTestCase("47ff5882-2a0b-408d-89e4-63ac23ab0130", TapiClient.Web)]

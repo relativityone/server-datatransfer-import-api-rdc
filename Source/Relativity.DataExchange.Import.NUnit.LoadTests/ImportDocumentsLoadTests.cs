@@ -31,7 +31,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	{
 		[CollectDeadlocks]
 		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
 		[IdentifiedTestCase("b9b6897f-ea3f-4694-80d2-db08529387AB")]
 		public async Task ShouldImportFoldersParallelAsync(
@@ -73,7 +72,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 
 		[CollectDeadlocks]
 		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
 		[IdentifiedTestCase("bbbc5de9-f6a4-4a4c-97a7-6f1f88d96c93")]
 		public async Task ShouldImportChoicesInParallelAsync(
@@ -119,7 +117,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 
 		[CollectDeadlocks]
 		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
 		[IdentifiedTestCase("9f2f532e-7a16-4199-87ec-1308dbff27a7")]
 		public async Task ShouldImportChoicesAndFoldersInParallelAsync(

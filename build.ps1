@@ -87,6 +87,9 @@ Timeout for NUnit tests (in milliseconds).
 .PARAMETER TestParametersFile
 An optional test parameters JSON file that conforms to the standard App.Config file (e.g. Scripts\test-settings-sample.json)
 
+.PARAMETER TestReportFolderName
+An optional parameter. If specified test reports will be put in TestReports\{TestReportFolderName}\ directory
+
 .PARAMETER TestEnvironment
 An optional test environment that maps to a test parameters JSON file.
 
@@ -137,6 +140,8 @@ param(
     [int]$TestTimeoutInMS = 300000,
     [Parameter()]
     [String]$TestParametersFile,
+    [Parameter()]
+    [String]$TestReportFolderName,
     [Parameter()]
     [ValidateSet("Hopper")]
     [String]$TestEnvironment,
@@ -210,6 +215,7 @@ $Params = @{
     parameters = @{
         Root = $BaseDir
         PackagesDir = $PackagesDir
+        TestReportFolderName = $TestReportFolderName
     }
     properties = @{
         Target = $Target
