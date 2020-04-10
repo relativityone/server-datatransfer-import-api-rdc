@@ -52,7 +52,7 @@ nuget relativity.oauth2client.implicit = 1.0.27
 nuget relativity.oauth2client.interfaces = 1.0.27
 nuget relativity.telemetry.datacontracts.shared ~> 3000.0
 nuget relativity.telemetry.services.interface ~> 3000.0
-nuget relativity.transfer.client ~> 7.0.8
+nuget relativity.transfer.client ~> 7.1.0-pre.11
 nuget relativity.services.datacontracts = 11.0.137.1
 nuget relativity.services.interfaces = 11.0.137.1
 nuget relativity.services.interfaces.private = 11.0.137.1
