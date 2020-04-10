@@ -16,6 +16,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 	using Polly;
 
+	using Relativity.DataExchange.TestFramework;
+
 	using Relativity.Services.Interfaces.Field;
 	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Interfaces.Shared.Models;
@@ -102,6 +104,17 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return TestFramework.RelativityHelpers.FieldHelper.CreateFieldAsync(testParameters, request);
 		}
 
+		public static Task CreateFileFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId)
+		{
+			var request = new FileFieldRequest()
+			{
+				Name = fieldName,
+				ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = destinationRdoArtifactTypeId },
+			};
+
+			return TestFramework.RelativityHelpers.FieldHelper.CreateFieldAsync(testParameters, request);
+		}
+
 		public static async Task<int> CreateFieldAsync<T>(IntegrationTestParameters parameters, T fieldRequest)
 			where T : BaseFieldRequest
 		{
@@ -113,6 +126,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				[typeof(MultipleChoiceFieldRequest)] = (manager, request, workspaceId) => manager.CreateMultipleChoiceFieldAsync(workspaceId, request as MultipleChoiceFieldRequest),
 				[typeof(WholeNumberFieldRequest)] = (manager, request, workspaceId) => manager.CreateWholeNumberFieldAsync(workspaceId, request as WholeNumberFieldRequest),
 				[typeof(LongTextFieldRequest)] = (manager, request, workspaceId) => manager.CreateLongTextFieldAsync(workspaceId, request as LongTextFieldRequest),
+				[typeof(FileFieldRequest)] = (manager, request, workspaceId) => manager.CreateFileFieldAsync(workspaceId, request as FileFieldRequest),
 			};
 
 			if (!supportedFieldTypesToCreateMethodMapping.ContainsKey(typeof(T)))
@@ -206,6 +220,58 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			RelativityObject ro = QueryIdentifierRelativityObject(parameters, artifactTypeName);
 			return ro.FieldValues[0].Value as string;
+		}
+
+		public static async Task<Dictionary<string, List<string>>> GetFieldValuesAsync(string fieldName, int artifactTypeId, IntegrationTestParameters testParameters)
+		{
+			var request = new Services.Objects.DataContracts.QueryRequest
+			{
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId },
+				Fields = new[]
+											   {
+												   new FieldRef { Name = WellKnownFields.ControlNumber },
+												   new FieldRef { Name = fieldName },
+											   },
+			};
+			Services.Objects.DataContracts.QueryResult result;
+			using (var objectManager = ServiceHelper.GetServiceProxy<IObjectManager>(testParameters))
+			{
+				const int NumberOfResults = 4500;
+				result = await objectManager.QueryAsync(testParameters.WorkspaceId, request, 0, NumberOfResults).ConfigureAwait(false);
+				if (result.TotalCount > NumberOfResults)
+				{
+					throw new InvalidOperationException($"Not all results returned: Is: {NumberOfResults}, Should be: {result.TotalCount}");
+				}
+			}
+
+			var fieldsValuesForDocuments = new Dictionary<string, List<string>>();
+			foreach (RelativityObject document in result.Objects)
+			{
+				string documentId = document.FieldValues.First().Value.ToString();
+
+				var listToInsert = new List<string>();
+				fieldsValuesForDocuments[documentId] = listToInsert;
+
+				object fieldValue = document.FieldValues.Skip(1).First().Value;
+				if (fieldValue is Relativity.Services.Objects.DataContracts.Choice choice)
+				{
+					listToInsert.Add(choice.Name);
+				}
+				else if (fieldValue is IList<Relativity.Services.Objects.DataContracts.Choice> choices)
+				{
+					listToInsert.AddRange(choices.Select(x => x.Name));
+				}
+				else if (fieldValue is RelativityObjectValue objectValue)
+				{
+					listToInsert.Add(objectValue.Name);
+				}
+				else if (fieldValue is IList<RelativityObjectValue> objectValues)
+				{
+					listToInsert.AddRange(objectValues.Select(x => x.Name));
+				}
+			}
+
+			return fieldsValuesForDocuments;
 		}
 
 		private static RelativityObject QueryIdentifierRelativityObject(IntegrationTestParameters parameters, string artifactTypeName)

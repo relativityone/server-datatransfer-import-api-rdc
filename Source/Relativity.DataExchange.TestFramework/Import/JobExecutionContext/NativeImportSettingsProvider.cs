@@ -35,6 +35,14 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 			}
 		}
 
+		public static Settings DefaultNativeObjectImportSettings(int artifactTypeId)
+		{
+			Settings settings = new Settings();
+			SetDefaultNativeDocumentImportSettings(settings);
+			settings.ArtifactTypeId = artifactTypeId;
+			return settings;
+		}
+
 		private static void SetDefaultNativeDocumentImportSettings(Settings settings)
 		{
 			settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;

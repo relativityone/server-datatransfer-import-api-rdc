@@ -12,7 +12,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using global::NUnit.Framework;
 
 	using kCura.Relativity.DataReaderClient;
-
+	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
@@ -20,8 +20,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Interfaces.Shared.Models;
-	using Relativity.Services.Objects;
-	using Relativity.Services.Objects.DataContracts;
 	using Relativity.Testing.Identification;
 
 	using OverlayBehavior = kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior;
@@ -190,12 +188,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(secondImportResult, numberOfDocumentToImportInImportUnderTest);
 
 			// overlaid documents
-			await this.ThenTheChoiceFieldHasExpectedValues(singleChoiceFieldName, expectedSingleChoiceToDocumentMappingForOverlaidDocuments).ConfigureAwait(false);
-			await this.ThenTheChoiceFieldHasExpectedValues(multiChoiceFieldName, expectedMultiChoiceToDocumentMappingForOverlaidDocuments).ConfigureAwait(false);
+			await ValidateChoices.ThenTheChoiceFieldHasExpectedValues(singleChoiceFieldName, expectedSingleChoiceToDocumentMappingForOverlaidDocuments, (int)ArtifactType.Document, this.TestParameters).ConfigureAwait(false);
+			await ValidateChoices.ThenTheChoiceFieldHasExpectedValues(multiChoiceFieldName, expectedMultiChoiceToDocumentMappingForOverlaidDocuments, (int)ArtifactType.Document, this.TestParameters).ConfigureAwait(false);
 
 			// not modified documents
-			await this.ThenTheChoiceFieldHasExpectedValues(singleChoiceFieldName, expectedSingleChoiceToDocumentMappingForNotModifiedDocuments).ConfigureAwait(false);
-			await this.ThenTheChoiceFieldHasExpectedValues(multiChoiceFieldName, expectedMultiChoiceToDocumentMappingForNotModifiedDocuments).ConfigureAwait(false);
+			await ValidateChoices.ThenTheChoiceFieldHasExpectedValues(singleChoiceFieldName, expectedSingleChoiceToDocumentMappingForNotModifiedDocuments, (int)ArtifactType.Document, this.TestParameters).ConfigureAwait(false);
+			await ValidateChoices.ThenTheChoiceFieldHasExpectedValues(multiChoiceFieldName, expectedMultiChoiceToDocumentMappingForNotModifiedDocuments, (int)ArtifactType.Document, this.TestParameters).ConfigureAwait(false);
 		}
 
 		private static List<string> GenerateIdsForDocuments(int numberOfDocuments)
@@ -254,7 +252,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(secondImportResult, NumberOfDocumentsToImport);
-			await this.ThenTheChoiceFieldHasExpectedValues(choiceName, expectedChoiceToDocumentMapping).ConfigureAwait(false);
+			await ValidateChoices.ThenTheChoiceFieldHasExpectedValues(choiceName, expectedChoiceToDocumentMapping, (int)ArtifactType.Document, this.TestParameters).ConfigureAwait(false);
 		}
 
 		private async Task MultiChoiceTestAsync(
@@ -301,7 +299,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(secondImportResult, NumberOfDocumentsToImport);
-			await this.ThenTheChoiceFieldHasExpectedValues(choiceName, expectedChoiceToDocumentMapping).ConfigureAwait(false);
+			await ValidateChoices.ThenTheChoiceFieldHasExpectedValues(choiceName, expectedChoiceToDocumentMapping, (int)ArtifactType.Document, this.TestParameters).ConfigureAwait(false);
 		}
 
 		private void InitializeExecutionContext(OverlayBehavior overlayBehavior, OverwriteModeEnum overwriteMode)
@@ -354,77 +352,5 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		private IEnumerable<string> ConvertToChoicesListToImportApiFormat(IEnumerable<string[]> choicesForDocuments)
 			=> choicesForDocuments.Select(choicesForDocument => string.Join(this.multiValueDelimiter, choicesForDocument));
-
-		private async Task<Dictionary<string, List<string>>> GetChoiceFieldValuesForDocumentsAsync(string fieldName)
-		{
-			var request = new QueryRequest
-			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Document },
-				Fields = new[]
-				{
-					new FieldRef { Name = WellKnownFields.ControlNumber },
-					new FieldRef { Name = fieldName },
-				},
-			};
-			QueryResultSlim result;
-			using (var objectManager = ServiceHelper.GetServiceProxy<IObjectManager>(this.TestParameters))
-			{
-				result = await objectManager.QuerySlimAsync(this.TestParameters.WorkspaceId, request, 0, NumberOfDocumentsToImport).ConfigureAwait(false);
-			}
-
-			var fieldsValuesForDocuments = new Dictionary<string, List<string>>();
-			foreach (RelativityObjectSlim document in result.Objects)
-			{
-				string documentId = document.Values.First().ToString();
-				fieldsValuesForDocuments[documentId] = new List<string>();
-
-				object choiceFieldValue = document.Values.Skip(1).First();
-				if (choiceFieldValue is Choice choice)
-				{
-					fieldsValuesForDocuments[documentId].Add(choice.Name);
-				}
-				else if (choiceFieldValue is IList<Choice> choices)
-				{
-					fieldsValuesForDocuments[documentId].AddRange(choices.Select(x => x.Name));
-				}
-			}
-
-			return fieldsValuesForDocuments;
-		}
-
-		private async Task ThenTheChoiceFieldHasExpectedValues(string choiceName, IEnumerable<DocumentChoicesDto> expectedChoiceToDocumentMapping)
-		{
-			Dictionary<string, List<string>> actualChoiceToDocumentMapping = await this.GetChoiceFieldValuesForDocumentsAsync(choiceName).ConfigureAwait(false);
-
-			foreach (var expectedMapping in expectedChoiceToDocumentMapping)
-			{
-				Assert.That(actualChoiceToDocumentMapping, Contains.Key(expectedMapping.ControlNumber));
-
-				List<string> actualChoiceValuesForDocument = actualChoiceToDocumentMapping[expectedMapping.ControlNumber];
-				CollectionAssert.AreEquivalent(expectedMapping.ChoicesNames, actualChoiceValuesForDocument);
-			}
-		}
-
-		private class DocumentChoicesDto
-		{
-			public DocumentChoicesDto(string controlNumber, IEnumerable<string> choicesNames)
-			{
-				this.ControlNumber = controlNumber;
-				this.ChoicesNames = RemoveEmptyChoices(choicesNames).ToList();
-			}
-
-			public string ControlNumber { get; }
-
-			public List<string> ChoicesNames { get; }
-
-			public DocumentChoicesDto AddChoicesNames(IEnumerable<string> choicesNames)
-			{
-				this.ChoicesNames.AddRange(RemoveEmptyChoices(choicesNames));
-				return this;
-			}
-
-			private static IEnumerable<string> RemoveEmptyChoices(IEnumerable<string> choices) =>
-				choices.Where(choice => !string.IsNullOrEmpty(choice));
-		}
 	}
 }
