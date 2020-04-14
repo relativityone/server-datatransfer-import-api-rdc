@@ -29,7 +29,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	/// </summary>
 	public static class FieldHelper
 	{
-		public static Task CreateSingleObjectFieldAsync(IntegrationTestParameters testParameters, string fieldName, int fieldObjectArtifactTypeId, int destinationRdoArtifactTypeId)
+		public static Task<int> CreateSingleObjectFieldAsync(IntegrationTestParameters testParameters, string fieldName, int fieldObjectArtifactTypeId, int destinationRdoArtifactTypeId)
 		{
 			var request = new SingleObjectFieldRequest
 			{

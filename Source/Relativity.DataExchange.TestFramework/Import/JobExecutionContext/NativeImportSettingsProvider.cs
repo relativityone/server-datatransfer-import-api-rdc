@@ -35,11 +35,22 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 			}
 		}
 
-		public static Settings DefaultNativeObjectImportSettings(int artifactTypeId)
+		public static Settings NativeControlNumberIdentifierObjectImportSettings(int artifactTypeId)
 		{
 			Settings settings = new Settings();
 			SetDefaultNativeDocumentImportSettings(settings);
 			settings.ArtifactTypeId = artifactTypeId;
+			return settings;
+		}
+
+		public static Settings DefaultNativeObjectImportSettings(int artifactTypeId)
+		{
+			Settings settings = new Settings
+			{
+				SelectedIdentifierFieldName = WellKnownFields.RdoIdentifier,
+				OverwriteMode = OverwriteModeEnum.Append,
+				ArtifactTypeId = artifactTypeId,
+			};
 			return settings;
 		}
 

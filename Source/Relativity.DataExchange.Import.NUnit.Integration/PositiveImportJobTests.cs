@@ -71,7 +71,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			[Values(true, false)] bool disableNativeValidation)
 		{
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.DefaultNativeObjectImportSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(artifactTypeId);
 
 			// ARRANGE
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
@@ -168,7 +168,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.DefaultNativeObjectImportSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(artifactTypeId);
 
 			// Import initial data to workspace
 			if (overwriteMode == OverwriteModeEnum.AppendOverlay || overwriteMode == OverwriteModeEnum.Overlay)
@@ -267,7 +267,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.DefaultNativeObjectImportSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(artifactTypeId);
 			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
@@ -306,7 +306,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.DefaultNativeObjectImportSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(artifactTypeId);
 
 			// Import initial data to workspace
 			if (overwriteMode == OverwriteModeEnum.AppendOverlay || overwriteMode == OverwriteModeEnum.Overlay)
@@ -399,7 +399,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.DefaultNativeObjectImportSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(artifactTypeId);
 
 			// Prepare data for import under test
 			settings.OverwriteMode = overwriteMode;

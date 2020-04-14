@@ -91,6 +91,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssociateObjectsTests.cs" />
     <Compile Include="ChoicesTests.cs" />
     <Compile Include="DevTests\ChoicesProfilingTests.cs" />
     <Compile Include="Dto\DocumentObjectsDto.cs" />
