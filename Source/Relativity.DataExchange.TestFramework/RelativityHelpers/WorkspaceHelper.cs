@@ -81,7 +81,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 								DownloadHandlerApplicationPath = "Relativity.Distributed",
 							};
 
-							logger.LogInformation("Creating the {WorkspaceName} workspace...", workspace.Name);
+							logger.LogInformation("Creating the {WorkspaceName} workspace...", workspace.Name.Secure());
 							ProcessOperationResult result =
 								client.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspace);
 							parameters.WorkspaceId = QueryWorkspaceArtifactId(client, result, logger);
