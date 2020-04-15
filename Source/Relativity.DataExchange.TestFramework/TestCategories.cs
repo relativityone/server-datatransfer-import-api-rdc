@@ -88,5 +88,11 @@ namespace Relativity.DataExchange.TestFramework
 		/// The web-service test category.
 		/// </summary>
 		public const string WebService = "WebService";
+
+		/// <summary>
+		/// Tell tests not to run this in the compatibility pipeline.
+		/// If we add some functionality, it might not be available in older versions.
+		/// </summary>
+		public const string NotInCompatibility = "NotInCompatibility";
 	}
 }

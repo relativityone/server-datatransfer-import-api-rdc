@@ -41,7 +41,7 @@ build = params.build
 
 def config = [
     slackChannel: params.slackChannel,
-	sutTemplate: "aio-juniper-ea",
+	sutTemplate: "aio-juniper-0",
 	hopperApiUrl: "https://api.hopper.relativity.com/",
 	hopperApiUsername: "homeimprovement@relativity.com"
 ]

@@ -523,26 +523,16 @@ task Help -Alias ? -Description "Display task information" {
     WriteDocumentation
 }
 
+task IntegrationTestsNightly -Description "Run all integration tests for the nightly pipeline" {
+	folders\Initialize-Folder $TestReportsDir -Safe
+    folders\Initialize-Folder $IntegrationTestsReportDir
+	Testing\Invoke-IntegrationTests -TestCategoryFilter	"--where=`"cat==Integration and cat!=NotInCompatibility`""
+}
+
 task IntegrationTests -Description "Run all integration tests" {
     folders\Initialize-Folder $TestReportsDir -Safe
     folders\Initialize-Folder $IntegrationTestsReportDir
-
-    $SolutionFile = $MasterSolution
-    if ($ILMerge) {
-        $SolutionFile = $MasterILMergeSolution
-    }
-
-    $testCategoryFilter = "--where=`"cat==Integration`""
-    testing\Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
-    exec { & $NunitExe $SolutionFile `
-            "--labels=All" `
-            "--agents=$NumberOfProcessors" `
-            "--skipnontestassemblies" `
-            "--timeout=$TestTimeoutInMS" `
-            "--result=$IntegrationTestsResultXmlFile" `
-            "--out=$IntegrationTestsOutputFile" `
-            $testCategoryFilter `
-    } -errorMessage "There was an error running the integration tests."
+	Testing\Invoke-IntegrationTests -TestCategoryFilter	"--where=`"cat==Integration`""
 }
 
 task UIAutomationTests -Description "Runs all UI tests" {

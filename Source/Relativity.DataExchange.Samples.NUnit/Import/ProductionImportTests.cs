@@ -45,6 +45,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		[Test]
 		[Category(TestCategories.ImportProduction)]
 		[Category(TestCategories.Integration)]
+		[Category(TestCategories.NotInCompatibility)]
 		public void ShouldImportTheProductionImages()
 		{
 			// Arrange

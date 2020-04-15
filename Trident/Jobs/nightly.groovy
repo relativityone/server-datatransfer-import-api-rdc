@@ -8,7 +8,7 @@ properties([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#ugly_test', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
-        string(defaultValue: 'aio-indigo-eau,aio-juniper-ea', description: 'Comma separated list of SUT templates', name: 'temlatesStr')
+        string(defaultValue: 'aio-goatsbeard-3,aio-blazingstar-3,aio-larkspur-3,aio-foxglove-3,aio-juniper-0', description: 'Comma separated list of SUT templates', name: 'temlatesStr')
     ]),
     pipelineTriggers([cron("H 22 * * *")])
 ])
@@ -83,19 +83,15 @@ timestamps
 								archiveArtifacts artifacts: 'Logs/**/*.*'
 									
 								echo "Publishing the integration tests report"
-								archiveArtifacts artifacts: "TestReports/${sutTemplate}/**/*.*"
-
-								if(numberOfErrors > 0)
-								{
-									echo "Number of errors: ${numberOfErrors}"
-									currentBuild.result = 'FAILED'
-								}								
+								archiveArtifacts artifacts: "TestReports/${sutTemplate}/**/*.*"							
 							}
 						}
 						catch(err)
 						{
 							echo err.toString()
 							numberOfErrors++
+							echo "Number of errors: ${numberOfErrors}"
+							currentBuild.result = 'FAILED'
 							inCompatibleEnvironments = inCompatibleEnvironments + sutTemplate + " "
 						}
 						finally
@@ -168,7 +164,7 @@ def runIntegrationTests(String sutTemplate)
 {
     String pathToJsonFile = getPathToTestParametersFile(sutTemplate)
     echo "Running the integration tests"
-    output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestTimeoutInMS 900000 -TestReportFolderName '${sutTemplate}' -TestParametersFile '${pathToJsonFile}' -Branch 'Trident'"
+    output = powershell ".\\build.ps1 IntegrationTestsNightly -ILMerge -TestTimeoutInMS 900000 -TestReportFolderName '${sutTemplate}' -TestParametersFile '${pathToJsonFile}' -Branch 'Trident'"
     echo output 								
 	
 	echo "Retrieving results of integration tests : $sutTemplate"

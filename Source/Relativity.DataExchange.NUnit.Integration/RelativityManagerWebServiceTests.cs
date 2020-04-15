@@ -27,6 +27,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		[IdentifiedTest("c0c2a5b9-4149-4dc2-9cb3-df6de3612804")]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.WebService)]
+		[Category(TestCategories.NotInCompatibility)]
 		public void ShouldReadTheCaseInfo()
 		{
 			using (RelativityManager relativityManager = new RelativityManager(

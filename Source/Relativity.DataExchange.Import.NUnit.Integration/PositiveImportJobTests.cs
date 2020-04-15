@@ -107,6 +107,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
+		[Category(TestCategories.NotInCompatibility)]
 		[IdentifiedTest("b9b6897f-ea3f-4694-80d2-db0852938789")]
 		public void ShouldImportFolders()
 		{
