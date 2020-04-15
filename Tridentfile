@@ -295,6 +295,13 @@ timestamps
 											echo "$testDescription-test failed: $failed"
 											echo "$testDescription-test skipped: $skipped"
 											
+											if(failed > 0)
+											{
+												echo "$testDescription-test failed is bigger than zero"
+												currentBuild.result = 'FAILED' 
+												throw new Exception("Tests failed.")
+											}
+											
 											// Now add to the final test results
 											testResultsPassed += passed
 											testResultsFailed += failed
