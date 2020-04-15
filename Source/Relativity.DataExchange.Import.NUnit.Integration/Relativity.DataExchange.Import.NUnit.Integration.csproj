@@ -104,8 +104,8 @@
     <Compile Include="DevTests\ImportProfilingTests.cs" />
     <Compile Include="DevTests\CreateWorkspaceWithManyFieldsTests.cs" />
     <Compile Include="PositiveImageImportJobTests.cs" />
-    <Compile Include="ValidateChoices.cs" />
-    <Compile Include="ValidateObjects.cs" />
+    <Compile Include="ChoicesValidator.cs" />
+    <Compile Include="ObjectsValidator.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
       <Paket>True</Paket>
     </Content>

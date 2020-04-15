@@ -14,7 +14,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 		public DocumentChoicesDto(string controlNumber, IEnumerable<string> choicesNames)
 		{
 			this.ControlNumber = controlNumber;
-			this.ChoicesNames = RemoveWhiteSpaces(RemoveEmptyChoices(choicesNames)).ToList();
+			this.ChoicesNames = RemoveEmptyChoices(choicesNames).ToList();
 		}
 
 		public string ControlNumber { get; }
@@ -29,8 +29,5 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 
 		private static IEnumerable<string> RemoveEmptyChoices(IEnumerable<string> choices) =>
 			choices.Where(choice => !string.IsNullOrEmpty(choice));
-
-		private static IEnumerable<string> RemoveWhiteSpaces(IEnumerable<string> choices) =>
-			choices.Select(choice => choice.Trim());
 	}
 }

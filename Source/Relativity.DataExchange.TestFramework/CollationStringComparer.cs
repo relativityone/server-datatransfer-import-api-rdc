@@ -28,12 +28,6 @@ namespace Relativity.DataExchange.TestFramework
 			}
 		}
 
-		public static bool Compare(string x, string y)
-		{
-			CollationStringComparer comparer = new CollationStringComparer(0x0409, SqlCompareOptions.IgnoreCase | SqlCompareOptions.IgnoreWidth | SqlCompareOptions.IgnoreKanaType);
-			return comparer.Equals(x, y);
-		}
-
 		public bool Equals(string x, string y)
 		{
 			SqlString xw = new SqlString(x, this.lcid, this.sqlCompareOptions);

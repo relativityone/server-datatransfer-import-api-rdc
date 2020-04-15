@@ -222,7 +222,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return ro.FieldValues[0].Value as string;
 		}
 
-		public static async Task<Dictionary<string, List<string>>> GetFieldValuesAsync(string fieldName, int artifactTypeId, IntegrationTestParameters testParameters)
+		public static async Task<Dictionary<string, List<string>>> GetFieldValuesAsync(IntegrationTestParameters testParameters, string fieldName, int artifactTypeId)
 		{
 			var request = new Services.Objects.DataContracts.QueryRequest
 			{
@@ -236,11 +236,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			Services.Objects.DataContracts.QueryResult result;
 			using (var objectManager = ServiceHelper.GetServiceProxy<IObjectManager>(testParameters))
 			{
-				const int NumberOfResults = 4500;
-				result = await objectManager.QueryAsync(testParameters.WorkspaceId, request, 0, NumberOfResults).ConfigureAwait(false);
-				if (result.TotalCount > NumberOfResults)
+				const int maxNumberOfResults = 4500;
+				result = await objectManager.QueryAsync(testParameters.WorkspaceId, request, 0, maxNumberOfResults).ConfigureAwait(false);
+				if (result.TotalCount > maxNumberOfResults)
 				{
-					throw new InvalidOperationException($"Not all results returned: Is: {NumberOfResults}, Should be: {result.TotalCount}");
+					throw new InvalidOperationException($"Not all results returned: Is: {maxNumberOfResults}, Should be: {result.TotalCount}");
 				}
 			}
 

@@ -7,6 +7,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Runtime.CompilerServices;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
@@ -33,11 +34,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private int originalImportBatchSize;
 		private List<int> createdFieldsIds = new List<int>();
 
+		private ChoicesValidator choicesValidator;
+
 		[OneTimeSetUp]
 		public Task OneTimeSetUpAsync()
 		{
 			this.originalImportBatchSize = AppSettings.Instance.ImportBatchSize;
 			AppSettings.Instance.ImportBatchSize = 4;
+
+			choicesValidator = new ChoicesValidator(this.TestParameters);
 
 			return RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document);
 		}
@@ -188,12 +193,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(secondImportResult, numberOfDocumentToImportInImportUnderTest);
 
 			// overlaid documents
-			await ValidateChoices.ThenTheChoiceFieldHasExpectedValues(singleChoiceFieldName, expectedSingleChoiceToDocumentMappingForOverlaidDocuments, (int)ArtifactType.Document, this.TestParameters).ConfigureAwait(false);
-			await ValidateChoices.ThenTheChoiceFieldHasExpectedValues(multiChoiceFieldName, expectedMultiChoiceToDocumentMappingForOverlaidDocuments, (int)ArtifactType.Document, this.TestParameters).ConfigureAwait(false);
+			await this.choicesValidator.ThenTheChoiceFieldHasExpectedValues(singleChoiceFieldName, expectedSingleChoiceToDocumentMappingForOverlaidDocuments, (int)ArtifactType.Document).ConfigureAwait(false);
+			await this.choicesValidator.ThenTheChoiceFieldHasExpectedValues(multiChoiceFieldName, expectedMultiChoiceToDocumentMappingForOverlaidDocuments, (int)ArtifactType.Document).ConfigureAwait(false);
 
 			// not modified documents
-			await ValidateChoices.ThenTheChoiceFieldHasExpectedValues(singleChoiceFieldName, expectedSingleChoiceToDocumentMappingForNotModifiedDocuments, (int)ArtifactType.Document, this.TestParameters).ConfigureAwait(false);
-			await ValidateChoices.ThenTheChoiceFieldHasExpectedValues(multiChoiceFieldName, expectedMultiChoiceToDocumentMappingForNotModifiedDocuments, (int)ArtifactType.Document, this.TestParameters).ConfigureAwait(false);
+			await this.choicesValidator.ThenTheChoiceFieldHasExpectedValues(singleChoiceFieldName, expectedSingleChoiceToDocumentMappingForNotModifiedDocuments, (int)ArtifactType.Document).ConfigureAwait(false);
+			await this.choicesValidator.ThenTheChoiceFieldHasExpectedValues(multiChoiceFieldName, expectedMultiChoiceToDocumentMappingForNotModifiedDocuments, (int)ArtifactType.Document).ConfigureAwait(false);
 		}
 
 		private static List<string> GenerateIdsForDocuments(int numberOfDocuments)
@@ -252,7 +257,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(secondImportResult, NumberOfDocumentsToImport);
-			await ValidateChoices.ThenTheChoiceFieldHasExpectedValues(choiceName, expectedChoiceToDocumentMapping, (int)ArtifactType.Document, this.TestParameters).ConfigureAwait(false);
+			await this.choicesValidator.ThenTheChoiceFieldHasExpectedValues(choiceName, expectedChoiceToDocumentMapping, (int)ArtifactType.Document).ConfigureAwait(false);
 		}
 
 		private async Task MultiChoiceTestAsync(
@@ -299,7 +304,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(secondImportResult, NumberOfDocumentsToImport);
-			await ValidateChoices.ThenTheChoiceFieldHasExpectedValues(choiceName, expectedChoiceToDocumentMapping, (int)ArtifactType.Document, this.TestParameters).ConfigureAwait(false);
+			await this.choicesValidator.ThenTheChoiceFieldHasExpectedValues(choiceName, expectedChoiceToDocumentMapping, (int)ArtifactType.Document).ConfigureAwait(false);
 		}
 
 		private void InitializeExecutionContext(OverlayBehavior overlayBehavior, OverwriteModeEnum overwriteMode)

@@ -37,11 +37,17 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	{
 		private int createdObjectArtifactTypeId = 0;
 
+		private ObjectsValidator objectsValidator;
+
+		private ChoicesValidator choicesValidator;
+
 		[OneTimeSetUp]
 		public async Task SetupObjectAsync()
 		{
 			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false); // Remove all Documents imported in AssemblySetup
 			createdObjectArtifactTypeId = await this.CreateObjectInWorkspaceAsync().ConfigureAwait(false);
+			this.objectsValidator = new ObjectsValidator(this.TestParameters);
+			this.choicesValidator = new ChoicesValidator(this.TestParameters);
 		}
 
 		[TearDown]
@@ -92,12 +98,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(results, NumberOfFilesToImport);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfFilesToImport));
-			ValidateObjects.ValidateImportedObjectsCountAndNotEmptyFieldsValues(
+			this.objectsValidator.ValidateImportedObjectsCountAndNotEmptyFieldsValues(
 					NumberOfFilesToImport,
 					false,
 					new[] { WellKnownFields.ControlNumber },
-					artifactTypeId,
-					this.TestParameters);
+					artifactTypeId);
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -243,19 +248,18 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(results, numberOfDocumentsToImport);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToImport));
-			ValidateObjects.ValidateImportedObjectsCountAndNotEmptyFieldsValues(numberOfDocumentsToImport, true, new[] { WellKnownFields.ControlNumber, WellKnownFields.PrivilegeDesignation, WellKnownFields.ConfidentialDesignation, WellKnownFields.ClassificationIndex }, artifactTypeId, this.TestParameters);
+			this.objectsValidator.ValidateImportedObjectsCountAndNotEmptyFieldsValues(numberOfDocumentsToImport, true, new[] { WellKnownFields.ControlNumber, WellKnownFields.PrivilegeDesignation, WellKnownFields.ConfidentialDesignation, WellKnownFields.ClassificationIndex }, artifactTypeId);
 			Dictionary<string, IEnumerable<string>> fieldsAndValuesToValidate = new Dictionary<string, IEnumerable<string>>();
 			fieldsAndValuesToValidate.Add(WellKnownFields.ConfidentialDesignation, confidentialDesignation);
 			fieldsAndValuesToValidate.Add(WellKnownFields.PrivilegeDesignation, privilegeDesignation);
 			fieldsAndValuesToValidate.Add(WellKnownFields.ClassificationIndex, classificationIndex);
 
-			await ValidateChoices.ValidateChoiceFieldValuesWithExpected(
+			await this.choicesValidator.ValidateChoiceFieldsValuesWithExpected(
 				controlNumber,
 				fieldsAndValuesToValidate,
 				multiValueDelimiter,
 				nestedValueDelimiter,
-				artifactTypeId,
-				this.TestParameters).ConfigureAwait(false);
+				artifactTypeId).ConfigureAwait(false);
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -289,12 +293,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(results, importData.Length);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(importData.Length));
-			ValidateObjects.ValidateImportedObjectsCountAndNotEmptyFieldsValues(
+			this.objectsValidator.ValidateImportedObjectsCountAndNotEmptyFieldsValues(
 				importData.Length,
 				true,
 				new[] { WellKnownFields.ControlNumber, WellKnownFields.PrivilegeDesignation, WellKnownFields.ConfidentialDesignation },
-				artifactTypeId,
-				this.TestParameters);
+				artifactTypeId);
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -381,12 +384,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			fieldsAndValuesToValidate.Add(WellKnownFields.DomainsEmailTo, domainsEmailTo);
 			fieldsAndValuesToValidate.Add(WellKnownFields.DomainsEmailFrom, domainsEmailFrom);
 
-			await ValidateObjects.ValidateObjectFieldValuesWithExpected(
+			await this.objectsValidator.ValidateObjectFieldsValuesWithExpected(
 				controlNumber,
 				fieldsAndValuesToValidate,
 				multiValueDelimiter,
-				artifactTypeId,
-				this.TestParameters).ConfigureAwait(false);
+				artifactTypeId).ConfigureAwait(false);
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -430,12 +432,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Dictionary<string, IEnumerable<string>> fieldsAndValuesToValidate = new Dictionary<string, IEnumerable<string>>();
 			fieldsAndValuesToValidate.Add(WellKnownFields.DomainsEmailTo, domainsEmailTo);
 
-			await ValidateObjects.ValidateObjectFieldValuesWithExpected(
+			await this.objectsValidator.ValidateObjectFieldsValuesWithExpected(
 				controlNumber,
 				fieldsAndValuesToValidate,
 				multiValueDelimiter,
-				artifactTypeId,
-				this.TestParameters).ConfigureAwait(false);
+				artifactTypeId).ConfigureAwait(false);
 		}
 
 		private static IEnumerable<string> GetControlNumberEnumerable(
