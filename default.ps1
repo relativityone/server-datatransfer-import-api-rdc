@@ -526,13 +526,13 @@ task Help -Alias ? -Description "Display task information" {
 task IntegrationTestsNightly -Description "Run all integration tests for the nightly pipeline" {
 	folders\Initialize-Folder $TestReportsDir -Safe
     folders\Initialize-Folder $IntegrationTestsReportDir
-	Testing\Invoke-IntegrationTests -TestCategoryFilter	"--where=`"cat==Integration and cat!=NotInCompatibility`""
+	Invoke-IntegrationTests -TestCategoryFilter	"--where=`"cat==Integration and cat!=NotInCompatibility`""
 }
 
 task IntegrationTests -Description "Run all integration tests" {
     folders\Initialize-Folder $TestReportsDir -Safe
     folders\Initialize-Folder $IntegrationTestsReportDir
-	Testing\Invoke-IntegrationTests -TestCategoryFilter	"--where=`"cat==Integration`""
+	Invoke-IntegrationTests -TestCategoryFilter	"--where=`"cat==Integration`""
 }
 
 task UIAutomationTests -Description "Runs all UI tests" {
@@ -806,4 +806,26 @@ task CreateTemplateTestParametersFile -Description "Create template of test para
     }
     $pathToTemplateFile = ".\Scripts\test-parameters-template.json"
     Copy-Item $pathToTemplateFile $TestParametersFile
+}
+
+Function Invoke-IntegrationTests {
+    param(
+        [String] $TestCategoryFilter
+    )
+
+    $SolutionFile = $MasterSolution
+    if ($ILMerge) {
+        $SolutionFile = $MasterILMergeSolution
+    }
+
+    Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
+    exec { & $NunitExe $SolutionFile `
+            "--labels=All" `
+            "--agents=$NumberOfProcessors" `
+            "--skipnontestassemblies" `
+            "--timeout=$TestTimeoutInMS" `
+            "--result=$IntegrationTestsResultXmlFile" `
+            "--out=$IntegrationTestsOutputFile" `
+            $TestCategoryFilter `
+    } -errorMessage "There was an error running the integration tests."
 }

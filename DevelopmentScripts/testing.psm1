@@ -17,28 +17,6 @@ Function Invoke-SetTestParameters {
     }
 }
 
-Function Invoke-IntegrationTests {
-    param(
-        [String] $TestCategoryFilter
-    )
-
-    $SolutionFile = $MasterSolution
-    if ($ILMerge) {
-        $SolutionFile = $MasterILMergeSolution
-    }
-
-    Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
-    exec { & $NunitExe $SolutionFile `
-            "--labels=All" `
-            "--agents=$NumberOfProcessors" `
-            "--skipnontestassemblies" `
-            "--timeout=$TestTimeoutInMS" `
-            "--result=$IntegrationTestsResultXmlFile" `
-            "--out=$IntegrationTestsOutputFile" `
-            $testCategoryFilter `
-    } -errorMessage "There was an error running the integration tests."
-}
-
 Function Remove-EmptyLogFile {
     param(
         [String] $LogFile
