@@ -149,8 +149,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
-			Assert.That(testJobResult.JobReportErrorsCount, Is.EqualTo(expectedErrorRows));
-			Assert.That(testJobResult.JobReportErrorsCount, Is.EqualTo(testJobResult.ErrorRows.Count));
+			string failureMessage = "Number of errors was different than expected.";
+			Assert.That(testJobResult.JobReportErrorsCount, Is.EqualTo(expectedErrorRows), () => failureMessage);
+			Assert.That(testJobResult.ErrorRows.Count, Is.EqualTo(expectedErrorRows), () => failureMessage);
 		}
 
 		protected virtual void ValidateFatalExceptionsNotExist(ImportTestJobResult testJobResult)

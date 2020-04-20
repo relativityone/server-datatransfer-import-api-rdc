@@ -17,6 +17,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.Services.Interfaces.ObjectType;
 	using Relativity.Services.Interfaces.ObjectType.Models;
@@ -33,6 +34,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private const string ReferenceToObjectFieldName = "ReferenceToObject";
 		private const string ReferenceToDocumentFieldName = "ReferenceToDocument";
 
+		/// <summary>
+		/// Test case can change import batch size, so we have to revert it to the initial value after each test.
+		/// </summary>
+		private int initialImportBatchSize;
+
 		private int objectArtifactTypeId;
 		private int referenceToObjectFieldId;
 
@@ -40,11 +46,18 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public async Task OneTimeSetupAsync()
 		{
 			this.objectArtifactTypeId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, $"{nameof(AssociateObjectsTests)}-Object")
-				.ConfigureAwait(false);
+											.ConfigureAwait(false);
 			this.referenceToObjectFieldId = await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, ReferenceToObjectFieldName, this.objectArtifactTypeId, (int)ArtifactType.Document)
 				.ConfigureAwait(false);
 			await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, ReferenceToDocumentFieldName, (int)ArtifactType.Document, this.objectArtifactTypeId)
 				.ConfigureAwait(false);
+			this.initialImportBatchSize = AppSettings.Instance.ImportBatchSize;
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			AppSettings.Instance.ImportBatchSize = this.initialImportBatchSize;
 		}
 
 		[IdentifiedTest("1415cfe8-8c4a-4559-b0ec-36ded3925f55")]
@@ -195,6 +208,42 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(results.JobReportErrorsCount, Is.EqualTo(RowsWithNonExistingObjects));
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(TotalRows));
+		}
+
+		[IdentifiedTest("20fe9dfe-7e40-4c7f-85d2-1f37a88f6fcd")]
+		[Feature.DataTransfer.ImportApi.BulkInsert.SqlServer]
+		public async Task ShouldCreateOnlySingleInstanceOfAssociatedObjectWithGivenNameAsync() // test for https://jira.kcura.com/browse/REL-421458
+		{
+			// ARRANGE
+			const int NumberOfDocuments = 6;
+			const int BatchSize = 2;
+
+			AppSettings.Instance.ImportBatchSize = BatchSize;
+
+			var settingsBuilder = NativeImportSettingsBuilder.New().WithDefaultSettings();
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settingsBuilder);
+
+			const string SingleObjectFieldName = "MySingleObject";
+			int firstObjectArtifactId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, "MySingleObject").ConfigureAwait(false);
+			await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, SingleObjectFieldName, firstObjectArtifactId, (int)ArtifactType.Document).ConfigureAwait(false);
+
+			List<string> singleObjectsSource = Enumerable.Repeat("SingleObjectInstance", NumberOfDocuments).ToList();
+
+			var dataSourceBuilder = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource())
+				.AddField(SingleObjectFieldName, singleObjectsSource);
+
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(dataSourceBuilder.Build(NumberOfDocuments));
+
+			// ASSERT
+			this.ThenTheImportJobIsSuccessful(results, NumberOfDocuments);
+			Assert.That(results.NumberOfJobMessages, Is.Positive, "Wrong number of job messages.");
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfDocuments), () => "Wrong number of completed rows.");
+
+			int actualAssociatedObjectCount = RdoHelper.QueryRelativityObjectCount(this.TestParameters, firstObjectArtifactId);
+			int expectedAssociatedObjectCount = singleObjectsSource.Distinct(CollationStringComparer.SQL_Latin1_General_CP1_CI_AS).Count();
+			Assert.That(actualAssociatedObjectCount, Is.EqualTo(expectedAssociatedObjectCount), () => "Wrong number of associated objects created during import");
 		}
 
 		private static void ThenTheErrorRowsHaveCorrectMessage(IEnumerable<IDictionary> errorRows, string expectedMessage)
