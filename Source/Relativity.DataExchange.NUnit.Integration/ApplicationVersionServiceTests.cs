@@ -27,6 +27,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		[IdentifiedTest("d54cce55-4d67-4488-8d1f-2e2f40d7bf28")]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.WebService)]
+		[Category(TestCategories.NotInCompatibility)]
 		public async Task ShouldGetTheBackendApiVersionAsync()
 		{
 			IApplicationVersionService service =

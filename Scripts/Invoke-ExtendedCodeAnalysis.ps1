@@ -19,7 +19,7 @@ Param(
     [Parameter(Mandatory=$True,Position=0)]
     [string]$SolutionFile,
     [Parameter(Mandatory=$False,Position=1)]
-    [string]$CliDownloadUrl = "https://relativity.jfrog.io/relativity/official-nuget-remote-cache/JetBrains.ReSharper.CommandLineTools.2018.2.3.nupkg",
+    [string]$CliDownloadUrl = "https://relativity.jfrog.io/relativity/api/nuget/nuget-anthology/Download/JetBrains.ReSharper.CommandLineTools/2018.2.3",
     [Parameter(Mandatory=$False,Position=2)]
     [string]$NuGetPackageUrl = "https://relativity.jfrog.io/relativity/nuget-local/ConfigureAwaitChecker.v9.0.15.0.nupkg",
     [Parameter(Mandatory=$False,Position=3)]
