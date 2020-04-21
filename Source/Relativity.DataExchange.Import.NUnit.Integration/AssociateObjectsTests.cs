@@ -40,13 +40,16 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private int initialImportBatchSize;
 
 		private int objectArtifactTypeId;
+		private int childObjectArtifactTypeId;
 		private int referenceToObjectFieldId;
 
 		[OneTimeSetUp]
 		public async Task OneTimeSetupAsync()
 		{
 			this.objectArtifactTypeId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, $"{nameof(AssociateObjectsTests)}-Object")
-											.ConfigureAwait(false);
+				.ConfigureAwait(false);
+			this.childObjectArtifactTypeId = await this.CreateChildObjectTypeAsync($"{nameof(AssociateObjectsTests)}-ChildObject", this.objectArtifactTypeId)
+				.ConfigureAwait(false);
 			this.referenceToObjectFieldId = await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, ReferenceToObjectFieldName, this.objectArtifactTypeId, (int)ArtifactType.Document)
 				.ConfigureAwait(false);
 			await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, ReferenceToDocumentFieldName, (int)ArtifactType.Document, this.objectArtifactTypeId)
@@ -58,6 +61,105 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void TearDown()
 		{
 			AppSettings.Instance.ImportBatchSize = this.initialImportBatchSize;
+		}
+
+		[IdentifiedTest("4ae96850-4ef9-4a1d-95eb-3140a5d7efa5")]
+		public async Task ShouldNotAppendOverlayChildObjectsThatNotExist()
+		{
+			// ARRANGE
+			const int RowsWithExistingObject = 5;
+			const int RowsWithNonExistingObject = 10;
+			const int TotalRows = RowsWithNonExistingObject + RowsWithExistingObject;
+
+			IEnumerable<string> existingRowsNames = Enumerable
+				.Range(1, RowsWithExistingObject)
+				.Select(i => $"{nameof(this.ShouldNotAppendOverlayChildObjectsThatNotExist)}-existing-{i}")
+				.ToList();
+
+			foreach (string name in existingRowsNames)
+			{
+				await this.CreateChildObjectInstanceAsync(name, this.childObjectArtifactTypeId, this.objectArtifactTypeId).ConfigureAwait(false);
+			}
+
+			IEnumerable<string> notExistingRowsNames = Enumerable
+				.Range(1, RowsWithNonExistingObject)
+				.Select(i => $"{nameof(this.ShouldNotAppendOverlayChildObjectsThatNotExist)}-non-existing-{i}")
+				.ToList();
+
+			IEnumerable<string> nameSource = existingRowsNames.Concat(notExistingRowsNames);
+
+			Settings settings = NativeImportSettingsProvider.DefaultNativeObjectImportSettings(this.childObjectArtifactTypeId);
+			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.RdoIdentifier, nameSource)
+				.Build();
+
+			// ACT
+			ImportTestJobResult result = this.JobExecutionContext.Execute(importDataSource);
+
+			// ASSERT
+			ThenTheErrorRowsHaveCorrectMessage(result.ErrorRows, " - Your account does not have rights to add a document or object to this case\n - No parent artifact specified for this new object");
+			Assert.That(result.JobReportErrorsCount, Is.EqualTo(RowsWithNonExistingObject));
+			Assert.That(result.NumberOfJobMessages, Is.GreaterThan(0));
+			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(TotalRows));
+		}
+
+		[IdentifiedTest("0d9cd961-0b6a-42d0-99ac-b58ea4ef21b7")]
+		public void ShouldNotOverlayDocumentsWithSharedOverlayIdentifier()
+		{
+			// ARRANGE
+			const int RowsWithDuplicatedOverlayIdentifier = 5;
+			const int RowsWithUniqueOverlayIdentifier = 10;
+			const int TotalRows = RowsWithUniqueOverlayIdentifier + RowsWithDuplicatedOverlayIdentifier;
+
+			List<int> objectIdentifiers = new List<int>();
+			for (int i = 1; i <= TotalRows; i++)
+			{
+				int id = RdoHelper.CreateObjectTypeInstance(
+					this.TestParameters,
+					this.objectArtifactTypeId,
+					new Dictionary<string, object> { { WellKnownFields.RdoIdentifier, $"obj-{nameof(this.ShouldNotOverlayDocumentsWithSharedOverlayIdentifier)}-{i}" } });
+				objectIdentifiers.Add(id);
+				if (i <= RowsWithDuplicatedOverlayIdentifier)
+				{
+					objectIdentifiers.Add(id);
+				}
+			}
+
+			IEnumerable<string> controlNumberSource = Enumerable.Range(1, TotalRows + RowsWithDuplicatedOverlayIdentifier)
+				.Select(i => $"doc-{nameof(this.ShouldNotOverlayDocumentsWithSharedOverlayIdentifier)}-{i}");
+
+			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, controlNumberSource)
+				.AddField(ReferenceToObjectFieldName, objectIdentifiers)
+				.Build();
+
+			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+			settings.ObjectFieldIdListContainsArtifactId = new List<int> { this.referenceToObjectFieldId };
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+
+			this.JobExecutionContext.Execute(importDataSource);
+
+			Settings overlaySettings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+			overlaySettings.SelectedIdentifierFieldName = ReferenceToObjectFieldName;
+			overlaySettings.OverwriteMode = OverwriteModeEnum.Overlay;
+			overlaySettings.IdentityFieldId = this.referenceToObjectFieldId;
+			overlaySettings.ObjectFieldIdListContainsArtifactId = new List<int> { this.referenceToObjectFieldId };
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, overlaySettings);
+
+			ImportDataSource<object[]> overlayImportDataSource = ImportDataSourceBuilder.New()
+				.AddField(ReferenceToObjectFieldName, objectIdentifiers.Distinct())
+				.Build();
+
+			// ACT
+			ImportTestJobResult result = this.JobExecutionContext.Execute(overlayImportDataSource);
+
+			// ASSERT
+			ThenTheErrorRowsHaveCorrectMessage(result.ErrorRows, " - This record's Overlay Identifier is shared by multiple documents in the case, and cannot be imported");
+			Assert.That(result.JobReportErrorsCount, Is.EqualTo(RowsWithDuplicatedOverlayIdentifier));
+			Assert.That(result.NumberOfJobMessages, Is.GreaterThan(0));
+			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(TotalRows));
 		}
 
 		[IdentifiedTest("1415cfe8-8c4a-4559-b0ec-36ded3925f55")]
@@ -169,7 +271,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		}
 
 		[IdentifiedTest("274340c0-e7ae-4c28-8be3-07863271a7a5")]
-		public async Task ShouldNotCreateObjectsThatAreChildrenAsync()
+		public async Task ShouldNotCreateAssociatedObjectsThatAreChildrenAsync()
 		{
 			// ARRANGE
 			const int RowsWithNonExistingObjects = 5;
@@ -177,21 +279,20 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			const int TotalRows = RowsWithExistingObjects + RowsWithNonExistingObjects;
 
 			const string ReferenceToChildObjectFieldName = "ReferenceToChildObject";
-			string childObjectTypeName = $"{nameof(AssociateObjectsTests)}-ChildObject";
-			string existingChildObjectName = $"{nameof(this.ShouldNotCreateObjectsThatAreChildrenAsync)}-existing";
+			string existingChildObjectName = $"{nameof(this.ShouldNotCreateAssociatedObjectsThatAreChildrenAsync)}-existing";
+			string nonExistingChildObjectName = $"{nameof(this.ShouldNotCreateAssociatedObjectsThatAreChildrenAsync)}-non-existing";
 
-			int childObjectTypeId = await this.CreateChildObjectTypeAsync(childObjectTypeName, this.objectArtifactTypeId).ConfigureAwait(false);
-			await this.CreateChildObjectInstance(existingChildObjectName, childObjectTypeId, this.objectArtifactTypeId).ConfigureAwait(false);
+			await this.CreateChildObjectInstanceAsync(existingChildObjectName, this.childObjectArtifactTypeId, this.objectArtifactTypeId).ConfigureAwait(false);
 			await FieldHelper.CreateSingleObjectFieldAsync(
 				this.TestParameters,
 				ReferenceToChildObjectFieldName,
-				childObjectTypeId,
+				this.childObjectArtifactTypeId,
 				(int)ArtifactType.Document).ConfigureAwait(false);
 
 			IEnumerable<string> controlNumberSource = Enumerable.Range(1, TotalRows)
-				.Select(i => $"doc-{nameof(this.ShouldNotCreateObjectsThatAreChildrenAsync)}-{i}");
+				.Select(i => $"doc-{nameof(this.ShouldNotCreateAssociatedObjectsThatAreChildrenAsync)}-{i}");
 			IEnumerable<string> referenceToChildObject = Enumerable.Range(1, TotalRows)
-				.Select(i => i <= RowsWithExistingObjects ? existingChildObjectName : "NonExistingChildObjectName");
+				.Select(i => i <= RowsWithExistingObjects ? existingChildObjectName : nonExistingChildObjectName);
 
 			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
 				.AddField(WellKnownFields.ControlNumber, controlNumberSource)
@@ -246,6 +347,108 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(actualAssociatedObjectCount, Is.EqualTo(expectedAssociatedObjectCount), () => "Wrong number of associated objects created during import");
 		}
 
+		[Test]
+		[Category(TestCategories.ImportDoc)]
+		[IdentifiedTest("7a83707e-ad9c-47da-b925-39a32784d0d2")]
+		public void ShouldNotOverlayDocumentsWhichDoNotExist()
+		{
+			// ARRANGE
+			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+
+			int numberOfDocumentsToOverlay = 10;
+			int numberOfDefaultDocuments = 10;
+			bool includeDefaultDocuments = true;
+			string controlNumberSuffix = "OverlayTest";
+
+			// Prepare data for import under test
+			settings.OverwriteMode = OverwriteModeEnum.Overlay;
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+
+			IEnumerable<string> controlNumber = GetControlNumberForImport(
+				numberOfDocumentsToOverlay,
+				controlNumberSuffix,
+				includeDefaultDocuments);
+
+			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, controlNumber).Build();
+
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
+
+			// ASSERT
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToOverlay + numberOfDefaultDocuments), () => "Wrong number of job messages.");
+			Assert.That(results.ErrorRows.Count, Is.EqualTo(numberOfDocumentsToOverlay), () => "Wrong number of error messages.");
+
+			ThenTheErrorRowsHaveCorrectMessage(
+				results.ErrorRows,
+				" - This document identifier does not exist in the workspace - no document to overwrite");
+		}
+
+		[Category(TestCategories.ImportDoc)]
+		[IdentifiedTest("f6ea6c09-ffb8-4191-95b6-75e8f04c96e3")]
+		public void ShouldNotAppendDocumentsWhichAlreadyExist()
+		{
+			// ARRANGE
+			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+
+			int numberOfDocumentsToAppend = 10;
+			int numberOfDefaultDocuments = 10;
+			string controlNumberSuffix = "AppendTest";
+
+			// Prepare data for import under test
+			settings.OverwriteMode = OverwriteModeEnum.Append;
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+
+			IEnumerable<string> controlNumberStandAlone = GetControlNumberForImport(
+				numberOfDocumentsToAppend,
+				controlNumberSuffix,
+				false);
+
+			IEnumerable<string> controlNumberWithDefaults = GetControlNumberForImport(
+				numberOfDocumentsToAppend,
+				controlNumberSuffix,
+				true);
+
+			ImportDataSource<object[]> importDataSourceStandAlone = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, controlNumberStandAlone).Build();
+
+			ImportDataSource<object[]> importDataSourceWithDefaults = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, controlNumberWithDefaults).Build();
+
+			this.JobExecutionContext.Execute(importDataSourceStandAlone);
+
+			// ACT
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+			ImportTestJobResult resultsWithDefaults = this.JobExecutionContext.Execute(importDataSourceWithDefaults);
+
+			// ASSERT
+			Assert.That(resultsWithDefaults.JobReportTotalRows, Is.EqualTo(numberOfDocumentsToAppend + numberOfDefaultDocuments), () => "Wrong number of job messages.");
+			Assert.That(resultsWithDefaults.ErrorRows.Count, Is.EqualTo(numberOfDocumentsToAppend + numberOfDefaultDocuments), () => "Wrong number of errors.");
+
+			foreach (var elem in resultsWithDefaults.ErrorRows)
+			{
+				string errorMsg = (string)elem["Message"];
+				string controlName = (string)elem["Identifier"];
+
+				Assert.That(errorMsg, Is.EqualTo($" - An item with identifier {controlName} already exists in the workspace"), () => "Unexpected error message.");
+			}
+		}
+
+		private static IEnumerable<string> GetControlNumberForImport(
+			int numberOfDocumentsToAppend,
+			string appendToName,
+			bool includeDefaultDocuments)
+		{
+			IEnumerable<string> controlNumber = includeDefaultDocuments
+				                                    ? TestData.SampleDocFiles.Select(Path.GetFileName)
+				                                    : Enumerable.Empty<string>();
+
+			controlNumber = controlNumber.Concat(
+				Enumerable.Range(1, numberOfDocumentsToAppend).Select(p => $"{p}--{appendToName}"));
+
+			return controlNumber;
+		}
+
 		private static void ThenTheErrorRowsHaveCorrectMessage(IEnumerable<IDictionary> errorRows, string expectedMessage)
 		{
 			foreach (var row in errorRows)
@@ -273,7 +476,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		private async Task CreateChildObjectInstance(string name, int artifactTypeId, int parentArtifactTypeId)
+		private async Task CreateChildObjectInstanceAsync(string name, int artifactTypeId, int parentArtifactTypeId)
 		{
 			int parentObjectArtifactId = RdoHelper.CreateObjectTypeInstance(
 				this.TestParameters,
