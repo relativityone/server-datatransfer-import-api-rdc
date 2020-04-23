@@ -635,7 +635,8 @@ Namespace kCura.WinEDDS
 
 						Me.LogInformation("Preparing to import documents via WinEDDS.")
 						Using Timekeeper.CaptureTime("ReadFile_ProcessDocuments")
-							_columnHeaders = _artifactReader.GetColumnNames(_settings)
+							_artifactReader.ValidateColumnNames(AddressOf WriteInvalidColumnNameWarning)
+
 							If _firstLineContainsColumnNames Then Offset = -1
 							Statistics.BatchSize = Me.ImportBatchSize
 							JobCounter = 1
@@ -660,10 +661,7 @@ Namespace kCura.WinEDDS
 												WriteStatusLine(EventType2.Count, String.Empty)
 												line = _artifactReader.ReadArtifact
 											End Using
-											Dim lineStatus As Int32 = 0
-											'If line.Count <> _columnHeaders.Length Then
-											'	lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
-											'End If
+											Dim lineStatus As Long = 0
 
 											Dim id As String
 											Using Timekeeper.CaptureTime("ReadFile_ManageDocument")
@@ -822,6 +820,10 @@ Namespace kCura.WinEDDS
 			Next
 			fieldIdList.Add(Me.FileInfoField(_artifactTypeID).ArtifactID)
 			_fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
+		End Sub
+
+		Private Sub WriteInvalidColumnNameWarning(columnName As String)
+			WriteStatusLine(EventType2.Warning, $"Field {columnName} not exists in workspace")
 		End Sub
 
 		Private Function ManageDocument(ByVal fileTypeIdentifier As IFileTypeIdentifier, ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String

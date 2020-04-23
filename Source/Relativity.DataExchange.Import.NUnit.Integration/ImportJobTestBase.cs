@@ -10,6 +10,7 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
+	using System.Linq;
 	using System.Net;
 	using System.Threading.Tasks;
 
@@ -143,6 +144,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
 			Assert.That(testJobResult.JobReportTotalRows, Is.EqualTo(expectedTotalRows));
+		}
+
+		protected virtual void ValidateJobMessagesContainsText(ImportTestJobResult testJobResult, string text)
+		{
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
+
+			Assert.That(testJobResult.JobMessages, Has.Some.Contains(text));
 		}
 
 		protected virtual void ValidateErrorRowsCount(ImportTestJobResult testJobResult, int expectedErrorRows)

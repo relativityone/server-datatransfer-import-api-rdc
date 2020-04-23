@@ -14,7 +14,6 @@ Namespace kCura.WinEDDS
 #Region "Members"
 
 		Protected _columnsAreInitialized As Boolean
-		Protected _columnHeaders As String()
 
 		Protected _documentManager As kCura.WinEDDS.Service.DocumentManager
 		Protected _codeManager As kCura.WinEDDS.Service.CodeManager

@@ -231,6 +231,9 @@ Namespace kCura.WinEDDS
 			Return _columnHeaders
 		End Function
 
+		Public Sub ValidateColumnNames(invalidNameAction As Action(Of String)) Implements IArtifactReader.ValidateColumnNames
+		End Sub
+
 		Public Function SourceIdentifierValue() As String Implements IArtifactReader.SourceIdentifierValue
 			Return If(_currentIdentifier, String.Empty)
 		End Function
@@ -267,7 +270,6 @@ Namespace kCura.WinEDDS
 				Return Me.Reader.BaseStream.Position
 			End Get
 		End Property
-
 
 		Protected Overrides Function ParseNullableDecimal(ByVal value As String) As Nullable(Of Decimal)
 			If _executionSource = ExecutionSource.Rdc

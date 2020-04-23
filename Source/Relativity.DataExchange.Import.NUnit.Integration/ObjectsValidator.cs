@@ -29,21 +29,35 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.testParameters = testParameters;
 		}
 
-		public void ValidateImportedObjectsCountAndNotEmptyFieldsValues(
-			int expectedObjectsCount,
-			bool validateFieldsWithObjectsAreNotEmpty,
-			string[] fieldsToValidate,
-			int objectArtifactTypeId)
+		public static void ThenObjectsFieldsAreImported(IList<RelativityObject> relativityObjects, string[] fieldsToValidate)
 		{
-			IList<RelativityObject> objectList = RdoHelper.QueryRelativityObjects(this.testParameters, objectArtifactTypeId, fieldsToValidate);
-			Assert.That(objectList.Count, Is.EqualTo(expectedObjectsCount));
-
-			if (validateFieldsWithObjectsAreNotEmpty)
+			if (relativityObjects == null)
 			{
-				foreach (RelativityObject objectItem in objectList)
-				{
-					ValidateFieldsWithObjectsAreNotEmpty(objectItem);
-				}
+				return;
+			}
+
+			foreach (RelativityObject relativityObject in relativityObjects)
+			{
+				var values = relativityObject.FieldValues
+					.Where(x => fieldsToValidate.Contains(x.Field.Name))
+					.Select(x => x.Value);
+				Assert.That(values, Has.All.Not.Null, "object field value not imported correctly");
+			}
+		}
+
+		public static void ThenObjectsFieldsAreNotImported(IList<RelativityObject> relativityObjects, string[] fieldsToValidate)
+		{
+			if (relativityObjects == null)
+			{
+				return;
+			}
+
+			foreach (RelativityObject relativityObject in relativityObjects)
+			{
+				var values = relativityObject.FieldValues
+					.Where(x => fieldsToValidate.Contains(x.Field.Name))
+					.Select(x => x.Value);
+				Assert.That(!values.Any(), "object field value not imported correctly");
 			}
 		}
 
@@ -62,17 +76,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					.Zip(fieldPossibleValues, (id, objects) => new DocumentObjectsDto(id, objects.Split(multiValueDelimiter)));
 
 				await ThenTheObjectFieldHasExpectedValues(fieldName, expectedFieldValuesToObjectMapping, artifactTypeId).ConfigureAwait(false);
-			}
-		}
-
-		private static void ValidateFieldsWithObjectsAreNotEmpty(RelativityObject fieldRow)
-		{
-			foreach (FieldValuePair column in fieldRow.FieldValues)
-			{
-				Assert.That(
-					column.Value,
-					!Is.Null,
-					$"{column.Value} value is null - object field value not imported correctly");
 			}
 		}
 

@@ -1,13 +1,14 @@
+Imports System.Collections.Generic
 Imports kCura.WinEDDS.Api
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderReader
 
 		Implements kCura.WinEDDS.Api.IArtifactReader
-
 
 		Private Const _KCURAMARKERFILENAME As String = "kcuramarkerfilename"
 
@@ -127,14 +128,20 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Public Function GetColumnNames(ByVal args As Object) As String() Implements kCura.WinEDDS.Api.IArtifactReader.GetColumnNames
 			If _columnNames Is Nothing Then
-				Dim retval As New System.Collections.ArrayList
-				For iFieldIndex As Integer = 0 To _reader.FieldCount - 1
-					retval.Add(_reader.GetName(iFieldIndex))
-				Next
-				_columnNames = DirectCast(retval.ToArray(GetType(String)), String())
+				_columnNames = Enumerable _
+					.Range(0, _reader.FieldCount) _
+					.Select(Function(fieldIndex) _reader.GetName(fieldIndex)) _
+					.ToArray()
 			End If
+
 			Return _columnNames
 		End Function
+
+		Public Sub ValidateColumnNames(invalidNameAction As Action(Of String)) Implements IArtifactReader.ValidateColumnNames
+			For Each invalidName As String In GetColumnNames(Nothing).Where(Function(columnName) _allFields(columnName.ToLower()) Is Nothing)
+				invalidNameAction(invalidName)
+			Next
+		End Sub
 
 		Public ReadOnly Property HasMoreRecords() As Boolean Implements kCura.WinEDDS.Api.IArtifactReader.HasMoreRecords
 			Get

@@ -29,12 +29,22 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Interfaces.Shared.Models;
 	using Relativity.Services.LinkManager.Interfaces;
+	using Relativity.Services.Objects.DataContracts;
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	public class PositiveImportJobTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
+		private const string SingleChoiceFieldName = "SINGLE_CHOICE_FIELD";
+		private const string MultiChoiceFieldName1 = "MULTI_CHOICE_FIELD_1";
+		private const string MultiChoiceFieldName2 = "MULTI_CHOICE_FIELD_2";
+		private const string MultiChoiceFieldNameNotExisting = "MULTI_CHOICE_FIELD_NOT_EXISTING";
+
+		private const string SingleObjectFieldName = "SINGLE_OBJECT_FIELD";
+		private const string MultiObjectFieldName1 = "MULTI_OBJECT_FIELD_1";
+		private const string MultiObjectFieldName2 = "MULTI_OBJECT_FIELD_2";
+
 		private int createdObjectArtifactTypeId = 0;
 
 		private ObjectsValidator objectsValidator;
@@ -46,6 +56,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false); // Remove all Documents imported in AssemblySetup
 			createdObjectArtifactTypeId = await this.CreateObjectInWorkspaceAsync().ConfigureAwait(false);
+			await CreateChoiceFieldsAsync(this.createdObjectArtifactTypeId).ConfigureAwait(false);
+			await CreateChoiceFieldsAsync((int)ArtifactTypeID.Document).ConfigureAwait(false);
+			await CreateObjectFieldsAsync(this.createdObjectArtifactTypeId).ConfigureAwait(false);
+			await CreateObjectFieldsAsync((int)ArtifactTypeID.Document).ConfigureAwait(false);
+
 			this.objectsValidator = new ObjectsValidator(this.TestParameters);
 			this.choicesValidator = new ChoicesValidator(this.TestParameters);
 		}
@@ -98,11 +113,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(results, NumberOfFilesToImport);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfFilesToImport));
-			this.objectsValidator.ValidateImportedObjectsCountAndNotEmptyFieldsValues(
-					NumberOfFilesToImport,
-					false,
-					new[] { WellKnownFields.ControlNumber },
-					artifactTypeId);
+
+			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, artifactTypeId, fields: new[] { WellKnownFields.ControlNumber });
+			Assert.That(relativityObjects.Count, Is.EqualTo(NumberOfFilesToImport));
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -207,7 +220,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				overwriteMode,
 				numberOfDocumentsToAppend,
 				$"{nameof(this.ShouldImportDocumentWithChoices)}{overwriteMode}").ToList();
-			IEnumerable<string> confidentialDesignation = RandomPathGenerator.GetChoiceGenerator(
+			IEnumerable<string> singleChoiceField = RandomPathGenerator.GetChoiceGenerator(
 				numOfDifferentElements: 100,
 				maxElementLength: 200,
 				numOfDifferentPaths: 100,
@@ -216,7 +229,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				nestedValueDelimiter: nestedValueDelimiter).ToEnumerable().Take(numberOfDocumentsToImport).ToList();
 
 			// Overlay replace.
-			IEnumerable<string> privilegeDesignation = RandomPathGenerator.GetChoiceGenerator(
+			IEnumerable<string> multiChoiceField = RandomPathGenerator.GetChoiceGenerator(
 					numOfDifferentElements: 250,
 					maxElementLength: 200,
 					numOfDifferentPaths: 100,
@@ -226,7 +239,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.RandomUniqueBatch(4, multiValueDelimiter).Take(numberOfDocumentsToImport).ToList();
 
 			// Overlay append.
-			IEnumerable<string> classificationIndex = RandomPathGenerator.GetChoiceGenerator(
+			IEnumerable<string> multiChoiceFieldNotExisting = RandomPathGenerator.GetChoiceGenerator(
 					numOfDifferentElements: 250,
 					maxElementLength: 200,
 					numOfDifferentPaths: 100,
@@ -237,10 +250,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
 				.AddField(WellKnownFields.ControlNumber, controlNumber)
-				.AddField(WellKnownFields.ConfidentialDesignation, confidentialDesignation)
-				.AddField(WellKnownFields.PrivilegeDesignation, privilegeDesignation).AddField(
-					WellKnownFields.ClassificationIndex,
-					classificationIndex).Build();
+				.AddField(SingleChoiceFieldName, singleChoiceField)
+				.AddField(MultiChoiceFieldName1, multiChoiceField)
+				.AddField(MultiChoiceFieldNameNotExisting, multiChoiceFieldNotExisting)
+				.Build();
 
 			// ACT
 			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
@@ -249,11 +262,17 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(results, numberOfDocumentsToImport);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToImport));
-			this.objectsValidator.ValidateImportedObjectsCountAndNotEmptyFieldsValues(numberOfDocumentsToImport, true, new[] { WellKnownFields.ControlNumber, WellKnownFields.PrivilegeDesignation, WellKnownFields.ConfidentialDesignation, WellKnownFields.ClassificationIndex }, artifactTypeId);
+
+			ValidateJobMessagesContainsText(results, "Warning - Field MULTI_CHOICE_FIELD_NOT_EXISTING not exists in workspace");
+			string[] fieldsToValidate = new[] { WellKnownFields.ControlNumber, SingleChoiceFieldName, MultiChoiceFieldName1, MultiChoiceFieldNameNotExisting };
+			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, artifactTypeId, fieldsToValidate);
+			Assert.That(relativityObjects.Count, Is.EqualTo(numberOfDocumentsToImport));
+			ObjectsValidator.ThenObjectsFieldsAreImported(relativityObjects, fieldsToValidate: new[] { WellKnownFields.ControlNumber, MultiChoiceFieldName1, SingleChoiceFieldName });
+			ObjectsValidator.ThenObjectsFieldsAreNotImported(relativityObjects, fieldsToValidate: new[] { MultiChoiceFieldNameNotExisting });
+
 			Dictionary<string, IEnumerable<string>> fieldsAndValuesToValidate = new Dictionary<string, IEnumerable<string>>();
-			fieldsAndValuesToValidate.Add(WellKnownFields.ConfidentialDesignation, confidentialDesignation);
-			fieldsAndValuesToValidate.Add(WellKnownFields.PrivilegeDesignation, privilegeDesignation);
-			fieldsAndValuesToValidate.Add(WellKnownFields.ClassificationIndex, classificationIndex);
+			fieldsAndValuesToValidate.Add(SingleChoiceFieldName, singleChoiceField);
+			fieldsAndValuesToValidate.Add(MultiChoiceFieldName1, multiChoiceField);
 
 			await this.choicesValidator.ValidateChoiceFieldsValuesWithExpected(
 				controlNumber,
@@ -294,11 +313,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(results, importData.Length);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(importData.Length));
-			this.objectsValidator.ValidateImportedObjectsCountAndNotEmptyFieldsValues(
-				importData.Length,
-				true,
-				new[] { WellKnownFields.ControlNumber, WellKnownFields.PrivilegeDesignation, WellKnownFields.ConfidentialDesignation },
-				artifactTypeId);
+
+			string[] fieldsToValidate = new[] { WellKnownFields.ControlNumber, SingleChoiceFieldName, MultiChoiceFieldName1 };
+			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, artifactTypeId, fieldsToValidate);
+			Assert.That(relativityObjects.Count, Is.EqualTo(importData.Length));
+			ObjectsValidator.ThenObjectsFieldsAreImported(relativityObjects, fieldsToValidate);
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -340,14 +359,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			IEnumerable<string> controlNumber = GetControlNumberEnumerable(overwriteMode, numberOfDocumentsToAppend, $"{nameof(this.ShouldImportDocumentWithObjects)}{overwriteMode}").ToList();
 
-			IEnumerable<string> originatingImagingDocumentError = RandomPathGenerator.GetObjectGenerator(
+			IEnumerable<string> singleObjectField = RandomPathGenerator.GetObjectGenerator(
 				numOfDifferentElements: 100,
 				maxElementLength: 255,
 				numOfDifferentPaths: 100,
 				maxPathDepth: 1,
 				multiValueDelimiter: multiValueDelimiter).ToEnumerable().Take(numberOfDocumentsToImport).ToList();
 
-			IEnumerable<string> domainsEmailTo = RandomPathGenerator.GetObjectGenerator(
+			IEnumerable<string> multiObjectField1 = RandomPathGenerator.GetObjectGenerator(
 					numOfDifferentElements: 300,
 					maxElementLength: 255,
 					numOfDifferentPaths: 100,
@@ -356,7 +375,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.RandomUniqueBatch(2, multiValueDelimiter)
 				.Take(numberOfDocumentsToImport).ToList();
 
-			IEnumerable<string> domainsEmailFrom = RandomPathGenerator.GetObjectGenerator(
+			IEnumerable<string> multiObjectField2 = RandomPathGenerator.GetObjectGenerator(
 					numOfDifferentElements: 400,
 					maxElementLength: 255,
 					numOfDifferentPaths: 100,
@@ -367,10 +386,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
 				.AddField(WellKnownFields.ControlNumber, controlNumber)
-				.AddField(WellKnownFields.OriginatingImagingDocumentError, originatingImagingDocumentError)
-				.AddField(WellKnownFields.DomainsEmailTo, domainsEmailTo).AddField(
-					WellKnownFields.DomainsEmailFrom,
-					domainsEmailFrom).Build();
+				.AddField(SingleObjectFieldName, singleObjectField)
+				.AddField(MultiObjectFieldName1, multiObjectField1)
+				.AddField(MultiObjectFieldName2, multiObjectField2)
+				.Build();
 
 			// ACT
 			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
@@ -381,9 +400,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToImport));
 
 			Dictionary<string, IEnumerable<string>> fieldsAndValuesToValidate = new Dictionary<string, IEnumerable<string>>();
-			fieldsAndValuesToValidate.Add(WellKnownFields.OriginatingImagingDocumentError, originatingImagingDocumentError);
-			fieldsAndValuesToValidate.Add(WellKnownFields.DomainsEmailTo, domainsEmailTo);
-			fieldsAndValuesToValidate.Add(WellKnownFields.DomainsEmailFrom, domainsEmailFrom);
+			fieldsAndValuesToValidate.Add(SingleObjectFieldName, singleObjectField);
+			fieldsAndValuesToValidate.Add(MultiObjectFieldName1, multiObjectField1);
+			fieldsAndValuesToValidate.Add(MultiObjectFieldName2, multiObjectField2);
 
 			await this.objectsValidator.ValidateObjectFieldsValuesWithExpected(
 				controlNumber,
@@ -416,11 +435,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			IEnumerable<string> controlNumber = GetControlNumberEnumerable(overwriteMode, numberOfDocumentsToAppend, $"{nameof(this.ShouldImportDocumentWithObjects)}{overwriteMode}").ToList();
 
-			IEnumerable<string> domainsEmailTo = new List<string> { "UÁØ]7$(ÝÄ2H", " uáØ]7$(ÝÄ2H", "hÜ)ßêÏuNëiìÚÃOÒËetYÏÝÛþCLS4MÉI2dwÔ8má] {aLÑ<1dûxcêx3)ýëÎÝçrvzIÆÂWgCï5Dé'tÝNp*â0èX|éßGÿ[yèjÑúëi!8Ç.åÊA,b@ û~LÐZÄûÖ" };
+			IEnumerable<string> multiObjectField = new List<string> { "UÁØ]7$(ÝÄ2H", " uáØ]7$(ÝÄ2H", "hÜ)ßêÏuNëiìÚÃOÒËetYÏÝÛþCLS4MÉI2dwÔ8má] {aLÑ<1dûxcêx3)ýëÎÝçrvzIÆÂWgCï5Dé'tÝNp*â0èX|éßGÿ[yèjÑúëi!8Ç.åÊA,b@ û~LÐZÄûÖ" };
 
 			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
 				.AddField(WellKnownFields.ControlNumber, controlNumber)
-				.AddField(WellKnownFields.DomainsEmailTo, domainsEmailTo).Build();
+				.AddField(MultiObjectFieldName1, multiObjectField).Build();
 
 			// ACT
 			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
@@ -431,7 +450,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToImport));
 
 			Dictionary<string, IEnumerable<string>> fieldsAndValuesToValidate = new Dictionary<string, IEnumerable<string>>();
-			fieldsAndValuesToValidate.Add(WellKnownFields.DomainsEmailTo, domainsEmailTo);
+			fieldsAndValuesToValidate.Add(MultiObjectFieldName1, multiObjectField);
 
 			await this.objectsValidator.ValidateObjectFieldsValuesWithExpected(
 				controlNumber,
@@ -472,27 +491,55 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			return artifactTypeId;
 		}
 
+		private async Task CreateChoiceFieldsAsync(int artifactTypeId)
+		{
+			await FieldHelper.CreateSingleChoiceFieldAsync(
+				this.TestParameters,
+				SingleChoiceFieldName,
+				artifactTypeId,
+				false).ConfigureAwait(false);
+			await FieldHelper.CreateMultiChoiceFieldAsync(
+				this.TestParameters,
+				MultiChoiceFieldName1,
+				artifactTypeId,
+				false).ConfigureAwait(false);
+			await FieldHelper.CreateMultiChoiceFieldAsync(
+				this.TestParameters,
+				MultiChoiceFieldName2,
+				artifactTypeId,
+				false).ConfigureAwait(false);
+		}
+
+		private async Task CreateObjectFieldsAsync(int artifactTypeId)
+		{
+			int multiObjectArtifactTypeId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, $"Multi object type for artifactTypeId {artifactTypeId}")
+				                     .ConfigureAwait(false);
+			await FieldHelper.CreateMultiObjectFieldAsync(
+				this.TestParameters,
+				MultiObjectFieldName1,
+				multiObjectArtifactTypeId,
+				artifactTypeId).ConfigureAwait(false);
+			await FieldHelper.CreateMultiObjectFieldAsync(
+				this.TestParameters,
+				MultiObjectFieldName2,
+				multiObjectArtifactTypeId,
+				artifactTypeId).ConfigureAwait(false);
+
+			int singleObjectArtifactTypeId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, $"Single object type for artifactTypeId {artifactTypeId}")
+				                         .ConfigureAwait(false);
+			await FieldHelper.CreateSingleObjectFieldAsync(
+				this.TestParameters,
+				SingleObjectFieldName,
+				singleObjectArtifactTypeId,
+				artifactTypeId).ConfigureAwait(false);
+		}
+
 		private async Task<int> CreateObjectInWorkspaceAsync()
 		{
 			string objectName = Guid.NewGuid().ToString();
 
 			var objectId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, objectName).ConfigureAwait(false);
 			await FieldHelper.CreateFileFieldAsync(this.TestParameters, "FilePath", objectId).ConfigureAwait(false);
-			await FieldHelper.CreateSingleChoiceFieldAsync(
-				this.TestParameters,
-				WellKnownFields.ConfidentialDesignation,
-				objectId,
-				false).ConfigureAwait(false);
-			await FieldHelper.CreateMultiChoiceFieldAsync(
-				this.TestParameters,
-				WellKnownFields.PrivilegeDesignation,
-				objectId,
-				false).ConfigureAwait(false);
-			await FieldHelper.CreateMultiChoiceFieldAsync(
-				this.TestParameters,
-				WellKnownFields.ClassificationIndex,
-				objectId,
-				false).ConfigureAwait(false);
 
 			var controlNumberFieldRequest = new FixedLengthFieldRequest()
 				                                {
@@ -519,27 +566,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					FieldHelper.QueryIdentifierFieldId(this.TestParameters, objectName),
 					controlNumberFieldRequest).ConfigureAwait(false);
 			}
-
-			int domainObjectId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, "DomainForObject")
-				                     .ConfigureAwait(false);
-			await FieldHelper.CreateMultiObjectFieldAsync(
-				this.TestParameters,
-				WellKnownFields.DomainsEmailFrom,
-				domainObjectId,
-				objectId).ConfigureAwait(false);
-			await FieldHelper.CreateMultiObjectFieldAsync(
-				this.TestParameters,
-				WellKnownFields.DomainsEmailTo,
-				domainObjectId,
-				objectId).ConfigureAwait(false);
-
-			int imagingObjectError = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, "Imaging Object Error")
-				                         .ConfigureAwait(false);
-			await FieldHelper.CreateSingleObjectFieldAsync(
-				this.TestParameters,
-				WellKnownFields.OriginatingImagingDocumentError,
-				imagingObjectError,
-				objectId).ConfigureAwait(false);
 
 			return objectId;
 		}

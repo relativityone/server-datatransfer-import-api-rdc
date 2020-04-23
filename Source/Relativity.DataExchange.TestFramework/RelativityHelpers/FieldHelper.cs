@@ -139,10 +139,10 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			using (var fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(parameters))
 			{
 				int fieldId = await Policy
-							.Handle<Exception>()
-							.WaitAndRetryAsync(3, retryNumber => TimeSpan.FromSeconds(3 ^ retryNumber))
-							.ExecuteAsync(() => createMethod(fieldManager, fieldRequest, parameters.WorkspaceId))
-							.ConfigureAwait(false);
+					       .Handle<Exception>()
+					       .WaitAndRetryAsync(3, retryNumber => TimeSpan.FromSeconds(3 ^ retryNumber))
+					       .ExecuteAsync(() => createMethod(fieldManager, fieldRequest, parameters.WorkspaceId))
+					       .ConfigureAwait(false);
 				return fieldId;
 			}
 		}

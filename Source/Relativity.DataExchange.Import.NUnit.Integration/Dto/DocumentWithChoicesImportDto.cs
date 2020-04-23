@@ -12,20 +12,20 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 
 	public class DocumentWithChoicesImportDto
 	{
-		public DocumentWithChoicesImportDto(string controlNumber, string confidentialDesignation, string privilegeDesignation)
+		public DocumentWithChoicesImportDto(string controlNumber, string singleChoiceField, string multiChoiceField)
 		{
 			this.ControlNumber = controlNumber;
-			this.ConfidentialDesignation = confidentialDesignation;
-			this.PrivilegeDesignation = privilegeDesignation;
+			this.SingleChoiceField = singleChoiceField;
+			this.MultiChoiceField = multiChoiceField;
 		}
 
 		[DisplayName(WellKnownFields.ControlNumber)]
 		public string ControlNumber { get; }
 
-		[DisplayName(WellKnownFields.ConfidentialDesignation)]
-		public string ConfidentialDesignation { get; }
+		[DisplayName("SINGLE_CHOICE_FIELD")]
+		public string SingleChoiceField { get; }
 
-		[DisplayName(WellKnownFields.PrivilegeDesignation)]
-		public string PrivilegeDesignation { get; }
+		[DisplayName("MULTI_CHOICE_FIELD_1")]
+		public string MultiChoiceField { get; }
 	}
 }
