@@ -8,6 +8,7 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldV
 	using System.Collections;
 	using System.Linq;
 
+	[Serializable]
 	public class ObjectNameValueSource : IFieldValueSource
 	{
 		private readonly IdentifierValueSource identifierValueSource;
@@ -23,6 +24,18 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldV
 			this.numberOfObjects = numberOfObjects;
 			this.maxNumberOfMultiValues = maxNumberOfMultiValues;
 			this.multiValuesDelimiter = multiValuesDelimiter;
+		}
+
+		public static ObjectNameValueSource CreateForMultiObjects(
+			IdentifierValueSource identifierValueSource,
+			int numberOfObjects,
+			int maxNumberOfMultiValues)
+		{
+			return CreateForMultiObjects(
+				identifierValueSource,
+				numberOfObjects,
+				maxNumberOfMultiValues,
+				SettingsConstants.DefaultMultiValueDelimiter.ToString());
 		}
 
 		public static ObjectNameValueSource CreateForMultiObjects(

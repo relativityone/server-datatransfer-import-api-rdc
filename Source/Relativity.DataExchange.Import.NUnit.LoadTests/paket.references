@@ -15,3 +15,6 @@ relativity.services.interfaces.private
 relativity.testing.identification
 relativity.transfer.client
 stylecop.analyzers
+
+group integration-tests
+System.ValueTuple

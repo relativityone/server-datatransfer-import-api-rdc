@@ -42,7 +42,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			IEnumerable<Exception> fatalExceptions =
 				this.JobExecutionContext.FatalExceptionsFromReport;
 
-			Assert.That(fatalExceptions.All(item => item == null));
+			Assert.That(fatalExceptions, Has.All.Null);
 			Assert.That(this.JobExecutionContext.TestJobResult.JobFatalExceptions, Has.Count.Zero);
 		}
 
