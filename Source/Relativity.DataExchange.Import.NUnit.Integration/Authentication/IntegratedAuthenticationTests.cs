@@ -43,7 +43,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 		public static Task OneTimeTearDown()
 		{
 			return Task.WhenAll(
-				UsersHelper.SwitchIntegratedAuthenticationForCurrentUser(AssemblySetup.TestParameters, isEnabled: false),
+				UsersHelper.SwitchIntegratedAuthenticationForCurrentUserAsync(AssemblySetup.TestParameters, isEnabled: false),
 				ChangeStateOfIntegratedAuthentication(isEnabled: false));
 		}
 
@@ -54,7 +54,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 		{
 			// ARRANGE
 			await ChangeStateOfIntegratedAuthentication(false).ConfigureAwait(false);
-			await UsersHelper.SwitchIntegratedAuthenticationForCurrentUser(AssemblySetup.TestParameters, isEnabled: true).ConfigureAwait(false);
+			await UsersHelper.SwitchIntegratedAuthenticationForCurrentUserAsync(AssemblySetup.TestParameters, isEnabled: true).ConfigureAwait(false);
 
 			// ACT
 			TestDelegate createImportApiUsingIntegratedAuthenticationAction =
@@ -75,7 +75,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 
 			// ARRANGE
 			await ChangeStateOfIntegratedAuthentication(true).ConfigureAwait(false);
-			await UsersHelper.SwitchIntegratedAuthenticationForCurrentUser(AssemblySetup.TestParameters, isEnabled: true).ConfigureAwait(false);
+			await UsersHelper.SwitchIntegratedAuthenticationForCurrentUserAsync(AssemblySetup.TestParameters, isEnabled: true).ConfigureAwait(false);
 			await RdoHelper.DeleteAllObjectsByTypeAsync(AssemblySetup.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
 
 			ForceClient(client);

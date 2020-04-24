@@ -10,12 +10,15 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
+	using System.Collections;
+	using System.Collections.Generic;
+	using System.IO;
 	using System.Linq;
 	using System.Net;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
-
+	using kCura.Relativity.DataReaderClient;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.Transfer;
@@ -88,6 +91,35 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			IntegrationTestParameters newParameters = await AssemblySetup.ResetContextAsync().ConfigureAwait(false);
 			this.SetTestParameters(newParameters);
+		}
+
+		protected static void ThenTheErrorRowsHaveCorrectMessage(IEnumerable<IDictionary> errorRows, string expectedMessage)
+		{
+			errorRows = errorRows ?? throw new ArgumentNullException(nameof(errorRows));
+
+			foreach (var row in errorRows)
+			{
+				string actualMessage = (string)row["Message"];
+				StringAssert.AreEqualIgnoringCase(expectedMessage, actualMessage);
+			}
+		}
+
+		protected static IEnumerable<string> GetControlNumberEnumerable(
+			OverwriteModeEnum overwriteMode,
+			int numberOfDocumentsToAppend,
+			string nameSuffix)
+		{
+			IEnumerable<string> controlNumber = (overwriteMode == OverwriteModeEnum.Overlay || overwriteMode == OverwriteModeEnum.AppendOverlay) ?
+				                                    TestData.SampleDocFiles.Select(Path.GetFileName) :
+				                                    Enumerable.Empty<string>();
+
+			if (overwriteMode == OverwriteModeEnum.Append || overwriteMode == OverwriteModeEnum.AppendOverlay)
+			{
+				controlNumber = controlNumber.Concat(
+					Enumerable.Range(1, numberOfDocumentsToAppend).Select(p => $"{p}-{nameSuffix}"));
+			}
+
+			return controlNumber;
 		}
 
 		protected static void ForceClient(TapiClient tapiClient)

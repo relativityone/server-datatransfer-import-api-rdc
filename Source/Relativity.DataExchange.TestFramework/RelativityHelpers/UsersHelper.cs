@@ -34,18 +34,18 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		/// <param name="parameters">Test context parameters.</param>
 		/// <param name="isEnabled">Determines if integrated authentication should be enabled for current user.</param>
 		/// <returns><see cref="Task"/> which completes when setting was changed.</returns>
-		public static async Task SwitchIntegratedAuthenticationForCurrentUser(IntegrationTestParameters parameters, bool isEnabled)
+		public static async Task SwitchIntegratedAuthenticationForCurrentUserAsync(IntegrationTestParameters parameters, bool isEnabled)
 		{
-			int currentUserID;
+			int currentUserId;
 			using (var userManager = ServiceHelper.GetServiceProxy<IUserManager>(parameters))
 			{
 				User currentUser = await userManager.RetrieveCurrentAsync(parameters.WorkspaceId).ConfigureAwait(false);
-				currentUserID = currentUser.ArtifactID;
+				currentUserId = currentUser.ArtifactID;
 			}
 
 			using (var loginProfileManager = ServiceHelper.GetServiceProxy<ILoginProfileManager>(parameters))
 			{
-				LoginProfile loginProfile = await loginProfileManager.GetLoginProfileAsync(currentUserID).ConfigureAwait(false);
+				LoginProfile loginProfile = await loginProfileManager.GetLoginProfileAsync(currentUserId).ConfigureAwait(false);
 
 				IntegratedAuthenticationMethod integratedAuthentication = null;
 				if (isEnabled)
@@ -63,9 +63,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		public static async Task<int> EnsureUser(IntegrationTestParameters parameters, string firstName, string lastName, string password, IEnumerable<int> groupArtifactIds)
+		public static async Task<int> EnsureUserAsync(IntegrationTestParameters parameters, string firstName, string lastName, string password, IEnumerable<int> groupArtifactIds)
 		{
-			UserRef[] users = await GetUserList(parameters).ConfigureAwait(false);
+			UserRef[] users = await GetUserListAsync(parameters).ConfigureAwait(false);
 			string name = $"{lastName}, {firstName}";
 			UserRef user = users.FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
@@ -74,10 +74,10 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				return user.ArtifactID;
 			}
 
-			return await CreateNewUser(parameters, firstName, lastName, password, groupArtifactIds).ConfigureAwait(false);
+			return await CreateNewUserAsync(parameters, firstName, lastName, password, groupArtifactIds).ConfigureAwait(false);
 		}
 
-		public static async Task<UserRef[]> GetUserList(IntegrationTestParameters parameters)
+		public static async Task<UserRef[]> GetUserListAsync(IntegrationTestParameters parameters)
 		{
 			using (IUserManager userManager = ServiceHelper.GetServiceProxy<IUserManager>(parameters))
 			{
@@ -86,7 +86,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		public static async Task<int> CreateNewUser(IntegrationTestParameters parameters, string firstName, string lastName, string password, IEnumerable<int> groupArtifactIds)
+		public static async Task<int> CreateNewUserAsync(IntegrationTestParameters parameters, string firstName, string lastName, string password, IEnumerable<int> groupArtifactIds)
 		{
 			string createInputJson = ResourceFileHelper.GetResourceFolderPath("CreateInput.json");
 			JObject request = JObject.Parse(File.ReadAllText(createInputJson));
@@ -125,7 +125,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 				if (response.StatusCode != HttpStatusCode.Created)
 				{
-					throw new HttpServiceException($"{nameof(CreateNewUser)} failed." + Environment.NewLine +
+					throw new HttpServiceException($"{nameof(CreateNewUserAsync)} failed." + Environment.NewLine +
 							  new
 							  {
 								  request,
@@ -138,6 +138,15 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 				JObject resultObject = JObject.Parse(result);
 				return (int)resultObject["Results"][0]["ArtifactID"];
+			}
+		}
+
+		public static async Task RemoveUserAsync(IntegrationTestParameters parameters, int userId)
+		{
+			using (var userManager =
+				ServiceHelper.GetServiceProxy<Services.Interfaces.UserInfo.IUserInfoManager>(parameters))
+			{
+				await userManager.DeleteAsync(userId).ConfigureAwait(false);
 			}
 		}
 	}

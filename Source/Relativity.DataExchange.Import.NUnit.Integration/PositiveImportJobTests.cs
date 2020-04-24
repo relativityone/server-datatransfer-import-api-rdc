@@ -459,30 +459,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				artifactTypeId).ConfigureAwait(false);
 		}
 
-		private static IEnumerable<string> GetControlNumberEnumerable(
-			OverwriteModeEnum overwriteMode,
-			int numberOfDocumentsToAppend,
-			string appendToName)
-		{
-			IEnumerable<string> controlNumber;
-			if (overwriteMode == OverwriteModeEnum.Overlay || overwriteMode == OverwriteModeEnum.AppendOverlay)
-			{
-				controlNumber = TestData.SampleDocFiles.Select(Path.GetFileName);
-			}
-			else
-			{
-				controlNumber = Enumerable.Empty<string>();
-			}
-
-			if (overwriteMode == OverwriteModeEnum.Append || overwriteMode == OverwriteModeEnum.AppendOverlay)
-			{
-				controlNumber = controlNumber.Concat(
-					Enumerable.Range(1, numberOfDocumentsToAppend).Select(p => $"{p}-{appendToName}"));
-			}
-
-			return controlNumber;
-		}
-
 		private int GetArtifactTypeIdForTest(ArtifactType artifactType)
 		{
 			int artifactTypeId = artifactType == ArtifactType.Document

@@ -7,7 +7,6 @@
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
-	using System.Collections;
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
@@ -355,19 +354,18 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// ARRANGE
 			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
 
-			int numberOfDocumentsToOverlay = 10;
-			int numberOfDefaultDocuments = 10;
-			bool includeDefaultDocuments = true;
-			string controlNumberSuffix = "OverlayTest";
+			const int NumberOfDocumentsToOverlay = 10;
+			const int NumberOfDefaultDocuments = 10;
+			const string ControlNumberSuffix = "OverlayTest";
 
 			// Prepare data for import under test
 			settings.OverwriteMode = OverwriteModeEnum.Overlay;
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
-			IEnumerable<string> controlNumber = GetControlNumberForImport(
-				numberOfDocumentsToOverlay,
-				controlNumberSuffix,
-				includeDefaultDocuments);
+			IEnumerable<string> controlNumber = GetControlNumberEnumerable(
+				OverwriteModeEnum.AppendOverlay,
+				NumberOfDocumentsToOverlay,
+				ControlNumberSuffix);
 
 			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
 				.AddField(WellKnownFields.ControlNumber, controlNumber).Build();
@@ -376,8 +374,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
 
 			// ASSERT
-			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToOverlay + numberOfDefaultDocuments), () => "Wrong number of job messages.");
-			Assert.That(results.ErrorRows.Count, Is.EqualTo(numberOfDocumentsToOverlay), () => "Wrong number of error messages.");
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfDocumentsToOverlay + NumberOfDefaultDocuments), () => "Wrong number of job messages.");
+			Assert.That(results.ErrorRows.Count, Is.EqualTo(NumberOfDocumentsToOverlay), () => "Wrong number of error messages.");
 
 			ThenTheErrorRowsHaveCorrectMessage(
 				results.ErrorRows,
@@ -391,23 +389,23 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// ARRANGE
 			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
 
-			int numberOfDocumentsToAppend = 10;
-			int numberOfDefaultDocuments = 10;
+			const int NumberOfDocumentsToAppend = 10;
+			const int NumberOfDefaultDocuments = 10;
 			string controlNumberSuffix = "AppendTest";
 
 			// Prepare data for import under test
 			settings.OverwriteMode = OverwriteModeEnum.Append;
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
-			IEnumerable<string> controlNumberStandAlone = GetControlNumberForImport(
-				numberOfDocumentsToAppend,
-				controlNumberSuffix,
-				false);
+			IEnumerable<string> controlNumberStandAlone = GetControlNumberEnumerable(
+				OverwriteModeEnum.Append,
+				NumberOfDocumentsToAppend,
+				controlNumberSuffix);
 
-			IEnumerable<string> controlNumberWithDefaults = GetControlNumberForImport(
-				numberOfDocumentsToAppend,
-				controlNumberSuffix,
-				true);
+			IEnumerable<string> controlNumberWithDefaults = GetControlNumberEnumerable(
+				OverwriteModeEnum.AppendOverlay,
+				NumberOfDocumentsToAppend,
+				controlNumberSuffix);
 
 			ImportDataSource<object[]> importDataSourceStandAlone = ImportDataSourceBuilder.New()
 				.AddField(WellKnownFields.ControlNumber, controlNumberStandAlone).Build();
@@ -422,8 +420,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ImportTestJobResult resultsWithDefaults = this.JobExecutionContext.Execute(importDataSourceWithDefaults);
 
 			// ASSERT
-			Assert.That(resultsWithDefaults.JobReportTotalRows, Is.EqualTo(numberOfDocumentsToAppend + numberOfDefaultDocuments), () => "Wrong number of job messages.");
-			Assert.That(resultsWithDefaults.ErrorRows.Count, Is.EqualTo(numberOfDocumentsToAppend + numberOfDefaultDocuments), () => "Wrong number of errors.");
+			Assert.That(resultsWithDefaults.JobReportTotalRows, Is.EqualTo(NumberOfDocumentsToAppend + NumberOfDefaultDocuments), () => "Wrong number of job messages.");
+			Assert.That(resultsWithDefaults.ErrorRows.Count, Is.EqualTo(NumberOfDocumentsToAppend + NumberOfDefaultDocuments), () => "Wrong number of errors.");
 
 			foreach (var elem in resultsWithDefaults.ErrorRows)
 			{
@@ -431,30 +429,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				string controlName = (string)elem["Identifier"];
 
 				Assert.That(errorMsg, Is.EqualTo($" - An item with identifier {controlName} already exists in the workspace"), () => "Unexpected error message.");
-			}
-		}
-
-		private static IEnumerable<string> GetControlNumberForImport(
-			int numberOfDocumentsToAppend,
-			string appendToName,
-			bool includeDefaultDocuments)
-		{
-			IEnumerable<string> controlNumber = includeDefaultDocuments
-				                                    ? TestData.SampleDocFiles.Select(Path.GetFileName)
-				                                    : Enumerable.Empty<string>();
-
-			controlNumber = controlNumber.Concat(
-				Enumerable.Range(1, numberOfDocumentsToAppend).Select(p => $"{p}--{appendToName}"));
-
-			return controlNumber;
-		}
-
-		private static void ThenTheErrorRowsHaveCorrectMessage(IEnumerable<IDictionary> errorRows, string expectedMessage)
-		{
-			foreach (var row in errorRows)
-			{
-				string actualMessage = (string)row["Message"];
-				StringAssert.AreEqualIgnoringCase(expectedMessage, actualMessage);
 			}
 		}
 

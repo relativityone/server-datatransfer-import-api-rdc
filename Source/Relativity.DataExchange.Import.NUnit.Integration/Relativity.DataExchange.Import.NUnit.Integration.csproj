@@ -103,6 +103,7 @@
     <Compile Include="DevTests\ImageImportProfilingTests.cs" />
     <Compile Include="DevTests\ImportProfilingTests.cs" />
     <Compile Include="DevTests\CreateWorkspaceWithManyFieldsTests.cs" />
+    <Compile Include="PermissionTests.cs" />
     <Compile Include="PositiveImageImportJobTests.cs" />
     <Compile Include="ChoicesValidator.cs" />
     <Compile Include="ObjectsValidator.cs" />
