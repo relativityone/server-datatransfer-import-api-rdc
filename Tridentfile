@@ -171,60 +171,53 @@ timestamps
 
                     try
                     {
-						
-                        stage('Tests and Static analysis')
+                        stage("Extended code analysis")
                         {
-                            parallel(
-                                "Extended code analysis":
-                                {
-                                    echo "Extending code analysis"
-                                    output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'"
-                                    echo output
-                                },
+                            echo "Extending code analysis"
+                            output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'"
+                            echo output
+                        }
 
-                                "Run unit tests":
-                                {
-                                    if (shouldRunUnitTests)
-                                    {
-                                        echo "Running the unit tests"
-                                        output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${branchName}'"
-                                        echo output
-                                    }
-									else
-									{
-                                        echo "Skip running unit tests due to configuration parameters."
-									}
-                                },
+                        stage("Run unit tests")
+                        {
+                            if (shouldRunUnitTests)
+                            {
+                                echo "Running the unit tests"
+                                output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${branchName}'"
+                                echo output
+                            }
+                            else
+                            {
+                                echo "Skip running unit tests due to configuration parameters."
+                            }
+                        }
 
-                                "Run integration tests":
-                                {
-                                    if (shouldRunIntegrationTests)
-                                    {
-                                        echo "Running the integration tests"
-                                        output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
-                                        echo output
-                                    }
-									else
-									{
-                                        echo "Skip running integration tests due to configuration parameters."
-									}
-                                },
-                                
-                                "Code coverage report":
-                                {
-                                    if (shouldRuncodeCoverageReport)
-                                    {
-                                        echo "Creating a code coverage report"
-                                        output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
-                                        echo output
-                                    }
-                                    else
-                                    {
-                                        echo "Skip creating code coverage report due to configuration parameter. This only runs if you want to run the integration tests as well"
-                                    }
-                                },
-                                failFast: true
-                            )
+                        stage("Run integration tests")
+                        {
+                            if (shouldRunIntegrationTests)
+                            {
+                                echo "Running the integration tests"
+                                output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
+                                echo output
+                            }
+                            else
+                            {
+                                echo "Skip running integration tests due to configuration parameters."
+                            }
+                        }
+                        
+                        stage("Code coverage report")
+                        {
+                            if (shouldRuncodeCoverageReport)
+                            {
+                                echo "Creating a code coverage report"
+                                output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
+                                echo output
+                            }
+                            else
+                            {
+                                echo "Skip creating code coverage report due to configuration parameter. This only runs if you want to run the integration tests as well"
+                            }
                         }
                     }
                     finally
