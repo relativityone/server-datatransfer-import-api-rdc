@@ -117,6 +117,7 @@ Namespace kCura.WinEDDS
 			Dim stepsize As Int64 = CType(filesize / 100, Int64)
 			ProcessStart(0, filesize, stepsize)
 			Dim fieldArrays As New System.Collections.ArrayList
+			_artifactReader.GetColumnNames(_settings)
 
 			If _firstLineContainsColumnNames Then
 				If _uploadFiles Then
