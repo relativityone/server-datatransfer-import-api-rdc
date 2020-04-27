@@ -64,7 +64,7 @@ timestamps
 						try
 						{
 							echo "Getting hopper for ${sutTemplate}"
-							globalVmInfo = tools.createHopperInstance(sutTemplate)
+							globalVmInfo = tools.createHopperInstance(sutTemplate, null)
 							
 							echo "Replacing variables for ${sutTemplate}"
 							replaceTestVariables(sutTemplate, globalVmInfo.Url)
