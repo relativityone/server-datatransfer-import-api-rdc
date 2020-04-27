@@ -142,7 +142,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Sub SendMetricJobBatch(batchInformation As BatchInformation)
 		Dim metric As MetricJobBatch = New MetricJobBatch() With {
 					.ImportObjectType = Statistics.ImportObjectType,
-					.MassImportDurationMilliseconds = batchInformation.MassImportDuration.Milliseconds,
+					.MassImportDurationMilliseconds = batchInformation.MassImportDuration.TotalMilliseconds,
 					.BatchNumber = batchInformation.OrdinalNumber,
 					.NumberOfRecords = batchInformation.NumberOfRecords,
 					.NumberOfRecordsWithErrors = batchInformation.NumberOfRecordsWithErrors
