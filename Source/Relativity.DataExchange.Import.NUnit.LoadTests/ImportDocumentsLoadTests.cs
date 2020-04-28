@@ -42,13 +42,15 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[CollectDeadlocks]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.TransferApi)]
-		[IdentifiedTestCase("b9b6897f-ea3f-4694-80d2-db08529387AB")]
+		[Category(TestCategories.LoadTest)]
+		[IdentifiedTest("b9b6897f-ea3f-4694-80d2-db08529387AB")]
 		public async Task ShouldImportFoldersParallelAsync(
-			[Values(16, 8)] int parallelIApiClientCount,
+			[Values(2, 4, 8, 16)] int parallelIApiClientCount,
 			[Values(100_000)] int numberOfDocumentsPerIApiClient,
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportFoldersParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 
@@ -83,13 +85,16 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[CollectDeadlocks]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.TransferApi)]
-		[IdentifiedTestCase("bbbc5de9-f6a4-4a4c-97a7-6f1f88d96c93")]
+		[Category(TestCategories.LoadTest)]
+		[IdentifiedTest("bbbc5de9-f6a4-4a4c-97a7-6f1f88d96c93")]
 		public async Task ShouldImportChoicesInParallelAsync(
-			[Values(16, 8)] int parallelIApiClientCount,
+			[Values(2, 4, 8, 16)] int parallelIApiClientCount,
 			[Values(100_000)] int numberOfDocumentsPerIApiClient,
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportChoicesInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
+
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 			var settingsBuilder = NativeImportSettingsBuilder.New().WithDefaultSettings();
@@ -129,13 +134,15 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[CollectDeadlocks]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.TransferApi)]
-		[IdentifiedTestCase("9f2f532e-7a16-4199-87ec-1308dbff27a7")]
+		[Category(TestCategories.LoadTest)]
+		[IdentifiedTest("9f2f532e-7a16-4199-87ec-1308dbff27a7")]
 		public async Task ShouldImportChoicesAndFoldersInParallelAsync(
-			[Values(16, 8)] int parallelIApiClientCount,
+			[Values(2, 4, 8, 16)] int parallelIApiClientCount,
 			[Values(100_000)] int numberOfDocumentsPerIApiClient,
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportChoicesAndFoldersInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 
@@ -185,6 +192,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[CollectDeadlocks]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.TransferApi)]
+		[Category(TestCategories.LoadTest)]
 		[IdentifiedTestCase("40c70223-0c66-4ccc-b234-1dd1726a260c", 1, 320_000, TapiClient.Direct)]
 		[IdentifiedTestCase("a44e2969-e31b-44b4-aa16-94a9f2a0a5a7", 8, 40_000, TapiClient.Direct)]
 		[IdentifiedTestCase("04cc904e-a951-4cfa-ad70-195b977ce873", 16, 20_000, TapiClient.Direct)]
@@ -201,6 +209,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			TapiClient client)
 		{
 			// ARRANGE
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithSingleAndMultiObjectsInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 
@@ -270,6 +279,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 
 		[CollectDeadlocks]
 		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.LoadTest)]
 		[IdentifiedTestCase("e7a09288-ccf5-42ff-ae33-2e2dc8a603c2", 1, 160_000, 20, TapiClient.Direct)]
 		[IdentifiedTestCase("f9b7c932-fb43-4089-88fe-3548c7f2f533", 1, 160_000, 100, TapiClient.Direct)]
 		[IdentifiedTestCase("a5eb21ad-5631-4f36-a3d9-249aa4e2a9ff", 8, 20_000, 20, TapiClient.Direct)]
@@ -290,6 +300,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			TapiClient client)
 		{
 			// ARRANGE
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithBigNumberOfMultiObjectsPerDocumentParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, maxNumberOfMultiValues, client);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 
@@ -323,6 +334,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[CollectDeadlocks]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.TransferApi)]
+		[Category(TestCategories.LoadTest)]
 		[IdentifiedTestCase("495ac24c-bf3e-4245-8179-9532b6f80291", 1, 640_000, TapiClient.Direct)]
 		[IdentifiedTestCase("5091dd5d-d9ee-4e45-8444-47fec6caeb4d", 8, 80_000, TapiClient.Direct)]
 		[IdentifiedTestCase("4b714377-b170-4884-b567-ac0c399f6fef", 16, 40_000, TapiClient.Direct)]
@@ -339,6 +351,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			TapiClient client)
 		{
 			// ARRANGE
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithFolderChoicesAndObjectsInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 

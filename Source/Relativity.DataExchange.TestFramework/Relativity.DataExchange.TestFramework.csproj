@@ -129,6 +129,7 @@
     <Compile Include="Import\JobExecutionContext\NativeImportExecutionContext.cs" />
     <Compile Include="Import\JobExecutionContext\NativeImportSettingsProvider.cs" />
     <Compile Include="NUnitExtensions\CollectDeadlocksAttribute.cs" />
+    <Compile Include="NUnitExtensions\PerformanceDataCollector.cs" />
     <Compile Include="ObjectManagers\ClientManager.cs" />
     <Compile Include="ObjectManagers\FileShareServerManager.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />

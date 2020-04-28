@@ -7,9 +7,7 @@
 namespace Relativity.DataExchange.Import.NUnit.LoadTests
 {
 	using System.Threading.Tasks;
-
 	using global::NUnit.Framework;
-
 	using kCura.Relativity.DataReaderClient;
 
 	using Relativity.DataExchange.Import.NUnit.Integration;
@@ -30,14 +28,16 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[CollectDeadlocks]
 		[Category(TestCategories.ImportImage)]
 		[Category(TestCategories.TransferApi)]
-		[IdentifiedTestCase("6a32530b-a6ca-4f78-9ee9-0875f90ae49e")]
+		[Category(TestCategories.LoadTest)]
+		[IdentifiedTest("6a32530b-a6ca-4f78-9ee9-0875f90ae49e")]
 		public async Task ShouldImportImagesParallelAsync(
-			[Values(16, 8)] int parallelIApiClientCount,
-			[Values(100_000)] int numberOfDocumentsPerIApiClient,
-			[Values(1, 10)] int numberOfImagesPerDocument,
+			[Values(2)] int parallelIApiClientCount,
+			[Values(10_000)] int numberOfDocumentsPerIApiClient,
+			[Values(1, 5)] int numberOfImagesPerDocument,
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportImagesParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, numberOfImagesPerDocument, 0, client);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 			const ImageFormat ImageFormat = ImageFormat.Tiff;

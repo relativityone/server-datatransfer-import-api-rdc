@@ -31,18 +31,19 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 		private void ExecuteBeforeTest(TestExecutionContext context)
 		{
 			this.profilingSession.StartProfilingForRelativityWebApi();
+			PerformanceDataCollector.SetUpPerformanceLogger();
 		}
 
 		private void ExecuteAfterTest(TestExecutionContext context)
 		{
 			ProfilerReport report = this.profilingSession.ReadCapturedEventsAndStopProfiling();
 			this.WriteProfilerReport(context, report);
+			PerformanceDataCollector.Instance.StorePerformanceResults();
 		}
 
 		private void WriteProfilerReport(TestExecutionContext context, ProfilerReport profilingReport)
 		{
 			context.OutWriter.WriteLine(profilingReport.Description);
-
 			if (profilingReport.Files.Any())
 			{
 				this.WriteFiles(context, profilingReport);
@@ -57,6 +58,9 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 				string filePath = Path.Combine(outputPath, $"{fileDto.Name}.{fileDto.Extension}");
 				File.WriteAllText(filePath, fileDto.Content);
 			}
+
+			int deadlocksCount = profilingReport.Files.Count() - 1;
+			PerformanceDataCollector.Instance.StoreDeadlocksCount(deadlocksCount, deadlocksCount == 0 ? string.Empty : outputPath);
 		}
 
 		private string GetDirectoryPath(TestExecutionContext context)

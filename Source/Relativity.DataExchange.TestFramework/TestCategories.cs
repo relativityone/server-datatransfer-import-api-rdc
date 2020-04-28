@@ -94,5 +94,10 @@ namespace Relativity.DataExchange.TestFramework
 		/// If we add some functionality, it might not be available in older versions.
 		/// </summary>
 		public const string NotInCompatibility = "NotInCompatibility";
+
+		/// <summary>
+		/// The load test test category.
+		/// </summary>
+		public const string LoadTest = "LoadTest";
 	}
 }

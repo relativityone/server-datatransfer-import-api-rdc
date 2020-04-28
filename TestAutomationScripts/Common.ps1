@@ -48,7 +48,7 @@ function CreateBatForTestExecution([ValidateSet(“Api-Export”,”Api-Import”,”Api-S
     [string]$assemblyPath = ""
     [string]$folderName   = $IntegrationTestsReportDirName
 
-    switch ($TestAssemblyName ) {
+     switch ($TestAssemblyName ) {
 
         “Api-Export” { $assemblyPath = "$ParentFolderPath\Source\Relativity.DataExchange.Export.NUnit.Integration\bin\Relativity.DataExchange.Export.NUnit.Integration.dll"}
         “Api-Import” { $assemblyPath = "$ParentFolderPath\Source\Relativity.DataExchange.Import.NUnit.Integration\bin\Relativity.DataExchange.Import.NUnit.Integration.dll"}
@@ -70,7 +70,7 @@ function CreateBatForTestExecution([ValidateSet(“Api-Export”,”Api-Import”,”Api-S
     } else {
         [string]$Namespace = [System.IO.Path]::GetFileNameWithoutExtension($assemblyPath)
 
-        #pathToNUnitConssole --test=namespace.class.test(params) pathToAssembly /out:pathToOutputXml /result:pathToResultXml
+        # pathToNUnitConssole --test=namespace.class.test(params) pathToAssembly /out:pathToOutputXml /result:pathToResultXml
         $BatFileContent = """$NUnitConsoleRunnerPath"" --test=$Namespace.$TestClassName.$TestNameWithParameters ""$assemblyPath"" /out:""$ParentFolderPath\$TestResultsFolderName\$folderName\$TestAssemblyName-Output.txt"" /result:""$ParentFolderPath\$TestResultsFolderName\$folderName\$TestAssemblyName-Result.xml"""
     }
 
@@ -90,6 +90,8 @@ function CreateFolderStructureForTestResult([bool]$ToBeExecutedOnTestVM=$true){
     New-Item -Path "$TestResultsFolder\$IntegrationTestsReportDirName" -ItemType Directory -Force
     New-Item -Path "$TestResultsFolder\$UnitTestsReportDirName" -ItemType Directory -Force
     New-Item -Path "$TestResultsFolder\$UIAutomationTestsReportDirName" -ItemType Directory -Force
+    New-Item -Path "$TestResultsFolder\$LoadTestsReportDirName" -ItemType Directory -Force
+   
 }
 
 function CreateBatToConvertResultsToHtml([bool]$ToBeExecutedOnTestVM=$true){
@@ -108,6 +110,7 @@ function CreateBatToConvertResultsToHtml([bool]$ToBeExecutedOnTestVM=$true){
     [string]$batContent = """$ReportNUnitPath"" ""$ParentFolderPath\$TestResultsFolderName\$IntegrationTestsReportDirName"" ""$ParentFolderPath\$TestResultsFolderName\$IntegrationTestsReportDirName"""
     $batContent        += "`n""$ReportNUnitPath"" ""$ParentFolderPath\$TestResultsFolderName\$UnitTestsReportDirName"" ""$ParentFolderPath\$TestResultsFolderName\$UnitTestsReportDirName"""
     $batContent        += "`n""$ReportNUnitPath"" ""$ParentFolderPath\$TestResultsFolderName\$UIAutomationTestsReportDirName"" ""$ParentFolderPath\$TestResultsFolderName\$UIAutomationTestsReportDirName"""
+    $batContent        += "`n""$ReportNUnitPath"" ""$ParentFolderPath\$TestResultsFolderName\$LoadTestsReportDirName"" ""$ParentFolderPath\$TestResultsFolderName\$LoadTestsReportDirName"""
 
     Set-Content -LiteralPath "$ParentFolderPath\Run_ConvertTestReportsToHtml.bat" -value $batContent -PassThru -Force
 }

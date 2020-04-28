@@ -18,6 +18,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 
 	public class ParallelImportExecutionContext<TExecutionContext, TSettings> : IDisposable, IImportApiSetup<TSettings>
 		where TSettings : ImportSettingsBase
@@ -67,6 +68,8 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 		{
 			dataSourceBuilder = dataSourceBuilder ?? throw new ArgumentNullException(nameof(dataSourceBuilder));
 
+			PerformanceDataCollector.Instance.StartMeasureTime();
+
 			var importTasks = new Task<ImportTestJobResult>[this.importExecutionContexts.Count];
 			for (int index = 0; index < this.importExecutionContexts.Count; index++)
 			{
@@ -82,6 +85,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 
 			ImportTestJobResult[] testResults = await Task.WhenAll(importTasks).ConfigureAwait(false);
 
+			PerformanceDataCollector.Instance.StopMeasureTime();
 			foreach (ImportTestJobResult testResult in testResults)
 			{
 				this.TestJobResult.NumberOfCompletedRows += testResult.NumberOfCompletedRows;

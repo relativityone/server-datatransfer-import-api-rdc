@@ -11,8 +11,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{44D52970-C80E-4D2F-A986-2EB046DCB96B}"
 	ProjectSection(SolutionItems) = preProject
 		..\paket.dependencies = ..\paket.dependencies
-		..\.paket\paket.template.relativity.desktop.client = ..\.paket\paket.template.relativity.desktop.client
 		..\.paket\paket.template.Relativity.DataExchange.client.sdk = ..\.paket\paket.template.Relativity.DataExchange.client.sdk
+		..\.paket\paket.template.relativity.desktop.client = ..\.paket\paket.template.relativity.desktop.client
 		..\.paket\Relativity.DataExchange.Client.SDK.targets = ..\.paket\Relativity.DataExchange.Client.SDK.targets
 	EndProjectSection
 EndProject
@@ -70,6 +70,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Export", "Relativity.DataExchange.Export\Relativity.DataExchange.Export.csproj", "{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.DataExchange.Legacy", "Relativity.DataExchange.Legacy\Relativity.DataExchange.Legacy.vbproj", "{2022E24B-46A1-46DA-A715-36D137436B3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Import.NUnit.LoadTests", "Relativity.DataExchange.Import.NUnit.LoadTests\Relativity.DataExchange.Import.NUnit.LoadTests.csproj", "{F86E3808-81B9-41F5-9B11-220910715EB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,6 +135,10 @@ Global
 		{2022E24B-46A1-46DA-A715-36D137436B3A}.Debug-ILMerge|Any CPU.Build.0 = Debug-ILMerge|Any CPU
 		{2022E24B-46A1-46DA-A715-36D137436B3A}.Release-ILMerge|Any CPU.ActiveCfg = Release-ILMerge|Any CPU
 		{2022E24B-46A1-46DA-A715-36D137436B3A}.Release-ILMerge|Any CPU.Build.0 = Release-ILMerge|Any CPU
+		{F86E3808-81B9-41F5-9B11-220910715EB8}.Debug-ILMerge|Any CPU.ActiveCfg = Debug-ILMerge|Any CPU
+		{F86E3808-81B9-41F5-9B11-220910715EB8}.Debug-ILMerge|Any CPU.Build.0 = Debug-ILMerge|Any CPU
+		{F86E3808-81B9-41F5-9B11-220910715EB8}.Release-ILMerge|Any CPU.ActiveCfg = Release-ILMerge|Any CPU
+		{F86E3808-81B9-41F5-9B11-220910715EB8}.Release-ILMerge|Any CPU.Build.0 = Release-ILMerge|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -152,6 +158,7 @@ Global
 		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D} = {D46C8AE9-2431-43EC-9AC6-3CB06EE99453}
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5} = {1114F579-C126-48A5-8182-50AB87366325}
 		{2022E24B-46A1-46DA-A715-36D137436B3A} = {5F3863F0-E6C9-439F-A371-6B95DB928BDE}
+		{F86E3808-81B9-41F5-9B11-220910715EB8} = {D46C8AE9-2431-43EC-9AC6-3CB06EE99453}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B030F56A-9600-4DC6-B33D-A81BE2C63205}

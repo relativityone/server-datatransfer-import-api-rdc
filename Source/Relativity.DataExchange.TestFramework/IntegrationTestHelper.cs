@@ -68,6 +68,7 @@ namespace Relativity.DataExchange.TestFramework
 			IntegrationTestParameters parameters = IntegrationTestParameters;
 			SetupLogger(parameters);
 			SetupServerCertificateValidation(parameters);
+			SetFullPathToSqlProfilingReportsFolder(parameters);
 			if (parameters.SkipIntegrationTests)
 			{
 				Console.WriteLine("Skipping test workspace creation.");
@@ -355,6 +356,17 @@ END";
 
 			Console.WriteLine("Retrieved and dumped all integration test parameters.");
 			return parameters;
+		}
+
+		private static void SetFullPathToSqlProfilingReportsFolder(IntegrationTestParameters parameters)
+		{
+			string sqlProfilingReportsOutputPathValue = parameters.SqlProfilingReportsOutputPath;
+
+			if (!Path.IsPathRooted(sqlProfilingReportsOutputPathValue) || Path.GetPathRoot(sqlProfilingReportsOutputPathValue).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
+			{
+				string currentPath = new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName;
+				parameters.SqlProfilingReportsOutputPath = Path.GetFullPath(Path.Combine(currentPath, sqlProfilingReportsOutputPathValue));
+			}
 		}
 	}
 }
