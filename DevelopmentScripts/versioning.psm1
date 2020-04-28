@@ -140,6 +140,7 @@ Function Get-ReleaseVersion {
             $postfix = "-Hotfix-$numbersAtTheEnd"
         }
         ([BranchType]::Trident) {$postfix = "-testing"}
+        ([BranchType]::PerformancePipeline) {$postfix = "-performance"}
         default { Throw "Branch type is unknown" }
     }
     

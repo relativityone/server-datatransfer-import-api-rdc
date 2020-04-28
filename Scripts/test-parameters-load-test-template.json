@@ -1,0 +1,20 @@
+{
+	"RelativityUrl": "<replaced_in_build_target_to_test>",
+	"RelativityRestUrl": "<replaced_in_build_target_to_test>/relativity.rest/api",
+	"RelativityServicesUrl": "<replaced_in_build_target_to_test>/relativity.services",
+	"RelativityWebApiUrl": "<replaced_in_build_target_to_test>/relativitywebapi",
+	"RelativityUserName": "<replaced_in_build_relativity_user_name>",
+	"RelativityPassword": "<replaced_in_build_relativity_password>",
+	"ServerCertificateValidation": "False",
+	"WriteLogsToConsole": "True",
+	"SkipAsperaModeTests": "True",
+	"SkipDirectModeTests": "True",
+	"SkipIntegrationTests": "False",
+	"SqlDropWorkspaceDatabase": "True",
+	"SqlCaptureProfiling": "<replaced_in_build_sqlcaptureprofiling>",
+	"SqlProfilingReportsOutputPath" : "<replaced_in_build_sqlprofilingreportsoutputpath>",
+	"SqlInstanceName": "<replaced_in_build_sql_instance_name>",
+	"SqlAdminUserName": "<replaced_in_build_sql_user_name>",
+	"SqlAdminPassword": "<replaced_in_build_sql_password>",
+	"WorkspaceTemplate": "Relativity Starter Template"
+}

@@ -290,6 +290,7 @@ build/
 /Logs/*
 /PDBs/*
 /TestReports/*
+Run_*.bat
 errors.xml
 
 # Allow vendor binaries

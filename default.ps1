@@ -36,6 +36,10 @@ properties {
     $UIAutomationTestsReportDir = Join-Path $TestReportsDir "ui-automation-tests"
     $UIAutomationTestsResultXmlFile = Join-Path $UIAutomationTestsReportDir "test-results-ui-automation.xml"
     $UIAutomationTestsOutputFile = Join-Path $UIAutomationTestsReportDir "ui-automation-test-output.txt"
+	
+	$LoadTestsReportDir = Join-Path $TestReportsDir "load-tests"
+	$LoadTestsResultXmlFile = Join-Path $LoadTestsReportDir "test-results-loadtest.xml"
+    $LoadTestsOutputFile =  Join-Path $LoadTestsReportDir "loadtest-test-output.txt"
 #----------- end testreports ------------	
     $ExtentCliExe = Join-Path $PackagesDir "extent\tools\extent.exe"
     $NunitExe = Join-Path $PackagesDir "NUnit.ConsoleRunner\tools\nunit3-console.exe"
@@ -549,6 +553,12 @@ task UIAutomationTests -Description "Runs all UI tests" {
     } -errorMessage "There was an error running the UI tests."
 }
 
+task LoadTests -Description "Run all load tests for the loadtest pipeline" {
+	folders\Initialize-Folder $TestReportsDir -Safe
+    folders\Initialize-Folder $LoadTestsReportDir
+	Invoke-LoadTests -TestCategoryFilter "--where=`"cat==LoadTest`""
+}
+
 task PackageVersion -Description "Retrieves the package version from powershell" {
 
     $localPackageVersion = versioning\Get-ReleaseVersion "$Branch"
@@ -622,6 +632,8 @@ task TestReports -Description "Create the test reports" {
 
     folders\Initialize-Folder $UnitTestsReportDir -Safe
     folders\Initialize-Folder $IntegrationTestsReportDir -Safe
+	folders\Initialize-Folder $LoadTestsReportDir -Safe
+	
     exec {
         # See this page for CLI docs: https://github.com/extent-framework/extentreports-dotnet-cli
         if (Test-Path $UnitTestsResultXmlFile -PathType Leaf) {
@@ -630,6 +642,10 @@ task TestReports -Description "Create the test reports" {
 
         if (Test-Path $IntegrationTestsResultXmlFile -PathType Leaf) {
             & $ExtentCliExe -i "$IntegrationTestsResultXmlFile" -o "$IntegrationTestsReportDir/" -r v3html
+        }
+		
+		 if (Test-Path $LoadTestsResultXmlFile -PathType Leaf) {
+            & $ExtentCliExe -i "$LoadTestsResultXmlFile" -o "$LoadTestsReportDir/" -r v3html
         }
 
         # Convert reports using ReportUnit(only if exist files not converted above)
@@ -651,6 +667,16 @@ task TestReports -Description "Create the test reports" {
             & $ReportUnitExe @(
                     ("$IntegrationTestsReportDir"), 
                     ("$IntegrationTestsReportDir")) | Out-File "$IntegrationTestsReportDir\create-html-report-from-integration-tests.txt"
+        }
+		
+		$filesToConvert = Get-ChildItem -LiteralPath $LoadTestsReportDir -Include "*.xml" -Exclude $LoadTestsResultXmlFile -Force
+        if ($filesToConvert) {
+            Write-Host "Convert Load tests results to html"
+            Write-Host "Details in file: '\\load-tests\create-html-report-from-load-tests.txt'"
+
+            & $ReportUnitExe @(
+                    ("$LoadTestsReportDir"), 
+                    ("$LoadTestsReportDir")) | Out-File "$LoadTestsReportDir\create-html-report-from-load-tests.txt"
         }
 
     } -errorMessage "There was an error creating the test reports."
@@ -731,6 +757,10 @@ task UnitTestResults -Description "Retrieve the unit test results from the Xml f
     testing\Write-TestResultsOutput $UnitTestsReportDir
 }
 
+task LoadTestResults -Description "Retrieve the load test results from the Xml file" {
+    testing\Write-TestResultsOutput $LoadTestsReportDir
+}
+
 task ReplaceTestVariables -Description "Replace test variables in file" {
 $pathToFile = ".\Source\Relativity.DataExchange.TestFramework\Resources\test-parameters-hopper.json"
 if ($TestParametersFile) {
@@ -744,6 +774,18 @@ if ($TestParametersFile) {
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_relativity_password>','Test1234!') | Set-Content -Path $pathToFile
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_relativity_user_name>','relativity.admin@kcura.com') | Set-Content -Path $pathToFile
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_target_to_test>', $replaceTarget) | Set-Content -Path $pathToFile
+	Write-Host (Get-Content -path $pathToFile -Raw)
+}
+
+task SetVariablesForSqlProfiling -Description "Set variables for sql profiling" {
+	$pathToFile = ".\Source\Relativity.DataExchange.TestFramework\Resources\test-parameters-hopper.json"
+	if ($TestParametersFile) {
+		$pathToFile = $TestParametersFile
+	}
+	
+    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sqlcaptureprofiling>','true') | Set-Content -Path $pathToFile
+	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sqlprofilingreportsoutputpath>','..\\..\\..\\TestReports\\SqlProfiling') | Set-Content -Path $pathToFile
+	((Get-Content -path $pathToFile -Raw) -replace 'eddsdbo','sa') | Set-Content -Path $pathToFile
 	Write-Host (Get-Content -path $pathToFile -Raw)
 }
 
@@ -808,6 +850,14 @@ task CreateTemplateTestParametersFile -Description "Create template of test para
     Copy-Item $pathToTemplateFile $TestParametersFile
 }
 
+task CreateTemplateTestParametersFileForLoadTests -Description "Create template of test parameters file for load tests" {
+    if (-Not $TestParametersFile) {
+        Throw "You need to specify path to new test parameters file (including file name and extension)"
+    }
+    $pathToTemplateFile = ".\Scripts\test-parameters-load-test-template.json"
+    Copy-Item $pathToTemplateFile $TestParametersFile
+}
+
 Function Invoke-IntegrationTests {
     param(
         [String] $TestCategoryFilter
@@ -828,4 +878,27 @@ Function Invoke-IntegrationTests {
             "--out=$IntegrationTestsOutputFile" `
             $TestCategoryFilter `
     } -errorMessage "There was an error running the integration tests."
+}
+
+Function Invoke-LoadTests {
+    param(
+        [String] $TestCategoryFilter
+    )
+
+    $SolutionFile = $MasterSolution
+    if ($ILMerge) {
+        $SolutionFile = $MasterILMergeSolution
+    }
+
+    Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
+	
+    exec { & $NunitExe $SolutionFile `
+            "--labels=All" `
+            "--agents=$NumberOfProcessors" `
+            "--skipnontestassemblies" `
+            "--timeout=$TestTimeoutInMS" `
+            "--result=$LoadTestsResultXmlFile" `
+            "--out=$LoadTestsOutputFile" `
+            $TestCategoryFilter `
+    } -errorMessage "There was an error running the load tests."
 }

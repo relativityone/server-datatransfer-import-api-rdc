@@ -5,6 +5,7 @@ public enum BranchType {
     Develop,
     FeatureBranch,
     Trident,
+	PerformancePipeline
 }
 '@ -Language CSharp
 
@@ -17,7 +18,11 @@ Function Get-CurrentBranchType{
     If ($currentBranch.ToString() -eq "develop" ) 
     {
        return [BranchType]::Develop
-    }    
+    }  
+    If ($currentBranch.ToString() -eq "Performance-pipeline" ) 
+    {
+       return [BranchType]::PerformancePipeline
+    }  	
     elseif ($currentBranch.ToString().StartsWith("release-")) 
     {
         if($currentBranch -like "*hotfix*")
