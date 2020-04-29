@@ -80,6 +80,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			this.ThenTheImportJobIsSuccessful(results, expectedNumberOfRows);
 			Assert.That(results.NumberOfJobMessages, Is.Positive);
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(expectedNumberOfRows));
+			ThenTheJobCompletedInCorrectTransferMode(results, client);
 		}
 
 		[CollectDeadlocks]
@@ -129,6 +130,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			this.ThenTheImportJobIsSuccessful(results, expectedNumberOfDocuments);
 			Assert.That(results.NumberOfJobMessages, Is.Positive);
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(expectedNumberOfDocuments));
+			ThenTheJobCompletedInCorrectTransferMode(results, client);
 		}
 
 		[CollectDeadlocks]
@@ -187,6 +189,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			this.ThenTheImportJobIsSuccessful(results, expectedNumberOfDocuments);
 			Assert.That(results.NumberOfJobMessages, Is.Positive);
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(expectedNumberOfDocuments));
+			ThenTheJobCompletedInCorrectTransferMode(results, client);
 		}
 
 		[CollectDeadlocks]
@@ -275,6 +278,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			this.ThenTheImportJobIsSuccessful(results, expectedNumberOfDocuments);
 			Assert.That(results.NumberOfJobMessages, Is.Positive);
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(expectedNumberOfDocuments));
+			ThenTheJobCompletedInCorrectTransferMode(results, client);
 		}
 
 		[CollectDeadlocks]
@@ -329,6 +333,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			this.ThenTheImportJobIsSuccessful(results, expectedNumberOfDocuments);
 			Assert.That(results.NumberOfJobMessages, Is.Positive);
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(expectedNumberOfDocuments));
+			ThenTheJobCompletedInCorrectTransferMode(results, client);
 		}
 
 		[CollectDeadlocks]
@@ -412,6 +417,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			this.ThenTheImportJobIsSuccessful(results, expectedNumberOfDocuments);
 			Assert.That(results.NumberOfJobMessages, Is.Positive);
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(expectedNumberOfDocuments));
+			ThenTheJobCompletedInCorrectTransferMode(results, client);
 		}
 
 		private Task<IEnumerable<(string fieldName, ObjectNameValueSource valuesSource)>> CreateSingleObjectsFieldsAsync(

@@ -192,6 +192,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(testResult, ExpectedNumberOfImportedImages);
 			ThenRelativityObjectCountsIsCorrect(ExpectedNumberOfImportedImages);
 			ThenTheImportedDocumentIsCorrect(imageImportDto, useFileNames);
+			ThenTheJobCompletedInCorrectTransferMode(testResult, client);
 		}
 
 		protected override Task OnSetUpAsync()

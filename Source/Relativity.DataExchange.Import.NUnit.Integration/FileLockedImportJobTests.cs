@@ -61,6 +61,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// The exact value is impossible to predict.
 			Assert.That(results.NumberOfCompletedRows, Is.GreaterThan(0));
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
+			ThenTheJobCompletedInCorrectTransferMode(results, client);
 		}
 
 		[TearDown]

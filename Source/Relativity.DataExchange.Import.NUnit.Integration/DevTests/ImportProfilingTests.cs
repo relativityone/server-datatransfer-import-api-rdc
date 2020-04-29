@@ -54,6 +54,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(result, numberOfDocuments);
+			ThenTheJobCompletedInCorrectTransferMode(result, Client);
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "2*numberOfDocuments", Justification = "It won't overflow for values used in test")]
@@ -115,6 +116,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(result, numberOfDocuments);
+			ThenTheJobCompletedInCorrectTransferMode(result, Client);
 		}
 	}
 }

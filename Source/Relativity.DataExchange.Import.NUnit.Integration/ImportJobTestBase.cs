@@ -104,6 +104,20 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
+		protected static void ThenTheJobCompletedInCorrectTransferMode(
+			ImportTestJobResult testJobResult,
+			TapiClient expectedClient)
+		{
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
+
+			if (expectedClient == TapiClient.None)
+			{
+				return;
+			}
+
+			Assert.That(testJobResult.SwitchedToWebMode, Is.False, $"Job was expected to run in {expectedClient} mode but switched to Web mode");
+		}
+
 		protected static IEnumerable<string> GetControlNumberEnumerable(
 			OverwriteModeEnum overwriteMode,
 			int numberOfDocumentsToAppend,

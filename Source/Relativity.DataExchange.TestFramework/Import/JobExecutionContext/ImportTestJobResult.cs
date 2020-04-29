@@ -27,6 +27,8 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 
 		public long NumberOfJobMessages { get; set; }
 
+		public bool SwitchedToWebMode { get; private set; }
+
 		/// <summary>
 		/// Gets 10 000 most recent job messages.
 		/// </summary>
@@ -59,6 +61,13 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 		/// <param name="message">message to add to list.</param>
 		public void AddMessage(string message)
 		{
+			message = message ?? throw new ArgumentNullException(nameof(message));
+
+			if (message.Contains("Switching to web mode due to a serious error within the"))
+			{
+				this.SwitchedToWebMode = true;
+			}
+
 			this.NumberOfJobMessages++;
 			while (this.jobMessages.Count > JobMessagesLimit)
 			{

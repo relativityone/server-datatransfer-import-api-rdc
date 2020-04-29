@@ -94,6 +94,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 			this.ThenTheImportJobIsSuccessful(results, NumberOfFilesToImport);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfFilesToImport));
+			ThenTheJobCompletedInCorrectTransferMode(results, client);
 		}
 
 		private static async Task ChangeStateOfIntegratedAuthentication(bool isEnabled)

@@ -113,6 +113,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(results, NumberOfFilesToImport);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfFilesToImport));
+			ThenTheJobCompletedInCorrectTransferMode(results, client);
 
 			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, artifactTypeId, fields: new[] { WellKnownFields.ControlNumber });
 			Assert.That(relativityObjects.Count, Is.EqualTo(NumberOfFilesToImport));
@@ -125,7 +126,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldImportFolders()
 		{
 			// ARRANGE
-			ForceClient(TapiClient.Direct);
+			const TapiClient Client = TapiClient.Direct;
+			ForceClient(Client);
+
+			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, Client);
 
 			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
@@ -148,6 +152,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(results, NumberOfDocumentsToImport);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfDocumentsToImport));
+			ThenTheJobCompletedInCorrectTransferMode(results, Client);
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -156,7 +161,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldAppendOverlayDocumentsAndMoveToNewFolders()
 		{
 			// ARRANGE
-			ForceClient(TapiClient.Direct);
+			const TapiClient Client = TapiClient.Direct;
+			ForceClient(Client);
+
+			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, Client);
 
 			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
@@ -175,6 +183,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(result, numberOfDocumentsToImport);
 			Assert.That(result.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToImport));
+			ThenTheJobCompletedInCorrectTransferMode(result, Client);
 		}
 
 		[Category(TestCategories.ImportDoc)]

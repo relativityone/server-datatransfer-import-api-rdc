@@ -63,6 +63,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			int expectedNumberOfImportedImages = numberOfImagesPerDocument * numberOfDocumentsPerIApiClient * parallelIApiClientCount;
 			this.ThenTheImportJobIsSuccessful(results, expectedNumberOfImportedImages);
 			Assert.That(results.NumberOfJobMessages, Is.Positive);
+			ThenTheJobCompletedInCorrectTransferMode(results, client);
 		}
 	}
 }
