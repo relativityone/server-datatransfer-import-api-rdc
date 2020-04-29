@@ -26,7 +26,8 @@ Public MustInherit Class MonitoredProcessBase
 	Private _jobStartedMetricSent As Boolean = False
 	Protected MustOverride ReadOnly Property TapiClient As TapiClient
 	Private _initialTapiClient As TapiClient = TapiClient.None
-	
+	Protected Property RunId As String
+
 	Public Property CaseInfo As CaseInfo
 
 	<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
@@ -121,6 +122,9 @@ Public MustInherit Class MonitoredProcessBase
 		Dim completedRecordsCount As Long = GetCompletedRecordsCount()
 		Dim jobDuration As Double = (EndTime - StartTime).TotalSeconds
 		Dim totalTransferredBytes As Long = Statistics.FileTransferredBytes + Statistics.MetadataTransferredBytes
+		Dim jobStartTimeStamp As Double = EpochDateConverter.ConvertDateTimeToEpoch(StartTime)
+		Dim jobEndTimeStamp As Double = EpochDateConverter.ConvertDateTimeToEpoch(EndTime)
+
 		Dim metric As MetricJobEndReport = New MetricJobEndReport() With {
 				.JobStatus = jobStatus,
 				.TotalSizeBytes = totalTransferredBytes,
@@ -134,7 +138,10 @@ Public MustInherit Class MonitoredProcessBase
 				.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(Statistics.DocumentsCreated + Statistics.DocumentsUpdated, Statistics.MassImportDuration.TotalSeconds),
 				.ImportObjectType = Statistics.ImportObjectType,
 				.JobDurationInSeconds = jobDuration,
-				.InitialTransferMode = _initialTapiClient}
+				.InitialTransferMode = _initialTapiClient,
+				.JobStartTimeStamp = jobStartTimeStamp,
+				.JobEndTimeStamp = jobEndTimeStamp,
+				.JobRunId = RunId}
 		BuildMetricBase(metric)
 		MetricService.Log(metric)
 	End Sub

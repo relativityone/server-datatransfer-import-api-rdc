@@ -137,6 +137,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public ReadOnly Property RunId As String
+			Get
+				Return _runId
+			End Get
+		End Property
+
 		Protected ReadOnly Property [Continue]() As Boolean
 			Get
 				Return _imageReader.HasMoreRecords AndAlso ShouldImport

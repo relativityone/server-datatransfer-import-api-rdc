@@ -64,7 +64,7 @@ Namespace kCura.WinEDDS
 		Private _fieldArtifactIds As Int32()
 		Protected OutputFileWriter As OutputFileWriter
 		Protected OverlayArtifactId As Int32
-		Protected RunId As String = System.Guid.NewGuid.ToString.Replace("-", "_")
+		Private _runId As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 		Private _lastRunMetadataImport As Int64 = 0
 		Private _timekeeper As ITimeKeeperManager
 		Private _filePath As String
@@ -245,6 +245,11 @@ Namespace kCura.WinEDDS
 				Return _unmappedRelationalFields
 			End Get
 		End Property
+		Public ReadOnly Property RunId As String
+			Get
+				Return _runId
+			End Get
+		End Property
 
 		Protected Overridable ReadOnly Property ParentArtifactTypeID As Int32
 			Get
@@ -296,34 +301,34 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Protected Overridable ReadOnly Property BatchResizeEnabled As Boolean
-			Get
-				Return AppSettings.Instance.DynamicBatchResizingOn
-			End Get
-		End Property
+        Protected Overridable ReadOnly Property BatchResizeEnabled As Boolean
+            Get
+                Return AppSettings.Instance.DynamicBatchResizingOn
+            End Get
+        End Property
 
 #End Region
 
 #Region "Constructors"
 
-		''' <summary>
-		''' Constructs a new importer that will prepare a bulk load file from a provided file.
-		''' </summary>
-		''' <param name="args">Information about the file being loaded</param>
-		''' <param name="context">The process context</param>
-		''' <param name="reporter">The object that performs I/O operations and publishes messages during retry operations.</param>
-		''' <param name="logger">The Relativity logger.</param>
-		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
-		''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
-		''' for use</param>
-		''' <param name="processID">The identifier of the process running</param>
-		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
-		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
-		''' <param name="executionSource">Optional parameter that states where the import
-		''' is coming from.</param>
-		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
-		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(args As LoadFile, _
+        ''' <summary>
+        ''' Constructs a new importer that will prepare a bulk load file from a provided file.
+        ''' </summary>
+        ''' <param name="args">Information about the file being loaded</param>
+        ''' <param name="context">The process context</param>
+        ''' <param name="reporter">The object that performs I/O operations and publishes messages during retry operations.</param>
+        ''' <param name="logger">The Relativity logger.</param>
+        ''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
+        ''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
+        ''' for use</param>
+        ''' <param name="processID">The identifier of the process running</param>
+        ''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
+        ''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
+        ''' <param name="executionSource">Optional parameter that states where the import
+        ''' is coming from.</param>
+        ''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
+        ''' is <c>null</c> or <c>String.Empty</c>.</exception>
+        Public Sub New(args As LoadFile, _
 		               context As ProcessContext, _
 		               reporter As IIoReporter, _
 		               logger As Global.Relativity.Logging.ILog, _
@@ -607,7 +612,7 @@ Namespace kCura.WinEDDS
 		Public Overridable Function ReadFile(ByVal path As String) As Object Implements IImportJob.ReadFile
 			Dim line As Api.ArtifactFieldCollection
 			_filePath = path
-			Using _logger.LogImportContextPushProperties(New LogContext(RunId, _settings.CaseInfo.ArtifactID))
+			Using _logger.LogImportContextPushProperties(New LogContext(_runId, _settings.CaseInfo.ArtifactID))
 				Try
 					_logger.LogUserContextInformation("Start import process", _settings.Credentials)
 					Using Timekeeper.CaptureTime("TOTAL")
@@ -616,7 +621,7 @@ Namespace kCura.WinEDDS
 							If Not InitializeMembers() Then
 								Return False
 							End If
-							ProcessedDocumentIdentifiers = New Dictionary(Of String,Integer)
+							ProcessedDocumentIdentifiers = New Dictionary(Of String, Integer)
 						End Using
 
 						If (_enforceDocumentLimit) Then
@@ -738,7 +743,7 @@ Namespace kCura.WinEDDS
 						Using Timekeeper.CaptureTime("ReadFile_OtherFinalization")
 							Me.TryPushNativeBatch(True, True, True)
 							WaitOnPushBatchTask()
-							RaiseEvent EndFileImport(RunId)
+							RaiseEvent EndFileImport(_runId)
 							WriteEndImport("Finish")
 							_artifactReader.Close()
 						End Using
@@ -758,8 +763,8 @@ Namespace kCura.WinEDDS
 
 						If Not Me.OutputFileWriter Is Nothing Then
 							Dim numberOfNotDeletedFiles As Integer = Me.OutputFileWriter.TryCloseAndDeleteAllTempFiles()
-							If numberOfNotDeletedFiles > 0
-								WriteStatusLine(EventType2.Warning, $"Process was not able to delete {numberOfNotDeletedFiles} temporary file(s).", lineNumber := 0)
+							If numberOfNotDeletedFiles > 0 Then
+								WriteStatusLine(EventType2.Warning, $"Process was not able to delete {numberOfNotDeletedFiles} temporary file(s).", lineNumber:=0)
 							End If
 							Me.OutputFileWriter.Dispose()
 							Me.OutputFileWriter = Nothing
@@ -1386,7 +1391,7 @@ Namespace kCura.WinEDDS
 				settings.Repository = _caseInfo.DocumentPath
 			End If
 
-			settings.RunID = RunId
+			settings.RunID = _runId
 			settings.CodeFileName = codeFileUploadKey
 			settings.DataFileName = nativeFileUploadKey
 			settings.ObjectFileName = objectFileUploadKey
@@ -1991,7 +1996,7 @@ Namespace kCura.WinEDDS
 		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal exception As System.Exception)
 			_artifactReader.OnFatalErrorState()
 			StopImport()
-			OnFatalError($"Error processing line:{lineNumber.ToString}", exception, RunId)
+			OnFatalError($"Error processing line:{lineNumber.ToString}", exception, _runId)
 		End Sub
 
 		Private Sub WriteError(ByVal currentLineNumber As Int32, ByVal line As String)
@@ -2239,11 +2244,11 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub ManageErrors(ByVal artifactTypeID As Int32)
-			If Not Me.BulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, RunId) Then Exit Sub
+			If Not Me.BulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, _runId) Then Exit Sub
 			Dim sr As GenericCsvReader2 = Nothing
 			Dim downloader As FileDownloader = Nothing
 			Try
-				With Me.BulkImportManager.GenerateNonImageErrorFiles(_caseInfo.ArtifactID, RunId, artifactTypeID, True, _keyFieldID)
+				With Me.BulkImportManager.GenerateNonImageErrorFiles(_caseInfo.ArtifactID, _runId, artifactTypeID, True, _keyFieldID)
 					Me.WriteStatusLine(EventType2.Status, "Retrieving errors from server")
 					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer)
 					AddHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
@@ -2256,7 +2261,7 @@ Namespace kCura.WinEDDS
 						' -Phil S. 08/13/2012
 						Const message As String = "There was an error while attempting to retrieve the errors from the server."
 
-						OnFatalError(message, New Exception(message), RunId)
+						OnFatalError(message, New Exception(message), _runId)
 					Else
 						AddHandler sr.Context.IoWarningEvent, AddressOf Me.IoWarningHandler
 						Dim line As String() = sr.ReadLine
@@ -2321,11 +2326,11 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub CleanupTempTables()
-			If Not RunId Is Nothing AndAlso RunId <> "" Then
+			If Not _runId Is Nothing AndAlso _runId <> "" Then
 				Try
-					Me.BulkImportManager.DisposeTempTables(_caseInfo.ArtifactID, RunId)
+					Me.BulkImportManager.DisposeTempTables(_caseInfo.ArtifactID, _runId)
 				Catch ex As Exception
-					Me.LogWarning(ex, "Failed to drop the {RunId} SQL temp tables.", RunId)
+					Me.LogWarning(ex, "Failed to drop the {RunId} SQL temp tables.", _runId)
 				End Try
 			End If
 		End Sub

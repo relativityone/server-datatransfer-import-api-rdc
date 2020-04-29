@@ -404,6 +404,7 @@
     <Compile Include="Monitoring\Sinks\MetricSinkSum.vb" />
     <Compile Include="Monitoring\TelemetryConstants.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="Process\EpochDateConverter.vb" />
     <Compile Include="Resources\Strings.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

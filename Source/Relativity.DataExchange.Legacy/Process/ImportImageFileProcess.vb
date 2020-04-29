@@ -90,6 +90,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Function Run() As Boolean
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
+			RunId = _imageFileImporter.RunId
 			Return Not _hasFatalErrorOccured
 		End Function
 
@@ -281,5 +282,6 @@ Namespace kCura.WinEDDS
 			_perBatchErrorCount = 0
 			MyBase.SendMetricJobBatch(batchInformation)
 		End Sub
+
 	End Class
 End Namespace

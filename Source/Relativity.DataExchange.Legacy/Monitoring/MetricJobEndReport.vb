@@ -146,7 +146,7 @@ Namespace Monitoring
 				Return GetValueOrDefault(Of Double)(TelemetryConstants.KeyName.JOB_DURATION)
 			End Get
 			Set
-				CustomData.Item(TelemetryConstants.KeyName.JOB_DURATION) = value
+				CustomData.Item(TelemetryConstants.KeyName.JOB_DURATION) = Value
 			End Set
 		End Property
 
@@ -159,7 +159,46 @@ Namespace Monitoring
 				Return GetValueOrDefault(Of TapiClient)(TelemetryConstants.KeyName.INITIAL_TRANSFER_MODE)
 			End Get
 			Set
-				CustomData.Item(TelemetryConstants.KeyName.INITIAL_TRANSFER_MODE) = value
+				CustomData.Item(TelemetryConstants.KeyName.INITIAL_TRANSFER_MODE) = Value
+			End Set
+		End Property
+
+		''' <summary>
+		''' Gets or sets start timestamp of the job.
+		''' </summary>
+		''' <returns>Start timestamp in epoch format.</returns>
+		Public Property JobStartTimeStamp As Double
+			Get
+				Return GetValueOrDefault(Of Double)(TelemetryConstants.KeyName.JOB_START_TIMESTAMP)
+			End Get
+			Set
+				CustomData.Item(TelemetryConstants.KeyName.JOB_START_TIMESTAMP) = Value
+			End Set
+		End Property
+
+		''' <summary>
+		''' Gets or sets end timestamp of the job.
+		''' </summary>
+		''' <returns>End timestamp in epoch format.</returns>
+		Public Property JobEndTimeStamp As Double
+			Get
+				Return GetValueOrDefault(Of Double)(TelemetryConstants.KeyName.JOB_END_TIMESTAMP)
+			End Get
+			Set
+				CustomData.Item(TelemetryConstants.KeyName.JOB_END_TIMESTAMP) = Value
+			End Set
+		End Property
+
+		''' <summary>
+		''' Gets or sets the server side job run ID.
+		''' </summary>
+		''' <returns>Job run ID.</returns>
+		Public Property JobRunId As String
+			Get
+				Return GetValueOrDefault(Of String)(TelemetryConstants.KeyName.JOB_RUN_ID)
+			End Get
+			Set
+				CustomData.Item(TelemetryConstants.KeyName.JOB_RUN_ID) = Value
 			End Set
 		End Property
 	End Class

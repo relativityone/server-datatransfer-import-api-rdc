@@ -166,7 +166,9 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Function Run() As Boolean
-			Return (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasFatalErrorOccured
+			Dim returnValue As Boolean = (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasFatalErrorOccured
+			RunId = _loadFileImporter.RunId
+			Return returnValue
 		End Function
 
 		Protected Overrides Sub Initialize()
@@ -412,7 +414,7 @@ Namespace kCura.WinEDDS
 
 		Dim isDisposed as Boolean
 		Protected Overrides Sub Dispose(disposing As Boolean)
-			If Not isDisposed
+			If Not isDisposed Then
 				_loadFileImporter?.Dispose()
 				isDisposed = True
 			End If
