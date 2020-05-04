@@ -66,7 +66,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 		public void StorePerformanceResults()
 		{
 			// Do not add statistics from tests that were not executed
-			if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Skipped)
+			if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Skipped)
 			{
 				return;
 			}

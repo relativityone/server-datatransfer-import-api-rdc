@@ -62,7 +62,7 @@ timestamps
 					try
 					{
 						echo "Getting hopper for ${testEnvironment}"
-						globalVmInfo = tools.createHopperInstance(testEnvironment)
+						globalVmInfo = tools.createHopperInstance(testEnvironment, "develop")
 						
 						echo "Replacing variables for ${testEnvironment}"
 						replaceTestVariables(testEnvironment, globalVmInfo.Url)
