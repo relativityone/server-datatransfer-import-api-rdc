@@ -44,24 +44,25 @@ nuget System.Reactive = 4.0.0
 nuget EWSoftware.SHFB = 2019.8.24
 
 # The Relativity packages below are required by the SDK projects.
-nuget kcura.outsidein.fi.win32 = 2019.5.1
+nuget kcura.outsidein.fi.win32 = 2020.1.0
 nuget relativity.logging.interfaces = 2018.11.8
-nuget relativity.kepler.client = 1.0.1.627
-nuget relativity.oauth2client = 1.0.27
-nuget relativity.oauth2client.implicit = 1.0.27
-nuget relativity.oauth2client.interfaces = 1.0.27
+nuget relativity.kepler.client = 2.6.2
+nuget relativity.oauth2client = 1.5.2
+nuget relativity.oauth2client.implicit = 1.5.2
+nuget relativity.oauth2client.interfaces = 1.5.2
 nuget relativity.telemetry.datacontracts.shared ~> 3000.0
 nuget relativity.telemetry.services.interface ~> 3000.0
-nuget relativity.transfer.client ~> 7.0.8
-nuget relativity.services.datacontracts = 11.2.8.6-DEV
-nuget relativity.services.interfaces = 11.2.8.6-DEV
-nuget relativity.services.interfaces.private = 11.2.8.6-DEV
+nuget relativity.transfer.client ~> 7.0.11
+nuget relativity.services.datacontracts = 11.2.114.64
+nuget relativity.services.interfaces = 11.2.114.64
+nuget relativity.services.interfaces.private = 11.2.114.64
 
 # The Relativity packages below are required ONLY for test projects!
 nuget kcura.relativity.client = 11.2.8.6-DEV
 nuget relativity.logging = 2018.11.8
 nuget relativity.productions.services.interfaces = 11.0.7
-nuget relativity.testing.identification ~> 1.6.0
+nuget relativity.testing.identification = 1.6.0
+nuget NUnitExtras.HierarchicalCategories = 1.1
 nuget ReportUnit = 1.2.1
 
 # A group is used to address dependency conflicts and only required by UI automation tests.

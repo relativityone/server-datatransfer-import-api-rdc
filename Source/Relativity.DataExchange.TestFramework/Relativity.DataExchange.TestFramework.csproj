@@ -377,6 +377,12 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Microsoft.VisualBasic">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Web.Services">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity">
           <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
           <Private>True</Private>
@@ -412,6 +418,22 @@
       <ItemGroup>
         <Reference Include="Relativity.Services.ServiceProxy">
           <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura.Vendor.Castle.Core">
+          <HintPath>..\..\packages\Relativity.Kepler.Service\lib\net462\kCura.Vendor.Castle.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="kCura.Vendor.Castle.Windsor">
+          <HintPath>..\..\packages\Relativity.Kepler.Service\lib\net462\kCura.Vendor.Castle.Windsor.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -504,12 +526,12 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Relativity.Services.Layout.DataContracts">
-          <HintPath>..\..\packages\Relativity.Services.Layout.Interfaces\lib\Relativity.Services.Layout.DataContracts.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Services.Layout.Interfaces\lib\net462\Relativity.Services.Layout.DataContracts.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Services.Layout.Interfaces">
-          <HintPath>..\..\packages\Relativity.Services.Layout.Interfaces\lib\Relativity.Services.Layout.Interfaces.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Services.Layout.Interfaces\lib\net462\Relativity.Services.Layout.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -596,37 +618,33 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
-    <When Condition="'$(Configuration)'!='Debug'">
-      <ItemGroup>
-        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
-          <Paket>True</Paket>
-        </Analyzer>
-        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.dll">
-          <Paket>True</Paket>
-        </Analyzer>
-        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\de-DE\StyleCop.Analyzers.resources.dll">
-          <Paket>True</Paket>
-        </Analyzer>
-        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\en-GB\StyleCop.Analyzers.resources.dll">
-          <Paket>True</Paket>
-        </Analyzer>
-        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\es-MX\StyleCop.Analyzers.resources.dll">
-          <Paket>True</Paket>
-        </Analyzer>
-        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\fr-FR\StyleCop.Analyzers.resources.dll">
-          <Paket>True</Paket>
-        </Analyzer>
-        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pl-PL\StyleCop.Analyzers.resources.dll">
-          <Paket>True</Paket>
-        </Analyzer>
-        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pt-BR\StyleCop.Analyzers.resources.dll">
-          <Paket>True</Paket>
-        </Analyzer>
-        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\ru-RU\StyleCop.Analyzers.resources.dll">
-          <Paket>True</Paket>
-        </Analyzer>
-      </ItemGroup>
-    </When>
-  </Choose>
+  <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\de-DE\StyleCop.Analyzers.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\en-GB\StyleCop.Analyzers.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\es-MX\StyleCop.Analyzers.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\fr-FR\StyleCop.Analyzers.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pl-PL\StyleCop.Analyzers.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pt-BR\StyleCop.Analyzers.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\ru-RU\StyleCop.Analyzers.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+  </ItemGroup></When></Choose>
 </Project>
