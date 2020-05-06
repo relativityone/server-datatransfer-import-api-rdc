@@ -64,7 +64,7 @@ timestamps
 						try
 						{
 							echo "Getting hopper for ${sutTemplate}"
-							globalVmInfo = tools.createHopperInstance(sutTemplate, null)
+							globalVmInfo = tools.createHopperInstance(sutTemplate)
 							
 							echo "Replacing variables for ${sutTemplate}"
 							replaceTestVariables(sutTemplate, globalVmInfo.Url)
@@ -147,15 +147,7 @@ timestamps
 					"\n" + "message: " + message +
 					"\n" +
 					"\n*************************************************"
-				try
-				{
-					sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, ['tests': ['passed': numberOfPassedTests, 'failed': numberOfFailedTests, 'skipped': numberOfSkippedTests]], message, "CD" )
-				}
-				catch(err)
-				{
-					echo "Send slack notification failed"
-					echo err.toString()
-				}
+				sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, ['tests': ['passed': numberOfPassedTests, 'failed': numberOfFailedTests, 'skipped': numberOfSkippedTests]], message, "CD" )
 			}
 		}
 	}

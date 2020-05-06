@@ -78,12 +78,11 @@ def tagGitCommit(String commitHash, String tag, String username, String password
 
 }
 
-def createHopperInstance(String sutTemplate, String relativityBranch)
+def createHopperInstance(String sutTemplate)
 {
     def vmInfo = null
     String productName = utils.retrieveProductNameFromGitURL(scm.getUserRemoteConfigs()[0].getUrl())
     String buildOwner = ""
-	String vmName = "$productName-${UUID.randomUUID().toString()}"
         
     withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) 
 	{
@@ -94,36 +93,11 @@ def createHopperInstance(String sutTemplate, String relativityBranch)
 		usernamePassword(credentialsId: 'jenkins_build_svc', passwordVariable: 'bldSvcPassword', usernameVariable: 'bldSvcUsername'),
 		string(credentialsId: 'HopperTrustedAppToken', variable: 'hopperTrustedAppToken')]) 
 	{
+		String vmName = "$productName-${UUID.randomUUID().toString()}"
 		String vmDescription = "$productName - ${env.BRANCH_NAME} - ${currentBuild.displayName}"
 		vmInfo = utils.createHopper("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", sutTemplate, vmName, vmDescription, bldSvcUsername, bldSvcPassword, buildOwner, productName)
 		utils.createHopperTestSettings(vmInfo)
 		utils.renewInstanceLease("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", vmInfo.Id, bldSvcUsername, bldSvcPassword)
-	}
-	
-	if(relativityBranch != null && !relativityBranch.isEmpty()) 
-	{
-		try{
-			stage('Install Relativity') {
-				utils.getRelativityInstaller(relativityBranch)
-
-				withCredentials([
-					usernamePassword(credentialsId: 'RAPCDServicePrincipal', passwordVariable: 'spPassword', usernameVariable: 'spUsername')
-				]) {
-					utils.deployRelativityToHopper(vmInfo, vmName, spUsername, spPassword)
-					utils.waitForRelativityWorkspaceUpgrade(vmInfo)
-				}
-			}
-			withCredentials([
-			usernamePassword(credentialsId: 'ProgetCI', passwordVariable: 'nugetPassword', usernameVariable: 'nugetUsername'),
-			string(credentialsId: 'HopperTrustedAppToken', variable: 'hopperTrustedAppToken')
-			]) {
-				utils.renewInstanceLease("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", vmInfo.Id, nugetUsername, nugetPassword)
-			}
-			}
-		catch(ex)
-		{
-			echo ex.toString()
-		}
 	}
 	
     return vmInfo
