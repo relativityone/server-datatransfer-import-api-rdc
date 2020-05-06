@@ -8,7 +8,7 @@ properties([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#ugly_test', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
-        string(defaultValue: 'aio-goatsbeard-3,aio-blazingstar-3,aio-larkspur-3,aio-foxglove-3,aio-juniper-0', description: 'Comma separated list of SUT templates', name: 'temlatesStr')
+        choice(defaultValue: 'release-11.1-juniper-1', choices: ["release-11.1-juniper-1"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment'),
     ]),
     pipelineTriggers([cron("H 22 * * *")])
 ])
@@ -17,7 +17,7 @@ testResultsPassed = 0
 testResultsFailed = 0
 testResultsSkipped = 0
 
-String[] templates = params.temlatesStr.tokenize(',')
+String[] templates = params.testEnvironment.tokenize(',')
 
 def globalVmInfo = null
 numberOfErrors = 0
@@ -55,52 +55,66 @@ timestamps
 				echo output
 			}
 
-			for(sutTemplate in templates)
+			timeout(time: 8, unit: 'HOURS')
 			{
-				timeout(time: 3, unit: 'HOURS')
+				stage("Prepare hopper")
 				{
-					stage("Run integration tests against ${sutTemplate}")
+					try
 					{
-						try
+						echo "Getting hopper for ${testEnvironment}"
+						globalVmInfo = tools.createHopperInstance(testEnvironment, "release-11.1-juniper-1")
+						
+						echo "Replacing variables for ${testEnvironment}"
+						replaceTestVariables(testEnvironment, globalVmInfo.Url)
+						
+						stage("Run tests against ${testEnvironment}")
 						{
-							echo "Getting hopper for ${sutTemplate}"
-							globalVmInfo = tools.createHopperInstance(sutTemplate, null)
-							
-							echo "Replacing variables for ${sutTemplate}"
-							replaceTestVariables(sutTemplate, globalVmInfo.Url)
-							
 							try
 							{                        
-								echo "Running integration tests for ${sutTemplate}"
-								runIntegrationTests(sutTemplate)
+								echo "Running tests for ${testEnvironment}"
+								runLoadTests(testEnvironment)
 							}
 							finally
 							{ 
-								echo "Test results report for ${sutTemplate}"
-								createTestReport(sutTemplate)
+								echo "Get test results for ${testEnvironment}"
+								GetTestResults(testEnvironment)
+					
+								echo "Test results report for ${testEnvironment}"
+								createTestReport(testEnvironment)
 								
 								echo "Publishing the build logs"
 								archiveArtifacts artifacts: 'Logs/**/*.*'
 									
-								echo "Publishing the integration tests report"
-								archiveArtifacts artifacts: "TestReports/${sutTemplate}/**/*.*"							
+								echo "Publishing the load tests report"
+								archiveArtifacts artifacts: "TestReports/${testEnvironment}/**/*.*"	
+
+								echo "Publishing deadlocks details"
+								archiveArtifacts artifacts: "TestReports/SqlProfiling/**/*.*"	
+								
+								def int numberOfFailedTests = testResultsFailed
+								if (numberOfFailedTests > 0)
+								{
+									echo "Failed tests count bigger than 0"
+									currentBuild.result = 'FAILED'
+									throw new Exception("One or more tests failed")
+								}
 							}
 						}
-						catch(err)
+					}
+					catch(err)
+					{
+						echo err.toString()
+						numberOfErrors++
+						echo "Number of errors: ${numberOfErrors}"
+						currentBuild.result = 'FAILED'
+						inCompatibleEnvironments = inCompatibleEnvironments + testEnvironment + " "
+					}
+					finally
+					{
+						if(globalVmInfo != null) 
 						{
-							echo err.toString()
-							numberOfErrors++
-							echo "Number of errors: ${numberOfErrors}"
-							currentBuild.result = 'FAILED'
-							inCompatibleEnvironments = inCompatibleEnvironments + sutTemplate + " "
-						}
-						finally
-						{
-							if(globalVmInfo != null) 
-							{
-								tools.deleteHopperInstance(globalVmInfo.Id)
-							}	
-						}
+							tools.deleteHopperInstance(globalVmInfo.Id)
+						}	
 					}
 				}
 			}
@@ -109,9 +123,9 @@ timestamps
 			stage("Send slack and bitbucket notification")
 			{
 				def script = this
-				def String serverUnderTestName = temlatesStr
-				def String version = "Trident nightly"
-				def String branch = "Trident"
+				def String serverUnderTestName = testEnvironment
+				def String version = "Trident loadtests"
+				def String branch = env.BRANCH_NAME
 				def String buildType = params.buildConfig
 				def String slackChannel = params.slackChannel
 				def String email = "slack_svc@relativity.com"
@@ -163,32 +177,35 @@ timestamps
 
 //################################ functions ###################################################
 
-def getPathToTestParametersFile(String sutTemplate)
+def getPathToTestParametersFile(String testEnvironment)
 {
-    return ".\\Source\\Relativity.DataExchange.TestFramework\\Resources\\${sutTemplate}.json"
+    return ".\\Source\\Relativity.DataExchange.TestFramework\\Resources\\${testEnvironment}.json"
 }
 
-def runIntegrationTests(String sutTemplate)
+def runLoadTests(String testEnvironment)
 {
-    String pathToJsonFile = getPathToTestParametersFile(sutTemplate)
-    echo "Running the integration tests"
-    output = powershell ".\\build.ps1 IntegrationTestsNightly -ILMerge -TestTimeoutInMS 900000 -TestReportFolderName '${sutTemplate}' -TestParametersFile '${pathToJsonFile}' -Branch 'Trident'"
+    String pathToJsonFile = getPathToTestParametersFile(testEnvironment)
+    echo "Running the load tests"
+    output = powershell ".\\build.ps1 LoadTests -ILMerge -TestTimeoutInMS 900000 -TestReportFolderName '${testEnvironment}' -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
     echo output 								
-	
-	echo "Retrieving results of integration tests : $sutTemplate"
-	def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 IntegrationTestResults -TestReportFolderName '${sutTemplate}' ")
+}
+
+def GetTestResults(String testEnvironment)
+{
+	echo "Retrieving results of load tests : $testEnvironment"
+	def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 LoadTestResults -TestReportFolderName '${testEnvironment}' ")
 
 	// Search for specific tokens within the response.
-	echo "Extracting the $sutTemplate-test result parameters"
+	echo "Extracting the $testEnvironment-test result parameters"
 	def int passed = tools.extractValue("testResultsPassed", testResultOutputString)
 	def int failed = tools.extractValue("testResultsFailed", testResultOutputString)
 	def int skipped = tools.extractValue("testResultsSkipped", testResultOutputString)
-	echo "Extracted the $sutTemplate-test result parameters"
+	echo "Extracted the $testEnvironment-test result parameters"
 
 	// Dump the individual test results
-	echo "$sutTemplate-test passed: $passed"
-	echo "$sutTemplate-test failed: $failed"
-	echo "$sutTemplate-test skipped: $skipped"
+	echo "$testEnvironment-test passed: $passed"
+	echo "$testEnvironment-test failed: $failed"
+	echo "$testEnvironment-test skipped: $skipped"
 	
 	// Now add to the final test results
 	testResultsPassed += passed
@@ -196,17 +213,21 @@ def runIntegrationTests(String sutTemplate)
 	testResultsSkipped += skipped	
 }
 
-def replaceTestVariables(String sutTemplate, String vmUrl)
+def replaceTestVariables(String testEnvironment, String vmUrl)
 {
-    String pathToJsonFile = getPathToTestParametersFile(sutTemplate)
-    powershell ".\\build.ps1 CreateTemplateTestParametersFile -TestParametersFile '${pathToJsonFile}'"
-	echo "replacing test variables in ${sutTemplate}"
+    String pathToJsonFile = getPathToTestParametersFile(testEnvironment)
+    powershell ".\\build.ps1 CreateTemplateTestParametersFileForLoadTests -TestParametersFile '${pathToJsonFile}'"
+	echo "replacing test variables in ${testEnvironment}"
     output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}'"
+    echo output
+	
+	echo "set values for sql profiling"
+	output = powershell ".\\build.ps1 SetVariablesForSqlProfiling -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}'"
     echo output
 }
 
-def createTestReport(String sutTemplate)
+def createTestReport(String testEnvironment)
 {
     echo "Generating test report"
-    powershell ".\\build.ps1 TestReports -TestReportFolderName '${sutTemplate}' -Branch '${env.BRANCH_NAME}'"
+    powershell ".\\build.ps1 TestReports -TestReportFolderName '${testEnvironment}' -Branch '${env.BRANCH_NAME}'"
 }
