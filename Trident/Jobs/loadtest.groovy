@@ -20,8 +20,7 @@ testResultsSkipped = 0
 String[] templates = params.testEnvironment.tokenize(',')
 
 def globalVmInfo = null
-numberOfErrors = 0
-def String inCompatibleEnvironments = ""	
+numberOfErrors = 0	
 tools = null
 
 timestamps
@@ -64,29 +63,29 @@ timestamps
 						echo "Getting hopper for ${testEnvironment}"
 						globalVmInfo = tools.createHopperInstance(testEnvironment, "develop")
 						
-						echo "Replacing variables for ${testEnvironment}"
-						replaceTestVariables(testEnvironment, globalVmInfo.Url)
+						echo "Replacing variables"
+						replaceTestVariables(globalVmInfo.Url)
 						
-						stage("Run tests against ${testEnvironment}")
+						stage("Run load tests")
 						{
 							try
 							{                        
-								echo "Running tests for ${testEnvironment}"
-								runLoadTests(testEnvironment)
+								echo "Running tests"
+								runLoadTests()
 							}
 							finally
 							{ 
-								echo "Get test results for ${testEnvironment}"
-								GetTestResults(testEnvironment)
+								echo "Get test results"
+								GetTestResults()
 					
-								echo "Test results report for ${testEnvironment}"
-								createTestReport(testEnvironment)
+								echo "Test results report"
+								createTestReport()
 								
 								echo "Publishing the build logs"
 								archiveArtifacts artifacts: 'Logs/**/*.*'
 									
 								echo "Publishing the load tests report"
-								archiveArtifacts artifacts: "TestReports/${testEnvironment}/**/*.*"	
+								archiveArtifacts artifacts: "TestReports/load-tests/**/*.*"	
 
 								echo "Publishing deadlocks details"
 								archiveArtifacts artifacts: "TestReports/SqlProfiling/**/*.*"	
@@ -107,7 +106,6 @@ timestamps
 						numberOfErrors++
 						echo "Number of errors: ${numberOfErrors}"
 						currentBuild.result = 'FAILED'
-						inCompatibleEnvironments = inCompatibleEnvironments + testEnvironment + " "
 					}
 					finally
 					{
@@ -123,7 +121,7 @@ timestamps
 			stage("Send slack and bitbucket notification")
 			{
 				def script = this
-				def String serverUnderTestName = testEnvironment
+				def String serverUnderTestName = "Newest Relativity from develop"
 				def String version = "Trident loadtests"
 				def String branch = env.BRANCH_NAME
 				def String buildType = params.buildConfig
@@ -135,8 +133,7 @@ timestamps
 				def String message = ""
 				if(numberOfErrors > 0 || numberOfFailedTests > 0)
 				{
-					message = "Something went wrong with the following environments : "
-					message = message + inCompatibleEnvironments
+					message = "Something went wrong"
 					currentBuild.result = 'FAILED'
 				}
 				else
@@ -177,35 +174,35 @@ timestamps
 
 //################################ functions ###################################################
 
-def getPathToTestParametersFile(String testEnvironment)
+def getPathToTestParametersFile()
 {
-    return ".\\Source\\Relativity.DataExchange.TestFramework\\Resources\\${testEnvironment}.json"
+    return ".\\Source\\Relativity.DataExchange.TestFramework\\Resources\\loadtests.json"
 }
 
-def runLoadTests(String testEnvironment)
+def runLoadTests()
 {
-    String pathToJsonFile = getPathToTestParametersFile(testEnvironment)
+    String pathToJsonFile = getPathToTestParametersFile()
     echo "Running the load tests"
-    output = powershell ".\\build.ps1 LoadTests -ILMerge -TestTimeoutInMS 900000 -TestReportFolderName '${testEnvironment}' -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
+    output = powershell ".\\build.ps1 LoadTests -ILMerge -TestTimeoutInMS 2700000 -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
     echo output 								
 }
 
-def GetTestResults(String testEnvironment)
+def GetTestResults()
 {
-	echo "Retrieving results of load tests : $testEnvironment"
-	def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 LoadTestResults -TestReportFolderName '${testEnvironment}' ")
+	echo "Retrieving results of load tests"
+	def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 LoadTestResults")
 
 	// Search for specific tokens within the response.
-	echo "Extracting the $testEnvironment-test result parameters"
+	echo "Extracting the loadtests result parameters"
 	def int passed = tools.extractValue("testResultsPassed", testResultOutputString)
 	def int failed = tools.extractValue("testResultsFailed", testResultOutputString)
 	def int skipped = tools.extractValue("testResultsSkipped", testResultOutputString)
-	echo "Extracted the $testEnvironment-test result parameters"
+	echo "Extracted the loadtests result parameters"
 
 	// Dump the individual test results
-	echo "$testEnvironment-test passed: $passed"
-	echo "$testEnvironment-test failed: $failed"
-	echo "$testEnvironment-test skipped: $skipped"
+	echo "Test passed: $passed"
+	echo "Test failed: $failed"
+	echo "Test skipped: $skipped"
 	
 	// Now add to the final test results
 	testResultsPassed += passed
@@ -213,11 +210,11 @@ def GetTestResults(String testEnvironment)
 	testResultsSkipped += skipped	
 }
 
-def replaceTestVariables(String testEnvironment, String vmUrl)
+def replaceTestVariables(String vmUrl)
 {
-    String pathToJsonFile = getPathToTestParametersFile(testEnvironment)
+    String pathToJsonFile = getPathToTestParametersFile()
     powershell ".\\build.ps1 CreateTemplateTestParametersFileForLoadTests -TestParametersFile '${pathToJsonFile}'"
-	echo "replacing test variables in ${testEnvironment}"
+	echo "replacing test variables"
     output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}'"
     echo output
 	
@@ -226,8 +223,8 @@ def replaceTestVariables(String testEnvironment, String vmUrl)
     echo output
 }
 
-def createTestReport(String testEnvironment)
+def createTestReport()
 {
     echo "Generating test report"
-    powershell ".\\build.ps1 TestReports -TestReportFolderName '${testEnvironment}' -Branch '${env.BRANCH_NAME}'"
+    powershell ".\\build.ps1 TestReports -Branch '${env.BRANCH_NAME}'"
 }
