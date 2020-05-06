@@ -7,23 +7,10 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property ExportBatchSize As Integer Implements IExportConfig.ExportBatchSize
 			Get
-				return AppSettings.Instance.ExportBatchSize
+				Return AppSettings.Instance.ExportBatchSize
 			End Get
 		End Property
 
-		Public ReadOnly Property ExportThreadCount As Integer Implements IExportConfig.ExportThreadCount
-			Get
-				Return AppSettings.Instance.ExportThreadCount
-			End Get
-		End Property
-
-		Public ReadOnly Property UseOldExport As Boolean Implements IExportConfig.UseOldExport
-			Get
-				Return AppSettings.Instance.UseOldExport
-			End Get
-		End Property
-
-		
 		Public ReadOnly Property ExportIOErrorWaitTime As Integer Implements IExportConfig.ExportIOErrorWaitTime
 			Get
 				return AppSettings.Instance.IoErrorWaitTimeInSeconds

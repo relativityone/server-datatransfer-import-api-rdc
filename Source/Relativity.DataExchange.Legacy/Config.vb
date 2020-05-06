@@ -186,19 +186,6 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property ExportThreadCount() As Int32        'Number of threads during the exporting process
-			Get
-				Return AppSettings.Instance.ExportThreadCount
-			End Get
-		End Property
-
-		Public Shared ReadOnly Property UseOldExport() As Boolean
-			Get
-				Return AppSettings.Instance.UseOldExport
-			End Get
-		End Property
-
-
 		Public Shared ReadOnly Property DisableImageTypeValidation() As Boolean
 			Get
 				Return AppSettings.Instance.DisableImageTypeValidation

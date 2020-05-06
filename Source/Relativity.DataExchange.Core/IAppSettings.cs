@@ -237,18 +237,6 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets the number of threads to use during export jobs.
-		/// </summary>
-		/// <value>
-		/// The total number of threads.
-		/// </value>
-		int ExportThreadCount
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Gets or sets the size of the buffer in bytes to use when retrieving long text field data from Object Manager during export jobs.
 		/// </summary>
 		/// <value>
@@ -931,18 +919,6 @@ namespace Relativity.DataExchange
 		/// The full path.
 		/// </value>
 		string TempDirectory
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether to use the old export production implementation. This is <see langword="false" /> by default.
-		/// </summary>
-		/// <value>
-		/// <see langword="true" /> to use the old export production implementation; otherwise, <see langword="false" /> to use the new export production implementation.
-		/// </value>
-		bool UseOldExport
 		{
 			get;
 			set;

@@ -42,7 +42,6 @@ Namespace kCura.WinEDDS
 		Private WithEvents _processContext As ProcessContext
 		Private _downloadHandler As Service.Export.IExportFileDownloader
 		Private WithEvents _downloadModeStatus As Service.Export.IExportFileDownloaderStatus
-		Private _volumeManager As VolumeManager
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
 		Private _beginBatesColumn As String = ""
 		Private _timekeeper As New Timekeeper2
@@ -111,9 +110,6 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property ErrorLogFileName() As String
 			Get
-				If UseOldExport Then
-					Return _volumeManager?.ErrorLogFileName
-				End If
 				If _errorFile?.IsErrorFileCreated() Then
 					Return _errorFile.Path()
 				Else
@@ -137,12 +133,6 @@ Namespace kCura.WinEDDS
 		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
 			Get
 				Return _exportConfig.ExportErrorWaitTime
-			End Get
-		End Property
-
-		Protected Overridable ReadOnly Property UseOldExport() As Boolean
-			Get
-				Return _exportConfig.UseOldExport
 			End Get
 		End Property
 
@@ -250,9 +240,6 @@ Namespace kCura.WinEDDS
 				_logger.LogInformation("Successfully executed the export search.")
 			Catch ex As System.Exception
 				Me.WriteFatalError($"A fatal error occurred on document #{Me.DocumentsExported}", ex)
-				If Not _volumeManager Is Nothing Then
-					_volumeManager.Close()
-				End If
 			Finally
 				_stopwatch.Stop()
 				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType2.End, _lastStatisticsSnapshot, Statistics))
@@ -439,27 +426,21 @@ Namespace kCura.WinEDDS
 
 			Statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1))
 
-			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport, _loadFileFormatterFactory)
+			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, _loadFileFormatterFactory)
 				Dim batch As IBatch = Nothing
 				Dim objectExportableSize As IObjectExportableSize = Nothing
 
-				If UseOldExport Then
-					_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, Statistics, FileHelper, DirectoryHelper, FileNameProvider, _logger)
-					FieldLookupService = _volumeManager
-					_volumeManager.ColumnHeaderString = columnHeaderString
-				Else
-					Dim validator As IExportValidation = container.Resolve(Of IExportValidation)
-					If (Not validator.ValidateExport(Settings, TotalExportArtifactCount)) Then
-						_logger.LogWarning("The export failed due to a validation failure.")
-						Shutdown()
-						Return
-					End If
-					objectExportableSize = container.Resolve(Of IObjectExportableSize)
-					FieldLookupService = container.Resolve(Of IFieldLookupService)
-					_errorFile = container.Resolve(Of IErrorFile)
-					batch = container.Resolve(Of IBatch)
-					_downloadModeStatus = container.Resolve(Of IExportFileDownloaderStatus)
+				Dim validator As IExportValidation = container.Resolve(Of IExportValidation)
+				If (Not validator.ValidateExport(Settings, TotalExportArtifactCount)) Then
+					_logger.LogWarning("The export failed due to a validation failure.")
+					Shutdown()
+					Return
 				End If
+				objectExportableSize = container.Resolve(Of IObjectExportableSize)
+				FieldLookupService = container.Resolve(Of IFieldLookupService)
+				_errorFile = container.Resolve(Of IErrorFile)
+				batch = container.Resolve(Of IBatch)
+				_downloadModeStatus = container.Resolve(Of IExportFileDownloaderStatus)
 
 				CreateOriginalFileNameProviderInstance(isFileNamePresent)
 
@@ -507,7 +488,7 @@ Namespace kCura.WinEDDS
 					_timekeeper.MarkEnd("Exporter_GetDocumentBlock")
 					Dim artifactIDs As New List(Of Int32)
 					Dim artifactIdOrdinal As Int32 = FieldLookupService.GetOrdinalIndex("ArtifactID")
-					
+
 					If records.Length > 0 Then
 						For Each artifactMetadata As Object() In records
 							artifactIDs.Add(CType(artifactMetadata(artifactIdOrdinal), Int32))
@@ -537,10 +518,6 @@ Namespace kCura.WinEDDS
 
 				Me.WriteStatusLine(EventType2.Status, FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
-
-				If UseOldExport Then
-					_volumeManager.Finish()
-				End If
 
 				Me.AuditRun(True)
 				Return
@@ -669,48 +646,18 @@ Namespace kCura.WinEDDS
 			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
 			Dim volumePredictions(documentArtifactIDs.Length - 1) As VolumePredictions
 
-			Dim threads As Task() = Nothing
-			If UseOldExport Then
-				Dim threadCount As Integer = _exportConfig.ExportThreadCount - 1
-				threads = New Task(threadCount) {}
-				For i = 0 To threadCount
-					threads(i) = Task.FromResult(0)
-				Next
-			End If
-
 			For i = 0 To documentArtifactIDs.Length - 1
 				Dim record As Object() = DirectCast(records(i), Object())
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
 				Dim prediction As VolumePredictions = New VolumePredictions()
 				Dim artifact As ObjectExportInfo = CreateArtifact(record, documentArtifactIDs(i), nativeRow, images, productionImages, beginBatesColumnIndex, identifierColumnIndex, lookup, prediction)
 
-				If UseOldExport Then
-					_volumeManager.FinalizeVolumeAndSubDirPredictions(prediction, artifact)
-				Else
-					objectExportableSize.FinalizeSizeCalculations(artifact, prediction)
-				End If
-
+				objectExportableSize.FinalizeSizeCalculations(artifact, prediction)
 				volumePredictions(i) = prediction
-
 				artifacts(i) = artifact
 			Next
 
-			If UseOldExport Then
-				For i = 0 To documentArtifactIDs.Length - 1
-					If _cancellationTokenSource.IsCancellationRequested Then Exit For
-					Dim openThreadNumber As Integer = Task.WaitAny(threads, TimeSpan.FromDays(1))
-					Dim volumeNum As Integer = _volumeManager.GetCurrentVolumeNumber(volumePredictions(i))
-					Dim subDirNum As Integer = _volumeManager.GetCurrentSubDirectoryNumber(volumePredictions(i))
-					threads(openThreadNumber) = ExportArtifactAsync(artifacts(i), maxTries, i, documentArtifactIDs.Length, openThreadNumber, volumeNum, subDirNum)
-					DocumentsExported += 1
-				Next
-
-				Task.WaitAll(threads)
-				_volumeManager.WriteDatFile(_linesToWriteDat, artifacts)
-				_volumeManager.WriteOptFile(_linesToWriteOpt, artifacts)
-			Else
-				batch.ExportAsync(artifacts, volumePredictions, _cancellationTokenSource.Token).ConfigureAwait(false).GetAwaiter().GetResult()
-			End If
+			batch.ExportAsync(artifacts, volumePredictions, _cancellationTokenSource.Token).ConfigureAwait(False).GetAwaiter().GetResult()
 		End Sub
 
 		Private Async Function RetrieveNatives(ByVal natives As System.Data.DataView, ByVal productionArtifactID As Int32, ByVal documentArtifactIDs As Int32(), ByVal maxTries As Integer) As Task(Of System.Data.DataView)
@@ -773,24 +720,6 @@ Namespace kCura.WinEDDS
 					End If
 					Return productionImages
 				End Function
-				)
-		End Function
-
-		Private Async Function ExportArtifactAsync(ByVal artifact As ObjectExportInfo, ByVal maxTries As Integer, ByVal docNum As Integer, ByVal numDocs As Integer, ByVal threadNumber As Integer, ByVal volumeNumber As Integer, ByVal subDirectoryNumber As Integer) As Task
-			Await Task.Run(
-				Sub()
-					_fileCount += CallServerWithRetry(Function()
-														  Dim retval As Long
-														  retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt, threadNumber, volumeNumber, subDirectoryNumber)
-														  If retval >= 0 Then
-															  WriteUpdate("Exported document " & docNum + 1, docNum = numDocs - 1)
-															  UpdateStatisticsSnapshot(DateTime.Now)
-															  Return retval
-														  Else
-															  Return 0
-														  End If
-													  End Function, maxTries)
-				End Sub
 				)
 		End Function
 
@@ -1415,19 +1344,10 @@ Namespace kCura.WinEDDS
 			Else
 				_logger.LogVerbose("The export cancellation request event has been raised by the search process to perform standard cleanup.")
 			End If
-			
-			If Not _volumeManager Is Nothing Then
-				_volumeManager.Halt = True
-			End If
 		End Sub
 
 		Private Sub _processContext_OnExportServerErrors(ByVal sender As Object, e As ExportErrorEventArgs) Handles _processContext.ExportServerErrors
-			Dim sourcePath As String
-			If UseOldExport Then
-				sourcePath = _volumeManager.ErrorDestinationPath
-			Else
-				sourcePath = _errorFile.Path()
-			End If
+			Dim sourcePath As String = _errorFile.Path()
 			Dim destinationPath As String = Path.Combine(e.Path, $"{Settings.LoadFilesPrefix}_errors.csv")
 			FileHelper.Move(sourcePath, destinationPath)
 		End Sub

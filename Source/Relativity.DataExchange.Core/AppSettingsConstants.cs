@@ -62,8 +62,6 @@ namespace Relativity.DataExchange
 		public const int ExportErrorNumberOfRetriesDefaultValue = 20;
 		public const string ExportErrorWaitTimeInSecondsKey = "ExportErrorWaitTimeInSeconds";
 		public const int ExportErrorWaitTimeInSecondsDefaultValue = 30;
-		public const string ExportThreadCountKey = "ExportThreadCount";
-		public const int ExportThreadCountDefaultValue = 2;
 		public const string ExportLongTextBufferSizeBytesKey = "ExportLongTextBufferSizeBytes";
 		public const int ExportLongTextBufferSizeBytesDefaultValue = 16384;
 		public const int ExportLongTextBufferSizeBytesMinValue = 128;
@@ -177,8 +175,6 @@ namespace Relativity.DataExchange
 		public const string TempDirectoryKey = "TempDirectory";
 		public const string TempDirectoryDefaultValue = "";
 		public const int TapiTargetDataRateMbpsDefaultValue = 100;
-		public const string UseOldExportKey = "UseOldExport";
-		public const bool UseOldExportDefaultValue = false;
 		public const string UsePipeliningForNativeAndObjectImportsKey = "UsePipeliningForNativeAndObjectImports";
 		public const bool UsePipeliningForNativeAndObjectImportsDefaultValue = true;
 		public const string ValueRefreshThresholdKey = "ValueRefreshThreshold";

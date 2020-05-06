@@ -47,16 +47,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		public virtual IWindsorContainer Create(
 			Exporter exporter,
 			string[] columnNamesInOrder,
-			bool useOldExport,
 			ILoadFileHeaderFormatterFactory loadFileHeaderFormatterFactory)
 		{
 			// Note: bypass the "real" ContainerFactory class to install directly into the test container.
-			if (!useOldExport)
-			{
-				this.container.Kernel.Resolver.AddSubResolver(new CollectionResolver(this.container.Kernel, true));
-				this.container.Install(
-					new ExportInstaller(exporter, columnNamesInOrder, loadFileHeaderFormatterFactory, this.logger));
-			}
+			this.container.Kernel.Resolver.AddSubResolver(new CollectionResolver(this.container.Kernel, true));
+			this.container.Install(
+				new ExportInstaller(exporter, columnNamesInOrder, loadFileHeaderFormatterFactory, this.logger));
 
 			return this.container;
 		}

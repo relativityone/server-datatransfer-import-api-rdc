@@ -44,17 +44,13 @@
 		public virtual IWindsorContainer Create(
 			Exporter exporter,
 			string[] columnNamesInOrder,
-			bool useOldExport,
 			ILoadFileHeaderFormatterFactory loadFileHeaderFormatterFactory)
 		{
 			var container = new WindsorContainer();
 
-			if (!useOldExport)
-			{
-				container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel, true));
-				container.Install(
-					new ExportInstaller(exporter, columnNamesInOrder, loadFileHeaderFormatterFactory, this.logger));
-			}
+			container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel, true));
+			container.Install(
+				new ExportInstaller(exporter, columnNamesInOrder, loadFileHeaderFormatterFactory, this.logger));
 
 			return container;
 		}

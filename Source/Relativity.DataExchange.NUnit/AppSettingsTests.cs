@@ -350,17 +350,6 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldGetAndSetTheExportThreadCountSetting()
-		{
-			Assert.That(
-				this.settings.ExportThreadCount,
-				Is.EqualTo(DataExchange.AppSettingsConstants.ExportThreadCountDefaultValue));
-			int expectedValue = RandomHelper.NextInt32(1, 1000);
-			this.settings.ExportThreadCount = expectedValue;
-			Assert.That(this.settings.ExportThreadCount, Is.EqualTo(expectedValue));
-		}
-
-		[Test]
 		public void ShouldGetAndSetTheFileTypeIdentifierTimeoutSecondsSetting()
 		{
 			Assert.That(
@@ -984,19 +973,6 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldGetAndSetTheUseOldExportSetting()
-		{
-			Assert.That(
-				this.settings.UseOldExport,
-				Is.EqualTo(DataExchange.AppSettingsConstants.UseOldExportDefaultValue));
-			bool expectedValue = RandomHelper.NextBoolean();
-			this.settings.UseOldExport = expectedValue;
-			Assert.That(this.settings.UseOldExport, Is.EqualTo(expectedValue));
-			this.settings.UseOldExport = !expectedValue;
-			Assert.That(this.settings.UseOldExport, Is.EqualTo(!expectedValue));
-		}
-
-		[Test]
 		public void ShouldGetAndSetTheUsePipeliningForNativeAndObjectImportsSetting()
 		{
 			Assert.That(
@@ -1157,7 +1133,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.DisableThrowOnIllegalCharacters, Is.True);
 				Assert.That(this.settings.DynamicBatchResizingOn, Is.False);
 				Assert.That(this.settings.ExportBatchSize, Is.EqualTo(255));
-				Assert.That(this.settings.ExportThreadCount, Is.EqualTo(3));
 				Assert.That(this.settings.ForceWebUpload, Is.True);
 				Assert.That(this.settings.HttpTimeoutSeconds, Is.EqualTo(23));
 				Assert.That(this.settings.ImportBatchMaxVolume, Is.EqualTo(12345));
@@ -1183,7 +1158,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.TapiTargetDataRateMbps, Is.EqualTo(50));
 				Assert.That(this.settings.TapiTransferLogDirectory, Is.EqualTo(@"%temp%\IAPI_log\"));
 				Assert.That(this.settings.TempDirectory, Is.EqualTo(@"C:\"));
-				Assert.That(this.settings.UseOldExport, Is.True);
 				Assert.That(this.settings.UsePipeliningForNativeAndObjectImports, Is.True);
 				Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo("https://relativity.one.com/"));
 				Assert.That(this.settings.WebApiOperationTimeout, Is.EqualTo(333));
@@ -1230,7 +1204,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.DisableThrowOnIllegalCharactersKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.DynamicBatchResizingOnKey], Is.False);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportBatchSizeKey], Is.EqualTo(255));
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportThreadCountKey], Is.EqualTo(3));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ForceWebUploadKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.HttpTimeoutSecondsKey], Is.EqualTo(23));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.ImportBatchMaxVolumeKey], Is.EqualTo(12345));
@@ -1256,7 +1229,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiTargetDataRateMbpsKey], Is.EqualTo(50));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiTransferLogDirectoryKey], Is.EqualTo(@"%temp%\IAPI_log\"));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TempDirectoryKey], Is.EqualTo(@"C:\"));
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.UseOldExportKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.UsePipeliningForNativeAndObjectImportsKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.WaitBeforeReconnectKey], Is.EqualTo(64));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.WebApiOperationTimeoutKey], Is.EqualTo(333));
@@ -1321,8 +1293,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.DynamicBatchResizingOn, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.ExportBatchSizeKey] = 9;
 				Assert.That(this.settings.ExportBatchSize, Is.EqualTo(9));
-				dictionary[DataExchange.AppSettingsConstants.ExportThreadCountKey] = 10;
-				Assert.That(this.settings.ExportThreadCount, Is.EqualTo(10));
 				dictionary[DataExchange.AppSettingsConstants.ForceWebUploadKey] = true;
 				Assert.That(this.settings.ForceWebUpload, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.ImportBatchMaxVolumeKey] = 11;
@@ -1379,8 +1349,6 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.TapiTransferLogDirectory, Is.EqualTo("jkl"));
 				dictionary[DataExchange.AppSettingsConstants.TempDirectoryKey] = "mno";
 				Assert.That(this.settings.TempDirectory, Is.EqualTo("mno"));
-				dictionary[DataExchange.AppSettingsConstants.UseOldExportKey] = true;
-				Assert.That(this.settings.UseOldExport, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.UsePipeliningForNativeAndObjectImportsKey] = true;
 				Assert.That(this.settings.UsePipeliningForNativeAndObjectImports, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.WaitBeforeReconnectKey] = 20;

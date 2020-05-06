@@ -205,7 +205,6 @@ Public MustInherit Class MonitoredProcessBase
 		metric.TransferDirection = TransferDirection
 		metric.TransferMode = TapiClient
 		metric.CorrelationID = JobGuid.ToString()
-		metric.UseOldExport = Me.AppSettings.UseOldExport
 		metric.UnitOfMeasure = TelemetryConstants.Values.NOT_APPLICABLE
 		metric.ApplicationName = GetApplicationName()
 		metric.ImportApiVersion = RunningContext.ImportApiSdkVersion.ToString()

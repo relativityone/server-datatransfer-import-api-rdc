@@ -296,9 +296,6 @@
     <Compile Include="Exporters\VolumeInfo.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Exporters\VolumeManager.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Exporters\VolumePredictions.vb" />
     <Compile Include="FieldProviderCache.vb" />
     <Compile Include="FileDownloader.vb">

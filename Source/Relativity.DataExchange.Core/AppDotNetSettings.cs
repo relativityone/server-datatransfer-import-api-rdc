@@ -405,17 +405,6 @@ namespace Relativity.DataExchange
 
 		/// <inheritdoc />
 		[AppSetting(
-			AppSettingsConstants.SectionLegacyWinEdds,
-			AppSettingsConstants.ExportThreadCountKey,
-			AppSettingsConstants.ExportThreadCountDefaultValue)]
-		int IAppSettings.ExportThreadCount
-		{
-			get;
-			set;
-		}
-
-		/// <inheritdoc />
-		[AppSetting(
 			AppSettingsConstants.SectionDataExchange,
 			AppSettingsConstants.FileTypeIdentifyTimeoutSecondsKey,
 			AppSettingsConstants.FileTypeIdentifyTimeoutSecondsDefaultValue)]
@@ -1125,17 +1114,6 @@ namespace Relativity.DataExchange
 			AppSettingsConstants.TempDirectoryKey,
 			AppSettingsConstants.TempDirectoryDefaultValue)]
 		string IAppSettings.TempDirectory
-		{
-			get;
-			set;
-		}
-
-		/// <inheritdoc />
-		[AppSetting(
-			AppSettingsConstants.SectionLegacyWinEdds,
-			AppSettingsConstants.UseOldExportKey,
-			AppSettingsConstants.UseOldExportDefaultValue)]
-		bool IAppSettings.UseOldExport
 		{
 			get;
 			set;

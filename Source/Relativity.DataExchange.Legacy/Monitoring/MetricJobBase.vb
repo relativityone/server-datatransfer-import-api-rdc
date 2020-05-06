@@ -3,7 +3,12 @@
 Namespace Monitoring
 	Public MustInherit Class MetricJobBase
 		Inherits MetricBase
-		
+
+		Protected Sub New()
+			' TODO: remove UseOldExport flag when most clients install Mayapple version in R1
+			Me.CustomData.Item(TelemetryConstants.KeyName.USE_OLD_EXPORT) = False
+		End Sub
+
 		''' <summary>
 		''' Gets or sets job type - Import or Export.
 		''' </summary>
@@ -40,19 +45,6 @@ Namespace Monitoring
 			End Get
 			Set
 				CustomData.Item(TelemetryConstants.KeyName.APPLICATION_NAME) = Value
-			End Set
-		End Property
-
-		''' <summary>
-		''' Gets or sets value indicating whether old export was used to perform job
-		''' </summary>
-		''' <returns>True if old export was used, False otherwise</returns>
-		Public Property UseOldExport As Boolean
-			Get
-				Return GetValueOrDefault(Of Boolean)(TelemetryConstants.KeyName.USE_OLD_EXPORT)
-			End Get
-			Set
-				CustomData.Item(TelemetryConstants.KeyName.USE_OLD_EXPORT) = Value
 			End Set
 		End Property
 
