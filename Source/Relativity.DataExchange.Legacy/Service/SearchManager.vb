@@ -31,6 +31,10 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.RetrieveNativesForSearch(caseContextArtifactID, documentArtifactIDs))
 		End Function
 
+		Public Shadows Function RetrievePdfForSearch(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As String) As System.Data.DataSet Implements ISearchManager.RetrievePdfForSearch
+			Return RetryOnReLoginException(Function() MyBase.RetrievePdfForSearch(caseContextArtifactID, documentArtifactIDs))
+		End Function
+
 		Public Shadows Function RetrieveFilesForDynamicObjects(ByVal caseContextArtifactID As Int32, ByVal fileFieldArtifactID As Int32, ByVal objectIds As Int32()) As System.Data.DataSet Implements ISearchManager.RetrieveFilesForDynamicObjects
 			Return RetryOnReLoginException(Function() MyBase.RetrieveFilesForDynamicObjects(caseContextArtifactID, fileFieldArtifactID, objectIds))
 		End Function

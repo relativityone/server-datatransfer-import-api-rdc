@@ -59,6 +59,28 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RetrievePdfForSearch">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentArtifactIDs" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrievePdfForSearchResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrievePdfForSearchResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="RetrieveFilesForDynamicObjects">
         <s:complexType>
           <s:sequence>
@@ -355,6 +377,12 @@
   <wsdl:message name="RetrieveNativesForSearchSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveNativesForSearchResponse" />
   </wsdl:message>
+  <wsdl:message name="RetrievePdfForSearchSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrievePdfForSearch" />
+  </wsdl:message>
+  <wsdl:message name="RetrievePdfForSearchSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrievePdfForSearchResponse" />
+  </wsdl:message>
   <wsdl:message name="RetrieveFilesForDynamicObjectsSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveFilesForDynamicObjects" />
   </wsdl:message>
@@ -440,6 +468,13 @@
     <wsdl:part name="documentArtifactIDs" type="s:string" />
   </wsdl:message>
   <wsdl:message name="RetrieveNativesForSearchHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrievePdfForSearchHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="documentArtifactIDs" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrievePdfForSearchHttpPostOut">
     <wsdl:part name="Body" element="tns:DataSet" />
   </wsdl:message>
   <wsdl:message name="RetrieveFilesForDynamicObjectsHttpPostIn">
@@ -539,6 +574,10 @@
       <wsdl:input message="tns:RetrieveNativesForSearchSoapIn" />
       <wsdl:output message="tns:RetrieveNativesForSearchSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="RetrievePdfForSearch">
+      <wsdl:input message="tns:RetrievePdfForSearchSoapIn" />
+      <wsdl:output message="tns:RetrievePdfForSearchSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="RetrieveFilesForDynamicObjects">
       <wsdl:input message="tns:RetrieveFilesForDynamicObjectsSoapIn" />
       <wsdl:output message="tns:RetrieveFilesForDynamicObjectsSoapOut" />
@@ -596,6 +635,10 @@
     <wsdl:operation name="RetrieveNativesForSearch">
       <wsdl:input message="tns:RetrieveNativesForSearchHttpPostIn" />
       <wsdl:output message="tns:RetrieveNativesForSearchHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrievePdfForSearch">
+      <wsdl:input message="tns:RetrievePdfForSearchHttpPostIn" />
+      <wsdl:output message="tns:RetrievePdfForSearchHttpPostOut" />
     </wsdl:operation>
     <wsdl:operation name="RetrieveFilesForDynamicObjects">
       <wsdl:input message="tns:RetrieveFilesForDynamicObjectsHttpPostIn" />
@@ -664,6 +707,15 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveNativesForSearch">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveNativesForSearch" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrievePdfForSearch">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrievePdfForSearch" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -800,6 +852,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="RetrievePdfForSearch">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrievePdfForSearch" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="RetrieveFilesForDynamicObjects">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveFilesForDynamicObjects" style="document" />
       <wsdl:input>
@@ -929,6 +990,15 @@
         <mime:mimeXml part="Body" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="RetrievePdfForSearch">
+      <http:operation location="/RetrievePdfForSearch" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="RetrieveFilesForDynamicObjects">
       <http:operation location="/RetrieveFilesForDynamicObjects" />
       <wsdl:input>
@@ -1035,6 +1105,9 @@
     </wsdl:port>
     <wsdl:port name="SearchManagerSoap12" binding="tns:SearchManagerSoap12">
       <soap12:address location="http://localhost/RelativityWebApi/SearchManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="SearchManagerHttpPost" binding="tns:SearchManagerHttpPost">
+      <http:address location="http://localhost/RelativityWebApi/SearchManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
