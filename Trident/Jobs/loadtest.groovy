@@ -8,7 +8,7 @@ properties([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#ugly_test', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
-        choice(defaultValue: 'release-11.1-juniper-1', choices: ["release-11.1-juniper-1"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment'),
+        choice(defaultValue: 'aio-juniper-1', choices: ["aio-juniper-1"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment'),
     ]),
     pipelineTriggers([cron("H 22 * * *")])
 ])
