@@ -190,6 +190,8 @@ namespace Relativity.DataExchange
 		public const string WebApiServiceUrlDefaultValue = "";
 		public const string UseSynchronizedImportBatchModeKey = "UseSynchronizedImportBatchMode";
 		public const bool UseSynchronizedImportBatchModeDefaultValue = true;
+		public const string UseSearchablePDFKey = "UseSearchablePDF";
+		public const bool UseSearchablePDFDefaultValue = false;
 #pragma warning restore SA1600
 	}
 }

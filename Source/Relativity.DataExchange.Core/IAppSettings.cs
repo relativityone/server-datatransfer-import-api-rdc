@@ -1010,6 +1010,18 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the searchable PDF mode is active or not.
+		/// </summary>
+		/// <value>
+		/// Searchable PDF mode is active.
+		/// </value>
+		bool UseSearchablePDF
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Performs a deep copy of this instance.
 		/// </summary>
 		/// <returns>

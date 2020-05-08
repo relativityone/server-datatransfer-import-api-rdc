@@ -437,5 +437,11 @@ Namespace kCura.WinEDDS
 				Return AppSettings.Instance.RetryOptions
 			End Get
 		End Property
+
+		Public Shared ReadOnly Property UseSearchablePDF As Boolean
+			Get
+				Return AppSettings.Instance.UseSearchablePDF
+			End Get
+		End Property
 	End Class
 End Namespace

@@ -1231,6 +1231,17 @@ namespace Relativity.DataExchange
 			set;
 		}
 
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionLegacyWinEdds,
+			AppSettingsConstants.UseSearchablePDFKey,
+			AppSettingsConstants.UseSearchablePDFDefaultValue)]
+		bool IAppSettings.UseSearchablePDF
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Validates that the URI is valid and returns a properly formatted URI string.
 		/// </summary>
