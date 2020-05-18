@@ -208,6 +208,11 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			TapiClient client)
 		{
 			// ARRANGE
+			if (parallelIApiClientCount == 16)
+			{
+				MassImportImprovementsToggleChecker.SkipTestIfMassImportImprovementToggleOff(this.TestParameters);
+			}
+
 			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithSingleAndMultiObjectsInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
 			ForceClient(client);
 
