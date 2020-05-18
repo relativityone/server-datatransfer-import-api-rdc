@@ -83,8 +83,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			[ValueSource(nameof(Paddings))] PaddingDto paddingValue,
 			[ValueSource(nameof(Delimiters))] DelimiterDto delimiterValue)
 		{
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(TestParameters, client);
-
 			// ARRANGE
 			GivenTheTapiForceClientAppSettings(client);
 

@@ -17,6 +17,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 
 	using Relativity.DataExchange.Import.NUnit.Integration;
 	using Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 
@@ -24,6 +25,12 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		where TSettings : ImportSettingsBase
 		where TExecutionContext : IExecutionContext, IImportApiSetup<TSettings>, new()
 	{
+		[SetUp]
+		public void Setup()
+		{
+			TapiClientModeAvailabilityChecker.SkipTestIfTestParameterTransferModeNotAvailable(this.TestParameters);
+		}
+
 		[TearDown]
 		public Task TearDownAsync()
 		{

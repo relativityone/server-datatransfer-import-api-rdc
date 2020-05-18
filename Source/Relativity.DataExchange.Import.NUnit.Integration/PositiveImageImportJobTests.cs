@@ -154,7 +154,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			[Values(ImageFormat.Jpeg, ImageFormat.Tiff)] ImageFormat imageFormat,
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 
 			var imageSettingsBuilder = new ImageSettingsBuilder();

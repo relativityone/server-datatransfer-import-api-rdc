@@ -38,8 +38,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[TestCase(TapiClient.Web)]
 		public void ExportShouldReportErrorOnMissingFile(TapiClient client)
 		{
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(TestParameters, client);
-
 			// ARRANGE
 			GivenTheTapiForceClientAppSettings(client);
 

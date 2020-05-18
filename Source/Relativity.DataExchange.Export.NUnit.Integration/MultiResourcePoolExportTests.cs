@@ -49,8 +49,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[TestCase(TapiClient.Web)]
 		public void ShouldExportAllSampleDocAndImagesFromTwoFileShares(TapiClient client)
 		{
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(TestParameters, client);
-
 			// ARRANGE
 			GivenTheTapiForceClientAppSettings(client);
 

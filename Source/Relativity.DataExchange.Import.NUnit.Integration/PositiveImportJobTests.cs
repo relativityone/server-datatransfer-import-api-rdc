@@ -89,8 +89,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(artifactTypeId);
 
 			// ARRANGE
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
-
 			ForceClient(client);
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
@@ -122,7 +120,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// ARRANGE
 			const TapiClient Client = TapiClient.Direct;
 			ForceClient(Client);
-
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, Client);
 
 			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
@@ -157,7 +154,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// ARRANGE
 			const TapiClient Client = TapiClient.Direct;
 			ForceClient(Client);
-
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, Client);
 
 			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;

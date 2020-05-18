@@ -38,7 +38,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		{
 			// ARRANGE
 			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportImagesParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, numberOfImagesPerDocument, 0, client, this.TestParameters);
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 			const ImageFormat ImageFormat = ImageFormat.Tiff;
 
