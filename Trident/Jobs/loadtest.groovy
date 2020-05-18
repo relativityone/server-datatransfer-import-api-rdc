@@ -8,16 +8,14 @@ properties([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#ugly_test', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
-        choice(defaultValue: 'lanceleafAA1', choices: ["lanceleafAA1"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment'),
-    ]),
-    pipelineTriggers([cron("H 22 * * *")])
+        choice(defaultValue: 'lanceleafAA1', choices: ["lanceleafAA1"], description: 'The template used to prepare hopper instance', name: 'hopperTemplate'),
+		string(defaultValue: 'develop', description: 'Name of folder in bld-pkgs Packages Relativity', name: 'relativityInstallerSource'),
+    ])
 ])
 
 testResultsPassed = 0
 testResultsFailed = 0
 testResultsSkipped = 0
-
-String[] templates = params.testEnvironment.tokenize(',')
 
 def globalVmInfo = null
 numberOfErrors = 0	
@@ -54,49 +52,54 @@ timestamps
 				echo output
 			}
 
-			timeout(time: 8, unit: 'HOURS')
+			timeout(time: 11, unit: 'HOURS')
 			{
 				stage("Prepare hopper")
 				{
 					try
 					{
-						echo "Getting hopper for ${testEnvironment}"
-						globalVmInfo = tools.createHopperInstance(testEnvironment, "develop")
+						echo "Getting hopper for ${hopperTemplate}"
+						globalVmInfo = tools.createHopperInstance(hopperTemplate, relativityInstallerSource)
 						
 						echo "Replacing variables"
 						replaceTestVariables(globalVmInfo.Url)
 						
-						stage("Run load tests")
-						{
-							try
-							{                        
-								echo "Running tests"
-								runLoadTests()
+						try
+						{        
+							try{
+								stage("Run load tests for MassImportImprovementsToggle On")
+								runLoadTests(globalVmInfo.Url, true)
 							}
-							finally
-							{ 
-								echo "Get test results"
-								GetTestResults()
-					
-								echo "Test results report"
-								createTestReport()
+							finally{
 								
-								echo "Publishing the build logs"
-								archiveArtifacts artifacts: 'Logs/**/*.*'
-									
-								echo "Publishing the load tests report"
-								archiveArtifacts artifacts: "TestReports/load-tests/**/*.*"	
+								stage("Run load tests for MassImportImprovementsToggle Off")
+								runLoadTests(globalVmInfo.Url, false)
+							}
+						}
+						finally
+						{ 
+							stage("Retrieve test results")
+							echo "Get test results"
+							GetTestResults()
+				
+							echo "Test results report"
+							createTestReport()
+							
+							echo "Publishing the build logs"
+							archiveArtifacts artifacts: 'Logs/**/*.*'
+								
+							echo "Publishing the load tests report"
+							archiveArtifacts artifacts: "TestReports/load-tests/**/*.*"	
 
-								echo "Publishing deadlocks details"
-								archiveArtifacts artifacts: "TestReports/SqlProfiling/**/*.*"	
-								
-								def int numberOfFailedTests = testResultsFailed
-								if (numberOfFailedTests > 0)
-								{
-									echo "Failed tests count bigger than 0"
-									currentBuild.result = 'FAILED'
-									throw new Exception("One or more tests failed")
-								}
+							echo "Publishing deadlocks details"
+							archiveArtifacts artifacts: "TestReports/SqlProfiling/**/*.*"	
+							
+							def int numberOfFailedTests = testResultsFailed
+							if (numberOfFailedTests > 0)
+							{
+								echo "Failed tests count bigger than 0"
+								currentBuild.result = 'FAILED'
+								throw new Exception("One or more tests failed")
 							}
 						}
 					}
@@ -121,7 +124,7 @@ timestamps
 			stage("Send slack and bitbucket notification")
 			{
 				def script = this
-				def String serverUnderTestName = "Newest Relativity from develop"
+				def String serverUnderTestName = "Newest Relativity from '${relativityInstallerSource}'"
 				def String version = "Trident loadtests"
 				def String branch = env.BRANCH_NAME
 				def String buildType = params.buildConfig
@@ -179,12 +182,16 @@ def getPathToTestParametersFile()
     return ".\\Source\\Relativity.DataExchange.TestFramework\\Resources\\loadtests.json"
 }
 
-def runLoadTests()
+def runLoadTests(String vmUrl, Boolean massImportImprovementsToggleOn)
 {
-    String pathToJsonFile = getPathToTestParametersFile()
     echo "Running the load tests"
-    output = powershell ".\\build.ps1 LoadTests -ILMerge -TestTimeoutInMS 2700000 -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
-    echo output 								
+	
+	String pathToJsonFile = getPathToTestParametersFile()
+	def massImportImprovementsToggle = massImportImprovementsToggleOn ? "-MassImportImprovementsToggle" : ""
+	def timeout = massImportImprovementsToggleOn  ? 2700000 : 4800000
+	
+	output = powershell ".\\build.ps1 LoadTests ${massImportImprovementsToggle} -ILMerge -TestTimeoutInMS ${timeout} -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
+	echo output 								
 }
 
 def GetTestResults()

@@ -98,6 +98,7 @@ def createHopperInstance(String sutTemplate, String relativityBranch)
 		vmInfo = utils.createHopper("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", sutTemplate, vmName, vmDescription, bldSvcUsername, bldSvcPassword, buildOwner, productName)
 		utils.createHopperTestSettings(vmInfo)
 		utils.renewInstanceLease("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", vmInfo.Id, bldSvcUsername, bldSvcPassword)
+		utils.renewInstanceLease("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", vmInfo.Id, bldSvcUsername, bldSvcPassword)
 	}
 	
 	if(relativityBranch != null && !relativityBranch.isEmpty()) 
@@ -117,6 +118,8 @@ def createHopperInstance(String sutTemplate, String relativityBranch)
 			usernamePassword(credentialsId: 'ProgetCI', passwordVariable: 'nugetPassword', usernameVariable: 'nugetUsername'),
 			string(credentialsId: 'HopperTrustedAppToken', variable: 'hopperTrustedAppToken')
 			]) {
+				utils.renewInstanceLease("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", vmInfo.Id, nugetUsername, nugetPassword)
+				utils.renewInstanceLease("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", vmInfo.Id, nugetUsername, nugetPassword)
 				utils.renewInstanceLease("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", vmInfo.Id, nugetUsername, nugetPassword)
 			}
 			}

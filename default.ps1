@@ -75,6 +75,7 @@ properties {
     $SkipPublishSdkPackage = $Null
     $Simulate = $Null
     $ProgetApiKey = $Null
+	$MassImportImprovementsToggle = $Null
 }
 
 $code = @"
@@ -555,8 +556,19 @@ task UIAutomationTests -Description "Runs all UI tests" {
 
 task LoadTests -Description "Run all load tests for the loadtest pipeline" {
 	folders\Initialize-Folder $TestReportsDir -Safe
-    folders\Initialize-Folder $LoadTestsReportDir
-	Invoke-LoadTests -TestCategoryFilter "--where=`"cat==LoadTest`""
+    folders\Initialize-Folder $LoadTestsReportDir -Safe
+	
+	[bool]$massImportToggleOn = $false
+	if($MassImportImprovementsToggle){
+		$massImportToggleOn = $true
+	}
+	
+	Write-Host "Set MassImportImprovementsToggle value to $massImportToggleOn"
+	InsertMassImportToggleRecord
+	SetMassImportToggleValue -IsEnabled $massImportToggleOn
+	
+	Write-Host "Execute LoadTests"
+	Invoke-LoadTests -TestCategoryFilter "--where=`"cat==LoadTest`"" -MassImportImprovementsToggle $MassImportImprovementsToggle
 }
 
 task PackageVersion -Description "Retrieves the package version from powershell" {
@@ -868,6 +880,7 @@ Function Invoke-IntegrationTests {
         $SolutionFile = $MasterILMergeSolution
     }
 
+	
     Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
     exec { & $NunitExe $SolutionFile `
             "--labels=All" `
@@ -882,7 +895,8 @@ Function Invoke-IntegrationTests {
 
 Function Invoke-LoadTests {
     param(
-        [String] $TestCategoryFilter
+        [String] $TestCategoryFilter,
+		[bool]$MassImportImprovementsToggle
     )
 
     $SolutionFile = $MasterSolution
@@ -890,6 +904,9 @@ Function Invoke-LoadTests {
         $SolutionFile = $MasterILMergeSolution
     }
 
+	[string]$ResultXmlFile = Join-Path $LoadTestsReportDir "test-results-loadtest_toggle$MassImportImprovementsToggle.xml"
+	[string]$OutputTxtFile = Join-Path $LoadTestsReportDir "loadtest-test-output_toggle$MassImportImprovementsToggle.txt"
+	
     Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
 	
     exec { & $NunitExe $SolutionFile `
@@ -897,8 +914,52 @@ Function Invoke-LoadTests {
             "--agents=$NumberOfProcessors" `
             "--skipnontestassemblies" `
             "--timeout=$TestTimeoutInMS" `
-            "--result=$LoadTestsResultXmlFile" `
-            "--out=$LoadTestsOutputFile" `
+            "--result=$ResultXmlFile" `
+            "--out=$OutputTxtFile" `
             $TestCategoryFilter `
     } -errorMessage "There was an error running the load tests."
+}
+
+Function InsertMassImportToggleRecord{
+	
+	[string]$sqlCommand = "INSERT INTO [EDDS].[eddsdbo].[Toggle]([Name], [IsEnabled])
+								Select 'Relativity.Core.Toggle.MassImportImprovementsToggle', 'False'
+							WHERE
+							NOT EXISTS (SELECT * FROM [EDDS].[eddsdbo].[Toggle]
+									  WHERE [Name] = 'Relativity.Core.Toggle.MassImportImprovementsToggle')"
+    
+	ExecuteSqlCommand -SQLCommand $sqlCommand -SQLUserName 'sa' -SQLPassword 'P@ssw0rd@1' -SQLDatabaseName "EDDS"
+}
+
+Function SetMassImportToggleValue{
+	param(
+		[boolean]$IsEnabled
+	)
+	
+	[string]$sQLCOmmand = "Update [EDDS].[eddsdbo].[Toggle]
+							set [EDDS].[eddsdbo].[Toggle].[IsEnabled]= '$IsEnabled'
+							where [EDDS].[eddsdbo].[Toggle].[Name] = 'Relativity.Core.Toggle.MassImportImprovementsToggle'"
+	
+	ExecuteSqlCommand -SQLCommand $sqlCommand -SQLUserName 'sa' -SQLPassword 'P@ssw0rd@1' -SQLDatabaseName "EDDS"
+}
+
+Function ExecuteSqlCommand{
+	param(
+		[string]$SQLCommand,
+		[string]$SQLUserName,
+		[string]$SQLPassword,
+		[string]$SQLDatabaseName
+	)
+	
+	$replaceTarget = [Paths.UriScheme]::AddHttpsIfMissing($TestTarget)
+	$sqlserveraddress = [Paths.UriScheme]::GetHost($TestTarget)
+	
+	Write-Host $SQLCommand -ForegroundColor Yellow
+	Write-Host "SQLInstance: '$sqlserveraddress'" -ForegroundColor Green
+	Write-Host "SQLDatabaseName: '$SQLDatabaseName'" -ForegroundColor Green
+	
+	Install-Module sqlserver -Force
+	Import-Module sqlserver -Force
+
+	Invoke-Sqlcmd -ServerInstance $sqlserveraddress -Database $SQLDatabaseName -Username $SQLUserName -Password $SQLPassword -Query $SQLCommand
 }

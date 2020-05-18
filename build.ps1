@@ -111,6 +111,10 @@ The optional parameter that forces publishing the RDC package.
 
 .PARAMETER Simulate
 The optional parameter that simulates executing a command. This is generally reserved for debug purposes.
+
+.EXAMPLE MassImportImprovementsToggle
+The optional parameter used to execute LoadTests for two MassImportImprovementsToggle values
+
 #>
 
 #Requires -Version 5.0
@@ -164,7 +168,9 @@ param(
     [Parameter()]
     [Switch]$ForcePublishRdcPackage,    
     [Parameter()]
-    [Switch]$Simulate
+    [Switch]$Simulate,
+	[Parameter()]
+    [Switch]$MassImportImprovementsToggle
 )
 
 $BaseDir = $PSScriptRoot
@@ -242,6 +248,7 @@ $Params = @{
         ForcePublishRdcPackage = $ForcePublishRdcPackage
         Simulate = $Simulate
 		ProgetApiKey = $ProgetApiKey
+		MassImportImprovementsToggle = $MassImportImprovementsToggle
     }
 
     Verbose = $VerbosePreference

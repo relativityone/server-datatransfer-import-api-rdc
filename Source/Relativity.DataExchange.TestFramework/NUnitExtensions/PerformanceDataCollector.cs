@@ -10,15 +10,15 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 	using System.IO;
 	using NUnit.Framework;
 	using NUnit.Framework.Interfaces;
-
 	using Relativity.DataExchange.Transfer;
+
 	using File = System.IO.File;
 
 	public sealed class PerformanceDataCollector
 	{
 		private static PerformanceDataCollector _instance;
 		private readonly Stopwatch stopwatch;
-		private readonly bool massImportImprovementsToggle;
+		private bool massImportImprovementsToggle;
 		private TimeSpan jobExecutionTime;
 		private int numberOfClients;
 		private int numberOfDocumentsToImport;
@@ -36,7 +36,6 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 			this.stopwatch = new Stopwatch();
 			this.jobExecutionTime = stopwatch.Elapsed;
 			this.tapiClient = TapiClient.None;
-			this.massImportImprovementsToggle = false; // TODO: this value will be set on pipeline script, all tests should be executed for both values true and false
 			this.storeDeadlocksInfo = false;
 		}
 
@@ -53,7 +52,8 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 			int documentsCount,
 			int imagesPerDocument,
 			int maximumNumberOfMultiValues,
-			TapiClient tapiClientName)
+			TapiClient tapiClientName,
+			IntegrationTestParameters parameters)
 		{
 			this.testCaseName = testName;
 			this.numberOfClients = clientsCount;
@@ -61,6 +61,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 			this.numberOfImagesPerDocument = imagesPerDocument;
 			this.maxNumberOfMultiValues = maximumNumberOfMultiValues;
 			this.tapiClient = tapiClientName;
+			this.massImportImprovementsToggle = MassImportImprovementsToggleChecker.GetMassImportToggleValueFromDatabase(parameters);
 		}
 
 		public void StorePerformanceResults()

@@ -128,6 +128,7 @@
     <Compile Include="Import\JobExecutionContext\ImportApiSetupExtensions.cs" />
     <Compile Include="Import\JobExecutionContext\NativeImportExecutionContext.cs" />
     <Compile Include="Import\JobExecutionContext\NativeImportSettingsProvider.cs" />
+    <Compile Include="MassImportImprovementsToggleChecker.cs" />
     <Compile Include="NUnitExtensions\CollectDeadlocksAttribute.cs" />
     <Compile Include="NUnitExtensions\PerformanceDataCollector.cs" />
     <Compile Include="ObjectManagers\ClientManager.cs" />
@@ -618,33 +619,37 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\de-DE\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\en-GB\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\es-MX\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\fr-FR\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pl-PL\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pt-BR\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\ru-RU\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup></When></Choose>
+  <Choose>
+    <When Condition="'$(Configuration)'!='Debug'">
+      <ItemGroup>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\de-DE\StyleCop.Analyzers.resources.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\en-GB\StyleCop.Analyzers.resources.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\es-MX\StyleCop.Analyzers.resources.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\fr-FR\StyleCop.Analyzers.resources.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pl-PL\StyleCop.Analyzers.resources.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pt-BR\StyleCop.Analyzers.resources.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\ru-RU\StyleCop.Analyzers.resources.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+      </ItemGroup>
+    </When>
+  </Choose>
 </Project>

@@ -50,7 +50,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
-			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportFoldersParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportFoldersParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 
@@ -94,7 +94,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
-			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportChoicesInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportChoicesInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
 
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
@@ -144,7 +144,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
-			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportChoicesAndFoldersInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportChoicesAndFoldersInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 
@@ -212,7 +212,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			TapiClient client)
 		{
 			// ARRANGE
-			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithSingleAndMultiObjectsInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithSingleAndMultiObjectsInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 
@@ -304,7 +304,13 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			TapiClient client)
 		{
 			// ARRANGE
-			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithBigNumberOfMultiObjectsPerDocumentParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, maxNumberOfMultiValues, client);
+			if (parallelIApiClientCount == 16)
+			{
+				MassImportImprovementsToggleChecker.SkipTestIfMassImportImprovementToggleOff(this.TestParameters);
+			}
+
+			MassImportImprovementsToggleChecker.SkipTestIfMassImportImprovementToggleOff(this.TestParameters);
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithBigNumberOfMultiObjectsPerDocumentParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, maxNumberOfMultiValues, client, this.TestParameters);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 
@@ -356,7 +362,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			TapiClient client)
 		{
 			// ARRANGE
-			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithFolderChoicesAndObjectsInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithFolderChoicesAndObjectsInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 
