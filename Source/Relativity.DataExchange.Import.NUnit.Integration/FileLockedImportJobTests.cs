@@ -45,6 +45,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 
+			AppSettings.Instance.IoErrorNumberOfRetries = 3;
+			AppSettings.Instance.IoErrorWaitTimeInSeconds = 10;
+
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, NativeImportSettingsProvider.NativeFilePathSourceDocumentImportSettings);
 
 			const int NumberOfFilesToImport = 5;
