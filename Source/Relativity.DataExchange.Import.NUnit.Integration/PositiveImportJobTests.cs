@@ -72,12 +72,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
 		}
 
-		[OneTimeTearDown]
-		public void OneTimeTearDown()
-		{
-			ImportHelper.ImportDefaultTestData(this.TestParameters);
-		}
-
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]

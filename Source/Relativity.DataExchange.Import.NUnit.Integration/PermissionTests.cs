@@ -54,6 +54,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			this.WithOriginalUser();
 			await UsersHelper.RemoveUserAsync(this.TestParameters, this.userId).ConfigureAwait(false);
+			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
 		}
 
 		[SetUp]

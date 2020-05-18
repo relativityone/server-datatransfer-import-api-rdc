@@ -36,6 +36,18 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	[Feature.DataTransfer.ImportApi.Operations.ImportImages]
 	public class PositiveImageImportJobTests : ImportJobTestBase<ImageImportExecutionContext>
 	{
+		[OneTimeSetUp]
+		public Task OneTimeSetUp()
+		{
+			return this.ResetContextAsync();
+		}
+
+		[TearDown]
+		public Task TearDown()
+		{
+			return RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document);
+		}
+
 		[Category(TestCategories.ImportImage)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
@@ -193,11 +205,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ThenRelativityObjectCountsIsCorrect(ExpectedNumberOfImportedImages);
 			ThenTheImportedDocumentIsCorrect(imageImportDto, useFileNames);
 			ThenTheJobCompletedInCorrectTransferMode(testResult, client);
-		}
-
-		protected override Task OnSetUpAsync()
-		{
-			return this.ResetContextAsync();
 		}
 
 		private static void ThenRelativityObjectCountsIsCorrect(int expectedNumberOfImportedDocuments)
