@@ -39,7 +39,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			await UserSetup().ConfigureAwait(false);
 
 			// await SecuritySetup().ConfigureAwait(false); TODO : REL-398159
-			ImportHelper.ImportDefaultTestData(TestParameters);
 		}
 
 		[OneTimeTearDown]

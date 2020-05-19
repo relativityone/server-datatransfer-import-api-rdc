@@ -39,8 +39,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			bool disableNativeValidation)
 		{
 			// ARRANGE
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
-
 			ForceClient(client);
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;

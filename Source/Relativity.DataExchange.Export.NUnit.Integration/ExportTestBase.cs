@@ -75,6 +75,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[SetUp]
 		public void Setup()
 		{
+			TapiClientModeAvailabilityChecker.SkipTestIfTestParameterTransferModeNotAvailable(this.TestParameters);
+
 			// This registers all components.
 			this.testContainer = new WindsorContainer();
 			ContainerFactoryProvider.ContainerFactory = new TestContainerFactory(this.testContainer, new TestNullLogger());

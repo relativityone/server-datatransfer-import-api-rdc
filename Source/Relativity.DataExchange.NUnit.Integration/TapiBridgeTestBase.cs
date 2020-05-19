@@ -237,6 +237,9 @@ namespace Relativity.DataExchange.NUnit.Integration
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
 			this.AssignTestSettings();
+
+			TapiClientModeAvailabilityChecker.SkipTestIfTestParameterTransferModeNotAvailable(this.TestParameters);
+
 			Assert.That(
 				this.TestParameters.WorkspaceId,
 				Is.Positive,
@@ -264,8 +267,11 @@ namespace Relativity.DataExchange.NUnit.Integration
 		public void Teardown()
 		{
 			this.TapiBridge?.Dispose();
-			this.TempDirectory.DeleteDirectory = true;
-			this.TempDirectory.Dispose();
+			if (this.TempDirectory != null)
+			{
+				this.TempDirectory.DeleteDirectory = true;
+				this.TempDirectory.Dispose();
+			}
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "We use method from derived class")]

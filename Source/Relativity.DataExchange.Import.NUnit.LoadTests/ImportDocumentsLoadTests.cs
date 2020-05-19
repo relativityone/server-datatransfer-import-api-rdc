@@ -50,8 +50,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
-			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportFoldersParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportFoldersParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
 			ForceClient(client);
 
 			var settingsBuilder = NativeImportSettingsBuilder.New()
@@ -94,9 +93,8 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
-			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportChoicesInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportChoicesInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
 
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
 			ForceClient(client);
 			var settingsBuilder = NativeImportSettingsBuilder.New().WithDefaultSettings();
 
@@ -144,8 +142,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
-			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportChoicesAndFoldersInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportChoicesAndFoldersInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
 			ForceClient(client);
 
 			var settingsBuilder = NativeImportSettingsBuilder.New()
@@ -212,8 +209,12 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			TapiClient client)
 		{
 			// ARRANGE
-			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithSingleAndMultiObjectsInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
+			if (parallelIApiClientCount == 16)
+			{
+				MassImportImprovementsToggleChecker.SkipTestIfMassImportImprovementToggleOff(this.TestParameters);
+			}
+
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithSingleAndMultiObjectsInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
 			ForceClient(client);
 
 			// create single objects fields in workspace
@@ -304,8 +305,8 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			TapiClient client)
 		{
 			// ARRANGE
-			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithBigNumberOfMultiObjectsPerDocumentParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, maxNumberOfMultiValues, client);
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
+			MassImportImprovementsToggleChecker.SkipTestIfMassImportImprovementToggleOff(this.TestParameters);
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithBigNumberOfMultiObjectsPerDocumentParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, maxNumberOfMultiValues, client, this.TestParameters);
 			ForceClient(client);
 
 			int secondObjectTypeArtifactId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, MultiObjectFieldName).ConfigureAwait(false);
@@ -356,8 +357,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			TapiClient client)
 		{
 			// ARRANGE
-			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithFolderChoicesAndObjectsInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client);
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
+			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithFolderChoicesAndObjectsInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
 			ForceClient(client);
 
 			int firstObjectTypeArtifactId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, SingleObjectFieldName).ConfigureAwait(false);

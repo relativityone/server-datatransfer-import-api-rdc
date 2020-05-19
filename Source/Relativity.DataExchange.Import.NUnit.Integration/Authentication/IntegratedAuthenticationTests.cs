@@ -71,8 +71,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 		[Timeout(_TIMEOUT_IN_MS)]
 		public async Task ShouldImportDocumentsWithIntegratedAuthentication(TapiClient client)
 		{
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
-
 			// ARRANGE
 			await ChangeStateOfIntegratedAuthentication(true).ConfigureAwait(false);
 			await UsersHelper.SwitchIntegratedAuthenticationForCurrentUserAsync(AssemblySetup.TestParameters, isEnabled: true).ConfigureAwait(false);

@@ -54,12 +54,20 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, ReferenceToDocumentFieldName, (int)ArtifactType.Document, this.objectArtifactTypeId)
 				.ConfigureAwait(false);
 			this.initialImportBatchSize = AppSettings.Instance.ImportBatchSize;
+
+			ImportHelper.ImportDefaultTestData(this.TestParameters);
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
 			AppSettings.Instance.ImportBatchSize = this.initialImportBatchSize;
+		}
+
+		[OneTimeTearDown]
+		public Task OneTimeTearDown()
+		{
+			return RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document);
 		}
 
 		[IdentifiedTest("4ae96850-4ef9-4a1d-95eb-3140a5d7efa5")]

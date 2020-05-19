@@ -72,12 +72,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
 		}
 
-		[OneTimeTearDown]
-		public void OneTimeTearDown()
-		{
-			ImportHelper.ImportDefaultTestData(this.TestParameters);
-		}
-
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
@@ -95,8 +89,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(artifactTypeId);
 
 			// ARRANGE
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, client);
-
 			ForceClient(client);
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
