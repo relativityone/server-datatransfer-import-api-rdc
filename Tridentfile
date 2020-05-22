@@ -127,7 +127,7 @@ timestamps
 						def output = JsonOutput.toJson(config)
 						echo JsonOutput.prettyPrint(output)
 						echo "End of hopper variables"
-						vmInfo = tools.createHopperInstance(config.sutTemplate, relativityBranch)
+						vmInfo = tools.createHopperInstance(config.sutTemplate, params.relativityBranch)
 					}	
 					
 					stage('Replace variables in build')
