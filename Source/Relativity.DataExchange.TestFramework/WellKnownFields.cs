@@ -125,5 +125,15 @@ namespace Relativity.DataExchange.TestFramework
 		/// Default name of an RDO identifier field.
 		/// </summary>
 		public const string RdoIdentifier = "Name";
+
+		/// <summary>
+		/// Text field used as key field when overlaying.
+		/// </summary>
+		public const string KeyFieldName = "Key Field";
+
+		/// <summary>
+		/// Simple text field.
+		/// </summary>
+		public const string TextFieldName = "Text Field";
 	}
 }

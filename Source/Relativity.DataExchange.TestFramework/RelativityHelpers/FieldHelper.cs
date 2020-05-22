@@ -79,6 +79,20 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return TestFramework.RelativityHelpers.FieldHelper.CreateFieldAsync(testParameters, request);
 		}
 
+		public static Task<int> CreateFixedLengthTextFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId, bool isOpenToAssociations, int length)
+		{
+			var request = new FixedLengthFieldRequest()
+			{
+			  Name = fieldName,
+			  ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = destinationRdoArtifactTypeId },
+			  OpenToAssociations = isOpenToAssociations,
+			  HasUnicode = true,
+			  Length = length,
+			};
+
+			return TestFramework.RelativityHelpers.FieldHelper.CreateFieldAsync(testParameters, request);
+		}
+
 		public static Task CreateLongTextFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId, bool isOpenToAssociations)
 		{
 			var request = new LongTextFieldRequest
@@ -126,6 +140,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				[typeof(MultipleChoiceFieldRequest)] = (manager, request, workspaceId) => manager.CreateMultipleChoiceFieldAsync(workspaceId, request as MultipleChoiceFieldRequest),
 				[typeof(WholeNumberFieldRequest)] = (manager, request, workspaceId) => manager.CreateWholeNumberFieldAsync(workspaceId, request as WholeNumberFieldRequest),
 				[typeof(LongTextFieldRequest)] = (manager, request, workspaceId) => manager.CreateLongTextFieldAsync(workspaceId, request as LongTextFieldRequest),
+				[typeof(FixedLengthFieldRequest)] = (manager, request, workspaceId) => manager.CreateFixedLengthFieldAsync(workspaceId, request as FixedLengthFieldRequest),
 				[typeof(FileFieldRequest)] = (manager, request, workspaceId) => manager.CreateFileFieldAsync(workspaceId, request as FileFieldRequest),
 			};
 

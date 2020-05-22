@@ -211,9 +211,6 @@ Namespace kCura.WinEDDS
 			_artifactIDDataSetCache = New Dictionary(Of Tuple(Of Integer, String), DataSet)
 
 			MulticodeMatrix = New System.Collections.Hashtable
-			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> ImportOverwriteType.Overlay.ToString.ToLower AndAlso args.ArtifactTypeID = ArtifactType.Document Then
-				_keyFieldID = -1
-			End If
 			If _keyFieldID = -1 Then
 				For Each field As DocumentField In _docFields
 					If field.FieldCategory = FieldCategory.Identifier Then

@@ -291,6 +291,12 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public WriteOnly Property IdentityFieldId() As Integer
+			Set
+				_loadFile.IdentityFieldId = Value
+			End Set
+		End Property
+
 		Public Overrides Sub Save(ByVal location As String)
 			MyBase.SaveObject(location, _loadFile)
 		End Sub

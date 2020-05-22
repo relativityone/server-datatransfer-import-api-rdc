@@ -206,10 +206,8 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Function CreateLoadFile(ByVal clientSettings As Settings) As kCura.WinEDDS.ImportExtension.DataReaderLoadFile
 			Dim loadFileTemp As WinEDDS.LoadFile = MapInputToSettingsFactory(clientSettings).ToLoadFile
 
-			' If IdentityFieldId is greater than zero, it has been explicitly set, 
-			' otherwise allow LoadFile its defaulting as it already does
-			If AllowNonIdentifierKeyField(clientSettings) Then
-				loadFileTemp.IdentityFieldId = clientSettings.IdentityFieldId
+			If loadFileTemp.ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID And loadFileTemp.IdentityFieldId > 0 Then
+				ValidateIdentifierMapping(loadFileTemp.IdentityFieldId)
 			End If
 
 			Dim tempLoadFile As New WinEDDS.ImportExtension.DataReaderLoadFile
@@ -259,11 +257,7 @@ Namespace kCura.Relativity.DataReaderClient
 				RaiseEvent OnMessage(New Status(String.Format("Using default identifier field {0}", loadFileTemp.SelectedIdentifierField.FieldName)))
 				tempIDField = loadFileTemp.SelectedIdentifierField
 			End If
-			'
-			'
-			'
 			tempLoadFile.SelectedIdentifierField = tempIDField
-			'
 			tempLoadFile.SendEmailOnLoadCompletion = clientSettings.SendEmailOnLoadCompletion
 			tempLoadFile.SourceFileEncoding = loadFileTemp.SourceFileEncoding
 			tempLoadFile.StartLineNumber = loadFileTemp.StartLineNumber
@@ -271,18 +265,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.OverlayBehavior = loadFileTemp.OverlayBehavior
 			tempLoadFile.Billable = loadFileTemp.Billable
 
-			ValidateIdentifierMapping()
-
 			Return tempLoadFile
-		End Function
-
-
-		Private Function AllowNonIdentifierKeyField(clientSettings As Settings) As Boolean
-			Dim retval As Boolean = (clientSettings.IdentityFieldId > 0)
-			If clientSettings.ArtifactTypeId = _DOCUMENT_ARTIFACT_TYPE_ID Then
-				retval = retval AndAlso (clientSettings.OverwriteMode = OverwriteModeEnum.Overlay)
-			End If
-			Return retval
 		End Function
 
 		''' <summary>
@@ -358,11 +341,8 @@ Namespace kCura.Relativity.DataReaderClient
 			End Try
 			Return True
 		End Function
-
-		Private Sub ValidateIdentifierMapping()
-			If Me._nativeSettings.OverwriteMode <> OverwriteModeEnum.Overlay OrElse Me._nativeSettings.IdentityFieldId <= 0 Then
-				Return
-			End If
+		
+		Private Sub ValidateIdentifierMapping(IdentityFieldId As Integer)
 			Dim idField As DocumentField = Nothing
 			For Each item As DocumentField In _docIDFieldCollection
 				If Not item Is Nothing AndAlso item.FieldCategory = FieldCategory.Identifier Then
@@ -372,13 +352,12 @@ Namespace kCura.Relativity.DataReaderClient
 			Next
 			If Not idField Is Nothing Then
 				For i As Integer = 0 To _nativeDataReader.SourceData.FieldCount - 1
-					If _nativeDataReader.SourceData.GetName(i) = idField.FieldName AndAlso idField.FieldID <> Me._nativeSettings.IdentityFieldId Then
+					If _nativeDataReader.SourceData.GetName(i) = idField.FieldName AndAlso idField.FieldID <> IdentityFieldId Then
 						Throw New ImportSettingsException("The field marked [identifier] cannot be part of a field map when it's not the Overlay Identifier field")
 					End If
 				Next
 			End If
 		End Sub
-
 
 		Private Function MapInputToSettingsFactory(ByVal clientSettings As Settings) As WinEDDS.DynamicObjectSettingsFactory
 			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory
@@ -458,6 +437,10 @@ Namespace kCura.Relativity.DataReaderClient
 				.DataGridIDColumn = clientSettings.DataGridIDColumnName
 
 				.Billable = clientSettings.Billable
+
+				If clientSettings.IdentityFieldId > 0 Then
+					.IdentityFieldId = clientSettings.IdentityFieldId
+				End If
 			End With
 
 			Return dosf_settings

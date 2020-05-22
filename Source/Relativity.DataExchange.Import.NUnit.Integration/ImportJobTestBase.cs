@@ -21,7 +21,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using kCura.Relativity.DataReaderClient;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.Transfer;
+	using Relativity.Services.Interfaces.Field;
+	using Relativity.Services.Interfaces.Field.Models;
+	using Relativity.Services.Interfaces.Shared.Models;
+
+	using FieldHelper = Relativity.FieldHelper;
 
 	public abstract class ImportJobTestBase<TJobExecutionContext> : IDisposable
 		where TJobExecutionContext : class, IDisposable, new()
@@ -156,6 +162,42 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			{
 				this.Teardown();
 			}
+		}
+
+		protected async Task<int> CreateObjectInWorkspaceAsync()
+		{
+			string objectName = Guid.NewGuid().ToString();
+
+			var objectId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, objectName).ConfigureAwait(false);
+			await TestFramework.RelativityHelpers.FieldHelper.CreateFileFieldAsync(this.TestParameters, "FilePath", objectId).ConfigureAwait(false);
+
+			var controlNumberFieldRequest = new FixedLengthFieldRequest()
+				                                {
+					                                Name = WellKnownFields.ControlNumber,
+					                                ObjectType = new ObjectTypeIdentifier() { Name = objectName },
+					                                Length = 255,
+					                                IsRequired = true,
+					                                IncludeInTextIndex = true,
+					                                FilterType = FilterType.TextBox,
+					                                AllowSortTally = true,
+					                                AllowGroupBy = false,
+					                                AllowPivot = false,
+					                                HasUnicode = true,
+					                                OpenToAssociations = false,
+					                                IsRelational = false,
+					                                AllowHtml = false,
+					                                IsLinked = true,
+					                                Wrapping = true,
+				                                };
+			using (IFieldManager fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(this.TestParameters))
+			{
+				await fieldManager.UpdateFixedLengthFieldAsync(
+					this.TestParameters.WorkspaceId,
+					TestFramework.RelativityHelpers.FieldHelper.QueryIdentifierFieldId(this.TestParameters, objectName),
+					controlNumberFieldRequest).ConfigureAwait(false);
+			}
+
+			return objectId;
 		}
 
 		protected void ThenTheImportJobIsSuccessful(ImportTestJobResult testJobResult, int expectedTotalRows) // TODO create extension method for that

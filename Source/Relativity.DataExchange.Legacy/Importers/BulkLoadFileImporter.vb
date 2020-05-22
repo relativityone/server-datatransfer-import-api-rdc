@@ -49,7 +49,7 @@ Namespace kCura.WinEDDS
 		Protected RecordCount As Int64 = -1
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Private _fieldsForCreate As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
-		Protected ProcessedDocumentIdentifiers As Dictionary(Of String, Integer)
+		Private _processedKeyFieldValues As Dictionary(Of String, Integer)
 		Protected WithEvents Context As ProcessContext
 		Protected Offset As Int32 = 0
 		Protected FirstTimeThrough As Boolean
@@ -621,7 +621,7 @@ Namespace kCura.WinEDDS
 							If Not InitializeMembers() Then
 								Return False
 							End If
-							ProcessedDocumentIdentifiers = New Dictionary(Of String, Integer)
+							_processedKeyFieldValues = New Dictionary(Of String,Integer)
 						End Using
 
 						If (_enforceDocumentLimit) Then
@@ -668,13 +668,8 @@ Namespace kCura.WinEDDS
 											End Using
 											Dim lineStatus As Long = 0
 
-											Dim id As String
 											Using Timekeeper.CaptureTime("ReadFile_ManageDocument")
-												id = ManageDocument(fileTypeIdentifier, line, lineStatus)
-											End Using
-
-											Using Timekeeper.CaptureTime("ReadFile_IdTrack")
-												ProcessedDocumentIdentifiers.Add(id, CurrentLineNumber)
+												ManageDocument(fileTypeIdentifier, line, lineStatus, CurrentLineNumber)
 											End Using
 										End If
 									Catch ex As LoadFileBase.CodeCreationException
@@ -831,7 +826,7 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(EventType2.Warning, $"Field {columnName} not exists in workspace")
 		End Sub
 
-		Private Function ManageDocument(ByVal fileTypeIdentifier As IFileTypeIdentifier, ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String
+		Private Sub ManageDocument(ByVal fileTypeIdentifier As IFileTypeIdentifier, ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64, ByVal CurrentLineNumber As Integer)
 			Dim filename As String = String.Empty
 			Dim originalFilename As String
 			Dim fileGuid As String = String.Empty
@@ -1021,14 +1016,7 @@ Namespace kCura.WinEDDS
 				End If
 			End Using
 			
-			identityValue = PrepareFieldCollectionAndExtractIdentityValue(record)
-			If identityValue = String.Empty Then
-				'lineStatus += ImportStatus.EmptyIdentifier				'
-				Throw New IdentityValueNotSetException
-			ElseIf ProcessedDocumentIdentifiers.ContainsKey(identityValue) Then
-				'lineStatus += ImportStatus.IdentifierOverlap				'
-				Throw New IdentifierOverlapException(identityValue, ProcessedDocumentIdentifiers(identityValue).ToString())
-			End If
+			identityValue = PrepareFieldCollectionAndExtractIdentityValue(record, CurrentLineNumber)
 
 			Dim dataGridID As String = Nothing
 			Dim dataGridIDField As Api.ArtifactField = record.FieldList(FieldType.Varchar).FirstOrDefault(Function(x) x.DisplayName = DATA_GRID_ID_FIELD_NAME)
@@ -1050,9 +1038,7 @@ Namespace kCura.WinEDDS
 			Using Timekeeper.CaptureTime("ManageDocument_ManageDocumentMetadata")
 				ManageDocumentMetaData(doc)
 			End Using
-
-			Return identityValue
-		End Function
+		End Sub
 
 		Public Shared Function CleanDestinationFolderPath(ByVal path As String) As String
 			path = path.Trim()
@@ -1879,24 +1865,25 @@ Namespace kCura.WinEDDS
 
 #Region "Field Preparation"
 
-		Protected Function PrepareFieldCollectionAndExtractIdentityValue(ByVal record As Api.ArtifactFieldCollection) As String
+		Protected Function PrepareFieldCollectionAndExtractIdentityValue(ByVal record As Api.ArtifactFieldCollection, ByVal CurrentLineNumber As Integer) As String
 			SyncLock OutputFileWriter.OutputNativeFileWriter
 			SyncLock OutputFileWriter.OutputCodeFileWriter
 			SyncLock OutputFileWriter.OutputObjectFileWriter
 			SyncLock OutputFileWriter.OutputDataGridFileWriter
-				Dim item As LoadFileFieldMap.LoadFileFieldMapItem
-				Dim identityValue As String = String.Empty
+				
+				Dim keyFieldValue As String = String.Empty
 				Dim keyField As Api.ArtifactField
 				If _keyFieldID > 0 Then
 					keyField = record(_keyFieldID)
 				Else
 					keyField = record.IdentifierField
 				End If
+				If Not keyField Is Nothing AndAlso Not keyField.Value Is Nothing Then keyFieldValue = keyField.Value.ToString
+				If keyFieldValue Is Nothing OrElse keyFieldValue = String.Empty Then Throw New IdentityValueNotSetException
+				If _processedKeyFieldValues.ContainsKey(keyFieldValue) Then Throw New IdentifierOverlapException(keyFieldValue, _processedKeyFieldValues(keyFieldValue).ToString())
+				_processedKeyFieldValues.Add(keyFieldValue, CurrentLineNumber)
 
-				If Not keyField Is Nothing AndAlso Not keyField.Value Is Nothing Then identityValue = keyField.Value.ToString
-				If identityValue Is Nothing OrElse identityValue = String.Empty Then Throw New IdentityValueNotSetException
-				If ProcessedDocumentIdentifiers.ContainsKey(identityValue) Then Throw New IdentifierOverlapException(identityValue, ProcessedDocumentIdentifiers(identityValue).ToString())
-				For Each item In _fieldMap
+				For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
 					If FirstTimeThrough Then
 						If item.DocumentField Is Nothing Then
 							WriteStatusLine(EventType2.Warning, $"File column '{(item.NativeFileColumnIndex + 1)}' will be unmapped", 0)
@@ -1909,20 +1896,20 @@ Namespace kCura.WinEDDS
 						If item.DocumentField.FieldTypeID = FieldType.File Then
 							Me.ManageFileField(record(item.DocumentField.FieldID))
 						Else
-
-							MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, identityValue, 0, item.DocumentField.ImportBehavior)
+							MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, keyFieldValue, 0, item.DocumentField.ImportBehavior)
 						End If
 					End If
 				Next
 				For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.UnmappedRelationalFields
 					If fieldDTO.ImportBehavior = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
 						Dim field As New Api.ArtifactField(fieldDTO)
-						field.Value = identityValue
-						Me.SetFieldValue(field, -1, False, identityValue, 0, fieldDTO.ImportBehavior)
+						field.Value = keyFieldValue
+						Me.SetFieldValue(field, -1, False, keyFieldValue, 0, fieldDTO.ImportBehavior)
 					End If
 				Next
 				FirstTimeThrough = False
-				Return identityValue
+
+				Return keyFieldValue
 			End SyncLock
 			End SyncLock
 			End SyncLock

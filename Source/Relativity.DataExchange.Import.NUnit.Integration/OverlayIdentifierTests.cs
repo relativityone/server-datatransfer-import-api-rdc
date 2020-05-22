@@ -1,0 +1,247 @@
+﻿// ----------------------------------------------------------------------------
+// <copyright file="OverlayIdentifierTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
+
+namespace Relativity.DataExchange.Import.NUnit.Integration
+{
+	using System.Linq;
+	using System.Threading.Tasks;
+	using global::NUnit.Framework;
+
+	using kCura.Relativity.DataReaderClient;
+	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
+	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.Services.LinkManager.Interfaces;
+	using Relativity.Testing.Identification;
+
+	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	public class OverlayIdentifierTests : ImportJobTestBase<NativeImportExecutionContext>
+	{
+		private int createdObjectArtifactTypeId;
+		private int documentKeyFieldId;
+		private int objectKeyFieldId;
+		private int documentTextFieldId;
+		private int objectTextFieldId;
+		private int artifactTypeId;
+
+		[OneTimeSetUp]
+		public async Task OneTimeSetUp()
+		{
+			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false); // Remove all Documents imported in AssemblySetup
+			createdObjectArtifactTypeId = await this.CreateObjectInWorkspaceAsync().ConfigureAwait(false);
+			await Task.WhenAll(
+					this.CreateTextFieldAsync(this.createdObjectArtifactTypeId, WellKnownFields.KeyFieldName).ContinueWith(task => this.objectKeyFieldId = task.Result),
+					this.CreateTextFieldAsync((int)ArtifactTypeID.Document, WellKnownFields.KeyFieldName).ContinueWith(task => this.documentKeyFieldId = task.Result),
+					this.CreateTextFieldAsync(this.createdObjectArtifactTypeId, WellKnownFields.TextFieldName).ContinueWith(task => this.objectTextFieldId = task.Result),
+					this.CreateTextFieldAsync((int)ArtifactTypeID.Document, WellKnownFields.TextFieldName).ContinueWith(task => this.documentTextFieldId = task.Result))
+				.ConfigureAwait(false);
+		}
+
+		[TearDown]
+		public async Task TearDown()
+		{
+			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, this.artifactTypeId).ConfigureAwait(false);
+		}
+
+		[OneTimeTearDown]
+		public async Task OneTimeTearDown()
+		{
+			await Task.WhenAll(
+					FieldHelper.DeleteFieldAsync(this.TestParameters, this.objectKeyFieldId),
+					FieldHelper.DeleteFieldAsync(this.TestParameters, this.documentKeyFieldId),
+					FieldHelper.DeleteFieldAsync(this.TestParameters, this.objectTextFieldId),
+					FieldHelper.DeleteFieldAsync(this.TestParameters, this.documentTextFieldId))
+				.ConfigureAwait(false);
+		}
+
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[IdentifiedTest("53174721-9360-4708-8639-1b25e104c9ab")]
+		public void ShouldNotOverlayControlNumber([Values(OverwriteModeEnum.AppendOverlay, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode)
+		{
+			DocumentWithKeyFieldDto[] initialData =
+			{
+				new DocumentWithKeyFieldDto("11", "A"),
+				new DocumentWithKeyFieldDto("12", "B"),
+				new DocumentWithKeyFieldDto("13", "C"),
+				new DocumentWithKeyFieldDto("14", "D"),
+			};
+
+			DocumentWithKeyFieldDto[] importData =
+			{
+				new DocumentWithKeyFieldDto("21", "A"),
+				new DocumentWithKeyFieldDto("22", "B"),
+				new DocumentWithKeyFieldDto("23", "C"),
+				new DocumentWithKeyFieldDto("24", "D"),
+			};
+
+			// ARRANGE && ACT && ASSERT
+			Assert.Throws<ImportSettingsException>(() => ArrangeAndActOverlayIndetifierTest(ArtifactType.Document, overwriteMode, initialData, importData));
+		}
+
+		[Category(TestCategories.ImportObject)]
+		[Category(TestCategories.Integration)]
+		[TestCaseSource(typeof(OverlayIdentifierTestCases), nameof(OverlayIdentifierTestCases.ShouldOverlayIdentifierTestCaseData))]
+		[IdentifiedTest("1c955071-67b1-40aa-819f-9c1fdc3020c0")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "caseName is needed to identify test case")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "caseName is needed to identify test case")]
+		public void ShouldOverlayIdentifier(
+			string caseName,
+			OverwriteModeEnum overwriteMode,
+			DocumentWithKeyFieldDto[] initialData,
+			DocumentWithKeyFieldDto[] importData,
+			DocumentWithKeyFieldDto[] expectedData)
+		{
+			// ARRANGE && ACT
+			ImportTestJobResult results = ArrangeAndActOverlayIndetifierTest(ArtifactType.ObjectType, overwriteMode, initialData, importData);
+
+			// ASSERT
+			this.ThenTheImportJobIsSuccessful(results, importData?.Length ?? 0);
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(importData?.Length));
+
+			string[] fieldsToValidate = new[] { WellKnownFields.ControlNumber, WellKnownFields.KeyFieldName };
+			DocumentWithKeyFieldDto[] resultData = RdoHelper.QueryRelativityObjects(this.TestParameters, this.artifactTypeId, fieldsToValidate)
+				.Select(ro => new DocumentWithKeyFieldDto((string)ro.FieldValues[0].Value, (string)ro.FieldValues[1].Value))
+				.ToArray();
+
+			CollectionAssert.AreEquivalent(expectedData.Select(d => $"{d.ControlNumber}_{d.KeyField}"), resultData.Select(d => $"{d.ControlNumber}_{d.KeyField}"));
+		}
+
+		[Category(TestCategories.ImportObject)]
+		[Category(TestCategories.Integration)]
+		[TestCaseSource(typeof(OverlayIdentifierTestCases),	nameof(OverlayIdentifierTestCases.ShouldOverlayIdentifierWithErrorTestCaseData))]
+		[IdentifiedTest("76377061-b274-4c22-abce-b0fa05aba143")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "caseName is needed to identify test case")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "caseName is needed to identify test case")]
+		public void ShouldOverlayIdentifierWithError(
+			string caseName,
+			OverwriteModeEnum overwriteMode,
+			DocumentWithKeyFieldDto[] initialData,
+			DocumentWithKeyFieldDto[] importData,
+			DocumentWithKeyFieldDto[] expectedData,
+			string errorMessage)
+		{
+			// ARRANGE && ACT
+			ImportTestJobResult results = ArrangeAndActOverlayIndetifierTest(ArtifactType.ObjectType, overwriteMode, initialData, importData);
+
+			// ASSERT
+			Assert.That(results.ErrorRows.Count, Is.GreaterThan(0));
+			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, errorMessage);
+
+			// verify if initial data didn't change
+			string[] fieldsToValidate = new[] { WellKnownFields.ControlNumber, WellKnownFields.KeyFieldName };
+			DocumentWithKeyFieldDto[] resultData = RdoHelper.QueryRelativityObjects(this.TestParameters, this.artifactTypeId, fieldsToValidate)
+				.Select(ro => new DocumentWithKeyFieldDto((string)ro.FieldValues[0].Value, (string)ro.FieldValues[1].Value))
+				.ToArray();
+
+			CollectionAssert.AreEquivalent(expectedData.Select(d => $"{d.ControlNumber}_{d.KeyField}"), resultData.Select(d => $"{d.ControlNumber}_{d.KeyField}"));
+		}
+
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.ImportObject)]
+		[Category(TestCategories.Integration)]
+		[IdentifiedTest("4089f177-7332-40fc-9409-36fc4e9d00f9")]
+		public void ShouldOverlayWithoutIdentifier([Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType)
+		{
+			// ARRANGE
+			this.artifactTypeId = GetArtifactTypeIdForTest(artifactType);
+			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(this.artifactTypeId);
+
+			// Prepare data for import under test
+			DocumentWithKeyFieldDto[] initialData =
+			{
+				new DocumentWithKeyFieldDto("100010", "AAA"), new DocumentWithKeyFieldDto("100011", "BBB"),
+				new DocumentWithKeyFieldDto("100012", "CCC"), new DocumentWithKeyFieldDto("100013", "DDD"),
+				new DocumentWithKeyFieldDto("100014", "EEE"),
+			};
+
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+			this.JobExecutionContext.Execute(initialData);
+
+			DocumentWithoutIdentifierDto[] importData =
+			{
+				new DocumentWithoutIdentifierDto("AAA", "text1"),
+				new DocumentWithoutIdentifierDto("BBB", "text2"),
+				new DocumentWithoutIdentifierDto("CCC", "text3"),
+				new DocumentWithoutIdentifierDto("DDD", "text4"),
+			};
+
+			DocumentWithoutIdentifierDto[] expectedData =
+			{
+				new DocumentWithoutIdentifierDto("AAA", "text1"),
+				new DocumentWithoutIdentifierDto("BBB", "text2"),
+				new DocumentWithoutIdentifierDto("CCC", "text3"),
+				new DocumentWithoutIdentifierDto("DDD", "text4"),
+				new DocumentWithoutIdentifierDto("EEE", null),
+			};
+
+			settings.OverwriteMode = OverwriteModeEnum.Overlay;
+			settings.IdentityFieldId = GetKeyFieldIdForTest(artifactType);
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
+
+			// ASSERT
+			this.ThenTheImportJobIsSuccessful(results, importData?.Length ?? 0);
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(importData?.Length));
+
+			string[] fieldsToValidate = new[] { WellKnownFields.KeyFieldName, WellKnownFields.TextFieldName };
+
+			DocumentWithoutIdentifierDto[] resultData = RdoHelper.QueryRelativityObjects(this.TestParameters, this.artifactTypeId, fieldsToValidate)
+				.Select(ro => new DocumentWithoutIdentifierDto((string)ro.FieldValues[0].Value, (string)ro.FieldValues[1].Value))
+				.ToArray();
+
+			CollectionAssert.AreEquivalent(expectedData.Select(d => $"{d.KeyField}_{d.TextField}"), resultData.Select(d => $"{d.KeyField}_{d.TextField}"));
+		}
+
+		private ImportTestJobResult ArrangeAndActOverlayIndetifierTest(ArtifactType artifactType, OverwriteModeEnum overwriteMode, DocumentWithKeyFieldDto[] initialData, DocumentWithKeyFieldDto[] importData)
+		{
+			this.artifactTypeId = GetArtifactTypeIdForTest(artifactType);
+			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(this.artifactTypeId);
+
+			// Prepare data for import under test
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+			this.JobExecutionContext.Execute(initialData);
+
+			settings.OverwriteMode = overwriteMode;
+			settings.IdentityFieldId = GetKeyFieldIdForTest(artifactType);
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+
+			// ACT
+			return this.JobExecutionContext.Execute(importData);
+		}
+
+		private int GetArtifactTypeIdForTest(ArtifactType artifactType)
+		{
+			return artifactType == ArtifactType.Document
+				                     ? (int)ArtifactTypeID.Document
+				                     : this.createdObjectArtifactTypeId;
+		}
+
+		private async Task<int> CreateTextFieldAsync(int rdoArtifactTypeId, string fieldName)
+		{
+			int fieldId = await FieldHelper.CreateFixedLengthTextFieldAsync(
+				this.TestParameters,
+				fieldName,
+				rdoArtifactTypeId,
+				false,
+				length: 50).ConfigureAwait(false);
+
+			return fieldId;
+		}
+
+		private int GetKeyFieldIdForTest(ArtifactType artifactType)
+		{
+			int keyFieldId = artifactType == ArtifactType.Document
+				                 ? this.documentKeyFieldId
+				                 : this.objectKeyFieldId;
+			return keyFieldId;
+		}
+	}
+}

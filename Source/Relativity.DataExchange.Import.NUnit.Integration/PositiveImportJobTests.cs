@@ -25,9 +25,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.Services.Interfaces.Field;
-	using Relativity.Services.Interfaces.Field.Models;
-	using Relativity.Services.Interfaces.Shared.Models;
 	using Relativity.Services.LinkManager.Interfaces;
 	using Relativity.Services.Objects.DataContracts;
 	using Relativity.Testing.Identification;
@@ -507,42 +504,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				SingleObjectFieldName,
 				singleObjectArtifactTypeId,
 				artifactTypeId).ConfigureAwait(false);
-		}
-
-		private async Task<int> CreateObjectInWorkspaceAsync()
-		{
-			string objectName = Guid.NewGuid().ToString();
-
-			var objectId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, objectName).ConfigureAwait(false);
-			await FieldHelper.CreateFileFieldAsync(this.TestParameters, "FilePath", objectId).ConfigureAwait(false);
-
-			var controlNumberFieldRequest = new FixedLengthFieldRequest()
-				                                {
-					                                Name = WellKnownFields.ControlNumber,
-					                                ObjectType = new ObjectTypeIdentifier() { Name = objectName },
-					                                Length = 255,
-					                                IsRequired = true,
-					                                IncludeInTextIndex = true,
-					                                FilterType = FilterType.TextBox,
-					                                AllowSortTally = true,
-					                                AllowGroupBy = false,
-					                                AllowPivot = false,
-					                                HasUnicode = true,
-					                                OpenToAssociations = false,
-					                                IsRelational = false,
-					                                AllowHtml = false,
-					                                IsLinked = true,
-					                                Wrapping = true,
-				                                };
-			using (IFieldManager fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(this.TestParameters))
-			{
-				await fieldManager.UpdateFixedLengthFieldAsync(
-					this.TestParameters.WorkspaceId,
-					FieldHelper.QueryIdentifierFieldId(this.TestParameters, objectName),
-					controlNumberFieldRequest).ConfigureAwait(false);
-			}
-
-			return objectId;
 		}
 	}
 }
