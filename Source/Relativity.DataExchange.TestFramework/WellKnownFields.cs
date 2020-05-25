@@ -135,5 +135,10 @@ namespace Relativity.DataExchange.TestFramework
 		/// Simple text field.
 		/// </summary>
 		public const string TextFieldName = "Text Field";
+
+		/// <summary>
+		/// Relational field.
+		/// </summary>
+		public const string RelationalFieldName = "Relational Field";
 	}
 }

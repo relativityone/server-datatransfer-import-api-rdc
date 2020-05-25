@@ -23,5 +23,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 
 		[DisplayName(WellKnownFields.KeyFieldName)]
 		public string KeyField { get; }
+
+		public override string ToString()
+		{
+			return $"{ControlNumber}_{KeyField}";
+		}
 	}
 }

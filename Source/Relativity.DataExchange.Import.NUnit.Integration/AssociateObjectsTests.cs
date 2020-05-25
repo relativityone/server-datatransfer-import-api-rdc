@@ -95,7 +95,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			IEnumerable<string> nameSource = existingRowsNames.Concat(notExistingRowsNames);
 
-			Settings settings = NativeImportSettingsProvider.DefaultNativeObjectImportSettings(this.childObjectArtifactTypeId);
+			Settings settings = NativeImportSettingsProvider.DefaultSettings(this.childObjectArtifactTypeId, WellKnownFields.RdoIdentifier);
 			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
@@ -142,13 +142,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.AddField(ReferenceToObjectFieldName, objectIdentifiers)
 				.Build();
 
-			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+			Settings settings = NativeImportSettingsProvider.DefaultSettings();
 			settings.ObjectFieldIdListContainsArtifactId = new List<int> { this.referenceToObjectFieldId };
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 			this.JobExecutionContext.Execute(importDataSource);
 
-			Settings overlaySettings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+			Settings overlaySettings = NativeImportSettingsProvider.DefaultSettings();
 			overlaySettings.SelectedIdentifierFieldName = ReferenceToObjectFieldName;
 			overlaySettings.OverwriteMode = OverwriteModeEnum.Overlay;
 			overlaySettings.IdentityFieldId = this.referenceToObjectFieldId;
@@ -177,7 +177,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			int rowsWithExistingDocuments = TestData.SampleDocFiles.Count();
 			int totalRows = rowsWithExistingDocuments + RowsWithNonExistingDocuments;
 
-			Settings settings = NativeImportSettingsProvider.DefaultNativeObjectImportSettings(this.objectArtifactTypeId);
+			Settings settings = NativeImportSettingsProvider.DefaultSettings(this.objectArtifactTypeId, WellKnownFields.RdoIdentifier);
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 			IEnumerable<string> nameFieldSource = Enumerable.Range(1, totalRows).Select(i => $"{nameof(this.ShouldNotCreateAssociatedDocumentThatNotExist)}-{i}");
@@ -222,7 +222,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.AddField(WellKnownFields.ControlNumber, controlNumberSource)
 				.AddField(ReferenceToObjectFieldName, referenceToMyObjectSource)
 				.Build();
-			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+			Settings settings = NativeImportSettingsProvider.DefaultSettings();
 			settings.ObjectFieldIdListContainsArtifactId = new List<int> { this.referenceToObjectFieldId };
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
@@ -264,7 +264,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.AddField(WellKnownFields.ControlNumber, controlNumberSource)
 				.AddField(ReferenceToObjectFieldName, referenceToMyObjectSource)
 				.Build();
-			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+			Settings settings = NativeImportSettingsProvider.DefaultSettings();
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 			// ACT
@@ -305,7 +305,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.AddField(WellKnownFields.ControlNumber, controlNumberSource)
 				.AddField(ReferenceToChildObjectFieldName, referenceToChildObject)
 				.Build();
-			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+			Settings settings = NativeImportSettingsProvider.DefaultSettings();
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 			// ACT
@@ -360,7 +360,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldNotOverlayDocumentsWhichDoNotExist()
 		{
 			// ARRANGE
-			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+			Settings settings = NativeImportSettingsProvider.DefaultSettings();
 
 			const int NumberOfDocumentsToOverlay = 10;
 			const int NumberOfDefaultDocuments = 10;
@@ -395,7 +395,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldNotAppendDocumentsWhichAlreadyExist()
 		{
 			// ARRANGE
-			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+			Settings settings = NativeImportSettingsProvider.DefaultSettings();
 
 			const int NumberOfDocumentsToAppend = 10;
 			const int NumberOfDefaultDocuments = 10;

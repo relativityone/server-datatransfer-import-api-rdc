@@ -14,63 +14,43 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 
 	public static class NativeImportSettingsProvider
 	{
-		public static Settings NativeFilePathSourceDocumentImportSettings
+		public static Settings FileCopySettings
 		{
 			get
 			{
-				Settings settings = new Settings();
-				SetDefaultNativeDocumentImportSettings(settings);
-				SetNativeFilePathSourceDocumentImportSettings(settings);
+				Settings settings = DefaultSettings();
+				settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
+				settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
+
+				settings.OIFileIdMapped = true;
+				settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
+				settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
+
+				settings.FileSizeMapped = true;
+				settings.FileSizeColumn = WellKnownFields.NativeFileSize;
 				return settings;
 			}
 		}
 
-		public static Settings DefaultNativeDocumentImportSettings
+		public static Settings DefaultSettings()
 		{
-			get
-			{
-				Settings settings = new Settings();
-				SetDefaultNativeDocumentImportSettings(settings);
-				return settings;
-			}
+			return DefaultSettings((int)ArtifactType.Document, WellKnownFields.ControlNumber);
 		}
 
-		public static Settings NativeControlNumberIdentifierObjectImportSettings(int artifactTypeId)
+		public static Settings DefaultSettings(int artifactTypeId)
 		{
-			Settings settings = new Settings();
-			SetDefaultNativeDocumentImportSettings(settings);
-			settings.ArtifactTypeId = artifactTypeId;
-			return settings;
+			return DefaultSettings(artifactTypeId, WellKnownFields.ControlNumber);
 		}
 
-		public static Settings DefaultNativeObjectImportSettings(int artifactTypeId)
+		public static Settings DefaultSettings(int artifactTypeId, string selectedIdentifierFieldName)
 		{
 			Settings settings = new Settings
 			{
-				SelectedIdentifierFieldName = WellKnownFields.RdoIdentifier,
+				SelectedIdentifierFieldName = selectedIdentifierFieldName,
 				OverwriteMode = OverwriteModeEnum.Append,
 				ArtifactTypeId = artifactTypeId,
 			};
 			return settings;
-		}
-
-		private static void SetDefaultNativeDocumentImportSettings(Settings settings)
-		{
-			settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
-			settings.OverwriteMode = OverwriteModeEnum.Append;
-		}
-
-		private static void SetNativeFilePathSourceDocumentImportSettings(Settings settings)
-		{
-			settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
-			settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
-
-			settings.OIFileIdMapped = true;
-			settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
-			settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
-
-			settings.FileSizeMapped = true;
-			settings.FileSizeColumn = WellKnownFields.NativeFileSize;
 		}
 	}
 }

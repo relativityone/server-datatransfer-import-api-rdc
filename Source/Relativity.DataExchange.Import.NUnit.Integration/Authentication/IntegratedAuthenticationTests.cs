@@ -80,7 +80,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = true;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = true;
 
-			this.JobExecutionContext.InitializeImportApiWithIntegratedAuthentication(this.TestParameters, NativeImportSettingsProvider.NativeFilePathSourceDocumentImportSettings);
+			this.JobExecutionContext.InitializeImportApiWithIntegratedAuthentication(this.TestParameters, NativeImportSettingsProvider.FileCopySettings);
 
 			const int NumberOfFilesToImport = 5;
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport);

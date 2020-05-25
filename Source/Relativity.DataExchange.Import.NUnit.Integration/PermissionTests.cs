@@ -95,7 +95,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.ConfigureAwait(false);
 
 			this.WithNewUser();
-			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+			Settings settings = NativeImportSettingsProvider.DefaultSettings();
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 			IEnumerable<string> controlNumberSource = Enumerable.Range(1, TotalRows).Select(i => $"doc-{nameof(this.ShouldPreventSecurityAdd)}-{i}");
 
@@ -128,7 +128,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.ConfigureAwait(false);
 
 			this.WithNewUser();
-			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+			Settings settings = NativeImportSettingsProvider.DefaultSettings();
 			settings.OverwriteMode = OverwriteModeEnum.Overlay;
 
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
@@ -189,7 +189,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				false).ConfigureAwait(false);
 
 			this.WithNewUser();
-			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+			Settings settings = NativeImportSettingsProvider.DefaultSettings();
 
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 

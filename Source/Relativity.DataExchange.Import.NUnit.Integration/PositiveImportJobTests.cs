@@ -83,7 +83,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			[Values(true, false)] bool disableNativeValidation)
 		{
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.DefaultSettings(artifactTypeId);
 
 			// ARRANGE
 			ForceClient(client);
@@ -119,7 +119,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ForceClient(Client);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, Client);
 
-			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+			Settings settings = NativeImportSettingsProvider.DefaultSettings();
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
@@ -153,7 +153,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ForceClient(Client);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, Client);
 
-			Settings settings = NativeImportSettingsProvider.DefaultNativeDocumentImportSettings;
+			Settings settings = NativeImportSettingsProvider.DefaultSettings();
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
 			settings.MoveDocumentsInAppendOverlayMode = true;
 			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
@@ -183,7 +183,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.DefaultSettings(artifactTypeId);
 
 			// Import initial data to workspace
 			if (overwriteMode == OverwriteModeEnum.AppendOverlay || overwriteMode == OverwriteModeEnum.Overlay)
@@ -287,7 +287,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.DefaultSettings(artifactTypeId);
 			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
@@ -325,7 +325,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.DefaultSettings(artifactTypeId);
 
 			// Import initial data to workspace
 			if (overwriteMode == OverwriteModeEnum.AppendOverlay || overwriteMode == OverwriteModeEnum.Overlay)
@@ -417,7 +417,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.DefaultSettings(artifactTypeId);
 
 			// Prepare data for import under test
 			settings.OverwriteMode = overwriteMode;

@@ -6,6 +6,7 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Threading.Tasks;
 	using global::NUnit.Framework;
@@ -88,8 +89,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.Integration)]
 		[TestCaseSource(typeof(OverlayIdentifierTestCases), nameof(OverlayIdentifierTestCases.ShouldOverlayIdentifierTestCaseData))]
 		[IdentifiedTest("1c955071-67b1-40aa-819f-9c1fdc3020c0")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "caseName is needed to identify test case")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "caseName is needed to identify test case")]
+		[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "caseName is needed to identify test case")]
+		[SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "caseName is needed to identify test case")]
 		public void ShouldOverlayIdentifier(
 			string caseName,
 			OverwriteModeEnum overwriteMode,
@@ -109,15 +110,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.Select(ro => new DocumentWithKeyFieldDto((string)ro.FieldValues[0].Value, (string)ro.FieldValues[1].Value))
 				.ToArray();
 
-			CollectionAssert.AreEquivalent(expectedData.Select(d => $"{d.ControlNumber}_{d.KeyField}"), resultData.Select(d => $"{d.ControlNumber}_{d.KeyField}"));
+			CollectionAssert.AreEquivalent(expectedData.Select(d => d.ToString()), resultData.Select(d => d.ToString()));
 		}
 
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
-		[TestCaseSource(typeof(OverlayIdentifierTestCases),	nameof(OverlayIdentifierTestCases.ShouldOverlayIdentifierWithErrorTestCaseData))]
+		[TestCaseSource(typeof(OverlayIdentifierTestCases), nameof(OverlayIdentifierTestCases.ShouldOverlayIdentifierWithErrorTestCaseData))]
 		[IdentifiedTest("76377061-b274-4c22-abce-b0fa05aba143")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "caseName is needed to identify test case")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "caseName is needed to identify test case")]
+		[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "caseName is needed to identify test case")]
+		[SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "caseName is needed to identify test case")]
 		public void ShouldOverlayIdentifierWithError(
 			string caseName,
 			OverwriteModeEnum overwriteMode,
@@ -139,7 +140,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.Select(ro => new DocumentWithKeyFieldDto((string)ro.FieldValues[0].Value, (string)ro.FieldValues[1].Value))
 				.ToArray();
 
-			CollectionAssert.AreEquivalent(expectedData.Select(d => $"{d.ControlNumber}_{d.KeyField}"), resultData.Select(d => $"{d.ControlNumber}_{d.KeyField}"));
+			CollectionAssert.AreEquivalent(expectedData.Select(d => d.ToString()), resultData.Select(d => d.ToString()));
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -150,7 +151,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			this.artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(this.artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.DefaultSettings(this.artifactTypeId);
 
 			// Prepare data for import under test
 			DocumentWithKeyFieldDto[] initialData =
@@ -197,13 +198,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.Select(ro => new DocumentWithoutIdentifierDto((string)ro.FieldValues[0].Value, (string)ro.FieldValues[1].Value))
 				.ToArray();
 
-			CollectionAssert.AreEquivalent(expectedData.Select(d => $"{d.KeyField}_{d.TextField}"), resultData.Select(d => $"{d.KeyField}_{d.TextField}"));
+			CollectionAssert.AreEquivalent(expectedData.Select(d => d.ToString()), resultData.Select(d => d.ToString()));
 		}
 
 		private ImportTestJobResult ArrangeAndActOverlayIndetifierTest(ArtifactType artifactType, OverwriteModeEnum overwriteMode, DocumentWithKeyFieldDto[] initialData, DocumentWithKeyFieldDto[] importData)
 		{
 			this.artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.NativeControlNumberIdentifierObjectImportSettings(this.artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.DefaultSettings(this.artifactTypeId);
 
 			// Prepare data for import under test
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
@@ -220,8 +221,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private int GetArtifactTypeIdForTest(ArtifactType artifactType)
 		{
 			return artifactType == ArtifactType.Document
-				                     ? (int)ArtifactTypeID.Document
-				                     : this.createdObjectArtifactTypeId;
+				? (int)ArtifactTypeID.Document
+				: this.createdObjectArtifactTypeId;
 		}
 
 		private async Task<int> CreateTextFieldAsync(int rdoArtifactTypeId, string fieldName)
@@ -239,9 +240,31 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private int GetKeyFieldIdForTest(ArtifactType artifactType)
 		{
 			int keyFieldId = artifactType == ArtifactType.Document
-				                 ? this.documentKeyFieldId
-				                 : this.objectKeyFieldId;
+				? this.documentKeyFieldId
+				: this.objectKeyFieldId;
 			return keyFieldId;
+		}
+
+		private class DocumentWithoutIdentifierDto
+		{
+			public DocumentWithoutIdentifierDto(string keyField, string textField)
+			{
+				this.TextField = textField;
+				this.KeyField = keyField;
+			}
+
+			[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Must be public for DataReader")]
+			[System.ComponentModel.DisplayName(WellKnownFields.KeyFieldName)]
+			public string KeyField { get; }
+
+			[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Must be public for DataReader")]
+			[System.ComponentModel.DisplayName(WellKnownFields.TextFieldName)]
+			public string TextField { get; }
+
+			public override string ToString()
+			{
+				return $"{KeyField}_{TextField}";
+			}
 		}
 	}
 }
