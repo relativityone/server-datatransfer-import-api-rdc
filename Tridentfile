@@ -86,6 +86,7 @@ timestamps
 					echo "GIT_COMMIT is ${commitHash}"
                     notifyBitbucket()
 					tools = load 'Trident/Tools/Tools.groovy'
+					Slack = load 'Trident/Tools/Slack.groovy'
                 }
 				
                 try
@@ -145,7 +146,7 @@ timestamps
                         output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge -Sign -Branch '${branchName}'"
                         echo output
                     }
-					
+                    
 					stage('Build install packages and check sdk dependencies')
 					{
 						parallel(
@@ -192,7 +193,7 @@ timestamps
                                 echo "Skip running unit tests due to configuration parameters."
                             }
                         }
-
+                        
                         stage("Run integration tests")
                         {
                             if (shouldRunIntegrationTests)
@@ -412,7 +413,7 @@ timestamps
                         echo "Publishing the unit tests report"
                         archiveArtifacts artifacts: 'TestReports/unit-tests/**/*.*'
                     }
-
+                    
                     if (shouldRunIntegrationTests)
                     {
                         echo "Publishing the integration tests report"
@@ -456,54 +457,19 @@ timestamps
 							tools.deleteHopperInstance(vmInfo.Id)
 						}
 					}    
-                    stage('Reporting and Cleanup')
-                    {
-                        parallel(
-                            // StashNotifier second call, passes currentBuild.result to BitBucket as build status 
-                            "BitBucket notification":
-                            { 
-                                notifyBitbucket()
-                            },
-							"Slack Notification": 
-                            {
-                                def script = this
-                                def String serverUnderTestName = ""
-                                def String version = buildVersion
-                                def String branch = env.BRANCH_NAME
-                                def String buildType = params.buildType
-                                def String slackChannel = params.slackChannel
-                                def String email = "slack_svc@relativity.com"
-                                def int numberOfFailedTests = testResultsFailed
-                                def int numberOfPassedTests = testResultsPassed
-                                def int numberOfSkippedTests = testResultsSkipped
-                                def String message = env.BUILD_TAG
-								echo "*************************************************" +
-                                    "\n" +
-                                    "\n" + "sendCDSlackNotification Parameters: " +
-                                    "\n" +
-                                    "\n" + "script: " + script +
-                                    "\n" + "serverUnderTestName: " + serverUnderTestName +
-                                    "\n" + "version: " + version +
-                                    "\n" + "branch: " + branch +
-                                    "\n" + "buildType: " + buildType +
-                                    "\n" + "slackChannel: " + slackChannel +
-                                    "\n" + "email: " + email +
-                                    "\n" + "numberOfFailedTests: " + numberOfFailedTests +
-                                    "\n" + "numberOfPassedTests: " + numberOfPassedTests +
-                                    "\n" + "numberOfSkippedTests: " + numberOfSkippedTests +
-                                    "\n" + "message: " + message +
-                                    "\n" +
-                                    "\n*************************************************"
-								sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, ['tests': ['passed': numberOfPassedTests, 'failed': numberOfFailedTests, 'skipped': numberOfSkippedTests]], message, "CD" )
-
-                            }
-                        )
-                    }
                 }
                 catch (err)
                 {
                     // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
                     echo err.toString()
+                }
+                finally
+                {
+                    stage('Send slack and bitbucket notification')
+                    {
+                        notifyBitbucket()
+                        Slack.SendSlackNotification("Relativity from image '${config.sutTemplate}'", buildVersion, env.BRANCH_NAME, params.buildType, params.slackChannel, testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
+                    }
                 }
             }
         }

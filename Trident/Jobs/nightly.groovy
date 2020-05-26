@@ -23,6 +23,7 @@ def globalVmInfo = null
 numberOfErrors = 0
 def String inCompatibleEnvironments = ""	
 tools = null
+Slack = null
 
 timestamps
 {
@@ -46,6 +47,7 @@ timestamps
 					])
 				notifyBitbucket()
 				tools = load 'Trident/Tools/Tools.groovy'
+				Slack = load 'Trident/Tools/Slack.groovy'
 			}
 
 			stage('Build binaries')
@@ -106,57 +108,23 @@ timestamps
 			}
 		}
 		finally{
-			stage("Send slack and bitbucket notification")
-			{
-				def script = this
-				def String serverUnderTestName = temlatesStr
-				def String version = "Trident nightly"
-				def String branch = "Trident"
-				def String buildType = params.buildConfig
-				def String slackChannel = params.slackChannel
-				def String email = "slack_svc@relativity.com"
-				def int numberOfFailedTests = testResultsFailed
-				def int numberOfPassedTests = testResultsPassed
-				def int numberOfSkippedTests = testResultsSkipped
-				def String message = ""
-				if(numberOfErrors > 0 || numberOfFailedTests > 0)
-				{
-					message = "Something went wrong with the following environments : "
-					message = message + inCompatibleEnvironments
-					currentBuild.result = 'FAILED'
-				}
-				else
-				{
+            stage("Send slack and bitbucket notification")
+            {
+                if(numberOfErrors > 0 || numberOfFailedTests > 0)
+                {
+                    message = "Something went wrong with the following environments : "
+                    message = message + inCompatibleEnvironments
+                    currentBuild.result = 'FAILED'
+                }
+                else
+                {
                     currentBuild.result = 'SUCCESS'
-				}
+                }
+                
                 notifyBitbucket()
-				echo "*************************************************" +
-					"\n" +
-					"\n" + "sendCDSlackNotification Parameters: " +
-					"\n" +
-					"\n" + "script: " + script +
-					"\n" + "serverUnderTestName: " + serverUnderTestName +
-					"\n" + "version: " + version +
-					"\n" + "branch: " + branch +
-					"\n" + "buildType: " + buildType +
-					"\n" + "slackChannel: " + slackChannel +
-					"\n" + "email: " + email +
-					"\n" + "numberOfFailedTests: " + numberOfFailedTests +
-					"\n" + "numberOfPassedTests: " + numberOfPassedTests +
-					"\n" + "numberOfSkippedTests: " + numberOfSkippedTests +
-					"\n" + "message: " + message +
-					"\n" +
-					"\n*************************************************"
-				try
-				{
-					sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, ['tests': ['passed': numberOfPassedTests, 'failed': numberOfFailedTests, 'skipped': numberOfSkippedTests]], message, "CD" )
-				}
-				catch(err)
-				{
-					echo "Send slack notification failed"
-					echo err.toString()
-				}
-			}
+                
+                Slack.SendSlackNotification(temlatesStr, "Trident nightly", env.BRANCH_NAME, params.buildConfig, params.slackChannel, testResultsFailed, testResultsPassed, testResultsSkipped, message)
+            }
 		}
 	}
 }
