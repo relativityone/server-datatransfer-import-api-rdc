@@ -57,6 +57,18 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to create an error when exporting a zero byte file. This is <see langword="false" /> by default.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to create an error; otherwise, <see langword="false" />.
+		/// </value>
+		bool CreateErrorForEmptyPdfFile
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to create an error when importing fields with invalid dates. This is <see langword="true" /> by default.
 		/// </summary>
 		/// <value>
@@ -1015,7 +1027,7 @@ namespace Relativity.DataExchange
 		/// <value>
 		/// Searchable PDF mode is active.
 		/// </value>
-		bool UseSearchablePDF
+		bool UseSearchablePdf
 		{
 			get;
 			set;

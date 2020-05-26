@@ -5,6 +5,7 @@
 		string GetCurrentImageSubdirectoryLabel();
 		string GetCurrentNativeSubdirectoryLabel();
 		string GetCurrentTextSubdirectoryLabel();
+		string GetCurrentPdfSubdirectoryLabel();
 		string GetCurrentVolumeLabel();
 	}
 }

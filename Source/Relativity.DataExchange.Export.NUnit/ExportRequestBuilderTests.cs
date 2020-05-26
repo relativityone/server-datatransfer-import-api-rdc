@@ -24,6 +24,9 @@ namespace Relativity.DataExchange.Export.NUnit
 	[TestFixture]
 	public abstract class ExportRequestBuilderTests
 	{
+		private const string FileName = "file_name";
+		private const string ExportPath = "export_path";
+
 		private Mock<IFilePathProvider> _filePathProvider;
 		private Mock<IFileNameProvider> _fileNameProvider;
 		private Mock<IExportFileValidator> _validator;
@@ -38,6 +41,12 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileNameProvider = new Mock<IFileNameProvider>();
 			this._validator = new Mock<IExportFileValidator>();
 			this._fileProcessingStatistics = new Mock<IFileProcessingStatistics>();
+
+			this._fileNameProvider.Setup(x => x.GetName(It.IsAny<ObjectExportInfo>())).Returns(FileName);
+			this._fileNameProvider.Setup(x => x.GetPdfName(It.IsAny<ObjectExportInfo>())).Returns(FileName);
+			this._filePathProvider.Setup(x => x.GetPathForFile(FileName, It.IsAny<int>())).Returns(ExportPath);
+			this._validator.Setup(x => x.CanExport(ExportPath, It.IsAny<string>())).Returns(true);
+
 			this.Instance = this.CreateInstance(this._filePathProvider.Object, this._fileNameProvider.Object, this._validator.Object, this._fileProcessingStatistics.Object);
 		}
 
@@ -50,51 +59,43 @@ namespace Relativity.DataExchange.Export.NUnit
 		[Test]
 		public void ItShouldUpdateStatisticsAndSkipImageWhenCannotExport()
 		{
-			const string fileName = "file_name";
-			const string exportPath = "export_path";
-
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
 				NativeFileGuid = Guid.NewGuid().ToString(),
 				FileID = 1,
-				NativeSourceLocation = "source_location"
+				NativeSourceLocation = "source_location",
+				PdfFileGuid = Guid.NewGuid().ToString(),
+				PdfSourceLocation = "pdf_source_location"
 			};
 
-			this._fileNameProvider.Setup(x => x.GetName(artifact)).Returns(fileName);
-			this._filePathProvider.Setup(x => x.GetPathForFile(fileName, It.IsAny<int>())).Returns(exportPath);
-			this._validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(false);
+			this._validator.Setup(x => x.CanExport(ExportPath, It.IsAny<string>())).Returns(false);
 
 			// ACT
 			IList<ExportRequest> requests = this.Instance.Create(artifact, CancellationToken.None);
 
 			// ASSERT
 			CollectionAssert.IsEmpty(requests);
-			this._fileProcessingStatistics.Verify(x => x.UpdateStatisticsForFile(exportPath));
+			this._fileProcessingStatistics.Verify(x => x.UpdateStatisticsForFile(ExportPath));
 		}
 
 		[Test]
 		public void ItShouldCreateRequests()
 		{
-			const string fileName = "file_name";
-			const string exportPath = "export_path";
-
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
 				NativeFileGuid = Guid.NewGuid().ToString(),
 				FileID = 1,
-				NativeSourceLocation = "source_location"
+				NativeSourceLocation = "source_location",
+				PdfFileGuid = Guid.NewGuid().ToString(),
+				PdfSourceLocation = "pdf_source_location"
 			};
-
-			this._fileNameProvider.Setup(x => x.GetName(artifact)).Returns(fileName);
-			this._filePathProvider.Setup(x => x.GetPathForFile(fileName, It.IsAny<int>())).Returns(exportPath);
-			this._validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(true);
 
 			// ACT
 			IList<ExportRequest> requests = this.Instance.Create(artifact, CancellationToken.None);
 
 			// ASSERT
 			Assert.That(requests.Count, Is.EqualTo(1));
-			Assert.That(requests[0].DestinationLocation, Is.EqualTo(exportPath));
+			Assert.That(requests[0].DestinationLocation, Is.EqualTo(ExportPath));
 		}
 	}
 }

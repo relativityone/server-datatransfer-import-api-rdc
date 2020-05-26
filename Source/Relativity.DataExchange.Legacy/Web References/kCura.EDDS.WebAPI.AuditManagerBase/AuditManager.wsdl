@@ -196,7 +196,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="StartExportAtDocumentNumber" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="VolumeStartNumber" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="ArtifactTypeID" type="s:int" />
-          <s:element minOccurs="0" maxOccurs="1" name="SubdirectoryPDFPrefix" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SubdirectoryPdfPrefix" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="ExportSearchablePDFs" type="s:boolean" />
         </s:sequence>
       </s:complexType>

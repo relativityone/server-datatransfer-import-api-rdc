@@ -7,16 +7,31 @@
 
 	public class PhysicalFileExportRequest : ExportRequest
 	{
-		public PhysicalFileExportRequest(ImageExportInfo image, string destinationLocation)
-			: base(image.ArtifactID, image.SourceLocation, destinationLocation)
+		private PhysicalFileExportRequest(int artifactId, string sourceLocation, string destinationLocation, string remoteFileGuid)
+			: base(artifactId, sourceLocation, destinationLocation)
 		{
-			this.RemoteFileGuid = image.FileGuid;
+			this.RemoteFileGuid = remoteFileGuid;
 		}
 
-		public PhysicalFileExportRequest(ObjectExportInfo artifact, string destinationLocation)
-			: base(artifact.ArtifactID, artifact.NativeSourceLocation, destinationLocation)
+		public static PhysicalFileExportRequest CreateRequestForImage(
+			ImageExportInfo image,
+			string destinationLocation)
 		{
-			this.RemoteFileGuid = artifact.NativeFileGuid;
+			return new PhysicalFileExportRequest(image.ArtifactID, image.SourceLocation, destinationLocation, image.FileGuid);
+		}
+
+		public static PhysicalFileExportRequest CreateRequestForNative(
+			ObjectExportInfo artifact,
+			string destinationLocation)
+		{
+			return new PhysicalFileExportRequest(artifact.ArtifactID, artifact.NativeSourceLocation, destinationLocation, artifact.NativeFileGuid);
+		}
+
+		public static PhysicalFileExportRequest CreateRequestForPdf(
+			ObjectExportInfo artifact,
+			string destinationLocation)
+		{
+			return new PhysicalFileExportRequest(artifact.ArtifactID, artifact.PdfSourceLocation, destinationLocation, artifact.PdfFileGuid);
 		}
 
 		/// <summary>

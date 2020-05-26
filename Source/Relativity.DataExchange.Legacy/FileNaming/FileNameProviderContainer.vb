@@ -21,6 +21,10 @@ Namespace kCura.WinEDDS
 			Return GetProvider().GetTextName(exportedObjectInfo)
 		End Function
 
+		Public Function GetPdfName(exportedObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetPdfName
+			Return GetProvider().GetPdfName(exportedObjectInfo)
+		End Function
+
 		Private Function GetProvider() As IFileNameProvider
 			If (_fileNameProviders.ContainsKey(_exportSettings.ExportNativesToFileNamedFrom))
 				Return _fileNameProviders(_exportSettings.ExportNativesToFileNamedFrom)

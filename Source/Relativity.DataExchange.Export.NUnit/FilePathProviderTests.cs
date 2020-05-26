@@ -39,6 +39,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._labelManager.Setup(x => x.GetImageSubdirectoryLabel(It.IsAny<int>())).Returns(this.Subdirectory);
 			this._labelManager.Setup(x => x.GetNativeSubdirectoryLabel(It.IsAny<int>())).Returns(this.Subdirectory);
 			this._labelManager.Setup(x => x.GetTextSubdirectoryLabel(It.IsAny<int>())).Returns(this.Subdirectory);
+			this._labelManager.Setup(x => x.GetPdfSubdirectoryLabel(It.IsAny<int>())).Returns(this.Subdirectory);
 
 			this._exportSettings = new ExportFile(1)
 			{

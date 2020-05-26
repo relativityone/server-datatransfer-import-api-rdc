@@ -50,11 +50,13 @@ namespace Relativity.DataExchange.Export.NUnit
 		// Indirect dependencies
 		private ExportFile _exportFile;
 
-		private NativeRepository _nativeRepository;
+		private FileRequestRepository _nativeRepository;
 
 		private ImageRepository _imageRepository;
 
 		private LongTextRepository _longTextRepository;
+
+		private FileRequestRepository _pdfRepository;
 
 		private Mock<IFile> _fileHelper;
 
@@ -74,17 +76,19 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._tapiBridgeParametersFactory =
 				new TapiBridgeParametersFactory(this._exportFile, this._exportConfig.Object);
 			this._tapiObjectService = new Mock<ITapiObjectService>();
-			this._nativeRepository = new NativeRepository();
+			this._nativeRepository = new FileRequestRepository();
 			this._imageRepository = new ImageRepository();
 			this._fileHelper = new Mock<IFile>();
 			var testNullLogger = new TestNullLogger();
 			this._logger = testNullLogger.NullLoggerMock;
 			this._longTextRepository = new LongTextRepository(this._fileHelper.Object, this._logger.Object);
+			this._pdfRepository = new FileRequestRepository();
 			this._status = new Mock<IStatus>();
 			this._downloadProgressManager = new DownloadProgressManager(
 				this._nativeRepository,
 				this._imageRepository,
 				this._longTextRepository,
+				this._pdfRepository,
 				this._status.Object,
 				testNullLogger);
 

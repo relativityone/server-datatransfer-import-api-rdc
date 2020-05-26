@@ -44,6 +44,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			{
 				new Mock<IRepositoryBuilder>(),
 				new Mock<IRepositoryBuilder>(),
+				new Mock<IRepositoryBuilder>(),
 				new Mock<IRepositoryBuilder>()
 			};
 			this.DirectoryManager = new Mock<IDirectoryManager>();

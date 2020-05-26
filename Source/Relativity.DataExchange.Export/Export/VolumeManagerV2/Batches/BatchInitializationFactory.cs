@@ -6,7 +6,9 @@
 
 	using kCura.WinEDDS;
 
+	using Relativity.DataExchange.Export.VolumeManagerV2.Container;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.Logging;
 
@@ -26,7 +28,12 @@
 			repositoryBuilders.Add(container.Resolve<LongTextRepositoryBuilderFactory>().Create(exportSettings, container));
 			repositoryBuilders.Add(container.Resolve<NativeRepositoryBuilderFactory>().Create(exportSettings, container));
 			repositoryBuilders.Add(container.Resolve<ImageRepositoryBuilderFactory>().Create(exportSettings, container));
-			
+			repositoryBuilders.Add(new FileRepositoryBuilder(
+				container.Resolve<FileRequestRepository>(ExportInstaller.GetServiceNameByExportType(typeof(FileRequestRepository), ExportFileTypes.Pdf)), 
+				container.Resolve<ILabelManagerForArtifact>(), 
+				container.Resolve<IExportRequestBuilder>(ExportInstaller.GetServiceNameByExportType(typeof(IExportRequestBuilder), ExportFileTypes.Pdf)),
+				_logger));
+
 			IDirectoryManager directoryManager = container.Resolve<IDirectoryManager>();
 
 			return new BatchInitialization(repositoryBuilders, directoryManager, _logger);

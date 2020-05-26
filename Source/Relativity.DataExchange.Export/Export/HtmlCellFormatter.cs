@@ -50,6 +50,11 @@
 			return $"{COLUMN_PREFIX}{this.GetNativeHtmlString(artifact, location)}{COLUMN_SUFFIX}";
 		}
 
+		public string CreatePdfCell(string location, ObjectExportInfo artifact)
+		{
+			return $"{COLUMN_PREFIX}{this.GetPdfHtmlString(artifact, location)}{COLUMN_SUFFIX}";
+		}
+
 		private string GetNativeHtmlString(ObjectExportInfo artifact, string location)
 		{
 			if (this.IsDocument() && artifact.NativeCount == 0)
@@ -64,6 +69,17 @@
 
 			string nativeFileName = artifact.NativeFileName(this._settings.AppendOriginalFileName);
 			return this.GetLink(location, nativeFileName);
+		}
+
+		private string GetPdfHtmlString(ObjectExportInfo artifact, string location)
+		{
+			if (!this.IsDocument() || !artifact.HasPdf)
+			{
+				return string.Empty;
+			}
+
+			string pdfFileName = artifact.PdfFileName(artifact.IdentifierValue, this._settings.AppendOriginalFileName);
+			return this.GetLink(location, pdfFileName);
 		}
 
 		private bool IsDocument()

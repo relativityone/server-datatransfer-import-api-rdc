@@ -91,7 +91,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._imageExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<ExportRequest>
 			{
-				new PhysicalFileExportRequest(artifact, tempLocation)
+				PhysicalFileExportRequest.CreateRequestForNative(artifact, tempLocation)
 			});
 
 			// ACT
@@ -152,13 +152,13 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			IList<ExportRequest> exportRequests1 = new List<ExportRequest>
 			{
-				new PhysicalFileExportRequest(artifact1, "invalid_path"),
-				new PhysicalFileExportRequest(artifact1, tempLocation2)
+				PhysicalFileExportRequest.CreateRequestForNative(artifact1, "invalid_path"),
+				PhysicalFileExportRequest.CreateRequestForNative(artifact1, tempLocation2)
 			};
 			this._imageExportRequestBuilder.Setup(x => x.Create(artifact1, CancellationToken.None)).Returns(exportRequests1);
 			IList<ExportRequest> exportRequests2 = new List<ExportRequest>
 			{
-				new PhysicalFileExportRequest(artifact2, tempLocation3)
+				PhysicalFileExportRequest.CreateRequestForNative(artifact2, tempLocation3)
 			};
 			this._imageExportRequestBuilder.Setup(x => x.Create(artifact2, CancellationToken.None)).Returns(exportRequests2);
 
@@ -167,9 +167,9 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.AddToRepository(artifact2, CancellationToken.None);
 
 			// ASSERT
-			Image image1 = this._imageRepository.GetImage(artifactId1, bates1);
-			Image image2 = this._imageRepository.GetImage(artifactId1, bates2);
-			Image image3 = this._imageRepository.GetImage(artifactId2, bates3);
+			FileRequest<ImageExportInfo> image1 = this._imageRepository.GetImage(artifactId1, bates1);
+			FileRequest<ImageExportInfo> image2 = this._imageRepository.GetImage(artifactId1, bates2);
+			FileRequest<ImageExportInfo> image3 = this._imageRepository.GetImage(artifactId2, bates3);
 
 			Assert.That(image1.ExportRequest, Is.Null);
 

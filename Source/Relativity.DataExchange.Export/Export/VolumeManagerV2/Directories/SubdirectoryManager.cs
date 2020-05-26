@@ -8,6 +8,7 @@
 		private long _currentNativeSubdirectoryFileCount;
 		private long _currentImageSubdirectoryFileCount;
 		private long _currentTextSubdirectoryFileCount;
+		private long _currentPdfSubdirectoryFileCount;
 
 		private VolumePredictions _currentVolumePredictions;
 
@@ -27,7 +28,7 @@
 		public void MoveNext(VolumePredictions volumePredictions)
 		{
 			_currentVolumePredictions = volumePredictions;
-			if (WillNativeFolderBeFull() || WillImageFolderBeFull() || WillTextFolderBeFull())
+			if (WillAnyFolderBeFull())
 			{
 				MoveToNextSubdirectory();
 			}
@@ -35,6 +36,12 @@
 			_currentNativeSubdirectoryFileCount += _currentVolumePredictions.NativeFileCount;
 			_currentImageSubdirectoryFileCount += _currentVolumePredictions.ImageFileCount;
 			_currentTextSubdirectoryFileCount += _currentVolumePredictions.TextFileCount;
+			_currentPdfSubdirectoryFileCount += _currentVolumePredictions.PdfFileCount;
+		}
+
+		private bool WillAnyFolderBeFull()
+		{
+			return WillNativeFolderBeFull() || WillImageFolderBeFull() || WillTextFolderBeFull() || WillPdfFolderBeFull();
 		}
 
 		private bool WillNativeFolderBeFull()
@@ -50,6 +57,11 @@
 		private bool WillTextFolderBeFull()
 		{
 			return _currentTextSubdirectoryFileCount + _currentVolumePredictions.TextFileCount > _subdirectoryMaxFileCount && _currentTextSubdirectoryFileCount > 0;
+		}
+
+		private bool WillPdfFolderBeFull()
+		{
+			return _currentPdfSubdirectoryFileCount + _currentVolumePredictions.PdfFileCount > _subdirectoryMaxFileCount && _currentPdfSubdirectoryFileCount > 0;
 		}
 
 		private void MoveToNextSubdirectory()
@@ -69,6 +81,7 @@
 			_currentNativeSubdirectoryFileCount = 0;
 			_currentImageSubdirectoryFileCount = 0;
 			_currentTextSubdirectoryFileCount = 0;
+			_currentPdfSubdirectoryFileCount = 0;
 		}
 	}
 }

@@ -43,6 +43,10 @@
 			{
 				retString.Append("<th>Native Files</th>");
 			}
+			if (ExportSettings.ExportPdf)
+			{
+				retString.Append("<th>PDF Files</th>");
+			}
 			retString.Append(Environment.NewLine + "</tr>" + Environment.NewLine);
 			return retString.ToString();
 		}

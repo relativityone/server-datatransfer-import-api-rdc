@@ -36,6 +36,8 @@ namespace Relativity.DataExchange
 		public const bool CreateErrorForInvalidDateDefaultValue = true;
 		public const string CreateErrorForEmptyNativeFileKey = "CreateErrorForEmptyNativeFile";
 		public const bool CreateErrorForEmptyNativeFileDefaultValue = false;
+		public const string CreateErrorForEmptyPdfFileKey = "CreateErrorForEmptyPdfFile";
+		public const bool CreateErrorForEmptyPdfFileDefaultValue = false;
 		public const string CreateFoldersInWebApiKey = "CreateFoldersInWebAPI";
 		public const bool CreateFoldersInWebApiDefaultValue = true;
 		public const string DefaultMaxErrorCountKey = "DefaultMaxErrorCount";
@@ -190,8 +192,8 @@ namespace Relativity.DataExchange
 		public const string WebApiServiceUrlDefaultValue = "";
 		public const string UseSynchronizedImportBatchModeKey = "UseSynchronizedImportBatchMode";
 		public const bool UseSynchronizedImportBatchModeDefaultValue = true;
-		public const string UseSearchablePDFKey = "UseSearchablePDF";
-		public const bool UseSearchablePDFDefaultValue = false;
+		public const string UseSearchablePdfKey = "UseSearchablePdf";
+		public const bool UseSearchablePdfDefaultValue = false;
 #pragma warning restore SA1600
 	}
 }

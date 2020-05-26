@@ -14,17 +14,17 @@
 
 	public abstract class ExportRequestBuilder : IExportRequestBuilder
 	{
+		protected readonly IFileNameProvider FileNameProvider;
 		private readonly IFilePathProvider _filePathProvider;
-		private readonly IFileNameProvider _fileNameProvider;
 		private readonly IExportFileValidator _validator;
 		private readonly IFileProcessingStatistics _fileProcessingStatistics;
 		private readonly ILog _logger;
 
 		protected ExportRequestBuilder(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator validator,
-			IFileProcessingStatistics fileProcessingStatistics, ILog logger)
+		                               IFileProcessingStatistics fileProcessingStatistics, ILog logger)
 		{
 			_filePathProvider = filePathProvider;
-			_fileNameProvider = fileNameProvider;
+			FileNameProvider = fileNameProvider;
 			_validator = validator;
 			_fileProcessingStatistics = fileProcessingStatistics;
 			_logger = logger;
@@ -45,10 +45,8 @@
 				return Enumerable.Empty<ExportRequest>().ToList();
 			}
 
-			artifact.Filename = GetFileName(artifact);
-			string destinationLocation = GetExportDestinationLocation(artifact);
-			artifact.NativeTempLocation = destinationLocation;
-
+			string destinationLocation = RetrieveFileNameAndDestinationLocation(artifact);
+			
 			string warningInCaseOfOverwriting = $"Overwriting document {destinationLocation}.";
 			if (!_validator.CanExport(destinationLocation, warningInCaseOfOverwriting))
 			{
@@ -63,17 +61,31 @@
 			return exportRequest.InList();
 		}
 
-		protected abstract ExportRequest CreateExportRequest(ObjectExportInfo artifact, string destinationLocation);
+		protected virtual string RetrieveFileNameAndDestinationLocation(ObjectExportInfo artifact)
+		{
+			string fileName = GetFileName(artifact);
+			string destinationLocation = GetExportDestinationLocation(fileName, artifact.ArtifactID);
+			SaveDestinationLocation(artifact, destinationLocation);
+			return destinationLocation;
+		}
 
+		protected abstract ExportRequest CreateExportRequest(ObjectExportInfo artifact, string destinationLocation);
+		
 		protected abstract bool IsFileToExport(ObjectExportInfo artifact);
 
-		private string GetFileName(ObjectExportInfo artifact)
+		protected virtual string GetFileName(ObjectExportInfo artifact)
 		{
-			return _fileNameProvider.GetName(artifact);
+			return FileNameProvider.GetName(artifact);
 		}
-		private string GetExportDestinationLocation(ObjectExportInfo artifact)
+
+		protected virtual void SaveDestinationLocation(ObjectExportInfo artifact, string destinationLocation)
 		{
-			return _filePathProvider.GetPathForFile(artifact.Filename, artifact.ArtifactID);
+			artifact.NativeTempLocation = destinationLocation;
+		}
+
+		private string GetExportDestinationLocation(string fileName, int artifactId)
+		{
+			return _filePathProvider.GetPathForFile(fileName, artifactId);
 		}
 	}
 }

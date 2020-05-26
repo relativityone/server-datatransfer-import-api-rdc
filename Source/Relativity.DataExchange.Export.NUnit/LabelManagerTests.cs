@@ -128,5 +128,30 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ACT
 			return instance.GetCurrentTextSubdirectoryLabel();
 		}
+
+		[Test]
+		[TestCase(1, "PDF", 3, ExpectedResult = "PDF\\PDF001")]
+		[TestCase(123, "PDF", 1, ExpectedResult = "PDF\\PDF123")]
+		[TestCase(1, "PDF", 1, ExpectedResult = "PDF\\PDF1")]
+		[TestCase(23, "PDF", 0, ExpectedResult = "PDF\\PDF23")]
+		[TestCase(0, "PDF", 3, ExpectedResult = "PDF\\PDF000")]
+		[TestCase(23, "", 0, ExpectedResult = "PDF\\23")]
+		[TestCase(3, "", 5, ExpectedResult = "PDF\\00003")]
+		[TestCase(1, "DifferentPrefix", 3, ExpectedResult = "PDF\\DifferentPrefix001")]
+		public string ItShouldReturnValidPdfLabel(int subdirectoryNumber, string prefix, int padding)
+		{
+			ExportFile exportSettings = new ExportFile(1)
+			{
+				SubdirectoryDigitPadding = padding,
+				VolumeInfo = new VolumeInfo()
+			};
+			exportSettings.VolumeInfo.set_SubdirectoryPdfPrefix(false, prefix);
+
+			this._subdirectoryMock.SetupGet(x => x.CurrentSubdirectoryNumber).Returns(subdirectoryNumber);
+			var instance = new LabelManager(exportSettings, this._volumeMock.Object, this._subdirectoryMock.Object);
+
+			// ACT
+			return instance.GetCurrentPdfSubdirectoryLabel();
+		}
 	}
 }

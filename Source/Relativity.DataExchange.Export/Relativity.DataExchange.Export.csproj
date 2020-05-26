@@ -80,6 +80,7 @@
     <Compile Include="Export\ExportFileFormatter.cs" />
     <Compile Include="Export\ExportFileFormatterBase.cs" />
     <Compile Include="Export\ExportFileFormatterFactory.cs" />
+    <Compile Include="Export\ExportFileTypes.cs" />
     <Compile Include="Export\FieldNameProvider.cs" />
     <Compile Include="Export\HtmlCellFormatter.cs" />
     <Compile Include="Export\HtmlExportFileFormatter.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Export\VolumeManagerV2\Batches\LoadFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\LongTextBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\NativeFileBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\PdfFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Container\ContainerFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Container\ExportInstaller.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\EncodingFileSize.cs" />
@@ -129,6 +131,7 @@
     <Compile Include="Export\VolumeManagerV2\Directories\LabelManagerForArtifact.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\LongTextFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\NativeFilePathProvider.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\PdfFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\SubdirectoryManager.cs" />
@@ -162,6 +165,7 @@
     <Compile Include="Export\VolumeManagerV2\Download\LongTextExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextObjectManagerDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequestBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\PdfFileExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\PhysicalFileExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\PhysicalFilesDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeAdapter.cs" />
@@ -242,6 +246,8 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Paths\IDestinationPath.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Paths\ImageLoadFileDestinationPath.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Paths\LoadFileDestinationPath.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Pdfs\ILinePdfFilePath.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Pdfs\LinePdfFilePath.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\DelimitedFileLongTextStreamFormatterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Delimiter\ConfigurableDelimiter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Delimiter\DelimiterFactory.cs" />
@@ -281,11 +287,12 @@
     <Compile Include="Export\VolumeManagerV2\RelativityFileShareSettings.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\EmptyLongTextBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\ExportRequestRepository.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\FileRequestRepository.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\FileRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\IClearable.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\IExportRequestRepository.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\ILongTextBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\ILongTextRepository.cs" />
-    <Compile Include="Export\VolumeManagerV2\Repository\Image.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\ImageRepository.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\ImageRepositoryBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\ImageRepositoryBuilderFactory.cs" />
@@ -296,10 +303,8 @@
     <Compile Include="Export\VolumeManagerV2\Repository\LongTextRepository.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\LongTextRepositoryBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\LongTextRepositoryBuilderFactory.cs" />
-    <Compile Include="Export\VolumeManagerV2\Repository\Native.cs" />
-    <Compile Include="Export\VolumeManagerV2\Repository\NativeRepository.cs" />
-    <Compile Include="Export\VolumeManagerV2\Repository\NativeRepositoryBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\NativeRepositoryBuilderFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\FileRepositoryBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\ColumnsFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\ColumnsOrdinalLookupFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\FieldLookupService.cs" />

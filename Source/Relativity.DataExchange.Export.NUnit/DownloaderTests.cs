@@ -26,9 +26,10 @@ namespace Relativity.DataExchange.Export.NUnit
 	public class DownloaderTests
 	{
 		private Downloader _instance;
-		private NativeRepository _nativeRepository;
+		private FileRequestRepository _nativeRepository;
 		private ImageRepository _imageRepository;
 		private LongTextRepository _longTextRepository;
+		private FileRequestRepository _pdfRepository;
 		private IExportRequestRetriever _exportRequestRetriever;
 
 		private Mock<IErrorFileWriter> _errorFileWriter;
@@ -41,10 +42,11 @@ namespace Relativity.DataExchange.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			this._nativeRepository = new NativeRepository();
+			this._nativeRepository = new FileRequestRepository();
 			this._imageRepository = new ImageRepository();
 			this._longTextRepository = new LongTextRepository(null, new TestNullLogger());
-			this._exportRequestRetriever = new ExportRequestRetriever(this._nativeRepository, this._imageRepository, this._longTextRepository);
+			this._pdfRepository = new FileRequestRepository();
+			this._exportRequestRetriever = new ExportRequestRetriever(this._nativeRepository, this._imageRepository, this._longTextRepository, this._pdfRepository);
 
 			this._physicalFilesDownloader = new Mock<IPhysicalFilesDownloader>();
 			this._longTextDownloader = new Mock<ILongTextDownloader>();
@@ -65,7 +67,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		[Test]
 		public async Task GoldWorkflow()
 		{
-			Native native = ModelFactory.GetNative(this._nativeRepository);
+			FileRequest<ObjectExportInfo> native = ModelFactory.GetNative(this._nativeRepository);
 			ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID);
 			ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID);
 			ModelFactory.GetLongText(native.Artifact.ArtifactID, this._longTextRepository);
@@ -76,6 +78,19 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ASSERT
 			this._physicalFilesDownloader.Verify(x => x.DownloadFilesAsync(It.Is<List<ExportRequest>>(list => list.Count == 3), CancellationToken.None));
 			this._longTextDownloader.Verify(x => x.DownloadAsync(It.Is<List<LongTextExportRequest>>(list => list.Count == 1), CancellationToken.None), Times.Once);
+		}
+
+		[Test]
+		public async Task ItShouldDownloadPdfFiles()
+		{
+			ModelFactory.GetPdf(this._pdfRepository, 1);
+			ModelFactory.GetPdf(this._pdfRepository, 2);
+
+			// ACT
+			await this._instance.DownloadFilesForArtifactsAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			this._physicalFilesDownloader.Verify(x => x.DownloadFilesAsync(It.Is<List<ExportRequest>>(list => list.Count == 2), CancellationToken.None));
 		}
 
 		[Test]

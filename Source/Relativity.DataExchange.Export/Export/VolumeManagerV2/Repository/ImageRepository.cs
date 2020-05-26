@@ -7,17 +7,19 @@
 	using System.Collections.Generic;
 	using System.Linq;
 
+	using kCura.WinEDDS.Exporters;
+
 	public class ImageRepository : IClearable
 	{
-		private List<Image> _images;
+		private List<FileRequest<ImageExportInfo>> _images;
 		private readonly object _syncLock = new object();
 
 		public ImageRepository()
 		{
-			_images = new List<Image>();
+			_images = new List<FileRequest<ImageExportInfo>>();
 		}
 
-		public void Add(IList<Image> images)
+		public void Add(IList<FileRequest<ImageExportInfo>> images)
 		{
 			lock (_syncLock)
 			{
@@ -25,7 +27,7 @@
 			}
 		}
 
-		public Image GetImage(int artifactId, string batesNumber)
+		public FileRequest<ImageExportInfo> GetImage(int artifactId, string batesNumber)
 		{
 			lock (_syncLock)
 			{
@@ -37,12 +39,12 @@
 			}
 		}
 
-		public IList<Image> GetImagesByTargetFile(string targetFile)
+		public IList<FileRequest<ImageExportInfo>> GetImagesByTargetFile(string targetFile)
 		{
 			lock (_syncLock)
 			{
 				string trimmedTargetFile = targetFile != null ? targetFile.TrimEnd() : string.Empty;
-				List<Image> images = _images.Where(
+				List<FileRequest<ImageExportInfo>> images = _images.Where(
 					x => x.ExportRequest?.DestinationLocation != null && string.Compare(
 						     x.ExportRequest.DestinationLocation.TrimEnd(),
 						     trimmedTargetFile,
@@ -51,7 +53,7 @@
 			}
 		}
 
-		public IList<Image> GetArtifactImages(int artifactId)
+		public IList<FileRequest<ImageExportInfo>> GetArtifactImages(int artifactId)
 		{
 			lock (_syncLock)
 			{
@@ -59,7 +61,7 @@
 			}
 		}
 
-		public IList<Image> GetImages()
+		public IList<FileRequest<ImageExportInfo>> GetImages()
 		{
 			lock (_syncLock)
 			{
@@ -94,7 +96,7 @@
 		{
 			lock (_syncLock)
 			{
-				_images = new List<Image>();
+				_images = new List<FileRequest<ImageExportInfo>>();
 			}
 		}
 	}

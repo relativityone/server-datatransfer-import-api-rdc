@@ -772,9 +772,9 @@ Namespace kCura.EDDS.WebAPI.AuditManagerBase
 
         Private artifactTypeIDField As Integer
 
-        Private subdirectoryPDFPrefixField As String
+        Private subdirectoryPdfPrefixField As String
 
-        Private exportSearchablePDFsField As Boolean
+        Private exportSearchablePdfsField As Boolean
 
         '''<remarks/>
         Public Property Type() As String
@@ -1217,22 +1217,22 @@ Namespace kCura.EDDS.WebAPI.AuditManagerBase
         End Property
 
         '''<remarks/>
-        Public Property SubdirectoryPDFPrefix() As String
+        Public Property SubdirectoryPdfPrefix() As String
             Get
-                Return Me.subdirectoryPDFPrefixField
+                Return Me.subdirectoryPdfPrefixField
             End Get
             Set
-                Me.subdirectoryPDFPrefixField = Value
+                Me.subdirectoryPdfPrefixField = Value
             End Set
         End Property
 
         '''<remarks/>
-        Public Property ExportSearchablePDFs() As Boolean
+        Public Property ExportSearchablePdfs() As Boolean
             Get
-                Return Me.exportSearchablePDFsField
+                Return Me.exportSearchablePdfsField
             End Get
             Set
-                Me.exportSearchablePDFsField = Value
+                Me.exportSearchablePdfsField = Value
             End Set
         End Property
     End Class

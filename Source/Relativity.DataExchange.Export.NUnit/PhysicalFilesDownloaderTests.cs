@@ -145,7 +145,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		private PhysicalFileExportRequest CreatePhysicalFileExportRequest(string fileshareAddress)
 		{
-			return new PhysicalFileExportRequest(
+			return PhysicalFileExportRequest.CreateRequestForNative(
 				new ObjectExportInfo
 				{
 					NativeSourceLocation = $"{fileshareAddress}\\{Guid.NewGuid()}"

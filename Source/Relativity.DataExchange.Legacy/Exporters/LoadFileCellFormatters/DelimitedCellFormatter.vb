@@ -33,5 +33,9 @@
 		Public Function CreateNativeCell(ByVal location As String, ByVal artifact As ObjectExportInfo) As String Implements ILoadFileCellFormatter.CreateNativeCell
 			Return String.Format("{2}{0}{1}{0}", _settings.QuoteDelimiter, location, _settings.RecordDelimiter)
 		End Function
+
+		Public Function CreatePdfCell(location As String, artifact As ObjectExportInfo) As String Implements ILoadFileCellFormatter.CreatePdfCell
+			Return CreateNativeCell(location, artifact)
+		End Function
 	End Class
 End Namespace

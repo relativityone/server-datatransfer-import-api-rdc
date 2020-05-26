@@ -20,6 +20,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			// Arrange
 			this.ExpFile.ExportNative = false;
+			this.ExpFile.ExportPdf = false;
 			this.SubjectUnderTest = new ExportFileFormatter(this.ExpFile, this.FieldNameProviderMock.Object);
 
 			string expectedHeader = $"{QuoteDelimiter}{FileName1}{QuoteDelimiter}{RecordDelimiter}{QuoteDelimiter}{FieldName2}{QuoteDelimiter}{Environment.NewLine}";
@@ -36,6 +37,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			// Arrange
 			this.ExpFile.ExportNative = true;
+			this.ExpFile.ExportPdf = false;
 			this.SubjectUnderTest = new ExportFileFormatter(this.ExpFile, this.FieldNameProviderMock.Object);
 
 			string filePathCol = "FILE_PATH";
@@ -50,10 +52,53 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
+		public void ItShouldReturnHeaderStringWithPdfPathCol()
+		{
+			// Arrange
+			const string PdfPathColumnName = "PDF_PATH";
+
+			this.ExpFile.ExportNative = false;
+			this.ExpFile.ExportPdf = true;
+			this.SubjectUnderTest = new ExportFileFormatter(this.ExpFile, this.FieldNameProviderMock.Object);
+
+			string expectedHeader = $"{QuoteDelimiter}{FileName1}{QuoteDelimiter}{RecordDelimiter}{QuoteDelimiter}{FieldName2}{QuoteDelimiter}" +
+									$"{RecordDelimiter}{QuoteDelimiter}{PdfPathColumnName}{QuoteDelimiter}{Environment.NewLine}";
+
+			// Act
+			string header = this.SubjectUnderTest.GetHeader(this.Fields.ToList());
+
+			// Assert
+			Assert.That(header, Is.EqualTo(expectedHeader));
+		}
+
+		[Test]
+		public void ItShouldReturnHeaderStringWithPdfAndFilePathCol()
+		{
+			// Arrange
+			const string PdfPathColumnName = "PDF_PATH";
+			const string FilePathColumnName = "FILE_PATH";
+
+			this.ExpFile.ExportNative = true;
+			this.ExpFile.ExportPdf = true;
+			this.SubjectUnderTest = new ExportFileFormatter(this.ExpFile, this.FieldNameProviderMock.Object);
+
+			string expectedHeader = $"{QuoteDelimiter}{FileName1}{QuoteDelimiter}{RecordDelimiter}{QuoteDelimiter}{FieldName2}{QuoteDelimiter}" +
+									$"{RecordDelimiter}{QuoteDelimiter}{FilePathColumnName}{QuoteDelimiter}" +
+									$"{RecordDelimiter}{QuoteDelimiter}{PdfPathColumnName}{QuoteDelimiter}{Environment.NewLine}";
+
+			// Act
+			string header = this.SubjectUnderTest.GetHeader(this.Fields.ToList());
+
+			// Assert
+			Assert.That(header, Is.EqualTo(expectedHeader));
+		}
+
+		[Test]
 		public void ItShouldReturnEmptyHeader()
 		{
 			// Arrange
 			this.ExpFile.ExportNative = true;
+			this.ExpFile.ExportPdf = true;
 			this.SubjectUnderTest = new ExportFileFormatter(this.ExpFile, this.FieldNameProviderMock.Object);
 
 			// Act

@@ -6,7 +6,7 @@
 namespace Relativity.DataExchange.Service
 {
 	/// <summary>
-	/// Defines constants for the well-known file types, including native, TIFF, full-text, stamped TIFF, transcript, and production images.
+	/// Defines constants for the well-known file types, including native, TIFF, full-text, stamped TIFF, transcript,  production images, searchable-pdf.
 	/// </summary>
 	public enum FileType
 	{
@@ -20,6 +20,8 @@ namespace Relativity.DataExchange.Service
 
 		Transcript = 4,
 
-		ProductionImagePlaceholder = 5
+		ProductionImagePlaceholder = 5,
+
+		Pdf = 6
 	}
 }

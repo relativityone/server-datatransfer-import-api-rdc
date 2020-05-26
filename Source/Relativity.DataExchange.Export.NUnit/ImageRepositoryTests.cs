@@ -22,7 +22,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	{
 		private ImageRepository _instance;
 
-		private IList<Image> _images;
+		private IList<FileRequest<ImageExportInfo>> _images;
 
 		[SetUp]
 		public void SetUp()
@@ -37,13 +37,13 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldSearchImageByArtifactIdAndBatesNumber()
 		{
 			// ACT
-			Image image1 = this._instance.GetImage(1, "bates_1");
-			Image image1DiffCase = this._instance.GetImage(1, "BATES_1");
-			Image image2 = this._instance.GetImage(1, "bates_2");
-			Image image2DiffCase = this._instance.GetImage(1, "BATES_2");
-			Image image3 = this._instance.GetImage(2, "bates_3");
-			Image image3DiffCase = this._instance.GetImage(2, "BATES_3");
-			Image image4DoesNotExist = this._instance.GetImage(99, "bates_99");
+			FileRequest<ImageExportInfo> image1 = this._instance.GetImage(1, "bates_1");
+			FileRequest<ImageExportInfo> image1DiffCase = this._instance.GetImage(1, "BATES_1");
+			FileRequest<ImageExportInfo> image2 = this._instance.GetImage(1, "bates_2");
+			FileRequest<ImageExportInfo> image2DiffCase = this._instance.GetImage(1, "BATES_2");
+			FileRequest<ImageExportInfo> image3 = this._instance.GetImage(2, "bates_3");
+			FileRequest<ImageExportInfo> image3DiffCase = this._instance.GetImage(2, "BATES_3");
+			FileRequest<ImageExportInfo> image4DoesNotExist = this._instance.GetImage(99, "bates_99");
 
 			// ASSERT
 			Assert.That(image1, Is.EqualTo(this._images[0]));
@@ -59,8 +59,8 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldGetImagesForArtifact()
 		{
 			// ACT
-			IList<Image> images1 = this._instance.GetArtifactImages(1);
-			IList<Image> images2 = this._instance.GetArtifactImages(2);
+			IList<FileRequest<ImageExportInfo>> images1 = this._instance.GetArtifactImages(1);
+			IList<FileRequest<ImageExportInfo>> images2 = this._instance.GetArtifactImages(2);
 
 			// ASSERT
 			CollectionAssert.AreEquivalent(this._images.GetRange(0, 2), images1);
@@ -71,7 +71,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldGetAllImages()
 		{
 			// ACT
-			IList<Image> images = this._instance.GetImages();
+			IList<FileRequest<ImageExportInfo>> images = this._instance.GetImages();
 
 			// ASSERT
 			CollectionAssert.AreEquivalent(this._images, images);
@@ -97,11 +97,11 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldGetImageByTargetFile()
 		{
 			// ACT
-			IList<Image> image1 = this._instance.GetImagesByTargetFile("a.txt");
-			IList<Image> image2 = this._instance.GetImagesByTargetFile("b.txt");
-			IList<Image> image3 = this._instance.GetImagesByTargetFile("c.txt");
-			IList<Image> image4 = this._instance.GetImagesByTargetFile(null);
-			IList<Image> image5 = this._instance.GetImagesByTargetFile(string.Empty);
+			IList<FileRequest<ImageExportInfo>> image1 = this._instance.GetImagesByTargetFile("a.txt");
+			IList<FileRequest<ImageExportInfo>> image2 = this._instance.GetImagesByTargetFile("b.txt");
+			IList<FileRequest<ImageExportInfo>> image3 = this._instance.GetImagesByTargetFile("c.txt");
+			IList<FileRequest<ImageExportInfo>> image4 = this._instance.GetImagesByTargetFile(null);
+			IList<FileRequest<ImageExportInfo>> image5 = this._instance.GetImagesByTargetFile(string.Empty);
 
 			// ASSERT
 			Assert.That(image1.Count, Is.EqualTo(1));
@@ -118,27 +118,26 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			// ACT
 			this._instance.Clear();
-			IList<Image> images = this._instance.GetImages();
+			IList<FileRequest<ImageExportInfo>> images = this._instance.GetImages();
 
 			// ASSERT
 			CollectionAssert.IsEmpty(images);
 		}
 
-		private List<Image> CreateDataSet()
+		private List<FileRequest<ImageExportInfo>> CreateDataSet()
 		{
 			var artifact1 = new ImageExportInfo
 			{
 				ArtifactID = 1,
 				BatesNumber = "bates_1"
 			};
-			var image1 = new Image(artifact1)
+			var exportRequest1 = PhysicalFileExportRequest.CreateRequestForImage(artifact1, "a.txt");
+			exportRequest1.FileName = "filename_1";
+			exportRequest1.Order = 1;
+			var image1 = new FileRequest<ImageExportInfo>(artifact1)
 			{
 				TransferCompleted = false,
-				ExportRequest = new PhysicalFileExportRequest(artifact1, "a.txt")
-				{
-					FileName = "filename_1",
-					Order = 1
-				}
+				ExportRequest = exportRequest1,
 			};
 			image1.ExportRequest.CreateTransferPath(1);
 
@@ -147,7 +146,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				ArtifactID = 1,
 				BatesNumber = "bates_2"
 			};
-			var image2 = new Image(artifact2)
+			var image2 = new FileRequest<ImageExportInfo>(artifact2)
 			{
 				TransferCompleted = true,
 			};
@@ -157,18 +156,17 @@ namespace Relativity.DataExchange.Export.NUnit
 				ArtifactID = 2,
 				BatesNumber = "bates_3"
 			};
-			var image3 = new Image(artifact3)
+			var exportRequest3 = PhysicalFileExportRequest.CreateRequestForImage(artifact3, "c.txt");
+			exportRequest3.FileName = "filename_3";
+			exportRequest3.Order = 3;
+			var image3 = new FileRequest<ImageExportInfo>(artifact3)
 			{
 				TransferCompleted = false,
-				ExportRequest = new PhysicalFileExportRequest(artifact3, "c.txt")
-				{
-					FileName = "filename_3",
-					Order = 3
-				}
+				ExportRequest = exportRequest3,
 			};
 			image3.ExportRequest.CreateTransferPath(3);
 
-			return new List<Image> { image1, image2, image3 };
+			return new List<FileRequest<ImageExportInfo>> { image1, image2, image3 };
 		}
 	}
 }

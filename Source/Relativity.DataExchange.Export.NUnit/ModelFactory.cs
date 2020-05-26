@@ -22,17 +22,17 @@ namespace Relativity.DataExchange.Export.NUnit
 		private static int _artifactId = 1;
 		private static int _order = 1;
 
-		public static Native GetNative(NativeRepository nativeRepository)
+		public static FileRequest<ObjectExportInfo> GetNative(FileRequestRepository nativeRepository)
 		{
 			return GetNative(nativeRepository, "sourceLocation", Path.Combine(@"C:\temp", Guid.NewGuid().ToString()));
 		}
 
-		public static Native GetNative(NativeRepository nativeRepository, string sourceLocation, string targetFile)
+		public static FileRequest<ObjectExportInfo> GetNative(FileRequestRepository nativeRepository, string sourceLocation, string targetFile)
 		{
 			return GetNative(nativeRepository, sourceLocation, targetFile, _artifactId++);
 		}
 
-		public static Native GetNative(NativeRepository nativeRepository, string sourceLocation, string targetFile, int artifactId)
+		public static FileRequest<ObjectExportInfo> GetNative(FileRequestRepository nativeRepository, string sourceLocation, string targetFile, int artifactId)
 		{
 			if (nativeRepository == null)
 			{
@@ -45,28 +45,26 @@ namespace Relativity.DataExchange.Export.NUnit
 				NativeSourceLocation = sourceLocation
 			};
 
-			ExportRequest exportRequest = new PhysicalFileExportRequest(artifact, targetFile)
-			{
-				FileName = System.IO.Path.GetFileName(targetFile),
-				Order = _order++
-			};
+			ExportRequest exportRequest = PhysicalFileExportRequest.CreateRequestForNative(artifact, targetFile);
+			exportRequest.FileName = System.IO.Path.GetFileName(targetFile);
+			exportRequest.Order = _order++;
 
-			Native native = new Native(artifact)
+			FileRequest<ObjectExportInfo> native = new FileRequest<ObjectExportInfo>(artifact)
 			{
-				TransferCompleted = false,
-				ExportRequest = exportRequest
+			   TransferCompleted = false,
+			   ExportRequest = exportRequest
 			};
 
 			nativeRepository.Add(native);
 			return native;
 		}
 
-		public static Image GetImage(ImageRepository imageRepository, int artifactId)
+		public static FileRequest<ImageExportInfo> GetImage(ImageRepository imageRepository, int artifactId)
 		{
 			return GetImage(imageRepository, artifactId, "sourceLocation", Guid.NewGuid().ToString());
 		}
 
-		public static Image GetImage(ImageRepository imageRepository, int artifactId, string sourceLocation)
+		public static FileRequest<ImageExportInfo> GetImage(ImageRepository imageRepository, int artifactId, string sourceLocation)
 		{
 			return GetImage(
 				imageRepository,
@@ -75,7 +73,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				Path.Combine(@"C:\temp", Path.Combine(@"C:\temp", Guid.NewGuid().ToString())));
 		}
 
-		public static Image GetImage(ImageRepository imageRepository, int artifactId, string sourceLocation, string targetFile)
+		public static FileRequest<ImageExportInfo> GetImage(ImageRepository imageRepository, int artifactId, string sourceLocation, string targetFile)
 		{
 			if (imageRepository == null)
 			{
@@ -88,13 +86,11 @@ namespace Relativity.DataExchange.Export.NUnit
 				SourceLocation = sourceLocation
 			};
 
-			ExportRequest exportRequest = new PhysicalFileExportRequest(artifact, targetFile)
-			{
-				FileName = System.IO.Path.GetFileName(targetFile),
-				Order = _order++
-			};
+			ExportRequest exportRequest = PhysicalFileExportRequest.CreateRequestForImage(artifact, targetFile);
+			exportRequest.FileName = System.IO.Path.GetFileName(targetFile);
+			exportRequest.Order = _order++;
 
-			Image image = new Image(artifact)
+			FileRequest<ImageExportInfo> image = new FileRequest<ImageExportInfo>(artifact)
 			{
 				TransferCompleted = false,
 				ExportRequest = exportRequest
@@ -121,6 +117,38 @@ namespace Relativity.DataExchange.Export.NUnit
 			LongText longText = LongText.CreateFromMissingValue(artifactId, 1, exportRequest, encoding, artifact.LongTextLength);
 			longTextRepository.Add(longText.InList());
 			return longText;
+		}
+
+		public static FileRequest<ObjectExportInfo> GetPdf(FileRequestRepository pdfRepository, int artifactId)
+		{
+			return GetPdf(pdfRepository, artifactId, "sourceLocation", Guid.NewGuid().ToString());
+		}
+
+		public static FileRequest<ObjectExportInfo> GetPdf(FileRequestRepository pdfRepository, int artifactId, string sourceLocation, string targetFile)
+		{
+			if (pdfRepository == null)
+			{
+				throw new ArgumentNullException(nameof(pdfRepository));
+			}
+
+			ObjectExportInfo artifact = new ObjectExportInfo()
+			{
+				ArtifactID = artifactId,
+				PdfSourceLocation = sourceLocation
+			};
+
+			ExportRequest exportRequest = PhysicalFileExportRequest.CreateRequestForPdf(artifact, targetFile);
+			exportRequest.FileName = System.IO.Path.GetFileName(targetFile);
+			exportRequest.Order = _order++;
+
+			FileRequest<ObjectExportInfo> pdf = new FileRequest<ObjectExportInfo>(artifact)
+			{
+				TransferCompleted = false,
+				ExportRequest = exportRequest
+			};
+
+			pdfRepository.Add(pdf);
+			return pdf;
 		}
 	}
 }

@@ -126,7 +126,8 @@
 		{
 			Image,
 			Native,
-			Generic
+			Generic,
+			Pdf
 		}
 	}
 }

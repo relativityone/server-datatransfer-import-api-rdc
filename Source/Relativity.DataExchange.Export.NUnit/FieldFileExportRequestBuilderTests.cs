@@ -52,28 +52,14 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldSkipFieldFileWithMissingId()
+		[TestCase(0, "someLocation")]
+		[TestCase(1, "")]
+		public void ItShouldSkipFiledFileWhenFileMetadataIsNotAvailable(int fileId, string sourceLocation)
 		{
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				FileID = 0,
-				NativeSourceLocation = "location"
-			};
-
-			// ACT
-			IList<ExportRequest> requests = this.Instance.Create(artifact, CancellationToken.None);
-
-			// ASSERT
-			CollectionAssert.IsEmpty(requests);
-		}
-
-		[Test]
-		public void ItShouldSkipFieldFileWithEmptyLocation()
-		{
-			ObjectExportInfo artifact = new ObjectExportInfo
-			{
-				FileID = 1,
-				NativeSourceLocation = string.Empty
+				FileID = fileId,
+				NativeSourceLocation = sourceLocation
 			};
 
 			// ACT

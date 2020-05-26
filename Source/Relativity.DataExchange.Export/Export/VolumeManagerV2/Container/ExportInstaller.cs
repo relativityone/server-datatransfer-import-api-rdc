@@ -73,6 +73,11 @@
 		{
 		}
 
+		public static string GetServiceNameByExportType(Type service, string exportFileTypes)
+		{
+			return $"{service}_{exportFileTypes}";
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ExportInstaller"/> class.
 		/// </summary>
@@ -143,6 +148,7 @@
 			InstallFieldService(container);
 			InstallDirectory(container);
 			InstallNatives(container);
+			InstallPdfs(container);
 			InstallImages(container);
 			InstallLongText(container);
 			InstallStatefulComponents(container);
@@ -158,6 +164,22 @@
 			container.Register(Component.For<ILog>().UsingFactoryMethod(k => _logger));
 			container.Register(Component.For<ITapiObjectService>().ImplementedBy<TapiObjectService>());
 			container.Register(Component.For<IAuthenticationTokenProvider>().ImplementedBy<NullAuthTokenProvider>());
+
+			container.Register(
+				Component.For<IExportRequestRetriever>().UsingFactoryMethod(k => new ExportRequestRetriever(
+					k.Resolve<FileRequestRepository>(GetServiceNameByExportType(typeof(FileRequestRepository), ExportFileTypes.Native)), 
+					k.Resolve<ImageRepository>(), 
+					k.Resolve<LongTextRepository>(), 
+					k.Resolve<FileRequestRepository>(GetServiceNameByExportType(typeof(FileRequestRepository), ExportFileTypes.Pdf))
+					)));
+
+			container.Register(
+				Component.For<IExportRequestRepository>().UsingFactoryMethod(k => new ExportRequestRepository(
+					k.Resolve<FileRequestRepository>(GetServiceNameByExportType(typeof(FileRequestRepository), ExportFileTypes.Native)),
+					k.Resolve<ImageRepository>(),
+					k.Resolve<LongTextRepository>(),
+					k.Resolve<FileRequestRepository>(GetServiceNameByExportType(typeof(FileRequestRepository), ExportFileTypes.Pdf)))
+				));
 
 			container.Register(Component.For<ILabelManagerForArtifact>().UsingFactoryMethod(k =>
 				 (ILabelManagerForArtifact)k.Resolve<LabelManagerForArtifact>()));
@@ -178,7 +200,27 @@
 
 		private void InstallNatives(IWindsorContainer container)
 		{
-			container.Register(Component.For<IClearable, NativeRepository>().ImplementedBy<NativeRepository>());
+			container.Register(Component.For<IClearable, FileRequestRepository>().Named(GetServiceNameByExportType(typeof(FileRequestRepository), ExportFileTypes.Native))
+				.UsingFactoryMethod(() => new FileRequestRepository()));
+		}
+
+		private void InstallPdfs(IWindsorContainer container)
+		{
+			container.Register(Component.For<IClearable, FileRequestRepository>().Named(GetServiceNameByExportType(typeof(FileRequestRepository), ExportFileTypes.Pdf))
+				.UsingFactoryMethod(() => new FileRequestRepository()));
+
+			if (this.ExportSettings.ExportPdf && this.ExportSettings.VolumeInfo.CopyPdfFilesFromRepository)
+			{
+				container.Register(
+					Component.For<IExportRequestBuilder>().Named(GetServiceNameByExportType(typeof(IExportRequestBuilder), ExportFileTypes.Pdf))
+						.ImplementedBy<PdfFileExportRequestBuilder>());
+			}
+			else
+			{
+				container.Register(
+					Component.For<IExportRequestBuilder>().Named(GetServiceNameByExportType(typeof(IExportRequestBuilder), ExportFileTypes.Pdf))
+						.ImplementedBy<EmptyExportRequestBuilder>());
+			}
 		}
 
 		private void InstallImages(IWindsorContainer container)
@@ -229,7 +271,15 @@
 		{
 			container.Register(Component.For<IStateful, IFileProcessingStatistics, FilesStatistics>().ImplementedBy<FilesStatistics>());
 			container.Register(Component.For<IStateful, IMetadataProcessingStatistics, MetadataStatistics>().ImplementedBy<MetadataStatistics>());
-			container.Register(Component.For<IDownloadProgress, IDownloadProgressManager, DownloadProgressManager>().ImplementedBy<DownloadProgressManager>());
+			container.Register(Component.For<IDownloadProgress, IDownloadProgressManager, DownloadProgressManager>()
+				.UsingFactoryMethod(k => new DownloadProgressManager(
+						k.Resolve<FileRequestRepository>(GetServiceNameByExportType(typeof(FileRequestRepository), ExportFileTypes.Native)),
+						k.Resolve<ImageRepository>(),
+						k.Resolve<LongTextRepository>(),
+						k.Resolve<FileRequestRepository>(GetServiceNameByExportType(typeof(FileRequestRepository), ExportFileTypes.Pdf)),
+						k.Resolve<IStatus>(),
+						k.Resolve<ILog>()
+					)));
 		}
 	}
 }

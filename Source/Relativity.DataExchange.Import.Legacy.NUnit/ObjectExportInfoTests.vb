@@ -298,5 +298,30 @@ Namespace Relativity.DataExchange.Import.NUnit
 			Dim expectedFileName As String = _IDENTIFIER
 			Assert.AreEqual(expectedFileName, textFileName)
 		End Sub
+
+		<TestCase("test", False, "NotAppended", "test.pdf")>
+		<TestCase("test.pDf", False, "NotAppended", "test.pDf")>
+		<TestCase("te/?*<>|st", False, "NotAppended", "te______st.pdf")>
+		<TestCase("tEsT", True, "file.txt", "tEsT_file.txt.pdf")>
+		<TestCase("TEST", True, "file.pdf", "TEST_file.pdf")>
+		<TestCase("TEST", True, "file", "TEST_file.pdf")>
+		<TestCase(Nothing, True, "file", "file.pdf")>
+		<TestCase("", True, "file.PdF", "file.PdF")>
+		<TestCase("test", True, Nothing, "test.pdf")>
+		<TestCase("test", True, "", "test.pdf")>
+		<TestCase("test", True, "	  ", "test.pdf")>
+		<TestCase("", True, "   ", ".pdf")>
+		Public Shared Sub ShouldReturnCorrectPdfFileName(name As String, appendToOriginal As Boolean, originalFileName As String, expected As String)
+			'Arrange
+			Dim sut As ObjectExportInfo = New ObjectExportInfo With {
+				.OriginalFileName = originalFileName
+			}
+
+			'Act
+			Dim actual As String = sut.PdfFileName(name, appendToOriginal)
+
+			'Assert
+			Assert.AreEqual(expected, actual)
+		End Sub
 	End Class
 End Namespace

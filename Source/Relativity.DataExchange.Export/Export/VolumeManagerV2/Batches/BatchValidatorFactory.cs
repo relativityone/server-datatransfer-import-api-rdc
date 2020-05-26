@@ -32,6 +32,11 @@
 				AddValidator<NativeFileBatchValidator>(batchValidators, container);
 			}
 
+			if (exportSettings.ExportPdf && exportSettings.VolumeInfo.CopyPdfFilesFromRepository)
+			{
+				AddValidator<PdfFileBatchValidator>(batchValidators, container);
+			}
+
 			if (exportSettings.ExportImages && exportSettings.VolumeInfo.CopyImageFilesFromRepository)
 			{
 				AddValidator<ImageFileBatchValidator>(batchValidators, container);
@@ -42,7 +47,7 @@
 				AddValidator<ImageLoadFileBatchValidator>(batchValidators, container);
 			}
 
-			if (exportSettings.ExportNative)
+			if (exportSettings.ExportNative || exportSettings.ExportPdf)
 			{
 				AddValidator<LoadFileBatchValidator>(batchValidators, container);
 			}

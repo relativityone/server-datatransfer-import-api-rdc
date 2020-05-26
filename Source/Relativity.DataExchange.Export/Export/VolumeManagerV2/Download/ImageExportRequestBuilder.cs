@@ -86,7 +86,7 @@
 
 			_logger.LogVerbose("Image file will be export to {destinationLocation}.", destinationLocation.Secure());
 
-			exportRequest = new PhysicalFileExportRequest(image, destinationLocation);
+			exportRequest = PhysicalFileExportRequest.CreateRequestForImage(image, destinationLocation);
 			return true;
 		}
 

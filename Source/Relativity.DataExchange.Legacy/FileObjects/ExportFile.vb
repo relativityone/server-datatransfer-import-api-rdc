@@ -32,6 +32,7 @@ Namespace kCura.WinEDDS
 		Protected _exportFullText As Boolean
 		Protected _exportFullTextAsFile As Boolean
 		Protected _exportNative As Boolean
+		Protected _exportPdf As Boolean
 		Protected _logFileFormat As kCura.WinEDDS.LoadFileType.FileFormat?
 		Protected _renameFilesToIdentifier As Boolean
 		Protected _identifierColumnName As String
@@ -251,6 +252,15 @@ Namespace kCura.WinEDDS
 			End Get
 			Set(ByVal value As Boolean)
 				_exportNative = value
+			End Set
+		End Property
+
+		Public Property ExportPdf() As Boolean
+			Get
+				Return _exportPdf
+			End Get
+			Set(ByVal value As Boolean)
+				_exportPdf = value
 			End Set
 		End Property
 

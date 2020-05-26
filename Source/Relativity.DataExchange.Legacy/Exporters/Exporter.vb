@@ -613,22 +613,25 @@ Namespace kCura.WinEDDS
 			Dim natives As New System.Data.DataView
 			Dim images As New System.Data.DataView
 			Dim productionImages As New System.Data.DataView
+			Dim pdfs As New System.Data.DataView
 			Dim i As Int32 = 0
 			Dim productionArtifactID As Int32 = 0
 
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then productionArtifactID = Settings.ArtifactID
 
-			Dim retrieveThreads As Task(Of System.Data.DataView)() = New Task(Of System.Data.DataView)(2) {}
+			Dim retrieveThreads As Task(Of System.Data.DataView)() = New Task(Of System.Data.DataView)(3) {}
 
 			retrieveThreads(0) = RetrieveNatives(natives, productionArtifactID, documentArtifactIDs, maxTries)
 			retrieveThreads(1) = RetrieveImages(images, documentArtifactIDs, maxTries)
 			retrieveThreads(2) = RetrieveProductions(productionImages, documentArtifactIDs, maxTries)
+			retrieveThreads(3) = RetrievePdfs(pdfs, documentArtifactIDs, maxTries)
 
 			Task.WaitAll(retrieveThreads)
 
 			natives = retrieveThreads(0).Result()
 			images = retrieveThreads(1).Result()
 			productionImages = retrieveThreads(2).Result()
+			pdfs = retrieveThreads(3).Result()
 
 			Dim beginBatesColumnIndex As Int32 = -1
 			If FieldLookupService.ContainsFieldName(_beginBatesColumn) Then
@@ -649,8 +652,9 @@ Namespace kCura.WinEDDS
 			For i = 0 To documentArtifactIDs.Length - 1
 				Dim record As Object() = DirectCast(records(i), Object())
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
+				Dim pdfRow As System.Data.DataRowView = GetPdfRow(pdfs, documentArtifactIDs(i))
 				Dim prediction As VolumePredictions = New VolumePredictions()
-				Dim artifact As ObjectExportInfo = CreateArtifact(record, documentArtifactIDs(i), nativeRow, images, productionImages, beginBatesColumnIndex, identifierColumnIndex, lookup, prediction)
+				Dim artifact As ObjectExportInfo = CreateArtifact(record, documentArtifactIDs(i), nativeRow, pdfRow, images, productionImages, beginBatesColumnIndex, identifierColumnIndex, lookup, prediction)
 
 				objectExportableSize.FinalizeSizeCalculations(artifact, prediction)
 				volumePredictions(i) = prediction
@@ -723,11 +727,29 @@ Namespace kCura.WinEDDS
 				)
 		End Function
 
+		Private Async Function RetrievePdfs(ByVal pdfs As System.Data.DataView, ByVal documentArtifactIDs As Int32(), ByVal maxTries As Integer) As Task(Of System.Data.DataView)
+			Return Await Task.Run(
+				Function() As System.Data.DataView
+					If Me.Settings.ExportPdf Then
+						_timekeeper.MarkStart("Exporter_GetPDFsForDocumentBlock")
+						Dim start As Int64
+						start = System.DateTime.Now.Ticks
+
+						pdfs.Table = CallServerWithRetry(Function() _searchManager.RetrievePdfForSearch(Me.Settings.CaseArtifactID, documentArtifactIDs.ToCsv()).Tables(0), maxTries)
+
+						Statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - start, 1))
+						_timekeeper.MarkEnd("Exporter_GetPDFsForDocumentBlock")
+					End If
+					Return pdfs
+				End Function
+				)
+		End Function
+
 		Protected Overridable Function CreateObjectExportInfo() As ObjectExportInfo
 			Return New ObjectExportInfo
 		End Function
 
-		Private Function CreateArtifact(ByVal record As Object(), ByVal documentArtifactID As Int32, ByVal nativeRow As System.Data.DataRowView, ByVal images As System.Data.DataView, ByVal productionImages As System.Data.DataView, ByVal beginBatesColumnIndex As Int32,
+		Private Function CreateArtifact(ByVal record As Object(), ByVal documentArtifactID As Int32, ByVal nativeRow As System.Data.DataRowView, ByVal pdfRow As System.Data.DataRowView, ByVal images As System.Data.DataView, ByVal productionImages As System.Data.DataView, ByVal beginBatesColumnIndex As Int32,
 																		ByVal identifierColumnIndex As Int32, ByRef lookup As Lazy(Of Dictionary(Of Int32, List(Of BatesEntry))), ByRef prediction As VolumePredictions) As Exporters.ObjectExportInfo
 
 			Dim artifact As ObjectExportInfo = CreateObjectExportInfo()
@@ -758,6 +780,15 @@ Namespace kCura.WinEDDS
 			Else
 				artifact.NativeExtension = ""
 			End If
+
+			If pdfRow Is Nothing Then
+				artifact.PdfFileGuid = String.Empty
+				artifact.PdfSourceLocation = String.Empty
+			Else
+				artifact.PdfSourceLocation = pdfRow("Location").ToString()
+				artifact.PdfFileGuid = pdfRow("Guid").ToString
+			End If
+
 			artifact.ArtifactID = documentArtifactID
 			artifact.Metadata = record
 			SetProductionBegBatesFileName(artifact, lookup)
@@ -970,6 +1001,16 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
+		Private Function GetPdfRow(ByVal dv As System.Data.DataView, ByVal artifactID As Int32) As System.Data.DataRowView
+			If Not Me.Settings.ExportPdf Then Return Nothing
+			dv.RowFilter = "DocumentArtifactID = " & artifactID.ToString
+			If dv.Count > 0 Then
+				Return dv(0)
+			Else
+				Return Nothing
+			End If
+		End Function
+
 		''' <summary>
 		''' Sets the member variable _columns to contain an array of each Field which will be exported.
 		''' _columns is an array of ViewFieldInfo, but for the "Text Precedence" column, the array item is
@@ -1160,6 +1201,7 @@ Namespace kCura.WinEDDS
 			args.SubdirectoryNativePrefix = Me.Settings.VolumeInfo.SubdirectoryNativePrefix(False)
 			args.SubdirectoryStartNumber = Me.Settings.VolumeInfo.SubdirectoryStartNumber
 			args.SubdirectoryTextPrefix = Me.Settings.VolumeInfo.SubdirectoryFullTextPrefix(False)
+			args.SubdirectoryPdfPrefix = Me.Settings.VolumeInfo.SubdirectoryPdfPrefix(False)
 			'args.TextAndNativeFilesNamedAfterFieldID = Me.ExportNativesToFileNamedFrom
 			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier Then
 				For Each field As ViewFieldInfo In Me.Settings.AllExportableFields

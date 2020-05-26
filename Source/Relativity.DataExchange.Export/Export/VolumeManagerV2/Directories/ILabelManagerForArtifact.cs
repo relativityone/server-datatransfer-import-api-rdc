@@ -9,6 +9,7 @@
 		string GetImageSubdirectoryLabel(int objectExportInfoArtifactId);
 		string GetNativeSubdirectoryLabel(int objectExportInfoArtifactId);
 		string GetTextSubdirectoryLabel(int objectExportInfoArtifactId);
+		string GetPdfSubdirectoryLabel(int objectExportInfoArtifactId);
 		string GetVolumeLabel(int objectExportInfoArtifactId);
 
 		void InitializeFor(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken);

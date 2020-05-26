@@ -55,5 +55,24 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			Assert.AreEqual(expected, actual, "GetTextName should call FullTextFileName method with AppendOriginalFileName value and return proper result.");
 		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		[Test]
+		public void GetPdfNameShouldCallPdfFileNameMethodWithAppendOriginalFileNameProperty(bool appendOriginalFileName)
+		{
+			// ARRANGE
+			string identifierValue = "idValue";
+			this._exportFileMock.AppendOriginalFileName = appendOriginalFileName;
+			this._objectExportInfoMock.Object.IdentifierValue = identifierValue;
+			this._objectExportInfoMock.Setup(x => x.PdfFileName(It.IsAny<string>(), It.IsAny<bool>())).Returns((string s, bool b) => $"{s}{b}");
+			string expected = $"{identifierValue}{appendOriginalFileName}";
+
+			// ACT
+			string actual = this._sut.GetPdfName(this._objectExportInfoMock.Object);
+
+			// ASSERT
+			Assert.AreEqual(expected, actual, "GetPdfName should call PdfFileName method with AppendOriginalFileName value and return proper result.");
+		}
 	}
 }

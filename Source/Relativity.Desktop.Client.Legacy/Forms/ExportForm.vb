@@ -1620,6 +1620,7 @@ End Sub
 			If Not _subdirectoryImagePrefix.Text.Equals(ef.VolumeInfo.SubdirectoryImagePrefix) Then _subdirectoryImagePrefix.Text = ef.VolumeInfo.SubdirectoryImagePrefix(False)
 			If Not _subDirectoryNativePrefix.Text.Equals(ef.VolumeInfo.SubdirectoryNativePrefix) Then _subDirectoryNativePrefix.Text = ef.VolumeInfo.SubdirectoryNativePrefix(False)
 			If Not _subdirectoryTextPrefix.Text.Equals(ef.VolumeInfo.SubdirectoryFullTextPrefix) Then _subdirectoryTextPrefix.Text = ef.VolumeInfo.SubdirectoryFullTextPrefix(False)
+			If Not _subdirectoryPdfPrefix.Text.Equals(ef.VolumeInfo.SubdirectoryPdfPrefix) Then _subdirectoryPdfPrefix.Text = ef.VolumeInfo.SubdirectoryPdfPrefix(False)
 			If _subdirectoryStartNumber.Value <> ef.VolumeInfo.SubdirectoryStartNumber Then _subdirectoryStartNumber.Value = ef.VolumeInfo.SubdirectoryStartNumber
 			If _subDirectoryMaxSize.Value <> ef.VolumeInfo.SubdirectoryMaxSize Then _subDirectoryMaxSize.Value = ef.VolumeInfo.SubdirectoryMaxSize
 		End If
@@ -1880,6 +1881,7 @@ End Sub
 		retval.SubdirectoryImagePrefix = _subdirectoryImagePrefix.Text
 		retval.SubdirectoryNativePrefix = _subDirectoryNativePrefix.Text
 		retval.SubdirectoryFullTextPrefix = _subdirectoryTextPrefix.Text
+		retval.SubdirectoryPdfPrefix = _subdirectoryPdfPrefix.Text
 		retval.SubdirectoryStartNumber = Int32.Parse(_subdirectoryStartNumber.Text)
 		retval.VolumeMaxSize = Int32.Parse(_volumeMaxSize.Text)
 		retval.VolumePrefix = _volumePrefix.Text

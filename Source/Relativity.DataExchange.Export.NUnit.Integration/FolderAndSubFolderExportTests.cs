@@ -117,19 +117,19 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		public void ShouldExportWhenTheNativeSourceLocationIsInvalid()
 		{
 			// ARRANGE
+			var nativeExportRequest = PhysicalFileExportRequest.CreateRequestForNative(
+				new ObjectExportInfo
+				{
+					ArtifactID = 1,
+					NativeSourceLocation = null,
+					NativeFileGuid = System.Guid.NewGuid().ToString(),
+				},
+				System.IO.Path.Combine(this.TempDirectory.Directory, $"{Guid.NewGuid()}.doc"));
+			nativeExportRequest.Order = 1;
+
 			var fileExportRequests = new List<ExportRequest>
 			{
-				new PhysicalFileExportRequest(
-					new ObjectExportInfo
-						{
-							ArtifactID = 1,
-							NativeSourceLocation = null,
-							NativeFileGuid = System.Guid.NewGuid().ToString(),
-						},
-					destinationLocation: System.IO.Path.Combine(this.TempDirectory.Directory, $"{Guid.NewGuid()}.doc"))
-					{
-						Order = 1,
-					},
+				nativeExportRequest,
 				new FieldFileExportRequest(
 					new ObjectExportInfo
 						{
@@ -158,19 +158,19 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		public void ShouldExportWhenTheDestinationLocationIsInvalid()
 		{
 			// ARRANGE
+			var nativeExportRequest = PhysicalFileExportRequest.CreateRequestForNative(
+				new ObjectExportInfo
+				{
+					ArtifactID = 1,
+					NativeSourceLocation = $"{TestData.DummyUncPath}{Guid.NewGuid()}.doc",
+					NativeFileGuid = System.Guid.NewGuid().ToString(),
+				},
+				destinationLocation: null);
+			nativeExportRequest.Order = 1;
+
 			var fileExportRequests = new List<ExportRequest>
 			{
-				new PhysicalFileExportRequest(
-					new ObjectExportInfo
-						{
-							ArtifactID = 1,
-							NativeSourceLocation = $"{TestData.DummyUncPath}{Guid.NewGuid()}.doc",
-							NativeFileGuid = System.Guid.NewGuid().ToString(),
-						},
-					destinationLocation: null)
-					{
-						Order = 1,
-					},
+				nativeExportRequest,
 				new FieldFileExportRequest(
 					new ObjectExportInfo
 						{

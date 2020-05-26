@@ -123,6 +123,17 @@ namespace Relativity.DataExchange
 
 		/// <inheritdoc />
 		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.CreateErrorForEmptyPdfFileKey,
+			AppSettingsConstants.CreateErrorForEmptyPdfFileDefaultValue)]
+		bool IAppSettings.CreateErrorForEmptyPdfFile
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.CreateErrorForInvalidDateKey,
 			AppSettingsConstants.CreateErrorForInvalidDateDefaultValue)]
@@ -1233,10 +1244,10 @@ namespace Relativity.DataExchange
 
 		/// <inheritdoc />
 		[AppSetting(
-			AppSettingsConstants.SectionLegacyWinEdds,
-			AppSettingsConstants.UseSearchablePDFKey,
-			AppSettingsConstants.UseSearchablePDFDefaultValue)]
-		bool IAppSettings.UseSearchablePDF
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.UseSearchablePdfKey,
+			AppSettingsConstants.UseSearchablePdfDefaultValue)]
+		bool IAppSettings.UseSearchablePdf
 		{
 			get;
 			set;

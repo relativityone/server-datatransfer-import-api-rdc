@@ -22,6 +22,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	{
 		private const string _TEXT_EXTENSION = ".txt";
 		private const string _NATIVE_EXTENSION = ".xls";
+		private const string _PDF_EXTENSION = ".pdf";
 
 		private readonly ObjectExportInfo _exportObjectInfoHtmlFile = new ObjectExportInfo
 		{
@@ -33,6 +34,12 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			NativeExtension = "txt",
 			OriginalFileName = "OriginalFileName.TxT"
+		};
+
+		private readonly ObjectExportInfo _exportObjectInfoPdfFile = new ObjectExportInfo
+		{
+			NativeExtension = "pdf",
+			OriginalFileName = "OriginalFileName.PdF"
 		};
 
 		private readonly ObjectExportInfo _exportObjectInfoNoExtensionFile = new ObjectExportInfo
@@ -64,7 +71,13 @@ namespace Relativity.DataExchange.Export.NUnit
 		[Test]
 		public void ItShouldReturnNativeFileNameWhenThreeDescriptorsAreUsed()
 		{
-			this.ItShouldReturnFileNameWhenThreeDescriptorsAreUsed((sut, objectExportInfo) => sut.GetTextName(objectExportInfo), _TEXT_EXTENSION);
+			this.ItShouldReturnFileNameWhenThreeDescriptorsAreUsed((sut, objectExportInfo) => sut.GetName(objectExportInfo), _NATIVE_EXTENSION);
+		}
+
+		[Test]
+		public void ItShouldReturnPdfFileNameWhenThreeDescriptorsAreUsed()
+		{
+			this.ItShouldReturnFileNameWhenThreeDescriptorsAreUsed((sut, objectExportInfo) => sut.GetPdfName(objectExportInfo), _PDF_EXTENSION);
 		}
 
 		[Test]
@@ -80,6 +93,12 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
+		public void ItShouldRemoveDoubleSeparatorsFromPdfFileName()
+		{
+			this.ItShouldRemoveDoubleSeparatorsFromFileName((sut, objectExportInfo) => sut.GetPdfName(objectExportInfo), _PDF_EXTENSION);
+		}
+
+		[Test]
 		public void ItShouldConvertIllegalCharactersInTextFileName()
 		{
 			this.ItShouldConvertIllegalCharactersInTextFileName((sut, objectExportInfo) => sut.GetTextName(objectExportInfo), _TEXT_EXTENSION);
@@ -89,6 +108,12 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldConvertIllegalCharactersInNativeFileName()
 		{
 			this.ItShouldConvertIllegalCharactersInTextFileName((sut, objectExportInfo) => sut.GetName(objectExportInfo), _NATIVE_EXTENSION);
+		}
+
+		[Test]
+		public void ItShouldConvertIllegalCharactersInPdfFileName()
+		{
+			this.ItShouldConvertIllegalCharactersInTextFileName((sut, objectExportInfo) => sut.GetPdfName(objectExportInfo), _PDF_EXTENSION);
 		}
 
 		[Test]
@@ -104,6 +129,12 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
+		public void ItShouldReturnOnlyControlAsPdfFileNameNumberWhenOneDescriptorIsUsed()
+		{
+			this.ItShouldReturnOnlyControlAsFileNameNumberWhenOneDescriptorIsUsed((sut, objectExportInfo) => sut.GetPdfName(objectExportInfo), _PDF_EXTENSION);
+		}
+
+		[Test]
 		public void ItShouldCreateCorrectTextFileNameForFiveParts()
 		{
 			this.ItShouldCreateCorrectFileNameForFiveParts((sut, objectExportInfo) => sut.GetTextName(objectExportInfo), _TEXT_EXTENSION);
@@ -113,6 +144,12 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldCreateCorrectNativeFileNameForFiveParts()
 		{
 			this.ItShouldCreateCorrectFileNameForFiveParts((sut, objectExportInfo) => sut.GetName(objectExportInfo), _NATIVE_EXTENSION);
+		}
+
+		[Test]
+		public void ItShouldCreateCorrectPdfFileNameForFiveParts()
+		{
+			this.ItShouldCreateCorrectFileNameForFiveParts((sut, objectExportInfo) => sut.GetPdfName(objectExportInfo), _PDF_EXTENSION);
 		}
 
 		[Test]
@@ -140,7 +177,50 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
+		public void ItShouldAppendOriginalFileNameToPdfFileName()
+		{
+			this.ItShouldAppendOriginalFileNameToFileName((sut, objectExportInfo) => sut.GetPdfName(objectExportInfo), _PDF_EXTENSION);
+		}
+
+		[Test]
+		public void ItShouldNotAppendOriginalFileNameToPdfFileNameIfOriginalFileNameIsEmpty()
+		{
+			this.ItShouldNotAppendOriginalFileNameToFileName((sut, objectExportInfo) => sut.GetPdfName(objectExportInfo), _PDF_EXTENSION);
+		}
+
+		[Test]
 		public void ItShouldAppendTextExtenstionToTextFilesWhenOriginalFileNameWithoutExtensionIsAppended()
+		{
+			this.ItShouldAppendExtenstionToFilesWhenOriginalFileNameWithoutExtensionIsAppended(
+				(sut, objectExportInfo) => sut.GetTextName(objectExportInfo),
+				_TEXT_EXTENSION);
+		}
+
+		[Test]
+		public void ItShouldAppendPdfExtenstionToPdfFilesWhenOriginalFileNameWithoutExtensionIsAppended()
+		{
+			this.ItShouldAppendExtenstionToFilesWhenOriginalFileNameWithoutExtensionIsAppended(
+				(sut, objectExportInfo) => sut.GetPdfName(objectExportInfo),
+				_PDF_EXTENSION);
+		}
+
+		[Test]
+		public void ItShouldNotAppendTextExtensionToOriginalFileNameForTextFilesIfNotNeeded()
+		{
+			this.ItShouldNotAppendExtensionToOriginalFileNameIfNotNeeded(
+				(sut, objectExportInfo) => sut.GetTextName(objectExportInfo),
+				this._exportObjectInfoTextFile);
+		}
+
+		[Test]
+		public void ItShouldNotAppendPdfExtensionToOriginalFileNameForPdfFilesIfNotNeeded()
+		{
+			this.ItShouldNotAppendExtensionToOriginalFileNameIfNotNeeded(
+				(sut, objectExportInfo) => sut.GetPdfName(objectExportInfo),
+				this._exportObjectInfoPdfFile);
+		}
+
+		private void ItShouldAppendExtenstionToFilesWhenOriginalFileNameWithoutExtensionIsAppended(Func<CustomFileNameProvider, ObjectExportInfo, string> testedFunction, string expectedExtension)
 		{
 			// Arrange
 			var firstDescriptor = new FieldDescriptorPart(1);
@@ -153,19 +233,18 @@ namespace Relativity.DataExchange.Export.NUnit
 				true);
 
 			// Act
-			string retFileName = subjectUnderTest.GetTextName(this._exportObjectInfoNoExtensionFile);
+			string retFileName = testedFunction(subjectUnderTest, this._exportObjectInfoNoExtensionFile);
 
 			// Assert
-			Assert.That(retFileName, Is.EqualTo($"{firstPartName}_{this._exportObjectInfoNoExtensionFile.OriginalFileName}{_TEXT_EXTENSION}"));
+			Assert.That(retFileName, Is.EqualTo($"{firstPartName}_{this._exportObjectInfoNoExtensionFile.OriginalFileName}{expectedExtension}"));
 		}
 
-		[Test]
-		public void ItShouldNotAppendTextExtensionToOriginalFileNameForTextFilesIfNotNeeded()
+		private void ItShouldNotAppendExtensionToOriginalFileNameIfNotNeeded(Func<CustomFileNameProvider, ObjectExportInfo, string> testedFunction, ObjectExportInfo artifact)
 		{
 			// Arrange
 			var firstDescriptor = new FieldDescriptorPart(1);
 			string firstPartName = "ControlNumber";
-			this.InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, this._exportObjectInfoTextFile);
+			this.InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, artifact);
 
 			var subjectUnderTest = new CustomFileNameProvider(
 				new List<DescriptorPart> { firstDescriptor },
@@ -173,10 +252,10 @@ namespace Relativity.DataExchange.Export.NUnit
 				true);
 
 			// Act
-			string retFileName = subjectUnderTest.GetTextName(this._exportObjectInfoTextFile);
+			string retFileName = testedFunction(subjectUnderTest, artifact);
 
 			// Assert
-			Assert.That(retFileName, Is.EqualTo($"{firstPartName}_{this._exportObjectInfoTextFile.OriginalFileName}"));
+			Assert.That(retFileName, Is.EqualTo($"{firstPartName}_{artifact.OriginalFileName}"));
 		}
 
 		private void ItShouldReturnFileNameWhenThreeDescriptorsAreUsed(Func<CustomFileNameProvider, ObjectExportInfo, string> testedFunction, string expectedExtension)

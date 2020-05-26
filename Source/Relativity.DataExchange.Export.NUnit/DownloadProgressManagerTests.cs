@@ -9,6 +9,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
 
 	using Moq;
 
@@ -22,22 +23,25 @@ namespace Relativity.DataExchange.Export.NUnit
 	public class DownloadProgressManagerTests
 	{
 		private DownloadProgressManager _instance;
-		private NativeRepository _nativeRepository;
+		private FileRequestRepository _nativeRepository;
 		private ImageRepository _imageRepository;
 		private LongTextRepository _longTextRepository;
+		private FileRequestRepository _pdfRepository;
 		private Mock<IStatus> _status;
 
 		[SetUp]
 		public void SetUp()
 		{
-			this._nativeRepository = new NativeRepository();
+			this._nativeRepository = new FileRequestRepository();
 			this._imageRepository = new ImageRepository();
 			this._longTextRepository = new LongTextRepository(null, new TestNullLogger());
+			this._pdfRepository = new FileRequestRepository();
 			this._status = new Mock<IStatus>();
 			this._instance = new DownloadProgressManager(
 				this._nativeRepository,
 				this._imageRepository,
 				this._longTextRepository,
+				this._pdfRepository,
 				this._status.Object,
 				new TestNullLogger());
 		}
@@ -46,18 +50,22 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldUpdateProgress()
 		{
 			// DATA SET
-			Native nativeWithoutImagesOrText_A = ModelFactory.GetNative(this._nativeRepository);
+			// Artifact A - native
+			FileRequest<ObjectExportInfo> nativeA = ModelFactory.GetNative(this._nativeRepository);
 
-			Native nativeWithTwoImages_B = ModelFactory.GetNative(this._nativeRepository);
-			Image image1_B = ModelFactory.GetImage(this._imageRepository, nativeWithTwoImages_B.Artifact.ArtifactID);
-			Image image2_B = ModelFactory.GetImage(this._imageRepository, nativeWithTwoImages_B.Artifact.ArtifactID);
+			// Artifact B - native and 2 images
+			FileRequest<ObjectExportInfo> nativeB = ModelFactory.GetNative(this._nativeRepository);
+			FileRequest<ImageExportInfo> imageB1 = ModelFactory.GetImage(this._imageRepository, nativeB.Artifact.ArtifactID);
+			FileRequest<ImageExportInfo> imageB2 = ModelFactory.GetImage(this._imageRepository, nativeB.Artifact.ArtifactID);
 
-			Native nativeWithText_C = ModelFactory.GetNative(this._nativeRepository);
-			LongText text_C = ModelFactory.GetLongText(nativeWithText_C.Artifact.ArtifactID, this._longTextRepository);
+			// Artifact C - native and long text
+			FileRequest<ObjectExportInfo> nativeC = ModelFactory.GetNative(this._nativeRepository);
+			LongText textC = ModelFactory.GetLongText(nativeC.Artifact.ArtifactID, this._longTextRepository);
 
-			Native nativeWithImageAndText_D = ModelFactory.GetNative(this._nativeRepository);
-			Image image_D = ModelFactory.GetImage(this._imageRepository, nativeWithImageAndText_D.Artifact.ArtifactID);
-			LongText text_D = ModelFactory.GetLongText(nativeWithImageAndText_D.Artifact.ArtifactID, this._longTextRepository);
+			// Artifact D - native, image and long text
+			FileRequest<ObjectExportInfo> nativeD = ModelFactory.GetNative(this._nativeRepository);
+			FileRequest<ImageExportInfo> imageD = ModelFactory.GetImage(this._imageRepository, nativeD.Artifact.ArtifactID);
+			LongText textD = ModelFactory.GetLongText(nativeD.Artifact.ArtifactID, this._longTextRepository);
 
 			int actualDocumentExportedCount = 0;
 			string actualLine = string.Empty;
@@ -66,36 +74,36 @@ namespace Relativity.DataExchange.Export.NUnit
 				.Callback((EventType2 eventType, string line, bool isEssential) => actualLine = line);
 
 			// ACT
-			this._instance.MarkFileAsCompleted(image1_B.ExportRequest.DestinationLocation, image1_B.ExportRequest.Order, true);
+			this._instance.MarkFileAsCompleted(imageB1.ExportRequest.DestinationLocation, imageB1.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(0));
 			Assert.That(actualLine, Does.Contain(string.Empty));
 
 			// 1 downloaded (A)
-			this._instance.MarkFileAsCompleted(nativeWithoutImagesOrText_A.ExportRequest.DestinationLocation, nativeWithoutImagesOrText_A.ExportRequest.Order, true);
+			this._instance.MarkFileAsCompleted(nativeA.ExportRequest.DestinationLocation, nativeA.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
 
-			this._instance.MarkFileAsCompleted(nativeWithText_C.ExportRequest.DestinationLocation, nativeWithText_C.ExportRequest.Order, true);
+			this._instance.MarkFileAsCompleted(nativeC.ExportRequest.DestinationLocation, nativeC.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
 
 			// 2 downloaded (A, C)
-			this._instance.MarkLongTextAsCompleted(text_C.ExportRequest.DestinationLocation, text_C.ExportRequest.Order, true);
+			this._instance.MarkLongTextAsCompleted(textC.ExportRequest.DestinationLocation, textC.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
 
-			this._instance.MarkFileAsCompleted(nativeWithTwoImages_B.ExportRequest.DestinationLocation, nativeWithTwoImages_B.ExportRequest.Order, true);
+			this._instance.MarkFileAsCompleted(nativeB.ExportRequest.DestinationLocation, nativeB.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
 
 			// 3 downloaded (A, C, B)
-			this._instance.MarkFileAsCompleted(image2_B.ExportRequest.DestinationLocation, image2_B.ExportRequest.Order, true);
+			this._instance.MarkFileAsCompleted(imageB2.ExportRequest.DestinationLocation, imageB2.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
 
-			this._instance.MarkLongTextAsCompleted(text_D.ExportRequest.DestinationLocation, text_D.ExportRequest.Order, true);
+			this._instance.MarkLongTextAsCompleted(textD.ExportRequest.DestinationLocation, textD.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
 
-			this._instance.MarkFileAsCompleted(image_D.ExportRequest.DestinationLocation, image_D.ExportRequest.Order, true);
+			this._instance.MarkFileAsCompleted(imageD.ExportRequest.DestinationLocation, imageD.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
 
 			// 4 download (A, C, B, D)
-			this._instance.MarkFileAsCompleted(nativeWithImageAndText_D.ExportRequest.DestinationLocation, nativeWithImageAndText_D.ExportRequest.Order, true);
+			this._instance.MarkFileAsCompleted(nativeD.ExportRequest.DestinationLocation, nativeD.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
 
 			// None downloaded - just an error.
@@ -108,20 +116,100 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
+		public void ItShouldUpdateProgressForDocumentsWithPdf()
+		{
+			// ARRANGE
+			// Artifact A - native
+			FileRequest<ObjectExportInfo> nativeA = ModelFactory.GetNative(this._nativeRepository);
+
+			// Artifact B - native and PDF
+			FileRequest<ObjectExportInfo> nativeB = ModelFactory.GetNative(this._nativeRepository);
+			FileRequest<ObjectExportInfo> pdfB = ModelFactory.GetPdf(this._pdfRepository, nativeB.Artifact.ArtifactID);
+
+			// Artifact C - native, long text and PDF
+			FileRequest<ObjectExportInfo> nativeC = ModelFactory.GetNative(this._nativeRepository);
+			LongText textC = ModelFactory.GetLongText(nativeC.Artifact.ArtifactID, this._longTextRepository);
+			FileRequest<ObjectExportInfo> pdfC = ModelFactory.GetPdf(this._pdfRepository, nativeC.Artifact.ArtifactID);
+
+			// Artifact D - native, image and PDF
+			FileRequest<ObjectExportInfo> nativeD = ModelFactory.GetNative(this._nativeRepository);
+			FileRequest<ImageExportInfo> imageD = ModelFactory.GetImage(this._imageRepository, nativeD.Artifact.ArtifactID);
+			FileRequest<ObjectExportInfo> pdfD = ModelFactory.GetPdf(this._pdfRepository, nativeD.Artifact.ArtifactID);
+
+			// Artifact E - native, image, long text and PDF
+			FileRequest<ObjectExportInfo> nativeE = ModelFactory.GetNative(this._nativeRepository);
+			FileRequest<ImageExportInfo> imageE = ModelFactory.GetImage(this._imageRepository, nativeE.Artifact.ArtifactID);
+			LongText textE = ModelFactory.GetLongText(nativeE.Artifact.ArtifactID, this._longTextRepository);
+			FileRequest<ObjectExportInfo> pdfE = ModelFactory.GetPdf(this._pdfRepository, nativeE.Artifact.ArtifactID);
+
+			int actualDocumentExportedCount = 0;
+			string actualLine = string.Empty;
+			this._status.Setup(x => x.UpdateDocumentExportedCount(It.IsAny<int>())).Callback((int docs) => actualDocumentExportedCount = docs);
+			this._status.Setup(x => x.WriteStatusLine(It.IsAny<EventType2>(), It.IsAny<string>(), It.IsAny<bool>()))
+				.Callback((EventType2 eventType, string line, bool isEssential) => actualLine = line);
+
+			// ACT
+			this._instance.MarkFileAsCompleted(pdfB.ExportRequest.DestinationLocation, pdfB.ExportRequest.Order, true);
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(0));
+			Assert.That(actualLine, Does.Contain(string.Empty));
+
+			// Download A
+			this._instance.MarkFileAsCompleted(nativeA.ExportRequest.DestinationLocation, nativeA.ExportRequest.Order, true);
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
+
+			// Download B
+			this._instance.MarkFileAsCompleted(nativeB.ExportRequest.DestinationLocation, nativeB.ExportRequest.Order, true);
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
+
+			// Download C
+			this._instance.MarkFileAsCompleted(nativeC.ExportRequest.DestinationLocation, nativeC.ExportRequest.Order, true);
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
+
+			this._instance.MarkFileAsCompleted(pdfC.ExportRequest.DestinationLocation, pdfC.ExportRequest.Order, true);
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
+
+			this._instance.MarkLongTextAsCompleted(textC.ExportRequest.DestinationLocation, textC.ExportRequest.Order, true);
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+
+			// Download D
+			this._instance.MarkFileAsCompleted(pdfD.ExportRequest.DestinationLocation, pdfD.ExportRequest.Order, true);
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+
+			this._instance.MarkFileAsCompleted(nativeD.ExportRequest.DestinationLocation, nativeD.ExportRequest.Order, true);
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+
+			this._instance.MarkFileAsCompleted(imageD.ExportRequest.DestinationLocation, imageD.ExportRequest.Order, true);
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
+
+			// Download E
+			this._instance.MarkLongTextAsCompleted(textE.ExportRequest.DestinationLocation, textE.ExportRequest.Order, true);
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
+
+			this._instance.MarkFileAsCompleted(nativeE.ExportRequest.DestinationLocation, nativeE.ExportRequest.Order, true);
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
+
+			this._instance.MarkFileAsCompleted(imageE.ExportRequest.DestinationLocation, imageE.ExportRequest.Order, true);
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
+
+			this._instance.MarkFileAsCompleted(pdfE.ExportRequest.DestinationLocation, pdfE.ExportRequest.Order, true);
+			Assert.That(actualDocumentExportedCount, Is.EqualTo(5));
+		}
+
+		[Test]
 		public void ItShouldCountDuplicateSourceNatives()
 		{
 			// ARRANGE
 			const string SourceLocation = @"\\files\T001\Files\EDDS123456\8B845660-CBD8-456E-BDB9-15BFDB33BD7D";
-			Native native1 = ModelFactory.GetNative(this._nativeRepository, SourceLocation, @"C:\temp\REL-0001.doc");
-			Native native2 = ModelFactory.GetNative(this._nativeRepository, SourceLocation.ToLowerInvariant(), @"C:\temp\REL-0002.doc");
-			Native native3 = ModelFactory.GetNative(this._nativeRepository, SourceLocation.ToUpperInvariant(), @"C:\temp\REL-0003.doc");
-			Native native4 = ModelFactory.GetNative(this._nativeRepository, SourceLocation.ToLowerInvariant() + " ", @"C:\temp\REL-0004.doc");
-			Native native5 = ModelFactory.GetNative(this._nativeRepository, SourceLocation.ToUpperInvariant() + " ", @"C:\temp\REL-0005.doc");
+			FileRequest<ObjectExportInfo> native1 = ModelFactory.GetNative(this._nativeRepository, SourceLocation, @"C:\temp\REL-0001.doc");
+			FileRequest<ObjectExportInfo> native2 = ModelFactory.GetNative(this._nativeRepository, SourceLocation.ToLowerInvariant(), @"C:\temp\REL-0002.doc");
+			FileRequest<ObjectExportInfo> native3 = ModelFactory.GetNative(this._nativeRepository, SourceLocation.ToUpperInvariant(), @"C:\temp\REL-0003.doc");
+			FileRequest<ObjectExportInfo> native4 = ModelFactory.GetNative(this._nativeRepository, SourceLocation.ToLowerInvariant() + " ", @"C:\temp\REL-0004.doc");
+			FileRequest<ObjectExportInfo> native5 = ModelFactory.GetNative(this._nativeRepository, SourceLocation.ToUpperInvariant() + " ", @"C:\temp\REL-0005.doc");
 			int actualDocumentExportedCount = 0;
 			this._status.Setup(x => x.UpdateDocumentExportedCount(It.IsAny<int>())).Callback((int docs) => actualDocumentExportedCount = docs);
 
 			// ACT
-			foreach (Native native in new[] { native1, native2, native3, native4, native5 })
+			foreach (FileRequest<ObjectExportInfo> native in new[] { native1, native2, native3, native4, native5 })
 			{
 				this._instance.MarkFileAsCompleted(native.ExportRequest.DestinationLocation, native.ExportRequest.Order, true);
 			}
@@ -135,12 +223,12 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			// ARRANGE
 			const string SourceLocation = @"\\files\T001\Files\EDDS123456\F780BC4E-39FC-44E2-8F48-5608CBAA795C";
-			Native native = ModelFactory.GetNative(this._nativeRepository);
-			Image image1 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation, @"C:\temp\file1.tiff");
-			Image image2 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToLowerInvariant(), @"C:\temp\file2.tiff");
-			Image image3 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToUpperInvariant(), @"C:\temp\file3.tiff");
-			Image image4 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToLowerInvariant() + " ", @"C:\temp\file4.tiff");
-			Image image5 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToUpperInvariant() + " ", @"C:\temp\file5.tiff");
+			FileRequest<ObjectExportInfo> native = ModelFactory.GetNative(this._nativeRepository);
+			FileRequest<ImageExportInfo> image1 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation, @"C:\temp\file1.tiff");
+			FileRequest<ImageExportInfo> image2 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToLowerInvariant(), @"C:\temp\file2.tiff");
+			FileRequest<ImageExportInfo> image3 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToUpperInvariant(), @"C:\temp\file3.tiff");
+			FileRequest<ImageExportInfo> image4 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToLowerInvariant() + " ", @"C:\temp\file4.tiff");
+			FileRequest<ImageExportInfo> image5 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToUpperInvariant() + " ", @"C:\temp\file5.tiff");
 			int actualDocumentExportedCount = 0;
 			this._status.Setup(x => x.UpdateDocumentExportedCount(It.IsAny<int>())).Callback((int docs) => actualDocumentExportedCount = docs);
 			this._instance.MarkFileAsCompleted(
@@ -149,7 +237,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				true);
 
 			// ACT
-			foreach (Image image in new[] { image1, image2, image3, image4, image5 })
+			foreach (FileRequest<ImageExportInfo> image in new[] { image1, image2, image3, image4, image5 })
 			{
 				this._instance.MarkFileAsCompleted(image.ExportRequest.DestinationLocation, image.ExportRequest.Order, true);
 			}
@@ -162,12 +250,13 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldFinalizeTheBatchProcessedCount()
 		{
 			// ARRANGE
-			Native nativeWithImage = ModelFactory.GetNative(this._nativeRepository);
+			FileRequest<ObjectExportInfo> nativeWithImage = ModelFactory.GetNative(this._nativeRepository);
 			ModelFactory.GetImage(this._imageRepository, nativeWithImage.Artifact.ArtifactID);
 			ModelFactory.GetImage(this._imageRepository, nativeWithImage.Artifact.ArtifactID);
-			Native nativeWithText = ModelFactory.GetNative(this._nativeRepository);
+			FileRequest<ObjectExportInfo> nativeWithText = ModelFactory.GetNative(this._nativeRepository);
 			ModelFactory.GetLongText(nativeWithText.Artifact.ArtifactID, this._longTextRepository);
-			ModelFactory.GetNative(this._nativeRepository);
+			FileRequest<ObjectExportInfo> nativeWithPdf = ModelFactory.GetNative(this._nativeRepository);
+			ModelFactory.GetPdf(this._pdfRepository, nativeWithPdf.Artifact.ArtifactID);
 			ModelFactory.GetNative(this._nativeRepository);
 			int actualDocumentExportedCount = 0;
 			this._status.Setup(x => x.UpdateDocumentExportedCount(It.IsAny<int>())).Callback((int docs) => actualDocumentExportedCount = docs);

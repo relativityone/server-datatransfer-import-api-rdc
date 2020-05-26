@@ -44,7 +44,7 @@
 
 		protected override bool IsFileToExport(ObjectExportInfo artifact)
 		{
-			return artifact.FileID > 0 || !string.IsNullOrWhiteSpace(artifact.NativeSourceLocation);
+			return artifact.FileID > 0 && !string.IsNullOrWhiteSpace(artifact.NativeSourceLocation);
 		}
 	}
 }

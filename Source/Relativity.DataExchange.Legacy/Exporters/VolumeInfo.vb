@@ -7,6 +7,7 @@ Namespace kCura.WinEDDS.Exporters
 		Private _subdirectoryImagePrefix As String
 		Private _subdirectoryNativePrefix As String
 		Private _subdirectoryTextPrefix As String
+		Private _subdirectoryPdfPrefix As String
 
 		Public Property VolumePrefix As String
 
@@ -22,13 +23,11 @@ Namespace kCura.WinEDDS.Exporters
 
 		Public Property CopyImageFilesFromRepository As Boolean = True
 
+		Public Property CopyPdfFilesFromRepository() As Boolean = True
+
 		Public Property SubdirectoryImagePrefix(Optional ByVal includeTopFolder As Boolean = True) As String
 			Get
-				Dim result As String = _subdirectoryImagePrefix
-				If includeTopFolder Then
-					result = "IMAGES\" + result
-				End If
-				Return result
+				Return BuildSubdirectoryPrefix(_subdirectoryImagePrefix, "IMAGES", includeTopFolder)
 			End Get
 			Set(ByVal value As String)
 				_subdirectoryImagePrefix = value
@@ -37,11 +36,7 @@ Namespace kCura.WinEDDS.Exporters
 
 		Public Property SubdirectoryNativePrefix(Optional ByVal includeTopFolder As Boolean = True) As String
 			Get
-				Dim result As String = _subdirectoryNativePrefix
-				If includeTopFolder Then
-					result = "NATIVES\" + result
-				End If
-				Return result
+				Return BuildSubdirectoryPrefix(_subdirectoryNativePrefix, "NATIVES", includeTopFolder)
 			End Get
 			Set(ByVal value As String)
 				_subdirectoryNativePrefix = value
@@ -50,16 +45,32 @@ Namespace kCura.WinEDDS.Exporters
 
 		Public Property SubdirectoryFullTextPrefix(Optional ByVal includeTopFolder As Boolean = True) As String
 			Get
-				Dim result As String = _subdirectoryTextPrefix
-				If includeTopFolder Then
-					result = "TEXT\" + result
-				End If
-				Return result
+				Return BuildSubdirectoryPrefix(_subdirectoryTextPrefix, "TEXT", includeTopFolder)
 			End Get
 			Set(ByVal value As String)
 				_subdirectoryTextPrefix = value
 			End Set
 		End Property
+
+		Public Property SubdirectoryPdfPrefix(Optional ByVal includeTopFolder As Boolean = True) As String
+			Get
+				Return BuildSubdirectoryPrefix(_subdirectoryPdfPrefix, "PDF", includeTopFolder)
+			End Get
+			Set(ByVal value As String)
+				_subdirectoryPdfPrefix = value
+			End Set
+		End Property
+
+#End Region
+
+#Region "Functions"
+		Private Function BuildSubdirectoryPrefix(ByVal subdirectoryPrefix As String, ByVal parentFolderPrefix As String, Optional ByVal includeTopFolder As Boolean = True) As String
+			If includeTopFolder Then
+				Return parentFolderPrefix + "\" + subdirectoryPrefix
+			Else
+				Return subdirectoryPrefix
+			End If
+		End Function
 
 #End Region
 
@@ -68,6 +79,7 @@ Namespace kCura.WinEDDS.Exporters
 			MyBase.New()
 			Me.CopyImageFilesFromRepository = True
 			Me.CopyNativeFilesFromRepository = True
+			Me.CopyPdfFilesFromRepository = True
 		End Sub
 #End Region
 
@@ -102,7 +114,7 @@ Namespace kCura.WinEDDS.Exporters
 				If readCopyImageFilesSettingFrom Or readCopyNativeFilesSettingFrom Then
 					Dim aggregateSetting As Boolean = .GetBoolean("CopyFilesFromRepository")
 					If readCopyImageFilesSettingFrom Then Me.CopyImageFilesFromRepository = aggregateSetting
-					If readCopyImageFilesSettingFrom Then Me.CopyNativeFilesFromRepository = aggregateSetting
+					If readCopyNativeFilesSettingFrom Then Me.CopyNativeFilesFromRepository = aggregateSetting
 				End If
 				Me.SubdirectoryMaxSize = .GetInt64("SubdirectoryMaxSize")
 				Me.SubdirectoryStartNumber = .GetInt32("SubdirectoryStartNumber")

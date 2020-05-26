@@ -57,5 +57,13 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._labelManager.Verify(manager => manager.GetCurrentTextSubdirectoryLabel(), Times.Once);
 		}
+
+		[Test]
+		public void ItShouldDelegateGetPdfSubdirectoryLabelCallToLabelManager()
+		{
+			this._instance.GetPdfSubdirectoryLabel(1);
+
+			this._labelManager.Verify(manager => manager.GetCurrentPdfSubdirectoryLabel(), Times.Once);
+		}
 	}
 }
