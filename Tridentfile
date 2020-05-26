@@ -290,23 +290,23 @@ timestamps
 											echo "$testDescription-test failed: $failed"
 											echo "$testDescription-test skipped: $skipped"
 											
-											if(failed > 0)
-											{
-												echo "$testDescription-test failed is bigger than zero"
-												currentBuild.result = 'FAILED' 
-												throw new Exception("Tests failed.")
-											}
+                                            // Now add to the final test results
+                                            testResultsPassed += passed
+                                            testResultsFailed += failed
+                                            testResultsSkipped += skipped
 											
-											// Now add to the final test results
-											testResultsPassed += passed
-											testResultsFailed += failed
-											testResultsSkipped += skipped
+                                            if(failed > 0)
+                                            {
+                                                echo "$testDescription-test failed is bigger than zero"
+                                                currentBuild.result = 'FAILED' 
+                                                throw new Exception("Tests failed.")
+                                            }
 										}
 
-										// Dump the final test results
-										echo "Total passed: $testResultsPassed"
-										echo "Total failed: $testResultsFailed"
-										echo "Total skipped: $testResultsSkipped"
+                                        // Dump the final test results
+                                        echo "Total passed: $testResultsPassed"
+                                        echo "Total failed: $testResultsFailed"
+                                        echo "Total skipped: $testResultsSkipped"
 									},
 									
 									"Create NuGet packages":

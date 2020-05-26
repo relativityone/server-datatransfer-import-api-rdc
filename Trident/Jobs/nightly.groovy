@@ -16,6 +16,7 @@ properties([
 testResultsPassed = 0
 testResultsFailed = 0
 testResultsSkipped = 0
+testResultsFailedForsutTemplate = 0
 
 String[] templates = params.temlatesStr.tokenize(',')
 
@@ -78,6 +79,9 @@ timestamps
 							}
 							finally
 							{ 
+                                echo "Get test results"
+                                GetTestResults(sutTemplate)
+								
 								echo "Test results report for ${sutTemplate}"
 								createTestReport(sutTemplate)
 								
@@ -85,7 +89,15 @@ timestamps
 								archiveArtifacts artifacts: 'Logs/**/*.*'
 									
 								echo "Publishing the integration tests report"
-								archiveArtifacts artifacts: "TestReports/${sutTemplate}/**/*.*"							
+								archiveArtifacts artifacts: "TestReports/${sutTemplate}/**/*.*"		
+
+                                def int numberOfFailedTests = testResultsFailedForsutTemplate
+                                if (numberOfFailedTests > 0)
+                                {
+                                    echo "Failed tests count for '${sutTemplate}' bigger than 0"
+                                    currentBuild.result = 'FAILED'
+                                    throw new Exception("One or more tests failed")
+                                }
 							}
 						}
 						catch(err)
@@ -142,7 +154,10 @@ def runIntegrationTests(String sutTemplate)
     echo "Running the integration tests"
     output = powershell ".\\build.ps1 IntegrationTestsNightly -ILMerge -TestTimeoutInMS 900000 -TestReportFolderName '${sutTemplate}' -TestParametersFile '${pathToJsonFile}' -Branch 'Trident'"
     echo output 								
-	
+}
+
+def GetTestResults(String sutTemplate)
+{
 	echo "Retrieving results of integration tests : $sutTemplate"
 	def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 IntegrationTestResults -TestReportFolderName '${sutTemplate}' ")
 
@@ -157,6 +172,8 @@ def runIntegrationTests(String sutTemplate)
 	echo "$sutTemplate-test passed: $passed"
 	echo "$sutTemplate-test failed: $failed"
 	echo "$sutTemplate-test skipped: $skipped"
+    
+    testResultsFailedForsutTemplate = failed
 	
 	// Now add to the final test results
 	testResultsPassed += passed
