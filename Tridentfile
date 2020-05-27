@@ -86,6 +86,7 @@ timestamps
 					echo "GIT_COMMIT is ${commitHash}"
                     notifyBitbucket()
 					tools = load 'Trident/Tools/Tools.groovy'
+                    Slack = load 'Trident/Tools/Slack.groovy'
                 }
 				
                 try
@@ -289,23 +290,23 @@ timestamps
 											echo "$testDescription-test failed: $failed"
 											echo "$testDescription-test skipped: $skipped"
 											
-											if(failed > 0)
-											{
-												echo "$testDescription-test failed is bigger than zero"
-												currentBuild.result = 'FAILED' 
-												throw new Exception("Tests failed.")
-											}
+                                            // Now add to the final test results
+                                            testResultsPassed += passed
+                                            testResultsFailed += failed
+                                            testResultsSkipped += skipped
 											
-											// Now add to the final test results
-											testResultsPassed += passed
-											testResultsFailed += failed
-											testResultsSkipped += skipped
+                                            if(failed > 0)
+                                            {
+                                                echo "$testDescription-test failed is bigger than zero"
+                                                currentBuild.result = 'FAILED' 
+                                                throw new Exception("Tests failed.")
+                                            }
 										}
 
-										// Dump the final test results
-										echo "Total passed: $testResultsPassed"
-										echo "Total failed: $testResultsFailed"
-										echo "Total skipped: $testResultsSkipped"
+                                        // Dump the final test results
+                                        echo "Total passed: $testResultsPassed"
+                                        echo "Total failed: $testResultsFailed"
+                                        echo "Total skipped: $testResultsSkipped"
 									},
 									
 									"Create NuGet packages":
@@ -455,55 +456,20 @@ timestamps
 						{
 							tools.deleteHopperInstance(vmInfo.Id)
 						}
-					}    
-                    stage('Reporting and Cleanup')
-                    {
-                        parallel(
-                            // StashNotifier second call, passes currentBuild.result to BitBucket as build status 
-                            "BitBucket notification":
-                            { 
-                                notifyBitbucket()
-                            },
-							"Slack Notification": 
-                            {
-                                def script = this
-                                def String serverUnderTestName = ""
-                                def String version = buildVersion
-                                def String branch = env.BRANCH_NAME
-                                def String buildType = params.buildType
-                                def String slackChannel = params.slackChannel
-                                def String email = "slack_svc@relativity.com"
-                                def int numberOfFailedTests = testResultsFailed
-                                def int numberOfPassedTests = testResultsPassed
-                                def int numberOfSkippedTests = testResultsSkipped
-                                def String message = env.BUILD_TAG
-								echo "*************************************************" +
-                                    "\n" +
-                                    "\n" + "sendCDSlackNotification Parameters: " +
-                                    "\n" +
-                                    "\n" + "script: " + script +
-                                    "\n" + "serverUnderTestName: " + serverUnderTestName +
-                                    "\n" + "version: " + version +
-                                    "\n" + "branch: " + branch +
-                                    "\n" + "buildType: " + buildType +
-                                    "\n" + "slackChannel: " + slackChannel +
-                                    "\n" + "email: " + email +
-                                    "\n" + "numberOfFailedTests: " + numberOfFailedTests +
-                                    "\n" + "numberOfPassedTests: " + numberOfPassedTests +
-                                    "\n" + "numberOfSkippedTests: " + numberOfSkippedTests +
-                                    "\n" + "message: " + message +
-                                    "\n" +
-                                    "\n*************************************************"
-								sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, ['tests': ['passed': numberOfPassedTests, 'failed': numberOfFailedTests, 'skipped': numberOfSkippedTests]], message, "CD" )
-
-                            }
-                        )
-                    }
+					}
                 }
                 catch (err)
                 {
                     // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
                     echo err.toString()
+                }
+                finally
+                {
+                    stage('Send slack and bitbucket notification')
+                    {
+                        notifyBitbucket()
+                        Slack.SendSlackNotification("Relativity from image '${config.sutTemplate}'", buildVersion, env.BRANCH_NAME, params.buildType, params.slackChannel, testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
+                    }
                 }
             }
         }
