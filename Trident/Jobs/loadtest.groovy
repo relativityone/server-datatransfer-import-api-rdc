@@ -125,6 +125,7 @@ timestamps
 		finally{
             stage("Send slack and bitbucket notification")
             {
+                def int numberOfFailedTests = testResultsFailed
                 if(numberOfErrors > 0 || numberOfFailedTests > 0)
                 {
                     message = "Something went wrong"
