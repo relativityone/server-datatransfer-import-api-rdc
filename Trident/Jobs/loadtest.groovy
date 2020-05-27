@@ -9,8 +9,8 @@ properties([
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#ugly_test', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
         choice(defaultValue: 'lanceleafAA1', choices: ["lanceleafAA1"], description: 'The template used to prepare hopper instance', name: 'hopperTemplate'),
-		string(defaultValue: 'release-11.2-lanceleaf', description: 'Name of folder in bld-pkgs Packages Relativity ', name: 'relativityInstallerSource'),
-  	])
+		string(defaultValue: 'release-11.2-lanceleaf', description: 'Name of folder in bld-pkgs Packages Relativity', name: 'relativityInstallerSource'),
+    ])
 ])
 
 testResultsPassed = 0
@@ -20,6 +20,7 @@ testResultsSkipped = 0
 def globalVmInfo = null
 numberOfErrors = 0	
 tools = null
+Slack = null
 
 timestamps
 {
@@ -43,6 +44,7 @@ timestamps
 					])
 				notifyBitbucket()
 				tools = load 'Trident/Tools/Tools.groovy'
+				Slack = load 'Trident/Tools/Slack.groovy'
 			}
 
 			stage('Build binaries')
@@ -121,56 +123,23 @@ timestamps
 			}
 		}
 		finally{
-			stage("Send slack and bitbucket notification")
-			{
-				def script = this
-				def String serverUnderTestName = "Newest Relativity from '${relativityInstallerSource}'"
-				def String version = "Trident loadtests"
-				def String branch = env.BRANCH_NAME
-				def String buildType = params.buildConfig
-				def String slackChannel = params.slackChannel
-				def String email = "slack_svc@relativity.com"
-				def int numberOfFailedTests = testResultsFailed
-				def int numberOfPassedTests = testResultsPassed
-				def int numberOfSkippedTests = testResultsSkipped
-				def String message = ""
-				if(numberOfErrors > 0 || numberOfFailedTests > 0)
-				{
-					message = "Something went wrong"
-					currentBuild.result = 'FAILED'
-				}
-				else
-				{
+            stage("Send slack and bitbucket notification")
+            {
+                def int numberOfFailedTests = testResultsFailed
+                if(numberOfErrors > 0 || numberOfFailedTests > 0)
+                {
+                    message = "Something went wrong"
+                    currentBuild.result = 'FAILED'
+                }
+                else
+                {
                     currentBuild.result = 'SUCCESS'
-				}
+                }
+                
                 notifyBitbucket()
-				echo "*************************************************" +
-					"\n" +
-					"\n" + "sendCDSlackNotification Parameters: " +
-					"\n" +
-					"\n" + "script: " + script +
-					"\n" + "serverUnderTestName: " + serverUnderTestName +
-					"\n" + "version: " + version +
-					"\n" + "branch: " + branch +
-					"\n" + "buildType: " + buildType +
-					"\n" + "slackChannel: " + slackChannel +
-					"\n" + "email: " + email +
-					"\n" + "numberOfFailedTests: " + numberOfFailedTests +
-					"\n" + "numberOfPassedTests: " + numberOfPassedTests +
-					"\n" + "numberOfSkippedTests: " + numberOfSkippedTests +
-					"\n" + "message: " + message +
-					"\n" +
-					"\n*************************************************"
-				try
-				{
-					sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, ['tests': ['passed': numberOfPassedTests, 'failed': numberOfFailedTests, 'skipped': numberOfSkippedTests]], message, "CD" )
-				}
-				catch(err)
-				{
-					echo "Send slack notification failed"
-					echo err.toString()
-				}
-			}
+                
+                Slack.SendSlackNotification("Newest Relativity from '${relativityInstallerSource}'", "Trident loadtests", env.BRANCH_NAME, params.buildConfig, params.slackChannel, testResultsFailed, testResultsPassed, testResultsSkipped, message)
+            }
 		}
 	}
 }

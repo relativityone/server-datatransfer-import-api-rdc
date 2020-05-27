@@ -45,7 +45,7 @@ Function Write-TestResultsOutput {
 
     $TestResultFiles = Get-ChildItem -Path $FolderWithTestResults -Include "*.xml" -Recurse -Force
 
-    [int]$passed,$failed,$skipped = 0
+    [int]$passed = $failed = $skipped = 0
 
     foreach($TestResultsXmlFile in $TestResultFiles) {
 
@@ -57,6 +57,11 @@ Function Write-TestResultsOutput {
         $passed   += [convert]::ToInt32($xml.'test-run'.passed)
         $failed   += [convert]::ToInt32($xml.'test-run'.failed)
         $skipped  += [convert]::ToInt32($xml.'test-run'.skipped)
+    }
+	
+    # Just in case if no test executed or no test result retrieved
+    if(($passed -eq 0) -and ($failed -eq 0) -and ($skipped -eq 0)) {
+        Throw "No test result retrieved"
     }
 
     # So Jenkins can get the results
