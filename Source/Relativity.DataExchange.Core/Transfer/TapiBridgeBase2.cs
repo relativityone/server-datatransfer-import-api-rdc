@@ -24,6 +24,7 @@ namespace Relativity.DataExchange.Transfer
 	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 	using Relativity.Transfer;
+	using Relativity.Transfer.Aspera;
 
 	/// <summary>
 	/// Represents a class object to provide a bridge from the Transfer API to existing Import/Export code.
@@ -734,7 +735,11 @@ namespace Relativity.DataExchange.Transfer
 				SavingMemoryMode = true,
 			};
 
-			configuration[Relativity.Transfer.Aspera.AsperaClientConfigurationKeys.DatagramSize] = this.parameters.AsperaDatagramSize;
+			if (this.parameters.AsperaDatagramSize != AppSettingsConstants.TapiAsperaDatagramSizeDefaultValue)
+			{
+				configuration[AsperaClientConfigurationKeys.DatagramSize] = this.parameters.AsperaDatagramSize;
+			}
+
 			return configuration;
 		}
 
