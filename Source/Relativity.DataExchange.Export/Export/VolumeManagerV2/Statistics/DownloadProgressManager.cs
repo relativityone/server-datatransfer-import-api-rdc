@@ -99,14 +99,14 @@
 				}
 				else
 				{
-					IList<FileRequest<ImageExportInfo>> images = _imageRepository.GetImagesByTargetFile(targetFile);
+					IList<ImageRequest> images = _imageRepository.GetImagesByTargetFile(targetFile);
 					if (images.Count > 0)
 					{
-						FileRequest<ImageExportInfo> image = images.FirstOrDefault(x => !x.TransferCompleted);
-						if (image != null)
+						ImageRequest imageRequest = images.FirstOrDefault(x => !x.TransferCompleted);
+						if (imageRequest != null)
 						{
-							image.TransferCompleted = true;
-							this.UpdateProcessedCountAndNotify(image.Artifact.ArtifactID, transferResult);
+							imageRequest.TransferCompleted = true;
+							this.UpdateProcessedCountAndNotify(imageRequest.Artifact.ArtifactID, transferResult);
 						}
 					}
 					else
@@ -205,7 +205,7 @@
 				return false;
 			}
 
-			IList<FileRequest<ImageExportInfo>> images = _imageRepository.GetArtifactImages(artifactId);
+			IList<ImageRequest> images = _imageRepository.GetArtifactImages(artifactId);
 			if (images.Any(x => !x.TransferCompleted))
 			{
 				return false;

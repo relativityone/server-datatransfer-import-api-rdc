@@ -759,11 +759,7 @@ Namespace kCura.WinEDDS
 			End If
 			artifact.IdentifierValue = record(identifierColumnIndex).ToString
 			artifact.Images = Me.PrepareImages(images, productionImages, documentArtifactID, artifact, Me.Settings.ImagePrecedence, prediction)
-			If nativeRow Is Nothing Then
-				artifact.NativeFileGuid = ""
-				artifact.OriginalFileName = ""
-				artifact.NativeSourceLocation = ""
-			Else
+			If Not nativeRow Is Nothing Then
 				artifact.OriginalFileName = _originalFileNameProvider.GetOriginalFileName(record, nativeRow)
 				artifact.NativeSourceLocation = nativeRow("Location").ToString
 				If Me.Settings.ArtifactTypeID = ArtifactType.Document Then
@@ -773,18 +769,11 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 
-			If nativeRow Is Nothing Then
-				artifact.NativeExtension = ""
-			ElseIf nativeRow("Filename").ToString.IndexOf(".") <> -1 Then
+			If Not nativeRow Is Nothing AndAlso nativeRow("Filename").ToString.IndexOf(".") <> -1  Then
 				artifact.NativeExtension = nativeRow("Filename").ToString.Substring(nativeRow("Filename").ToString.LastIndexOf(".") + 1)
-			Else
-				artifact.NativeExtension = ""
 			End If
 
-			If pdfRow Is Nothing Then
-				artifact.PdfFileGuid = String.Empty
-				artifact.PdfSourceLocation = String.Empty
-			Else
+			If Not pdfRow Is Nothing Then
 				artifact.PdfSourceLocation = pdfRow("Location").ToString()
 				artifact.PdfFileGuid = pdfRow("Guid").ToString
 			End If

@@ -59,12 +59,12 @@ namespace Relativity.DataExchange.Export.NUnit
 			return native;
 		}
 
-		public static FileRequest<ImageExportInfo> GetImage(ImageRepository imageRepository, int artifactId)
+		public static ImageRequest GetImage(ImageRepository imageRepository, int artifactId)
 		{
 			return GetImage(imageRepository, artifactId, "sourceLocation", Guid.NewGuid().ToString());
 		}
 
-		public static FileRequest<ImageExportInfo> GetImage(ImageRepository imageRepository, int artifactId, string sourceLocation)
+		public static ImageRequest GetImage(ImageRepository imageRepository, int artifactId, string sourceLocation)
 		{
 			return GetImage(
 				imageRepository,
@@ -73,7 +73,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				Path.Combine(@"C:\temp", Path.Combine(@"C:\temp", Guid.NewGuid().ToString())));
 		}
 
-		public static FileRequest<ImageExportInfo> GetImage(ImageRepository imageRepository, int artifactId, string sourceLocation, string targetFile)
+		public static ImageRequest GetImage(ImageRepository imageRepository, int artifactId, string sourceLocation, string targetFile)
 		{
 			if (imageRepository == null)
 			{
@@ -90,14 +90,14 @@ namespace Relativity.DataExchange.Export.NUnit
 			exportRequest.FileName = System.IO.Path.GetFileName(targetFile);
 			exportRequest.Order = _order++;
 
-			FileRequest<ImageExportInfo> image = new FileRequest<ImageExportInfo>(artifact)
+			ImageRequest imageRequest = new ImageRequest(artifact)
 			{
 				TransferCompleted = false,
 				ExportRequest = exportRequest
 			};
 
-			imageRepository.Add(image.InList());
-			return image;
+			imageRepository.Add(imageRequest.InList());
+			return imageRequest;
 		}
 
 		public static LongText GetLongText(int artifactId, LongTextRepository longTextRepository)

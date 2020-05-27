@@ -167,9 +167,9 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.AddToRepository(artifact2, CancellationToken.None);
 
 			// ASSERT
-			FileRequest<ImageExportInfo> image1 = this._imageRepository.GetImage(artifactId1, bates1);
-			FileRequest<ImageExportInfo> image2 = this._imageRepository.GetImage(artifactId1, bates2);
-			FileRequest<ImageExportInfo> image3 = this._imageRepository.GetImage(artifactId2, bates3);
+			ImageRequest image1 = this._imageRepository.GetImage(artifactId1, bates1);
+			ImageRequest image2 = this._imageRepository.GetImage(artifactId1, bates2);
+			ImageRequest image3 = this._imageRepository.GetImage(artifactId2, bates3);
 
 			Assert.That(image1.ExportRequest, Is.Null);
 

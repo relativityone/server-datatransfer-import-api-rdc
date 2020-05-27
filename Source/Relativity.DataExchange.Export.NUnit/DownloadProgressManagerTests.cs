@@ -55,8 +55,8 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			// Artifact B - native and 2 images
 			FileRequest<ObjectExportInfo> nativeB = ModelFactory.GetNative(this._nativeRepository);
-			FileRequest<ImageExportInfo> imageB1 = ModelFactory.GetImage(this._imageRepository, nativeB.Artifact.ArtifactID);
-			FileRequest<ImageExportInfo> imageB2 = ModelFactory.GetImage(this._imageRepository, nativeB.Artifact.ArtifactID);
+			ImageRequest imageB1 = ModelFactory.GetImage(this._imageRepository, nativeB.Artifact.ArtifactID);
+			ImageRequest imageB2 = ModelFactory.GetImage(this._imageRepository, nativeB.Artifact.ArtifactID);
 
 			// Artifact C - native and long text
 			FileRequest<ObjectExportInfo> nativeC = ModelFactory.GetNative(this._nativeRepository);
@@ -64,7 +64,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			// Artifact D - native, image and long text
 			FileRequest<ObjectExportInfo> nativeD = ModelFactory.GetNative(this._nativeRepository);
-			FileRequest<ImageExportInfo> imageD = ModelFactory.GetImage(this._imageRepository, nativeD.Artifact.ArtifactID);
+			ImageRequest imageD = ModelFactory.GetImage(this._imageRepository, nativeD.Artifact.ArtifactID);
 			LongText textD = ModelFactory.GetLongText(nativeD.Artifact.ArtifactID, this._longTextRepository);
 
 			int actualDocumentExportedCount = 0;
@@ -133,12 +133,12 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			// Artifact D - native, image and PDF
 			FileRequest<ObjectExportInfo> nativeD = ModelFactory.GetNative(this._nativeRepository);
-			FileRequest<ImageExportInfo> imageD = ModelFactory.GetImage(this._imageRepository, nativeD.Artifact.ArtifactID);
+			ImageRequest imageD = ModelFactory.GetImage(this._imageRepository, nativeD.Artifact.ArtifactID);
 			FileRequest<ObjectExportInfo> pdfD = ModelFactory.GetPdf(this._pdfRepository, nativeD.Artifact.ArtifactID);
 
 			// Artifact E - native, image, long text and PDF
 			FileRequest<ObjectExportInfo> nativeE = ModelFactory.GetNative(this._nativeRepository);
-			FileRequest<ImageExportInfo> imageE = ModelFactory.GetImage(this._imageRepository, nativeE.Artifact.ArtifactID);
+			ImageRequest imageE = ModelFactory.GetImage(this._imageRepository, nativeE.Artifact.ArtifactID);
 			LongText textE = ModelFactory.GetLongText(nativeE.Artifact.ArtifactID, this._longTextRepository);
 			FileRequest<ObjectExportInfo> pdfE = ModelFactory.GetPdf(this._pdfRepository, nativeE.Artifact.ArtifactID);
 
@@ -224,11 +224,11 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ARRANGE
 			const string SourceLocation = @"\\files\T001\Files\EDDS123456\F780BC4E-39FC-44E2-8F48-5608CBAA795C";
 			FileRequest<ObjectExportInfo> native = ModelFactory.GetNative(this._nativeRepository);
-			FileRequest<ImageExportInfo> image1 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation, @"C:\temp\file1.tiff");
-			FileRequest<ImageExportInfo> image2 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToLowerInvariant(), @"C:\temp\file2.tiff");
-			FileRequest<ImageExportInfo> image3 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToUpperInvariant(), @"C:\temp\file3.tiff");
-			FileRequest<ImageExportInfo> image4 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToLowerInvariant() + " ", @"C:\temp\file4.tiff");
-			FileRequest<ImageExportInfo> image5 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToUpperInvariant() + " ", @"C:\temp\file5.tiff");
+			ImageRequest image1 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation, @"C:\temp\file1.tiff");
+			ImageRequest image2 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToLowerInvariant(), @"C:\temp\file2.tiff");
+			ImageRequest image3 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToUpperInvariant(), @"C:\temp\file3.tiff");
+			ImageRequest image4 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToLowerInvariant() + " ", @"C:\temp\file4.tiff");
+			ImageRequest image5 = ModelFactory.GetImage(this._imageRepository, native.Artifact.ArtifactID, SourceLocation.ToUpperInvariant() + " ", @"C:\temp\file5.tiff");
 			int actualDocumentExportedCount = 0;
 			this._status.Setup(x => x.UpdateDocumentExportedCount(It.IsAny<int>())).Callback((int docs) => actualDocumentExportedCount = docs);
 			this._instance.MarkFileAsCompleted(
@@ -237,7 +237,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				true);
 
 			// ACT
-			foreach (FileRequest<ImageExportInfo> image in new[] { image1, image2, image3, image4, image5 })
+			foreach (ImageRequest image in new[] { image1, image2, image3, image4, image5 })
 			{
 				this._instance.MarkFileAsCompleted(image.ExportRequest.DestinationLocation, image.ExportRequest.Order, true);
 			}

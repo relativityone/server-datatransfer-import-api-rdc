@@ -11,15 +11,15 @@
 
 	public class ImageRepository : IClearable
 	{
-		private List<FileRequest<ImageExportInfo>> _images;
+		private List<ImageRequest> _images;
 		private readonly object _syncLock = new object();
 
 		public ImageRepository()
 		{
-			_images = new List<FileRequest<ImageExportInfo>>();
+			_images = new List<ImageRequest>();
 		}
 
-		public void Add(IList<FileRequest<ImageExportInfo>> images)
+		public void Add(IList<ImageRequest> images)
 		{
 			lock (_syncLock)
 			{
@@ -27,7 +27,7 @@
 			}
 		}
 
-		public FileRequest<ImageExportInfo> GetImage(int artifactId, string batesNumber)
+		public ImageRequest GetImage(int artifactId, string batesNumber)
 		{
 			lock (_syncLock)
 			{
@@ -39,12 +39,12 @@
 			}
 		}
 
-		public IList<FileRequest<ImageExportInfo>> GetImagesByTargetFile(string targetFile)
+		public IList<ImageRequest> GetImagesByTargetFile(string targetFile)
 		{
 			lock (_syncLock)
 			{
 				string trimmedTargetFile = targetFile != null ? targetFile.TrimEnd() : string.Empty;
-				List<FileRequest<ImageExportInfo>> images = _images.Where(
+				List<ImageRequest> images = _images.Where(
 					x => x.ExportRequest?.DestinationLocation != null && string.Compare(
 						     x.ExportRequest.DestinationLocation.TrimEnd(),
 						     trimmedTargetFile,
@@ -53,7 +53,7 @@
 			}
 		}
 
-		public IList<FileRequest<ImageExportInfo>> GetArtifactImages(int artifactId)
+		public IList<ImageRequest> GetArtifactImages(int artifactId)
 		{
 			lock (_syncLock)
 			{
@@ -61,7 +61,7 @@
 			}
 		}
 
-		public IList<FileRequest<ImageExportInfo>> GetImages()
+		public IList<ImageRequest> GetImages()
 		{
 			lock (_syncLock)
 			{
@@ -96,7 +96,7 @@
 		{
 			lock (_syncLock)
 			{
-				_images = new List<FileRequest<ImageExportInfo>>();
+				_images = new List<ImageRequest>();
 			}
 		}
 	}
