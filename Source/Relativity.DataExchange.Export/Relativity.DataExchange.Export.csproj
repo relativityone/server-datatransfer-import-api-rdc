@@ -109,10 +109,7 @@
     <Compile Include="Export\VolumeManagerV2\Container\ContainerFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Container\ExportInstaller.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\EncodingFileSize.cs" />
-    <Compile Include="Export\VolumeManagerV2\DataSize\ImageExportableSize.cs" />
-    <Compile Include="Export\VolumeManagerV2\DataSize\NativeExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\ObjectExportableSize.cs" />
-    <Compile Include="Export\VolumeManagerV2\DataSize\TextExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\AbsoluteFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\DirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\FilePathHelper.cs" />

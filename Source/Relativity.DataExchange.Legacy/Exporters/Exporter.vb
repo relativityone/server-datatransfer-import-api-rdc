@@ -790,6 +790,14 @@ Namespace kCura.WinEDDS
 				prediction.NativeFilesSize = 0
 			End If
 
+			prediction.PdfFileCount = CLng(IIf(artifact.HasPdf, 1, 0))
+
+			If (prediction.PdfFileCount > 0 AndAlso pdfRow?.Row?.Table?.Columns?.Contains("Size")) Then
+				prediction.PdfFileSize = CLng(pdfRow("Size"))
+			Else
+				prediction.PdfFileSize = 0
+			End If
+
 			prediction.ImageFileCount = artifact.ImageCount
 
 			Return artifact

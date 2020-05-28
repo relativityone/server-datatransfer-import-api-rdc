@@ -55,10 +55,11 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		[TestCase(2, 0, 0)]
-		[TestCase(0, 2, 0)]
-		[TestCase(0, 0, 2)]
-		public void ItShouldMoveToNextDirectoryWhenSpecificFilesCountExceedsLimit(int natives, int images, int text)
+		[TestCase(2, 0, 0, 0)]
+		[TestCase(0, 2, 0, 0)]
+		[TestCase(0, 0, 2, 0)]
+		[TestCase(0, 0, 0, 2)]
+		public void ItShouldMoveToNextDirectoryWhenSpecificFilesCountExceedsLimit(int natives, int images, int text, int pdf)
 		{
 			const int maxFileCount = 3;
 			const int startNumber = 5;
@@ -69,7 +70,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			{
 				NativeFileCount = natives,
 				ImageFileCount = images,
-				TextFileCount = text
+				TextFileCount = text,
+				PdfFileCount = pdf
 			};
 
 			// ACT
@@ -92,35 +94,47 @@ namespace Relativity.DataExchange.Export.NUnit
 			{
 				NativeFileCount = 2,
 				ImageFileCount = 0,
-				TextFileCount = 0
+				TextFileCount = 0,
+				PdfFileCount = 0
 			};
 			VolumePredictions predictionsImages = new VolumePredictions
 			{
 				NativeFileCount = 0,
 				ImageFileCount = 2,
-				TextFileCount = 0
+				TextFileCount = 0,
+				PdfFileCount = 0
 			};
 			VolumePredictions predictionsText = new VolumePredictions
 			{
 				NativeFileCount = 0,
 				ImageFileCount = 0,
-				TextFileCount = 2
+				TextFileCount = 2,
+				PdfFileCount = 0
+			};
+			VolumePredictions predictionsPdf = new VolumePredictions
+			{
+				NativeFileCount = 0,
+				ImageFileCount = 0,
+				TextFileCount = 0,
+				PdfFileCount = 2
 			};
 
 			// ACT
 			this._instance.MoveNext(predictionsNatives);
 			this._instance.MoveNext(predictionsImages);
 			this._instance.MoveNext(predictionsText);
+			this._instance.MoveNext(predictionsPdf);
 
 			// ASSERT
 			Assert.That(this._instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber));
 		}
 
 		[Test]
-		[TestCase(5, 0, 0)]
-		[TestCase(0, 5, 0)]
-		[TestCase(0, 0, 5)]
-		public void ItShouldNotMoveToNextDirectoryForFirstPrediction(int natives, int images, int text)
+		[TestCase(5, 0, 0, 0)]
+		[TestCase(0, 5, 0, 0)]
+		[TestCase(0, 0, 5, 0)]
+		[TestCase(0, 0, 0, 5)]
+		public void ItShouldNotMoveToNextDirectoryForFirstPrediction(int natives, int images, int text, int pdf)
 		{
 			const int maxFileCount = 1;
 			const int startNumber = 5;
@@ -131,7 +145,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			{
 				NativeFileCount = natives,
 				ImageFileCount = images,
-				TextFileCount = text
+				TextFileCount = text,
+				PdfFileCount = pdf
 			};
 
 			// ACT
@@ -142,10 +157,11 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		[TestCase(5, 0, 0)]
-		[TestCase(0, 5, 0)]
-		[TestCase(0, 0, 5)]
-		public void ItShouldNotMoveToNextDirectoryForFirstPredictionAfterRestart(int natives, int images, int text)
+		[TestCase(5, 0, 0, 0)]
+		[TestCase(0, 5, 0, 0)]
+		[TestCase(0, 0, 5, 0)]
+		[TestCase(0, 0, 0, 5)]
+		public void ItShouldNotMoveToNextDirectoryForFirstPredictionAfterRestart(int natives, int images, int text, int pdf)
 		{
 			const int maxFileCount = 1;
 			const int startNumber = 5;
@@ -156,7 +172,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			{
 				NativeFileCount = natives,
 				ImageFileCount = images,
-				TextFileCount = text
+				TextFileCount = text,
+				PdfFileCount = pdf
 			};
 
 			// ACT

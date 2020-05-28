@@ -93,6 +93,7 @@
     <Compile Include="LinePdfFilePathTests.cs" />
     <Compile Include="LongTextObjectManagerDownloaderTests.cs" />
     <Compile Include="LongTextTapiBridgeFactoryTests.cs" />
+    <Compile Include="ObjectExportableSizeTests.cs" />
     <Compile Include="PdfFileBatchValidatorTests.cs" />
     <Compile Include="PdfFileExportRequestBuilderTests.cs" />
     <Compile Include="PdfFilePathProviderTests.cs" />
@@ -108,7 +109,6 @@
     <Compile Include="SinglePageMetadataForArtifactBuilderTests.cs" />
     <Compile Include="StreamStub.cs" />
     <Compile Include="SubdirectoryManagerTests.cs" />
-    <Compile Include="TextExportableSizeTests.cs" />
     <Compile Include="TooLongTextToLoadFileTests.cs" />
     <Compile Include="ViewFieldInfoMockFactory.cs" />
     <Compile Include="VolumeAndSubdirectoryValidatorTests.cs" />
@@ -163,7 +163,6 @@
     <Compile Include="HtmlExportFileFormatterTests.cs" />
     <Compile Include="IdentifierExportFileNameProviderTests.cs" />
     <Compile Include="ImageException.cs" />
-    <Compile Include="ImageExportableSizeTests.cs" />
     <Compile Include="ImageExportRequestBuilderTests.cs" />
     <Compile Include="ImageFileBatchValidatorTests.cs" />
     <Compile Include="ImageFilePathProviderTests.cs" />
@@ -210,7 +209,6 @@
     <Compile Include="MultiPageNotOpticonMetadataForArtifactBuilderTests.cs" />
     <Compile Include="MultiPageOpticonMetadataForArtifactBuilderTests.cs" />
     <Compile Include="MultiPageTiffImagesRollupTests.cs" />
-    <Compile Include="NativeExportableSizeTests.cs" />
     <Compile Include="NativeFileBatchValidatorTests.cs" />
     <Compile Include="NativeFileExportRequestBuilderTests.cs" />
     <Compile Include="NativeFileNameViewFieldsHelperTests.cs" />
