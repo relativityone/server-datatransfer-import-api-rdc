@@ -188,6 +188,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("ObjectTypeName", Me.ObjectTypeName, GetType(String))
 			info.AddValue("UseCustomFileNaming", Me.UseCustomFileNaming, GetType(Boolean))
 			info.AddValue("CustomFileNaming", Me.CustomFileNaming, GetType(CustomFileNameDescriptorModel))
+			info.AddValue("ExportPdf", Me.ExportPdf, GetType(Boolean))
 		End Sub
 
 		Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
@@ -250,6 +251,11 @@ Namespace kCura.WinEDDS
 					Me.CustomFileNaming = DirectCast(info.GetValue("CustomFileNaming", GetType(CustomFileNameDescriptorModel)), CustomFileNameDescriptorModel)
 				Catch ex As SerializationException
 					Me.CustomFileNaming = Nothing
+				End Try
+				Try
+					Me.ExportPdf = info.GetBoolean("ExportPdf")
+				Catch
+					Me.ExportPdf = False
 				End Try
 			End With
 		End Sub

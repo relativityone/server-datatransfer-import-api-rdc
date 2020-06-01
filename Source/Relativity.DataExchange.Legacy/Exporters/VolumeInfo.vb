@@ -88,11 +88,13 @@ Namespace kCura.WinEDDS.Exporters
 		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
 			info.AddValue("CopyNativeFilesFromRepository", Me.CopyNativeFilesFromRepository, GetType(Boolean))
 			info.AddValue("CopyImageFilesFromRepository", Me.CopyImageFilesFromRepository, GetType(Boolean))
+			info.AddValue("CopyPdfFilesFromRepository", Me.CopyPdfFilesFromRepository, GetType(Boolean))
 			info.AddValue("SubdirectoryMaxSize", Me.SubdirectoryMaxSize, GetType(Int64))
 			info.AddValue("SubdirectoryStartNumber", Me.SubdirectoryStartNumber, GetType(Int32))
 			info.AddValue("SubdirectoryFullTextPrefix", Me.SubdirectoryFullTextPrefix(False), GetType(String))
 			info.AddValue("SubdirectoryNativePrefix", Me.SubdirectoryNativePrefix(False), GetType(String))
 			info.AddValue("SubdirectoryImagePrefix", Me.SubdirectoryImagePrefix(False), GetType(String))
+			info.AddValue("SubdirectoryPdfPrefix", Me.SubdirectoryPdfPrefix(False), GetType(String))
 			info.AddValue("VolumeMaxSize", Me.VolumeMaxSize, GetType(Int64))
 			info.AddValue("VolumeStartNumber", Me.VolumeStartNumber, GetType(Int32))
 			info.AddValue("VolumePrefix", Me.VolumePrefix, GetType(String))
@@ -111,11 +113,18 @@ Namespace kCura.WinEDDS.Exporters
 				Catch
 					readCopyNativeFilesSettingFrom = True
 				End Try
+				Try
+					Me.CopyPdfFilesFromRepository = .GetBoolean("CopyPdfFilesFromRepository")
+				Catch
+					Me.CopyPdfFilesFromRepository = False
+				End Try
+
 				If readCopyImageFilesSettingFrom Or readCopyNativeFilesSettingFrom Then
 					Dim aggregateSetting As Boolean = .GetBoolean("CopyFilesFromRepository")
 					If readCopyImageFilesSettingFrom Then Me.CopyImageFilesFromRepository = aggregateSetting
 					If readCopyNativeFilesSettingFrom Then Me.CopyNativeFilesFromRepository = aggregateSetting
 				End If
+
 				Me.SubdirectoryMaxSize = .GetInt64("SubdirectoryMaxSize")
 				Me.SubdirectoryStartNumber = .GetInt32("SubdirectoryStartNumber")
 				Me.SubdirectoryFullTextPrefix = .GetString("SubdirectoryFullTextPrefix")
@@ -124,6 +133,11 @@ Namespace kCura.WinEDDS.Exporters
 				Me.VolumeMaxSize = .GetInt64("VolumeMaxSize")
 				Me.VolumeStartNumber = .GetInt32("VolumeStartNumber")
 				Me.VolumePrefix = .GetString("VolumePrefix")
+				Try
+					Me.SubdirectoryPdfPrefix = .GetString("SubdirectoryPdfPrefix")
+				Catch
+					Me.SubdirectoryPdfPrefix = "PDF"
+				End Try
 			End With
 		End Sub
 #End Region

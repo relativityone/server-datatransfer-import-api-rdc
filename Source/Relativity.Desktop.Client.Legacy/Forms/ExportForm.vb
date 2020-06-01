@@ -1489,6 +1489,7 @@ End Sub
 		'_exportFile.ExportFullText = _exportFullText.Checked
 		_exportFile.ExportFullTextAsFile = _exportFullTextAsFile.Checked
 		_exportFile.ExportNative = _exportNativeFiles.Checked
+		_exportFile.ExportPdf = _exportPdfFiles.Checked
 		_exportFile.QuoteDelimiter = ChrW(CType(_quoteDelimiter.SelectedValue, Int32))
 		_exportFile.RecordDelimiter = ChrW(CType(_recordDelimiter.SelectedValue, Int32))
 		_exportFile.MultiRecordDelimiter = ChrW(CType(_multiRecordDelimiter.SelectedValue, Int32))
@@ -1606,6 +1607,7 @@ End Sub
 		_isLoadingExport = True
 		If _exportNativeFiles.Checked <> ef.ExportNative Then _exportNativeFiles.Checked = ef.ExportNative
 		If _exportImages.Checked <> ef.ExportImages Then _exportImages.Checked = ef.ExportImages
+		If _exportPdfFiles.Checked <> ef.ExportPdf Then _exportPdfFiles.Checked = ef.ExportPdf
 		If _overwriteCheckBox.Checked <> ef.Overwrite Then _overwriteCheckBox.Checked = ef.Overwrite
 		If _folderPath.Text <> ef.FolderPath Then _folderPath.Text = ef.FolderPath
 		If ef.VolumeDigitPadding >= _volumeDigitPadding.Minimum AndAlso ef.VolumeDigitPadding <= _volumeDigitPadding.Maximum Then
@@ -1888,6 +1890,7 @@ End Sub
 		retval.VolumeStartNumber = Int32.Parse(_volumeStartNumber.Text)
 		retval.CopyNativeFilesFromRepository = _copyFilesFromRepository.Checked
 		retval.CopyImageFilesFromRepository = _copyFilesFromRepository.Checked
+		retval.CopyPdfFilesFromRepository = _copyFilesFromRepository.Checked
 		Return retval
 	End Function
 
@@ -2050,7 +2053,7 @@ End Sub
 	End Sub
 	Private ReadOnly Property CreateVolume() As Boolean
 		Get
-			Return _exportImages.Checked OrElse _exportNativeFiles.Checked
+			Return _exportImages.Checked OrElse _exportNativeFiles.Checked OrElse _exportPdfFiles.Checked
 		End Get
 	End Property
 
