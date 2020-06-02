@@ -16,6 +16,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Reflection;
 	using System.Text;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 	using global::NUnit.Framework;
 
-	using kCura.EDDS.WebAPI.DocumentManagerBase;
+	using kCura.Relativity.Client;
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Container;
 	using kCura.WinEDDS.Exporters;
@@ -42,7 +43,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 
+	using ArtifactType = Relativity.DataExchange.Service.ArtifactType;
+	using Field = kCura.EDDS.WebAPI.DocumentManagerBase.Field;
 	using FieldType = Relativity.DataExchange.Service.FieldType;
+	using File = System.IO.File;
 
 	[TestFixture]
 	public abstract class ExportTestBase : IDisposable
@@ -439,6 +443,63 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			Assert.That(exportedFilesCount, Is.EqualTo(expectedExportedFilesCount));
 		}
 
+		protected void ThenTheExportedDocumentLoadFileIsAsExpected(string pathToExportedFile, string expectedFileContent)
+		{
+			// Validate that exported file has encoding and extension as set during export
+			ExportedFilesValidator.ValidateFileExtension(pathToExportedFile, this.ExtendedExportFile.LoadFileExtension);
+			ExportedFilesValidator.ValidateFileEncoding(pathToExportedFile, this.ExtendedExportFile.LoadFileEncoding);
+
+			// Validate that content is the same as in stored template
+			ExportedFilesValidator.ValidateFileContent(pathToExportedFile, expectedFileContent);
+		}
+
+		protected void ThenTheExportedDocumentLoadFileIsAsExpected()
+		{
+			if (this.ExtendedExportFile.ExportNative)
+			{
+				ThenTheExportedDocumentLoadFileIsAsExpected(
+					GetPathToExportedDocumentLoadFile(),
+					GenerateExpectedDocumentLoadFileContent());
+			}
+			else
+			{
+				ThenTheExportedDocumentLoadFileIsEmpty();
+			}
+		}
+
+		protected void ThenTheExportedImageLoadFileIsAsExpected()
+		{
+			string fileExtension = this.GetImageLoadFileExtension();
+			string pathToExportedFile = GetPathToExportedImageLoadFile();
+
+			if (this.ExtendedExportFile.ExportImages)
+			{
+				ExportedFilesValidator.ValidateFileExtension(pathToExportedFile, fileExtension);
+				ExportedFilesValidator.ValidateFileContent(pathToExportedFile, GenerateExpectedImageLoadFileContent());
+			}
+			else
+			{
+				Assert.That(!File.Exists(pathToExportedFile), $"Image load file was exported while it shouldn't");
+			}
+		}
+
+		private static string GetPathToTemplatesFolder()
+		{
+			string parentFolder = new System.IO.FileInfo(Assembly.GetExecutingAssembly().Location).Directory.Parent.Parent.FullName;
+			string folderPath = Path.Combine(parentFolder, "Relativity.DataExchange.TestFramework", "Resources", "TestResultsTemplates");
+			return folderPath;
+		}
+
+		private static string GetPathToDocumentLoadFileTemplate()
+		{
+			return Path.Combine(GetPathToTemplatesFolder(), "Documents_export_template.txt");
+		}
+
+		private void ThenTheExportedDocumentLoadFileIsEmpty()
+		{
+			ExportedFilesValidator.ValidateFileContent(GetPathToExportedDocumentLoadFile(), "\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n");
+		}
+
 		private DataTable GetSearchExportDataSource(SearchManager searchManager, bool isArtifactSearch, int artifactType)
 		{
 			DataSet dataset = searchManager.RetrieveViewsByContextArtifactID(
@@ -534,6 +595,145 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			Console.WriteLine(
 				$"Status: Message={args.Message}, Total Exported Docs={args.DocumentsExported}, Total Docs={args.TotalDocuments}");
+		}
+
+		private string GetPathToExportedDocumentLoadFile()
+		{
+			return Path.Combine(
+				this.ExtendedExportFile.FolderPath,
+				this.ExtendedExportFile.LoadFilesPrefix + "_export." + this.ExtendedExportFile.LoadFileExtension);
+		}
+
+		private string GetImageLoadFileExtension()
+		{
+			string fileExtension = string.Empty;
+			switch (this.ExtendedExportFile.LogFileFormat)
+			{
+				case LoadFileType.FileFormat.Opticon:
+					fileExtension = "opt";
+					break;
+				case LoadFileType.FileFormat.IPRO:
+					fileExtension = "lfp";
+					break;
+				case LoadFileType.FileFormat.IPRO_FullText:
+					fileExtension = "lfp";
+					break;
+			}
+
+			return fileExtension;
+		}
+
+		private string GetPathToExportedImageLoadFile()
+		{
+			string fileName = ExtendedExportFile.LogFileFormat == LoadFileType.FileFormat.IPRO_FullText ? "Documents_export_FULLTEXT_" : "Documents_export";
+			string exportedFile = Path.Combine(this.ExtendedExportFile.FolderPath, fileName + "." + GetImageLoadFileExtension());
+			return exportedFile;
+		}
+
+		private string GetPathToImageLoadFileTemplate()
+		{
+			string fileTemplate = string.Empty;
+
+			switch (this.ExtendedExportFile.LogFileFormat)
+			{
+				case LoadFileType.FileFormat.Opticon:
+					switch (this.ExtendedExportFile.TypeOfImage)
+					{
+						case ExportFile.ImageType.SinglePage:
+							fileTemplate = "Images_export_template_SinglePage.opt";
+							break;
+						case ExportFile.ImageType.MultiPageTiff:
+							fileTemplate = "Images_export_template_MultiPageTiff.opt";
+							break;
+						case ExportFile.ImageType.Pdf:
+							fileTemplate = "Images_export_template_Pdf.opt";
+							break;
+					}
+
+					break;
+				case LoadFileType.FileFormat.IPRO:
+					fileTemplate = "Images_export_MultiPageTiff.lfp";
+					break;
+				case LoadFileType.FileFormat.IPRO_FullText:
+					switch (this.ExtendedExportFile.TypeOfImage)
+					{
+						case ExportFile.ImageType.SinglePage:
+							fileTemplate = "Images_export_FULLTEXT_SinglePage.lfp";
+							break;
+						case ExportFile.ImageType.Pdf:
+							fileTemplate = "Images_export_FULLTEXT_pdf.lfp";
+							break;
+						default:
+							throw new NotImplementedException(
+								$"No template file for '{this.ExtendedExportFile.TypeOfImage.ToString()}'");
+					}
+
+					break;
+			}
+
+			return Path.Combine(GetPathToTemplatesFolder(), fileTemplate);
+		}
+
+		private string GenerateExpectedDocumentLoadFileContent()
+		{
+			string fileTemplate = GetPathToDocumentLoadFileTemplate();
+			string volumeValue = GetVolumeValue();
+			string folderPath = GetFolderPathValue();
+			string subDirectory = GetSubDirectoryValue();
+
+			string expectedContent = System.IO.File.ReadAllText(fileTemplate).Replace("<NewLineDelimeter>", string.Empty).Replace("<RecordDelimeter>", this.ExtendedExportFile.RecordDelimiter.ToString()).Replace("<QuoteDelimeter>", this.ExtendedExportFile.QuoteDelimiter.ToString()).Replace("<FolderPath>", folderPath).Replace("<Volume>", volumeValue).Replace("<SubDir>", subDirectory);
+			return expectedContent;
+		}
+
+		private string GenerateExpectedImageLoadFileContent()
+		{
+			string fileTemplate = GetPathToImageLoadFileTemplate();
+			string volumeValue = GetVolumeValue();
+			string folderPath = GetFolderPathValue();
+			string subDirectory = GetSubDirectoryValue();
+			string imageType = this.ExtendedExportFile.TypeOfImage.ToString();
+
+			string expectedFileContent = System.IO.File.ReadAllText(fileTemplate).Replace("<Volume>", volumeValue).Replace("<FolderPath>", folderPath).Replace("<SubDir>", subDirectory).Replace("<ImageType>", imageType);
+			return expectedFileContent;
+		}
+
+		private string GetVolumeValue()
+		{
+			string padVolStart = this.ExtendedExportFile.VolumeInfo.VolumeStartNumber
+				.ToString()
+				.PadLeft(this.ExtendedExportFile.VolumeDigitPadding, '0');
+
+			return $"{this.ExtendedExportFile.VolumeInfo.VolumePrefix}{padVolStart}";
+		}
+
+		private string GetFolderPathValue()
+		{
+			string folderPath = string.Empty;
+
+			switch (this.ExtendedExportFile.TypeOfExportedFilePath)
+			{
+				case kCura.WinEDDS.ExportFile.ExportedFilePathType.Relative:
+					folderPath = ".";
+					break;
+				case kCura.WinEDDS.ExportFile.ExportedFilePathType.Absolute:
+					folderPath = this.ExtendedExportFile.FolderPath.Substring(
+						0,
+						this.ExtendedExportFile.FolderPath.Length - 1);
+					break;
+				case ExportFile.ExportedFilePathType.Prefix:
+					folderPath = this.ExtendedExportFile.FilePrefix;
+					break;
+			}
+
+			return folderPath;
+		}
+
+		private string GetSubDirectoryValue()
+		{
+			string subDirectory = this.ExtendedExportFile.VolumeInfo.SubdirectoryStartNumber
+				.ToString()
+				.PadLeft(this.ExtendedExportFile.SubdirectoryDigitPadding, '0');
+			return subDirectory;
 		}
 	}
 }
