@@ -78,6 +78,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			[ValueSource(nameof(ExportTypes))] ExportTypeDto exportType,
 			[Values("utf-8", "utf-16")] string textFileEncoding,
 			[Values("utf-8", "utf-16")] string loadFileEncoding,
+			[Values("dat", "txt", "html", "csv")] string loadFileExtension,
 			[ValueSource(nameof(ExportNatives))] ExportNativeDto exportNative,
 			[ValueSource(nameof(ExportImages))] ExportImageDto exportImage,
 			[ValueSource(nameof(Paddings))] PaddingDto paddingValue,
@@ -87,36 +88,49 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			GivenTheTapiForceClientAppSettings(client);
 
 			// TODO REL-369935 enable ExportFile.ExportType.ArtifactSearch and ExportFile.ExportType.Production
-			this.ExtendedExportFile.TypeOfExport = exportType.ExportType;
+			this.ExtendedExportFile.TypeOfExport = exportType == null ? ExportFile.ExportType.ParentSearch : exportType.ExportType;
 
 			this.ExtendedExportFile.TextFileEncoding = Encoding.GetEncoding(textFileEncoding);
 			this.ExtendedExportFile.LoadFileEncoding = Encoding.GetEncoding(loadFileEncoding);
+			this.ExtendedExportFile.LoadFileExtension = loadFileExtension;
 
 			this.ExtendedExportFile.ExportNative = exportNative != null;
 			if (this.ExtendedExportFile.ExportNative)
 			{
-				this.ExtendedExportFile.TypeOfExportedFilePath = exportNative.ExportedFilePathType;
-				if (exportNative.FilePrefix != null)
+				if (exportNative != null)
 				{
-					this.ExtendedExportFile.FilePrefix = exportNative.FilePrefix;
+					this.ExtendedExportFile.TypeOfExportedFilePath = exportNative.ExportedFilePathType;
+					if (exportNative.FilePrefix != null)
+					{
+						this.ExtendedExportFile.FilePrefix = exportNative.FilePrefix;
+					}
 				}
 			}
 
 			this.ExtendedExportFile.ExportImages = exportImage != null;
 			if (this.ExtendedExportFile.ExportImages)
 			{
-				this.ExtendedExportFile.LogFileFormat = exportImage.FileFormat;
-				this.ExtendedExportFile.TypeOfImage = exportImage.ImageType;
+				if (exportImage != null)
+				{
+					this.ExtendedExportFile.LogFileFormat = exportImage.FileFormat;
+					this.ExtendedExportFile.TypeOfImage = exportImage.ImageType;
+				}
 			}
 
-			this.ExtendedExportFile.SubdirectoryDigitPadding = paddingValue.SubdirectoryDigitPadding;
-			this.ExtendedExportFile.VolumeDigitPadding = paddingValue.VolumeDigitPadding;
+			if (paddingValue != null)
+			{
+				this.ExtendedExportFile.SubdirectoryDigitPadding = paddingValue.SubdirectoryDigitPadding;
+				this.ExtendedExportFile.VolumeDigitPadding = paddingValue.VolumeDigitPadding;
+			}
 
-			this.ExtendedExportFile.MultiRecordDelimiter = delimiterValue.MultiRecordDelimiter;
-			this.ExtendedExportFile.NestedValueDelimiter = delimiterValue.NestedValueDelimiter;
-			this.ExtendedExportFile.NewlineDelimiter = delimiterValue.NewlineDelimiter;
-			this.ExtendedExportFile.QuoteDelimiter = delimiterValue.QuoteDelimiter;
-			this.ExtendedExportFile.RecordDelimiter = delimiterValue.RecordDelimiter;
+			if (delimiterValue != null)
+			{
+				this.ExtendedExportFile.MultiRecordDelimiter = delimiterValue.MultiRecordDelimiter;
+				this.ExtendedExportFile.NestedValueDelimiter = delimiterValue.NestedValueDelimiter;
+				this.ExtendedExportFile.NewlineDelimiter = delimiterValue.NewlineDelimiter;
+				this.ExtendedExportFile.QuoteDelimiter = delimiterValue.QuoteDelimiter;
+				this.ExtendedExportFile.RecordDelimiter = delimiterValue.RecordDelimiter;
+			}
 
 			// ACT
 			this.ExecuteFolderAndSubfoldersAndVerify();
@@ -129,6 +143,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			// We imported images only to one document during test setup phase
 			ExportedFilesValidator.ValidateImagesCount(this.ExtendedExportFile, TestData.SampleImageFiles.Count());
+
+			this.ThenTheExportedDocumentLoadFileIsAsExpected();
+			this.ThenTheExportedImageLoadFileIsAsExpected();
 		}
 	}
 }

@@ -1,0 +1,10 @@
+<NewLineDelimeter><RecordDelimeter><QuoteDelimeter><FolderPath>\<Volume>\NATIVES\<SubDir>\EDRM-Sample1.pdf.pdf<QuoteDelimeter>
+<NewLineDelimeter><RecordDelimeter><QuoteDelimeter><FolderPath>\<Volume>\NATIVES\<SubDir>\EDRM-Sample10.wmf.wmf<QuoteDelimeter>
+<NewLineDelimeter><RecordDelimeter><QuoteDelimeter><FolderPath>\<Volume>\NATIVES\<SubDir>\EDRM-Sample2.doc.doc<QuoteDelimeter>
+<NewLineDelimeter><RecordDelimeter><QuoteDelimeter><FolderPath>\<Volume>\NATIVES\<SubDir>\EDRM-Sample3.xlsx.xlsx<QuoteDelimeter>
+<NewLineDelimeter><RecordDelimeter><QuoteDelimeter><FolderPath>\<Volume>\NATIVES\<SubDir>\EDRM-Sample4.msg.msg<QuoteDelimeter>
+<NewLineDelimeter><RecordDelimeter><QuoteDelimeter><FolderPath>\<Volume>\NATIVES\<SubDir>\EDRM-Sample5.htm.htm<QuoteDelimeter>
+<NewLineDelimeter><RecordDelimeter><QuoteDelimeter><FolderPath>\<Volume>\NATIVES\<SubDir>\EDRM-Sample6.emf.emf<QuoteDelimeter>
+<NewLineDelimeter><RecordDelimeter><QuoteDelimeter><FolderPath>\<Volume>\NATIVES\<SubDir>\EDRM-Sample7.ppt.ppt<QuoteDelimeter>
+<NewLineDelimeter><RecordDelimeter><QuoteDelimeter><FolderPath>\<Volume>\NATIVES\<SubDir>\EDRM-Sample8.png.png<QuoteDelimeter>
+<NewLineDelimeter><RecordDelimeter><QuoteDelimeter><FolderPath>\<Volume>\NATIVES\<SubDir>\EDRM-Sample9.txt.txt<QuoteDelimeter>

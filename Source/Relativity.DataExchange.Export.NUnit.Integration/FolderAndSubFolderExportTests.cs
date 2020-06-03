@@ -44,6 +44,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// ASSERT
 			this.ThenTheExportJobIsSuccessful(TestData.SampleDocFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
+
+			this.ThenTheExportedDocumentLoadFileIsAsExpected();
+			this.ThenTheExportedImageLoadFileIsAsExpected();
 		}
 
 		[IdentifiedTest("F8F28759-EC5A-4C03-95A3-70ACB005BCCE")]
@@ -61,6 +64,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// ASSERT
 			this.ThenTheExportJobIsSuccessful(TestData.SampleDocFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
+
+			this.ThenTheExportedDocumentLoadFileIsAsExpected();
+			this.ThenTheExportedImageLoadFileIsAsExpected();
 		}
 
 		[IdentifiedTest("77A786A1-58E5-45E3-B0BF-CB70D3FFCE62")]
@@ -77,6 +83,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// ASSERT
 			this.ThenTheExportJobIsSuccessful(TestData.SampleDocFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
+
+			this.ThenTheExportedDocumentLoadFileIsAsExpected();
+			this.ThenTheExportedImageLoadFileIsAsExpected();
 		}
 
 		[IdentifiedTest("8DFA89C0-EB36-446B-92BC-2A0D8314ECD8")]
@@ -111,6 +120,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// ASSERT
 			this.ThenTheExportJobIsSuccessful(TestData.SampleDocFiles.Count());
 			this.ThenTheMockFileShareSettingsServiceIsVerified();
+
+			this.ThenTheExportedDocumentLoadFileIsAsExpected();
+			this.ThenTheExportedImageLoadFileIsAsExpected();
 		}
 
 		[IdentifiedTest("1AB462A0-AF45-4D4E-99DB-43FF74D44131")]
@@ -152,6 +164,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// ASSERT
 			// Note: the Exporter artifact search doesn't support dependency injection and the DownloadProgressManage now performs a finalization that counts all search/DI artifacts.
 			this.ThenTheExportJobIsNotSuccessful(TestData.SampleDocFiles.Count() + fileExportRequests.Count);
+
+			this.ThenTheExportedDocumentLoadFileIsAsExpected();
+
+			// TODO: Uncomment this after solve issue: https://jira.kcura.com/browse/REL-436100
+			// this.ThenTheExportedImageLoadFileIsAsExpected();
 		}
 
 		[IdentifiedTest("76FB096D-7948-4BFE-8CED-7E509505CA95")]
@@ -211,6 +228,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// ASSERT
 			// Note: the Exporter artifact search doesn't support dependency injection and the DownloadProgressManage now performs a finalization that counts all search/DI artifacts.
 			this.ThenTheExportJobIsNotSuccessful(TestData.SampleDocFiles.Count() + fileExportRequests.Count + longTextExportRequests.Count);
+
+			this.ThenTheExportedDocumentLoadFileIsAsExpected();
+
+			// TODO: Uncomment this after solve issue: https://jira.kcura.com/browse/REL-436100
+			// this.ThenTheExportedImageLoadFileIsAsExpected();
 		}
 	}
 }
