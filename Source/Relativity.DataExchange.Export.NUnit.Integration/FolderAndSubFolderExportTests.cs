@@ -17,6 +17,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 	using kCura.WinEDDS.Exporters;
 
+	using Moq;
+
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
@@ -125,6 +127,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ThenTheExportedImageLoadFileIsAsExpected();
 		}
 
+		/// <summary>
+		/// This test should not verify any load file content and physical download export logic
+		/// It is used only to validate the total number of record processed is correct and the given exception is thrown on invalid source location path.
+		/// </summary>
 		[IdentifiedTest("1AB462A0-AF45-4D4E-99DB-43FF74D44131")]
 		public void ShouldExportWhenTheNativeSourceLocationIsInvalid()
 		{
@@ -162,19 +168,21 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			// Note: the Exporter artifact search doesn't support dependency injection and the DownloadProgressManage now performs a finalization that counts all search/DI artifacts.
+			// This is the only way how can we currently combine specific download issue validation with total records processed count implementation in DownloadProgressManager class
+			ValidateNativeFileRequestIssue(fileExportRequests);
 			this.ThenTheExportJobIsNotSuccessful(TestData.SampleDocFiles.Count() + fileExportRequests.Count);
-
-			this.ThenTheExportedDocumentLoadFileIsAsExpected();
-
-			// TODO: Uncomment this after solve issue: https://jira.kcura.com/browse/REL-436100
-			// this.ThenTheExportedImageLoadFileIsAsExpected();
 		}
 
+		/// <summary>
+		/// This test should not verify any load file content and physical download export logic
+		/// It is used only to validate the total number of record processed is correct and the given exception is thrown on invalid destination location path.
+		/// </summary>
 		[IdentifiedTest("76FB096D-7948-4BFE-8CED-7E509505CA95")]
 		public void ShouldExportWhenTheDestinationLocationIsInvalid()
 		{
 			// ARRANGE
+			const string MsgTextFileDownloadIssueMsg = "There was a problem with the request details that prevented retrieving the long text data from artifact {ArtifactId}";
+
 			var nativeExportRequest = PhysicalFileExportRequest.CreateRequestForNative(
 				new ObjectExportInfo
 				{
@@ -226,13 +234,23 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ExecuteFolderAndSubfoldersAndVerify();
 
 			// ASSERT
-			// Note: the Exporter artifact search doesn't support dependency injection and the DownloadProgressManage now performs a finalization that counts all search/DI artifacts.
+			// This is the only way how can we currently combine specific download issue validation with total records processed count implementation in DownloadProgressManager class
+			ValidateNativeFileRequestIssue(fileExportRequests);
+			this.Logger.NullLoggerMock.Verify(
+				x => x.LogWarning(It.IsAny<ArgumentException>(), It.Is<string>(msg => msg.Contains(MsgTextFileDownloadIssueMsg)), longTextExportRequests[0].ArtifactId), Times.Once);
+
 			this.ThenTheExportJobIsNotSuccessful(TestData.SampleDocFiles.Count() + fileExportRequests.Count + longTextExportRequests.Count);
+		}
 
-			this.ThenTheExportedDocumentLoadFileIsAsExpected();
+		private void ValidateNativeFileRequestIssue(List<ExportRequest> fileExportRequests)
+		{
+			const string MsgNativeFileDownloadIssueMsg = "There was a problem downloading artifact {ArtifactId}";
 
-			// TODO: Uncomment this after solve issue: https://jira.kcura.com/browse/REL-436100
-			// this.ThenTheExportedImageLoadFileIsAsExpected();
+			foreach (var fileExportRequest in fileExportRequests)
+			{
+				this.Logger.NullLoggerMock.Verify(
+					x => x.LogWarning(It.IsAny<ArgumentException>(), It.Is<string>(msg => msg.Contains(MsgNativeFileDownloadIssueMsg)), fileExportRequest.ArtifactId), Times.Once);
+			}
 		}
 	}
 }

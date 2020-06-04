@@ -42,6 +42,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
+	using Relativity.Logging;
 
 	using ArtifactType = Relativity.DataExchange.Service.ArtifactType;
 	using Field = kCura.EDDS.WebAPI.DocumentManagerBase.Field;
@@ -76,14 +77,17 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected Mock<IFileShareSettingsService> MockFileShareSettingsService { get; private set; }
 
+		protected TestNullLogger Logger { get; private set; }
+
 		[SetUp]
 		public void Setup()
 		{
 			TapiClientModeAvailabilityChecker.SkipTestIfTestParameterTransferModeNotAvailable(this.TestParameters);
+			this.Logger = new TestNullLogger();
 
 			// This registers all components.
 			this.testContainer = new WindsorContainer();
-			ContainerFactoryProvider.ContainerFactory = new TestContainerFactory(this.testContainer, new TestNullLogger());
+			ContainerFactoryProvider.ContainerFactory = new TestContainerFactory(this.testContainer, this.Logger);
 
 			this.cookieContainer = new CookieContainer();
 			this.credentials = new NetworkCredential(TestParameters.RelativityUserName, TestParameters.RelativityPassword);
@@ -290,7 +294,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			using (var folderManager = new FolderManager(this.credentials, this.cookieContainer))
 			{
-				FolderCache folderCache = new FolderCache(new TestNullLogger(), folderManager, caseInfo.RootFolderID, caseInfo.ArtifactID);
+				FolderCache folderCache = new FolderCache(this.Logger, folderManager, caseInfo.RootFolderID, caseInfo.ArtifactID);
 				int folderArtifactId = folderCache.GetFolderId(folderPath);
 				return folderArtifactId;
 			}
@@ -358,7 +362,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				new WebApiServiceFactory(this.ExtendedExportFile),
 				new ExportFileFormatterFactory(),
 				new ExportConfig(),
-				new TestNullLogger(),
+				this.Logger,
 				this.cancellationTokenSource.Token);
 			try
 			{
