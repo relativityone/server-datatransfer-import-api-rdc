@@ -1936,7 +1936,7 @@ End Sub
 					If Me.ExportFile.TypeOfExport = ExportFile.ExportType.AncestorSearch Then
 						Me.Text = "Relativity Desktop Client | Export Folder and Subfolders"
 					End If
-					If AppSettings.Instance.UseSearchablePDF
+					If Me.CanUseSearchablePdfs()
 						ShowPdfImprovements()
 					End If
 				Else
@@ -2316,6 +2316,12 @@ End Sub
 		End If
 		Cursor = Cursors.Default
 	End Sub
+
+	Private Function CanUseSearchablePdfs() As Boolean
+'		This is not the best solution, but we cannot break compatibility on Mayapple
+		Dim firstCompatibleRelativityVersion As Version = New Version(11,3,16)
+		Return AppSettings.Instance.UseSearchablePDF AndAlso Me._application.RunningContext.RelativityVersion >= firstCompatibleRelativityVersion
+	End Function
 
 	public Sub ShowPdfImprovements()
 		Me._subdirectoryPdfPrefix.Visible = True
