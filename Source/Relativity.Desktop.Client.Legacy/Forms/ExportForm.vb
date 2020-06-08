@@ -1928,6 +1928,9 @@ End Sub
 				_filters.Text = "Searches"
 				_filtersBox.Text = "Searches"
 				Me.Text = "Relativity Desktop Client | Export Saved Search"
+				If Me.CanUseSearchablePdfs()
+					ShowPdfImprovements()
+				End If
 			Case ExportFile.ExportType.ParentSearch, ExportFile.ExportType.AncestorSearch
 				_filters.Text = "Views"
 				_filtersBox.Text = "Views"
@@ -2318,6 +2321,7 @@ End Sub
 	End Sub
 
 	Private Function CanUseSearchablePdfs() As Boolean
+		return True
 '		This is not the best solution, but we cannot break compatibility on Mayapple
 		Dim firstCompatibleRelativityVersion As Version = New Version(11,3,16)
 		Return AppSettings.Instance.UseSearchablePDF AndAlso Me._application.RunningContext.RelativityVersion >= firstCompatibleRelativityVersion
