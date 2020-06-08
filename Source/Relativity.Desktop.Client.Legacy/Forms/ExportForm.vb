@@ -2321,7 +2321,6 @@ End Sub
 	End Sub
 
 	Private Function CanUseSearchablePdfs() As Boolean
-		return True
 '		This is not the best solution, but we cannot break compatibility on Mayapple
 		Dim firstCompatibleRelativityVersion As Version = New Version(11,3,16)
 		Return AppSettings.Instance.UseSearchablePDF AndAlso Me._application.RunningContext.RelativityVersion >= firstCompatibleRelativityVersion
