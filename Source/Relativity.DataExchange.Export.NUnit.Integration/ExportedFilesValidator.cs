@@ -5,16 +5,18 @@
 namespace Relativity.DataExchange.Export.NUnit.Integration
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Reflection;
-	using System.Runtime.CompilerServices;
 	using System.Text;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
-
 	using kCura.WinEDDS;
+
+	using Relativity.DataExchange.TestFramework.Validation;
 
 	using FileInfo = System.IO.FileInfo;
 
@@ -51,6 +53,52 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			}
 
 			ValidateFileCount(exportFile, expectedNativesCount, NativesSubFolder);
+		}
+
+		public static Task ValidateNativeFilesAsync(ExportFile exportFile)
+		{
+			exportFile = exportFile ?? throw new ArgumentNullException(nameof(exportFile));
+
+			if (!exportFile.ExportNative)
+			{
+				return Task.CompletedTask;
+			}
+
+			List<FileInfo> actualNativeFiles = GetFilesFromSubFolder(exportFile.FolderPath, NativesSubFolder);
+			return ValidateFilesAsync(actualNativeFiles, new NativeFileHashValidator());
+		}
+
+		public static Task ValidateImageFilesAsync(ExportFile exportFile)
+		{
+			exportFile = exportFile ?? throw new ArgumentNullException(nameof(exportFile));
+
+			if (!exportFile.ExportImages)
+			{
+				return Task.CompletedTask;
+			}
+
+			List<FileInfo> actualImageFiles = GetFilesFromSubFolder(exportFile.FolderPath, ImagesSubFolder);
+			IFileValidator fileValidator;
+			switch (exportFile.TypeOfImage)
+			{
+				case ExportFile.ImageType.SinglePage:
+					fileValidator = new ImageSinglePageFileHashValidator();
+					break;
+				case ExportFile.ImageType.MultiPageTiff:
+					fileValidator = new ImageMultiPageFileHashValidator();
+					break;
+				case ExportFile.ImageType.Pdf:
+					{
+						const int NumberOfDifferentBytesInPdfFiles = 69;
+						fileValidator = new PdfFileValidator(NumberOfDifferentBytesInPdfFiles);
+						break;
+					}
+
+				default:
+					throw new ArgumentException($"incorrect image type: {exportFile.TypeOfImage}");
+			}
+
+			return ValidateFilesAsync(actualImageFiles, fileValidator);
 		}
 
 		public static void ValidateFileContent(string filePath, string expectedContent)
@@ -137,6 +185,37 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			}
 
 			Assert.That(actualFileCount, Is.EqualTo(expectedFileCount), $"Actual number of files in '{subFolderName}' folder is {actualFileCount} and expected number of files is {expectedFileCount} ");
+		}
+
+		private static async Task ValidateFilesAsync(List<FileInfo> actualFiles, IFileValidator fileValidator)
+		{
+			var results = actualFiles.Select(x => fileValidator.IsValidAsync(x.FullName))
+				.ToList();
+			await Task.WhenAll(results).ConfigureAwait(false);
+			var zip = actualFiles.Zip(results, (fileInfo, task) => new { fileInfo.FullName, task.Result });
+
+			foreach (var file in zip)
+			{
+				Assert.True(file.Result, $"Actual file {file.FullName} is different than expected");
+			}
+		}
+
+		private static List<FileInfo> GetFilesFromSubFolder(string path, string subFolderName)
+		{
+			List<FileInfo> files = new List<FileInfo>();
+
+			DirectoryInfo[] exportDirectories = new DirectoryInfo(path)
+				.GetDirectories("*", SearchOption.TopDirectoryOnly);
+			foreach (var folder in exportDirectories)
+			{
+				var nativeDir = new DirectoryInfo(Path.Combine(folder.FullName, subFolderName));
+				if (nativeDir.Exists)
+				{
+					files.AddRange(nativeDir.GetFiles("*", SearchOption.AllDirectories));
+				}
+			}
+
+			return files;
 		}
 	}
 }

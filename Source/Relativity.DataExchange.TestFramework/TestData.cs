@@ -16,6 +16,12 @@ namespace Relativity.DataExchange.TestFramework
 		/// </summary>
 		public const string DummyUncPath = @"\\files\T001\Files\EDDS123456\";
 
+		public static IEnumerable<string> SampleMultiplePageImageTestFiles =>
+			ResourceFileHelper.GetResourceFolderFiles("MultiPageImages");
+
+		public static IEnumerable<string> SamplePdfFiles =>
+			ResourceFileHelper.GetResourceFolderFiles("Pdfs");
+
 		public static IEnumerable<string> SampleDocFiles =>
 			ResourceFileHelper.GetResourceFolderFiles("Docs");
 

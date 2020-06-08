@@ -12,6 +12,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using System;
 	using System.Linq;
 	using System.Text;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
@@ -74,7 +75,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[IdentifiedTest("5b20c6f1-1196-41ea-9326-0e875e2cabe9")]
 		[Test]
 		[Pairwise]
-		public void ShouldExportAllSampleDocAndImages(
+		public async Task ShouldExportAllSampleDocAndImagesAsync(
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client,
 			[ValueSource(nameof(ExportTypes))] ExportTypeDto exportType,
 			[Values("utf-8", "utf-16")] string textFileEncoding,
@@ -89,7 +90,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			GivenTheTapiForceClientAppSettings(client);
 
 			// TODO REL-369935 enable ExportFile.ExportType.ArtifactSearch and ExportFile.ExportType.Production
-			this.ExtendedExportFile.TypeOfExport = exportType == null ? ExportFile.ExportType.ParentSearch : exportType.ExportType;
+			this.ExtendedExportFile.TypeOfExport = exportType?.ExportType ?? ExportFile.ExportType.ParentSearch;
 
 			this.ExtendedExportFile.TextFileEncoding = Encoding.GetEncoding(textFileEncoding);
 			this.ExtendedExportFile.LoadFileEncoding = Encoding.GetEncoding(loadFileEncoding);
@@ -141,9 +142,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ThenTheExportJobIsSuccessful(TestData.SampleDocFiles.Count());
 
 			ExportedFilesValidator.ValidateNativesCount(this.ExtendedExportFile, TestData.SampleDocFiles.Count());
+			await ExportedFilesValidator.ValidateNativeFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
 
 			// We imported images only to one document during test setup phase
 			ExportedFilesValidator.ValidateImagesCount(this.ExtendedExportFile, TestData.SampleImageFiles.Count());
+			await ExportedFilesValidator.ValidateImageFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
 
 			this.ThenTheExportedDocumentLoadFileIsAsExpected();
 			this.ThenTheExportedImageLoadFileIsAsExpected();

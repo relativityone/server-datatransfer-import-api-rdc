@@ -144,7 +144,14 @@
     <Compile Include="ObjectManagers\ServiceProxyFactory.cs" />
     <Compile Include="RelativityHelpers\PermissionsHelper.cs" />
     <Compile Include="RelativityHelpers\SqlQueryHelper.cs" />
+    <Compile Include="TestFilesRepository.cs" />
     <Compile Include="TestNullLogger.cs" />
+    <Compile Include="Validation\BaseFileHashValidator.cs" />
+    <Compile Include="Validation\IFileValidator.cs" />
+    <Compile Include="Validation\ImageMultiPageFileHashValidator.cs" />
+    <Compile Include="Validation\ImageSinglePageFileHashValidator.cs" />
+    <Compile Include="Validation\NativeFileHashValidator.cs" />
+    <Compile Include="Validation\PdfFileValidator.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\CollectDeadlockProfilerReportSession.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\CollectedDeadlockProfilerReportBuilder.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\DeadlockReportRowDto.cs" />
@@ -221,6 +228,9 @@
     <None Include="Resources\Docs\EDRM-Sample7.ppt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\Pdfs\EDRM-Sample1.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\buildtools\CustomDictionary.xml">
@@ -269,6 +279,9 @@
     <Content Include="Resources\Images\EDRM-Sample3.tif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\MultiPageImages\EDRM-Sample1.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
