@@ -15,5 +15,7 @@
 		public string MetadataFileEncoding { get; set; }
 		public string TextFileEncoding { get; set; }
 		public string TextFieldPrecedence { get; set; }
+		public bool ExportRenderedPDFs { get; set; }
+		public string PDFPrefix { get; set; }
 	}
 }

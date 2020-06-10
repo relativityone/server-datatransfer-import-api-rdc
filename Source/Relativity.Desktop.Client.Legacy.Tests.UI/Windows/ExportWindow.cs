@@ -13,6 +13,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly CheckBoxUIElement exportFullTextAsFileCheckBox;
 		private readonly CheckBoxUIElement exportImagesCheckBox;
 		private readonly CheckBoxUIElement exportNativeFilesCheckBox;
+		private readonly CheckBoxUIElement exportRenderedPDFsCheckBox;
 		private readonly EditUIElement folderPathTextBox;
 		private readonly ComboBoxUIElement imageFileFormatComboBox;
 		private readonly ComboBoxUIElement imageFileTypeComboBox;
@@ -27,6 +28,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 		private readonly ComboBoxUIElement textAndNativeComboBox;
 		private readonly ComboBoxUIElement textFileEncodingComboBox;
 		private readonly SpinnerComboBoxUIElement volumeDigitPaddingComboBox;
+		private readonly EditUIElement subdirectoryPdfPrefix;
 
 		public ExportWindow(ILog logger, RdcWindowsManager windowsManager, WindowDetails window,
 			ExportProfile profile)
@@ -46,6 +48,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			textAndNativeComboBox = textAndNativeFileNamesGroup.FindComboBoxWithAutomationId("_comboBox");
 			exportImagesCheckBox = FindCheckBoxWithAutomationId("_exportImages");
 			exportNativeFilesCheckBox = FindCheckBoxWithAutomationId("_exportNativeFiles");
+			exportRenderedPDFsCheckBox = FindCheckBoxWithAutomationId("_exportPdfFiles");
 			imageFileFormatComboBox = FindComboBoxWithAutomationId("_imageFileFormat");
 			imageFileTypeComboBox = FindComboBoxWithAutomationId("_imageTypeDropdown");
 			metadataFileFormatComboBox = FindComboBoxWithAutomationId("_nativeFileFormat");
@@ -54,21 +57,24 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 			textFileEncodingComboBox = FindPaneWithAutomationId("_textFileEncoding").FindComboBox();
 			volumeDigitPaddingComboBox = FindSpinnerComboBoxWithAutomationId("_volumeDigitPadding");
 			pickTextFieldPrecedenceButton = FindButtonWithAutomationId("_pickTextFieldPrecedenceButton");
+			subdirectoryPdfPrefix = FindEditWithAutomationId("_subdirectoryPdfPrefix");
 		}
 
 		public void SetupExport(ExportWindowSetupParameters parameters)
 		{
 			dataSourceTab.Click();
 			SelectView(parameters);
-			
+
 			CaptureWindowScreenshot();
 
 			destinationFilesTab.Click();
 			SetExportPath(parameters.ExportPath);
 			SetVolumeInformationDigitPadding(parameters);
+			SetSubdirectoryInformation(parameters);
 			SetFilesNamedAfter(parameters);
 			SetExportImages(parameters);
 			SetExportNativeFiles(parameters);
+			SetExportRenderedPDFsFiles(parameters);
 			SetImageFileFormat(parameters);
 			SetImageFileType(parameters);
 			SetMetadataFileFormat(parameters);
@@ -82,7 +88,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 
 		public ProgressWindow RunExport()
 		{
-            menuBar.SendKeys(Keys.Alt + "F");
+			menuBar.SendKeys(Keys.Alt + "F");
 			SendKeys(Keys.Enter);
 
 			return WindowsManager.SwitchToProgressWindow(profile.ProgressWindow);
@@ -174,6 +180,23 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Windows
 				selectFieldsSourceButton.Click();
 				selectFieldsSourceDialog.SelectView(parameters.FieldSourceName);
 				this.SwitchToWindow();
+			}
+		}
+
+		private void SetSubdirectoryInformation(ExportWindowSetupParameters parameters)
+		{
+			if (parameters.PDFPrefix != null)
+			{
+				subdirectoryPdfPrefix.Click();
+				subdirectoryPdfPrefix.SetText(parameters.PDFPrefix);
+			}
+		}
+
+		private void SetExportRenderedPDFsFiles(ExportWindowSetupParameters parameters)
+		{
+			if (exportRenderedPDFsCheckBox.Exists)
+			{
+				exportRenderedPDFsCheckBox.SetValue(parameters.ExportRenderedPDFs);
 			}
 		}
 	}

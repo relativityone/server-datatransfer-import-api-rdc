@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.DataExchange.TestFramework;
 using Relativity.DataExchange.TestFramework.RelativityHelpers;
@@ -32,6 +34,41 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				IntegrationTestHelper.Destroy(TestParameters);
 				TestParameters = null;
 			}
+		}
+
+		public void ResetContext()
+		{
+			OneTimeTearDown();
+			OneTimeSetUp();
+		}
+
+		[Test]
+		public void ExportRenderedPdfs()
+		{
+			_ = RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int) ArtifactType.Document);
+			ImportHelper.ImportDefaultTestData(TestParameters);
+			SetPdfTypeForDocumentsInWorkspace();
+
+			var exportParameters = new ExportWindowSetupParameters
+			{
+				FieldSourceName = allDocumentsViewName,
+				ExportPath = CreateExportPath(),
+				VolumeInformationDigitPadding = 3,
+				FilesNamedAfter = "Identifier",
+				ExportImages = false,
+				ExportNativeFiles = true,
+				ExportFullTextAsFile = true,
+				MetadataFileFormat = "Concordance (.dat)",
+				MetadataFileEncoding = "Unicode (UTF-8)",
+				TextFileEncoding = "Unicode (UTF-8)",
+				TextFieldPrecedence = "Extracted Text",
+				ExportRenderedPDFs = true,
+				PDFPrefix = "PDF_TEST"
+			};
+
+			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 21);
+
+			ResetContext();
 		}
 
 		[Test]
@@ -181,7 +218,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 
 		private string CreateExportPath()
 		{
-			var exportPath =  Path.Combine(exportRootPath, DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
+			var exportPath = Path.Combine(exportRootPath, DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
 			Directory.CreateDirectory(exportPath);
 			return exportPath;
 		}
@@ -191,6 +228,28 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			var documents = ImportHelper.ImportDocuments(TestParameters).ToList();
 			ImportHelper.ImportImagesForDocuments(TestParameters, documents);
 			ImportHelper.ImportProduction(TestParameters, ProductionName, documents);
+		}
+
+		private void SetPdfTypeForDocumentsInWorkspace()
+		{
+			// In future we can potentially replace this code with Production service that would produce searchable pdf
+			int pdfType = (int) Relativity.DataExchange.Service.FileType.Pdf;
+			int nativeType = (int) Relativity.DataExchange.Service.FileType.Native;
+
+			SqlConnectionStringBuilder builder =
+				IntegrationTestHelper.GetSqlConnectionStringBuilder(this.TestParameters);
+
+			using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+			{
+				connection.Open();
+				using (SqlCommand command = connection.CreateCommand())
+				{
+					command.CommandText =
+						$@"Update [EDDS{this.TestParameters.WorkspaceId}].[EDDSDBO].[File] Set Type = '{pdfType}' WHERE Type = '{nativeType}'";
+					command.ExecuteScalar();
+				}
+			}
+
 		}
 	}
 }
