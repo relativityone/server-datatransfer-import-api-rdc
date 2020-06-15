@@ -366,6 +366,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				this.cancellationTokenSource.Token);
 			try
 			{
+				exporter.InteractionManager = new EventBackedUserNotification(exporter);
 				exporter.StatusMessage += this.ExporterOnStatusMessage;
 				exporter.FileTransferMultiClientModeChangeEvent += this.ExporterOnFileTransferModeChangeEvent;
 				exporter.FatalErrorEvent += this.ExporterOnFatalErrorEvent;
@@ -485,6 +486,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			{
 				Assert.That(!File.Exists(pathToExportedFile), $"Image load file was exported while it shouldn't");
 			}
+		}
+
+		protected void ThenTheStatusMessageWasAdded(string expectedMessage)
+		{
+			Assert.That(this.exporterTestJobResult.StatusMessages.Where((actualMessage) => actualMessage.Contains(expectedMessage)), Is.Not.Empty);
 		}
 
 		private static string GetPathToTemplatesFolder()

@@ -24,6 +24,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	{
 		private const string NativesSubFolder = "NATIVES";
 		private const string ImagesSubFolder = "IMAGES";
+		private const string SearchablePdfSubFolder = "PDF";
 
 		public static void ValidateImagesCount(ExtendedExportFile exportFile, int originalImagesCount)
 		{
@@ -53,6 +54,35 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			}
 
 			ValidateFileCount(exportFile, expectedNativesCount, NativesSubFolder);
+		}
+
+		public static void ValidateSearchablePdfsCount(ExtendedExportFile exportFile, int originalSearchablePdfsCount)
+		{
+			exportFile = exportFile ?? throw new ArgumentNullException(nameof(exportFile));
+			int expectedSearchablePdfsCount = 0;
+
+			if (exportFile.ExportPdf && exportFile.VolumeInfo.CopyPdfFilesFromRepository)
+			{
+				expectedSearchablePdfsCount = originalSearchablePdfsCount;
+			}
+
+			ValidateFileCount(exportFile, expectedSearchablePdfsCount, SearchablePdfSubFolder);
+		}
+
+		public static void ValidateSearchablePdfSubDirectoryPrefix(ExportFile exportFile)
+		{
+			exportFile = exportFile ?? throw new ArgumentNullException(nameof(exportFile));
+
+			if (!exportFile.ExportPdf || !exportFile.VolumeInfo.CopyPdfFilesFromRepository)
+			{
+				return;
+			}
+
+			List<FileInfo> actualSearchablePdfFiles = GetFilesFromSubFolder(exportFile.FolderPath, SearchablePdfSubFolder);
+			foreach (FileInfo pdfFile in actualSearchablePdfFiles)
+			{
+				StringAssert.StartsWith(exportFile.VolumeInfo.get_SubdirectoryPdfPrefix(false) ?? string.Empty, pdfFile.Directory?.Name);
+			}
 		}
 
 		public static Task ValidateNativeFilesAsync(ExportFile exportFile)
@@ -99,6 +129,19 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			}
 
 			return ValidateFilesAsync(actualImageFiles, fileValidator);
+		}
+
+		public static Task ValidateSearchablePdfFilesAsync(ExportFile exportFile)
+		{
+			exportFile = exportFile ?? throw new ArgumentNullException(nameof(exportFile));
+
+			if (!exportFile.ExportPdf || !exportFile.VolumeInfo.CopyPdfFilesFromRepository)
+			{
+				return Task.CompletedTask;
+			}
+
+			List<FileInfo> actualSearchablePdfFiles = GetFilesFromSubFolder(exportFile.FolderPath, SearchablePdfSubFolder);
+			return ValidateFilesAsync(actualSearchablePdfFiles, new SearchablePdfFileHashValidator());
 		}
 
 		public static void ValidateFileContent(string filePath, string expectedContent)

@@ -144,6 +144,7 @@
     <Compile Include="ObjectManagers\ServiceProxyFactory.cs" />
     <Compile Include="RelativityHelpers\PermissionsHelper.cs" />
     <Compile Include="RelativityHelpers\SqlQueryHelper.cs" />
+    <Compile Include="RelativityVersionCompatibilityChecker.cs" />
     <Compile Include="TestFilesRepository.cs" />
     <Compile Include="TestNullLogger.cs" />
     <Compile Include="Validation\BaseFileHashValidator.cs" />
@@ -152,6 +153,7 @@
     <Compile Include="Validation\ImageSinglePageFileHashValidator.cs" />
     <Compile Include="Validation\NativeFileHashValidator.cs" />
     <Compile Include="Validation\PdfFileValidator.cs" />
+    <Compile Include="Validation\SearchablePdfFileHashValidator.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\CollectDeadlockProfilerReportSession.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\CollectedDeadlockProfilerReportBuilder.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\DeadlockReportRowDto.cs" />
@@ -229,6 +231,21 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Resources\Pdfs\EDRM-Sample1.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SearchablePdfs\SearchablePDF1.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SearchablePdfs\SearchablePDF2.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SearchablePdfs\SearchablePDF3.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SearchablePdfs\SearchablePDF4.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SearchablePdfs\SearchablePDF5.pdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
