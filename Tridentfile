@@ -9,11 +9,11 @@ properties([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
-        string(defaultValue: '', description: 'Relativity branch to test against, leave null for latest hopper image', name: 'relativityBranch'),
+        string(defaultValue: 'release-11.2-lanceleaf', description: 'Relativity branch to test against, leave null for latest hopper image', name: 'relativityBranch'),
         booleanParam(defaultValue: true, description: "Enable or disable running unit tests", name: 'runUnitTests'),
         booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests'),
         booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport'),
-        choice(defaultValue: 'Hopper', choices: ["Hopper"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment'),
+        choice(defaultValue: 'Hopper', choices: ["Hopper"], description: 'The template used to prepare the hopper instance', name: 'testEnvironment'),
         booleanParam(defaultValue: true, description: """Enable or disable publishing NuGet packages, default true, but can be blocked by type of build and branch type.
         This is only for debug purposes.""", name: 'publishPackages')
     ])
@@ -42,7 +42,7 @@ build = params.build
 
 def config = [
     slackChannel: params.slackChannel,
-	sutTemplate: "aio-juniper-0",
+	sutTemplate: "lanceleafAA2",
 	hopperApiUrl: "https://api.hopper.relativity.com/",
 	hopperApiUsername: "homeimprovement@relativity.com"
 ]

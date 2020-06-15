@@ -8,7 +8,7 @@ properties([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#ugly_test', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
-        choice(defaultValue: 'lanceleafAA1', choices: ["lanceleafAA1"], description: 'The template used to prepare hopper instance', name: 'hopperTemplate'),
+        choice(defaultValue: 'lanceleafAA2', choices: ["lanceleafAA2"], description: 'The template used to prepare the hopper instance', name: 'hopperTemplate'),
 		string(defaultValue: 'release-11.2-lanceleaf', description: 'Name of folder in bld-pkgs Packages Relativity', name: 'relativityInstallerSource'),
     ])
 ])
