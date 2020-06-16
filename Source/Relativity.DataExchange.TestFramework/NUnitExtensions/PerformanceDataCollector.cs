@@ -8,6 +8,8 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.IO;
+	using System.Reflection;
+
 	using NUnit.Framework;
 	using NUnit.Framework.Interfaces;
 	using Relativity.DataExchange.Transfer;
@@ -73,25 +75,25 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 			}
 
 			// TODO: Temporary solution with save test performance statistics to file
-			// TODO: add to output statistics: WebApiVersion, RelativityVersion, dateOfTestExecution
 			string parentFolder = IntegrationTestHelper.IntegrationTestParameters.SqlProfilingReportsOutputPath;
-			string outputFile = System.IO.Path.Combine(parentFolder, "Summary.csv");
+			string outputFile = Path.Combine(parentFolder, "Summary.csv");
 			Directory.CreateDirectory(parentFolder);
+
+			string relativityVersion = RelativityVersionCompatibilityChecker.GetCurrentRelativityVersion(IntegrationTestHelper.IntegrationTestParameters).ToString();
+			string testResultStatus = TestContext.CurrentContext.Result.Outcome.Status.ToString();
 
 			if (!File.Exists(outputFile))
 			{
-				IEnumerable<string> fileHeader = new string[] { $"TestCaseName|TestResultStatus|MassImportImprovementsToggle|NumberOfParallelApiClients|NumberOfDocumentsToImportByClient|NumberOfImagesPerDocument|MaxNumberOfMultiValues|FileTransferMode|ImportTime|DeadlocksCount|FolderWithDeadlocksDetails" };
+				IEnumerable<string> fileHeader = new string[] { $"GiBranch|GitCommit|RelativityVersion|Date|TestCaseName|TestResultStatus|MassImportImprovementsToggle|NumberOfParallelApiClients|NumberOfDocumentsToImportByClient|NumberOfImagesPerDocument|MaxNumberOfMultiValues|FileTransferMode|ImportTime|DeadlocksCount|FolderWithDeadlocksDetails" };
 				File.AppendAllLines(outputFile, fileHeader);
 			}
-
-			string testResultStatus = TestContext.CurrentContext.Result.Outcome.Status.ToString();
 
 			if (!this.storeDeadlocksInfo)
 			{
 				this.deadlocksFolderDetails = "CollectDeadlocks turned off";
 			}
 
-			IEnumerable<string> fileContent = new string[] { $"{this.testCaseName}|{testResultStatus}|{this.massImportImprovementsToggle}|{this.numberOfClients}|{this.numberOfDocumentsToImport}|{this.numberOfImagesPerDocument}|{this.maxNumberOfMultiValues}|{this.tapiClient.ToString()}|{this.jobExecutionTime.ToString()}|{this.deadlocksCount}|{this.deadlocksFolderDetails}" };
+			IEnumerable<string> fileContent = new string[] { $"{GetGitBranchName()}|{GetCommitHash()}|{relativityVersion}|{DateTime.UtcNow.ToShortDateString()}|{this.testCaseName}|{testResultStatus}|{this.massImportImprovementsToggle}|{this.numberOfClients}|{this.numberOfDocumentsToImport}|{this.numberOfImagesPerDocument}|{this.maxNumberOfMultiValues}|{this.tapiClient.ToString()}|{this.jobExecutionTime.ToString()}|{this.deadlocksCount}|{this.deadlocksFolderDetails}" };
 			File.AppendAllLines(outputFile, fileContent);
 		}
 
@@ -111,6 +113,39 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 		{
 			this.stopwatch.Stop();
 			this.jobExecutionTime = this.stopwatch.Elapsed;
+		}
+
+		private static string GetCommitHash()
+		{
+			return ExecuteCommandAndReturnOutput($"git -C {GetRootFolder()} rev-parse --short HEAD");
+		}
+
+		private static string GetGitBranchName()
+		{
+			return ExecuteCommandAndReturnOutput($"git -C {GetRootFolder()} describe --all");
+		}
+
+		private static string GetRootFolder()
+		{
+			string executionAssembly = Assembly.GetExecutingAssembly().Location;
+			return executionAssembly.Substring(0, executionAssembly.IndexOf("Source", StringComparison.CurrentCulture));
+		}
+
+		private static string ExecuteCommandAndReturnOutput(string command)
+		{
+			ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", $"/c {command}");
+			processInfo.CreateNoWindow = true;
+			processInfo.UseShellExecute = false;
+			processInfo.RedirectStandardOutput = true;
+			var process = Process.Start(processInfo);
+
+			StreamReader reader = process.StandardOutput;
+			string output = reader.ReadToEnd();
+
+			process.WaitForExit(10000);
+			process.Close();
+
+			return output.Trim();
 		}
 	}
 }

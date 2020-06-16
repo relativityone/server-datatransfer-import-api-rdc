@@ -27,8 +27,10 @@ namespace Relativity.DataExchange.TestFramework
 			}
 		}
 
-		private static Version GetCurrentRelativityVersion(IntegrationTestParameters testParameters)
+		public static Version GetCurrentRelativityVersion(IntegrationTestParameters testParameters)
 		{
+			testParameters = testParameters ?? throw new ArgumentNullException(nameof(testParameters));
+
 			if (cachedRelativityVersion == null)
 			{
 				IRunningContext runningContext = new RunningContext();
