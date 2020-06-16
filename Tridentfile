@@ -42,7 +42,7 @@ build = params.build
 
 def config = [
     slackChannel: params.slackChannel,
-	sutTemplate: "lanceleafAA1",
+	sutTemplate: "aio-lanceleaf-ea",
 	hopperApiUrl: "https://api.hopper.relativity.com/",
 	hopperApiUsername: "homeimprovement@relativity.com"
 ]

@@ -73,6 +73,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[IdentifiedTest("4ae96850-4ef9-4a1d-95eb-3140a5d7efa5")]
 		public async Task ShouldNotAppendOverlayChildObjectsThatNotExist()
 		{
+			RelativityVersionCompatibilityChecker.SkipTestIfRelativityVersionIsNotCompatible(this.TestParameters, new Version(11, 2, 158));
+
 			// ARRANGE
 			const int RowsWithExistingObject = 5;
 			const int RowsWithNonExistingObject = 10;

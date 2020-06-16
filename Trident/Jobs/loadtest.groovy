@@ -133,6 +133,7 @@ timestamps
                 }
                 else
                 {
+					message = "All tests passed"
                     currentBuild.result = 'SUCCESS'
                 }
                 
