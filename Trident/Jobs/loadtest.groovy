@@ -8,8 +8,8 @@ properties([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#ugly_test', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
-        choice(defaultValue: 'aio-juniper-1', choices: ["aio-juniper-1"], description: 'The template used to prepare hopper instance', name: 'hopperTemplate'),
-		string(defaultValue: 'release-11.1-juniper-1', description: 'Name of folder in \\bld-pkgs\Packages\Relativity\', name: 'relativityInstallerSource'),
+        choice(defaultValue: 'aio-juniper-2', choices: ["aio-juniper-2"], description: 'The template used to prepare hopper instance', name: 'hopperTemplate'),
+		string(defaultValue: 'release-11.1-juniper', description: 'Name of folder in bld-pkgs Packages Relativity', name: 'relativityInstallerSource'),
    ])
 ])
 
