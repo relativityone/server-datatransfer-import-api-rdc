@@ -14,6 +14,8 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockRepor
 
 	internal class CollectedDeadlockProfilerReportBuilder : ProfilerReportBuilderBase<DeadlockReportRowDto>
 	{
+		private const string WebAPIClientAppPrefix = "RelativityWebAPI";
+
 		public override ProfilerReport Build()
 		{
 			string description = BuildSummary(this.Rows);
@@ -36,7 +38,10 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockRepor
 
 		private static IEnumerable<TextFileDto> GetDeadlockGraphFiles(DeadlockReportRowDto dto)
 		{
-			return new[] { new TextFileDto(Guid.NewGuid().ToString(), "xdl", dto.DeadlockReport) };
+			if (IsWebApiDeadlock(dto))
+			{
+				yield return new TextFileDto(Guid.NewGuid().ToString(), "xdl", dto.DeadlockReport);
+			}
 		}
 
 		private static IEnumerable<TextFileDto> GetSummaryFile(string description)
@@ -50,55 +55,65 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockRepor
 
 			row.DeadlockReport = deadLockElement.ToString();
 
-			var processes = deadLockElement.Descendants("process");
+			row.VictimProcessId = deadLockElement
+				.Descendants("victimProcess")
+				.Single()
+				.Attribute("id")
+				.Value;
 
-			var ridToSqls = new List<(string RID, string SqlText)>();
-
-			foreach (var process in processes)
+			foreach (var process in deadLockElement.Descendants("process"))
 			{
-				string sql = process.Descendants("inputbuf").First().Value;
-				string rid = process.Attribute("waitresource").Value;
-				ridToSqls.Add((RID: rid, SqlText: sql));
+				string processId = process.Attribute("id").Value;
+				string clientApp = process.Attribute("clientapp").Value;
+				row.ProcessIdToClientApp[processId] = clientApp;
 			}
 
-			var ridLockElements = deadLockElement.Descendants("ridlock");
+			var resourceList = deadLockElement.Descendants("resource-list").Single();
 
-			foreach (var ridLockElem in ridLockElements)
+			foreach (var lockElement in resourceList.Elements())
 			{
-				string objectName = ridLockElem.Attribute("objectname")?.Value;
-				string ridToCompare =
-					$"{ridLockElem.Attribute("dbid")?.Value}:{ridLockElem.Attribute("fileid")?.Value}:{ridLockElem.Attribute("pageid")?.Value}";
-
-				string foundSQL = ridToSqls.Find(item => item.RID.Contains(ridToCompare)).SqlText;
-
-				row.LockedObjectInfo.Add((Name: objectName, Sql: foundSQL));
+				string objectName = lockElement.Attribute("objectname")?.Value;
+				row.LockedObjectsNames.Add(objectName);
 			}
 		}
 
-		private static string BuildSummary(List<DeadlockReportRowDto> deadlockReports)
+		private static string BuildSummary(IEnumerable<DeadlockReportRowDto> deadlockReports)
 		{
 			const string ReportHeader = "SQL Profiling - Collect Deadlocks";
 
-			var lockedObjectNames = deadlockReports.SelectMany(item => item.LockedObjectInfo)
-				.GroupBy(objectName => objectName.Name)
+			deadlockReports = deadlockReports.Where(IsWebApiDeadlock).ToList();
+
+			var lockedObjectNames = deadlockReports
+				.SelectMany(item => item.LockedObjectsNames)
+				.GroupBy(objectName => objectName)
 				.OrderByDescending(item => item.Count());
+
+			int numberOfDeadlocks = deadlockReports.Count();
+			int numberOfWebApiVictims = deadlockReports
+				.Select(deadlockReport => deadlockReport.ProcessIdToClientApp[deadlockReport.VictimProcessId])
+				.Count(victimClientApp => victimClientApp.StartsWith(WebAPIClientAppPrefix, StringComparison.OrdinalIgnoreCase));
 
 			var sb = new StringBuilder();
 			sb.AppendLine($"{ReportHeader} - report");
-			sb.AppendLine($"Number of deadlock occurence: {deadlockReports.Count}").AppendLine();
+			sb.AppendLine($"Number of deadlock occurence: {numberOfDeadlocks}");
+			sb.AppendLine($"Number of WebAPI victims: {numberOfWebApiVictims}");
+			sb.AppendLine($"Number of other victims: {numberOfDeadlocks - numberOfWebApiVictims}");
+			sb.AppendLine();
 
 			foreach (var lockedObjectName in lockedObjectNames)
 			{
 				sb.AppendLine($"Deadlocks count on object name '{lockedObjectName.Key}' : {lockedObjectName.Count()}");
 			}
 
-			sb.AppendLine().AppendLine("Details:").AppendLine();
-			foreach (var lockObject in deadlockReports.SelectMany(item => item.LockedObjectInfo))
-			{
-				sb.AppendLine($"Deadlocks object name '{lockObject.Name}' - Sql: {lockObject.Sql}").AppendLine();
-			}
-
 			return sb.AppendLine().AppendLine($"{ReportHeader} - End of the report").ToString();
+		}
+
+		private static bool IsWebApiDeadlock(DeadlockReportRowDto deadlockReport)
+		{
+			return deadlockReport
+				.ProcessIdToClientApp
+				.Values
+				.Any(clientApp => clientApp.StartsWith(WebAPIClientAppPrefix, StringComparison.OrdinalIgnoreCase));
 		}
 	}
 }

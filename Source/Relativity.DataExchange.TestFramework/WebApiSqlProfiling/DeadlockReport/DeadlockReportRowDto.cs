@@ -8,8 +8,18 @@ namespace Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockRepor
 
 	internal class DeadlockReportRowDto
 	{
+		public DeadlockReportRowDto()
+		{
+			LockedObjectsNames = new List<string>();
+			ProcessIdToClientApp = new Dictionary<string, string>();
+		}
+
 		public string DeadlockReport { get; set; }
 
-		public List<(string Name, string Sql)> LockedObjectInfo { get; } = new List<(string Name, string Sql)>();
+		public List<string> LockedObjectsNames { get; }
+
+		public Dictionary<string, string> ProcessIdToClientApp { get; }
+
+		public string VictimProcessId { get; set; }
 	}
 }
