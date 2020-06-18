@@ -83,6 +83,10 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Relativity.AutomatedWorkflows.Services.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.AutomatedWorkflows.Services.Interfaces\lib\net462\Relativity.AutomatedWorkflows.Services.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -212,6 +216,7 @@
     <Compile Include="Service\IServiceRetryPolicyFactory.cs" />
     <Compile Include="Service\KeplerRetryPolicyFactory.cs" />
     <Compile Include="Service\KeplerServiceProxyFactory.cs" />
+    <Compile Include="Service\TriggerManager.cs" />
     <Compile Include="SettingsConstants.cs" />
     <Compile Include="Transfer\ILongTextStreamService.cs" />
     <Compile Include="Transfer\LongTextStreamProgressEventArgs.cs" />

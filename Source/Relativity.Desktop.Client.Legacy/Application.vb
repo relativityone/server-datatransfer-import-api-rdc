@@ -1113,7 +1113,7 @@ Namespace Relativity.Desktop.Client
 			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
 					Dim frm As ProcessForm = CreateProcessForm()
-					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await SetupMetricService(), RunningContext, _logger)
+					Dim importer As New Processes.RdcImportLoadFileProcess(Await SetupMetricService(), RunningContext, _logger)
 					importer.CaseInfo = SelectedCaseInfo
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
@@ -1163,7 +1163,7 @@ Namespace Relativity.Desktop.Client
 				Return
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
-			Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await SetupMetricService(), Me.RunningContext, _logger)
+			Dim importer As New Processes.RdcImportImageFileProcess(Await SetupMetricService(), Me.RunningContext, _logger)
 			ImageLoadFile.CookieContainer = Me.CookieContainer
 			importer.CaseInfo = SelectedCaseInfo
 			importer.ImageLoadFile = ImageLoadFile
