@@ -148,8 +148,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			ExportedFilesValidator.ValidateImagesCount(this.ExtendedExportFile, TestData.SampleImageFiles.Count());
 			await ExportedFilesValidator.ValidateImageFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
 
-			this.ThenTheExportedDocumentLoadFileIsAsExpected();
-			this.ThenTheExportedImageLoadFileIsAsExpected();
+			await this.ThenTheExportedDocumentLoadFileIsAsExpectedAsync().ConfigureAwait(false);
+			await this.ThenTheExportedImageLoadFileIsAsExpectedAsync().ConfigureAwait(false);
 		}
 	}
 }

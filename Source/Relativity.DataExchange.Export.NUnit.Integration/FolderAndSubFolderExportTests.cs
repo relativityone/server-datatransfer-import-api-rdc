@@ -12,6 +12,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
@@ -34,7 +35,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[IdentifiedTest("3B50E3A9-0A28-4FA4-9ACD-5FB878DEF97A")]
 		[TestCase(false)]
 		[TestCase(true)]
-		public void ShouldExportWhenTheFileStorageSearchResultsAreEmpty(bool cloudInstance)
+		public async Task ShouldExportWhenTheFileStorageSearchResultsAreEmptyAsync(bool cloudInstance)
 		{
 			// ARRANGE
 			this.GivenTheMockTapiObjectServiceIsRegistered();
@@ -47,14 +48,14 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ThenTheExportJobIsSuccessful(TestData.SampleDocFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 
-			this.ThenTheExportedDocumentLoadFileIsAsExpected();
-			this.ThenTheExportedImageLoadFileIsAsExpected();
+			await this.ThenTheExportedDocumentLoadFileIsAsExpectedAsync().ConfigureAwait(false);
+			await this.ThenTheExportedImageLoadFileIsAsExpectedAsync().ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("F8F28759-EC5A-4C03-95A3-70ACB005BCCE")]
 		[TestCase(false)]
 		[TestCase(true)]
-		public void ShouldExportWhenTheFileStorageSearchResultsAreInvalid(bool cloudInstance)
+		public async Task ShouldExportWhenTheFileStorageSearchResultsAreInvalidAsync(bool cloudInstance)
 		{
 			// ARRANGE
 			this.GivenTheMockTapiObjectServiceIsRegistered();
@@ -67,12 +68,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ThenTheExportJobIsSuccessful(TestData.SampleDocFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 
-			this.ThenTheExportedDocumentLoadFileIsAsExpected();
-			this.ThenTheExportedImageLoadFileIsAsExpected();
+			await this.ThenTheExportedDocumentLoadFileIsAsExpectedAsync().ConfigureAwait(false);
+			await this.ThenTheExportedImageLoadFileIsAsExpectedAsync().ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("77A786A1-58E5-45E3-B0BF-CB70D3FFCE62")]
-		public void ShouldExportWhenTheFileStorageSearchThrowsNonFatalException()
+		public async Task ShouldExportWhenTheFileStorageSearchThrowsNonFatalExceptionAsync()
 		{
 			// ARRANGE
 			const bool Fatal = false;
@@ -86,8 +87,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ThenTheExportJobIsSuccessful(TestData.SampleDocFiles.Count());
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 
-			this.ThenTheExportedDocumentLoadFileIsAsExpected();
-			this.ThenTheExportedImageLoadFileIsAsExpected();
+			await this.ThenTheExportedDocumentLoadFileIsAsExpectedAsync().ConfigureAwait(false);
+			await this.ThenTheExportedImageLoadFileIsAsExpectedAsync().ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("8DFA89C0-EB36-446B-92BC-2A0D8314ECD8")]
@@ -110,7 +111,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[IdentifiedTest("14A8EB3C-5662-428C-B1E6-FA95E8C79259")]
 		[TestCase(TapiClient.None)]
 		[TestCase(TapiClient.Aspera)]
-		public void ShouldExportWhenTheSettingsForFileShareIsNull(TapiClient tapiClient)
+		public async Task ShouldExportWhenTheSettingsForFileShareIsNullAsync(TapiClient tapiClient)
 		{
 			// ARRANGE
 			GivenTheTapiForceClientAppSettings(tapiClient);
@@ -123,8 +124,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ThenTheExportJobIsSuccessful(TestData.SampleDocFiles.Count());
 			this.ThenTheMockFileShareSettingsServiceIsVerified();
 
-			this.ThenTheExportedDocumentLoadFileIsAsExpected();
-			this.ThenTheExportedImageLoadFileIsAsExpected();
+			await this.ThenTheExportedDocumentLoadFileIsAsExpectedAsync().ConfigureAwait(false);
+			await this.ThenTheExportedImageLoadFileIsAsExpectedAsync().ConfigureAwait(false);
 		}
 
 		/// <summary>

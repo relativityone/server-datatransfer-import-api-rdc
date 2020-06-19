@@ -148,12 +148,14 @@
     <Compile Include="TestFilesRepository.cs" />
     <Compile Include="TestNullLogger.cs" />
     <Compile Include="Validation\BaseFileHashValidator.cs" />
+    <Compile Include="Validation\ExportedFilesValidator.cs" />
     <Compile Include="Validation\IFileValidator.cs" />
     <Compile Include="Validation\ImageMultiPageFileHashValidator.cs" />
     <Compile Include="Validation\ImageSinglePageFileHashValidator.cs" />
     <Compile Include="Validation\NativeFileHashValidator.cs" />
     <Compile Include="Validation\PdfFileValidator.cs" />
     <Compile Include="Validation\SearchablePdfFileHashValidator.cs" />
+    <Compile Include="Validation\StringContentValidator.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\CollectDeadlockProfilerReportSession.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\CollectedDeadlockProfilerReportBuilder.cs" />
     <Compile Include="WebApiSqlProfiling\DeadlockReport\DeadlockReportRowDto.cs" />

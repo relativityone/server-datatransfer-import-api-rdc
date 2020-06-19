@@ -2,11 +2,10 @@
 // © Relativity All Rights Reserved.
 // </copyright>
 
-namespace Relativity.DataExchange.Export.NUnit.Integration
+namespace Relativity.DataExchange.TestFramework
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Reflection;
@@ -144,40 +143,16 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			return ValidateFilesAsync(actualSearchablePdfFiles, new SearchablePdfFileHashValidator());
 		}
 
-		public static void ValidateFileContent(string filePath, string expectedContent)
+		public static async Task ValidateFileStringContentAsync(string filePath, string expectedContent, string extension = null, Encoding loadFileEncoding = null)
 		{
-			CultureInfo cultureInfo = CultureInfo.CurrentCulture;
-			string currentContent = GetFileContent(filePath).ToLower(cultureInfo).TrimEnd();
-			string formattedExpectedContent = expectedContent == null ? string.Empty : expectedContent.ToLower(cultureInfo).TrimEnd();
+			var validator = new StringContentValidator(expectedContent, extension, loadFileEncoding);
 
-			if (formattedExpectedContent != currentContent)
+			if (!await validator.IsValidAsync(filePath).ConfigureAwait(false))
 			{
 				// Files should be copied to TestReports folder to be stored with other tests results from pipeline
-				string[] storedFiles = StoreCurrentAndExpectedFileInExportTestReportFolder(filePath, formattedExpectedContent);
-				Assert.AreEqual(formattedExpectedContent, currentContent, $"File '{filePath}' content differs from expected. Both exported and expected files saved in '{storedFiles[0]}' and {storedFiles[1]}");
+				string[] storedFiles = StoreCurrentAndExpectedFileInExportTestReportFolder(filePath, expectedContent);
+				Assert.Fail($"File '{filePath}' content differs from expected. Both exported and expected files saved in '{storedFiles[0]}' and {storedFiles[1]}");
 			}
-		}
-
-		public static void ValidateFileEncoding(string filePath, Encoding expectedEncoding)
-		{
-			Encoding currentEncoding = GetFileEncoding(filePath);
-			Assert.AreEqual(expectedEncoding, currentEncoding, $"File '{filePath}' encoding is '{currentEncoding}', should be '{expectedEncoding}'");
-		}
-
-		public static void ValidateFileExtension(string filePath, string expectedExtension)
-		{
-			string currentExtension = GetFileExtension(filePath);
-			Assert.AreEqual(expectedExtension, currentExtension, $"File '{filePath}' extension is '{currentExtension}', should be '{expectedExtension}'");
-		}
-
-		private static string GetFileExtension(string filePath)
-		{
-			return Path.GetExtension(filePath).Replace(".", string.Empty);
-		}
-
-		private static string GetFileContent(string filePath)
-		{
-			return File.ReadAllText(filePath);
 		}
 
 		private static Encoding GetFileEncoding(string filePath)
@@ -194,11 +169,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			string reportFolder = GetPathToExportTestReportFolder();
 			Directory.CreateDirectory(reportFolder);
 
-			string fileExtension = GetFileExtension(currentFilePath);
 			Encoding fileEncoding = GetFileEncoding(currentFilePath);
 
 			string fileName = Path.GetFileNameWithoutExtension(currentFilePath) + "_" + DateTime.Now.Hour + "_"
-			                  + DateTime.Now.Minute + "_" + DateTime.Now.Second + "_current." + fileExtension;
+			                  + DateTime.Now.Minute + "_" + DateTime.Now.Second + "_current" + Path.GetExtension(currentFilePath);
 
 			string storedCurrentFilePath = Path.Combine(reportFolder, fileName);
 			string storedExpectedFilePath = Path.Combine(reportFolder, fileName).Replace("current", "expected");
@@ -206,12 +180,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			File.Move(currentFilePath, storedCurrentFilePath);
 			File.WriteAllText(storedExpectedFilePath, expectedFileContent, fileEncoding);
 
-			return new string[] { storedCurrentFilePath, storedExpectedFilePath };
+			return new[] { storedCurrentFilePath, storedExpectedFilePath };
 		}
 
 		private static string GetPathToExportTestReportFolder()
 		{
-			string parentFolder = new System.IO.FileInfo(Assembly.GetExecutingAssembly().Location).Directory.Parent.Parent.Parent.FullName;
+			string parentFolder = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory.Parent.Parent.Parent.FullName;
 			string reportFolder = Path.Combine(parentFolder, "TestReports", "integration-tests", "ExportTests");
 			return reportFolder;
 		}

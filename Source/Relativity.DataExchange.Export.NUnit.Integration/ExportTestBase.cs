@@ -26,7 +26,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 	using global::NUnit.Framework;
 
-	using kCura.Relativity.Client;
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Container;
 	using kCura.WinEDDS.Exporters;
@@ -42,7 +41,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.Logging;
 
 	using ArtifactType = Relativity.DataExchange.Service.ArtifactType;
 	using Field = kCura.EDDS.WebAPI.DocumentManagerBase.Field;
@@ -448,39 +446,32 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			Assert.That(exportedFilesCount, Is.EqualTo(expectedExportedFilesCount));
 		}
 
-		protected void ThenTheExportedDocumentLoadFileIsAsExpected(string pathToExportedFile, string expectedFileContent)
+		protected Task ThenTheExportedDocumentLoadFileIsAsExpectedAsync(string pathToExportedFile, string expectedFileContent)
 		{
-			// Validate that exported file has encoding and extension as set during export
-			ExportedFilesValidator.ValidateFileExtension(pathToExportedFile, this.ExtendedExportFile.LoadFileExtension);
-			ExportedFilesValidator.ValidateFileEncoding(pathToExportedFile, this.ExtendedExportFile.LoadFileEncoding);
-
 			// Validate that content is the same as in stored template
-			ExportedFilesValidator.ValidateFileContent(pathToExportedFile, expectedFileContent);
+			return ExportedFilesValidator.ValidateFileStringContentAsync(pathToExportedFile, expectedFileContent, this.ExtendedExportFile.LoadFileExtension, this.ExtendedExportFile.LoadFileEncoding);
 		}
 
-		protected void ThenTheExportedDocumentLoadFileIsAsExpected()
+		protected Task ThenTheExportedDocumentLoadFileIsAsExpectedAsync()
 		{
 			if (this.ExtendedExportFile.ExportNative)
 			{
-				ThenTheExportedDocumentLoadFileIsAsExpected(
+				return ThenTheExportedDocumentLoadFileIsAsExpectedAsync(
 					GetPathToExportedDocumentLoadFile(),
 					GenerateExpectedDocumentLoadFileContent());
 			}
-			else
-			{
-				ThenTheExportedDocumentLoadFileIsEmpty();
-			}
+
+			return ThenTheExportedDocumentLoadFileIsEmptyAsync();
 		}
 
-		protected void ThenTheExportedImageLoadFileIsAsExpected()
+		protected async Task ThenTheExportedImageLoadFileIsAsExpectedAsync()
 		{
 			string fileExtension = this.GetImageLoadFileExtension();
 			string pathToExportedFile = GetPathToExportedImageLoadFile();
 
 			if (this.ExtendedExportFile.ExportImages)
 			{
-				ExportedFilesValidator.ValidateFileExtension(pathToExportedFile, fileExtension);
-				ExportedFilesValidator.ValidateFileContent(pathToExportedFile, GenerateExpectedImageLoadFileContent());
+				await ExportedFilesValidator.ValidateFileStringContentAsync(pathToExportedFile, GenerateExpectedImageLoadFileContent(), fileExtension).ConfigureAwait(false);
 			}
 			else
 			{
@@ -505,9 +496,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			return Path.Combine(GetPathToTemplatesFolder(), "Documents_export_template.txt");
 		}
 
-		private void ThenTheExportedDocumentLoadFileIsEmpty()
+		private Task ThenTheExportedDocumentLoadFileIsEmptyAsync()
 		{
-			ExportedFilesValidator.ValidateFileContent(GetPathToExportedDocumentLoadFile(), "\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n");
+			return ExportedFilesValidator.ValidateFileStringContentAsync(GetPathToExportedDocumentLoadFile(), string.Empty);
 		}
 
 		private DataTable GetSearchExportDataSource(SearchManager searchManager, bool isArtifactSearch, int artifactType)
