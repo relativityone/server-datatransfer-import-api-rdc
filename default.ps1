@@ -958,8 +958,19 @@ Function ExecuteSqlCommand{
 	Write-Host "SQLInstance: '$sqlserveraddress'" -ForegroundColor Green
 	Write-Host "SQLDatabaseName: '$SQLDatabaseName'" -ForegroundColor Green
 	
-	Install-Module sqlserver -Force
-	Import-Module sqlserver -Force
+	if(Get-Module -ListAvailable -Name sqlserver)
+	{
+		Import-Module sqlserver -Force
+	}
+	elseif(Get-Module -ListAvailable -Name sqlps)
+	{
+		Import-Module sqlps -Force
+	}
+	else
+	{
+		Install-Module sqlserver -Force
+		Import-Module sqlserver -Force
+	}
 
 	Invoke-Sqlcmd -ServerInstance $sqlserveraddress -Database $SQLDatabaseName -Username $SQLUserName -Password $SQLPassword -Query $SQLCommand
 }
