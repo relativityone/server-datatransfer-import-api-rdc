@@ -7,7 +7,6 @@ properties([
     parameters([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-        string(defaultValue: '#ugly_test', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
         choice(defaultValue: 'lanceleafAA1', choices: ["lanceleafAA1"], description: 'The template used to prepare hopper instance', name: 'hopperTemplate'),
 		string(defaultValue: 'develop', description: 'Name of folder in bld-pkgs Packages Relativity', name: 'relativityInstallerSource'),
     ])
@@ -139,7 +138,7 @@ timestamps
                 
                 notifyBitbucket()
                 
-                Slack.SendSlackNotification("Newest Relativity from '${relativityInstallerSource}'", "Trident loadtests", env.BRANCH_NAME, params.buildConfig, params.slackChannel, testResultsFailed, testResultsPassed, testResultsSkipped, message)
+                Slack.SendSlackNotification("Newest Relativity from '${relativityInstallerSource}'", "Trident loadtests", env.BRANCH_NAME, params.buildConfig, "load-tests", testResultsFailed, testResultsPassed, testResultsSkipped, message)
             }
 		}
 	}

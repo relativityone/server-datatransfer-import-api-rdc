@@ -7,7 +7,6 @@ properties([
     parameters([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-        string(defaultValue: '#ugly_test', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
         string(defaultValue: 'aio-larkspur-3,aio-blazingstar-3,aio-foxglove-3,aio-goatsbeard-3,aio-indigo-2,aio-juniper-2,aio-lanceleaf-ea', description: 'Comma separated list of SUT templates', name: 'temlatesStr')
     ]),
     pipelineTriggers([cron("H 22 * * *")])
@@ -137,7 +136,7 @@ timestamps
                 
                 notifyBitbucket()
                 
-                Slack.SendSlackNotification(temlatesStr, "Trident nightly", env.BRANCH_NAME, params.buildConfig, params.slackChannel, testResultsFailed, testResultsPassed, testResultsSkipped, message)
+                Slack.SendSlackNotification(temlatesStr, "Trident nightly", env.BRANCH_NAME, params.buildConfig, "compatibility", testResultsFailed, testResultsPassed, testResultsSkipped, message)
             }
 		}
 	}
