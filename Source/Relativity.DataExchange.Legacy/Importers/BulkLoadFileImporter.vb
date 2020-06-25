@@ -1418,28 +1418,33 @@ Namespace kCura.WinEDDS
 				_task = Nothing
 			End If
 			Dim makeServiceCalls As Action =
-				    Sub()
-					    Dim start As Int64 = DateTime.Now.Ticks
-					    Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
+					Sub()
+						Try
+							Dim start As DateTime = DateTime.Now
+							Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
-					    Statistics.ProcessMassImportResults(runResults)
-						Dim numberOfTicks As Long = DateTime.Now.Ticks - start
-						Dim batchDuration As TimeSpan = New TimeSpan(numberOfTicks)
-						
-					    Statistics.MassImportDuration += batchDuration
-						Statistics.BatchCount += 1
+							Statistics.ProcessMassImportResults(runResults)
+							Dim batchDuration As TimeSpan = DateTime.Now - start
 
-					    Logger.LogInformation("Duration of mass import processing: {durationInMilliseconds}, batch: {numberOfBatch}", batchDuration.TotalMilliseconds, Statistics.BatchCount)
-					    UpdateStatisticsSnapshot(DateTime.Now)
-						Me.ManageErrors(_artifactTypeID)
+							Statistics.MassImportDuration += batchDuration
+							Statistics.BatchCount += 1
 
-						Dim batchInformation As New BatchInformation With {
+							Logger.LogInformation("Duration of mass import processing: {durationInMilliseconds}, batch: {numberOfBatch}", batchDuration.TotalMilliseconds, Statistics.BatchCount)
+							UpdateStatisticsSnapshot(DateTime.Now)
+							Me.ManageErrors(_artifactTypeID)
+
+							Dim batchInformation As New BatchInformation With {
 								.OrdinalNumber = Statistics.BatchCount,
 								.NumberOfRecords = runResults.FilesProcessed,
 								.MassImportDuration = batchDuration
 								}
-						MyBase.OnBatchCompleted(batchInformation)
+							MyBase.OnBatchCompleted(batchInformation)
+						Catch ex As Exception
+							StopImport()
+							OnFatalError($"A fatal error occurred while executing a mass import task. Batch number: {Statistics.BatchCount}", ex, _runId)
+						End Try
 					End Sub
+
 			If _usePipeliningForNativeAndObjectImports Then
 				Dim f As New System.Threading.Tasks.TaskFactory()
 				_task = f.StartNew(makeServiceCalls)
