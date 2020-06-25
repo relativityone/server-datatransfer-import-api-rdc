@@ -15,6 +15,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	using Moq;
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents <see cref="ErrorMessageWriter{T}"/> tests.
@@ -46,6 +47,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[Test(Description = "Error message writer should write escaped messages.")]
+		[Category(TestCategories.Integration)]
 		[SuppressMessage("ReSharper", "AccessToDisposedClosure", Justification = "This is a test, and this is not a problem here.")]
 		public static void ErrorMessageWriterShouldWriteEscapedErrorMessages()
 		{
@@ -70,6 +72,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[Test(Description = "Error message writer should not create file if created, or disposed.")]
+		[Category(TestCategories.Integration)]
 		public static void ErrorMessageWriterShouldNotCreateFileIfCreated()
 		{
 			// Arrange
@@ -88,6 +91,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[Test(Description = "Error message writer should not create file if hold released.")]
+		[Category(TestCategories.Integration)]
 		public static void ErrorMessageWriterShouldNotCreateFileIfHoldReleased()
 		{
 			// Arrange
@@ -107,6 +111,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[Test(Description = "If hold is released file should not be held by writer.")]
+		[Category(TestCategories.Integration)]
 		public static void IfHoldIsReleasedFileShouldNotBeHeldByWriter()
 		{
 			// Arrange
@@ -128,6 +133,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[Test(Description = "Error message writer should create file if it has written something to disk.")]
+		[Category(TestCategories.Integration)]
 		public static void ErrorMessageWriterShouldCreateFileIfItHasWrittenSomethingToDisk()
 		{
 			// Arrange
@@ -150,6 +156,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[Test(Description = "Error message writer should create file if it has written something to disk, after releasing hold.")]
+		[Category(TestCategories.Integration)]
 		public static void ErrorMessageWriterShouldCreateFileIfItHasWrittenSomethingToDiskAfterReleasingHold()
 		{
 			// Arrange
@@ -173,6 +180,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[Test(Description = "Error message writer should create file if it has written something to disk, after releasing hold v2.")]
+		[Category(TestCategories.Integration)]
 		public static void ErrorMessageWriterShouldCreateFileIfItHasWrittenSomethingToDiskAfterReleasingHoldV2()
 		{
 			// Arrange
@@ -197,6 +205,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[Test(Description = "Error message writer should create filepath if instantiated without file path.")]
+		[Category(TestCategories.Integration)]
 		public static void ErrorMessageWriterShouldCreateFilePathIfInstantiatedWithoutFilePath()
 		{
 			// Act
@@ -209,6 +218,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[Test(Description = "Error message writer should create filepath equal to file path given.")]
+		[Category(TestCategories.Integration)]
 		public static void ErrorMessageWriterShouldCreateFilePathEqualToFilePathGiven()
 		{
 			// Arrange

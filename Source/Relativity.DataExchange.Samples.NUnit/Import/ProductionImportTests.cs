@@ -14,13 +14,15 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 
-	/// <summary>
-	/// Represents a test that imports production images and validates the results.
-	/// </summary>
-	/// <remarks>
-	/// This test requires the Relativity.Productions.Client package but hasn't yet been published to nuget.org.
-	/// </remarks>
+    /// <summary>
+    /// Represents a test that imports production images and validates the results.
+    /// </summary>
+    /// <remarks>
+    /// This test requires the Relativity.Productions.Client package but hasn't yet been published to nuget.org.
+    /// </remarks>
 	[TestFixture]
 	public class ProductionImportTests : ImageImportTestsBase
 	{
@@ -42,10 +44,12 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		/// </remarks>
 		private const int TotalImagesForFirstDocument = 1001;
 
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Goatsbeard;
+
 		[Test]
 		[Category(TestCategories.ImportProduction)]
 		[Category(TestCategories.Integration)]
-		[Category(TestCategories.NotInCompatibility)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		public void ShouldImportTheProductionImages()
 		{
 			// Arrange

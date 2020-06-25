@@ -6,20 +6,21 @@
 
 namespace Relativity.DataExchange.Export.NUnit.Integration
 {
-	using System;
 	using System.Linq;
 	using System.Text;
 	using System.Threading.Tasks;
 	using global::NUnit.Framework;
 	using kCura.WinEDDS;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
 	public class SearchablePdfExportTests : ExportTestBase
 	{
-		private readonly Version searchablePdfCompatibleRelativityVersion = new Version(11, 3, 16);
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.MayappleExportPDFs;
 
 		protected override IntegrationTestParameters TestParameters => AssemblySetup.TestParameters;
 
@@ -29,6 +30,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			SearchablePdfTestHelper.SetupTestData(this.TestParameters);
 		}
 
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("c1ea287a-44af-43fb-8a38-4956a5072de6")]
 		public async Task ShouldExportSearchablePdfAsync(
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client,
@@ -36,7 +39,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			[Values(true, false)] bool copyPdfFromRepository)
 		{
 			// ARRANGE
-			RelativityVersionCompatibilityChecker.SkipTestIfRelativityVersionIsNotCompatible(this.TestParameters, this.searchablePdfCompatibleRelativityVersion);
 			GivenTheTapiForceClientAppSettings(client);
 			SetupDefaultExportFile(this.ExtendedExportFile);
 			this.ExtendedExportFile.ExportPdf = exportPdf;
@@ -50,12 +52,13 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
 		}
 
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("e5976b64-107b-4d23-bd37-b748526768d9")]
 		public async Task ShouldAddCorrectSubDirectoryPrefixWhenExportSearchablePdfAsync(
 			[Values(null, "test_prefix")] string subDirectoryPrefix)
 		{
 			// ARRANGE
-			RelativityVersionCompatibilityChecker.SkipTestIfRelativityVersionIsNotCompatible(this.TestParameters, this.searchablePdfCompatibleRelativityVersion);
 			GivenTheTapiForceClientAppSettings(TapiClient.Web);
 			SetupDefaultExportFile(this.ExtendedExportFile);
 			this.ExtendedExportFile.VolumeInfo.set_SubdirectoryPdfPrefix(false, subDirectoryPrefix);
@@ -69,11 +72,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
 		}
 
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("baa7ad81-c688-43f3-bb1a-9f953fe5b6d6")]
 		public async Task ShouldDisplayWarningWhenInsufficientSubDirectoryPaddingAsync()
 		{
 			// ARRANGE
-			RelativityVersionCompatibilityChecker.SkipTestIfRelativityVersionIsNotCompatible(this.TestParameters, this.searchablePdfCompatibleRelativityVersion);
 			const string InsufficientPaddingWarningMessage =
 				"The selected subdirectory padding of 1 is less than the recommended subdirectory padding 2 for this export";
 			GivenTheTapiForceClientAppSettings(TapiClient.Web);

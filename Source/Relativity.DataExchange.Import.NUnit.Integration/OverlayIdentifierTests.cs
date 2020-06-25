@@ -6,23 +6,27 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
-	using System.Diagnostics.CodeAnalysis;
-	using System.Linq;
-	using System.Threading.Tasks;
-	using global::NUnit.Framework;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using global::NUnit.Framework;
+    using kCura.Relativity.DataReaderClient;
+    using Relativity.DataExchange.Import.NUnit.Integration.Dto;
+    using Relativity.DataExchange.TestFramework;
+    using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
+    using Relativity.DataExchange.TestFramework.NUnitExtensions;
+    using Relativity.DataExchange.TestFramework.RelativityHelpers;
+    using Relativity.DataExchange.TestFramework.RelativityVersions;
+    using Relativity.Services.LinkManager.Interfaces;
+    using Relativity.Testing.Identification;
 
-	using kCura.Relativity.DataReaderClient;
-	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
-	using Relativity.DataExchange.TestFramework;
-	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
-	using Relativity.DataExchange.TestFramework.RelativityHelpers;
-	using Relativity.Services.LinkManager.Interfaces;
-	using Relativity.Testing.Identification;
-
-	[TestFixture]
-	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-	public class OverlayIdentifierTests : ImportJobTestBase<NativeImportExecutionContext>
+    [TestFixture]
+    [Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+    public class OverlayIdentifierTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Goatsbeard;
+		private bool testsSkipped = false;
+
 		private int createdObjectArtifactTypeId;
 		private int documentKeyFieldId;
 		private int objectKeyFieldId;
@@ -33,35 +37,48 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[OneTimeSetUp]
 		public async Task OneTimeSetUp()
 		{
-			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false); // Remove all Documents imported in AssemblySetup
-			createdObjectArtifactTypeId = await this.CreateObjectInWorkspaceAsync().ConfigureAwait(false);
-			await Task.WhenAll(
-					this.CreateTextFieldAsync(this.createdObjectArtifactTypeId, WellKnownFields.KeyFieldName).ContinueWith(task => this.objectKeyFieldId = task.Result),
-					this.CreateTextFieldAsync((int)ArtifactTypeID.Document, WellKnownFields.KeyFieldName).ContinueWith(task => this.documentKeyFieldId = task.Result),
-					this.CreateTextFieldAsync(this.createdObjectArtifactTypeId, WellKnownFields.TextFieldName).ContinueWith(task => this.objectTextFieldId = task.Result),
-					this.CreateTextFieldAsync((int)ArtifactTypeID.Document, WellKnownFields.TextFieldName).ContinueWith(task => this.documentTextFieldId = task.Result))
-				.ConfigureAwait(false);
+			testsSkipped = RelativityVersionChecker.VersionIsLowerThan(
+				               this.TestParameters,
+				               MinSupportedVersion);
+			if (!this.testsSkipped)
+			{
+				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false); // Remove all Documents imported in AssemblySetup
+				createdObjectArtifactTypeId = await this.CreateObjectInWorkspaceAsync().ConfigureAwait(false);
+				await Task.WhenAll(
+						this.CreateTextFieldAsync(this.createdObjectArtifactTypeId, WellKnownFields.KeyFieldName).ContinueWith(task => this.objectKeyFieldId = task.Result),
+						this.CreateTextFieldAsync((int)ArtifactTypeID.Document, WellKnownFields.KeyFieldName).ContinueWith(task => this.documentKeyFieldId = task.Result),
+						this.CreateTextFieldAsync(this.createdObjectArtifactTypeId, WellKnownFields.TextFieldName).ContinueWith(task => this.objectTextFieldId = task.Result),
+						this.CreateTextFieldAsync((int)ArtifactTypeID.Document, WellKnownFields.TextFieldName).ContinueWith(task => this.documentTextFieldId = task.Result))
+					.ConfigureAwait(false);
+			}
 		}
 
 		[TearDown]
 		public async Task TearDown()
 		{
-			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, this.artifactTypeId).ConfigureAwait(false);
+			if (!testsSkipped)
+			{
+				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, this.artifactTypeId).ConfigureAwait(false);
+			}
 		}
 
 		[OneTimeTearDown]
 		public async Task OneTimeTearDown()
 		{
-			await Task.WhenAll(
-					FieldHelper.DeleteFieldAsync(this.TestParameters, this.objectKeyFieldId),
-					FieldHelper.DeleteFieldAsync(this.TestParameters, this.documentKeyFieldId),
-					FieldHelper.DeleteFieldAsync(this.TestParameters, this.objectTextFieldId),
-					FieldHelper.DeleteFieldAsync(this.TestParameters, this.documentTextFieldId))
-				.ConfigureAwait(false);
+			if (!testsSkipped)
+			{
+				await Task.WhenAll(
+						FieldHelper.DeleteFieldAsync(this.TestParameters, this.objectKeyFieldId),
+						FieldHelper.DeleteFieldAsync(this.TestParameters, this.documentKeyFieldId),
+						FieldHelper.DeleteFieldAsync(this.TestParameters, this.objectTextFieldId),
+						FieldHelper.DeleteFieldAsync(this.TestParameters, this.documentTextFieldId))
+					.ConfigureAwait(false);
+			}
 		}
 
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("53174721-9360-4708-8639-1b25e104c9ab")]
 		public void ShouldNotOverlayControlNumber([Values(OverwriteModeEnum.AppendOverlay, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode)
 		{
@@ -88,6 +105,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
 		[TestCaseSource(typeof(OverlayIdentifierTestCases), nameof(OverlayIdentifierTestCases.ShouldOverlayIdentifierTestCaseData))]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("1c955071-67b1-40aa-819f-9c1fdc3020c0")]
 		[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "caseName is needed to identify test case")]
 		[SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "caseName is needed to identify test case")]
@@ -116,6 +134,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
 		[TestCaseSource(typeof(OverlayIdentifierTestCases), nameof(OverlayIdentifierTestCases.ShouldOverlayIdentifierWithErrorTestCaseData))]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("76377061-b274-4c22-abce-b0fa05aba143")]
 		[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "caseName is needed to identify test case")]
 		[SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "caseName is needed to identify test case")]
@@ -146,6 +165,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("4089f177-7332-40fc-9409-36fc4e9d00f9")]
 		public void ShouldOverlayWithoutIdentifier([Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType)
 		{

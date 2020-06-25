@@ -12,6 +12,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 
 	using NUnit.Framework;
 	using NUnit.Framework.Interfaces;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.DataExchange.Transfer;
 
 	using File = System.IO.File;
@@ -79,7 +80,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 			string outputFile = Path.Combine(parentFolder, "Summary.csv");
 			Directory.CreateDirectory(parentFolder);
 
-			string relativityVersion = RelativityVersionCompatibilityChecker.GetCurrentRelativityVersion(IntegrationTestHelper.IntegrationTestParameters).ToString();
+			string relativityVersion = RelativityVersionChecker.GetCurrentRelativityVersion(IntegrationTestHelper.IntegrationTestParameters).ToString();
 			string testResultStatus = TestContext.CurrentContext.Result.Outcome.Status.ToString();
 
 			if (!File.Exists(outputFile))

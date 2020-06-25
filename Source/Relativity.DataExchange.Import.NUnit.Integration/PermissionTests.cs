@@ -15,13 +15,18 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	public class PermissionTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Juniper;
+		private bool testsSkipped = false;
+
 		private int groupId;
 		private int userId;
 		private string newUsername;
@@ -32,47 +37,64 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[OneTimeSetUp]
 		public async Task OneTimeSetupAsync()
 		{
-			const int EveryoneGroupId = 1015005;
-			this.oldUsername = this.TestParameters.RelativityUserName;
-			this.oldPassword = this.TestParameters.RelativityPassword;
+			testsSkipped = RelativityVersionChecker.VersionIsLowerThan(
+				               this.TestParameters,
+				               MinSupportedVersion);
+			if (!testsSkipped)
+			{
+				const int EveryoneGroupId = 1015005;
+				this.oldUsername = this.TestParameters.RelativityUserName;
+				this.oldPassword = this.TestParameters.RelativityPassword;
 
-			string lastName = Guid.NewGuid().ToString();
-			this.newUsername = $"ImportAPI.{lastName}@relativity.com";
-			this.newPassword = "Test1234!";
-			this.userId = await UsersHelper.CreateNewUserAsync(
-				this.TestParameters,
-				"ImportAPI",
-				lastName,
-				this.newPassword,
-				new List<int> { EveryoneGroupId }).ConfigureAwait(false);
+				string lastName = Guid.NewGuid().ToString();
+				this.newUsername = $"ImportAPI.{lastName}@relativity.com";
+				this.newPassword = "Test1234!";
+				this.userId = await UsersHelper.CreateNewUserAsync(
+					              this.TestParameters,
+					              "ImportAPI",
+					              lastName,
+					              this.newPassword,
+					              new List<int> { EveryoneGroupId }).ConfigureAwait(false);
 
-			ImportHelper.ImportDefaultTestData(this.TestParameters);
+				ImportHelper.ImportDefaultTestData(this.TestParameters);
+			}
 		}
 
 		[OneTimeTearDown]
 		public async Task OneTimeTeardown()
 		{
-			this.WithOriginalUser();
-			await UsersHelper.RemoveUserAsync(this.TestParameters, this.userId).ConfigureAwait(false);
-			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
+			if (!testsSkipped)
+			{
+				this.WithOriginalUser();
+				await UsersHelper.RemoveUserAsync(this.TestParameters, this.userId).ConfigureAwait(false);
+				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
+			}
 		}
 
 		[SetUp]
 		public async Task SetUpAsync()
 		{
-			this.WithOriginalUser();
-			this.groupId = await GroupHelper.CreateNewGroupAsync(this.TestParameters, Guid.NewGuid().ToString()).ConfigureAwait(false);
-			await GroupHelper.AddMemberAsync(this.TestParameters, this.groupId, this.userId).ConfigureAwait(false);
-			await PermissionsHelper.AddGroupToWorkspaceAsync(this.TestParameters, this.groupId).ConfigureAwait(false);
+			if (!testsSkipped)
+			{
+				this.WithOriginalUser();
+				this.groupId = await GroupHelper.CreateNewGroupAsync(this.TestParameters, Guid.NewGuid().ToString()).ConfigureAwait(false);
+				await GroupHelper.AddMemberAsync(this.TestParameters, this.groupId, this.userId).ConfigureAwait(false);
+				await PermissionsHelper.AddGroupToWorkspaceAsync(this.TestParameters, this.groupId).ConfigureAwait(false);
+			}
 		}
 
 		[TearDown]
 		public async Task TearDownAsync()
 		{
-			this.WithOriginalUser();
-			await GroupHelper.RemoveGroupAsync(this.TestParameters, this.groupId).ConfigureAwait(false);
+			if (!testsSkipped)
+			{
+				this.WithOriginalUser();
+				await GroupHelper.RemoveGroupAsync(this.TestParameters, this.groupId).ConfigureAwait(false);
+			}
 		}
 
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("6920c59d-8ffc-43e1-9dc5-15909dcd8d8a")]
 		public async Task ShouldPreventSecurityAdd()
 		{
@@ -113,6 +135,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(TotalRows));
 		}
 
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("aec57885-a9b9-40f3-ac30-f0538b6cb6cf")]
 		public async Task ShouldPreventSecuredDocumentsEdit()
 		{
@@ -151,6 +175,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		}
 
 		[Ignore("We don't check permissions for associate objects")]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("97286c32-733f-4e5f-9a1f-82f165a1b3bd")]
 		public async Task ShouldPreventAddingAssociatedObject()
 		{

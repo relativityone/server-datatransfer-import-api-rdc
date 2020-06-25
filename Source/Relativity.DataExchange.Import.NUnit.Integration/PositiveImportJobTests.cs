@@ -9,7 +9,6 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
-	using System;
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
@@ -23,7 +22,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Services.LinkManager.Interfaces;
 	using Relativity.Services.Objects.DataContracts;
@@ -42,6 +43,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private const string MultiObjectFieldName1 = "MULTI_OBJECT_FIELD_1";
 		private const string MultiObjectFieldName2 = "MULTI_OBJECT_FIELD_2";
 
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Indigo;
+		private bool testsSkipped = false;
+
 		private int createdObjectArtifactTypeId = 0;
 
 		private ObjectsValidator objectsValidator;
@@ -51,28 +55,38 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[OneTimeSetUp]
 		public async Task SetupObjectAsync()
 		{
-			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false); // Remove all Documents imported in AssemblySetup
-			createdObjectArtifactTypeId = await this.CreateObjectInWorkspaceAsync().ConfigureAwait(false);
-			await CreateChoiceFieldsAsync(this.createdObjectArtifactTypeId).ConfigureAwait(false);
-			await CreateChoiceFieldsAsync((int)ArtifactTypeID.Document).ConfigureAwait(false);
-			await CreateObjectFieldsAsync(this.createdObjectArtifactTypeId).ConfigureAwait(false);
-			await CreateObjectFieldsAsync((int)ArtifactTypeID.Document).ConfigureAwait(false);
+			testsSkipped = RelativityVersionChecker.VersionIsLowerThan(
+				               this.TestParameters,
+				               MinSupportedVersion);
+			if (!testsSkipped)
+			{
+				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false); // Remove all Documents imported in AssemblySetup
+				createdObjectArtifactTypeId = await this.CreateObjectInWorkspaceAsync().ConfigureAwait(false);
+				await CreateChoiceFieldsAsync(this.createdObjectArtifactTypeId).ConfigureAwait(false);
+				await CreateChoiceFieldsAsync((int)ArtifactTypeID.Document).ConfigureAwait(false);
+				await CreateObjectFieldsAsync(this.createdObjectArtifactTypeId).ConfigureAwait(false);
+				await CreateObjectFieldsAsync((int)ArtifactTypeID.Document).ConfigureAwait(false);
 
-			this.objectsValidator = new ObjectsValidator(this.TestParameters);
-			this.choicesValidator = new ChoicesValidator(this.TestParameters);
+				this.objectsValidator = new ObjectsValidator(this.TestParameters);
+				this.choicesValidator = new ChoicesValidator(this.TestParameters);
+			}
 		}
 
 		[TearDown]
 		public async Task TearDownAsync()
 		{
-			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, createdObjectArtifactTypeId).ConfigureAwait(false);
-			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
+			if (!testsSkipped)
+			{
+				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, createdObjectArtifactTypeId).ConfigureAwait(false);
+				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
+			}
 		}
 
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("f808845d-c8c9-454b-9d84-51d84be70bd1")]
 		[Test]
 		[Pairwise]
@@ -111,6 +125,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.NotInCompatibility)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("b9b6897f-ea3f-4694-80d2-db0852938789")]
 		public void ShouldImportFolders()
 		{
@@ -145,6 +160,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("3723e0e9-2ce1-472b-b655-8fbffb515c1a")]
 		public void ShouldAppendOverlayDocumentsAndMoveToNewFolders()
 		{
@@ -176,6 +192,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("700bda86-6e9a-43c1-a69c-2a1972cba4f8")]
 		public async Task ShouldImportDocumentWithChoices(
 			[Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType,
@@ -281,6 +298,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("e555aa7f-9976-4a74-87b4-577853209b57")]
 		public void ShouldImportDocumentWithChoices2(
 			[Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType)
@@ -318,6 +336,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("13dc1d17-4a2b-4b48-9015-b61e58bc5168")]
 		public async Task ShouldImportDocumentWithObjects(
 			[Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType,
@@ -410,6 +429,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("bfd19759-3ef5-4752-84ab-268e9fb54e3d")]
 		public async Task ShouldImportDocumentWithObjects2(
 			[Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType,

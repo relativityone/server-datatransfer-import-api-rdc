@@ -9,20 +9,19 @@
 
 namespace Relativity.DataExchange.NUnit.Integration
 {
-	using System.Threading.Tasks;
+    using System;
+    using System.Threading.Tasks;
+    using global::NUnit.Framework;
+    using Relativity.DataExchange;
+    using Relativity.DataExchange.TestFramework;
+    using Relativity.Testing.Identification;
 
-	using global::NUnit.Framework;
-
-	using Relativity.DataExchange;
-	using Relativity.DataExchange.TestFramework;
-	using Relativity.Testing.Identification;
-
-	/// <summary>
-	/// Represents <see cref="kCura.WinEDDS.Service.ApplicationVersionService"/> tests.
-	/// </summary>
-	[TestFixture]
-	[Feature.DataTransfer.ImportApi]
-	public class ApplicationVersionServiceTests : WebServiceTestsBase
+    /// <summary>
+    /// Represents <see cref="kCura.WinEDDS.Service.ApplicationVersionService"/> tests.
+    /// </summary>
+    [TestFixture]
+    [Feature.DataTransfer.ImportApi]
+    public class ApplicationVersionServiceTests : WebServiceTestsBase
 	{
 		[IdentifiedTest("d54cce55-4d67-4488-8d1f-2e2f40d7bf28")]
 		[Category(TestCategories.Integration)]
