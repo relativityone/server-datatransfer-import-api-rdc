@@ -17,7 +17,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Services.Interfaces.ObjectType;
 	using Relativity.Services.Interfaces.ObjectType.Models;
 	using Relativity.Services.Interfaces.Shared;
@@ -33,6 +35,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private const string ReferenceToObjectFieldName = "ReferenceToObject";
 		private const string ReferenceToDocumentFieldName = "ReferenceToDocument";
 
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
+		private bool testsSkipped = false;
+
 		/// <summary>
 		/// Test case can change import batch size, so we have to revert it to the initial value after each test.
 		/// </summary>
@@ -45,34 +50,58 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[OneTimeSetUp]
 		public async Task OneTimeSetupAsync()
 		{
-			this.objectArtifactTypeId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, $"{nameof(AssociateObjectsTests)}-Object")
-				.ConfigureAwait(false);
-			this.childObjectArtifactTypeId = await this.CreateChildObjectTypeAsync($"{nameof(AssociateObjectsTests)}-ChildObject", this.objectArtifactTypeId)
-				.ConfigureAwait(false);
-			this.referenceToObjectFieldId = await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, ReferenceToObjectFieldName, this.objectArtifactTypeId, (int)ArtifactType.Document)
-				.ConfigureAwait(false);
-			await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, ReferenceToDocumentFieldName, (int)ArtifactType.Document, this.objectArtifactTypeId)
-				.ConfigureAwait(false);
-			this.initialImportBatchSize = AppSettings.Instance.ImportBatchSize;
+			testsSkipped = RelativityVersionChecker.VersionIsLowerThan(this.TestParameters, MinSupportedVersion);
+			if (!testsSkipped)
+			{
+				this.objectArtifactTypeId = await RdoHelper.CreateObjectTypeAsync(
+					                            this.TestParameters,
+					                            $"{nameof(AssociateObjectsTests)}-Object").ConfigureAwait(false);
+				this.childObjectArtifactTypeId = await this.CreateChildObjectTypeAsync(
+					                                 $"{nameof(AssociateObjectsTests)}-ChildObject",
+					                                 this.objectArtifactTypeId).ConfigureAwait(false);
+				this.referenceToObjectFieldId = await FieldHelper.CreateSingleObjectFieldAsync(
+					                                this.TestParameters,
+					                                ReferenceToObjectFieldName,
+					                                this.objectArtifactTypeId,
+					                                (int)ArtifactType.Document).ConfigureAwait(false);
+				await FieldHelper.CreateSingleObjectFieldAsync(
+					this.TestParameters,
+					ReferenceToDocumentFieldName,
+					(int)ArtifactType.Document,
+					this.objectArtifactTypeId).ConfigureAwait(false);
+				this.initialImportBatchSize = AppSettings.Instance.ImportBatchSize;
 
-			ImportHelper.ImportDefaultTestData(this.TestParameters);
+				ImportHelper.ImportDefaultTestData(this.TestParameters);
+			}
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			AppSettings.Instance.ImportBatchSize = this.initialImportBatchSize;
+			if (!this.testsSkipped)
+			{
+				AppSettings.Instance.ImportBatchSize = this.initialImportBatchSize;
+			}
 		}
 
 		[OneTimeTearDown]
 		public Task OneTimeTearDown()
 		{
-			return RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document);
+			if (!this.testsSkipped)
+			{
+				return RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document);
+			}
+
+			return Task.CompletedTask;
 		}
 
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("4ae96850-4ef9-4a1d-95eb-3140a5d7efa5")]
 		public async Task ShouldNotAppendOverlayChildObjectsThatNotExist()
 		{
+			DecideIfTestShouldBeExecuted();
+
 			// ARRANGE
 			const int RowsWithExistingObject = 5;
 			const int RowsWithNonExistingObject = 10;
@@ -112,6 +141,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(TotalRows));
 		}
 
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("0d9cd961-0b6a-42d0-99ac-b58ea4ef21b7")]
 		public void ShouldNotOverlayDocumentsWithSharedOverlayIdentifier()
 		{
@@ -169,6 +200,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(TotalRows));
 		}
 
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("1415cfe8-8c4a-4559-b0ec-36ded3925f55")]
 		public void ShouldNotCreateAssociatedDocumentThatNotExist()
 		{
@@ -200,6 +233,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(totalRows));
 		}
 
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("0c543911-4d9f-441b-8949-511c84cb1701")]
 		public void ShouldNotCreateAssociatedObjectsReferencedByIdThatNotExist()
 		{
@@ -236,6 +271,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(TotalRows));
 		}
 
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("96ee72aa-e2d5-45b5-ab55-8c6059fe6637")]
 		public void ShouldPreventReferencesToDuplicateAssociateObjects()
 		{
@@ -277,6 +314,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(TotalRows));
 		}
 
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("274340c0-e7ae-4c28-8be3-07863271a7a5")]
 		public async Task ShouldNotCreateAssociatedObjectsThatAreChildrenAsync()
 		{
@@ -318,6 +357,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(TotalRows));
 		}
 
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("20fe9dfe-7e40-4c7f-85d2-1f37a88f6fcd")]
 		[Feature.DataTransfer.ImportApi.BulkInsert.SqlServer]
 		public async Task ShouldCreateOnlySingleInstanceOfAssociatedObjectWithGivenNameAsync() // test for https://jira.kcura.com/browse/REL-421458
@@ -356,6 +397,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[Test]
 		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("7a83707e-ad9c-47da-b925-39a32784d0d2")]
 		public void ShouldNotOverlayDocumentsWhichDoNotExist()
 		{
@@ -391,6 +434,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		}
 
 		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("f6ea6c09-ffb8-4191-95b6-75e8f04c96e3")]
 		public void ShouldNotAppendDocumentsWhichAlreadyExist()
 		{
@@ -474,6 +519,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					FieldValues = new List<FieldRefValuePair> { new FieldRefValuePair { Field = new FieldRef { Name = WellKnownFields.RdoIdentifier }, Value = name } },
 				};
 				await objectManager.CreateAsync(this.TestParameters.WorkspaceId, request).ConfigureAwait(false);
+			}
+		}
+
+		private void DecideIfTestShouldBeExecuted()
+		{
+			// For MassImportImprovementsToggle On test should be executed from version where issue REL-425922 was corrected
+			if (!RelativityVersionChecker.VersionIsLowerThan(this.TestParameters, RelativityVersion.LanceleafAA1))
+			{
+				RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(this.TestParameters, RelativityVersion.LanceleafREL425922);
 			}
 		}
 	}

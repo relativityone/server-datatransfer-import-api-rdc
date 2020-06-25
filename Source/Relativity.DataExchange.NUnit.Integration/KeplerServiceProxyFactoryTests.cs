@@ -23,6 +23,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	public static class KeplerServiceProxyFactoryTests
 	{
 		[Test]
+		[Category(TestCategories.Integration)]
 		public static void ShouldCreateAndDisposeTheServiceProxy()
 		{
 			// ARRANGE

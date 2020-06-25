@@ -8,7 +8,7 @@ properties([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#ugly_test', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
-        string(defaultValue: 'aio-goatsbeard-3,aio-blazingstar-3,aio-larkspur-3,aio-foxglove-3,aio-juniper-2,aio-indigo-2', description: 'Comma separated list of SUT templates', name: 'temlatesStr')
+        string(defaultValue: 'aio-larkspur-3,aio-blazingstar-3,aio-foxglove-3,aio-goatsbeard-3,aio-indigo-2,aio-juniper-2', description: 'Comma separated list of SUT templates', name: 'temlatesStr')
     ]),
     pipelineTriggers([cron("H 22 * * *")])
 ])
@@ -132,6 +132,7 @@ timestamps
                 else
                 {
                     currentBuild.result = 'SUCCESS'
+					message = "All tests passed"
                 }
                 
                 notifyBitbucket()
