@@ -149,6 +149,40 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
+		public static void RenameTestWorkspace(IntegrationTestParameters parameters, int workspaceId, string newName)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			if (newName == null)
+			{
+				throw new ArgumentNullException(nameof(newName));
+			}
+
+			// Prevent integration tests from failing due to RSAPI failures.
+			const int MaxRetryCount = 3;
+			int retryCount = 0;
+			Policy.Handle<Exception>().WaitAndRetry(
+				3,
+				i => TimeSpan.FromSeconds(MaxRetryCount),
+				(exception, span) =>
+				{
+					retryCount++;
+					Console.WriteLine($"The workspace helper failed to rename a test workspace. Retry: {retryCount} of {MaxRetryCount}, Error: {exception}");
+				}).Execute(
+				() =>
+				{
+					using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
+					{
+						Workspace workspace = client.Repositories.Workspace.ReadSingle(workspaceId);
+						workspace.Name = newName;
+						client.Repositories.Workspace.UpdateSingle(workspace);
+					}
+				});
+		}
+
 		private static QueryResultSet<Workspace> QueryWorkspaceTemplate(IRSAPIClient client, string templateName)
 		{
 			Query<Workspace> query = new Query<Workspace>

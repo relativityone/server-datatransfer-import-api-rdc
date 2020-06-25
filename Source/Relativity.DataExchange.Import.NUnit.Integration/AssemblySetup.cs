@@ -6,13 +6,12 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
-	using System.Collections.Generic;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.SqlDataComparer;
 
 	[SetUpFixture]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -21,6 +20,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		Justification = "NUnit requires AssemblySetup to be non static class.")]
 	public class AssemblySetup
 	{
+		private static readonly SqlComparerInputCollector _sqlComparerInputCollector = SqlComparerInputCollector.Instance;
+
 		public static IntegrationTestParameters TestParameters
 		{
 			get;
@@ -28,7 +29,28 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		}
 
 		[OneTimeSetUp]
-		public static async Task SetupAsync()
+		public static Task SetupAsync()
+		{
+			_sqlComparerInputCollector.Initialize();
+			return CreateTestContext();
+		}
+
+		[OneTimeTearDown]
+		public static void TearDown()
+		{
+			var massImportImprovementsToggle = MassImportImprovementsToggleChecker.GetMassImportToggleValueFromDatabase(TestParameters);
+			_sqlComparerInputCollector.SaveComparerInput(TestParameters.SqlComparerOutputPath, massImportImprovementsToggle);
+			DestroyTestContext();
+		}
+
+		public static async Task<IntegrationTestParameters> ResetContextAsync()
+		{
+			DestroyTestContext();
+			await CreateTestContext().ConfigureAwait(false);
+			return TestParameters;
+		}
+
+		private static async Task CreateTestContext()
 		{
 			TestParameters = IntegrationTestHelper.Create();
 			if (TestParameters.SkipIntegrationTests)
@@ -41,18 +63,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// await SecuritySetup().ConfigureAwait(false); TODO : REL-398159
 		}
 
-		[OneTimeTearDown]
-		public static void TearDown()
+		private static void DestroyTestContext()
 		{
 			IntegrationTestHelper.Destroy(TestParameters);
 			TestParameters = null;
-		}
-
-		public static async Task<IntegrationTestParameters> ResetContextAsync()
-		{
-			TearDown();
-			await SetupAsync().ConfigureAwait(false);
-			return TestParameters;
 		}
 
 		private static async Task UserSetup()

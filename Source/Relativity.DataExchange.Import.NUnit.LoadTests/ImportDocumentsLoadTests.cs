@@ -19,7 +19,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 
 	using kCura.Relativity.DataReaderClient;
 
-	using Relativity.DataExchange.Import.NUnit.Integration;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
@@ -39,6 +38,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		private const string SingleObjectFieldName = "SingleObject";
 		private const string MultiObjectFieldName = "MultiObject";
 
+		[UseSqlComparer]
 		[CollectDeadlocks]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.TransferApi)]
@@ -82,6 +82,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			ThenTheJobCompletedInCorrectTransferMode(results, client);
 		}
 
+		[UseSqlComparer]
 		[CollectDeadlocks]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.TransferApi)]

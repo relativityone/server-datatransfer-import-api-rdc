@@ -164,7 +164,7 @@ namespace SQLDataComparer.DataLoad
 
 			queryBuilder.Append($"SELECT * FROM {tableConfig.Name}");
 
-			if (tableConfig.WhereConfig != null && tableConfig.WhereConfig.Count > 0)
+			if (tableConfig.WhereConfig != null && tableConfig.WhereConfig.Length > 0)
 			{
 				queryBuilder.Append(GetQuery(tableConfig.WhereConfig));
 			}
@@ -174,7 +174,7 @@ namespace SQLDataComparer.DataLoad
 			return queryBuilder.ToString();
 		}
 
-		private string GetQuery(WhereConfig whereConfig)
+		private string GetQuery(WhereConfig[] whereConfig)
 		{
 			StringBuilder queryBuilder = new StringBuilder();
 
@@ -210,11 +210,6 @@ namespace SQLDataComparer.DataLoad
 
 			queryBuilder.Append($"SELECT {tableConfig.RowId}, ArtifactID, {mappingConfig.Name}");
 			queryBuilder.Append($" FROM {tableConfig.Name}");
-			queryBuilder.Append(" WHERE ArtifactID IN (");
-
-			queryBuilder.Append(string.Join(",", side == SideEnum.Left ? mappingTable.Keys.Select(x => x.ToString()) : mappingTable.Values.Select(x => x.ToString())));
-
-			queryBuilder.Append(")");
 			queryBuilder.Append($" ORDER BY {tableConfig.RowId}");
 
 			return queryBuilder.ToString();
@@ -278,11 +273,6 @@ namespace SQLDataComparer.DataLoad
 			queryBuilder.Append($" JOIN EDDSDBO.ZCodeArtifact_{codeTypeID}");
 			queryBuilder.Append($" ON {tableConfig.Name}.ArtifactID");
 			queryBuilder.Append(" = AssociatedArtifactID");
-			queryBuilder.Append(" WHERE ArtifactID IN (");
-
-			queryBuilder.Append(string.Join(",", side == SideEnum.Left ? mappingTable.Keys.Select(x => x.ToString()) : mappingTable.Values.Select(x => x.ToString())));
-
-			queryBuilder.Append(")");
 			queryBuilder.Append($" ORDER BY {tableConfig.RowId}");
 
 			return queryBuilder.ToString();
@@ -325,11 +315,6 @@ namespace SQLDataComparer.DataLoad
 			queryBuilder.Append($" JOIN EDDSDBO.f{docArtifactID}f{objArtifactID}");
 			queryBuilder.Append($" ON {tableConfig.Name}.ArtifactID");
 			queryBuilder.Append($" = f{objArtifactID}ArtifactID");
-			queryBuilder.Append(" WHERE ArtifactID IN (");
-
-			queryBuilder.Append(string.Join(",", side == SideEnum.Left ? mappingTable.Keys.Select(x=>x.ToString()) : mappingTable.Values.Select(x => x.ToString())));
-
-			queryBuilder.Append(")");
 			queryBuilder.Append($" ORDER BY {tableConfig.RowId}");
 
 			return queryBuilder.ToString();
@@ -344,11 +329,6 @@ namespace SQLDataComparer.DataLoad
 			queryBuilder.Append(" JOIN EDDSDBO.Artifact as artifact");
 			queryBuilder.Append(" ON artifact.ArtifactID = audit.ArtifactID");
 			queryBuilder.Append(" WHERE audit.Action = 47");
-			queryBuilder.Append(" AND artifact.ArtifactID IN (");
-			
-			queryBuilder.Append(string.Join(",", side == SideEnum.Left ? mappingTable.Keys.Select(x => x.ToString()) : mappingTable.Values.Select(x => x.ToString())));
-
-			queryBuilder.Append(")");
 			queryBuilder.Append($" ORDER BY artifact.TextIdentifier, audit.ID");
 
 			return queryBuilder.ToString();

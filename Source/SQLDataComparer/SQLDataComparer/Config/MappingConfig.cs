@@ -1,4 +1,4 @@
-﻿using System.Configuration;
+﻿using System.Xml.Serialization;
 
 namespace SQLDataComparer.Config
 {
@@ -10,27 +10,15 @@ namespace SQLDataComparer.Config
 		MultiObject
 	}
 
-	public class MappingConfig : ConfigurationElement
+	public class MappingConfig
 	{
-		[ConfigurationProperty("name", IsKey = true, IsRequired = true)]
-		public string Name
-		{
-			get { return (string)base["name"]; }
-			set { base["name"] = value; }
-		}
+		[XmlAttribute("name")]
+		public string Name { get; set; }
 
-		[ConfigurationProperty("type", IsRequired = true)]
-		public MappingType Type
-		{
-			get { return (MappingType)base["type"]; }
-			set { base["type"] = value; }
-		}
+		[XmlAttribute("type")]
+		public MappingType Type { get; set; }
 
-		[ConfigurationProperty("targetTable", IsRequired = true)]
-		public string TargetTable
-		{
-			get { return (string)base["targetTable"]; }
-			set { base["targetTable"] = value; }
-		}
+		[XmlAttribute("targetTable")]
+		public string TargetTable { get; set; }
 	}
 }

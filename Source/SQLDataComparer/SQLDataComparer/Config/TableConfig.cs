@@ -1,43 +1,32 @@
-﻿using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Xml.Serialization;
 
 namespace SQLDataComparer.Config
 {
-	public class TableConfig : ConfigurationElement
+	public class TableConfig
 	{
-		[ConfigurationProperty("name", IsKey = true, IsRequired = true)]
-		public string Name
-		{
-			get { return (string)base["name"]; }
-			set { base["name"] = value; }
-		}
+		[XmlAttribute("name")]
+		public string Name { get; set; }
 
-		[ConfigurationProperty("rowId", IsRequired = true)]
-		public string RowId
-		{
-			get { return (string)base["rowId"]; }
-			set { base["rowId"] = value; }
-		}
+		[XmlAttribute("rowId")]
+		public string RowId { get; set; }
 
-		[ConfigurationProperty("mappings", IsRequired = false)]
-		[ConfigurationCollection(typeof(MappingsConfig))]
-		public MappingsConfig MappingsConfig
-		{
-			get { return (MappingsConfig)this["mappings"]; }
-		}
+		[XmlArray("mappings")]
+		[XmlArrayItem("mapping")]
+		public MappingConfig[] MappingsConfig { get; set; }
 
-		[ConfigurationProperty("ignore", IsRequired = false)]
-		[ConfigurationCollection(typeof(IgnoreConfig))]
-		public IgnoreConfig IgnoreConfig
-		{
-			get { return (IgnoreConfig)this["ignore"]; }
-		}
+		[XmlArray("ignored")]
+		[XmlArrayItem("ignore")]
+		public IgnoreConfig[] IgnoreConfig { get; set; }
 
-		[ConfigurationProperty("where", IsRequired = false)]
-		[ConfigurationCollection(typeof(WhereConfig))]
-		public WhereConfig WhereConfig
+		[XmlArray("whereClauses")]
+		[XmlArrayItem("where")]
+		public WhereConfig[] WhereConfig { get; set; }
+
+		public TableConfig()
 		{
-			get { return (WhereConfig)this["where"]; }
+			MappingsConfig = new MappingConfig[0];
+			IgnoreConfig = new IgnoreConfig[0];
+			WhereConfig = new WhereConfig[0];
 		}
 	}
 }

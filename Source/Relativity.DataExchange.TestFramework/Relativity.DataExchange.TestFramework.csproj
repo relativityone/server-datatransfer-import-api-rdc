@@ -132,6 +132,8 @@
     <Compile Include="NUnitExtensions\CollectDeadlocksAttribute.cs" />
     <Compile Include="NUnitExtensions\IgnoreIfVersionLowerThanAttribute.cs" />
     <Compile Include="NUnitExtensions\PerformanceDataCollector.cs" />
+    <Compile Include="NUnitExtensions\SqlComparerTestCommand.cs" />
+    <Compile Include="NUnitExtensions\UseSqlComparerAttribute.cs" />
     <Compile Include="ObjectManagers\ClientManager.cs" />
     <Compile Include="ObjectManagers\FileShareServerManager.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
@@ -147,6 +149,8 @@
     <Compile Include="RelativityHelpers\SqlQueryHelper.cs" />
     <Compile Include="RelativityVersions\RelativityVersionChecker.cs" />
     <Compile Include="RelativityVersions\RelativityVersion.cs" />
+    <Compile Include="SqlDataComparer\SqlComparerInputCollector.cs" />
+    <Compile Include="SqlDataComparer\TestWorkspaceToCompareDto.cs" />
     <Compile Include="TestFilesRepository.cs" />
     <Compile Include="TestNullLogger.cs" />
     <Compile Include="Validation\BaseFileHashValidator.cs" />
@@ -252,6 +256,7 @@
     <None Include="Resources\SearchablePdfs\SearchablePDF5.pdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="SqlDataComparer\README.md" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\buildtools\CustomDictionary.xml">

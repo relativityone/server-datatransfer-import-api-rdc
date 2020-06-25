@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<compareConfig>
+	<tables>
+		<table name="EDDSDBO.Document" rowId="ControlNumber">
+			<ignored>
+				<ignore name="ArtifactID"/>
+				<ignore name="ParentArtifactID_D"/>
+				<ignore name="OriginatingImagingDocumentError"/>
+			</ignored>
+		</table>
+		<table name="EDDSDBO.Artifact" rowId="TextIdentifier">
+			<ignored>
+				<ignore name="ArtifactID"/>
+				<ignore name="ParentArtifactID"/>
+				<ignore name="CreatedOn"/>
+				<ignore name="LastModifiedOn"/>
+				<ignore name="LastModifiedBy"/>
+			</ignored>
+		</table>
+		<table name="EDDSDBO.AuditRecord_PrimaryPartition" rowId="TextIdentifier">
+		</table>
+	</tables>
+</compareConfig>

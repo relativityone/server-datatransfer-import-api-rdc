@@ -734,20 +734,20 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 		{
 			return new CompareConfig
 			{
-				TablesConfig =
+				TablesConfig = new[]
 				{
 					new TableConfig
 					{
 						Name = "EDDSDBO.Document",
 						RowId = "ControlNumber",
-						IgnoreConfig =
+						IgnoreConfig = new[]
 						{
-							new SingleIgnoreConfig
+							new IgnoreConfig
 							{
 								Name = "ArtifactID"
 							}
 						},
-						MappingsConfig =
+						MappingsConfig = new[]
 						{
 							new MappingConfig
 							{
@@ -761,9 +761,9 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 					{
 						Name = "EDDSDBO.MultiObj",
 						RowId = "Name",
-						IgnoreConfig =
+						IgnoreConfig = new[]
 						{
-							new SingleIgnoreConfig
+							new IgnoreConfig
 							{
 								Name = "ArtifactID"
 							}

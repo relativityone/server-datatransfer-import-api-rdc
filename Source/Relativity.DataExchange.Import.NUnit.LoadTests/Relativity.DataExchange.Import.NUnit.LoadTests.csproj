@@ -153,13 +153,19 @@
     <Compile Include="GlobalSuppressions.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="Resources\ImportDocumentsLoadTests\ShouldImportFoldersParallelAsync.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ImportDocumentsLoadTests\ShouldImportChoicesInParallelAsync.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\buildtools\stylecop.json">
       <Link>stylecop.json</Link>
     </AdditionalFiles>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
+    <None Include="..\Relativity.DataExchange.TestFramework\app.config">
+      <Link>app.config</Link>
     </None>
     <None Include="app.manifest" />
     <None Include="paket.references" />
@@ -197,6 +203,7 @@
       <Name>Relativity.DataExchange.TestFramework</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -547,33 +554,37 @@
     </When>
   </Choose>
   <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
-  <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\de-DE\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\en-GB\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\es-MX\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\fr-FR\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pl-PL\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pt-BR\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\ru-RU\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup></When></Choose>
+  <Choose>
+    <When Condition="'$(Configuration)'!='Debug'">
+      <ItemGroup>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\de-DE\StyleCop.Analyzers.resources.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\en-GB\StyleCop.Analyzers.resources.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\es-MX\StyleCop.Analyzers.resources.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\fr-FR\StyleCop.Analyzers.resources.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pl-PL\StyleCop.Analyzers.resources.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pt-BR\StyleCop.Analyzers.resources.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\ru-RU\StyleCop.Analyzers.resources.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+      </ItemGroup>
+    </When>
+  </Choose>
 </Project>

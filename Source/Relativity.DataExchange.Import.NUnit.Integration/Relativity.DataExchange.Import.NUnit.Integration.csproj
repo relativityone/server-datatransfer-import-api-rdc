@@ -187,7 +187,9 @@
     <AdditionalFiles Include="..\..\buildtools\stylecop.json">
       <Link>stylecop.json</Link>
     </AdditionalFiles>
-    <None Include="app.config" />
+    <None Include="..\Relativity.DataExchange.TestFramework\app.config">
+      <Link>app.config</Link>
+    </None>
     <None Include="app.manifest" />
     <None Include="paket.references" />
   </ItemGroup>

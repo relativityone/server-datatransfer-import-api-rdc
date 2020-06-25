@@ -28,7 +28,7 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 			public string FourthMultiObjectValue;
 			public string FirstSelectedMultiObjectValueArtifactId;
 			public string SecondSelectedMultiObjectValueArtifactId;
-			
+
 			public string FirstSingleObjectArtifactId;
 			public string FirstSingleObjectName;
 			public string FirstSingleObjectValue;
@@ -117,24 +117,24 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 		{
 			return new CompareConfig
 			{
-				TablesConfig =
+				TablesConfig = new[]
 				{
 					new TableConfig
 					{
 						Name = "EDDSDBO.Document",
 						RowId = "ControlNumber",
-						IgnoreConfig =
+						IgnoreConfig = new[]
 						{
-							new SingleIgnoreConfig
+							new IgnoreConfig
 							{
 								Name = "ArtifactID"
 							},
-							new SingleIgnoreConfig
+							new IgnoreConfig
 							{
 								Name = "SingleObj"
 							}
 						},
-						MappingsConfig =
+						MappingsConfig = new[]
 						{
 							new MappingConfig
 							{
@@ -154,9 +154,9 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 					{
 						Name = "EDDSDBO.SingleObj",
 						RowId = "Name",
-						IgnoreConfig =
+						IgnoreConfig = new[]
 						{
-							new SingleIgnoreConfig
+							new IgnoreConfig
 							{
 								Name = "ArtifactID"
 							}
@@ -166,9 +166,9 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 					{
 						Name = "EDDSDBO.MultiObj",
 						RowId = "Name",
-						IgnoreConfig =
+						IgnoreConfig = new[]
 						{
-							new SingleIgnoreConfig
+							new IgnoreConfig
 							{
 								Name = "ArtifactID"
 							}
@@ -392,7 +392,7 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 				fTable
 			};
 		}
-		
+
 		private static List<Table> GetSingleObjTable(OneSide side)
 		{
 			var firstSingleObjTable = new Table

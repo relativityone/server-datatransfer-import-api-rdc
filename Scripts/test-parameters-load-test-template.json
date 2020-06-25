@@ -1,4 +1,5 @@
 {
+	"DeleteWorkspaceAfterTest": "True",
 	"RelativityUrl": "<replaced_in_build_target_to_test>",
 	"RelativityRestUrl": "<replaced_in_build_target_to_test>/relativity.rest/api",
 	"RelativityServicesUrl": "<replaced_in_build_target_to_test>/relativity.services",
@@ -13,6 +14,8 @@
 	"SqlDropWorkspaceDatabase": "True",
 	"SqlCaptureProfiling": "<replaced_in_build_sqlcaptureprofiling>",
 	"SqlProfilingReportsOutputPath" : "<replaced_in_build_sqlprofilingreportsoutputpath>",
+	"SqlComparerEnabled": "False",
+	"SqlComparerOutputPath": "C:\\SqlComparer",
 	"SqlInstanceName": "<replaced_in_build_sql_instance_name>",
 	"SqlAdminUserName": "<replaced_in_build_sql_user_name>",
 	"SqlAdminPassword": "<replaced_in_build_sql_password>",

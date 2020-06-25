@@ -147,42 +147,21 @@ namespace Relativity.DataExchange.TestFramework
 				return;
 			}
 
-			WorkspaceHelper.DeleteTestWorkspace(parameters, Logger);
-			string database = $"EDDS{parameters.WorkspaceId}";
-			if (parameters.SqlDropWorkspaceDatabase && parameters.WorkspaceId > 0)
+			if (parameters.DeleteWorkspaceAfterTest)
 			{
-				try
+				WorkspaceHelper.DeleteTestWorkspace(parameters, Logger);
+				if (parameters.SqlDropWorkspaceDatabase && parameters.WorkspaceId > 0)
 				{
-					SqlConnectionStringBuilder builder = GetSqlConnectionStringBuilder(parameters);
-
-					SqlConnection.ClearAllPools();
-					using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
-					{
-						connection.Open();
-						using (SqlCommand command = connection.CreateCommand())
-						{
-							command.CommandText = $@"
-IF EXISTS(SELECT name FROM sys.databases WHERE name = '{database}')
-BEGIN
-	ALTER DATABASE [{database}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-	DROP DATABASE [{database}]
-END";
-							command.CommandType = CommandType.Text;
-							command.ExecuteNonQuery();
-							Logger.LogInformation("Successfully dropped the {DatabaseName} SQL workspace database.", database);
-							Console.WriteLine($"Successfully dropped the {database} SQL workspace database.");
-						}
-					}
+					DropWorkspaceDatabase(parameters);
 				}
-				catch (Exception e)
+				else
 				{
-					Logger.LogError(e, "Failed to drop the {DatabaseName} SQL workspace database.", database);
-					Console.WriteLine($"Failed to drop the {database} SQL workspace database. Exception: " + e);
+					Logger.LogInformation("Skipped dropping the SQL workspace {workspaceId} database", parameters.WorkspaceId);
 				}
 			}
 			else
 			{
-				Logger.LogInformation("Skipped dropping the {DatabaseName} SQL workspace database.", database);
+				Logger.LogInformation("Skipped deleting the workspace {workspaceId}.", parameters.WorkspaceId);
 			}
 		}
 
@@ -366,6 +345,40 @@ END";
 			{
 				string currentPath = new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName;
 				parameters.SqlProfilingReportsOutputPath = Path.GetFullPath(Path.Combine(currentPath, sqlProfilingReportsOutputPathValue));
+			}
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We can swallow exception in that case.")]
+		private static void DropWorkspaceDatabase(IntegrationTestParameters parameters)
+		{
+			string database = $"EDDS{parameters.WorkspaceId}";
+			try
+			{
+				SqlConnectionStringBuilder builder = GetSqlConnectionStringBuilder(parameters);
+
+				SqlConnection.ClearAllPools();
+				using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+				{
+					connection.Open();
+					using (SqlCommand command = connection.CreateCommand())
+					{
+						command.CommandText = $@"
+IF EXISTS(SELECT name FROM sys.databases WHERE name = '{database}')
+BEGIN
+	ALTER DATABASE [{database}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+	DROP DATABASE [{database}]
+END";
+						command.CommandType = CommandType.Text;
+						command.ExecuteNonQuery();
+						Logger.LogInformation("Successfully dropped the {DatabaseName} SQL workspace database.", database);
+						Console.WriteLine($"Successfully dropped the {database} SQL workspace database.");
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				Logger.LogError(e, "Failed to drop the {DatabaseName} SQL workspace database.", database);
+				Console.WriteLine($"Failed to drop the {database} SQL workspace database. Exception: " + e);
 			}
 		}
 	}

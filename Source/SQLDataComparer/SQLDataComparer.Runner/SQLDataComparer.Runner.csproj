@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3A56AEE4-5225-4863-BA64-AFE6A828BA20}</ProjectGuid>
+    <ProjectGuid>{84CCC2AF-5C5B-4F64-AE6F-44C310207614}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>SQLDataComparer</RootNamespace>
-    <AssemblyName>SQLDataComparer</AssemblyName>
+    <RootNamespace>SQLDataComparer.Runner</RootNamespace>
+    <AssemblyName>SQLDataComparer.Runner</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -34,11 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,41 +43,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigCheck\ConfigChecker.cs" />
-    <Compile Include="Config\SideEnum.cs" />
-    <Compile Include="Config\WhereConfig.cs" />
-    <Compile Include="Config\CompareConfig.cs" />
-    <Compile Include="Config\IgnoreConfig.cs" />
-    <Compile Include="Config\MappingConfig.cs" />
-    <Compile Include="Config\TableConfig.cs" />
-    <Compile Include="DataCompare\ArtifactRowEqualityComparer.cs" />
-    <Compile Include="DataCompare\AuditRowEqualityComparer.cs" />
-    <Compile Include="DataCompare\ObjectMappingEqualityComparer.cs" />
-    <Compile Include="DataCompare\ChoiceMappingEqualityComparer.cs" />
-    <Compile Include="DataCompare\RowDataEqualityComparer.cs" />
-    <Compile Include="DataCompare\RowEqualityComparer.cs" />
-    <Compile Include="DataCompare\RowMappingEqualityComparer.cs" />
-    <Compile Include="ConfigCheck\IConfigChecker.cs" />
-    <Compile Include="DataLoad\IDataLoader.cs" />
-    <Compile Include="Log\ConsoleLog.cs" />
-    <Compile Include="Log\ILog.cs" />
-    <Compile Include="Log\LogLevelEnum.cs" />
-    <Compile Include="Model\ComparisonResult.cs" />
-    <Compile Include="Model\ComparisonResultEnum.cs" />
+    <Compile Include="InputDto\TestWorkspace.cs" />
+    <Compile Include="InputDto\Input.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Model\Table.cs" />
-    <Compile Include="Model\Row.cs" />
-    <Compile Include="DataCompare\StreamDataComparer.cs" />
-    <Compile Include="DataLoad\StreamDataLoader.cs" />
-    <Compile Include="SqlDataComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SampleComparerConfig.xml" />
+    <Content Include="SampleInput\MyTest.xml" />
+    <Content Include="SampleInput\SampleInputRight.xml" />
+    <Content Include="SampleInput\SampleInputLeft.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SQLDataComparer\SQLDataComparer.csproj">
+      <Project>{3a56aee4-5225-4863-ba64-afe6a828ba20}</Project>
+      <Name>SQLDataComparer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

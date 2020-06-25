@@ -715,6 +715,7 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
             $hostname = "$($testVM.BoxName).kcura.corp"
         }
 
+        [Environment]::SetEnvironmentVariable("IAPI_DELETEWORKSPACEAFTERTEST", "true", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_RELATIVITYURL", "https://$hostname", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_RELATIVITYRESTURL", "https://$hostname/relativity.rest/api", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_RELATIVITYSERVICESURL", "https://$hostname/relativity.services", "Process")
@@ -725,7 +726,10 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPDIRECTMODETESTS", "false", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "false", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLDROPWORKSPACEDATABASE", "true", "Process")
-		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLCAPTUREPROFILING", "false", "Process")
+        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLCAPTUREPROFILING", "false", "Process")
+        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLPROFILINGREPORTSOUTPUTPATH", "C:\\SqlProfiling", "Process")
+        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLCOMPARERENABLED", "false", "Process")
+        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLCOMPAREROUTPUTPATH", "C:\\SqlComparer", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLINSTANCENAME", "$hostname\\EDDSINSTANCE001", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINUSERNAME", "sa", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINPASSWORD", "P@ssw0rd@1", "Process")

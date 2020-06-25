@@ -1,14 +1,17 @@
-﻿using System.Configuration;
+﻿using System.Xml.Serialization;
 
 namespace SQLDataComparer.Config
 {
-	public class CompareConfig : ConfigurationSection
+	[XmlRoot("compareConfig")]
+	public class CompareConfig
 	{
-		[ConfigurationProperty("tables")]
-		[ConfigurationCollection(typeof(TablesConfig))]
-		public TablesConfig TablesConfig
+		[XmlArray("tables")]
+		[XmlArrayItem("table")]
+		public TableConfig[] TablesConfig { get; set; }
+
+		public CompareConfig()
 		{
-			get { return (TablesConfig)this["tables"]; }
+			TablesConfig = new TableConfig[0];
 		}
 	}
 }
