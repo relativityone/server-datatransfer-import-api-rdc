@@ -8,7 +8,6 @@ properties([
         choice(defaultValue: 'DEV',choices: ["DEV", "GOLD - RDC AND SDK", "GOLD - RDC ONLY", "GOLD - SDK ONLY"], description: "Choose your build type, only gold can produce production packages.", name: 'buildType'),
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-        string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
         string(defaultValue: 'release-11.2-lanceleaf', description: 'Relativity branch to test against, leave null for latest hopper image', name: 'relativityBranch'),
         booleanParam(defaultValue: true, description: "Enable or disable running unit tests", name: 'runUnitTests'),
         booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests'),
@@ -41,7 +40,6 @@ def publishSdkAndRdc = (publishSdk && publishRdc)
 build = params.build
 
 def config = [
-    slackChannel: params.slackChannel,
 	sutTemplate: "aio-lanceleaf-ea",
 	hopperApiUrl: "https://api.hopper.relativity.com/",
 	hopperApiUsername: "homeimprovement@relativity.com"
@@ -468,7 +466,7 @@ timestamps
                     stage('Send slack and bitbucket notification')
                     {
                         notifyBitbucket()
-                        Slack.SendSlackNotification("Relativity from image '${config.sutTemplate}'", buildVersion, env.BRANCH_NAME, params.buildType, params.slackChannel, testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
+                        Slack.SendSlackNotification("Relativity from image '${config.sutTemplate}'", buildVersion, env.BRANCH_NAME, params.buildType, "build", testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
                     }
                 }
             }

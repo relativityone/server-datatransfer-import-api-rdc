@@ -3,8 +3,8 @@ def SendSlackNotification(String serverUnderTestName, String version, String bra
     echo "Send Slack Notification"
 
     def script = this
-    def String email = "slack_svc@relativity.com"
-
+	def email = powershell(returnStdout: true, script: "git --no-pager show -s --format='%ae'").trim()
+	def channel = "iapi-pipeline-" + "${slackChannel}"
     echo "*************************************************" +
         "\n" +
         "\n" + "sendCDSlackNotification Parameters: " +
@@ -14,7 +14,7 @@ def SendSlackNotification(String serverUnderTestName, String version, String bra
         "\n" + "version: " + version +
         "\n" + "branch: " + branch +
         "\n" + "buildType: " + buildType +
-        "\n" + "slackChannel: " + slackChannel +
+        "\n" + "slackChannel: " + channel +
         "\n" + "email: " + email +
         "\n" + "numberOfFailedTests: " + numberOfFailedTests +
         "\n" + "numberOfPassedTests: " + numberOfPassedTests +
@@ -24,7 +24,7 @@ def SendSlackNotification(String serverUnderTestName, String version, String bra
         "\n*************************************************"
     try
     {
-        sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, ['tests': ['passed': numberOfPassedTests, 'failed': numberOfFailedTests, 'skipped': numberOfSkippedTests]], message, "CD" )
+        sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, channel, email, ['tests': ['passed': numberOfPassedTests, 'failed': numberOfFailedTests, 'skipped': numberOfSkippedTests]], message, "CD" )
     }
     catch(err)
     {
