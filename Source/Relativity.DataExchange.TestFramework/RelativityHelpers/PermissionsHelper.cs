@@ -90,6 +90,43 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
+		public static async Task ApplyItemLevelSecurityAsync(
+			IntegrationTestParameters parameters,
+			int artifactId,
+			int groupId,
+			bool enabled)
+		{
+			using (IPermissionManager permissionManager = ServiceHelper.GetServiceProxy<IPermissionManager>(parameters))
+			{
+				ItemLevelSecurity itemLevelSecurity = await permissionManager.GetItemLevelSecurityAsync(parameters.WorkspaceId, artifactId)
+					                                      .ConfigureAwait(false);
+
+				itemLevelSecurity.Enabled = true;
+
+				await permissionManager.SetItemLevelSecurityAsync(parameters.WorkspaceId, itemLevelSecurity)
+					.ConfigureAwait(false);
+
+				GroupSelector selector = await permissionManager.GetItemGroupSelectorAsync(parameters.WorkspaceId, artifactId)
+					                         .ConfigureAwait(false);
+
+				var groupRef = new GroupRef(groupId);
+
+				if (enabled)
+				{
+					selector.EnabledGroups.Add(groupRef);
+					selector.DisabledGroups.RemoveAll(x => x.ArtifactID == groupRef.ArtifactID);
+				}
+				else
+				{
+					selector.DisabledGroups.Add(groupRef);
+					selector.EnabledGroups.RemoveAll(x => x.ArtifactID == groupRef.ArtifactID);
+				}
+
+				await permissionManager.AddRemoveItemGroupsAsync(parameters.WorkspaceId, artifactId, selector)
+					.ConfigureAwait(false);
+			}
+		}
+
 		private static void SetGenericPermissions(
 			List<GenericPermission> availablePermissions,
 			Func<GenericPermission, bool> predicate,

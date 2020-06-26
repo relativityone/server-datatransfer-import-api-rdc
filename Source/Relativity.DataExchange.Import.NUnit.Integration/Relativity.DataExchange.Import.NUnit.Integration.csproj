@@ -104,6 +104,7 @@
     <Compile Include="DevTests\ImageImportProfilingTests.cs" />
     <Compile Include="DevTests\ImportProfilingTests.cs" />
     <Compile Include="DevTests\CreateWorkspaceWithManyFieldsTests.cs" />
+    <Compile Include="ItemPermissionTests.cs" />
     <Compile Include="OverlayIdentifierTestCases.cs" />
     <Compile Include="OverlayIdentifierTests.cs" />
     <Compile Include="PermissionTests.cs" />

@@ -33,6 +33,20 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
+		public static IEnumerable<string> ImportDefaultTestDataToFolderByArtifactId(IntegrationTestParameters parameters, int destinationFolderArtifactId)
+		{
+			return ImportDocuments(parameters, SetupColumns, SetValues, destinationFolderArtifactId: destinationFolderArtifactId);
+
+			void SetupColumns(DataTable dataTable)
+			{
+				dataTable.WithFolderName();
+			}
+
+			void SetValues(DataRow dataRow, string file)
+			{
+			}
+		}
+
 		public static IEnumerable<string> ImportDocuments(IntegrationTestParameters parameters)
 		{
 			return ImportDocuments(parameters, SetupColumns, SetValues, true);
@@ -86,7 +100,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			IntegrationTestParameters parameters,
 			Action<DataTable> setupColumns,
 			Action<DataRow, string> setValues,
-			bool generateControlNumber = false)
+			bool generateControlNumber = false,
+			int destinationFolderArtifactId = 0)
 		{
 			parameters.ThrowIfNull(nameof(parameters));
 
@@ -96,6 +111,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			settings.CaseArtifactId = parameters.WorkspaceId;
 			ApplyDefaultsForDocuments(settings);
+			settings.DestinationFolderArtifactID = destinationFolderArtifactId;
 			ConfigureJobErrorEvents(job);
 
 			using (DataTable dataSource = new DataTable("Input Data"))

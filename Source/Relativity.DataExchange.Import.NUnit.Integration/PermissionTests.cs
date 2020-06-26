@@ -25,7 +25,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	public class PermissionTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.Juniper;
-		private bool testsSkipped = false;
+		private bool testsSkipped;
 
 		private int groupId;
 		private int userId;
@@ -42,10 +42,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				               MinSupportedVersion);
 			if (!testsSkipped)
 			{
-				const int EveryoneGroupId = 1015005;
 				this.oldUsername = this.TestParameters.RelativityUserName;
 				this.oldPassword = this.TestParameters.RelativityPassword;
 
+				const int EveryoneGroupId = 1015005;
 				string lastName = Guid.NewGuid().ToString();
 				this.newUsername = $"ImportAPI.{lastName}@relativity.com";
 				this.newPassword = "Test1234!";
