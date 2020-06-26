@@ -111,6 +111,7 @@
     <Compile Include="ChoicesValidator.cs" />
     <Compile Include="ObjectsValidator.cs" />
     <Compile Include="RelationalFieldsTests.cs" />
+    <Compile Include="SelfReferencedObjectsTests.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
       <Paket>True</Paket>
     </Content>

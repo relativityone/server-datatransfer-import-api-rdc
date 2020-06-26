@@ -23,6 +23,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 			[RelativityVersion.Lanceleaf] = new Version(11, 2, 1),
 			[RelativityVersion.LanceleafAA1] = new Version(11, 2, 94),
 			[RelativityVersion.LanceleafREL425922] = new Version(11, 2, 158),
+			[RelativityVersion.LanceleafREL438573] = new Version(11, 2, 170),
 			[RelativityVersion.Mayapple] = new Version(11, 3, 1),
 			[RelativityVersion.MayappleExportPDFs] = new Version(11, 3, 16),
 		};

@@ -237,14 +237,14 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return ro.FieldValues[0].Value as string;
 		}
 
-		public static async Task<Dictionary<string, List<string>>> GetFieldValuesAsync(IntegrationTestParameters testParameters, string fieldName, int artifactTypeId)
+		public static async Task<Dictionary<string, List<string>>> GetFieldValuesAsync(IntegrationTestParameters testParameters, string fieldName, string identifierFieldName, int artifactTypeId)
 		{
 			var request = new Services.Objects.DataContracts.QueryRequest
 			{
 				ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId },
 				Fields = new[]
 											   {
-												   new FieldRef { Name = WellKnownFields.ControlNumber },
+												   new FieldRef { Name = identifierFieldName },
 												   new FieldRef { Name = fieldName },
 											   },
 			};

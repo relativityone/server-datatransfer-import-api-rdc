@@ -55,6 +55,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 		LanceleafREL425922,
 
 		/// <summary>
+		/// Relativity 11.2.170 - version where REL-438573 is corrected.
+		/// </summary>
+		LanceleafREL438573,
+
+		/// <summary>
 		/// Relativity 11.3.
 		/// </summary>
 		Mayapple,

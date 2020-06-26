@@ -9,6 +9,7 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading.Tasks;
@@ -61,8 +62,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		public async Task ValidateObjectFieldsValuesWithExpected(
-			IEnumerable<string> controlNumber,
+		public async Task ValidateObjectFieldsValuesWithExpectedAsync(
+			Tuple<string, IEnumerable<string>> identifierFieldToExpectedValuesMapping,
 			Dictionary<string, IEnumerable<string>> fieldToExpectedValuesMapping,
 			char multiValueDelimiter,
 			int artifactTypeId)
@@ -72,10 +73,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				string fieldName = fieldWithPossibleValues.Key;
 				IEnumerable<string> fieldPossibleValues = fieldWithPossibleValues.Value;
 
-				IEnumerable<DocumentObjectsDto> expectedFieldValuesToObjectMapping = controlNumber
+				IEnumerable<DocumentObjectsDto> expectedFieldValuesToObjectMapping = identifierFieldToExpectedValuesMapping.Item2
 					.Zip(fieldPossibleValues, (id, objects) => new DocumentObjectsDto(id, objects.Split(multiValueDelimiter)));
 
-				await ThenTheObjectFieldHasExpectedValues(fieldName, expectedFieldValuesToObjectMapping, artifactTypeId).ConfigureAwait(false);
+				await ThenTheObjectFieldHasExpectedValues(fieldName, identifierFieldToExpectedValuesMapping.Item1, expectedFieldValuesToObjectMapping, artifactTypeId).ConfigureAwait(false);
 			}
 		}
 
@@ -134,9 +135,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			return false;
 		}
 
-		private async Task ThenTheObjectFieldHasExpectedValues(string objectName, IEnumerable<DocumentObjectsDto> expectedObjectToDocumentMapping, int artifactTypeId)
+		private async Task ThenTheObjectFieldHasExpectedValues(string objectName, string identifierFieldName, IEnumerable<DocumentObjectsDto> expectedObjectToDocumentMapping, int artifactTypeId)
 		{
-			Dictionary<string, List<string>> actualObjectToDocumentMapping = await FieldHelper.GetFieldValuesAsync(this.testParameters, objectName, artifactTypeId).ConfigureAwait(false);
+			Dictionary<string, List<string>> actualObjectToDocumentMapping = await FieldHelper.GetFieldValuesAsync(this.testParameters, objectName, identifierFieldName, artifactTypeId).ConfigureAwait(false);
 
 			foreach (var expectedMapping in expectedObjectToDocumentMapping)
 			{

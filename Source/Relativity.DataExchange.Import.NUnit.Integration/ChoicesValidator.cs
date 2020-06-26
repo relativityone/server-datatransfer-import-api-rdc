@@ -9,6 +9,7 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		}
 
 		public async Task ValidateChoiceFieldsValuesWithExpected(
-			IEnumerable<string> controlNumber,
+			Tuple<string, IEnumerable<string>> identifierFieldToExpectedValuesMapping,
 			Dictionary<string, IEnumerable<string>> fieldsWithPossibleValues,
 			char multiValueDelimiter,
 			char nestedValueDelimiter,
@@ -40,16 +41,16 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					string fieldName = fieldWithPossibleValues.Key;
 					IEnumerable<string> fieldPossibleValues = fieldWithPossibleValues.Value;
 
-					IEnumerable<DocumentChoicesDto> expectedFieldValuesToObjectMapping = controlNumber
+					IEnumerable<DocumentChoicesDto> expectedFieldValuesToObjectMapping = identifierFieldToExpectedValuesMapping.Item2
 						.Zip(fieldPossibleValues, (id, choices) => new DocumentChoicesDto(id, choices.Split(multiValueDelimiter).SelectMany(x => x.Split(nestedValueDelimiter)).Distinct(CollationStringComparer.SQL_Latin1_General_CP1_CI_AS)));
 
-					await ThenTheChoiceFieldHasExpectedValues(fieldName, expectedFieldValuesToObjectMapping, artifactTypeId).ConfigureAwait(false);
+					await ThenTheChoiceFieldHasExpectedValues(fieldName, identifierFieldToExpectedValuesMapping.Item1, expectedFieldValuesToObjectMapping, artifactTypeId).ConfigureAwait(false);
 				}
 			}
 
-		public async Task ThenTheChoiceFieldHasExpectedValues(string choiceName, IEnumerable<DocumentChoicesDto> expectedChoiceToDocumentMapping, int artifactTypeId)
+		public async Task ThenTheChoiceFieldHasExpectedValues(string choiceName, string identifierFieldName, IEnumerable<DocumentChoicesDto> expectedChoiceToDocumentMapping, int artifactTypeId)
 		{
-			Dictionary<string, List<string>> actualChoiceToDocumentMapping = await FieldHelper.GetFieldValuesAsync(this.testParameters, choiceName, artifactTypeId).ConfigureAwait(false);
+			Dictionary<string, List<string>> actualChoiceToDocumentMapping = await FieldHelper.GetFieldValuesAsync(this.testParameters, choiceName, identifierFieldName, artifactTypeId).ConfigureAwait(false);
 
 			foreach (var expectedMapping in expectedChoiceToDocumentMapping)
 			{

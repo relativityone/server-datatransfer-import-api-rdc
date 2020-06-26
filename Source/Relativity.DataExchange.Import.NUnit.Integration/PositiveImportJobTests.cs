@@ -9,6 +9,7 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
+	using System;
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
@@ -288,7 +289,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			fieldsAndValuesToValidate.Add(MultiChoiceFieldName1, multiChoiceField);
 
 			await this.choicesValidator.ValidateChoiceFieldsValuesWithExpected(
-				controlNumber,
+				new Tuple<string, IEnumerable<string>>(WellKnownFields.ControlNumber, controlNumber),
 				fieldsAndValuesToValidate,
 				multiValueDelimiter,
 				nestedValueDelimiter,
@@ -419,8 +420,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			fieldsAndValuesToValidate.Add(MultiObjectFieldName1, multiObjectField1);
 			fieldsAndValuesToValidate.Add(MultiObjectFieldName2, multiObjectField2);
 
-			await this.objectsValidator.ValidateObjectFieldsValuesWithExpected(
-				controlNumber,
+			await this.objectsValidator.ValidateObjectFieldsValuesWithExpectedAsync(
+				new Tuple<string, IEnumerable<string>>(WellKnownFields.ControlNumber, controlNumber),
 				fieldsAndValuesToValidate,
 				multiValueDelimiter,
 				artifactTypeId).ConfigureAwait(false);
@@ -468,8 +469,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Dictionary<string, IEnumerable<string>> fieldsAndValuesToValidate = new Dictionary<string, IEnumerable<string>>();
 			fieldsAndValuesToValidate.Add(MultiObjectFieldName1, multiObjectField);
 
-			await this.objectsValidator.ValidateObjectFieldsValuesWithExpected(
-				controlNumber,
+			await this.objectsValidator.ValidateObjectFieldsValuesWithExpectedAsync(
+				new Tuple<string, IEnumerable<string>>(WellKnownFields.ControlNumber, controlNumber),
 				fieldsAndValuesToValidate,
 				multiValueDelimiter,
 				artifactTypeId).ConfigureAwait(false);
