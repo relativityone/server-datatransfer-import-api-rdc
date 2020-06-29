@@ -518,12 +518,6 @@ task CodeCoverageReport -Description "Create a code coverage report" {
     } -errorMessage "There was an error creating a code coverage report."
 }
 
-task ExtendedCodeAnalysis -Description "Perform extended code analysis checks." {
-    exec { 
-        & "$ScriptsDir\Invoke-ExtendedCodeAnalysis.ps1" -SolutionFile $MasterSolution
-    } -errorMessage "There was an error running the extended code analysis checks."
-}
-
 task Help -Alias ? -Description "Display task information" {
     WriteDocumentation
 }

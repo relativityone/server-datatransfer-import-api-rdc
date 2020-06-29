@@ -35,17 +35,17 @@ Generally speaking, PowerShell is used to perform initial and pre-commit builds 
 
 ```bash
 # Builds the solution using a Release configuration, run the standard + extended CA checks, and then StyleCop analyzer.
-.\build.ps1 Build,ExtendedCodeAnalysis
+.\build.ps1 Build
 ```
 
 ```bash
-# Rebuilds the solution using a Release configuration, runs standard + extended CA checks, and then StyleCop analyzer.
-.\build.ps1 Build,ExtendedCodeAnalysis -Target Rebuild
+# Rebuilds the solution using a Release configuration, runs standard + extended CA, and then StyleCop analyzer.
+.\build.ps1 Build -Target Rebuild
 ```
 
 ```bash
 # Rebuilds the solution using a Debug configuration, runs standard + extended CA checks, and then StyleCop analyzer.
-.\build.ps1 Build,ExtendedCodeAnalysis -Target Rebuild -Configuration Debug
+.\build.ps1 Build -Target Rebuild -Configuration Debug
 ```
 
 ### Visual Studio
@@ -288,7 +288,6 @@ The project structure is similar to other repos. Important folders and files are
 ├───Scripts
 │   │
 │   │   Find-ChangedMigratedFiles.ps1
-│   │   Invoke-ExtendedCodeAnalysis.ps1
 │   │   Local.runsettings
 │   │   Local_x64.runsettings
 │   │   Test-PackageUpgrade.ps1
@@ -416,8 +415,6 @@ The `StyleCop.Analyzers` Roslyn-based analyzer is the de-facto replacement for t
 ***Note:** The `AllErrors.ruleset` enforces virtually all SC rules and is configured for all public facing projects.*
 
 #### Resharper Code Analysis (PowerShell only)
-Over the last few years, improper async/await usage caused `ASP.NET` applications to "hang" and resulted in PD alerts. After some investigation, the Resharper community developed an extension to identify this type of violation. Not only does the extension write a "squiggly" on the offending line, but it can be invoked using the Resharper CLI tools.
-
-The `.\Scripts\Invoke-ExtendedCodeAnalysis.ps1` PS script scans the solution and identifies all violations. The PSake-based build scripts are designed to fail the build for a single violation.
+Over the last few years, improper async/await usage caused `ASP.NET` applications to "hang" and resulted in PD alerts. After some investigation, the Resharper community developed an extension to identify this type of violation. This extension decorated offending code with squirrly red lines and crashes the build.
 
 ***Note:** The extension is limited to C# projects.*
