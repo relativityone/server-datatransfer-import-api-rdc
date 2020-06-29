@@ -171,13 +171,6 @@ timestamps
 
                     try
                     {
-                        stage("Extended code analysis")
-                        {
-                            echo "Extending code analysis"
-                            output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'"
-                            echo output
-                        }
-
                         stage("Run unit tests")
                         {
                             if (shouldRunUnitTests)
