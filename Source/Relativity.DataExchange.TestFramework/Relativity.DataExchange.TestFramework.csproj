@@ -94,6 +94,7 @@
     <Compile Include="CollationStringComparer.cs" />
     <Compile Include="DataReaderBase.cs" />
     <Compile Include="DummyTest.cs" />
+    <Compile Include="HttpClientHelper.cs" />
     <Compile Include="Import\JobExecutionContext\IExecutionContext.cs" />
     <Compile Include="Import\JobExecutionContext\ImportTestJobResult.cs" />
     <Compile Include="Import\SimpleFieldsImport\FieldValueSources\IFieldValueSourceWithPrefix.cs" />
@@ -221,6 +222,9 @@
     <None Include="paket.references" />
     <EmbeddedResource Include="Resources\test-parameters-hopper.json" />
     <None Include="Resources\CreateInput.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\CreateProductionInput.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Resources\Docs\EDRM-Sample1.pdf">

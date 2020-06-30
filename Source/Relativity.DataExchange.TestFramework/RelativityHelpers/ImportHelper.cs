@@ -12,6 +12,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
+	using System.Threading.Tasks;
+
 	using kCura.EDDS.WebAPI.BulkImportManagerBase;
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
@@ -78,13 +80,13 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		public static void ImportProduction(
+		public static async Task ImportProductionAsync(
 			IntegrationTestParameters parameters,
 			string productionName,
 			IEnumerable<string> documentsControlNumbers)
 		{
 			int productionId =
-				ProductionHelper.CreateProduction(parameters, productionName, "BATES", IntegrationTestHelper.Logger);
+				await ProductionHelper.CreateProductionAsync(parameters, productionName, "BATES").ConfigureAwait(false);
 
 			ImportImagesForDocuments(parameters, GetImportJob, documentsControlNumbers);
 
