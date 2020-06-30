@@ -10,19 +10,19 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Linq;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.DataExchange.TestFramework.NUnitExtensions;
-	using Relativity.DataExchange.TestFramework.RelativityVersions;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 
-    /// <summary>
-    /// Represents a test that imports production images and validates the results.
-    /// </summary>
-    /// <remarks>
-    /// This test requires the Relativity.Productions.Client package but hasn't yet been published to nuget.org.
-    /// </remarks>
+	/// <summary>
+	/// Represents a test that imports production images and validates the results.
+	/// </summary>
+	/// <remarks>
+	/// This test requires the Relativity.Productions.Client package but hasn't yet been published to nuget.org.
+	/// </remarks>
 	[TestFixture]
 	public class ProductionImportTests : ImageImportTestsBase
 	{
@@ -44,19 +44,16 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		/// </remarks>
 		private const int TotalImagesForFirstDocument = 1001;
 
-		private const RelativityVersion MinSupportedVersion = RelativityVersion.Goatsbeard;
-
 		[Test]
 		[Category(TestCategories.ImportProduction)]
 		[Category(TestCategories.Integration)]
-		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
-		public void ShouldImportTheProductionImages()
+		public async Task ShouldImportTheProductionImagesAsync()
 		{
 			// Arrange
 			IList<string> controlNumbers = new List<string> { FirstDocumentControlNumber, SecondDocumentControlNumber };
 			this.ImportDocuments(controlNumbers);
 			string productionSetName = GenerateProductionSetName();
-			int productionId = this.CreateProduction(productionSetName, BatesPrefix);
+			int productionId = await this.CreateProductionAsync(productionSetName, BatesPrefix).ConfigureAwait(false);
 
 			// Act
 			this.ImportProduction(productionId);
@@ -80,7 +77,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			Assert.That(this.PublishedProgressRows.Count, Is.Positive);
 
 			// Assert - the first and last bates numbers match the expected values.
-			Tuple<string, string> batesNumbers = this.QueryProductionBatesNumbers(productionId);
+			Tuple<string, string> batesNumbers = await this.QueryProductionBatesNumbersAsync(productionId).ConfigureAwait(false);
 			string expectedFirstBatesValue = FirstDocumentControlNumber;
 			string expectedLastBatesValue = SecondDocumentControlNumber;
 			Assert.That(batesNumbers.Item1, Is.EqualTo(expectedFirstBatesValue));
@@ -158,6 +155,24 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			this.DataSource.Rows.Add(row);
 			job.SourceData.SourceData = this.DataSource;
 			job.Execute();
+		}
+
+		private async Task<int> CreateProductionAsync(string productionName, string batesPrefix)
+		{
+			int artifactId = await ProductionHelper.CreateProductionAsync(this.TestParameters, productionName, batesPrefix).ConfigureAwait(false);
+			this.Logger.LogInformation(
+				"Successfully created production {ProductionName} - {ArtifactId}.",
+				productionName,
+				artifactId);
+			return artifactId;
+		}
+
+		private async Task<Tuple<string, string>> QueryProductionBatesNumbersAsync(int productionId)
+		{
+			var production = await ProductionHelper.QueryProductionAsync(this.TestParameters, productionId).ConfigureAwait(false);
+			Tuple<string, string> batesNumbers =
+				new Tuple<string, string>(production.Details.FirstBatesValue, production.Details.LastBatesValue);
+			return batesNumbers;
 		}
 	}
 }

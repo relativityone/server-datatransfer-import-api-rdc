@@ -816,16 +816,6 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			return artifactId;
 		}
 
-		protected int CreateProduction(string productionName, string batesPrefix)
-		{
-			int artifactId = ProductionHelper.CreateProduction(this.TestParameters, productionName, batesPrefix, this.Logger);
-			this.Logger.LogInformation(
-				"Successfully created production {ProductionName} - {ArtifactId}.",
-				productionName,
-				artifactId);
-			return artifactId;
-		}
-
 		protected void DeleteObjects(IList<int> artifacts)
 		{
 			foreach (int artifactId in artifacts.ToList())
@@ -964,23 +954,6 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 
 				return table.Rows.Cast<DataRow>().Select(x => new FileDto(x)).Single();
 			}
-		}
-
-		/// <summary>
-		/// Queries for a structure that provides the first and last Bates numbers for the specified production.
-		/// </summary>
-		/// <param name="productionId">
-		/// The production artifact identifier.
-		/// </param>
-		/// <returns>
-		/// The tuple.
-		/// </returns>
-		protected Tuple<string, string> QueryProductionBatesNumbers(int productionId)
-		{
-			var production = ProductionHelper.QueryProduction(this.TestParameters, productionId);
-			Tuple<string, string> batesNumbers =
-				new Tuple<string, string>(production.Details.FirstBatesValue, production.Details.LastBatesValue);
-			return batesNumbers;
 		}
 
 		/// <summary>

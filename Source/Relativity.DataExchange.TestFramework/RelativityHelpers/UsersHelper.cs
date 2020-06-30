@@ -10,9 +10,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
-	using System.Net;
-	using System.Net.Http;
-	using System.Text;
 	using System.Threading.Tasks;
 
 	using Newtonsoft.Json.Linq;
@@ -106,39 +103,13 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 
 			string absoluteUri = parameters.RelativityRestUrl.AbsoluteUri;
-			var uri = new Uri(absoluteUri.Substring(0, absoluteUri.IndexOf("/api", StringComparison.OrdinalIgnoreCase)));
+			absoluteUri = absoluteUri.Substring(0, absoluteUri.IndexOf("/api", StringComparison.OrdinalIgnoreCase));
+			absoluteUri = $"{absoluteUri}/Relativity/User";
 
-			using (var httpClient = new HttpClient())
-			{
-				httpClient.BaseAddress = uri;
+			string result = await HttpClientHelper.PostAsync(parameters, new Uri(absoluteUri), request.ToString()).ConfigureAwait(false);
+			JObject resultObject = JObject.Parse(result);
 
-				httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", "-");
-
-				string basicAuth = $"{parameters.RelativityUserName}:{parameters.RelativityPassword}";
-				httpClient.DefaultRequestHeaders.Add("Authorization", $"Basic {Convert.ToBase64String(Encoding.ASCII.GetBytes(basicAuth))}");
-
-				string url = $"{uri.AbsolutePath}/Relativity/User";
-
-				StringContent content = new StringContent(request.ToString(), Encoding.UTF8, "application/json");
-				HttpResponseMessage response = await httpClient.PostAsync(url, content).ConfigureAwait(false);
-				string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-				if (response.StatusCode != HttpStatusCode.Created)
-				{
-					throw new HttpServiceException($"{nameof(CreateNewUserAsync)} failed." + Environment.NewLine +
-							  new
-							  {
-								  request,
-								  response,
-								  url,
-								  basicAuth,
-								  httpClient.DefaultRequestHeaders,
-							  });
-				}
-
-				JObject resultObject = JObject.Parse(result);
-				return (int)resultObject["Results"][0]["ArtifactID"];
-			}
+			return (int)resultObject["Results"][0]["ArtifactID"];
 		}
 
 		public static async Task RemoveUserAsync(IntegrationTestParameters parameters, int userId)

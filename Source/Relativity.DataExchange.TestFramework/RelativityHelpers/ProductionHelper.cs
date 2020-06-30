@@ -7,67 +7,28 @@
 namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 {
 	using System;
+	using System.IO;
+	using System.Threading.Tasks;
+
+	using Newtonsoft.Json.Linq;
+
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
+	using Relativity.Productions.Services;
 
 	/// <summary>
 	/// Defines static helper methods to manage productions.
 	/// </summary>
 	public static class ProductionHelper
 	{
-		public static int CreateProduction(
-			IntegrationTestParameters parameters,
-			string productionName,
-			string batesPrefix,
-			Relativity.Logging.ILog logger)
+		public static async Task<Production> QueryProductionAsync(IntegrationTestParameters parameters, int productionId)
 		{
-			if (parameters == null)
-			{
-				throw new ArgumentNullException(nameof(parameters));
-			}
+			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
 
-			if (logger == null)
+			using (IProductionManager client =
+				ServiceHelper.GetServiceProxy<IProductionManager>(parameters))
 			{
-				throw new ArgumentNullException(nameof(logger));
-			}
-
-			const int productionFontSize = 10;
-			const int numberOfDigits = 7;
-			using (Relativity.Productions.Services.IProductionManager client = ServiceHelper.GetServiceProxy<Relativity.Productions.Services.IProductionManager>(parameters))
-			{
-				var production = new Relativity.Productions.Services.Production
-				{
-					Details = new Relativity.Productions.Services.ProductionDetails
-					{
-						BrandingFontSize = productionFontSize,
-						ScaleBrandingFont = false,
-					},
-					Name = productionName,
-					Numbering = new Relativity.Productions.Services.DocumentLevelNumbering
-					{
-						NumberingType = Relativity.Productions.Services.NumberingType.DocumentLevel,
-						BatesPrefix = batesPrefix,
-						BatesStartNumber = 0,
-						NumberOfDigitsForDocumentNumbering = numberOfDigits,
-						IncludePageNumbers = false,
-					},
-				};
-
-				return client.CreateSingleAsync(parameters.WorkspaceId, production).ConfigureAwait(false).GetAwaiter()
-					.GetResult();
-			}
-		}
-
-		public static Relativity.Productions.Services.Production QueryProduction(IntegrationTestParameters parameters, int productionId)
-		{
-			if (parameters == null)
-			{
-				throw new ArgumentNullException(nameof(parameters));
-			}
-
-			using (Relativity.Productions.Services.IProductionManager client =
-				ServiceHelper.GetServiceProxy<Relativity.Productions.Services.IProductionManager>(parameters))
-			{
-				Relativity.Productions.Services.Production production = client
-					.ReadSingleAsync(parameters.WorkspaceId, productionId).ConfigureAwait(false).GetAwaiter().GetResult();
+				Production production = await client
+					.ReadSingleAsync(parameters.WorkspaceId, productionId).ConfigureAwait(false);
 				if (production == null)
 				{
 					throw new InvalidOperationException($"The production {productionId} does not exist.");
@@ -75,6 +36,69 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 				return production;
 			}
+		}
+
+		public static async Task<int> CreateProductionAsync(
+			IntegrationTestParameters parameters,
+			string productionName,
+			string batesPrefix)
+		{
+			// Starting from Goatsbeard release we can use Kepler to create production
+			return RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.Goatsbeard)
+					? await CreateProductionUsingHttpClientAsync(parameters, productionName, batesPrefix).ConfigureAwait(false)
+					: await CreateProductionUsingKeplerAsync(parameters, productionName, batesPrefix).ConfigureAwait(false);
+		}
+
+		private static async Task<int> CreateProductionUsingKeplerAsync(
+			IntegrationTestParameters parameters,
+			string productionName,
+			string batesPrefix)
+		{
+			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+
+			const int ProductionFontSize = 10;
+			const int NumberOfDigits = 7;
+			using (IProductionManager client = ServiceHelper.GetServiceProxy<IProductionManager>(parameters))
+			{
+				var production = new Production
+				{
+					Details = new ProductionDetails
+					{
+						BrandingFontSize = ProductionFontSize,
+						ScaleBrandingFont = false,
+					},
+					Name = productionName,
+					Numbering = new DocumentLevelNumbering
+					{
+						NumberingType = NumberingType.DocumentLevel,
+						BatesPrefix = batesPrefix,
+						BatesStartNumber = 0,
+						NumberOfDigitsForDocumentNumbering = NumberOfDigits,
+						IncludePageNumbers = false,
+					},
+				};
+
+				return await client.CreateSingleAsync(parameters.WorkspaceId, production).ConfigureAwait(false);
+			}
+		}
+
+		private static async Task<int> CreateProductionUsingHttpClientAsync(
+			IntegrationTestParameters parameters,
+			string productionName,
+			string batesPrefix)
+		{
+			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+
+			string createProductionJson = ResourceFileHelper.GetResourceFolderPath("CreateProductionInput.json");
+			JObject request = JObject.Parse(File.ReadAllText(createProductionJson));
+			request["workspaceArtifactID"] = parameters.WorkspaceId;
+			request["Production"]["Name"] = productionName;
+			request["Production"]["Numbering"]["BatesPrefix"] = batesPrefix;
+
+			string url = $"{parameters.RelativityRestUrl.AbsoluteUri}/Relativity.Productions.Services.IProductionModule/Production%20Manager/CreateSingleAsync";
+			string result = await HttpClientHelper.PostAsync(parameters, new Uri(url), request.ToString()).ConfigureAwait(false);
+
+			return int.Parse(result);
 		}
 	}
 }
