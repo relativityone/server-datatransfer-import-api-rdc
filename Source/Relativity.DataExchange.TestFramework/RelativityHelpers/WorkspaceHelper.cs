@@ -86,6 +86,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 								client.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspace);
 							parameters.WorkspaceId = QueryWorkspaceArtifactId(client, result, logger);
 							parameters.WorkspaceName = workspace.Name;
+
+							EnableDataGrid(client, parameters, logger);
+
 							logger.LogInformation(
 								"Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
 								workspace.Name.Secure(),
@@ -245,6 +248,14 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return string.IsNullOrEmpty(parameters.WorkspaceName)
 				? $"Import API Sample Workspace ({DateTime.Now:MM-dd HH.mm.ss.fff})"
 				: parameters.WorkspaceName;
+		}
+
+		private static void EnableDataGrid(IRSAPIClient client, IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
+		{
+			var createdWorkspace = client.Repositories.Workspace.ReadSingle(parameters.WorkspaceId);
+			createdWorkspace.EnableDataGrid = parameters.EnableDataGrid;
+			client.Repositories.Workspace.UpdateSingle(createdWorkspace);
+			logger.LogInformation(parameters.EnableDataGrid ? $"Set DataGrid enabled for workspace with id {parameters.WorkspaceId}" : $"Set DataGrid disabled for workspace with id {parameters.WorkspaceId}");
 		}
 	}
 }

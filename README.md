@@ -213,6 +213,7 @@ The following table outlines all available `App.Config` and environment variable
 |SqlAdminUserName             | IAPI_INTEGRATION_SQLADMINUSERNAME             | The SQL system administrator user name.                           | sa                                                  |
 |SqlAdminPassword             | IAPI_INTEGRATION_SQLADMINPASSWORD             | The SQL system administrator password.                            | SomePassword!                                       |
 |WorkspaceTemplate            | IAPI_INTEGRATION_WORKSPACETEMPLATE            | The workspace template used to create the test workspace.         |	Relativity Starter Template                       |
+|EnableDataGrid               | IAPI_INTEGRATION_ENABLEDATAGRID               | Specify whether enable DataGrid property in created workspace     | false
 
 #### JSON File
 The same test parameters described above can also be used in JSON.
@@ -239,7 +240,8 @@ The same test parameters described above can also be used in JSON.
 	"SqlInstanceName" : "hostname.mycompany.corp\\EDDSINSTANCE001",
 	"SqlAdminUserName" : "sa",
 	"SqlAdminPassword" : "SomePassword!",
-	"WorkspaceTemplate" : "Relativity Starter Template"
+	"WorkspaceTemplate" : "Relativity Starter Template",
+	"EnableDataGrid" : "false"
 }
 ```
 

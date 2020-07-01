@@ -19,5 +19,6 @@
 	"SqlInstanceName": "hostname.mycompany.corp\\EDDSINSTANCE001",
 	"SqlAdminUserName": "sa",
 	"SqlAdminPassword": "SomePassword!",
-	"WorkspaceTemplate": "Relativity Starter Template"
+	"WorkspaceTemplate": "Relativity Starter Template",
+	"EnableDataGrid": "<replaced_in_build_enabledatagrid>"
 }

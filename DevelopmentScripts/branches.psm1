@@ -5,7 +5,8 @@ public enum BranchType {
     Develop,
     FeatureBranch,
     Trident,
-	PerformancePipeline
+	PerformancePipeline,
+	ComplexCases
 }
 '@ -Language CSharp
 
@@ -42,6 +43,10 @@ Function Get-CurrentBranchType{
     elseif ($currentBranch.ToString() -eq "Trident" ) 
     {
         return [BranchType]::Trident
+    }
+	elseif ($currentBranch.ToString() -eq "ComplexCases" ) 
+    {
+        return [BranchType]::ComplexCases
     }
     else
     {

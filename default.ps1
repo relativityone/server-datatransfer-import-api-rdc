@@ -76,6 +76,7 @@ properties {
     $Simulate = $Null
     $ProgetApiKey = $Null
 	$MassImportImprovementsToggle = $Null
+	$EnableDataGrid = $Null
 }
 
 $code = @"
@@ -565,6 +566,28 @@ task LoadTests -Description "Run all load tests for the loadtest pipeline" {
 	Invoke-LoadTests -TestCategoryFilter "--where=`"cat==LoadTest`"" -MassImportImprovementsToggle $MassImportImprovementsToggle
 }
 
+task IntegrationTestsForMassImportImprovementsToggle -Description "Set MassImportImprovementsToggle value and run all integration tests" {
+	folders\Initialize-Folder $TestReportsDir -Safe
+    folders\Initialize-Folder $IntegrationTestsReportDir -Safe
+	
+	[bool]$massImportToggleOn = $false
+	if($MassImportImprovementsToggle){
+		$massImportToggleOn = $true
+	}
+	
+	[bool]$dataGridShouldBeEnabled = $false
+	if($EnableDataGrid){
+		$dataGridShouldBeEnabled = $true
+	}
+	
+	Write-Host "Set MassImportImprovementsToggle value to $massImportToggleOn"
+	InsertMassImportToggleRecord
+	SetMassImportToggleValue -IsEnabled $massImportToggleOn
+	
+	Write-Host "Execute Integration tests"
+	Invoke-MassImportVerification-Tests -TestCategoryFilter "--where=`"cat==Integration`"" -TestReportDirectory $IntegrationTestsReportDir -MassImportImprovementsToggle $massImportToggleOn -EnableDataGrid $dataGridShouldBeEnabled	
+} 
+
 task PackageVersion -Description "Retrieves the package version from powershell" {
 
     $localPackageVersion = versioning\Get-ReleaseVersion "$Branch"
@@ -728,6 +751,7 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINUSERNAME", "sa", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINPASSWORD", "P@ssw0rd@1", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_WORKSPACETEMPLATE", "Relativity Starter Template", "Process")
+		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_ENABLEDATAGRID", "false", "Process")
         Write-Host "The test environment is setup with the $hostname TestVM."
     }
     catch {
@@ -772,18 +796,26 @@ task LoadTestResults -Description "Retrieve the load test results from the Xml f
 }
 
 task ReplaceTestVariables -Description "Replace test variables in file" {
-$pathToFile = ".\Source\Relativity.DataExchange.TestFramework\Resources\test-parameters-hopper.json"
-if ($TestParametersFile) {
-    $pathToFile = $TestParametersFile
-}
-     $replaceTarget = [Paths.UriScheme]::AddHttpsIfMissing($TestTarget)
-     $sqlserveraddress = [Paths.UriScheme]::GetHost($TestTarget)
+	$pathToFile = ".\Source\Relativity.DataExchange.TestFramework\Resources\test-parameters-hopper.json"
+	if ($TestParametersFile) {
+		$pathToFile = $TestParametersFile
+	}
+	
+	$replaceTarget = [Paths.UriScheme]::AddHttpsIfMissing($TestTarget)
+	$sqlserveraddress = [Paths.UriScheme]::GetHost($TestTarget)
+	 
+	[string]$dataGridShouldBeEnabled = 'false'
+	if($EnableDataGrid){
+		$dataGridShouldBeEnabled = 'true'
+	}
+	
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_instance_name>',$sqlserveraddress) | Set-Content -Path $pathToFile
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_user_name>','eddsdbo') | Set-Content -Path $pathToFile
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_password>','P@ssw0rd@1') | Set-Content -Path $pathToFile
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_relativity_password>','Test1234!') | Set-Content -Path $pathToFile
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_relativity_user_name>','relativity.admin@kcura.com') | Set-Content -Path $pathToFile
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_target_to_test>', $replaceTarget) | Set-Content -Path $pathToFile
+	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_enabledatagrid>', $dataGridShouldBeEnabled) | Set-Content -Path $pathToFile
 	Write-Host (Get-Content -path $pathToFile -Raw)
 }
 
@@ -896,14 +928,25 @@ Function Invoke-LoadTests {
         [String] $TestCategoryFilter,
 		[bool]$MassImportImprovementsToggle
     )
+	
+	Invoke-MassImportVerification-Tests -TestCategoryFilter $TestCategoryFilter -TestReportDirectory $LoadTestsReportDir -MassImportImprovementsToggle $MassImportImprovementsToggle -EnableDataGrid $EnableDataGrid
+}
 
-    $SolutionFile = $MasterSolution
+Function Invoke-MassImportVerification-Tests{
+	param(
+		[String] $TestCategoryFilter,
+		[String] $TestReportDirectory,
+		[bool]$MassImportImprovementsToggle,
+		[bool]$EnableDataGrid
+)
+
+	$SolutionFile = $MasterSolution
     if ($ILMerge) {
         $SolutionFile = $MasterILMergeSolution
     }
 
-	[string]$ResultXmlFile = Join-Path $LoadTestsReportDir "test-results-loadtest_toggle$MassImportImprovementsToggle.xml"
-	[string]$OutputTxtFile = Join-Path $LoadTestsReportDir "loadtest-test-output_toggle$MassImportImprovementsToggle.txt"
+	[string]$ResultXmlFile = Join-Path $TestReportDirectory "test-results-Toggle$MassImportImprovementsToggle-DataGrid$EnableDataGrid.xml"
+	[string]$OutputTxtFile = Join-Path $TestReportDirectory "test-output-Toggle$MassImportImprovementsToggle-DataGrid$EnableDataGrid.txt"
 	
     Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
 	
@@ -915,7 +958,7 @@ Function Invoke-LoadTests {
             "--result=$ResultXmlFile" `
             "--out=$OutputTxtFile" `
             $TestCategoryFilter `
-    } -errorMessage "There was an error running the load tests."
+    } -errorMessage "There was an error running the tests."
 }
 
 Function InsertMassImportToggleRecord{

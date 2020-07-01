@@ -39,6 +39,7 @@ namespace Relativity.DataExchange.TestFramework
 			this.SkipDirectModeTests = false;
 			this.SkipIntegrationTests = false;
 			this.WorkspaceId = 0;
+			this.EnableDataGrid = false;
 		}
 
 		/// <summary>
@@ -74,6 +75,7 @@ namespace Relativity.DataExchange.TestFramework
 			this.SqlComparerOutputPath = copy.SqlComparerOutputPath;
 			this.SqlInstanceName = copy.SqlInstanceName;
 			this.WorkspaceId = copy.WorkspaceId;
+			this.EnableDataGrid = copy.EnableDataGrid;
 		}
 
 		/// <summary>
@@ -293,6 +295,16 @@ namespace Relativity.DataExchange.TestFramework
 		[JsonProperty("WorkspaceTemplate")]
 		[IntegrationTestParameter(true)]
 		public string WorkspaceTemplate { get; set; }
+
+		/// <summary>
+		///  Gets or sets a value indicating whether DataGrid property should be enabled in created workspace.
+		/// </summary>
+		/// <value>
+		/// DataGrid enabled value.
+		/// </value>
+		[JsonProperty("EnableDataGrid")]
+		[IntegrationTestParameter(true)]
+		public bool EnableDataGrid { get; set; }
 
 		[JsonProperty("DeleteWorkspaceAfterTest")]
 		[IntegrationTestParameter(true)]

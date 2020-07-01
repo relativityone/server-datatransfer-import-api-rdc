@@ -58,6 +58,10 @@ Skips building the solution and executes all UI tests.
 Skips building the solution and executes all LoadTests tests.
 
 .EXAMPLE
+.\build.ps1 IntegrationTestsForMassImportImprovementsToggle
+Skips building the solution, set MassImportImprovementsToggle value and execute all Integration tests.
+
+.EXAMPLE
 .\build.ps1 CodeCoverageReport -TestEnvironment "Hopper"
 Skips building the solution, setup the integration test parameters using the Hopper test environment, executes a code coverage report, and creates the code coverage report within the ".\Reports" sub-folder.
 
@@ -113,7 +117,10 @@ The optional parameter that forces publishing the RDC package.
 The optional parameter that simulates executing a command. This is generally reserved for debug purposes.
 
 .EXAMPLE MassImportImprovementsToggle
-The optional parameter used to execute LoadTests for two MassImportImprovementsToggle values
+The optional parameter used to execute LoadTests for two MassImportImprovementsToggle values.
+
+.EXAMPLE EnableDataGrid
+The optional parameter used to execute tests for two enabled or disabled DataGrid.
 
 #>
 
@@ -170,7 +177,9 @@ param(
     [Parameter()]
     [Switch]$Simulate,
 	[Parameter()]
-    [Switch]$MassImportImprovementsToggle
+    [Switch]$MassImportImprovementsToggle,
+	[Parameter()]
+    [Switch]$EnableDataGrid
 )
 
 $BaseDir = $PSScriptRoot
@@ -249,6 +258,7 @@ $Params = @{
         Simulate = $Simulate
 		ProgetApiKey = $ProgetApiKey
 		MassImportImprovementsToggle = $MassImportImprovementsToggle
+		EnableDataGrid = $EnableDataGrid
     }
 
     Verbose = $VerbosePreference
