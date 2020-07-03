@@ -130,7 +130,7 @@
     <value>The default file share {0} for workspace {1} contains invalid cloud transfer configuration info. Exported artifacts from this file share can only be transferred by direct or web mode. Error: '{2}'</value>
   </data>
   <data name="FileStorageInvalidNonDefaultFileShareWarningMessage" xml:space="preserve">
-    <value>The non-default file share {0} associated with workspace {1} contains invalid cloud transfer configuration info. Exported artifacts from this file share can only be transferred by direct or web mode. Error: '{2}'</value>
+    <value>The non-default file share {0} associated with workspace {1} contains invalid cloud transfer configuration info. Exported artifacts from this file share can only be transferred by direct or web mode. Details: '{2}'</value>
   </data>
   <data name="FileStorageZeroValidFileSharesWarningMessage" xml:space="preserve">
     <value>All of the file shares associated with workspace {0} contain invalid cloud transfer configuration info. All exported artifacts can only be transferred by direct or web mode.</value>
