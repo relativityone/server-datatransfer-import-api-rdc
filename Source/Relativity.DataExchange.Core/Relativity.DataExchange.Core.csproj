@@ -79,7 +79,7 @@
     </Reference>
     <Reference Include="itextsharp">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll</HintPath>
+      <HintPath>..\..\Vendor\iTextSharp\5.5.13.1\x64\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />

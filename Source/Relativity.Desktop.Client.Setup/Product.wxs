@@ -197,7 +197,7 @@
       <File Id="Primary.itextsharp"
             Name="itextsharp.dll"
             DiskId="1"
-            Source="..\..\Vendor\iTextSharp\5.1.2\$(var.Platform)\itextsharp.dll" />
+            Source="..\..\Vendor\iTextSharp\5.5.13.1\$(var.Platform)\itextsharp.dll" />
       <File Id="Primary.FreeImageNET"
             Name="FreeImageNET.dll"
             DiskId="1"
