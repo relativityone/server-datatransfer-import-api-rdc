@@ -36,7 +36,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private const string ReferenceToDocumentFieldName = "ReferenceToDocument";
 
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
-		private bool testsSkipped = false;
+		private bool testsSkipped;
 
 		/// <summary>
 		/// Test case can change import batch size, so we have to revert it to the initial value after each test.
@@ -98,10 +98,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			const int RowsWithExistingObject = 5;
 			const int RowsWithNonExistingObject = 10;
 			const int TotalRows = RowsWithNonExistingObject + RowsWithExistingObject;
+			const string NamePrefix = "ChildObjects";
 
 			IEnumerable<string> existingRowsNames = Enumerable
 				.Range(1, RowsWithExistingObject)
-				.Select(i => $"{nameof(this.ShouldNotAppendOverlayChildObjectsThatNotExist)}-existing-{i}")
+				.Select(i => $"{NamePrefix}-existing-{i}")
 				.ToList();
 
 			foreach (string name in existingRowsNames)
@@ -111,7 +112,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			IEnumerable<string> notExistingRowsNames = Enumerable
 				.Range(1, RowsWithNonExistingObject)
-				.Select(i => $"{nameof(this.ShouldNotAppendOverlayChildObjectsThatNotExist)}-non-existing-{i}")
+				.Select(i => $"{NamePrefix}-non-existing-{i}")
 				.ToList();
 
 			IEnumerable<string> nameSource = existingRowsNames.Concat(notExistingRowsNames);
@@ -127,10 +128,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ImportTestJobResult result = this.JobExecutionContext.Execute(importDataSource);
 
 			// ASSERT
+			ThenTheImportJobCompletedWithErrors(result, RowsWithNonExistingObject, TotalRows);
+			Assert.That(result.NumberOfJobMessages, Is.Positive, () => "Wrong number of job messages.");
 			ThenTheErrorRowsHaveCorrectMessage(result.ErrorRows, " - Your account does not have rights to add a document or object to this case\n - No parent artifact specified for this new object");
-			Assert.That(result.JobReportErrorsCount, Is.EqualTo(RowsWithNonExistingObject));
-			Assert.That(result.NumberOfJobMessages, Is.GreaterThan(0));
-			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(TotalRows));
 		}
 
 		[Category(TestCategories.Integration)]
@@ -142,6 +142,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			const int RowsWithDuplicatedOverlayIdentifier = 5;
 			const int RowsWithUniqueOverlayIdentifier = 10;
 			const int TotalRows = RowsWithUniqueOverlayIdentifier + RowsWithDuplicatedOverlayIdentifier;
+			const string NamePrefix = "DocumentsSharedID";
 
 			List<int> objectIdentifiers = new List<int>();
 			for (int i = 1; i <= TotalRows; i++)
@@ -149,7 +150,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				int id = RdoHelper.CreateObjectTypeInstance(
 					this.TestParameters,
 					this.objectArtifactTypeId,
-					new Dictionary<string, object> { { WellKnownFields.RdoIdentifier, $"obj-{nameof(this.ShouldNotOverlayDocumentsWithSharedOverlayIdentifier)}-{i}" } });
+					new Dictionary<string, object> { { WellKnownFields.RdoIdentifier, $"obj-{NamePrefix}-{i}" } });
 				objectIdentifiers.Add(id);
 				if (i <= RowsWithDuplicatedOverlayIdentifier)
 				{
@@ -158,7 +159,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 
 			IEnumerable<string> controlNumberSource = Enumerable.Range(1, TotalRows + RowsWithDuplicatedOverlayIdentifier)
-				.Select(i => $"doc-{nameof(this.ShouldNotOverlayDocumentsWithSharedOverlayIdentifier)}-{i}");
+				.Select(i => $"doc-{NamePrefix}-{i}");
 
 			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
 				.AddField(WellKnownFields.ControlNumber, controlNumberSource)
@@ -186,10 +187,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ImportTestJobResult result = this.JobExecutionContext.Execute(overlayImportDataSource);
 
 			// ASSERT
+			ThenTheImportJobCompletedWithErrors(result, RowsWithDuplicatedOverlayIdentifier, TotalRows);
+			Assert.That(result.NumberOfJobMessages, Is.Positive, () => "Wrong number of job messages.");
 			ThenTheErrorRowsHaveCorrectMessage(result.ErrorRows, " - This record's Overlay Identifier is shared by multiple documents in the case, and cannot be imported");
-			Assert.That(result.JobReportErrorsCount, Is.EqualTo(RowsWithDuplicatedOverlayIdentifier));
-			Assert.That(result.NumberOfJobMessages, Is.GreaterThan(0));
-			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(TotalRows));
 		}
 
 		[Category(TestCategories.Integration)]
@@ -201,14 +201,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			const int RowsWithNonExistingDocuments = 5;
 			int rowsWithExistingDocuments = TestData.SampleDocFiles.Count();
 			int totalRows = rowsWithExistingDocuments + RowsWithNonExistingDocuments;
+			const string NamePrefix = "AssociatedDocuments";
 
 			Settings settings = NativeImportSettingsProvider.DefaultSettings(this.objectArtifactTypeId, WellKnownFields.RdoIdentifier);
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
-			IEnumerable<string> nameFieldSource = Enumerable.Range(1, totalRows).Select(i => $"{nameof(this.ShouldNotCreateAssociatedDocumentThatNotExist)}-{i}");
+			IEnumerable<string> nameFieldSource = Enumerable.Range(1, totalRows).Select(i => $"{NamePrefix}-{i}");
 			IEnumerable<string> referenceToDocumentFieldSource = TestData.SampleDocFiles.Select(Path.GetFileName).Concat(
 				Enumerable.Range(1, RowsWithNonExistingDocuments)
-					.Select(i => $"{nameof(this.ShouldNotCreateAssociatedDocumentThatNotExist)}-{i}"));
+					.Select(i => $"{NamePrefix}-{i}"));
 
 			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
 				.AddField(WellKnownFields.RdoIdentifier, nameFieldSource)
@@ -219,10 +220,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ImportTestJobResult result = this.JobExecutionContext.Execute(importDataSource);
 
 			// ASSERT
+			ThenTheImportJobCompletedWithErrors(result, RowsWithNonExistingDocuments, totalRows);
+			Assert.That(result.NumberOfJobMessages, Is.Positive, () => "Wrong number of job messages.");
 			ThenTheErrorRowsHaveCorrectMessage(result.ErrorRows, " - An object field references a document which does not exist");
-			Assert.That(result.JobReportErrorsCount, Is.EqualTo(RowsWithNonExistingDocuments));
-			Assert.That(result.NumberOfJobMessages, Is.GreaterThan(0));
-			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(totalRows));
 		}
 
 		[Category(TestCategories.Integration)]
@@ -234,14 +234,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			const int RowsWithNonExistingObjects = 5;
 			const int RowsWithExistingObjects = 10;
 			const int TotalRows = RowsWithNonExistingObjects + RowsWithExistingObjects;
+			const string NamePrefix = "ObjectsReferencedById";
 
 			int existingObjectArtifactId = RdoHelper.CreateObjectTypeInstance(
 				this.TestParameters,
 				this.objectArtifactTypeId,
-				new Dictionary<string, object> { { WellKnownFields.RdoIdentifier, $"{nameof(this.ShouldNotCreateAssociatedObjectsReferencedByIdThatNotExist)}" } });
+				new Dictionary<string, object> { { WellKnownFields.RdoIdentifier, NamePrefix } });
 
 			IEnumerable<string> controlNumberSource = Enumerable.Range(1, TotalRows)
-				.Select(i => $"{nameof(this.ShouldNotCreateAssociatedObjectsReferencedByIdThatNotExist)}-{i}");
+				.Select(i => $"{NamePrefix}-{i}");
 			IEnumerable<int> referenceToMyObjectSource = Enumerable.Range(1, TotalRows)
 				.Select(i => i <= RowsWithExistingObjects ? existingObjectArtifactId : -1);
 
@@ -257,10 +258,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
 
 			// ASSERT
+			ThenTheImportJobCompletedWithErrors(results, RowsWithNonExistingObjects, TotalRows);
+			Assert.That(results.NumberOfJobMessages, Is.Positive, () => "Wrong number of job messages.");
 			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - An object field references an artifact ID which doesn't exist for the object.");
-			Assert.That(results.JobReportErrorsCount, Is.EqualTo(RowsWithNonExistingObjects));
-			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
-			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(TotalRows));
 		}
 
 		[Category(TestCategories.Integration)]
@@ -272,9 +272,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			const int RowsReferencingDuplicateObject = 5;
 			const int RowsReferencingNonDuplicateObject = 10;
 			const int TotalRows = RowsReferencingNonDuplicateObject + RowsReferencingDuplicateObject;
+			const string NamePrefix = "DuplicatedObjects";
 
-			string duplicateObjectName = $"{nameof(this.ShouldPreventReferencesToDuplicateAssociateObjects)}-duplicate";
-			string uniqueObjectName = $"{nameof(this.ShouldPreventReferencesToDuplicateAssociateObjects)}-unique";
+			string duplicateObjectName = $"{NamePrefix}-duplicate";
+			string uniqueObjectName = $"{NamePrefix}-unique";
 
 			foreach (string nameValue in new List<string> { duplicateObjectName, duplicateObjectName, uniqueObjectName })
 			{
@@ -285,7 +286,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 
 			IEnumerable<string> controlNumberSource = Enumerable.Range(1, TotalRows)
-				.Select(i => $"{nameof(this.ShouldPreventReferencesToDuplicateAssociateObjects)}-{i}");
+				.Select(i => $"{NamePrefix}-{i}");
 			IEnumerable<string> referenceToMyObjectSource = Enumerable.Range(1, TotalRows)
 				.Select(i => i <= RowsReferencingDuplicateObject ? duplicateObjectName : uniqueObjectName);
 
@@ -300,10 +301,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
 
 			// ASSERT
+			ThenTheImportJobCompletedWithErrors(results, RowsReferencingDuplicateObject, TotalRows);
+			Assert.That(results.NumberOfJobMessages, Is.Positive, () => "Wrong number of job messages.");
 			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - A non unique associated object is specified for this new object");
-			Assert.That(results.JobReportErrorsCount, Is.EqualTo(RowsReferencingDuplicateObject));
-			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
-			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(TotalRows));
 		}
 
 		[Category(TestCategories.Integration)]
@@ -315,10 +315,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			const int RowsWithNonExistingObjects = 5;
 			const int RowsWithExistingObjects = 10;
 			const int TotalRows = RowsWithExistingObjects + RowsWithNonExistingObjects;
+			const string NamePrefix = "AssociatedChildObjects";
 
 			const string ReferenceToChildObjectFieldName = "ReferenceToChildObject";
-			string existingChildObjectName = $"{nameof(this.ShouldNotCreateAssociatedObjectsThatAreChildrenAsync)}-existing";
-			string nonExistingChildObjectName = $"{nameof(this.ShouldNotCreateAssociatedObjectsThatAreChildrenAsync)}-non-existing";
+			string existingChildObjectName = $"{NamePrefix}-existing";
+			string nonExistingChildObjectName = $"{NamePrefix}-non-existing";
 
 			await this.CreateChildObjectInstanceAsync(existingChildObjectName, this.childObjectArtifactTypeId, this.objectArtifactTypeId).ConfigureAwait(false);
 			await FieldHelper.CreateSingleObjectFieldAsync(
@@ -328,7 +329,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				(int)ArtifactType.Document).ConfigureAwait(false);
 
 			IEnumerable<string> controlNumberSource = Enumerable.Range(1, TotalRows)
-				.Select(i => $"doc-{nameof(this.ShouldNotCreateAssociatedObjectsThatAreChildrenAsync)}-{i}");
+				.Select(i => $"doc-{NamePrefix}-{i}");
 			IEnumerable<string> referenceToChildObject = Enumerable.Range(1, TotalRows)
 				.Select(i => i <= RowsWithExistingObjects ? existingChildObjectName : nonExistingChildObjectName);
 
@@ -343,10 +344,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
 
 			// ASSERT
+			ThenTheImportJobCompletedWithErrors(results, RowsWithNonExistingObjects, TotalRows);
+			Assert.That(results.NumberOfJobMessages, Is.Positive, () => "Wrong number of job messages.");
 			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, $" - 20.006. Failed to copy source field into destination field due to missing child object. Review the following destination field(s): '{ReferenceToChildObjectFieldName}'");
-			Assert.That(results.JobReportErrorsCount, Is.EqualTo(RowsWithNonExistingObjects));
-			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
-			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(TotalRows));
 		}
 
 		[Category(TestCategories.Integration)]
@@ -379,8 +379,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(results, NumberOfDocuments);
-			Assert.That(results.NumberOfJobMessages, Is.Positive, "Wrong number of job messages.");
-			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfDocuments), () => "Wrong number of completed rows.");
+			Assert.That(results.NumberOfJobMessages, Is.Positive, () => "Wrong number of job messages.");
 
 			int actualAssociatedObjectCount = RdoHelper.QueryRelativityObjectCount(this.TestParameters, firstObjectArtifactId);
 			int expectedAssociatedObjectCount = singleObjectsSource.Distinct(CollationStringComparer.SQL_Latin1_General_CP1_CI_AS).Count();
@@ -399,6 +398,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			const int NumberOfDocumentsToOverlay = 10;
 			const int NumberOfDefaultDocuments = 10;
+			const int TotalRows = NumberOfDocumentsToOverlay + NumberOfDefaultDocuments;
 			const string ControlNumberSuffix = "OverlayTest";
 
 			// Prepare data for import under test
@@ -417,12 +417,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
 
 			// ASSERT
-			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfDocumentsToOverlay + NumberOfDefaultDocuments), () => "Wrong number of job messages.");
-			Assert.That(results.ErrorRows.Count, Is.EqualTo(NumberOfDocumentsToOverlay), () => "Wrong number of error messages.");
-
-			ThenTheErrorRowsHaveCorrectMessage(
-				results.ErrorRows,
-				" - This document identifier does not exist in the workspace - no document to overwrite");
+			ThenTheImportJobCompletedWithErrors(results, NumberOfDocumentsToOverlay, TotalRows);
+			Assert.That(results.NumberOfJobMessages, Is.Positive, () => "Wrong number of job messages.");
+			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - This document identifier does not exist in the workspace - no document to overwrite");
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -436,6 +433,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			const int NumberOfDocumentsToAppend = 10;
 			const int NumberOfDefaultDocuments = 10;
+			const int TotalRows = NumberOfDocumentsToAppend + NumberOfDefaultDocuments;
 			string controlNumberSuffix = "AppendTest";
 
 			// Prepare data for import under test
@@ -465,8 +463,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ImportTestJobResult resultsWithDefaults = this.JobExecutionContext.Execute(importDataSourceWithDefaults);
 
 			// ASSERT
-			Assert.That(resultsWithDefaults.JobReportTotalRows, Is.EqualTo(NumberOfDocumentsToAppend + NumberOfDefaultDocuments), () => "Wrong number of job messages.");
-			Assert.That(resultsWithDefaults.ErrorRows.Count, Is.EqualTo(NumberOfDocumentsToAppend + NumberOfDefaultDocuments), () => "Wrong number of errors.");
+			ThenTheImportJobCompletedWithErrors(resultsWithDefaults, TotalRows, TotalRows);
+			Assert.That(resultsWithDefaults.NumberOfJobMessages, Is.Positive, () => "Wrong number of job messages.");
 
 			foreach (var elem in resultsWithDefaults.ErrorRows)
 			{

@@ -204,8 +204,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
-			this.ValidateTotalRowsCount(testJobResult, expectedTotalRows);
 			this.ValidateFatalExceptionsNotExist(testJobResult);
+			this.ValidateTotalRowsCount(testJobResult, expectedTotalRows);
 			this.ValidateErrorRowsCount(testJobResult, 0);
 		}
 
@@ -224,8 +224,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
-			this.ValidateTotalRowsCount(testJobResult, expectedTotalRows);
 			this.ValidateFatalExceptionsNotExist(testJobResult);
+			this.ValidateTotalRowsCount(testJobResult, expectedTotalRows);
 			this.ValidateErrorRowsCount(testJobResult, expectedErrorRows);
 		}
 
@@ -256,8 +256,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
-			Assert.That(testJobResult.FatalException, Is.Null);
-			Assert.That(testJobResult.JobFatalExceptions, Has.Count.Zero);
+			Assert.That(testJobResult.FatalException, Is.Null, $"Import was aborted due to the fatal exception: {testJobResult.FatalException?.Message}.");
+			Assert.That(testJobResult.JobFatalExceptions, Has.Count.Zero, $"{testJobResult.JobFatalExceptions.Count} fatal exceptions were thrown during import.");
 		}
 
 		private void SetTestParameters(IntegrationTestParameters testParameters)
