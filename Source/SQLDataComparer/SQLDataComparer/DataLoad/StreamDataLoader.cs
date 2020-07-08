@@ -193,10 +193,16 @@ namespace SQLDataComparer.DataLoad
 
 				if (singleWhereConfig.Value.Contains(','))
 				{
+					if (singleWhereConfig.Type == WhereType.IsNot)
+						queryBuilder.Append(" NOT");
+
 					queryBuilder.Append($" IN({singleWhereConfig.Value})");
 				}
 				else
 				{
+					if (singleWhereConfig.Type == WhereType.IsNot)
+						queryBuilder.Append(" !");
+
 					queryBuilder.Append($"={singleWhereConfig.Value}");
 				}
 			}
