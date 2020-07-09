@@ -18,7 +18,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
-	using Relativity.DataExchange.TestFramework.NUnitExtensions;
+	using Relativity.DataExchange.TestFramework.PerformanceTests;
 
 	public class ParallelImportExecutionContext<TExecutionContext, TSettings> : IDisposable, IImportApiSetup<TSettings>
 		where TSettings : ImportSettingsBase

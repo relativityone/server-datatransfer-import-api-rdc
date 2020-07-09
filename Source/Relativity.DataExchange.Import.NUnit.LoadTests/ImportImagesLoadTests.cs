@@ -17,6 +17,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
 	using Relativity.DataExchange.TestFramework.NUnitExtensions;
+	using Relativity.DataExchange.TestFramework.PerformanceTests;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
@@ -26,6 +27,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	public class ImportImagesLoadTests : ImportLoadTestsBase<ImageImportExecutionContext, ImageSettings>
 	{
 		[CollectDeadlocks]
+		[Performance]
 		[Category(TestCategories.ImportImage)]
 		[Category(TestCategories.TransferApi)]
 		[Category(TestCategories.LoadTest)]

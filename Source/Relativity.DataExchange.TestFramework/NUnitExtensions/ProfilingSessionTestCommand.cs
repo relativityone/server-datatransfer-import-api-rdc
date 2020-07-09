@@ -11,6 +11,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 	using NUnit.Framework.Internal;
 	using NUnit.Framework.Internal.Commands;
 
+	using Relativity.DataExchange.TestFramework.PerformanceTests;
 	using Relativity.DataExchange.TestFramework.WebApiSqlProfiling;
 
 	internal class ProfilingSessionTestCommand : BeforeAndAfterTestCommand
@@ -31,14 +32,12 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 		private void ExecuteBeforeTest(TestExecutionContext context)
 		{
 			this.profilingSession.StartProfilingForRelativityWebApi();
-			PerformanceDataCollector.SetUpPerformanceLogger();
 		}
 
 		private void ExecuteAfterTest(TestExecutionContext context)
 		{
 			ProfilerReport report = this.profilingSession.ReadCapturedEventsAndStopProfiling();
 			this.WriteProfilerReport(context, report);
-			PerformanceDataCollector.Instance.StorePerformanceResults();
 		}
 
 		private void WriteProfilerReport(TestExecutionContext context, ProfilerReport profilingReport)
@@ -71,7 +70,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 			{
 				string testName = context.CurrentTest.Name;
 				string currentUtcTime = DateTime.UtcNow.ToString("yyyyMMddTHHmmss");
-				string subDirectoryName = $"{testName}-{currentUtcTime}";
+				string subDirectoryName = $"{testName.Replace(",", "_")}-{currentUtcTime}";
 				string outputPath = Path.Combine(this.rootOutputPath, subDirectoryName);
 				Directory.CreateDirectory(outputPath);
 

@@ -24,6 +24,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
 	using Relativity.DataExchange.TestFramework.NUnitExtensions;
+	using Relativity.DataExchange.TestFramework.PerformanceTests;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
@@ -40,6 +41,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 
 		[UseSqlComparer]
 		[CollectDeadlocks]
+		[Performance]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.TransferApi)]
 		[Category(TestCategories.LoadTest)]
@@ -84,6 +86,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 
 		[UseSqlComparer]
 		[CollectDeadlocks]
+		[Performance]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.TransferApi)]
 		[Category(TestCategories.LoadTest)]
@@ -132,6 +135,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		}
 
 		[CollectDeadlocks]
+		[Performance]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.TransferApi)]
 		[Category(TestCategories.LoadTest)]
@@ -190,6 +194,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		}
 
 		[CollectDeadlocks]
+		[Performance]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.TransferApi)]
 		[Category(TestCategories.LoadTest)]
@@ -283,6 +288,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		}
 
 		[CollectDeadlocks]
+		[Performance]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.LoadTest)]
 		[IdentifiedTestCase("e7a09288-ccf5-42ff-ae33-2e2dc8a603c2", 1, 160_000, 20, TapiClient.Direct)]
@@ -338,6 +344,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		}
 
 		[CollectDeadlocks]
+		[Performance]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.TransferApi)]
 		[Category(TestCategories.LoadTest)]

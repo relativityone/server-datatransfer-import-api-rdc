@@ -95,6 +95,9 @@ timestamps
 							echo "Publishing deadlocks details"
 							archiveArtifacts artifacts: "TestReports/SqlProfiling/**/*.*"	
 							
+							echo "Publishing performance results"
+							archiveArtifacts artifacts: "TestReports/PerformanceSummary.csv"	
+							
 							def int numberOfFailedTests = testResultsFailed
 							if (numberOfFailedTests > 0)
 							{
