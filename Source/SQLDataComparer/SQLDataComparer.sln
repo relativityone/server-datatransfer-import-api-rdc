@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{BAEFBC04-B3A1-4845-A32A-39D76D7722FC}"
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLDataComparer", "SQLDataComparer\SQLDataComparer.csproj", "{3A56AEE4-5225-4863-BA64-AFE6A828BA20}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLDataComparer.UnitTests", "SQLDataComparer.UnitTests\SQLDataComparer.UnitTests.csproj", "{8CC1AAC5-C4B0-44EF-BC40-DBB82434571E}"

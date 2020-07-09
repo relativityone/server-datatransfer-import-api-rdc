@@ -1,0 +1,6 @@
+Castle.Core
+Moq
+MSTest.TestAdapter
+MSTest.TestFramework
+System.Runtime.CompilerServices.Unsafe
+System.Threading.Tasks.Extensions

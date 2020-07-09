@@ -68,7 +68,6 @@ namespace Relativity.DataExchange.TestFramework
 			IntegrationTestParameters parameters = IntegrationTestParameters;
 			SetupLogger(parameters);
 			SetupServerCertificateValidation(parameters);
-			SetFullPathToSqlProfilingReportsFolder(parameters);
 			if (parameters.SkipIntegrationTests)
 			{
 				Console.WriteLine("Skipping test workspace creation.");
@@ -335,17 +334,6 @@ namespace Relativity.DataExchange.TestFramework
 
 			Console.WriteLine("Retrieved and dumped all integration test parameters.");
 			return parameters;
-		}
-
-		private static void SetFullPathToSqlProfilingReportsFolder(IntegrationTestParameters parameters)
-		{
-			string sqlProfilingReportsOutputPathValue = parameters.SqlProfilingReportsOutputPath;
-
-			if (!Path.IsPathRooted(sqlProfilingReportsOutputPathValue) || Path.GetPathRoot(sqlProfilingReportsOutputPathValue).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
-			{
-				string currentPath = new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName;
-				parameters.SqlProfilingReportsOutputPath = Path.GetFullPath(Path.Combine(currentPath, sqlProfilingReportsOutputPathValue));
-			}
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We can swallow exception in that case.")]

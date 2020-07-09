@@ -3,13 +3,13 @@ library 'ProjectMayhem@v1'
 library 'SlackHelpers@5.2.0-Trident'
 
 properties([
-    buildDiscarder(logRotator(artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30')),
-    parameters([
-        choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
-        choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-        choice(defaultValue: 'lanceleafAA1', choices: ["lanceleafAA1"], description: 'The template used to prepare hopper instance', name: 'hopperTemplate'),
+	buildDiscarder(logRotator(artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30')),
+	parameters([
+		choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
+		choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
+		choice(defaultValue: 'lanceleafAA1', choices: ["lanceleafAA1"], description: 'The template used to prepare hopper instance', name: 'hopperTemplate'),
 		string(defaultValue: 'develop', description: 'Name of folder in bld-pkgs Packages Relativity', name: 'relativityInstallerSource'),
-    ])
+	])
 ])
 
 testResultsPassed = 0
@@ -21,11 +21,14 @@ numberOfErrors = 0
 tools = null
 Slack = null
 
+summaryMessage = ""
+
 timestamps
 {
 	node('role-build-agent||buildAgent')
 	{
-		try{
+		try
+		{
 		
 			stage ('Clean')
 			{
@@ -49,7 +52,7 @@ timestamps
 			stage('Build binaries')
 			{
 				echo "Building the binaries"
-				output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge -Sign -Branch '${env.BRANCH_NAME}'"
+				output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build,BuildSQLDataComparer -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge -Sign -Branch '${env.BRANCH_NAME}'"
 				echo output
 			}
 
@@ -67,14 +70,40 @@ timestamps
 						
 						try
 						{        
-							try{
+							try
+							{
 								stage("Run load tests for MassImportImprovementsToggle On")
-								runLoadTests(globalVmInfo.Url, true)
+								{
+									runLoadTests(globalVmInfo.Url, true)
+								}
 							}
 							finally{
 								
-								stage("Run load tests for MassImportImprovementsToggle Off")
-								runLoadTests(globalVmInfo.Url, false)
+								try
+								{
+									stage("Run load tests for MassImportImprovementsToggle Off")
+									{
+										runLoadTests(globalVmInfo.Url, false)
+									}
+								}
+								finally
+								{
+									try
+									{
+										stage("Run sql comparer tool")
+										{
+											runSqlComparerTool(globalVmInfo.Url)
+										}
+									}
+									catch(err)
+									{
+										echo err.toString()
+										numberOfErrors++
+										echo "Number of errors: ${numberOfErrors}"
+										summaryMessage = "Compare databases using SQL Comparer Tool finished with errors"
+										currentBuild.result = 'FAILED'
+									}
+								}
 							}
 						}
 						finally
@@ -94,6 +123,9 @@ timestamps
 
 							echo "Publishing deadlocks details"
 							archiveArtifacts artifacts: "TestReports/SqlProfiling/**/*.*"	
+							
+							echo "Publishing sql comparer details"
+							archiveArtifacts artifacts: "TestReports/SqlComparer/**/*.*"	
 							
 							echo "Publishing performance results"
 							archiveArtifacts artifacts: "TestReports/PerformanceSummary.csv"	
@@ -124,39 +156,65 @@ timestamps
 				}
 			}
 		}
-		finally{
-            stage("Send slack and bitbucket notification")
-            {
-                def int numberOfFailedTests = testResultsFailed
-                if(numberOfErrors > 0 || numberOfFailedTests > 0)
-                {
-                    message = "Something went wrong"
-                    currentBuild.result = 'FAILED'
-                }
-                else
-                {
-					message = "All tests passed"
-                    currentBuild.result = 'SUCCESS'
-                }
-                
-                notifyBitbucket()
-                
-                Slack.SendSlackNotification("Newest Relativity from '${relativityInstallerSource}'", "Trident loadtests", env.BRANCH_NAME, params.buildConfig, "load-tests", testResultsFailed, testResultsPassed, testResultsSkipped, message)
-            }
+		finally
+		{
+			stage("Send slack and bitbucket notification")
+			{
+				def buildResult = prepareSummaryMessage(numberOfErrors, testResultsPassed, testResultsFailed, testResultsSkipped)
+				currentBuild.result = buildResult
+
+				notifyBitbucket()
+
+				Slack.SendSlackNotification("Newest Relativity from '${relativityInstallerSource}'", "Trident loadtests", env.BRANCH_NAME, params.buildConfig, "load-tests", testResultsFailed, testResultsPassed, testResultsSkipped, summaryMessage)
+			}
 		}
 	}
 }
 
 //################################ functions ###################################################
 
+def prepareSummaryMessage(int numberOfErrors, int testResultsPassed, int testResultsFailed, int testResultsSkipped)
+{
+	def buildResult = 'FAILED'
+	
+	if(numberOfErrors > 0)
+	{
+		if(summaryMessage == "")
+		{
+			summaryMessage = "Something went wrong"
+		}
+	}
+	else
+	{
+		if(testResultsFailed > 0)
+		{
+			summaryMessage = "One or more tests finished with errors"
+		}
+		else 
+		{
+			if(testResultsPassed == 0 && testResultsFailed == 0 && testResultsSkipped == 0)
+			{
+				summaryMessage = "No test was executed"
+			}
+			else 
+			{
+				summaryMessage = "All tests passed"
+				buildResult = 'SUCCESS'
+			}
+		}
+	}
+	
+	return buildResult
+}
+
 def getPathToTestParametersFile()
 {
-    return ".\\Source\\Relativity.DataExchange.TestFramework\\Resources\\loadtests.json"
+	return ".\\Source\\Relativity.DataExchange.TestFramework\\Resources\\loadtests.json"
 }
 
 def runLoadTests(String vmUrl, Boolean massImportImprovementsToggleOn)
 {
-    echo "Running the load tests"
+	echo "Running the load tests"
 	
 	String pathToJsonFile = getPathToTestParametersFile()
 	def massImportImprovementsToggle = massImportImprovementsToggleOn ? "-MassImportImprovementsToggle" : ""
@@ -164,6 +222,13 @@ def runLoadTests(String vmUrl, Boolean massImportImprovementsToggleOn)
 	
 	output = powershell ".\\build.ps1 LoadTests ${massImportImprovementsToggle} -ILMerge -TestTimeoutInMS ${timeout} -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
 	echo output 								
+}
+
+def runSqlComparerTool(String vmUrl)
+{
+	echo "Running SQL Comparer tool"
+	output = powershell ".\\build.ps1 RunSqlComparerTool -TestTarget '${(new URI(vmUrl)).getHost()}'"
+	echo output
 }
 
 def GetTestResults()
@@ -191,19 +256,15 @@ def GetTestResults()
 
 def replaceTestVariables(String vmUrl)
 {
-    String pathToJsonFile = getPathToTestParametersFile()
-    powershell ".\\build.ps1 CreateTemplateTestParametersFileForLoadTests -TestParametersFile '${pathToJsonFile}'"
+	String pathToJsonFile = getPathToTestParametersFile()
+	powershell ".\\build.ps1 CreateTemplateTestParametersFileForLoadTests -TestParametersFile '${pathToJsonFile}'"
 	echo "replacing test variables"
-    output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}'"
-    echo output
-	
-	echo "set values for sql profiling"
-	output = powershell ".\\build.ps1 SetVariablesForSqlProfiling -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}'"
-    echo output
+	output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}' -SqlProfiling -SqlDataComparer"
+	echo output
 }
 
 def createTestReport()
 {
-    echo "Generating test report"
-    powershell ".\\build.ps1 TestReports -Branch '${env.BRANCH_NAME}'"
+	echo "Generating test report"
+	powershell ".\\build.ps1 TestReports -Branch '${env.BRANCH_NAME}'"
 }

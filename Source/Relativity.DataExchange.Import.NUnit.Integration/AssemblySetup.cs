@@ -20,8 +20,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		Justification = "NUnit requires AssemblySetup to be non static class.")]
 	public class AssemblySetup
 	{
-		private static readonly SqlComparerInputCollector _sqlComparerInputCollector = SqlComparerInputCollector.Instance;
-
 		public static IntegrationTestParameters TestParameters
 		{
 			get;
@@ -31,15 +29,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[OneTimeSetUp]
 		public static Task SetupAsync()
 		{
-			_sqlComparerInputCollector.Initialize();
 			return CreateTestContext();
 		}
 
 		[OneTimeTearDown]
 		public static void TearDown()
 		{
-			var massImportImprovementsToggle = MassImportImprovementsToggleChecker.GetMassImportToggleValueFromDatabase(TestParameters);
-			_sqlComparerInputCollector.SaveComparerInput(TestParameters.SqlComparerOutputPath, massImportImprovementsToggle);
 			DestroyTestContext();
 		}
 

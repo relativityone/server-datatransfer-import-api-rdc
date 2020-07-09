@@ -12,7 +12,8 @@ namespace Relativity.DataExchange.TestFramework.SqlDataComparer
 	public class SqlComparerInputCollector
 	{
 		private static readonly Lazy<SqlComparerInputCollector> _instanceLazy = new Lazy<SqlComparerInputCollector>(() => new SqlComparerInputCollector());
-		private List<TestWorkspaceToCompareDto> _items;
+
+		private TestWorkspaceToCompareDto _testWorkspaceToCompareDto;
 
 		private SqlComparerInputCollector()
 		{
@@ -20,67 +21,70 @@ namespace Relativity.DataExchange.TestFramework.SqlDataComparer
 
 		public static SqlComparerInputCollector Instance => _instanceLazy.Value;
 
-		public void Initialize()
+		public void AddTestWorkspaceToCompare(TestWorkspaceToCompareDto dto, string outputFilePath)
 		{
-			_items = new List<TestWorkspaceToCompareDto>();
+			_testWorkspaceToCompareDto = dto ?? throw new ArgumentNullException(nameof(dto));
+
+			GenerateEmptyInputStructure(outputFilePath);
+			AddTestWorkspaceToXml(outputFilePath);
 		}
 
-		public void AddTestWorkspaceToCompare(TestWorkspaceToCompareDto dto)
+		private static void GenerateEmptyInputStructure(string filePath)
 		{
-			if (_items == null)
+			if (!File.Exists(filePath))
 			{
-				throw new InvalidOperationException("Cannot add test when object is not initialized.");
+				string outputDirectory = Directory.GetParent(filePath).FullName;
+				Directory.CreateDirectory(outputDirectory);
+
+				var settings = new XmlWriterSettings
+					               {
+						               Indent = true,
+					               };
+				using (var writer = XmlWriter.Create(filePath, settings))
+				{
+					writer.WriteStartDocument();
+					writer.WriteStartElement("TestWorkspaces");
+					writer.WriteEndElement();
+					writer.WriteEndDocument();
+				}
 			}
-
-			dto = dto ?? throw new ArgumentNullException(nameof(dto));
-			_items.Add(dto);
 		}
 
-		public void SaveComparerInput(string outputDirectory, bool massImportImprovementsToggle)
+		private string CopyComparerConfigToOutputDirectoryAndGetFileName(string outputDirectory)
 		{
-			string outputFileName = $"sqlComparerInput-{massImportImprovementsToggle}.xml";
-			GenerateAndSaveInput(outputDirectory, outputFileName);
-			this._items = null;
-		}
-
-		private static string CopyComparerConfigToOutputDirectoryAndGetFileName(
-			string outputDirectory,
-			TestWorkspaceToCompareDto item)
-		{
-			string comparerConfigFileName = Path.GetFileName(item.ComparerConfigFilePath);
+			string comparerConfigFileName = Path.GetFileName(this._testWorkspaceToCompareDto.ComparerConfigFilePath);
 			string destinationComparerConfigFilePath = Path.Combine(outputDirectory, comparerConfigFileName);
-			File.Copy(item.ComparerConfigFilePath, destinationComparerConfigFilePath, overwrite: true);
+			File.Copy(this._testWorkspaceToCompareDto.ComparerConfigFilePath, destinationComparerConfigFilePath, overwrite: true);
 			return comparerConfigFileName;
 		}
 
-		private void GenerateAndSaveInput(string outputDirectory, string outputFileName)
+		private void AddTestWorkspaceToXml(string xmlFilePath)
 		{
-			Directory.CreateDirectory(outputDirectory);
-			var file = Path.Combine(outputDirectory, outputFileName);
-
-			var settings = new XmlWriterSettings
+			if (!File.Exists(xmlFilePath))
 			{
-				Indent = true,
-			};
-			using (var writer = XmlWriter.Create(file, settings))
-			{
-				writer.WriteStartDocument();
-
-				writer.WriteStartElement("TestWorkspaces");
-				foreach (TestWorkspaceToCompareDto item in _items)
-				{
-					writer.WriteStartElement("TestWorkspace");
-					writer.WriteAttributeString("TestName", item.FullTestCaseName);
-					writer.WriteAttributeString("DatabaseName", item.DatabaseName);
-
-					string comparerConfigFileName = CopyComparerConfigToOutputDirectoryAndGetFileName(outputDirectory, item);
-					writer.WriteAttributeString("ComparerConfigFilePath", comparerConfigFileName);
-					writer.WriteEndElement();
-				}
-
-				writer.WriteEndElement();
-				writer.WriteEndDocument();
+				throw new InvalidOperationException($"File '{xmlFilePath}' you want to modify doesn't exist");
 			}
+
+			XmlDocument doc = new XmlDocument();
+			doc.Load(xmlFilePath);
+
+			XmlNode testWorkspaceNode = doc.CreateNode(XmlNodeType.Element, "TestWorkspace", null);
+
+			XmlAttribute testName = doc.CreateAttribute("TestName");
+			testName.Value = this._testWorkspaceToCompareDto.FullTestCaseName;
+			XmlAttribute databaseName = doc.CreateAttribute("DatabaseName");
+			databaseName.Value = this._testWorkspaceToCompareDto.DatabaseName;
+			XmlAttribute comparerConfigFileName = doc.CreateAttribute("ComparerConfigFilePath");
+			comparerConfigFileName.Value = CopyComparerConfigToOutputDirectoryAndGetFileName(Directory.GetParent(xmlFilePath).FullName);
+
+			testWorkspaceNode.Attributes.Append(testName);
+			testWorkspaceNode.Attributes.Append(databaseName);
+			testWorkspaceNode.Attributes.Append(comparerConfigFileName);
+
+			doc.DocumentElement.AppendChild(testWorkspaceNode);
+			doc.Save(xmlFilePath);
+
+			this._testWorkspaceToCompareDto = null;
 		}
 	}
 }

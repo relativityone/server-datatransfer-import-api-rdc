@@ -52,7 +52,11 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 				return;
 			}
 
-			this._sqlComparerInputCollector.AddTestWorkspaceToCompare(this._testWorkspaceToAdd);
+			bool massImportImprovementsToggle = MassImportImprovementsToggleChecker.GetMassImportToggleValueFromDatabase(IntegrationTestHelper.IntegrationTestParameters);
+			string filePath = Path.Combine(
+				IntegrationTestHelper.IntegrationTestParameters.SqlComparerOutputPath,
+				$"sqlComparerInput-{massImportImprovementsToggle}.xml");
+			this._sqlComparerInputCollector.AddTestWorkspaceToCompare(this._testWorkspaceToAdd, filePath);
 			string testOutputMessage = $"Added test workspace to compare. Test: {this._testWorkspaceToAdd.FullTestCaseName}, database: {this._testWorkspaceToAdd.DatabaseName}, comparerConfig: {this._testWorkspaceToAdd.ComparerConfigFilePath}";
 			TestContext.Out.WriteLine(testOutputMessage);
 

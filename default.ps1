@@ -2,81 +2,90 @@
 Framework "4.6" #.NET framework version
 
 properties {
-    $LogsDir = Join-Path $Root "Logs"
-    $PackagesDir = Join-Path $Root "packages"
-    $PaketDir = Join-Path $Root ".paket"
-    $SourceDir = Join-Path $Root "Source"
-    $InstallersSolution = Join-Path $SourceDir "Installers.sln"
-    $MasterSolution = Join-Path $SourceDir "Master.sln"
-    $MasterILMergeSolution = Join-Path $SourceDir "Master-ILMerge.sln"
-    $UIAutomationSolution = Join-Path $SourceDir "UIAutomation.sln"
-    $NumberOfProcessors = (Get-ChildItem env:"NUMBER_OF_PROCESSORS").Value
-    $BuildArtifactsDir = Join-Path $Root "Artifacts"
-    $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
-    $InstallersArtifactsDir = Join-Path $BuildArtifactsDir "installers"
-    $PackagesArtifactsDir = Join-Path $BuildArtifactsDir "packages"
-    $SdkBinariesArtifactsDir = Join-Path $BinariesArtifactsDir "sdk"
-    $ScriptsDir = Join-Path $Root "Scripts"
-    $BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
-    $BuildPackagesDirGold = "\\bld-pkgs\Release\Import-Api-RDC\"
+	$LogsDir = Join-Path $Root "Logs"
+	$PackagesDir = Join-Path $Root "packages"
+	$PaketDir = Join-Path $Root ".paket"
+	$SourceDir = Join-Path $Root "Source"
+	$InstallersSolution = Join-Path $SourceDir "Installers.sln"
+	$MasterSolution = Join-Path $SourceDir "Master.sln"
+	$MasterILMergeSolution = Join-Path $SourceDir "Master-ILMerge.sln"
+	$UIAutomationSolution = Join-Path $SourceDir "UIAutomation.sln"
+	$SQLDataComparerSolution = Join-Path $SourceDir "SQLDataComparer\SQLDataComparer.sln"
+	$NumberOfProcessors = (Get-ChildItem env:"NUMBER_OF_PROCESSORS").Value
+	$BuildArtifactsDir = Join-Path $Root "Artifacts"
+	$BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
+	$InstallersArtifactsDir = Join-Path $BuildArtifactsDir "installers"
+	$PackagesArtifactsDir = Join-Path $BuildArtifactsDir "packages"
+	$SdkBinariesArtifactsDir = Join-Path $BinariesArtifactsDir "sdk"
+	$ScriptsDir = Join-Path $Root "Scripts"
+	$BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
+	$BuildPackagesDirGold = "\\bld-pkgs\Release\Import-Api-RDC\"
+	$SqlPassword = "P@ssw0rd@1"
 #----------- testreports ------------	
-    $TestReportsDir = Join-Path $Root "TestReports" | Join-Path -ChildPath $TestReportFolderName
+	$TestReportsDir = Join-Path $Root "TestReports" | Join-Path -ChildPath $TestReportFolderName
 
-    $CodeCoverageReportDir = Join-Path $TestReportsDir "code-coverage"        
-    $DotCoverReportXmlFile = Join-Path $CodeCoverageReportDir "code-coverage-report.xml"
-	
+	$CodeCoverageReportDir = Join-Path $TestReportsDir "code-coverage"        
+	$DotCoverReportXmlFile = Join-Path $CodeCoverageReportDir "code-coverage-report.xml"
+
 	$UnitTestsReportDir = Join-Path $TestReportsDir "unit-tests"
-    $UnitTestsResultXmlFile = Join-Path $UnitTestsReportDir "test-results-unit.xml"
-    $UnitTestsOutputFile = Join-Path $UnitTestsReportDir "unit-test-output.txt"
+	$UnitTestsResultXmlFile = Join-Path $UnitTestsReportDir "test-results-unit.xml"
+	$UnitTestsOutputFile = Join-Path $UnitTestsReportDir "unit-test-output.txt"
 
-    $IntegrationTestsReportDir = Join-Path $TestReportsDir "integration-tests"
+	$IntegrationTestsReportDir = Join-Path $TestReportsDir "integration-tests"
 	$IntegrationTestsResultXmlFile = Join-Path $IntegrationTestsReportDir "test-results-integration.xml"
-    $IntegrationTestsOutputFile =  Join-Path $IntegrationTestsReportDir "integration-test-output.txt"
+	$IntegrationTestsOutputFile =  Join-Path $IntegrationTestsReportDir "integration-test-output.txt"
 
-    $UIAutomationTestsReportDir = Join-Path $TestReportsDir "ui-automation-tests"
-    $UIAutomationTestsResultXmlFile = Join-Path $UIAutomationTestsReportDir "test-results-ui-automation.xml"
-    $UIAutomationTestsOutputFile = Join-Path $UIAutomationTestsReportDir "ui-automation-test-output.txt"
-	
+	$UIAutomationTestsReportDir = Join-Path $TestReportsDir "ui-automation-tests"
+	$UIAutomationTestsResultXmlFile = Join-Path $UIAutomationTestsReportDir "test-results-ui-automation.xml"
+	$UIAutomationTestsOutputFile = Join-Path $UIAutomationTestsReportDir "ui-automation-test-output.txt"
+
 	$LoadTestsReportDir = Join-Path $TestReportsDir "load-tests"
 	$LoadTestsResultXmlFile = Join-Path $LoadTestsReportDir "test-results-loadtest.xml"
-    $LoadTestsOutputFile =  Join-Path $LoadTestsReportDir "loadtest-test-output.txt"
+	$LoadTestsOutputFile =  Join-Path $LoadTestsReportDir "loadtest-test-output.txt"
+	
+	$SqlProfilingOutputPath = Join-Path $TestReportsDir "SqlProfiling"
+	$SqlComparerOutputPath = Join-Path $TestReportsDir "SqlComparer"
+	
 #----------- end testreports ------------	
-    $ExtentCliExe = Join-Path $PackagesDir "extent\tools\extent.exe"
-    $NunitExe = Join-Path $PackagesDir "NUnit.ConsoleRunner\tools\nunit3-console.exe"
-    $DotCoverExe = Join-Path $PackagesDir "JetBrains.dotCover.CommandLineTools\tools\dotCover.exe"
-    $ReportGeneratorExe = Join-Path $PackagesDir "ReportGenerator\tools\net47\ReportGenerator.exe"
-    $ReportUnitExe = Join-Path $PackagesDir "ReportUnit\tools\ReportUnit.exe"
-    $PaketExe = Join-Path $PaketDir "paket.exe"
-    $ProgetUrl = "https://proget.kcura.corp/nuget/NuGet"
+	$ExtentCliExe = Join-Path $PackagesDir "extent\tools\extent.exe"
+	$NunitExe = Join-Path $PackagesDir "NUnit.ConsoleRunner\tools\nunit3-console.exe"
+	$DotCoverExe = Join-Path $PackagesDir "JetBrains.dotCover.CommandLineTools\tools\dotCover.exe"
+	$ReportGeneratorExe = Join-Path $PackagesDir "ReportGenerator\tools\net47\ReportGenerator.exe"
+	$ReportUnitExe = Join-Path $PackagesDir "ReportUnit\tools\ReportUnit.exe"
+	$PaketExe = Join-Path $PaketDir "paket.exe"
+	$ProgetUrl = "https://proget.kcura.corp/nuget/NuGet"
+	$SqlComparerRunner = Join-Path $SourceDir "SQLDataComparer\SQLDataComparer.Runner\bin\Release\SQLDataComparer.Runner.exe"
 
-    # Installer paths
-    $SignScriptPath = Join-Path $ScriptsDir "Sign.bat"
+	# Installer paths
+	$SignScriptPath = Join-Path $ScriptsDir "Sign.bat"
 
-    # Properties below this line are defined in build.ps1
-    $Target = $Null
-    $Configuration = $Null
-    $BuildPlatform = $Null
-    $BuildUrl = $Null
-    $EinsteinSecret = $Null
-    $Version = $Null
-    $Branch = $Null
-    $BuildNumber = $Null
-    $Verbosity = $Null
+	# Properties below this line are defined in build.ps1
+	$Target = $Null
+	$Configuration = $Null
+	$BuildPlatform = $Null
+	$BuildUrl = $Null
+	$EinsteinSecret = $Null
+	$Version = $Null
+	$Branch = $Null
+	$BuildNumber = $Null
+	$Verbosity = $Null
 	$TestTarget = $Null
-    $TestTimeoutInMS = $Null
-    $TestParametersFile = $Null
-    $TestEnvironment = $Null
-    $TestVMName = $Null
-    $PackageTemplateRegex = $Null
-    $ILMerge = $Null
-    $PublishToRelease = $Null
-    $Sign = $Null
-    $SkipPublishRdcPackage = $Null
-    $SkipPublishSdkPackage = $Null
-    $Simulate = $Null
-    $ProgetApiKey = $Null
+	$TestTimeoutInMS = $Null
+	$TestParametersFile = $Null
+	$TestEnvironment = $Null
+	$TestVMName = $Null
+	$PackageTemplateRegex = $Null
+	$ILMerge = $Null
+	$PublishToRelease = $Null
+	$Sign = $Null
+	$SkipPublishRdcPackage = $Null
+	$SkipPublishSdkPackage = $Null
+	$Simulate = $Null
+	$ProgetApiKey = $Null
 	$MassImportImprovementsToggle = $Null
 	$EnableDataGrid = $Null
+	$SqlProfiling = $Null
+	$SqlDataComparer = $Null
 }
 
 $code = @"
@@ -132,8 +141,7 @@ task Build -Description "Builds the source code"  {
     $LogFilePath = Join-Path $LogsDir "master-buildsummary-$lwrConfiguration.log"
     $ErrorFilePath = Join-Path $LogsDir "master-builderrors-$lwrConfiguration.log"
 
-    try
-    {
+    try {
         exec {            
             msbuild @(($SolutionFile),
                     ("-t:$Target"),
@@ -293,8 +301,7 @@ task BuildUIAutomation -Description "Builds the source code for UI Automation"  
     $LogFilePath = Join-Path $LogsDir "UIAutomation-buildsummary-$lwrConfiguration.log"
     $ErrorFilePath = Join-Path $LogsDir "UIAutomation-builderrors-$lwrConfiguration.log"
 
-    try
-    {
+    try {
         exec {            
             msbuild @(($SolutionFile),
                     ("-t:$Target"),
@@ -310,6 +317,48 @@ task BuildUIAutomation -Description "Builds the source code for UI Automation"  
                     ("-flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity"),
                     ("-flp2:errorsonly;LogFile=`"$ErrorFilePath`""))
         } -errorMessage "There was an error building the master solution."
+    }
+    finally {
+        testing\Remove-EmptyLogFile $ErrorFilePath
+    }
+}
+
+task BuildSQLDataComparer -Description "Builds the source code for SQLDataComparer"  {
+    folders\Initialize-Folder $LogsDir -Safe
+    $SolutionFile = $SQLDataComparerSolution
+    .\Source\SQLDataComparer\.paket\paket.exe restore 
+
+    $SolutionConfiguration = $Configuration
+    if (!$BuildPlatform) {
+        $BuildPlatform = "Any CPU"
+    }
+	
+    Write-Output "Solution: $SolutionFile"
+    Write-Output "Configuration: $SolutionConfiguration"
+    Write-Output "Build platform: $BuildPlatform"
+    Write-Output "Target: $Target"
+    Write-Output "Verbosity: $Verbosity"
+    $lwrConfiguration = $SolutionConfiguration.ToLower()
+    $LogFilePath = Join-Path $LogsDir "SQLDataComparer-buildsummary-$lwrConfiguration.log"
+    $ErrorFilePath = Join-Path $LogsDir "SQLDataComparer-builderrors-$lwrConfiguration.log"
+
+	
+    try {
+        exec {            
+            msbuild @(($SolutionFile),
+                    ("-t:$Target"),
+                    ("-v:$Verbosity"),
+                    ("-p:Platform=$BuildPlatform"),
+                    ("-p:Configuration=$SolutionConfiguration"),
+                    ("-p:BuildProjectReferences=true"),
+                    ("-p:CopyArtifacts=true"),
+                    ("-clp:Summary"),
+                    ("-nodeReuse:false"),
+                    ("-nologo"),
+                    ("-maxcpucount"),
+                    ("-flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity"),
+                    ("-flp2:errorsonly;LogFile=`"$ErrorFilePath`""))
+        } -errorMessage "There was an error building the SQLDataComparer solution."
     }
     finally {
         testing\Remove-EmptyLogFile $ErrorFilePath
@@ -731,8 +780,25 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
         If ((Get-Content (Join-Path $testVM.Directory box.json) | ConvertFrom-Json).parameters.joinDomain.value -eq 0) { 
             $hostname = "$($testVM.BoxName).kcura.corp"
         }
+		
+		[string]$dataGridShouldBeEnabled = 'false'
+		if($EnableDataGrid){
+			$dataGridShouldBeEnabled = 'true'
+		}
+		
+		[string]$sqlProfilingShouldBeEnabled = 'false'
+		if($SqlProfiling){
+			$sqlProfilingShouldBeEnabled = 'true'
+		}
+		
+		[string]$sqlDataComparerShouldBeEnabled = 'false'
+		[string]$deleteWorkspaceAfterTest = 'true'
+		if($SqlDataComparer){
+			$sqlDataComparerShouldBeEnabled = 'true'
+			$deleteWorkspaceAfterTest = 'false'
+		}
 
-        [Environment]::SetEnvironmentVariable("IAPI_DELETEWORKSPACEAFTERTEST", "true", "Process")
+        [Environment]::SetEnvironmentVariable("IAPI_DELETEWORKSPACEAFTERTEST", $deleteWorkspaceAfterTest, "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_RELATIVITYURL", "https://$hostname", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_RELATIVITYRESTURL", "https://$hostname/relativity.rest/api", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_RELATIVITYSERVICESURL", "https://$hostname/relativity.services", "Process")
@@ -743,15 +809,16 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPDIRECTMODETESTS", "false", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "false", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLDROPWORKSPACEDATABASE", "true", "Process")
-        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLCAPTUREPROFILING", "false", "Process")
-        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLPROFILINGREPORTSOUTPUTPATH", "C:\\SqlProfiling", "Process")
-        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLCOMPARERENABLED", "false", "Process")
-        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLCOMPAREROUTPUTPATH", "C:\\SqlComparer", "Process")
+        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLCAPTUREPROFILING", $sqlProfilingShouldBeEnabled, "Process")
+		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLPROFILINGREPORTSOUTPUTPATH", $SqlProfilingOutputPath.Replace("\", "\\"), "Process")
+        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLCOMPARERENABLED", $sqlDataComparerShouldBeEnabled, "Process")
+		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLCOMPAREROUTPUTPATH", $SqlComparerOutputPath.Replace("\", "\\"), "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLINSTANCENAME", "$hostname\\EDDSINSTANCE001", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINUSERNAME", "sa", "Process")
-        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINPASSWORD", "P@ssw0rd@1", "Process")
+        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINPASSWORD", $SqlPassword, "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_WORKSPACETEMPLATE", "Relativity Starter Template", "Process")
-		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_ENABLEDATAGRID", "false", "Process")
+		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_ENABLEDATAGRID", $dataGridShouldBeEnabled , "Process")
+		
         Write-Host "The test environment is setup with the $hostname TestVM."
     }
     catch {
@@ -809,25 +876,34 @@ task ReplaceTestVariables -Description "Replace test variables in file" {
 		$dataGridShouldBeEnabled = 'true'
 	}
 	
+	[string]$sqlProfilingShouldBeEnabled = 'false'
+	if($SqlProfiling){
+		$sqlProfilingShouldBeEnabled = 'true'
+	}
+	
+	[string]$sqlDataComparerShouldBeEnabled = 'false'
+	[string]$deleteWorkspaceAfterTest = 'true'
+	if($SqlDataComparer){
+		$sqlDataComparerShouldBeEnabled = 'true'
+		$deleteWorkspaceAfterTest = 'false'
+	}
+	
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_instance_name>',$sqlserveraddress) | Set-Content -Path $pathToFile
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_user_name>','eddsdbo') | Set-Content -Path $pathToFile
-    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_password>','P@ssw0rd@1') | Set-Content -Path $pathToFile
+    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_password>', $SqlPassword) | Set-Content -Path $pathToFile
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_relativity_password>','Test1234!') | Set-Content -Path $pathToFile
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_relativity_user_name>','relativity.admin@kcura.com') | Set-Content -Path $pathToFile
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_target_to_test>', $replaceTarget) | Set-Content -Path $pathToFile
 	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_enabledatagrid>', $dataGridShouldBeEnabled) | Set-Content -Path $pathToFile
-	Write-Host (Get-Content -path $pathToFile -Raw)
-}
-
-task SetVariablesForSqlProfiling -Description "Set variables for sql profiling" {
-	$pathToFile = ".\Source\Relativity.DataExchange.TestFramework\Resources\test-parameters-hopper.json"
-	if ($TestParametersFile) {
-		$pathToFile = $TestParametersFile
-	}
 	
-    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sqlcaptureprofiling>','true') | Set-Content -Path $pathToFile
-	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sqlprofilingreportsoutputpath>','..\\..\\..\\TestReports\\SqlProfiling') | Set-Content -Path $pathToFile
-	((Get-Content -path $pathToFile -Raw) -replace 'eddsdbo','sa') | Set-Content -Path $pathToFile
+	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sqlcaptureprofiling>', $sqlProfilingShouldBeEnabled) | Set-Content -Path $pathToFile
+	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sqlprofilingreportsoutputpath>', $SqlProfilingOutputPath.Replace("\", "\\")) | Set-Content -Path $pathToFile
+	if($SqlProfiling) {((Get-Content -path $pathToFile -Raw) -replace 'eddsdbo','sa') | Set-Content -Path $pathToFile }
+	
+	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_enable_sql_comparer>', $sqlDataComparerShouldBeEnabled) | Set-Content -Path $pathToFile
+	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_comparer_output_path>', $SqlComparerOutputPath.Replace("\", "\\")) | Set-Content -Path $pathToFile
+	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_delete_workspace_after_test>', $deleteWorkspaceAfterTest) | Set-Content -Path $pathToFile
+	
 	Write-Host (Get-Content -path $pathToFile -Raw)
 }
 
@@ -900,6 +976,24 @@ task CreateTemplateTestParametersFileForLoadTests -Description "Create template 
     Copy-Item $pathToTemplateFile $TestParametersFile
 }
 
+task RunSqlComparerTool -Description "Run SQL Comparer Tool for previous prepared input" {
+
+	exec {
+		$sqlserveraddress = [Paths.UriScheme]::GetHost($TestTarget)
+		$sqlComparerInputLeft = Join-Path $SqlComparerOutputPath "sqlComparerInput-True.xml"
+		$sqlComparerInputRight = Join-Path $SqlComparerOutputPath "sqlComparerInput-False.xml"
+		$sqlComparerResultFile = Join-Path $SqlComparerOutputPath "sqlComparer_result.txt"
+	
+		& $SqlComparerRunner @(
+						($sqlserveraddress), 
+						("sa"),
+						($SqlPassword),
+						($sqlComparerInputLeft),
+						($sqlComparerInputRight)) | Out-File $sqlComparerResultFile
+						
+	} -errorMessage "Compare databases using SQL Comparer Tool finished with errors. Details in '..\TestReports\SqlComparer\sqlComparer_result.txt'"
+}
+
 Function Invoke-IntegrationTests {
     param(
         [String] $TestCategoryFilter
@@ -969,7 +1063,7 @@ Function InsertMassImportToggleRecord{
 							NOT EXISTS (SELECT * FROM [EDDS].[eddsdbo].[Toggle]
 									  WHERE [Name] = 'Relativity.Core.Toggle.MassImportImprovementsToggle')"
     
-	ExecuteSqlCommand -SQLCommand $sqlCommand -SQLUserName 'sa' -SQLPassword 'P@ssw0rd@1' -SQLDatabaseName "EDDS"
+	ExecuteSqlCommand -SQLCommand $sqlCommand -SQLUserName 'sa' -SQLPassword $SqlPassword -SQLDatabaseName "EDDS"
 }
 
 Function SetMassImportToggleValue{
@@ -981,7 +1075,7 @@ Function SetMassImportToggleValue{
 							set [EDDS].[eddsdbo].[Toggle].[IsEnabled]= '$IsEnabled'
 							where [EDDS].[eddsdbo].[Toggle].[Name] = 'Relativity.Core.Toggle.MassImportImprovementsToggle'"
 	
-	ExecuteSqlCommand -SQLCommand $sqlCommand -SQLUserName 'sa' -SQLPassword 'P@ssw0rd@1' -SQLDatabaseName "EDDS"
+	ExecuteSqlCommand -SQLCommand $sqlCommand -SQLUserName 'sa' -SQLPassword $SqlPassword -SQLDatabaseName "EDDS"
 }
 
 Function ExecuteSqlCommand{

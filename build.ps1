@@ -26,6 +26,10 @@ Build the solution, creates the install packages, and digitally signs all associ
 Builds the solution for UIAutomation.
 
 .EXAMPLE
+.\build.ps1 BuildSQLDataComparer
+Builds the solution for SQLDataComparer.
+
+.EXAMPLE
 .\build.ps1 Build,UnitTests
 Builds the solution and then executes all unit tests.
 
@@ -64,6 +68,10 @@ Skips building the solution, set MassImportImprovementsToggle value and execute 
 .EXAMPLE
 .\build.ps1 CodeCoverageReport -TestEnvironment "Hopper"
 Skips building the solution, setup the integration test parameters using the Hopper test environment, executes a code coverage report, and creates the code coverage report within the ".\Reports" sub-folder.
+
+.EXAMPLE
+.\build.ps1 RunSqlComparerTool
+Skips building the solution, run Sql Comparer Tool for previous prepared comparer input
 
 .PARAMETER Target
 The target to build (e.g. Build, Rebuild).
@@ -122,6 +130,12 @@ The optional parameter used to execute LoadTests for two MassImportImprovementsT
 .EXAMPLE EnableDataGrid
 The optional parameter used to execute tests for two enabled or disabled DataGrid.
 
+.EXAMPLE SqlProfiling
+The optional parameter used to execute tests with sql profiling turned on.
+
+.EXAMPLE SqlDataComparer
+The optional parameter used to execute tests with sql data comparer tool on.
+
 #>
 
 #Requires -Version 5.0
@@ -179,7 +193,11 @@ param(
 	[Parameter()]
     [Switch]$MassImportImprovementsToggle,
 	[Parameter()]
-    [Switch]$EnableDataGrid
+    [Switch]$EnableDataGrid,
+	[Parameter()]
+    [Switch]$SqlProfiling,
+	[Parameter()]
+    [Switch]$SqlDataComparer
 )
 
 $BaseDir = $PSScriptRoot
@@ -259,6 +277,8 @@ $Params = @{
 		ProgetApiKey = $ProgetApiKey
 		MassImportImprovementsToggle = $MassImportImprovementsToggle
 		EnableDataGrid = $EnableDataGrid
+		SqlProfiling = $SqlProfiling
+		SqlDataComparer = $SqlDataComparer
     }
 
     Verbose = $VerbosePreference
