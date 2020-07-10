@@ -6,8 +6,8 @@ namespace SQLDataComparer.DataCompare
 {
 	public class ObjectMappingEqualityComparer : RowMappingEqualityComparer
 	{
-		public ObjectMappingEqualityComparer(ILog log, Dictionary<string, string> mappingTable, string tableName)
-		 : base(log, mappingTable, tableName)
+		public ObjectMappingEqualityComparer(ILog log, string mapId, Dictionary<string, string> mappingTable, string tableName)
+		 : base(log, mapId, mappingTable, tableName)
 		{
 		}
 

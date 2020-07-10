@@ -7,8 +7,8 @@ namespace SQLDataComparer.DataCompare
 {
 	public class RowDataEqualityComparer : RowEqualityComparer
 	{
-		public RowDataEqualityComparer(ILog log, Dictionary<string, string> mappingTable, string tableName)
-		: base(log, mappingTable, tableName)
+		public RowDataEqualityComparer(ILog log, string mapId, Dictionary<string, string> mappingTable, string tableName)
+		: base(log, mapId, mappingTable, tableName)
 		{
 		}
 
@@ -48,12 +48,12 @@ namespace SQLDataComparer.DataCompare
 
 		protected void AddRowsMappingsToMappingTable(Row leftRow, Row rightRow)
 		{
-			string leftValue = leftRow["ArtifactID"];
-			string rightValue = rightRow["ArtifactID"];
+			string leftValue = leftRow[_mapId];
+			string rightValue = rightRow[_mapId];
 
 			if (string.IsNullOrEmpty(leftValue) || string.IsNullOrEmpty(rightValue))
 			{
-				throw new Exception($"{_tableName} : ArtifactID missing for table. Left: {leftValue} Right: {rightValue}");
+				throw new Exception($"{_tableName} : {_mapId} missing for table. Left: {leftValue} Right: {rightValue}");
 			}
 
 			if (!_mappingTable.ContainsKey(leftValue))

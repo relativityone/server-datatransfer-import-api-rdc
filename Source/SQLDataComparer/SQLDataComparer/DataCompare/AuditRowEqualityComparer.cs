@@ -8,7 +8,7 @@ namespace SQLDataComparer.DataCompare
 	public class AuditRowEqualityComparer : RowMappingEqualityComparer
 	{
 		public AuditRowEqualityComparer(ILog log, Dictionary<string, string> mappingTable, string tableName) 
-			: base(log, mappingTable, tableName)
+			: base(log, "ArtifactID", mappingTable, tableName)
 		{
 		}
 

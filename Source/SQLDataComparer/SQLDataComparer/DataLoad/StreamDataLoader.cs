@@ -169,7 +169,7 @@ namespace SQLDataComparer.DataLoad
 				queryBuilder.Append(GetQuery(tableConfig.WhereConfig));
 			}
 
-			queryBuilder.Append($" ORDER BY {tableConfig.RowId} ASC");
+			queryBuilder.Append($" ORDER BY {tableConfig.RowId} ASC, {tableConfig.MapId} ASC");
 
 			return queryBuilder.ToString();
 		}
@@ -214,9 +214,9 @@ namespace SQLDataComparer.DataLoad
 		{
 			StringBuilder queryBuilder = new StringBuilder();
 
-			queryBuilder.Append($"SELECT {tableConfig.RowId}, ArtifactID, {mappingConfig.Name}");
+			queryBuilder.Append($"SELECT {tableConfig.RowId}, {tableConfig.MapId}, {mappingConfig.Name}");
 			queryBuilder.Append($" FROM {tableConfig.Name}");
-			queryBuilder.Append($" ORDER BY {tableConfig.RowId}");
+			queryBuilder.Append($" ORDER BY {tableConfig.RowId}, {tableConfig.MapId} ASC");
 
 			return queryBuilder.ToString();
 		}
@@ -236,7 +236,7 @@ namespace SQLDataComparer.DataLoad
 		{
 			StringBuilder queryBuilder = new StringBuilder();
 
-			queryBuilder.Append("SELECT ArtifactID");
+			queryBuilder.Append($"SELECT {mappingConfig.TargetColumn}");
 			queryBuilder.Append(" FROM EDDSDBO.Field");
 			queryBuilder.Append($" WHERE DisplayName = '{mappingConfig.Name}'");
 			queryBuilder.Append(" AND FieldArtifactTypeID = 10");
@@ -248,7 +248,7 @@ namespace SQLDataComparer.DataLoad
 		{
 			StringBuilder queryBuilder = new StringBuilder();
 
-			queryBuilder.Append("SELECT ArtifactID");
+			queryBuilder.Append($"SELECT {mappingConfig.TargetColumn}");
 			queryBuilder.Append(" FROM EDDSDBO.Field");
 			queryBuilder.Append($" WHERE DisplayName = '{mappingConfig.Name}'");
 			queryBuilder.Append(" AND AssociativeArtifactTypeID = 10");
@@ -279,7 +279,7 @@ namespace SQLDataComparer.DataLoad
 			queryBuilder.Append($" JOIN EDDSDBO.ZCodeArtifact_{codeTypeID}");
 			queryBuilder.Append($" ON {tableConfig.Name}.ArtifactID");
 			queryBuilder.Append(" = AssociatedArtifactID");
-			queryBuilder.Append($" ORDER BY {tableConfig.RowId}");
+			queryBuilder.Append($" ORDER BY {tableConfig.RowId}, {tableConfig.MapId} ASC");
 
 			return queryBuilder.ToString();
 		}
@@ -321,7 +321,7 @@ namespace SQLDataComparer.DataLoad
 			queryBuilder.Append($" JOIN EDDSDBO.f{docArtifactID}f{objArtifactID}");
 			queryBuilder.Append($" ON {tableConfig.Name}.ArtifactID");
 			queryBuilder.Append($" = f{objArtifactID}ArtifactID");
-			queryBuilder.Append($" ORDER BY {tableConfig.RowId}");
+			queryBuilder.Append($" ORDER BY {tableConfig.RowId}, {tableConfig.MapId} ASC");
 
 			return queryBuilder.ToString();
 		}

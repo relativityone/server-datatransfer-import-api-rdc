@@ -263,7 +263,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private void SetTestParameters(IntegrationTestParameters testParameters)
 		{
 			this.TestParameters = testParameters ?? throw new ArgumentNullException(nameof(testParameters));
-			Assume.That(testParameters.WorkspaceId, Is.Positive, "The test workspace must be created or specified in order to run this integration test.");
+			Assume.That(testParameters.WorkspaceId, Is.Positive, "The test workspace must be created or specified in order to run this integration test. One possible reason for this error is that Skip Integration Tests is set to true.");
 		}
 	}
 }

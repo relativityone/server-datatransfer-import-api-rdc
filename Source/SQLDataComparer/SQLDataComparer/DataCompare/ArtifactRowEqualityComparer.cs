@@ -7,7 +7,7 @@ namespace SQLDataComparer.DataCompare
 	public class ArtifactRowEqualityComparer : RowDataEqualityComparer
 	{
 		public ArtifactRowEqualityComparer(ILog log, Dictionary<string, string> mappingTable, string tableName)
-			: base(log, mappingTable, tableName)
+			: base(log, "ArtifactID", mappingTable, tableName)
 		{
 		}
 

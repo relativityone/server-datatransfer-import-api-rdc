@@ -6,8 +6,8 @@ namespace SQLDataComparer.DataCompare
 {
 	public class ChoiceMappingEqualityComparer : RowMappingEqualityComparer
 	{
-		public ChoiceMappingEqualityComparer(ILog log, Dictionary<string, string> mappingTable, string tableName)
-		 : base(log, mappingTable, tableName)
+		public ChoiceMappingEqualityComparer(ILog log, string mapId, Dictionary<string, string> mappingTable, string tableName)
+		 : base(log, mapId, mappingTable, tableName)
 		{
 		}
 

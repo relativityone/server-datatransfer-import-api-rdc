@@ -15,7 +15,8 @@ namespace SQLDataComparer.DataCompare
 		private readonly IConfigChecker _configChecker;
 		private readonly IDataLoader _dataLoader;
 
-		private readonly Dictionary<string, string> _mappingTable = new Dictionary<string, string>();
+		private readonly Dictionary<string, Dictionary<string, string>> _mappingTable =
+			new Dictionary<string, Dictionary<string, string>>();
 
 		private readonly List<ComparisonResult> _results = new List<ComparisonResult>();
 
@@ -40,8 +41,13 @@ namespace SQLDataComparer.DataCompare
 				// step 1 - check configuration - parameters have to be filled to check this
 				if (_configChecker.CheckTableConfig(tableConfig))
 				{
+					if (!_mappingTable.ContainsKey(tableConfig.MapId))
+					{
+						_mappingTable[tableConfig.MapId] = new Dictionary<string, string>();
+					}
+
 					// step 2 - compare tables loading row by row
-					Compare(tableConfig, new RowDataEqualityComparer(_log, _mappingTable, tableConfig.Name), tableConfig.Name);
+					Compare(tableConfig, new RowDataEqualityComparer(_log, tableConfig.MapId, _mappingTable[tableConfig.MapId], tableConfig.Name), tableConfig.Name);
 				}
 			}
 
@@ -55,11 +61,11 @@ namespace SQLDataComparer.DataCompare
 					{
 						case MappingType.SingleObject:
 						case MappingType.MultiObject:
-							Compare(tableConfig, mappingConfig, new ObjectMappingEqualityComparer(_log, _mappingTable, logTableName), logTableName);
+							Compare(tableConfig, mappingConfig, new ObjectMappingEqualityComparer(_log, mappingConfig.TargetColumn, _mappingTable[mappingConfig.TargetColumn], logTableName), logTableName);
 							break;
 						case MappingType.SingleChoice:
 						case MappingType.MultiChoice:
-							Compare(tableConfig, mappingConfig, new ChoiceMappingEqualityComparer(_log, _mappingTable, logTableName), logTableName);
+							Compare(tableConfig, mappingConfig, new ChoiceMappingEqualityComparer(_log, mappingConfig.TargetColumn, _mappingTable[mappingConfig.TargetColumn], logTableName), logTableName);
 							break;
 					}
 				}
@@ -69,14 +75,14 @@ namespace SQLDataComparer.DataCompare
 
 			if (artifactConfig != null)
 			{
-				Compare(artifactConfig, new ArtifactRowEqualityComparer(_log, _mappingTable, artifactConfig.Name), artifactConfig.Name);
+				Compare(artifactConfig, new ArtifactRowEqualityComparer(_log, _mappingTable["ArtifactID"], artifactConfig.Name), artifactConfig.Name);
 			}
 
 			TableConfig auditConfig = compareConfig.TablesConfig.FirstOrDefault(x => x.Name == "EDDSDBO.AuditRecord_PrimaryPartition");
 
 			if (auditConfig != null)
 			{
-				CompareAudit(auditConfig, new AuditRowEqualityComparer(_log, _mappingTable, auditConfig.Name), auditConfig.Name);
+				CompareAudit(auditConfig, new AuditRowEqualityComparer(_log, _mappingTable["ArtifactID"], auditConfig.Name), auditConfig.Name);
 			}
 
 			return _results;
@@ -93,8 +99,8 @@ namespace SQLDataComparer.DataCompare
 
 		private void Compare(TableConfig tableConfig, MappingConfig mappingConfig, RowEqualityComparer comparer, string tableName)
 		{
-			using (IEnumerator<Table> leftEnumerator = _dataLoader.GetMappingTable(tableConfig, mappingConfig, _mappingTable, SideEnum.Left).GetEnumerator())
-			using (IEnumerator<Table> rightEnumerator = _dataLoader.GetMappingTable(tableConfig, mappingConfig, _mappingTable, SideEnum.Right).GetEnumerator())
+			using (IEnumerator<Table> leftEnumerator = _dataLoader.GetMappingTable(tableConfig, mappingConfig, _mappingTable[mappingConfig.TargetColumn], SideEnum.Left).GetEnumerator())
+			using (IEnumerator<Table> rightEnumerator = _dataLoader.GetMappingTable(tableConfig, mappingConfig, _mappingTable[mappingConfig.TargetColumn], SideEnum.Right).GetEnumerator())
 			{
 				CompareTables(leftEnumerator, rightEnumerator, comparer, tableName);
 			}
@@ -102,8 +108,8 @@ namespace SQLDataComparer.DataCompare
 
 		private void CompareAudit(TableConfig auditConfig, AuditRowEqualityComparer auditComparer, string auditTableName)
 		{
-			using (IEnumerator<Table> leftEnumerator = _dataLoader.GetAuditTable(auditConfig, _mappingTable, SideEnum.Left).GetEnumerator())
-			using (IEnumerator<Table> rightEnumerator = _dataLoader.GetAuditTable(auditConfig, _mappingTable, SideEnum.Right).GetEnumerator())
+			using (IEnumerator<Table> leftEnumerator = _dataLoader.GetAuditTable(auditConfig, _mappingTable["ArtifactID"], SideEnum.Left).GetEnumerator())
+			using (IEnumerator<Table> rightEnumerator = _dataLoader.GetAuditTable(auditConfig, _mappingTable["ArtifactID"], SideEnum.Right).GetEnumerator())
 			{
 				CompareTables(leftEnumerator, rightEnumerator, auditComparer, auditTableName);
 			}
@@ -113,21 +119,34 @@ namespace SQLDataComparer.DataCompare
 		{
 			bool leftCanAdvance = leftEnumerator.MoveNext();
 			bool rightCanAdvance = rightEnumerator.MoveNext();
+			bool lastRow = false;
 
-			while (leftCanAdvance || rightCanAdvance)
+			while (leftCanAdvance || rightCanAdvance || lastRow)
 			{
 				int result = CompareRows(leftEnumerator.Current, rightEnumerator.Current, comparer, tableName);
 
 				// rows had the same row id, advance both
 				if (result == 0)
 				{
-					leftCanAdvance = leftEnumerator.MoveNext();
-					rightCanAdvance = rightEnumerator.MoveNext();
+					// when advancing both check if both arrived at the last element
+					// in thi case we have to compare one more time
+					if (!lastRow)
+					{
+						leftCanAdvance = leftEnumerator.MoveNext();
+						rightCanAdvance = rightEnumerator.MoveNext();
+
+						lastRow = !leftCanAdvance && !rightCanAdvance;
+					}
+					// if we already compared last rows then we are done
+					else
+					{
+						lastRow = false;
+					}
 				}
 				else if (result < 0)
 				{
-					//right row id is higher
-					//advance left so it can catchup to right
+					// right row id is higher
+					// advance left so it can catchup to right
 					if (leftCanAdvance)
 					{
 						leftCanAdvance = leftEnumerator.MoveNext();

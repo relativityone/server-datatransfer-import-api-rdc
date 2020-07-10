@@ -7,31 +7,31 @@ namespace SQLDataComparer.DataCompare
 {
 	public abstract class RowMappingEqualityComparer : RowEqualityComparer
 	{
-		protected RowMappingEqualityComparer(ILog log, Dictionary<string, string> mappingTable, string tableName)
-		 : base(log, mappingTable, tableName)
+		protected RowMappingEqualityComparer(ILog log, string mapId, Dictionary<string, string> mappingTable, string tableName)
+		 : base(log, mapId, mappingTable, tableName)
 		{
 		}
 
-		protected List<string> GetMappingDifferences(string leftArtifactID, string rightArtifactID, string rowId)
+		protected List<string> GetMappingDifferences(string leftMapId, string rightMapId, string rowId)
 		{
 			var differences = new List<string>();
 
-			if (!string.IsNullOrEmpty(leftArtifactID) && !string.IsNullOrEmpty(rightArtifactID))
+			if (!string.IsNullOrEmpty(leftMapId) && !string.IsNullOrEmpty(rightMapId))
 			{
-				if (!_mappingTable.ContainsKey(leftArtifactID))
+				if (!_mappingTable.ContainsKey(leftMapId))
 				{
 					// this means there are artifact ids missing from mapping table and we can't fully be sure whether those rows are equal or not
-					_log.LogError($"{_tableName}.{rowId} : Missing Artifact ID in the mapping table: {leftArtifactID}");
+					_log.LogError($"{_tableName}.{rowId} : Missing {_mapId} in the mapping table: {leftMapId}");
 				}
-				else if (_mappingTable[leftArtifactID] != rightArtifactID)
+				else if (_mappingTable[leftMapId] != rightMapId)
 				{
-					differences.Add($"{_tableName}.{rowId} : Rows with have different mapping {_mappingTable[leftArtifactID]} != {rightArtifactID}");
+					differences.Add($"{_tableName}.{rowId} : Rows have different mapping {_mapId} : {_mappingTable[leftMapId]} != {rightMapId}");
 				}
 			}
-			else if ((!string.IsNullOrEmpty(leftArtifactID) && string.IsNullOrEmpty(rightArtifactID))
-						|| (string.IsNullOrEmpty(leftArtifactID) && !string.IsNullOrEmpty(rightArtifactID)))
+			else if ((!string.IsNullOrEmpty(leftMapId) && string.IsNullOrEmpty(rightMapId))
+						|| (string.IsNullOrEmpty(leftMapId) && !string.IsNullOrEmpty(rightMapId)))
 			{
-				differences.Add($"{_tableName}.{rowId} : Node mapped only on one side, left: {leftArtifactID}, right: {rightArtifactID}");
+				differences.Add($"{_tableName}.{rowId} : Node mapped only on one side, left: {leftMapId}, right: {rightMapId}");
 			}
 
 			return differences;

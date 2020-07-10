@@ -20,5 +20,8 @@ namespace SQLDataComparer.Config
 
 		[XmlAttribute("targetTable")]
 		public string TargetTable { get; set; }
+
+		[XmlAttribute("targetColumn")] 
+		public string TargetColumn { get; set; } = "ArtifactID";
 	}
 }

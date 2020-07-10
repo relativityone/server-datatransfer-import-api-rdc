@@ -7,12 +7,14 @@ namespace SQLDataComparer.DataCompare
 	public abstract class RowEqualityComparer
 	{
 		protected readonly ILog _log;
+		protected readonly string _mapId;
 		protected readonly Dictionary<string, string> _mappingTable;
 		protected readonly string _tableName;
 
-		protected RowEqualityComparer(ILog log, Dictionary<string, string> mappingTable, string tableName)
+		protected RowEqualityComparer(ILog log, string mapId, Dictionary<string, string> mappingTable, string tableName)
 		{
 			this._log = log;
+			this._mapId = mapId;
 			this._mappingTable = mappingTable;
 			this._tableName = tableName;
 		}

@@ -10,6 +10,9 @@ namespace SQLDataComparer.Config
 		[XmlAttribute("rowId")]
 		public string RowId { get; set; }
 
+		[XmlAttribute("mapId")] 
+		public string MapId { get; set; } = "ArtifactID";
+
 		[XmlArray("mappings")]
 		[XmlArrayItem("mapping")]
 		public MappingConfig[] MappingsConfig { get; set; }
