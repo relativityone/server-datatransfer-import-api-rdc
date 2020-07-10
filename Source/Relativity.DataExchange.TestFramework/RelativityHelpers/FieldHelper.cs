@@ -8,16 +8,18 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
 	using System.Linq;
 	using System.Threading.Tasks;
 
 	using kCura.Relativity.Client;
 	using kCura.Relativity.Client.DTOs;
 
+	using Newtonsoft.Json.Linq;
 	using Polly;
 
 	using Relativity.DataExchange.TestFramework;
-
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Services.Interfaces.Field;
 	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Interfaces.Shared.Models;
@@ -44,14 +46,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		public static Task CreateMultiObjectFieldAsync(IntegrationTestParameters testParameters, string fieldName, int fieldObjectArtifactTypeId, int destinationRdoArtifactTypeId)
 		{
-			var request = new MultipleObjectFieldRequest
-			{
-				Name = fieldName,
-				AssociativeObjectType = new ObjectTypeIdentifier { ArtifactTypeID = fieldObjectArtifactTypeId },
-				ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = destinationRdoArtifactTypeId },
-			};
-
-			return TestFramework.RelativityHelpers.FieldHelper.CreateFieldAsync(testParameters, request);
+			return RelativityVersionChecker.VersionIsLowerThan(testParameters, RelativityVersion.Indigo)
+						? CreateMultipleObjectFieldUsingHttpClientAsync(testParameters, fieldName, fieldObjectArtifactTypeId, destinationRdoArtifactTypeId)
+						: CreateMultipleObjectFieldUsingKeplerAsync(testParameters, fieldName, fieldObjectArtifactTypeId, destinationRdoArtifactTypeId);
 		}
 
 		public static Task<int> CreateSingleChoiceFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId, bool isOpenToAssociations)
@@ -347,6 +344,45 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				QueryResult queryResult = await objectManager.QueryAsync(parameters.WorkspaceId, queryRequest, 0, 1).ConfigureAwait(false);
 				return queryResult;
 			}
+		}
+
+		private static async Task CreateMultipleObjectFieldUsingHttpClientAsync(
+			IntegrationTestParameters parameters,
+			string fieldName,
+			int fieldObjectArtifactTypeId,
+			int destinationRdoArtifactTypeId)
+		{
+			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+
+			string createMultiObjectFieldJson = ResourceFileHelper.GetResourceFolderPath("CreateMultiObjectFieldInput.json");
+			JObject request = JObject.Parse(File.ReadAllText(createMultiObjectFieldJson));
+			request["Name"] = fieldName;
+			request["Parent Artifact"]["Artifact ID"] = parameters.WorkspaceId;
+			request["Associative Object Type"]["Descriptor Artifact Type ID"] = fieldObjectArtifactTypeId;
+			request["Object Type"]["Descriptor Artifact Type ID"] = destinationRdoArtifactTypeId;
+			if (destinationRdoArtifactTypeId == (int)Relativity.ArtifactType.Document)
+			{
+				request["Available In Field Tree"] = false;
+			}
+
+			string url = $"{parameters.RelativityRestUrl.AbsoluteUri}/Relativity.REST/Workspace/{parameters.WorkspaceId}/Field";
+			await HttpClientHelper.PostAsync(parameters, new Uri(url), request.ToString()).ConfigureAwait(false);
+		}
+
+		private static async Task CreateMultipleObjectFieldUsingKeplerAsync(
+			IntegrationTestParameters parameters,
+			string fieldName,
+			int fieldObjectArtifactTypeId,
+			int destinationRdoArtifactTypeId)
+		{
+			var request = new MultipleObjectFieldRequest
+			{
+				Name = fieldName,
+				AssociativeObjectType = new ObjectTypeIdentifier { ArtifactTypeID = fieldObjectArtifactTypeId },
+				ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = destinationRdoArtifactTypeId },
+			};
+
+			await TestFramework.RelativityHelpers.FieldHelper.CreateFieldAsync(parameters, request).ConfigureAwait(false);
 		}
 	}
 }
