@@ -24,6 +24,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	public class PermissionTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
+		private const int _WAIT_TIME_FOR_INSTANCE_SETTING_CHANGE_IN_MS = 30 * 1000;
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.Juniper;
 		private bool testsSkipped;
 
@@ -34,6 +35,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private string oldUsername;
 		private string oldPassword;
 
+		private bool adminsCanSetPasswordsInstanceSettingWasChanged;
+
 		[OneTimeSetUp]
 		public async Task OneTimeSetupAsync()
 		{
@@ -42,6 +45,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				               MinSupportedVersion);
 			if (!testsSkipped)
 			{
+				adminsCanSetPasswordsInstanceSettingWasChanged = await ChangeAdminsCanSetPasswordsInstanceSetting(isEnabled: true)
+					.ConfigureAwait(false);
+
 				this.oldUsername = this.TestParameters.RelativityUserName;
 				this.oldPassword = this.TestParameters.RelativityPassword;
 
@@ -68,6 +74,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				this.WithOriginalUser();
 				await UsersHelper.RemoveUserAsync(this.TestParameters, this.userId).ConfigureAwait(false);
 				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
+
+				if (adminsCanSetPasswordsInstanceSettingWasChanged)
+				{
+					await ChangeAdminsCanSetPasswordsInstanceSetting(isEnabled: false)
+						.ConfigureAwait(false);
+				}
 			}
 		}
 
@@ -238,6 +250,25 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - Your account does not have rights to add an associated object to the current object");
 			Assert.That(results.ErrorRows.Count, Is.EqualTo(NumberOfDocumentsToImport), () => "Wrong number of error rows.");
 			Assert.That(results.JobReportTotalRows, Is.EqualTo(NumberOfDocumentsToImport), () => "Wrong number of total job reports.");
+		}
+
+		private static async Task<bool> ChangeAdminsCanSetPasswordsInstanceSetting(bool isEnabled)
+		{
+			const string section = "Relativity.Authentication";
+			const string setting = "AdminsCanSetPasswords";
+			string newValue = isEnabled.ToString();
+
+			bool wasChanged = await InstanceSettingsHelper
+				                  .ChangeInstanceSetting(AssemblySetup.TestParameters, section, setting, newValue)
+				                  .ConfigureAwait(false);
+
+			if (wasChanged)
+			{
+				await Task.Delay(TimeSpan.FromMilliseconds(_WAIT_TIME_FOR_INSTANCE_SETTING_CHANGE_IN_MS))
+					.ConfigureAwait(false);
+			}
+
+			return wasChanged;
 		}
 
 		private void WithNewUser()
