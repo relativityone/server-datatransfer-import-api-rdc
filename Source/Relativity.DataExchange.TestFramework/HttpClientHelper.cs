@@ -43,6 +43,7 @@ namespace Relativity.DataExchange.TestFramework
 							{
 								request = requestJson,
 								response,
+								result,
 								url = absoluteUri,
 								basicAuth,
 								httpClient.DefaultRequestHeaders,
