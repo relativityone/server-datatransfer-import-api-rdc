@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Relativity.DataExchange.TestFramework;
 using Relativity.DataExchange.TestFramework.RelativityHelpers;
@@ -32,7 +33,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		}
 
 		[Test]
-		public void ImportProduction()
+		public async Task ImportProductionAsync()
 		{
 			var parameters = new ImageImportWindowSetupParameters
 			{
@@ -42,8 +43,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				OverwriteMode = "Append Only"
 			};
 
-			ProductionHelper.CreateProduction(TestParameters, parameters.ProductionName, "BATES",
-				IntegrationTestHelper.Logger);
+			await ProductionHelper.CreateProductionAsync(TestParameters, parameters.ProductionName, "BATES").ConfigureAwait(false);
 
 			RunImportTest(x =>
 			{
