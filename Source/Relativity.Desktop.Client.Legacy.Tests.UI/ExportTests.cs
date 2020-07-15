@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.DataExchange.TestFramework;
@@ -20,10 +21,10 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		private readonly string allDocumentsViewName = ConfigurationManager.AppSettings["AllDocumentsViewName"];
 
 		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		public Task OneTimeSetUpAsync()
 		{
 			TestParameters = IntegrationTestHelper.Create();
-			ImportDataForExport();
+			return ImportDataForExportAsync();
 		}
 
 		[OneTimeTearDown]
@@ -36,14 +37,14 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			}
 		}
 
-		public void ResetContext()
+		public Task ResetContextAsync()
 		{
 			OneTimeTearDown();
-			OneTimeSetUp();
+			return OneTimeSetUpAsync();
 		}
 
 		[Test]
-		public void ExportRenderedPdfs()
+		public Task ExportRenderedPdfsAsync()
 		{
 			_ = RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int) ArtifactType.Document);
 			ImportHelper.ImportDefaultTestData(TestParameters);
@@ -68,7 +69,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 
 			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 21);
 
-			ResetContext();
+			return ResetContextAsync();
 		}
 
 		[Test]
@@ -223,11 +224,11 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			return exportPath;
 		}
 
-		private void ImportDataForExport()
+		private Task ImportDataForExportAsync()
 		{
 			var documents = ImportHelper.ImportDocuments(TestParameters).ToList();
 			ImportHelper.ImportImagesForDocuments(TestParameters, documents);
-			ImportHelper.ImportProduction(TestParameters, ProductionName, documents);
+			return ImportHelper.ImportProductionAsync(TestParameters, ProductionName, documents);
 		}
 
 		private void SetPdfTypeForDocumentsInWorkspace()
