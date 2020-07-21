@@ -85,44 +85,31 @@ def createHopperInstance(String sutTemplate, String relativityBranch)
     String buildOwner = ""
 	String vmName = "$productName-${UUID.randomUUID().toString()}"
         
-    withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) 
-	{
-		buildOwner = utils.getBuildOwner(username, password)
-	}
-	
-	withCredentials([
-		usernamePassword(credentialsId: 'jenkins_build_svc', passwordVariable: 'bldSvcPassword', usernameVariable: 'bldSvcUsername'),
-		string(credentialsId: 'HopperTrustedAppToken', variable: 'hopperTrustedAppToken')]) 
-	{
-		String vmDescription = "$productName - ${env.BRANCH_NAME} - ${currentBuild.displayName}"
-		vmInfo = utils.createHopper("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", sutTemplate, vmName, vmDescription, bldSvcUsername, bldSvcPassword, buildOwner, productName)
-		utils.createHopperTestSettings(vmInfo)
-		utils.renewInstanceLease("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", vmInfo.Id, bldSvcUsername, bldSvcPassword)
-		utils.renewInstanceLease("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", vmInfo.Id, bldSvcUsername, bldSvcPassword)
-	}
+	buildOwner = utils.getBuildOwner()
+
+	String vmDescription = "$productName - ${env.BRANCH_NAME} - ${currentBuild.displayName}"
+	vmInfo = utils.createHopper("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", sutTemplate, vmName, vmDescription, buildOwner, productName)
+	utils.createHopperTestSettings(vmInfo)
+	// The hopper we created self destructs in a certain time period. This increases that timer by a bit. 
+	// Therefore we call this function twice to make sure the hopper outlasts testing.
+	utils.renewInstanceLease("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", vmInfo.Id)
+	utils.renewInstanceLease("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", vmInfo.Id)
+
 	
 	if(relativityBranch != null && !relativityBranch.isEmpty()) 
 	{
 		try{
 			stage('Install Relativity') {
 				utils.getRelativityInstaller(relativityBranch)
+				utils.deployRelativityToHopper(vmInfo, vmName)
+				utils.waitForRelativityWorkspaceUpgrade(vmInfo)
 
-				withCredentials([
-					usernamePassword(credentialsId: 'RAPCDServicePrincipal', passwordVariable: 'spPassword', usernameVariable: 'spUsername')
-				]) {
-					utils.deployRelativityToHopper(vmInfo, vmName, spUsername, spPassword)
-					utils.waitForRelativityWorkspaceUpgrade(vmInfo)
-				}
 			}
-			withCredentials([
-			usernamePassword(credentialsId: 'ProgetCI', passwordVariable: 'nugetPassword', usernameVariable: 'nugetUsername'),
-			string(credentialsId: 'HopperTrustedAppToken', variable: 'hopperTrustedAppToken')
-			]) {
-				utils.renewInstanceLease("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", vmInfo.Id, nugetUsername, nugetPassword)
-				utils.renewInstanceLease("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", vmInfo.Id, nugetUsername, nugetPassword)
-				utils.renewInstanceLease("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", vmInfo.Id, nugetUsername, nugetPassword)
-			}
-			}
+			utils.renewInstanceLease("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", vmInfo.Id)
+			utils.renewInstanceLease("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", vmInfo.Id)
+			utils.renewInstanceLease("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", vmInfo.Id)
+
+		}
 		catch(ex)
 		{
 			echo ex.toString()
@@ -137,12 +124,7 @@ def deleteHopperInstance(Integer vmId)
 	try
 	{
 		echo "Deleting the hopper instance for ${vmId}"
-		withCredentials([
-			usernamePassword(credentialsId: 'jenkins_build_svc', passwordVariable: 'bldSvcPassword', usernameVariable: 'bldSvcUsername'),
-			string(credentialsId: 'HopperTrustedAppToken', variable: 'hopperTrustedAppToken')]) 
-		{
-			utils.removeHopper("https://api.hopper.relativity.com/", hopperTrustedAppToken, "homeimprovement@relativity.com", vmId, bldSvcUsername, bldSvcPassword)
-		}											
+		utils.removeHopper("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", vmId)								
 	}
 	catch (err)
 	{
