@@ -16,6 +16,7 @@ relativity.services.interfaces.private
 relativity.transfer.client
 serilog
 stylecop.analyzers
+ConfigureAwaitChecker.Analyzer
 relativity.telemetry.datacontracts.shared
 relativity.telemetry.services.interface
 group integration-tests

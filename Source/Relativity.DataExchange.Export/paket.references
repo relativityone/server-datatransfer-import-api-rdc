@@ -7,3 +7,4 @@ relativity.services.datacontracts
 relativity.services.interfaces
 relativity.transfer.client
 system.reactive
+ConfigureAwaitChecker.Analyzer

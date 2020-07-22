@@ -14,5 +14,6 @@ relativity.services.interfaces.private
 relativity.testing.identification
 relativity.transfer.client
 stylecop.analyzers
+ConfigureAwaitChecker.Analyzer
 relativity.telemetry.datacontracts.shared
 relativity.telemetry.services.interface

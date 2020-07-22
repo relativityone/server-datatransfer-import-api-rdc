@@ -15,6 +15,6 @@ relativity.services.interfaces.private
 relativity.testing.identification
 relativity.transfer.client
 stylecop.analyzers
-
+ConfigureAwaitChecker.Analyzer
 group integration-tests
 System.ValueTuple
