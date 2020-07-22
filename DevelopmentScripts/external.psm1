@@ -36,7 +36,8 @@ Function Invoke-SignFile {
     $SignSites = @(
         "http://timestamp.comodoca.com/authenticode",
         "http://timestamp.verisign.com/scripts/timstamp.dll",
-        "http://tsa.starfieldtech.com"
+        "http://tsa.starfieldtech.com",
+		"http://timestamp.digicert.com"
     )
 
     $Signed = $false
@@ -45,13 +46,18 @@ Function Invoke-SignFile {
     if (-not $Signed) {
         For ($i = 0; $i -lt $RetryAttempts; $i++) {
             ForEach ($Site in $SignSites) {
-                Write-Host "Attempting to sign" $File "using" $Site "..."
-                & $SigntoolPath sign /a /t $Site /d "Relativity" /du "http://www.kcura.com" $File
-                $Signed = $?
-                if ($Signed) {
-                    Write-Host "Signed $File Successfully!"
-                    break
-                }
+				Try {
+					Write-Host "Attempting to sign" $File "using" $Site "..."
+					& $SigntoolPath sign /a /t $Site /d "Relativity" /du "http://www.kcura.com" $File
+					$Signed = $?
+					if ($Signed) {
+						Write-Host "Signed $File Successfully!"
+						break
+					}
+				}
+				catch {
+					Write-Host "Failed to sign" $File "using" $Site "..."
+				}
             }  
                     
             if ($Signed) {
