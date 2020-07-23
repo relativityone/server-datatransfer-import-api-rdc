@@ -1168,17 +1168,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="FaspManager">
-          <HintPath>..\..\packages\relativity.faspmanager\lib\net40\FaspManager.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Relativity.Kepler">
           <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
           <Private>True</Private>
@@ -1299,6 +1288,11 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="FaspManager">
+          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\FaspManager.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.DataTransfer.Nodes">
           <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
           <Private>True</Private>
@@ -1337,6 +1331,23 @@
       <ItemGroup>
         <Reference Include="Renci.SshNet">
           <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Windows">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WindowsBase">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Reactive">
+          <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

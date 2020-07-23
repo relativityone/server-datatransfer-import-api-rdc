@@ -7,4 +7,5 @@ relativity.services.datacontracts
 relativity.services.interfaces
 relativity.transfer.client
 stylecop.analyzers
+ConfigureAwaitChecker.Analyzer
 Relativity.AutomatedWorkflows.Services.Interfaces

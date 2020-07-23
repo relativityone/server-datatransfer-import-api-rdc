@@ -74,6 +74,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[IdentifiedTest("b92eb969-5330-443b-a720-0a2bc1db5a57")]
 		[IgnoreIfVersionLowerThan(RelativityVersion.LanceleafREL438573)]
+		[Ignore("Ignored until https://git.kcura.com/projects/REL/repos/relativity-core/pull-requests/152/overview is merged and hopper image is updated")]
 		public async Task ShouldNotCreateDuplicatedObjectsWithSelfReferencedFields(
 			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.AppendOverlay, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode,
 			[ValueSource(nameof(DataSource))] Dictionary<string, IEnumerable<string>> dataSource)
