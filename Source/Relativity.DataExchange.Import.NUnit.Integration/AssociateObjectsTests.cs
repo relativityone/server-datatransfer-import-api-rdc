@@ -33,6 +33,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	public class AssociateObjectsTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const string ReferenceToObjectFieldName = "ReferenceToObject";
+		private const string ReferenceToMultiObjectFieldName = "ReferenceToMultiObject";
 		private const string ReferenceToDocumentFieldName = "ReferenceToDocument";
 
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
@@ -59,6 +60,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					                                 .ConfigureAwait(false);
 				this.referenceToObjectFieldId = await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, ReferenceToObjectFieldName, this.objectArtifactTypeId, (int)ArtifactType.Document)
 					                                .ConfigureAwait(false);
+				await FieldHelper.CreateMultiObjectFieldAsync(this.TestParameters, ReferenceToMultiObjectFieldName, this.objectArtifactTypeId, (int)ArtifactType.Document)
+					                                     .ConfigureAwait(false);
+
 				await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, ReferenceToDocumentFieldName, (int)ArtifactType.Document, this.objectArtifactTypeId)
 					.ConfigureAwait(false);
 				this.initialImportBatchSize = AppSettings.Instance.ImportBatchSize;
@@ -270,32 +274,33 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			const int RowsReferencingDuplicateObject = 5;
-			const int RowsReferencingNonDuplicateObject = 10;
+			const int RowsReferencingNonDuplicateObject = 5;
 			const int TotalRows = RowsReferencingNonDuplicateObject + RowsReferencingDuplicateObject;
 			const string NamePrefix = "DuplicatedObjects";
 
-			string duplicateObjectName = $"{NamePrefix}-duplicate";
-			string uniqueObjectName = $"{NamePrefix}-unique";
+			ImportDataSource<object[]> importDataSource = GetDuplicateAssociateObjectsDataSource(RowsReferencingDuplicateObject, TotalRows, ReferenceToObjectFieldName, NamePrefix);
 
-			foreach (string nameValue in new List<string> { duplicateObjectName, duplicateObjectName, uniqueObjectName })
-			{
-				RdoHelper.CreateObjectTypeInstance(
-					this.TestParameters,
-					this.objectArtifactTypeId,
-					new Dictionary<string, object> { { WellKnownFields.RdoIdentifier, nameValue } });
-			}
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
 
-			IEnumerable<string> controlNumberSource = Enumerable.Range(1, TotalRows)
-				.Select(i => $"{NamePrefix}-{i}");
-			IEnumerable<string> referenceToMyObjectSource = Enumerable.Range(1, TotalRows)
-				.Select(i => i <= RowsReferencingDuplicateObject ? duplicateObjectName : uniqueObjectName);
+			// ASSERT
+			ThenTheImportJobCompletedWithErrors(results, RowsReferencingDuplicateObject, TotalRows);
+			Assert.That(results.NumberOfJobMessages, Is.Positive, () => "Wrong number of job messages.");
+			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - A non unique associated object is specified for this new object");
+		}
 
-			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
-				.AddField(WellKnownFields.ControlNumber, controlNumberSource)
-				.AddField(ReferenceToObjectFieldName, referenceToMyObjectSource)
-				.Build();
-			Settings settings = NativeImportSettingsProvider.DefaultSettings();
-			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Mayapple)]
+		[IdentifiedTest("2FD966EA-FC20-4D2F-B86D-4EF692DC07E2")]
+		public void ShouldPreventReferencesToDuplicateAssociateMultiObjects()
+		{
+			// ARRANGE
+			const int RowsReferencingDuplicateObject = 5;
+			const int RowsReferencingNonDuplicateObject = 5;
+			const int TotalRows = RowsReferencingNonDuplicateObject + RowsReferencingDuplicateObject;
+			const string NamePrefix = "DuplicatedMultiObjects";
+
+			ImportDataSource<object[]> importDataSource = GetDuplicateAssociateObjectsDataSource(RowsReferencingDuplicateObject, TotalRows, ReferenceToMultiObjectFieldName, NamePrefix);
 
 			// ACT
 			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
@@ -519,6 +524,34 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			{
 				RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(this.TestParameters, RelativityVersion.LanceleafREL425922);
 			}
+		}
+
+		private ImportDataSource<object[]> GetDuplicateAssociateObjectsDataSource(int rowsReferencingDuplicateObject, int totalRows, string referenceToObjectFieldName, string namePrefix)
+		{
+			string duplicateObjectName = $"{namePrefix}-duplicate";
+			string uniqueObjectName = $"{namePrefix}-unique";
+
+			foreach (string nameValue in new List<string> { duplicateObjectName, duplicateObjectName, uniqueObjectName })
+			{
+				RdoHelper.CreateObjectTypeInstance(
+					this.TestParameters,
+					this.objectArtifactTypeId,
+					new Dictionary<string, object> { { WellKnownFields.RdoIdentifier, nameValue } });
+			}
+
+			IEnumerable<string> controlNumberSource = Enumerable.Range(1, totalRows)
+				.Select(i => $"{namePrefix}-{i}");
+			IEnumerable<string> referenceToMyObjectSource = Enumerable.Range(1, totalRows)
+				.Select(i => i <= rowsReferencingDuplicateObject ? duplicateObjectName : uniqueObjectName);
+
+			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, controlNumberSource)
+				.AddField(referenceToObjectFieldName, referenceToMyObjectSource)
+				.Build();
+			Settings settings = NativeImportSettingsProvider.DefaultSettings();
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+
+			return importDataSource;
 		}
 	}
 }
