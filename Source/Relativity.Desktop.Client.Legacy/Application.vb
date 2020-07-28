@@ -61,7 +61,7 @@ Namespace Relativity.Desktop.Client
 		Private WithEvents _certificatePromptForm As CertificatePromptForm
 		Private WithEvents _optionsForm As OptionsForm
 		Private _documentRepositoryList As String()
-		Private ReadOnly _logger As Relativity.Logging.ILog
+		Private _logger As Relativity.Logging.ILog
 		Private ReadOnly oAuth2ImplicitCredentialsHelper As Lazy(Of OAuth2ImplicitCredentialsHelper) = New Lazy(Of OAuth2ImplicitCredentialsHelper)(AddressOf CreateOAuth2ImplicitCredentialsHelper)
 		Private _metricService As IMetricService
 #End Region
@@ -1475,6 +1475,7 @@ Namespace Relativity.Desktop.Client
 
 						_timeZoneOffset = 0
 						_lastCredentialCheckResult = CredentialCheckResult.Success
+						Me.SetupRelativityLoggingWithHttpParameters(credential)
 
 						'This was created specifically for raising an event after login success for RDC forms authentication 
 						LogOnForm()
@@ -1817,6 +1818,15 @@ Namespace Relativity.Desktop.Client
 			If (Not _fieldProviderCache Is Nothing) Then
 				_fieldProviderCache.ResetCache()
 			End If
+		End Sub
+
+		Private Sub SetupRelativityLoggingWithHttpParameters(credential As NetworkCredential)
+			Dim secureLogFactory As ISecureLogFactory = new RdcSecureLogFactory(credential)
+			Dim secureLogger As Relativity.Logging.ILog = secureLogFactory.CreateSecureLogger()
+			' Storing the logger reference on the singleton ensures it will be used throughout (see RelativityLogFactory).
+			Relativity.Logging.Log.Logger = secureLogger
+			RelativityLogger.Instance = secureLogger
+			Me._logger = secureLogger
 		End Sub
 
 	End Class
