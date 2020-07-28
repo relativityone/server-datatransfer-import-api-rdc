@@ -542,52 +542,53 @@ End Sub
 			SyncLock (_summaryLock)
 				If args Is Nothing Then args = _lastEvent
 				Dim stubDate As DateTime
-				Dim totalRecords, totalRecordsProcessed As Int32
-				If args.TotalRecords > Int32.MaxValue Then
-					totalRecordsProcessed = CType((args.TotalProcessedRecords / args.TotalRecords) * Int32.MaxValue, Int32)
-					totalRecords = Int32.MaxValue
+				Dim total, processed As Int32
+				If args.Total > Int32.MaxValue Then
+					processed = CType((args.Processed / args.Total) * Int32.MaxValue, Int32)
+					total = Int32.MaxValue
 				Else
-					totalRecords = CType(args.TotalRecords, Int32)
-					totalRecordsProcessed = CType(args.TotalProcessedRecords, Int32)
+					total = CType(args.Total, Int32)
+					processed = CType(args.Processed, Int32)
 				End If
 
-				If totalRecordsProcessed > totalRecords Or totalRecordsProcessed < 0 Then
+				If processed > total Or processed < 0 Then
+					_logger.LogWarning("Incorrect values when displaying progress bar: {processed}, {total}, {unit}", processed, total, args.ProgressUnit.ToString())
 					Return
 				End If
 
 				_progressBar.Minimum = 0
-				_progressBar.Maximum = totalRecords
-				_progressBar.Value = totalRecordsProcessed
-				_overalProgressLabel.Text = args.TotalProcessedRecordsDisplay + " of " + args.TotalRecordsDisplay + " processed"
+				_progressBar.Maximum = total
+				_progressBar.Value = processed
+				_overalProgressLabel.Text = $"{args.ProcessedDisplay} of {args.TotalDisplay} processed"
 
-				NumberOfWarnings = args.TotalProcessedWarningRecords
+				NumberOfWarnings = args.ProcessedWithWarning
 
 				'_summaryOutput.Text = ""
-				WriteSummaryLine("Start Time: " + args.StartTime.ToLongTimeString)
+				WriteSummaryLine($"Start time: {args.StartTime.ToLongTimeString}")
 				If args.Timestamp <> stubDate Then
-					WriteSummaryLine("Finish Time: " + args.Timestamp.ToLongTimeString)
-					WriteSummaryLine("Duration: " + (Me.GetTimeSpanString(args.Timestamp.Subtract(args.StartTime))))
+					WriteSummaryLine($"Finish time: {args.Timestamp.ToLongTimeString}")
+					WriteSummaryLine($"Duration: {(Me.GetTimeSpanString(args.Timestamp.Subtract(args.StartTime)))}")
 				Else
 					Dim duration As TimeSpan = DateTime.Now.Subtract(args.StartTime)
-					WriteSummaryLine("Duration: " + (Me.GetTimeSpanString(duration)))
-					WriteSummaryLine("")
-					If args.TotalProcessedRecords > 0 Then
-						Dim timeToCompletionString As String = Me.GetTimeSpanString(New TimeSpan(CType(duration.Ticks / CType(args.TotalProcessedRecords, Double) * CType((args.TotalRecords - args.TotalProcessedRecords), Double), Long)))
-						WriteSummaryLine("Time Left to Completion: " + timeToCompletionString)
+					WriteSummaryLine($"Duration: {(Me.GetTimeSpanString(duration))}")
+					WriteSummaryLine(String.Empty)
+					If processed > 0 Then
+						Dim timeToCompletionString As String = Me.GetTimeSpanString(New TimeSpan(CType(duration.Ticks / CType(processed, Double) * CType((total - processed), Double), Long)))
+						WriteSummaryLine($"Time left to completion: {timeToCompletionString}")
 					End If
 				End If
-				WriteSummaryLine("")
-				WriteSummaryLine("Total Records: " + args.TotalRecords.ToString)
-				WriteSummaryLine("Total Processed: " + args.TotalProcessedRecords.ToString)
-				WriteSummaryLine("Total Processed w/Warnings: " + args.TotalProcessedWarningRecords.ToString)
-				If args.TotalProcessedErrorRecords > 0 Then
+				WriteSummaryLine(String.Empty)
+				WriteSummaryLine($"Total {args.ProgressUnit.ToString().ToLower()}: {total.ToString("N0")}")
+				WriteSummaryLine($"Total processed: {processed.ToString("N0")}")
+				WriteSummaryLine($"Total processed with warnings: {args.ProcessedWithWarning.ToString("N0")}")
+				If args.ProcessedWithError > 0 Then
 					_summaryOutput.ForeColor = System.Drawing.Color.Red
 				End If
-				WriteSummaryLine("Total Processed w/Errors: " + args.TotalProcessedErrorRecords .ToString)
+				WriteSummaryLine($"Total processed with errors: {args.ProcessedWithError .ToString("N0")}")
 				If Not args.Metadata Is Nothing Then
-					WriteSummaryLine("")
+					WriteSummaryLine(String.Empty)
 					For Each title As String In args.Metadata.Keys
-						WriteSummaryLine(String.Format("{0}: {1}", title, args.Metadata(title).ToString))
+						WriteSummaryLine($"{title}: {args.Metadata(title).ToString}")
 					Next
 				End If
 				UpdateSummaryText()

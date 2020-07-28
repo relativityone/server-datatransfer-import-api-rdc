@@ -367,27 +367,17 @@ Namespace kCura.WinEDDS
 
 		Private Sub _loadFileImporter_DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs) Handles _loadFileImporter.DataSourcePrepEvent
 			SyncLock Me.Context
-				Dim totaldisplay As String
-				Dim processeddisplay As String
-				If e.TotalBytes >= 1048576 Then
-					totaldisplay = (e.TotalBytes / 1048576).ToString("N0") & " MB"
-					processeddisplay = (e.BytesRead / 1048576).ToString("N0") & " MB"
-				ElseIf e.TotalBytes < 1048576 AndAlso e.TotalBytes >= 102400 Then
-					totaldisplay = (e.TotalBytes / 1024).ToString("N0") & " KB"
-					processeddisplay = (e.BytesRead / 1024).ToString("N0") & " KB"
-				Else
-					totaldisplay = e.TotalBytes.ToString & " B"
-					processeddisplay = e.BytesRead.ToString & " B"
-				End If
+				Dim totalBytesDisplay As String = FileSizeHelper.ConvertBytesNumberToDisplayString(e.TotalBytes)
+				Dim processedBytesDisplay As String = FileSizeHelper.ConvertBytesNumberToDisplayString(e.BytesRead)
 				Select Case e.Type
 					Case Api.DataSourcePrepEventArgs.EventType.Close
-						Me.Context.PublishProgress(e.TotalBytes, e.TotalBytes, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
+						Me.Context.PublishProgressInBytes(e.TotalBytes, e.TotalBytes, e.StartTime, System.DateTime.Now, Me.ProcessId, totalBytesDisplay, processedBytesDisplay)
 					Case Api.DataSourcePrepEventArgs.EventType.Open
-						Me.Context.PublishProgress(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
-						Me.Context.PublishStatusEvent("", "Preparing file for import")
+						Me.Context.PublishProgressInBytes(e.TotalBytes, e.BytesRead, e.StartTime, System.DateTime.Now, Me.ProcessId, totalBytesDisplay, processedBytesDisplay)
+						Me.Context.PublishStatusEvent(String.Empty, "Preparing file for import")
 					Case Api.DataSourcePrepEventArgs.EventType.ReadEvent
-						Me.Context.PublishProgress(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
-						Me.Context.PublishStatusEvent("", "Preparing file for import")
+						Me.Context.PublishProgressInBytes(e.TotalBytes, e.BytesRead, e.StartTime, System.DateTime.Now, Me.ProcessId, totalBytesDisplay, processedBytesDisplay)
+						Me.Context.PublishStatusEvent(String.Empty, "Preparing file for import")
 				End Select
 			End SyncLock
 		End Sub
@@ -420,7 +410,5 @@ Namespace kCura.WinEDDS
 			End If
 			MyBase.Dispose(disposing)
 		End Sub
-
 	End Class
-
 End Namespace

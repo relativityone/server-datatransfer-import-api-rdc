@@ -402,8 +402,8 @@ Namespace kCura.Relativity.DataReaderClient
 		End Sub
 
 		Private Sub _processContext_OnProcessProgressEvent(ByVal sender As Object, ByVal e As ProgressEventArgs) Handles _processContext.Progress
-			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} ]", System.DateTime.Now, e.TotalProcessedRecordsDisplay)))
-			RaiseEvent OnProcessProgress(New FullStatus(e.TotalRecords, e.TotalProcessedRecords, e.TotalProcessedWarningRecords, e.TotalProcessedErrorRecords, e.StartTime, e.Timestamp, e.TotalRecordsDisplay, e.TotalProcessedRecordsDisplay, e.MetadataThroughput, e.NativeFileThroughput, e.ProcessID, e.Metadata))
+			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} ]", System.DateTime.Now, e.ProcessedDisplay)))
+			RaiseEvent OnProcessProgress(New FullStatus(e.Total, e.Processed, e.ProcessedWithWarning, e.ProcessedWithError, e.StartTime, e.Timestamp, e.TotalDisplay, e.ProcessedDisplay, e.MetadataThroughput, e.NativeFileThroughput, e.ProcessID, e.Metadata))
 		End Sub
 
 		Private Sub _processContext_RecordProcessedEvent(ByVal sender As Object, ByVal e As RecordNumberEventArgs) Handles _processContext.RecordProcessed

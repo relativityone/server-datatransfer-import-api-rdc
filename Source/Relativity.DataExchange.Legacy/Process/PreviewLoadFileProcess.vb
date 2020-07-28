@@ -74,30 +74,20 @@ Namespace kCura.WinEDDS
 
 		Private Sub _loadFilePreviewer_OnEvent(ByVal e As LoadFilePreviewer.EventArgs) Handles _loadFilePreviewer.OnEvent
 			SyncLock Me.Context
-				Dim totalDisplay As String
-				Dim processedDisplay As String
-				If e.TotalBytes >= 1048576 Then
-					totalDisplay = (e.TotalBytes / 1048576).ToString("N0") & " MB"
-					processedDisplay = (e.BytesRead / 1048576).ToString("N0") & " MB"
-				ElseIf e.TotalBytes < 1048576 AndAlso e.TotalBytes >= 102400 Then
-					totalDisplay = (e.TotalBytes / 1024).ToString("N0") & " KB"
-					processedDisplay = (e.BytesRead / 1024).ToString("N0") & " KB"
-				Else
-					totalDisplay = e.TotalBytes.ToString & " B"
-					processedDisplay = e.BytesRead.ToString & " B"
-				End If
+				Dim totalDisplay As String = FileSizeHelper.ConvertBytesNumberToDisplayString(e.TotalBytes)
+				Dim processedDisplay As String = FileSizeHelper.ConvertBytesNumberToDisplayString(e.BytesRead)
 				Select Case e.Type
 					Case LoadFilePreviewer.EventType.Begin
 						Me.StartTime = System.DateTime.Now
 					Case LoadFilePreviewer.EventType.Complete
-						If e.TotalBytes = -1 Then
-							Me.Context.PublishProgress(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, "First " & Me.AppSettings.PreviewThreshold & " records", totalDisplay)
+						If e.BytesRead = -1 Then
+							Me.Context.PublishProgressInBytes(e.TotalBytes, e.TotalBytes, Me.StartTime, System.DateTime.Now, Me.ProcessId, $"First {Me.AppSettings.PreviewThreshold} records", Me.AppSettings.PreviewThreshold.ToString())
 						Else
-							Me.Context.PublishProgress(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totalDisplay, processedDisplay)
+							Me.Context.PublishProgressInBytes(e.TotalBytes, e.TotalBytes, Me.StartTime, System.DateTime.Now, Me.ProcessId, totalDisplay, processedDisplay)
 						End If
 					Case LoadFilePreviewer.EventType.Progress
-						Me.Context.PublishProgress(e.TotalBytes, e.BytesRead, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totalDisplay, processedDisplay)
-						Me.Context.PublishStatusEvent("", "Preparing file for preview")
+						Me.Context.PublishProgressInBytes(e.TotalBytes, e.BytesRead, Me.StartTime, System.DateTime.Now, Me.ProcessId, totalDisplay, processedDisplay)
+						Me.Context.PublishStatusEvent(String.Empty, "Preparing file for preview")
 				End Select
 			End SyncLock
 		End Sub

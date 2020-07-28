@@ -528,7 +528,59 @@ namespace Relativity.DataExchange.Process
 				totalProcessedWarningRecords,
 				totalProcessedErrorRecords,
 				metadataThroughput,
-				nativeFileThroughput);
+				nativeFileThroughput,
+				ProgressEventArgs.UnitOfMeasurement.Records);
+			this.Progress?.Invoke(this, args);
+		}
+
+		/// <summary>
+		/// Publishes an event indicating the runnable process progress event has occurred.
+		/// Progress is measured in number of bytes.
+		/// </summary>
+		/// <param name="totalBytes">
+		/// The total number of bytes to process.
+		/// </param>
+		/// <param name="processedBytes">
+		/// The total number of bytes that have been processed.
+		/// </param>
+		/// <param name="startTime">
+		/// The process start time.
+		/// </param>
+		/// <param name="timestamp">
+		/// The timestamp when the event occurred.
+		/// </param>
+		/// <param name="processId">
+		/// The process unique identifier.
+		/// </param>
+		/// <param name="totalBytesDisplay">
+		/// The display string for the total number of bytes to process.
+		/// </param>
+		/// <param name="processedBytesDisplay">
+		/// The display string for the total number of bytes that have been processed.
+		/// </param>
+		public void PublishProgressInBytes(
+			long totalBytes,
+			long processedBytes,
+			DateTime startTime,
+			DateTime timestamp,
+			Guid processId,
+			string totalBytesDisplay,
+			string processedBytesDisplay)
+		{
+			ProgressEventArgs args = new ProgressEventArgs(
+				processId,
+				null,
+				startTime,
+				timestamp,
+				totalBytes,
+				totalBytesDisplay,
+				processedBytes,
+				processedBytesDisplay,
+				0,
+				0,
+				0,
+				0,
+				ProgressEventArgs.UnitOfMeasurement.Bytes);
 			this.Progress?.Invoke(this, args);
 		}
 

@@ -51,7 +51,7 @@ Namespace Relativity.Desktop.Client
 			Dim now As Long = System.DateTime.Now.Ticks
 			If now - _lastUpdated > TimeSpan.TicksPerSecond Then
 				_lastUpdated = now
-				WriteLine(vbTab & e.TotalProcessedRecordsDisplay + " of " + e.TotalRecordsDisplay + " processed", ParsableLineType.Status)
+				WriteLine(vbTab & e.ProcessedDisplay + " of " + e.TotalDisplay + " processed", ParsableLineType.Status)
 			End If
 		End Sub
 

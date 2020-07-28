@@ -30,23 +30,23 @@ namespace Relativity.DataExchange.Process
 		/// <param name="timestamp">
 		/// The timestamp when the event occurred.
 		/// </param>
-		/// <param name="totalRecords">
-		/// The total number of records to process.
+		/// <param name="total">
+		/// The total number of units to process.
 		/// </param>
-		/// <param name="totalRecordsDisplay">
-		/// The display string for the total number of records to process.
+		/// <param name="totalDisplay">
+		/// The display string for the total number of units to process.
 		/// </param>
-		/// <param name="totalProcessedRecords">
-		/// The total number of records that have been processed.
+		/// <param name="processed">
+		/// The number of units that have been processed.
 		/// </param>
-		/// <param name="totalProcessedRecordsDisplay">
-		/// The display string for the total number of records that have been processed.
+		/// <param name="processedDisplay">
+		/// The display string for the number of units that have been processed.
 		/// </param>
-		/// <param name="totalProcessedWarningRecords">
-		/// The total number of records that have been processed with warnings.
+		/// <param name="processedWithWarning">
+		/// The total number of units that have been processed with warnings.
 		/// </param>
-		/// <param name="totalProcessedErrorRecords">
-		/// The total number of records that have been processed with errors.
+		/// <param name="processedWithError">
+		/// The total number of units that have been processed with errors.
 		/// </param>
 		/// <param name="metadataThroughput">
 		/// The metadata throughput in MB/sec units.
@@ -54,36 +54,57 @@ namespace Relativity.DataExchange.Process
 		/// <param name="nativeFileThroughput">
 		/// The native file throughput in MB/sec units.
 		/// </param>
+		/// <param name="progressUnit">
+		/// The unit of measurement used to track progress.
+		/// </param>
 		public ProgressEventArgs(
 			Guid processId,
 			IDictionary metadata,
 			DateTime startTime,
 			DateTime timestamp,
-			long totalRecords,
-			string totalRecordsDisplay,
-			long totalProcessedRecords,
-			string totalProcessedRecordsDisplay,
-			long totalProcessedWarningRecords,
-			long totalProcessedErrorRecords,
+			long total,
+			string totalDisplay,
+			long processed,
+			string processedDisplay,
+			long processedWithWarning,
+			long processedWithError,
 			double metadataThroughput,
-			double nativeFileThroughput)
+			double nativeFileThroughput,
+			UnitOfMeasurement progressUnit)
 		{
 			this.ProcessId = processId;
 			this.Metadata = metadata;
 			this.StartTime = startTime;
 			this.Timestamp = timestamp;
-			this.TotalRecords = totalRecords;
-			this.TotalRecordsDisplay = !string.IsNullOrEmpty(totalRecordsDisplay)
-				                           ? totalRecordsDisplay
-				                           : totalRecords.ToString();
-			this.TotalProcessedRecords = totalProcessedRecords;
-			this.TotalProcessedRecordsDisplay = !string.IsNullOrEmpty(totalProcessedRecordsDisplay)
-				                           ? totalProcessedRecordsDisplay
-										   : totalProcessedRecords.ToString();
-			this.TotalProcessedErrorRecords = totalProcessedErrorRecords;
-			this.TotalProcessedWarningRecords = totalProcessedWarningRecords;
+			this.Total = total;
+			this.TotalDisplay = !string.IsNullOrEmpty(totalDisplay)
+											? totalDisplay
+											: total.ToString();
+			this.Processed = processed;
+			this.ProcessedDisplay = !string.IsNullOrEmpty(processedDisplay)
+											? processedDisplay
+											: processed.ToString();
+			this.ProcessedWithError = processedWithError;
+			this.ProcessedWithWarning = processedWithWarning;
 			this.MetadataThroughput = metadataThroughput;
 			this.NativeFileThroughput = nativeFileThroughput;
+			this.ProgressUnit = progressUnit;
+		}
+
+		/// <summary>
+		/// Unit of measurement used to track progress.
+		/// </summary>
+		public enum UnitOfMeasurement
+		{
+			/// <summary>
+			/// Progress is measured in number of processed records.
+			/// </summary>
+			Records,
+
+			/// <summary>
+			/// Progress is measured in number of processed bytes.
+			/// </summary>
+			Bytes,
 		}
 
 		/// <summary>
@@ -135,51 +156,56 @@ namespace Relativity.DataExchange.Process
 		public DateTime Timestamp { get; }
 
 		/// <summary>
-		/// Gets the total number of records to process.
+		/// Gets the total number of units to process measured in <see cref="ProgressUnit"/>.
 		/// </summary>
 		/// <value>
-		/// The total number of records.
+		/// The total number of units.
 		/// </value>
-		public long TotalRecords { get; }
+		public long Total { get; }
 
 		/// <summary>
-		/// Gets the display string for the total number of records to process.
+		/// Gets the display string for the total number of units to process measured in <see cref="ProgressUnit"/>.
 		/// </summary>
 		/// <value>
 		/// The display string.
 		/// </value>
-		public string TotalRecordsDisplay { get; }
+		public string TotalDisplay { get; }
 
 		/// <summary>
-		/// Gets the total number of records that have been processed.
+		/// Gets the total number of units that have already been processed measured in <see cref="ProgressUnit"/>.
 		/// </summary>
 		/// <value>
-		/// The total number of records.
+		/// The total number of processed units.
 		/// </value>
-		public long TotalProcessedRecords { get; }
+		public long Processed { get; }
 
 		/// <summary>
-		/// Gets the display string for the total number of records that have been processed.
+		/// Gets the display string for the total number of units that have been processed measured in <see cref="ProgressUnit"/>.
 		/// </summary>
 		/// <value>
 		/// The display string.
 		/// </value>
-		public string TotalProcessedRecordsDisplay { get; }
+		public string ProcessedDisplay { get; }
 
 		/// <summary>
-		/// Gets the total number of records that have been processed with warnings.
+		/// Gets the total number of units that have been processed with warnings measured in <see cref="ProgressUnit"/>.
 		/// </summary>
 		/// <value>
-		/// The total number of records.
+		/// The total number of units processed with warnings.
 		/// </value>
-		public long TotalProcessedWarningRecords { get; }
+		public long ProcessedWithWarning { get; }
 
 		/// <summary>
-		/// Gets the total number of records that have been processed with errors.
+		/// Gets the total number of units that have been processed with errors measured in <see cref="ProgressUnit"/>.
 		/// </summary>
 		/// <value>
-		/// The total number of records.
+		/// The total number of units processed with errors.
 		/// </value>
-		public long TotalProcessedErrorRecords { get; }
+		public long ProcessedWithError { get; }
+
+		/// <summary>
+		/// Gets the unit of measurement used to track progress.
+		/// </summary>
+		public UnitOfMeasurement ProgressUnit { get; }
 	}
 }

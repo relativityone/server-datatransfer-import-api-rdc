@@ -181,6 +181,7 @@
     <Compile Include="API\IImageReader.vb" />
     <Compile Include="API\ImageRecord.vb" />
     <Compile Include="API\LoginHelper.vb" />
+    <Compile Include="Helpers\FileSizeHelper.vb" />
     <Compile Include="ImportExtension\ImageImport\ImageDataReader.vb" />
     <Compile Include="Monitoring\BatchInformation.vb" />
     <Compile Include="Monitoring\MetricAuthenticationType.vb" />
