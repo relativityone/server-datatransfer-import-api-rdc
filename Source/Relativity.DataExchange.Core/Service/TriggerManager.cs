@@ -43,7 +43,7 @@ namespace Relativity.DataExchange.Service
 		/// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
 		public async Task AttemptSendingTriggerAsync(int workspaceId, bool hasErrors, Version relativityVersion)
 		{
-			var firstSupportedRelativityVersion = new Version(11, 3, 16); // Same first supported version is used for searchable PDFs
+			var firstSupportedRelativityVersion = new Version(11, 2, 151); // This is the RAW test Relativity env version where the triggers are implemented.
 
 			if (relativityVersion >= firstSupportedRelativityVersion)
 			{
@@ -81,15 +81,14 @@ namespace Relativity.DataExchange.Service
 				using (IAutomatedWorkflowsService triggerProcessor = this._serviceFactory.CreateProxy<IAutomatedWorkflowsService>())
 				{
 					await triggerProcessor.SendTriggerAsync(workSpaceId, triggerName, body).ConfigureAwait(false);
+					this._logger.LogInformation("Execution of trigger '{0}' in Workspace Id: {1} finished successfully.", triggerName, workSpaceId);
 				}
 			}
 			catch (Exception ex)
 			{
-				const string Message = "Error occured while executing trigger : {0} for workspace artifact ID : {1}";
-				this._logger.LogError(ex, Message, triggerName, workSpaceId);
+				const string Message = "Execution of trigger : '{0}' in Workspace Id: {1} failed. Most likely Workspace is not configured with Relativity Workflow Automation.";
+				this._logger.LogWarning(ex, Message, triggerName, workSpaceId);
 			}
-
-			this._logger.LogInformation("For workspace : {0} trigger {1} finished sending.", workSpaceId, triggerName);
 		}
 	}
 }
