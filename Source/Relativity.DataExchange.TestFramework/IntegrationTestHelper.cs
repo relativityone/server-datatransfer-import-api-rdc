@@ -32,7 +32,7 @@ namespace Relativity.DataExchange.TestFramework
 
 		public static IntegrationTestParameters IntegrationTestParameters
 		{
-			get => integrationTestParameters ?? (integrationTestParameters = ReadIntegrationTestParameters());
+			get => integrationTestParameters ?? (integrationTestParameters = ReadAndLogIntegrationTestParameters());
 			set => integrationTestParameters = value;
 		}
 
@@ -50,11 +50,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// <value>
 		/// The <see cref="Relativity.Logging.ILog"/> instance.
 		/// </value>
-		public static Relativity.Logging.ILog Logger
-		{
-			get;
-			private set;
-		}
+		public static Relativity.Logging.ILog Logger { get; private set; }
 
 		/// <summary>
 		/// Create the integration test environment with a new test workspace and returns the test parameters.
@@ -70,11 +66,11 @@ namespace Relativity.DataExchange.TestFramework
 			SetupServerCertificateValidation(parameters);
 			if (parameters.SkipIntegrationTests)
 			{
-				Console.WriteLine("Skipping test workspace creation.");
+				Logger.LogInformation("Skipping test workspace creation.");
 				return parameters;
 			}
 
-			Console.WriteLine("Creating a test workspace...");
+			Logger.LogInformation("Creating a test workspace...");
 			WorkspaceHelper.CreateTestWorkspace(parameters, Logger);
 
 			var importApi = new ImportAPI(
@@ -91,7 +87,7 @@ namespace Relativity.DataExchange.TestFramework
 			}
 
 			parameters.FileShareUncPath = workspace.DocumentPath;
-			Console.WriteLine($"Created {parameters.WorkspaceId} test workspace.");
+			Logger.LogInformation("Created {workspaceId} test workspace.", parameters.WorkspaceId);
 			return parameters;
 		}
 
@@ -142,21 +138,13 @@ namespace Relativity.DataExchange.TestFramework
 
 			if (parameters.SkipIntegrationTests)
 			{
-				Console.WriteLine("Skipping test workspace teardown.");
+				Logger.LogInformation("Skipping test workspace teardown.");
 				return;
 			}
 
 			if (parameters.DeleteWorkspaceAfterTest)
 			{
-				WorkspaceHelper.DeleteTestWorkspace(parameters, Logger);
-				if (parameters.SqlDropWorkspaceDatabase && parameters.WorkspaceId > 0)
-				{
-					DropWorkspaceDatabase(parameters);
-				}
-				else
-				{
-					Logger.LogInformation("Skipped dropping the SQL workspace {workspaceId} database", parameters.WorkspaceId);
-				}
+				DeleteTestWorkspace(parameters);
 			}
 			else
 			{
@@ -171,7 +159,8 @@ namespace Relativity.DataExchange.TestFramework
 			var loggerOptions = new LoggerOptions
 			{
 				Application = "8A1A6418-29B3-4067-8C9E-51E296F959DE",
-				ConfigurationFileLocation = Path.Combine(ResourceFileHelper.GetBasePath(), "LogConfig.xml"),
+				ConfigurationFileLocation =
+					Path.Combine(ResourceFileHelper.GetBasePath(), "LogConfig.xml"),
 				System = "Import-API",
 				SubSystem = "Samples",
 			};
@@ -204,6 +193,66 @@ namespace Relativity.DataExchange.TestFramework
 			Logger = logger;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1031:DoNotCatchGeneralExceptionTypes",
+			Justification = "We can swallow exception in that case.")]
+		public static void DropWorkspaceDatabase(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
+		{
+			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+			logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+			if (parameters.WorkspaceId <= 0)
+			{
+				Logger.LogWarning("Skipped dropping the SQL workspace database, because Id in not valid: {workspaceId}.", parameters.WorkspaceId);
+				return;
+			}
+
+			string databaseName = $"EDDS{parameters.WorkspaceId}";
+
+			try
+			{
+				SqlConnectionStringBuilder builder = GetSqlConnectionStringBuilder(parameters);
+				SqlConnection.ClearAllPools();
+				using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+				{
+					connection.Open();
+					using (SqlCommand command = connection.CreateCommand())
+					{
+						command.CommandText = $@"
+IF EXISTS(SELECT name FROM sys.databases WHERE name = '{databaseName}')
+BEGIN
+	ALTER DATABASE [{databaseName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+	DROP DATABASE [{databaseName}]
+END";
+						command.CommandType = CommandType.Text;
+						command.ExecuteNonQuery();
+						logger.LogInformation(
+							"Successfully dropped the {DatabaseName} SQL workspace database.",
+							databaseName);
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				logger.LogError(e, "Failed to drop the {DatabaseName} SQL workspace database.", databaseName);
+			}
+		}
+
+		private static void DeleteTestWorkspace(IntegrationTestParameters parameters)
+		{
+			WorkspaceHelper.DeleteTestWorkspace(parameters, Logger);
+
+			if (parameters.SqlDropWorkspaceDatabase)
+			{
+				DropWorkspaceDatabase(parameters, Logger);
+			}
+			else
+			{
+				Logger.LogInformation("Skipped dropping the SQL workspace database for workspace {workspaceId}.", parameters.WorkspaceId);
+			}
+		}
+
 		private static string GetConfigurationStringValue(string key)
 		{
 			string envVariable = $"IAPI_INTEGRATION_{key.ToUpperInvariant()}";
@@ -219,7 +268,8 @@ namespace Relativity.DataExchange.TestFramework
 				return value;
 			}
 
-			throw new InvalidOperationException($"The '{key}' app.config setting or '{envVariable}' environment variable is not specified.");
+			throw new InvalidOperationException(
+				$"The '{key}' app.config setting or '{envVariable}' environment variable is not specified.");
 		}
 
 		private static string GetEnvironmentVariable(string envVariable)
@@ -228,11 +278,11 @@ namespace Relativity.DataExchange.TestFramework
 			{
 				// Note: these targets are intentionally ordered to favor process vars!
 				IEnumerable<EnvironmentVariableTarget> targets = new[]
-																	 {
-																		 EnvironmentVariableTarget.Process,
-																		 EnvironmentVariableTarget.User,
-																		 EnvironmentVariableTarget.Machine,
-																	 };
+				{
+					EnvironmentVariableTarget.Process,
+					EnvironmentVariableTarget.User,
+					EnvironmentVariableTarget.Machine,
+				};
 				foreach (EnvironmentVariableTarget target in targets)
 				{
 					string envValue = Environment.GetEnvironmentVariable(envVariable, target);
@@ -255,71 +305,61 @@ namespace Relativity.DataExchange.TestFramework
 			}
 		}
 
-		private static IntegrationTestParameters ReadIntegrationTestParameters()
+		private static IntegrationTestParameters ReadAndLogIntegrationTestParameters()
 		{
 			Console.WriteLine("Retrieving and dumping all integration test parameters...");
-			IntegrationTestParameters parameters = new IntegrationTestParameters();
+
+			IntegrationTestParameters parameters = ReadIntegrationTestParameters();
+			LogIntegrationTestParameters(parameters);
+
+			Console.WriteLine("Retrieved and dumped all integration test parameters.");
+			return parameters;
+		}
+
+		private static IntegrationTestParameters ReadIntegrationTestParameters()
+		{
 			string testEnvironment = GetEnvironmentVariable("IAPI_INTEGRATION_TEST_ENV");
-			string jsonFile = GetEnvironmentVariable("IAPI_INTEGRATION_TEST_JSON_FILE");
 			if (!string.IsNullOrWhiteSpace(testEnvironment))
 			{
-				string resourceFile;
-				switch (testEnvironment.ToUpperInvariant())
-				{
-					case "HOPPER":
-						resourceFile = "test-parameters-hopper.json";
-						break;
-
-					default:
-						throw new InvalidOperationException($"The test environment '{testEnvironment}' is not recognized or supported.");
-				}
-
-				using (Stream stream = ResourceFileHelper.ExtractToStream(
-					Assembly.GetExecutingAssembly(),
-					$"Relativity.DataExchange.TestFramework.Resources.{resourceFile}"))
-				{
-					StreamReader reader = new StreamReader(stream);
-					JsonSerializer serializer = new JsonSerializer();
-					parameters = serializer.Deserialize<IntegrationTestParameters>(new JsonTextReader(reader));
-				}
+				return ReadIntegrationTestParametersFromEnvironmentConfiguration(testEnvironment);
 			}
-			else if (!string.IsNullOrWhiteSpace(jsonFile))
+
+			string jsonFile = GetEnvironmentVariable("IAPI_INTEGRATION_TEST_JSON_FILE");
+			if (!string.IsNullOrWhiteSpace(jsonFile))
 			{
-				parameters = JsonConvert.DeserializeObject<IntegrationTestParameters>(File.ReadAllText(jsonFile));
+				return JsonConvert.DeserializeObject<IntegrationTestParameters>(File.ReadAllText(jsonFile));
 			}
-			else
+
+			return ReadIntegrationTestParametersFromRegistryAndAppConfig();
+		}
+
+		private static IntegrationTestParameters ReadIntegrationTestParametersFromEnvironmentConfiguration(string testEnvironment)
+		{
+			string resourceFile;
+			switch (testEnvironment.ToUpperInvariant())
 			{
-				foreach (var prop in parameters.GetType().GetProperties())
-				{
-					IntegrationTestParameterAttribute attribute =
-						prop.GetCustomAttribute<IntegrationTestParameterAttribute>();
-					if (attribute == null || !attribute.IsMapped)
-					{
-						continue;
-					}
+				case "HOPPER":
+					resourceFile = "test-parameters-hopper.json";
+					break;
 
-					string value = GetConfigurationStringValue(prop.Name);
-					if (prop.PropertyType == typeof(string))
-					{
-						prop.SetValue(parameters, value);
-					}
-					else if (prop.PropertyType == typeof(bool))
-					{
-						prop.SetValue(parameters, bool.Parse(value));
-					}
-					else if (prop.PropertyType == typeof(Uri))
-					{
-						prop.SetValue(parameters, new Uri(value));
-					}
-					else
-					{
-						string message =
-							$"The integration test parameter '{prop.Name}' of type '{prop.PropertyType}' isn't supported by the integration test helper.";
-						throw new ConfigurationErrorsException(message);
-					}
-				}
+				default:
+					throw new InvalidOperationException(
+						$"The test environment '{testEnvironment}' is not recognized or supported.");
 			}
 
+			using (Stream stream = ResourceFileHelper.ExtractToStream(
+				Assembly.GetExecutingAssembly(),
+				$"Relativity.DataExchange.TestFramework.Resources.{resourceFile}"))
+			{
+				StreamReader reader = new StreamReader(stream);
+				JsonSerializer serializer = new JsonSerializer();
+				return serializer.Deserialize<IntegrationTestParameters>(new JsonTextReader(reader));
+			}
+		}
+
+		private static IntegrationTestParameters ReadIntegrationTestParametersFromRegistryAndAppConfig()
+		{
+			IntegrationTestParameters parameters = new IntegrationTestParameters();
 			foreach (var prop in parameters.GetType().GetProperties())
 			{
 				IntegrationTestParameterAttribute attribute =
@@ -329,44 +369,41 @@ namespace Relativity.DataExchange.TestFramework
 					continue;
 				}
 
-				Console.WriteLine("{0}={1}", prop.Name, prop.GetValue(parameters, null));
+				string value = GetConfigurationStringValue(prop.Name);
+				if (prop.PropertyType == typeof(string))
+				{
+					prop.SetValue(parameters, value);
+				}
+				else if (prop.PropertyType == typeof(bool))
+				{
+					prop.SetValue(parameters, bool.Parse(value));
+				}
+				else if (prop.PropertyType == typeof(Uri))
+				{
+					prop.SetValue(parameters, new Uri(value));
+				}
+				else
+				{
+					string message =
+						$"The integration test parameter '{prop.Name}' of type '{prop.PropertyType}' isn't supported by the integration test helper.";
+					throw new ConfigurationErrorsException(message);
+				}
 			}
 
-			Console.WriteLine("Retrieved and dumped all integration test parameters.");
 			return parameters;
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We can swallow exception in that case.")]
-		private static void DropWorkspaceDatabase(IntegrationTestParameters parameters)
+		private static void LogIntegrationTestParameters(IntegrationTestParameters parameters)
 		{
-			string database = $"EDDS{parameters.WorkspaceId}";
-			try
+			foreach (var prop in parameters.GetType().GetProperties())
 			{
-				SqlConnectionStringBuilder builder = GetSqlConnectionStringBuilder(parameters);
-
-				SqlConnection.ClearAllPools();
-				using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+				IntegrationTestParameterAttribute attribute = prop.GetCustomAttribute<IntegrationTestParameterAttribute>();
+				if (attribute == null || !attribute.IsMapped)
 				{
-					connection.Open();
-					using (SqlCommand command = connection.CreateCommand())
-					{
-						command.CommandText = $@"
-IF EXISTS(SELECT name FROM sys.databases WHERE name = '{database}')
-BEGIN
-	ALTER DATABASE [{database}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-	DROP DATABASE [{database}]
-END";
-						command.CommandType = CommandType.Text;
-						command.ExecuteNonQuery();
-						Logger.LogInformation("Successfully dropped the {DatabaseName} SQL workspace database.", database);
-						Console.WriteLine($"Successfully dropped the {database} SQL workspace database.");
-					}
+					continue;
 				}
-			}
-			catch (Exception e)
-			{
-				Logger.LogError(e, "Failed to drop the {DatabaseName} SQL workspace database.", database);
-				Console.WriteLine($"Failed to drop the {database} SQL workspace database. Exception: " + e);
+
+				Console.WriteLine("{0}={1}", prop.Name, prop.GetValue(parameters, null));
 			}
 		}
 	}

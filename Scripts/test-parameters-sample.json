@@ -13,12 +13,13 @@
 	"SkipIntegrationTests": "False",
 	"SqlDropWorkspaceDatabase": "True",
 	"SqlCaptureProfiling": "<replaced_in_build_sqlcaptureprofiling>",
-	"SqlProfilingReportsOutputPath" : "<replaced_in_build_sqlprofilingreportsoutputpath>",
+	"SqlProfilingReportsOutputPath": "<replaced_in_build_sqlprofilingreportsoutputpath>",
 	"SqlComparerEnabled": "<replaced_in_build_enable_sql_comparer>",
 	"SqlComparerOutputPath": "<replaced_in_build_sql_comparer_output_path>",
 	"SqlInstanceName": "hostname.mycompany.corp\\EDDSINSTANCE001",
 	"SqlAdminUserName": "sa",
 	"SqlAdminPassword": "SomePassword!",
 	"WorkspaceTemplate": "Relativity Starter Template",
+	"TestOnWorkspaceWithNonDefaultCollation": "False",
 	"EnableDataGrid": "<replaced_in_build_enabledatagrid>"
 }

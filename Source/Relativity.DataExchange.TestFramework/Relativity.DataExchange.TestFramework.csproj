@@ -150,6 +150,7 @@
     <Compile Include="RelativityHelpers\GroupHelper.cs" />
     <Compile Include="RelativityHelpers\ImportHelper.cs" />
     <Compile Include="ObjectManagers\ServiceProxyFactory.cs" />
+    <Compile Include="RelativityHelpers\NonDefaultCollationWorkspaceHelper.cs" />
     <Compile Include="RelativityHelpers\PermissionsHelper.cs" />
     <Compile Include="RelativityHelpers\SqlQueryHelper.cs" />
     <Compile Include="RelativityVersions\RelativityVersionChecker.cs" />
@@ -320,7 +321,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -365,6 +365,168 @@
       <ItemGroup>
         <Reference Include="kCura.Relativity.Client">
           <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Microsoft.SqlServer.Management.SqlParser">
+          <HintPath>..\..\packages\Microsoft.SqlServer.Management.SqlParser\lib\net462\Microsoft.SqlServer.Management.SqlParser.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Microsoft.Data.Tools.Sql.BatchParser">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.Data.Tools.Sql.BatchParser.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Assessment">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Assessment.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Assessment.Types">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Assessment.Types.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.ConnectionInfo">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Dmf">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Dmf.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Dmf.Common">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Dmf.Common.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.Assessment">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.Assessment.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.Collector">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.Collector.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.CollectorEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.CollectorEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.HadrData">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.HadrData.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.HadrModel">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.HadrModel.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.RegisteredServers">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.RegisteredServers.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.SmoMetadataProvider">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.SmoMetadataProvider.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.SqlScriptPublish">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.SqlScriptPublish.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.XEvent">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.XEvent.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.XEventDbScoped">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.XEventDbScoped.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.XEventDbScopedEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.XEventDbScopedEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.XEventEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.XEventEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.PolicyEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.PolicyEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.RegSvrEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.RegSvrEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.ServiceBrokerEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.ServiceBrokerEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Smo">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Smo.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Smo.Notebook">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Smo.Notebook.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.SmoExtended">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.SmoExtended.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.SqlClrProvider">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.SqlClrProvider.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.SqlEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.SqlEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.SqlWmiManagement">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.SqlWmiManagement.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.WmiEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.WmiEnum.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

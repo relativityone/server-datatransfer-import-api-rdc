@@ -816,6 +816,7 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLINSTANCENAME", "$hostname\\EDDSINSTANCE001", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINUSERNAME", "sa", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINPASSWORD", $SqlPassword, "Process")
+        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_TESTONWORKSPACEWITHNONDEFAULTCOLLATION", "false", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_WORKSPACETEMPLATE", "Relativity Starter Template", "Process")
 		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_ENABLEDATAGRID", $dataGridShouldBeEnabled , "Process")
 		

@@ -40,6 +40,7 @@ namespace Relativity.DataExchange.TestFramework
 			this.SkipIntegrationTests = false;
 			this.WorkspaceId = 0;
 			this.EnableDataGrid = false;
+			this.TestOnWorkspaceWithNonDefaultCollation = false;
 		}
 
 		/// <summary>
@@ -76,6 +77,7 @@ namespace Relativity.DataExchange.TestFramework
 			this.SqlInstanceName = copy.SqlInstanceName;
 			this.WorkspaceId = copy.WorkspaceId;
 			this.EnableDataGrid = copy.EnableDataGrid;
+			this.TestOnWorkspaceWithNonDefaultCollation = copy.TestOnWorkspaceWithNonDefaultCollation;
 		}
 
 		/// <summary>
@@ -309,6 +311,16 @@ namespace Relativity.DataExchange.TestFramework
 		[JsonProperty("DeleteWorkspaceAfterTest")]
 		[IntegrationTestParameter(true)]
 		public bool DeleteWorkspaceAfterTest { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to use WorkspaceTemplate or another workspace template for non default collation.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to test on workspace with non-default collation; otherwise, <see langword="false" />.
+		/// </value>
+		[JsonProperty("TestOnWorkspaceWithNonDefaultCollation")]
+		[IntegrationTestParameter(true)]
+		public bool TestOnWorkspaceWithNonDefaultCollation { get; set; }
 
 		/// <summary>
 		/// Performs a deep copy of this instance.

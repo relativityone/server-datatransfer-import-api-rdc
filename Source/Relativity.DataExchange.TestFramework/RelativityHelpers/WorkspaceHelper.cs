@@ -10,13 +10,13 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading.Tasks;
-
 	using kCura.Relativity.Client;
 	using kCura.Relativity.Client.DTOs;
 
 	using Polly;
+	using Polly.Retry;
 
-	using Relativity.DataExchange.Logger;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Interfaces.Shared.Models;
 
@@ -40,65 +40,37 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				throw new ArgumentNullException(nameof(logger));
 			}
 
+			string workspaceTemplateName = parameters.TestOnWorkspaceWithNonDefaultCollation
+				? NonDefaultCollationWorkspaceHelper.GetOrCreateWorkspaceTemplateWithNonDefaultCollation(parameters, logger)
+				: parameters.WorkspaceTemplate;
+
+			string newWorkspaceName = GetWorkspaceName(parameters);
+
 			// Prevent integration tests from failing due to workspace creation failures.
 			const int MaxRetryCount = 3;
 			int retryCount = 0;
-			Policy.Handle<Exception>().WaitAndRetry(
-				3,
+			RetryPolicy retryPolicy = Policy.Handle<Exception>().WaitAndRetry(
+				MaxRetryCount,
 				i => TimeSpan.FromSeconds(MaxRetryCount),
 				(exception, span) =>
 					{
 						retryCount++;
-						Console.WriteLine($"The workspace helper failed to create a test workspace. Retry: {retryCount} of {MaxRetryCount}, Error: {exception}");
-					}).Execute(
+						logger.LogError(
+							"The workspace helper failed to create a test workspace. Retry: {retryCount} of {MaxRetryCount}, Error: {exception}",
+							retryCount,
+							MaxRetryCount,
+							exception);
+					});
+
+			retryPolicy.Execute(
 				() =>
 					{
-						using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
-						{
-							logger.LogInformation(
-								"Retrieving the {TemplateName} workspace template...",
-								parameters.WorkspaceTemplate.Secure());
-							client.APIOptions.WorkspaceID = -1;
-							QueryResultSet<Workspace> resultSet = QueryWorkspaceTemplate(
-								client,
-								parameters.WorkspaceTemplate);
-							if (!resultSet.Success)
-							{
-								throw new InvalidOperationException(
-									$"An error occurred while attempting to create a workspace from template {parameters.WorkspaceTemplate}: {resultSet.Message}");
-							}
+						CreateWorkspaceFromTemplate(parameters, logger, workspaceTemplateName, newWorkspaceName);
 
-							if (resultSet.Results.Count == 0)
-							{
-								throw new InvalidOperationException(
-									$"Trying to create a workspace. Template with the following name does not exist: {parameters.WorkspaceTemplate}");
-							}
-
-							int templateWorkspaceId = resultSet.Results[0].Artifact.ArtifactID;
-							logger.LogInformation(
-								"Retrieved the {TemplateName} workspace template. TemplateWorkspaceId={TemplateWorkspaceId}.",
-								parameters.WorkspaceTemplate.Secure(),
-								templateWorkspaceId);
-
-							var workspace = new Workspace
-							{
-								Name = GetWorkspaceName(parameters),
-								DownloadHandlerApplicationPath = "Relativity.Distributed",
-							};
-
-							logger.LogInformation("Creating the {WorkspaceName} workspace...", workspace.Name.Secure());
-							ProcessOperationResult result =
-								client.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspace);
-							parameters.WorkspaceId = QueryWorkspaceArtifactId(client, result, logger);
-							parameters.WorkspaceName = workspace.Name;
-
-							EnableDataGrid(client, parameters, logger);
-
-							logger.LogInformation(
-								"Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
-								workspace.Name.Secure(),
-								parameters.WorkspaceId);
-						}
+						logger.LogInformation(
+							"Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
+							parameters.WorkspaceName,
+							parameters.WorkspaceId);
 					});
 		}
 
@@ -191,6 +163,76 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				});
 		}
 
+		internal static void CreateWorkspaceFromTemplate(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string workspaceTemplateName, string newWorkspaceName)
+		{
+			int templateWorkspaceId = RetrieveWorkspaceId(
+				parameters,
+				logger,
+				workspaceTemplateName);
+
+			if (templateWorkspaceId == -1)
+			{
+				throw new InvalidOperationException(
+					$"Trying to create a workspace. Template with the following name does not exist: {workspaceTemplateName}");
+			}
+
+			using (var client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
+			{
+				var workspace = new Workspace
+				{
+					Name = newWorkspaceName,
+					DownloadHandlerApplicationPath = "Relativity.Distributed",
+				};
+
+				string workspaceName = workspace.Name;
+				logger.LogInformation("Creating the {WorkspaceName} workspace...", workspaceName);
+				ProcessOperationResult result =
+					client.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspace);
+				int workspaceId = QueryWorkspaceArtifactId(client, result, logger);
+
+				parameters.WorkspaceId = workspaceId;
+				parameters.WorkspaceName = workspaceName;
+
+				EnableDataGrid(client, parameters, logger);
+			}
+		}
+
+		internal static int RetrieveWorkspaceId(
+			IntegrationTestParameters parameters,
+			Relativity.Logging.ILog logger,
+			string workspaceName)
+		{
+			using (var client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
+			{
+				int workspaceId;
+
+				logger.LogInformation("Retrieving the {workspaceName} workspace...", workspaceName);
+				client.APIOptions.WorkspaceID = -1;
+				QueryResultSet<Workspace> resultSet = QueryWorkspaceTemplate(client, workspaceName);
+				if (!resultSet.Success)
+				{
+					throw new InvalidOperationException(
+						$"An error occurred while attempting to create a workspace from template {workspaceName}: {resultSet.Message}");
+				}
+
+				if (resultSet.Results.Count == 0)
+				{
+					logger.LogWarning($"Workspace with the following name does not exist: {workspaceName}");
+					workspaceId = -1;
+				}
+				else
+				{
+					workspaceId = resultSet.Results[0].Artifact.ArtifactID;
+					logger.LogInformation(
+						$"Retrieved the {workspaceName} workspace. workspaceId={workspaceId}.",
+						workspaceName,
+						workspaceId);
+				}
+
+				return workspaceId;
+			}
+		}
+
 		private static QueryResultSet<Workspace> QueryWorkspaceTemplate(IRSAPIClient client, string templateName)
 		{
 			Query<Workspace> query = new Query<Workspace>
@@ -236,7 +278,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					args.ProcessInformation.Message);
 				source.SetResult(args.ProcessInformation);
 			};
-
 			client.MonitorProcessState(client.APIOptions, processResult.ProcessID);
 			ProcessInformation processInfo = source.Task.GetAwaiter().GetResult();
 			if (processInfo.OperationArtifactIDs.Any() && processInfo.OperationArtifactIDs[0] != null)

@@ -1,6 +1,8 @@
 castle.core
 castle.windsor
 kCura.relativity.client
+Microsoft.SqlServer.ConnectionInfo
+Microsoft.SqlServer.SqlManagementObjects
 Moq
 nbuilder
 NUnit
@@ -19,5 +21,6 @@ stylecop.analyzers
 ConfigureAwaitChecker.Analyzer
 relativity.telemetry.datacontracts.shared
 relativity.telemetry.services.interface
+
 group integration-tests
 System.ValueTuple
