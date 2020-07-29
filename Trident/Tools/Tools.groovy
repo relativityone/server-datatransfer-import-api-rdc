@@ -64,11 +64,11 @@ def runCommandWithOutput(String command)
 def tagGitCommit(String commitHash, String tag, String username, String password) {
     try {
         powershell """
-				def serverHasTag = git ls-remote origin refs/tags/$tag
-				if($serverHasTag)
+				\$serverHasTag = git ls-remote origin refs/tags/$tag
+				if(\$serverHasTag)
 				{
-					$variableAsJson = ConvertTo-Json -$serverHasTag
-					Write-Host "$tagName already exists. $variableAsJson"
+					\$variableAsJson = ConvertTo-Json -\$serverHasTag
+					Write-Host "$tagName already exists. \$variableAsJson"
 				}
 				else
 				{
