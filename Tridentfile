@@ -106,7 +106,7 @@ timestamps
 					stage('Tag version in GIT')
                     {
                         echo "Publishing to release? $publishToRelease"
-						if(publishToRelease)
+						if(!publishToRelease)
 						{
 							echo "Tagging git"
 							withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) {

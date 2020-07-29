@@ -64,11 +64,22 @@ def runCommandWithOutput(String command)
 def tagGitCommit(String commitHash, String tag, String username, String password) {
     try {
         powershell """
-            \$GitServer = "https://git.kcura.com"
-            \$Headers = @{"Authorization" = "Basic \$([System.Convert]::ToBase64String(([System.Text.Encoding]::UTF8.GetBytes(""$username:$password""))))"}
-            \$URI = "\$GitServer/rest/api/1.0/projects/DTX/repos/import-api-rdc/tags"
-            Invoke-RestMethod -Method POST -URI \$URI -Headers \$Headers -ContentType "application/json" -Body (@{"name" = "$tag"; "startPoint" = "$commitHash"} | ConvertTo-Json)
-            if(!\$?) {throw "An error ocurred while tagging git. Please check the logs."}
+				$serverHasTag = git ls-remote origin refs/tags/$tag
+				if($serverHasTag)
+				{
+					$variableAsJson = ConvertTo-Json -$serverHasTag
+					Write-Host "$tagName already exists. $variableAsJson"
+				}
+				else
+				{
+					Write-Host "$tagName does not exist."
+					\$GitServer = "https://git.kcura.com"
+					\$Headers = @{"Authorization" = "Basic \$([System.Convert]::ToBase64String(([System.Text.Encoding]::UTF8.GetBytes(""$username:$password""))))"}
+					\$URI = "\$GitServer/rest/api/1.0/projects/DTX/repos/import-api-rdc/tags"
+					Invoke-RestMethod -Method POST -URI \$URI -Headers \$Headers -ContentType "application/json" -Body (@{"name" = "$tag"; "startPoint" = "$commitHash"} | ConvertTo-Json)
+					if(!\$?) {throw "An error ocurred while tagging git. Please check the logs."}
+					Write-Host "$tagName was added to the remote repository."
+				}
         """
     } catch (InterruptedException err) {
         error (err.toString())
