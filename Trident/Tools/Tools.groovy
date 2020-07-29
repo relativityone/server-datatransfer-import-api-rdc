@@ -68,17 +68,17 @@ def tagGitCommit(String commitHash, String tag, String username, String password
 				if(\$serverHasTag)
 				{
 					\$variableAsJson = ConvertTo-Json -\$serverHasTag
-					Write-Host "$tagName already exists. \$variableAsJson"
+					Write-Host "$tag already exists. \$variableAsJson"
 				}
 				else
 				{
-					Write-Host "$tagName does not exist."
+					Write-Host "$tag does not exist."
 					\$GitServer = "https://git.kcura.com"
 					\$Headers = @{"Authorization" = "Basic \$([System.Convert]::ToBase64String(([System.Text.Encoding]::UTF8.GetBytes(""$username:$password""))))"}
 					\$URI = "\$GitServer/rest/api/1.0/projects/DTX/repos/import-api-rdc/tags"
 					Invoke-RestMethod -Method POST -URI \$URI -Headers \$Headers -ContentType "application/json" -Body (@{"name" = "$tag"; "startPoint" = "$commitHash"} | ConvertTo-Json)
 					if(!\$?) {throw "An error ocurred while tagging git. Please check the logs."}
-					Write-Host "$tagName was added to the remote repository."
+					Write-Host "$tag was added to the remote repository."
 				}
         """
     } catch (InterruptedException err) {
