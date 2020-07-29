@@ -64,7 +64,7 @@ def runCommandWithOutput(String command)
 def tagGitCommit(String commitHash, String tag, String username, String password) {
     try {
         powershell """
-				$serverHasTag = git ls-remote origin refs/tags/$tag
+				def serverHasTag = git ls-remote origin refs/tags/$tag
 				if($serverHasTag)
 				{
 					$variableAsJson = ConvertTo-Json -$serverHasTag
