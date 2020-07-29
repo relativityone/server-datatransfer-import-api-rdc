@@ -64,7 +64,7 @@ def runCommandWithOutput(String command)
 def tagGitCommit(String commitHash, String tag, String username, String password) {
     try {
         powershell """
-				\$serverHasTag = $(git tag -l "$tag")
+				\$serverHasTag = \$(git tag -l "$tag")
 				if(\$serverHasTag)
 				{
 					\$variableAsJson = ConvertTo-Json -\$serverHasTag
