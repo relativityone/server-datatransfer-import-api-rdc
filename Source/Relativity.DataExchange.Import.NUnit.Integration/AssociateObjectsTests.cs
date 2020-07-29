@@ -92,12 +92,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		}
 
 		[Category(TestCategories.Integration)]
-		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
+		[IgnoreIfVersionLowerThan(RelativityVersion.LanceleafEAU)]
 		[IdentifiedTest("4ae96850-4ef9-4a1d-95eb-3140a5d7efa5")]
 		public async Task ShouldNotAppendOverlayChildObjectsThatNotExist()
 		{
-			DecideIfTestShouldBeExecuted();
-
 			// ARRANGE
 			const int RowsWithExistingObject = 5;
 			const int RowsWithNonExistingObject = 10;
@@ -514,15 +512,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					FieldValues = new List<FieldRefValuePair> { new FieldRefValuePair { Field = new FieldRef { Name = WellKnownFields.RdoIdentifier }, Value = name } },
 				};
 				await objectManager.CreateAsync(this.TestParameters.WorkspaceId, request).ConfigureAwait(false);
-			}
-		}
-
-		private void DecideIfTestShouldBeExecuted()
-		{
-			// For MassImportImprovementsToggle On test should be executed from version where issue REL-425922 was corrected
-			if (!RelativityVersionChecker.VersionIsLowerThan(this.TestParameters, RelativityVersion.LanceleafAA1))
-			{
-				RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(this.TestParameters, RelativityVersion.LanceleafREL425922);
 			}
 		}
 

@@ -50,9 +50,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 		LanceleafAA1,
 
 		/// <summary>
-		/// Relativity 11.2.158 - version where REL-425922 is corrected.
+		/// Relativity 11.2.158.
 		/// </summary>
-		LanceleafREL425922,
+		LanceleafEAU,
 
 		/// <summary>
 		/// Relativity 11.2.170 - version where REL-438573 is corrected.

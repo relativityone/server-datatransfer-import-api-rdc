@@ -40,7 +40,7 @@ def publishSdkAndRdc = (publishSdk && publishRdc)
 build = params.build
 
 def config = [
-	sutTemplate: "aio-lanceleaf-ea",
+	sutTemplate: "aio-lanceleaf-eau",
 	hopperApiUrl: "https://api.hopper.relativity.com/",
 	hopperApiUsername: "homeimprovement@relativity.com"
 ]
