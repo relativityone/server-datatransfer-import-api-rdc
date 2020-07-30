@@ -13,6 +13,7 @@ namespace Relativity.DataExchange.Logger
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
+	using System.Net;
 	using System.Reflection;
 
 	using Relativity.Logging;
@@ -29,10 +30,30 @@ namespace Relativity.DataExchange.Logger
 		private const string RdcLoggingSubSystem = "Relativity.DataExchange";
 		private const string RdcLoggingApplication = "626BD889-2BFF-4407-9CE5-5CF3712E1BB7";
 
+		private readonly NetworkCredential credential;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RdcSecureLogFactory"/> class.
+		/// </summary>
+		public RdcSecureLogFactory()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RdcSecureLogFactory"/> class.
+		/// </summary>
+		/// <param name="credential">
+		/// Credentials with Relativity username and password to configure HTTP sink.
+		/// </param>
+		public RdcSecureLogFactory(NetworkCredential credential)
+		{
+			this.credential = credential;
+		}
+
 		/// <inheritdoc/>
 		public ILog CreateSecureLogger()
 		{
-			LoggerOptions options = CreateLoggerOptions();
+			LoggerOptions options = CreateLoggerOptions(this.credential);
 			ILog secureLogger;
 			if (options != null)
 			{
@@ -96,7 +117,7 @@ namespace Relativity.DataExchange.Logger
 			return configuration;
 		}
 
-		private static LoggerOptions CreateLoggerOptions()
+		private static LoggerOptions CreateLoggerOptions(NetworkCredential credential)
 		{
 			string configFileName = AppSettings.Instance.LogConfigXmlFileName;
 			if (string.IsNullOrWhiteSpace(configFileName) || !Path.IsPathRooted(configFileName) || !File.Exists(configFileName))
@@ -123,6 +144,18 @@ namespace Relativity.DataExchange.Logger
 				SubSystem = RdcLoggingSubSystem,
 				ConfigurationFileLocation = configFileName,
 			};
+
+			if (credential != null && !credential.Password.IsNullOrEmpty() && !credential.UserName.IsNullOrEmpty())
+			{
+				Uri webServiceUri = new Uri(AppSettings.Instance.WebApiServiceUrl);
+				Uri host = new Uri(webServiceUri.GetLeftPart(UriPartial.Authority));
+
+				options.AddSinkParameter(RelativityHttpSinkConfig.InstanceUrlSinkParameterKey, host);
+				options.AddSinkParameter(
+					RelativityHttpSinkConfig.CredentialSinkParameterKey,
+					new NetworkCredential(credential.UserName, credential.Password));
+			}
+
 			return options;
 		}
 	}
