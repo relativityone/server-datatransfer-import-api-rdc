@@ -1,24 +1,24 @@
-def sendEmailAboutFailureToAuthor()
+def sendEmailAboutFailureToAuthor(String branchName)
 {
     def commiterDetails = bat (
-        script: 'git --no-pager show -s --format=%ae', 
+        script: 'git --no-pager show -s --format=%%ae', 
         returnStdout: true
     )
 
     def recipients = extractCommiterEmail(commiterDetails)
-    sendEmailAboutFailure(recipients)
+    sendEmailAboutFailure(recipients, branchName)
 }
 
-def sendEmailAboutFailureToTeam()
+def sendEmailAboutFailureToTeam(String branchName)
 {
    def recipients = 'thegoodthebadandtheugly@relativity.com'
-   sendEmailAboutFailure(recipients)
+   sendEmailAboutFailure(recipients, branchName)
 }
 
-def sendEmailAboutFailure(String recipients)
+def sendEmailAboutFailure(String recipients, String branchName)
 {
-    echo "Sending ${branchName} build failure to $recipients"
-    def subject = "${env.JOB_NAME} - Build ${env.BUILD_DISPLAY_NAME} - Failed! On branch ${branchName}"
+    echo "Sending ${branchName} build failure to ${recipients}"
+    def subject = "[GBU-Pipeline] ${env.JOB_NAME} - Build ${env.BUILD_DISPLAY_NAME} - Failed! On branch ${branchName}"
     def body = """${env.JOB_NAME} - Build - Failed:
 
 	Check console output at ${env.BUILD_URL} to view the results."""

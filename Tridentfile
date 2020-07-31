@@ -430,11 +430,11 @@ timestamps
                 currentBuild.result = 'FAILED' 
                 if (branchName == 'develop' || isReleaseBranch)
                 {
-                    tools.sendEmailAboutFailureToTeam()
+                    tools.sendEmailAboutFailureToTeam(branchName)
                 }
                 else
                 {
-                    tools.sendEmailAboutFailureToAuthor() 
+                    tools.sendEmailAboutFailureToAuthor(branchName) 
                 }
             }
             finally
