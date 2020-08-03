@@ -8,19 +8,13 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug-ILMerge|Any CPU = Debug-ILMerge|Any CPU
 		Release|Any CPU = Release|Any CPU
-		Release-ILMerge|Any CPU = Release-ILMerge|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Debug-ILMerge|Any CPU.ActiveCfg = Debug|Any CPU
-		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Debug-ILMerge|Any CPU.Build.0 = Debug|Any CPU
 		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Release-ILMerge|Any CPU.ActiveCfg = Debug|Any CPU
-		{2EBD63AE-4FCC-4D85-8EE7-34322F0957DE}.Release-ILMerge|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,17 +8,18 @@ properties {
     $SourceDir = Join-Path $Root "Source"
     $InstallersSolution = Join-Path $SourceDir "Installers.sln"
     $MasterSolution = Join-Path $SourceDir "Master.sln"
-    $MasterILMergeSolution = Join-Path $SourceDir "Master-ILMerge.sln"
-    $UIAutomationSolution = Join-Path $SourceDir "UIAutomation.sln"
-    $NumberOfProcessors = (Get-ChildItem env:"NUMBER_OF_PROCESSORS").Value
-    $BuildArtifactsDir = Join-Path $Root "Artifacts"
-    $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
-    $InstallersArtifactsDir = Join-Path $BuildArtifactsDir "installers"
-    $PackagesArtifactsDir = Join-Path $BuildArtifactsDir "packages"
-    $SdkBinariesArtifactsDir = Join-Path $BinariesArtifactsDir "sdk"
-    $ScriptsDir = Join-Path $Root "Scripts"
-    $BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
-    $BuildPackagesDirGold = "\\bld-pkgs\Release\Import-Api-RDC\"
+	$UIAutomationSolution = Join-Path $SourceDir "UIAutomation.sln"
+	$SQLDataComparerSolution = Join-Path $SourceDir "SQLDataComparer\SQLDataComparer.sln"
+	$NumberOfProcessors = (Get-ChildItem env:"NUMBER_OF_PROCESSORS").Value
+	$BuildArtifactsDir = Join-Path $Root "Artifacts"
+	$BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
+	$InstallersArtifactsDir = Join-Path $BuildArtifactsDir "installers"
+	$PackagesArtifactsDir = Join-Path $BuildArtifactsDir "packages"
+	$SdkBinariesArtifactsDir = Join-Path $BinariesArtifactsDir "sdk"
+	$ScriptsDir = Join-Path $Root "Scripts"
+	$BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
+	$BuildPackagesDirGold = "\\bld-pkgs\Release\Import-Api-RDC\"
+	$SqlPassword = "P@ssw0rd@1"
 #----------- testreports ------------	
     $TestReportsDir = Join-Path $Root "TestReports" | Join-Path -ChildPath $TestReportFolderName
 
@@ -111,35 +112,27 @@ Import-Module ".\DevelopmentScripts\external.psm1"
 
 task Build -Description "Builds the source code"  {
     folders\Initialize-Folder $LogsDir -Safe
-    $SolutionFile = $MasterSolution
-    $SolutionConfiguration = $Configuration
     if (!$BuildPlatform) {
         $BuildPlatform = "Any CPU"
     }
 
-    if ($ILMerge) {
-        folders\Initialize-Folder $SdkBinariesArtifactsDir
-        $SolutionFile = $MasterILMergeSolution
-        $SolutionConfiguration = "$SolutionConfiguration-ILMerge"
-    }
-
-    Write-Output "Solution: $SolutionFile"
-    Write-Output "Configuration: $SolutionConfiguration"
+    Write-Output "Solution: $MasterSolution"
+    Write-Output "Configuration: $Configuration"
     Write-Output "Build platform: $BuildPlatform"
     Write-Output "Target: $Target"
     Write-Output "Verbosity: $Verbosity"
-    $lwrConfiguration = $SolutionConfiguration.ToLower()
+    $lwrConfiguration = $Configuration.ToLower()
     $LogFilePath = Join-Path $LogsDir "master-buildsummary-$lwrConfiguration.log"
     $ErrorFilePath = Join-Path $LogsDir "master-builderrors-$lwrConfiguration.log"
 
     try
     {
         exec {            
-            msbuild @(($SolutionFile),
+            msbuild @(($MasterSolution),
                     ("-t:$Target"),
                     ("-v:$Verbosity"),
                     ("-p:Platform=$BuildPlatform"),
-                    ("-p:Configuration=$SolutionConfiguration"),
+                    ("-p:Configuration=$Configuration"),
                     ("-p:BuildProjectReferences=true"),
                     ("-p:CopyArtifacts=true"),
                     ("-clp:Summary"),
@@ -153,7 +146,14 @@ task Build -Description "Builds the source code"  {
     finally {
         testing\Remove-EmptyLogFile $ErrorFilePath
     }
-
+	
+	if($ILMerge) {
+        folders\Initialize-Folder $SdkBinariesArtifactsDir
+		exec { 
+			& $ScriptsDir\Invoke-ILMerge.ps1 -SolutionDir $SourceDir
+		}  -errorMessage "There was an error merging the solution into 1 file using ILMerge."
+	}
+	
     if ($Sign) {
         # To reduce spending a significant amount of time signing unnecessary files, limit the candidate folders.
         $directoryCandidates =  @(
@@ -765,14 +765,9 @@ task UnitTests -Description "Run all unit tests" {
     folders\Initialize-Folder $TestReportsDir -Safe
     folders\Initialize-Folder $UnitTestsReportDir
 
-    $SolutionFile = $MasterSolution
-    if ($ILMerge) {
-        $SolutionFile = $MasterILMergeSolution
-    }
-
     $testCategoryFilter = "--where=`"cat!=Integration`""
     testing\Invoke-SetTestParameters -SkipIntegrationTests $true -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
-    exec { & $NunitExe $SolutionFile `
+    exec { & $NunitExe $MasterSolution `
             "--labels=All" `
             "--agents=$NumberOfProcessors" `
             "--skipnontestassemblies" `
@@ -904,15 +899,9 @@ Function Invoke-IntegrationTests {
     param(
         [String] $TestCategoryFilter
     )
-
-    $SolutionFile = $MasterSolution
-    if ($ILMerge) {
-        $SolutionFile = $MasterILMergeSolution
-    }
-
 	
     Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
-    exec { & $NunitExe $SolutionFile `
+    exec { & $NunitExe $MasterSolution `
             "--labels=All" `
             "--agents=$NumberOfProcessors" `
             "--skipnontestassemblies" `
@@ -940,17 +929,12 @@ Function Invoke-MassImportVerification-Tests{
 		[bool]$EnableDataGrid
 )
 
-	$SolutionFile = $MasterSolution
-    if ($ILMerge) {
-        $SolutionFile = $MasterILMergeSolution
-    }
-
 	[string]$ResultXmlFile = Join-Path $TestReportDirectory "test-results-Toggle$MassImportImprovementsToggle-DataGrid$EnableDataGrid.xml"
 	[string]$OutputTxtFile = Join-Path $TestReportDirectory "test-output-Toggle$MassImportImprovementsToggle-DataGrid$EnableDataGrid.txt"
 	
     Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
 	
-    exec { & $NunitExe $SolutionFile `
+    exec { & $NunitExe $MasterSolution `
             "--labels=All" `
             "--agents=$NumberOfProcessors" `
             "--skipnontestassemblies" `
