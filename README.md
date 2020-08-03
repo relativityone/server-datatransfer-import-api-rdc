@@ -63,7 +63,6 @@ The implementation details are as follows:
 
 * New build configurations added to drive overall build behavior
   * **Debug|Release**: Only project references used (no change in behavior)
-  * **Debug-ILMerge|Release-ILMerge**: Force assembly references and build a single SDK assembly
 * .\buildtools\Relativity.Build.DynamicReferences.targets
   * Dynamically switches project/assembly references via build configuration
   * Unit and integration tests import this custom targets file
@@ -77,13 +76,9 @@ The implementation details are as follows:
   * Post-build event calls Invoke-ILMerge.ps1
   * MSBUILD parameters are passed
   * **Debug|Release**: Do nothing; otherwise, execute ILMERGE
-* Master-ILMerge.sln
-  * The new solution was added to force **solution dependencies**
-  * **A 2nd solution file ensures project reference behavior is *not* impacted**
 * .\build.ps1
   * **-ILMerge** switch parameter drives build behavior
-  * Decides which solution file to use
-  * Decides whether to append "-ILMerge" to the specified build configuration
+  * Decides to merge all dlls into one or not.
 
 
 ***Note:** Master.sln should **not** be used to build/test the ILMERGE'd SDK assembly because it's configured for project references!*
@@ -323,7 +318,6 @@ The project structure is similar to other repos. Important folders and files are
 │   │   Installers.sln
 │   │   Master.sln
 │   │   Master.sln.DotSettings
-│   │   Master-ILMerge.sln
 ├───Vendor
 │   │
 │   │   iTextSharp

@@ -8,27 +8,17 @@ To simplify consuming and deploying the import/export API's, all assemblies cont
 .PARAMETER SolutionDir
 The solution directory.
 
-.PARAMETER Configuration
-The current build configuration.
-
 .EXAMPLE
-.\Test-PackageUpgrade.ps1 -SolutionDir "S:\SourceCode\DataTransfer\import-api-rdc\Source\" -Configuration "Release-ILMerge"
+.\Test-PackageUpgrade.ps1 -SolutionDir "S:\SourceCode\DataTransfer\import-api-rdc\Source\"
 #>
+
 [CmdletBinding()]
 Param(
     [Parameter(Mandatory=$True)]
-    [string]$SolutionDir,
-    [Parameter(Mandatory=$True)]
-    [string]$Configuration
+    [string]$SolutionDir
 )
 
-if (($Configuration -ne "Debug-ILMerge") -and ($Configuration -ne "Release-ILMerge")) {
-    Write-Host "Skip merging the SDK assemblies for configuration $Configuration."
-    exit 0
-}
-
 $SolutionDir = $SolutionDir.Trimend('\') + '\'
-Write-Host "The configuration $Configuration supports merging the SDK assemblies."
 $Root = Join-Path $SolutionDir "..\"
 $PackagesDir = Join-Path $Root "packages"
 $IlMergeExe = Join-Path $PackagesDir "ILMerge\tools\net452\ilmerge.exe"
