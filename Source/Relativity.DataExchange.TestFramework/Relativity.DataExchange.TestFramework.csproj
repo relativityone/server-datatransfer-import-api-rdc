@@ -199,11 +199,17 @@
     <None Include="app.manifest" />
     <None Include="paket.references" />
     <EmbeddedResource Include="Resources\test-parameters-hopper.json" />
+    <None Include="Resources\AddGroupMemberRequest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\CreateGroupRequest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\CreateInput.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Resources\CreateMultiObjectFieldInput.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Resources\CreateProductionInput.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

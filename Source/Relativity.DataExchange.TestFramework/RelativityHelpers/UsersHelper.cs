@@ -14,6 +14,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 	using Newtonsoft.Json.Linq;
 
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Services.Security;
 	using Relativity.Services.Security.Models;
 	using Relativity.Services.User;
@@ -114,11 +115,39 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		public static async Task RemoveUserAsync(IntegrationTestParameters parameters, int userId)
 		{
+			if (RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.Lanceleaf))
+			{
+				await RemoveUserAsyncUsingHttpClient(parameters, userId).ConfigureAwait(false);
+			}
+			else
+			{
+				await RemoveUserAsyncUsingKepler(parameters, userId).ConfigureAwait(false);
+			}
+		}
+
+		public static async Task<string> GetUserInfo(IntegrationTestParameters parameters, int userId)
+		{
+			string url =
+				$"{parameters.RelativityRestUrl.AbsoluteUri}/Relativity.REST/Relativity/User/{userId}";
+
+			return await HttpClientHelper.GetAsync(parameters, new Uri(url)).ConfigureAwait(false);
+		}
+
+		private static async Task RemoveUserAsyncUsingKepler(IntegrationTestParameters parameters, int userId)
+		{
 			using (var userManager =
 				ServiceHelper.GetServiceProxy<Services.Interfaces.UserInfo.IUserInfoManager>(parameters))
 			{
 				await userManager.DeleteAsync(userId).ConfigureAwait(false);
 			}
+		}
+
+		private static async Task RemoveUserAsyncUsingHttpClient(IntegrationTestParameters parameters, int userId)
+		{
+			string url =
+				$"{parameters.RelativityRestUrl.AbsoluteUri}/Relativity.REST/Relativity/User/{userId}";
+
+			await HttpClientHelper.DeleteAsync(parameters, new Uri(url)).ConfigureAwait(false);
 		}
 	}
 }

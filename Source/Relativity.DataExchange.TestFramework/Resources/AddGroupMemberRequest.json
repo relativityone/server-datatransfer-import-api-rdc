@@ -1,0 +1,25 @@
+{
+     "Artifact ID": 1015314,
+     "Artifact Type Name": "User",
+     "Groups": 
+           [
+               {
+               "Artifact ID": 1015005
+               },
+               {
+               "Artifact ID": 1015025
+               },
+               {
+               "Artifact ID": 1015394
+               }
+          ],
+     "Last Name": "SomeLastName",
+     "Type": {
+          "Artifact ID": 1015309
+     },
+     "Item List Page Length": 25,
+     "Keyboard Shortcuts": true,
+     "Client": {
+          "Artifact ID": 1015308
+     }
+}

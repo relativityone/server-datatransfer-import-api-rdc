@@ -44,7 +44,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private const string MultiObjectFieldName1 = "MULTI_OBJECT_FIELD_1";
 		private const string MultiObjectFieldName2 = "MULTI_OBJECT_FIELD_2";
 
-		private const RelativityVersion MinSupportedVersion = RelativityVersion.Indigo;
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Goatsbeard;
 		private bool testsSkipped = false;
 
 		private int createdObjectArtifactTypeId = 0;
