@@ -26,7 +26,6 @@ Namespace kCura.WinEDDS.ImportExtension
 				reporter,
 				Logger,
 				System.Guid.NewGuid,
-				EnforceDocumentLimit,
 				Me.CancellationTokenSource,
 				_reader,
 				_imageSettings,

@@ -86,8 +86,6 @@ Namespace kCura.WinEDDS
 
 		Public Property CloudInstance As Boolean
 
-		Public Property EnforceDocumentLimit As Boolean
-
 		Protected Overrides Function Run() As Boolean
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
 			RunId = _imageFileImporter.RunId
@@ -158,7 +156,6 @@ Namespace kCura.WinEDDS
 	            logger, _
 	            Me.ProcessID, _
 	            True, _
-	            EnforceDocumentLimit, _
 	            Me.CancellationTokenSource, _
 	            Me.RunningContext.ExecutionSource)
 			Return returnImporter

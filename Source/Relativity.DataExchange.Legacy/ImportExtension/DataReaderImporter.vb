@@ -89,7 +89,6 @@ Namespace kCura.WinEDDS.ImportExtension
 			           System.Guid.NewGuid, _
 			           True, _
 			           bulkLoadFileFieldDelimiter, _
-			           initializeArtifactReader, _
 			           tokenSource, _
 			           executionSource)
 			Me.OIFileIdColumnName = loadFile.OIFileIdColumnName

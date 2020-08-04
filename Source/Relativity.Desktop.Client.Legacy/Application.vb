@@ -616,7 +616,7 @@ Namespace Relativity.Desktop.Client
 			Dim importer As kCura.WinEDDS.BulkLoadFileImporter = Nothing
 
 			Try
-				importer = New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, Nothing, _logger, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Config.EnforceDocumentLimit, Nothing, ExecutionSource.Rdc)
+				importer = New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, Nothing, _logger, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Nothing, ExecutionSource.Rdc)
 				Return importer.GetColumnNames(loadfile)
 			Finally
 				' All load files are auto-generated when the importer is constructed. This prevents excessive temp files from accumulating.
@@ -1119,7 +1119,6 @@ Namespace Relativity.Desktop.Client
 					importer.TimeZoneOffset = _timeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 					importer.CloudInstance = Config.CloudInstance
-					importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
 					SetWorkingDirectory(loadFile.FilePath)
 					frm.Context = importer.Context
 					frm.StopImportButtonText = "Stop"
@@ -1168,7 +1167,6 @@ Namespace Relativity.Desktop.Client
 			importer.CaseInfo = SelectedCaseInfo
 			importer.ImageLoadFile = ImageLoadFile
 			importer.CloudInstance = Config.CloudInstance
-			importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
 			SetWorkingDirectory(ImageLoadFile.FileName)
 			frm.Context = importer.Context
 			frm.Text = "Import Image File Progress ..."

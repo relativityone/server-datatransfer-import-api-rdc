@@ -107,8 +107,6 @@ Namespace kCura.WinEDDS
 
 		Public Property CloudInstance() As Boolean
 
-		Public Property EnforceDocumentLimit() As Boolean
-
 		Public Property TimeZoneOffset() As Int32
 			Get
 				Return _timeZoneOffset
@@ -131,7 +129,6 @@ Namespace kCura.WinEDDS
 				Me.ProcessID, _
 				True, _
 				BulkLoadFileFieldDelimiter, _
-				EnforceDocumentLimit, _
 				Me.CancellationTokenSource, _
 				Me.RunningContext.ExecutionSource)
 			Return returnImporter
