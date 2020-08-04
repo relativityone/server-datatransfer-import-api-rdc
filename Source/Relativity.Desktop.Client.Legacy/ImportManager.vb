@@ -52,7 +52,6 @@ Namespace Relativity.Desktop.Client
 			importer.TimeZoneOffset = _application.TimeZoneOffset
 			importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 			importer.CloudInstance = Config.CloudInstance
-			importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
 			_application.SetWorkingDirectory(importOptions.SelectedNativeLoadFile.FilePath)
 			Dim executor As New CommandLineProcessRunner(importer.Context, importOptions.ErrorLoadFileLocation, importOptions.ErrorReportFileLocation)
 			_application.StartProcess(importer)
@@ -74,7 +73,6 @@ Namespace Relativity.Desktop.Client
 					importer.TimeZoneOffset = _application.TimeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 					importer.CloudInstance = Config.CloudInstance
-					importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
 					importOptions.SelectedNativeLoadFile.ArtifactTypeID = ArtifactType.Document
 					_application.SetWorkingDirectory(importOptions.SelectedNativeLoadFile.FilePath)
 					Dim executor As New CommandLineProcessRunner(importer.Context, importOptions.ErrorLoadFileLocation, importOptions.ErrorReportFileLocation)
@@ -98,7 +96,6 @@ Namespace Relativity.Desktop.Client
 				importOptions.SelectedImageLoadFile.StartLineNumber = importOptions.StartLineNumber
 				importer.ImageLoadFile = importOptions.SelectedImageLoadFile
 				importer.CloudInstance = Config.CloudInstance
-				importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
 				_application.SetWorkingDirectory(importOptions.SelectedImageLoadFile.FileName)
 				Dim executor As New CommandLineProcessRunner(importer.Context, importOptions.ErrorLoadFileLocation, importOptions.ErrorReportFileLocation)
 				_application.StartProcess(importer)

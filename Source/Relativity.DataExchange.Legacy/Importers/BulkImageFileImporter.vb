@@ -1,8 +1,7 @@
-Imports System.Runtime.InteropServices
 Imports System.Threading
+Imports System.Collections.Generic
 
 Imports kCura.WinEDDS.Service
-Imports kCura.WinEDDS.Helpers
 Imports Monitoring
 
 Imports Relativity.DataExchange
@@ -20,12 +19,10 @@ Namespace kCura.WinEDDS
 		Inherits ImportExportTapiBase
 
 #Region "Members"
-		Protected _imageReader As kCura.WinEDDS.Api.IImageReader
-		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
-		Protected _productionManager As kCura.WinEDDS.Service.ProductionManager
-		Protected _bulkImportManager As kCura.WinEDDS.Service.IBulkImportManager
-		Protected _documentManager As kCura.WinEDDS.Service.DocumentManager
-		Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
+		Protected _imageReader As Api.IImageReader
+		Protected _fieldQuery As FieldQuery
+		Protected _productionManager As ProductionManager
+		Protected _bulkImportManager As IBulkImportManager
 		Private _folderID As Int32
 		Private _productionArtifactID As Int32
 		Private _overwrite As ImportOverwriteType
@@ -36,7 +33,6 @@ Namespace kCura.WinEDDS
 		Private _jobCompleteBatchSize As Int32?
 		Private _importBatchVolume As Int32?
 		Private _minimumBatchSize As Int32?
-		Private _batchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 		Private _autoNumberImages As Boolean
 		Private _copyFilesToRepository As Boolean
 		Private _defaultDestinationFolderPath As String
@@ -70,14 +66,12 @@ Namespace kCura.WinEDDS
 		Private _totalValidated As Long
 		Private _totalProcessed As Long
 		Private _startLineNumber As Int64
-		Private _enforceDocumentLimit As Boolean
 
 		Private _timekeeper As New Timekeeper2
 		Private _doRetryLogic As Boolean
 		Private _verboseErrorCollection As New ClientSideErrorCollection
 		Private _cancelledByUser As Boolean = False
 
-		Protected ReadOnly FilePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String
@@ -114,11 +108,7 @@ Namespace kCura.WinEDDS
 		Public Property DisableUserSecurityCheck As Boolean
 		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
 
-		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
-			Get
-				Return _batchSizeHistoryList
-			End Get
-		End Property
+		Public ReadOnly Property BatchSizeHistoryList As List(Of Int32)
 
 		Friend WriteOnly Property FilePath() As String
 			Set(ByVal value As String)
@@ -235,7 +225,6 @@ Namespace kCura.WinEDDS
 		               logger As Global.Relativity.Logging.ILog, _
 		               processID As Guid, _
 		               doRetryLogic As Boolean, _
-		               enforceDocumentLimit As Boolean, _
 		               tokenSource As CancellationTokenSource, _
 		               Optional ByVal executionSource As ExecutionSource = ExecutionSource.Unknown)
 			MyBase.New(reporter, logger, tokenSource)
@@ -245,7 +234,6 @@ Namespace kCura.WinEDDS
 			'TODO: generate runId  https://jira.kcura.com/browse/REL-414969
 			'_runId = System.Guid.NewGuid.ToString.Replace("-", "_")
 
-			_enforceDocumentLimit = enforceDocumentLimit
 			_doRetryLogic = doRetryLogic
 			InitializeManagers(args)
 			Dim suffix As String = "\EDDS" & args.CaseInfo.ArtifactID & "\"
@@ -276,7 +264,7 @@ Namespace kCura.WinEDDS
 			_startLineNumber = args.StartLineNumber
 			_overlayArtifactID = args.IdentityFieldId
 
-			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
+			BatchSizeHistoryList = New List(Of Int32)
 
 			If args.ReplaceFullText Then
 				_fullTextStorageIsInSql = (_fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, ArtifactType.Document).FullText.EnableDataGrid = False)
@@ -284,7 +272,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)
-			Dim gateway As kCura.WinEDDS.Service.FileIO = New kCura.WinEDDS.Service.FileIO(args.Credential, args.CookieContainer)
+			Dim gateway As FileIO = New FileIO(args.Credential, args.CookieContainer)
 			Dim nativeParameters As UploadTapiBridgeParameters2 = New UploadTapiBridgeParameters2
 			nativeParameters.BcpFileTransfer = False
 			nativeParameters.AsperaBcpRootFolder = String.Empty
@@ -348,11 +336,9 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeManagers(ByVal args As ImageLoadFile)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
-			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
-			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
-			_relativityManager = New kCura.WinEDDS.Service.RelativityManager(args.Credential, args.CookieContainer)
+			_fieldQuery = New FieldQuery(args.Credential, args.CookieContainer)
+			_productionManager = New ProductionManager(args.Credential, args.CookieContainer)
+			_bulkImportManager = New BulkImportManager(args.Credential, args.CookieContainer)
 		End Sub
 
 #End Region
@@ -363,7 +349,7 @@ Namespace kCura.WinEDDS
 			Me.ReadFile(_filePath)
 		End Sub
 
-		Private Sub ProcessList(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByRef status As Int64, ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
+		Private Sub ProcessList(ByVal al As List(Of Api.ImageRecord), ByRef status As Int64, ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
 			If al.Count = 0 Then Exit Sub
 			Me.ProcessDocument(al, status)
 			al.Clear()
@@ -703,42 +689,9 @@ Namespace kCura.WinEDDS
 					_imageReader.Initialize()
 					_recordCount = _imageReader.CountRecords.GetValueOrDefault()
 
-					If (_enforceDocumentLimit AndAlso _overwrite = ImportOverwriteType.Append) Then
-
-						Me.LogInformation("Preparing to determine the number of images to import...")
-						Dim tempImageReader As OpticonFileReader = New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
-						tempImageReader.Initialize()
-						Dim newDocCount As Int32 = 0
-
-						While tempImageReader.HasMoreRecords AndAlso tempImageReader.CurrentRecordNumber < _startLineNumber
-							tempImageReader.AdvanceRecord()
-						End While
-
-						While tempImageReader.HasMoreRecords
-
-							Dim record As Api.ImageRecord = tempImageReader.GetImageRecord
-							If record.IsNewDoc Then
-								newDocCount += 1
-							End If
-
-						End While
-						tempImageReader.Close()
-
-						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
-						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
-
-
-						Dim countAfterJob As Long = currentDocCount + newDocCount
-						Me.LogInformation("Successfully calculated the number of images to import: {ImageCount}, Doc limit: {DocLimit}", countAfterJob, docLimit)
-						If (docLimit <> 0 And countAfterJob > docLimit) Then
-							Dim errorMessage As String = $"The document import was canceled.  It would have exceeded the workspace's document limit of {docLimit} by {(countAfterJob - docLimit)} documents."
-							Throw New Exception(errorMessage)
-						End If
-					End If
-
 					RaiseStatusEvent(EventType2.Progress, "Begin Image Upload", 0)
 					RaiseStatusEvent(EventType2.ResetStartTime, "", 0)
-					Dim al As New System.Collections.Generic.List(Of Api.ImageRecord)
+					Dim al As New List(Of Api.ImageRecord)
 					Dim status As Int64 = 0
 					_timekeeper.MarkEnd("ReadFile_Init")
 
@@ -840,7 +793,7 @@ Namespace kCura.WinEDDS
 			RaiseFatalError(exception)
 		End Sub
 
-		Private Sub ProcessDocument(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int64)
+		Private Sub ProcessDocument(ByVal al As List(Of Api.ImageRecord), ByVal status As Int64)
 			GetImagesForDocument(al, status)
 			Me.Statistics.DocumentsCount += 1
 		End Sub
@@ -907,7 +860,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Private Sub GetImagesForDocument(ByVal lines As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int64)
+		Private Sub GetImagesForDocument(ByVal lines As List(Of Api.ImageRecord), ByVal status As Int64)
 			Me.AutoNumberImages(lines)
 			Dim hasFileIdentifierProblem As Boolean = False
 			For Each line As Api.ImageRecord In lines
@@ -953,7 +906,7 @@ Namespace kCura.WinEDDS
 					'no extracted text encodings, write "-1"
 					_bulkLoadFileWriter.Write($"{(-1)}{lastDivider}")
 				ElseIf textFileList.Count > 0 Then
-					_bulkLoadFileWriter.Write("{0}{1}", Me.GetextractedTextEncodings(textFileList).ToDelimitedString("|"), lastDivider)
+					_bulkLoadFileWriter.Write("{0}{1}", Me.GetExtractedTextEncodings(textFileList).ToDelimitedString("|"), lastDivider)
 				End If
 
 
@@ -999,7 +952,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Function GetextractedTextEncodings(ByVal textFileList As System.Collections.ArrayList) As Generic.List(Of Int32)
+		Private Function GetExtractedTextEncodings(ByVal textFileList As ArrayList) As List(Of Int32)
 			Dim encodingList As New Generic.List(Of Int32)
 			For Each filename As String In textFileList
 				Dim chosenEncoding As System.Text.Encoding = _settings.FullTextEncoding
@@ -1023,7 +976,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Private Sub AutoNumberImages(ByVal lines As System.Collections.Generic.List(Of Api.ImageRecord))
+		Private Sub AutoNumberImages(ByVal lines As List(Of Api.ImageRecord))
 			If Not _autoNumberImages OrElse lines.Count <= 1 Then Exit Sub
 			Dim allsame As Boolean = True
 			Dim batesnumber As String = lines(0).BatesNumber

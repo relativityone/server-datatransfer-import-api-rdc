@@ -41,7 +41,6 @@ namespace Relativity.DataExchange.Import.NUnit
 				logger,
 				processID,
 				doRetryLogic,
-				false,
 				tokenSource,
 				executionSource)
 		{

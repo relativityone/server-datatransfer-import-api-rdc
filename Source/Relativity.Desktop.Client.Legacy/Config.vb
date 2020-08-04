@@ -87,12 +87,6 @@ Namespace Relativity.Desktop.Client
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property EnforceDocumentLimit() As Boolean
-			Get
-				Return CType(EddsConfigSettings("EnforceDocumentLimit"), Boolean)
-			End Get
-		End Property
-
 		Public Shared ReadOnly Property ExportSubdirectoryDigitPadding() As Int32
 			Get
 				Return CType(ConfigSettings("ExportSubdirectoryDigitPadding"), Int32)

@@ -40,7 +40,6 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _usePipeliningForNativeAndObjectImports As Boolean
 		Private ReadOnly _createFoldersInWebApi As Boolean
 		Private ReadOnly _createErrorForEmptyNativeFile As Boolean
-		Private ReadOnly _enforceDocumentLimit As Boolean
 
 		Protected Overwrite As ImportOverwriteType
 		Protected AuditManager As Service.AuditManager
@@ -337,7 +336,6 @@ Namespace kCura.WinEDDS
 		               processID As Guid, _
 		               doRetryLogic As Boolean, _
 		               bulkLoadFileFieldDelimiter As String, _
-		               enforceDocumentLimit As Boolean, _
 		               tokenSource As CancellationTokenSource, _
 					   ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
 			Me.New(args, _
@@ -350,7 +348,6 @@ Namespace kCura.WinEDDS
 			       processID, _
 			       doRetryLogic, _
 			       bulkLoadFileFieldDelimiter, _
-			       enforceDocumentLimit, _
 			       tokenSource, _
 			       initializeArtifactReader:=True, _
 			       executionSource:=executionSource)
@@ -383,7 +380,6 @@ Namespace kCura.WinEDDS
 		               processID As Guid, _
 		               doRetryLogic As Boolean, _
 		               bulkLoadFileFieldDelimiter As String, _
-		               enforceDocumentLimit As Boolean, _
 		               tokenSource As CancellationTokenSource, _
 		               ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
 			Me.New(args, _
@@ -396,7 +392,6 @@ Namespace kCura.WinEDDS
 			       processID, _
 			       doRetryLogic,
 			       bulkLoadFileFieldDelimiter, _
-			       enforceDocumentLimit, _
 			       tokenSource, _
 			       initializeArtifactReader:=True, _
 			       executionSource:=executionSource)
@@ -429,7 +424,6 @@ Namespace kCura.WinEDDS
 		               processID As Guid, _
 		               doRetryLogic As Boolean, _
 		               bulkLoadFileFieldDelimiter As String, _
-		               enforceDocumentLimit As Boolean, _
 		               tokenSource As CancellationTokenSource,
 		               initializeArtifactReader As Boolean,
 		               ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
@@ -447,9 +441,6 @@ Namespace kCura.WinEDDS
 			_usePipeliningForNativeAndObjectImports = AppSettings.Instance.UsePipeliningForNativeAndObjectImports
 			_createFoldersInWebApi = AppSettings.Instance.CreateFoldersInWebApi
 			_createErrorForEmptyNativeFile = AppSettings.Instance.CreateErrorForEmptyNativeFile
-
-			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
-			_enforceDocumentLimit = enforceDocumentLimit
 
 			Statistics.ImportObjectType = CType(IIf(args.ArtifactTypeID = ArtifactType.Document, TelemetryConstants.ImportObjectType.Native, TelemetryConstants.ImportObjectType.Objects),TelemetryConstants.ImportObjectType)
 
@@ -623,20 +614,6 @@ Namespace kCura.WinEDDS
 							End If
 							_processedKeyFieldValues = New Dictionary(Of String,Integer)
 						End Using
-
-						If (_enforceDocumentLimit) Then
-							If (Overwrite = ImportOverwriteType.Append And _artifactTypeID = ArtifactType.Document) Then
-								Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
-								Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
-								Dim fileLineStart As Long = _startLineNumber
-								If _startLineNumber <= 0 Then fileLineStart = 1
-								Dim countAfterJob As Long = currentDocCount + (RecordCount - (fileLineStart - 1))
-								If (docLimit <> 0 And countAfterJob > docLimit) Then
-									Dim errorMessage As String = String.Format("The document import was canceled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
-									Throw New Exception(errorMessage)
-								End If
-							End If
-						End If
 
 						Me.LogInformation("Preparing to import documents via WinEDDS.")
 						Using Timekeeper.CaptureTime("ReadFile_ProcessDocuments")

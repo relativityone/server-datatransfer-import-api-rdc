@@ -47,7 +47,6 @@ namespace Relativity.DataExchange.Import.NUnit
 				processID,
 				doRetryLogic,
 				bulkLoadFileFieldDelimiter,
-				false,
 				tokenSource,
 				executionSource)
 		{

@@ -40,7 +40,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		Public PauseCalled As Int32 = 0
 
 		Public Sub New(ByVal args As ImageLoadFile, ByVal processController As ProcessContext, ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager, ByVal tokenSource As CancellationTokenSource)
-			MyBase.New(0, args, processController, ioReporterInstance, logger, processID, doRetryLogic, False, tokenSource)
+			MyBase.New(0, args, processController, ioReporterInstance, logger, processID, doRetryLogic, tokenSource)
 			Me.WillThrowException = throwsException
 			_bulkImportManager = bulkManager
 			Me.ImportBatchSize = 500

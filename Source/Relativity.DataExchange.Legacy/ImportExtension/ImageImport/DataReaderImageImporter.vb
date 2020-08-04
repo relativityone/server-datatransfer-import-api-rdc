@@ -19,7 +19,6 @@ Namespace kCura.WinEDDS.ImportExtension
 		               ByVal ioReporterInstance As IIoReporter, 
 		               ByVal logger As ILog, _
 		               ByVal processID As System.Guid, _
-		               ByVal enforceDocumentLimit As Boolean, _
 		               ByVal tokenSource As CancellationTokenSource,
 		               ByVal reader As IDataReader,
 		               ByVal imageSettings As ImageSettings, _
@@ -31,7 +30,6 @@ Namespace kCura.WinEDDS.ImportExtension
 			           logger, _
 			           processID, _
 			           False, _
-			           enforceDocumentLimit, _
 			           tokenSource, _
 			           executionSource)
 			_reader = reader
