@@ -126,6 +126,7 @@
     <Compile Include="RelativityHelpers\NonDefaultCollationWorkspaceHelper.cs" />
     <Compile Include="RelativityHelpers\PermissionsHelper.cs" />
     <Compile Include="RelativityHelpers\SqlQueryHelper.cs" />
+    <Compile Include="RelativityHelpers\ViewHelper.cs" />
     <Compile Include="RelativityVersions\RelativityVersionChecker.cs" />
     <Compile Include="RelativityVersions\RelativityVersion.cs" />
     <Compile Include="SqlDataComparer\SqlComparerInputCollector.cs" />
@@ -179,6 +180,7 @@
     <Compile Include="RelativityHelpers\RdoHelper.cs" />
     <Compile Include="RelativityHelpers\WorkspaceHelper.cs" />
     <Compile Include="WellKnownArtifactTypes.cs" />
+    <Compile Include="WellKnownFieldRequests.cs" />
     <Compile Include="WellKnownFields.cs" />
     <Compile Include="IntegrationTestParameters.cs" />
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">

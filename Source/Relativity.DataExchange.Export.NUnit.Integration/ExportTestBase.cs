@@ -63,6 +63,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				| SecurityProtocolType.Tls12;
 		}
 
+		internal static int ViewId { get; set; } = 1003684;
+
 		internal Mock<TapiObjectService> MockTapiObjectService { get; private set; }
 
 		protected abstract IntegrationTestParameters TestParameters { get; }
@@ -115,7 +117,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				NewlineDelimiter = '@',
 				QuoteDelimiter = 'þ',
 				RecordDelimiter = '¶',
-				ViewID = 1003684,
+				ViewID = ViewId,
 				SelectedViewFields = new kCura.WinEDDS.ViewFieldInfo[] { },
 
 				// settings for exporting images

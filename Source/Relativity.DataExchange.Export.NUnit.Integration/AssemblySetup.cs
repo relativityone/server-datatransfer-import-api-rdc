@@ -6,6 +6,8 @@
 
 namespace Relativity.DataExchange.Export.NUnit.Integration
 {
+	using System.Threading.Tasks;
+
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework;
@@ -32,13 +34,19 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		[OneTimeSetUp]
-		public static void Setup()
+		public static async Task SetupAsync()
 		{
 			TestParameters = IntegrationTestHelper.Create();
 
 			if (TestParameters.SkipIntegrationTests)
 			{
 				return;
+			}
+
+			if (TestParameters.PerformAdditionalWorkspaceSetup)
+			{
+				await FieldHelper.EnsureWellKnownFieldsAsync(TestParameters).ConfigureAwait(false);
+				await CreateViewForExportTests().ConfigureAwait(false);
 			}
 
 			var controlNumbers = ImportHelper.ImportDefaultTestData(TestParameters);
@@ -51,6 +59,16 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		public static void TearDown()
 		{
 			IntegrationTestHelper.Destroy(TestParameters);
+		}
+
+		private static async Task CreateViewForExportTests()
+		{
+			const string ViewName = "ImportAPI test view";
+			ExportTestBase.ViewId = await ViewHelper.CreateViewAsync(
+										TestParameters,
+										ViewName,
+										WellKnownArtifactTypes.DocumentArtifactTypeId,
+										WellKnownFields.ControlNumberId).ConfigureAwait(false);
 		}
 	}
 }

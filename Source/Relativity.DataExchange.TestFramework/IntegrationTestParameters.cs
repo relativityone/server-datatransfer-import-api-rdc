@@ -41,6 +41,7 @@ namespace Relativity.DataExchange.TestFramework
 			this.WorkspaceId = 0;
 			this.EnableDataGrid = false;
 			this.TestOnWorkspaceWithNonDefaultCollation = false;
+			this.PerformAdditionalWorkspaceSetup = false;
 		}
 
 		/// <summary>
@@ -78,6 +79,7 @@ namespace Relativity.DataExchange.TestFramework
 			this.WorkspaceId = copy.WorkspaceId;
 			this.EnableDataGrid = copy.EnableDataGrid;
 			this.TestOnWorkspaceWithNonDefaultCollation = copy.TestOnWorkspaceWithNonDefaultCollation;
+			this.PerformAdditionalWorkspaceSetup = copy.PerformAdditionalWorkspaceSetup;
 		}
 
 		/// <summary>
@@ -321,6 +323,17 @@ namespace Relativity.DataExchange.TestFramework
 		[JsonProperty("TestOnWorkspaceWithNonDefaultCollation")]
 		[IntegrationTestParameter(true)]
 		public bool TestOnWorkspaceWithNonDefaultCollation { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to create all necessary fields and views before test execution.
+		/// This is required only when <see cref="WorkspaceTemplate"/> doesn't use <see cref="WellKnownFields"/>.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to perform additional setup; otherwise, <see langword="false" />.
+		/// </value>
+		[JsonProperty("PerformAdditionalWorkspaceSetup")]
+		[IntegrationTestParameter(true)]
+		public bool PerformAdditionalWorkspaceSetup { get; set; }
 
 		/// <summary>
 		/// Performs a deep copy of this instance.

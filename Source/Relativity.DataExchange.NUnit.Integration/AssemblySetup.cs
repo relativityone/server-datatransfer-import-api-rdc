@@ -6,9 +6,12 @@
 
 namespace Relativity.DataExchange.NUnit.Integration
 {
+	using System.Threading.Tasks;
+
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 
 	/// <summary>
 	/// Represents a global assembly-wide setup routine that's guaranteed to be executed before ANY NUnit test.
@@ -31,10 +34,18 @@ namespace Relativity.DataExchange.NUnit.Integration
 		/// <summary>
 		/// The main setup method.
 		/// </summary>
+		/// <returns>
+		/// Task.
+		/// </returns>
 		[OneTimeSetUp]
-		public void Setup()
+		public async Task SetupAsync()
 		{
 			TestParameters = IntegrationTestHelper.Create();
+
+			if (TestParameters.PerformAdditionalWorkspaceSetup)
+			{
+				await FieldHelper.EnsureWellKnownFieldsAsync(TestParameters).ConfigureAwait(false);
+			}
 		}
 
 		/// <summary>

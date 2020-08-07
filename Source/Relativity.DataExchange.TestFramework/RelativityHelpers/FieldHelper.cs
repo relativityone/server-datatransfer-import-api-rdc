@@ -41,7 +41,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = destinationRdoArtifactTypeId },
 			};
 
-			return TestFramework.RelativityHelpers.FieldHelper.CreateFieldAsync(testParameters, request);
+			return CreateFieldAsync(testParameters, request);
 		}
 
 		public static Task CreateMultiObjectFieldAsync(IntegrationTestParameters testParameters, string fieldName, int fieldObjectArtifactTypeId, int destinationRdoArtifactTypeId)
@@ -61,7 +61,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				HasUnicode = true,
 			};
 
-			return TestFramework.RelativityHelpers.FieldHelper.CreateFieldAsync(testParameters, request);
+			return CreateFieldAsync(testParameters, request);
 		}
 
 		public static Task<int> CreateMultiChoiceFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId, bool isOpenToAssociations)
@@ -74,7 +74,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				HasUnicode = true,
 			};
 
-			return TestFramework.RelativityHelpers.FieldHelper.CreateFieldAsync(testParameters, request);
+			return CreateFieldAsync(testParameters, request);
 		}
 
 		public static Task<int> CreateFixedLengthTextFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId, bool isOpenToAssociations, int length)
@@ -88,7 +88,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			  Length = length,
 			};
 
-			return TestFramework.RelativityHelpers.FieldHelper.CreateFieldAsync(testParameters, request);
+			return CreateFieldAsync(testParameters, request);
 		}
 
 		public static Task CreateLongTextFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId, bool isOpenToAssociations)
@@ -101,7 +101,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				HasUnicode = true,
 			};
 
-			return TestFramework.RelativityHelpers.FieldHelper.CreateFieldAsync(testParameters, request);
+			return CreateFieldAsync(testParameters, request);
 		}
 
 		public static Task CreateWholeNumberFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId, bool isOpenToAssociations)
@@ -113,7 +113,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				OpenToAssociations = isOpenToAssociations,
 			};
 
-			return TestFramework.RelativityHelpers.FieldHelper.CreateFieldAsync(testParameters, request);
+			return CreateFieldAsync(testParameters, request);
 		}
 
 		public static Task CreateFileFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId)
@@ -124,40 +124,45 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = destinationRdoArtifactTypeId },
 			};
 
-			return TestFramework.RelativityHelpers.FieldHelper.CreateFieldAsync(testParameters, request);
+			return CreateFieldAsync(testParameters, request);
 		}
 
-		public static async Task<int> CreateFieldAsync<T>(IntegrationTestParameters parameters, T fieldRequest)
-			where T : BaseFieldRequest
+		public static async Task<int> CreateFieldAsync(IntegrationTestParameters parameters, BaseFieldRequest fieldRequest)
 		{
-			var supportedFieldTypesToCreateMethodMapping = new Dictionary<Type, Func<IFieldManager, BaseFieldRequest, int, Task<int>>>
+			var supportedFieldTypesToCreateMethodMapping = new Dictionary<Type, Func<IFieldManager, Task<int>>>
 			{
-				[typeof(SingleObjectFieldRequest)] = (manager, request, workspaceId) => manager.CreateSingleObjectFieldAsync(workspaceId, request as SingleObjectFieldRequest),
-				[typeof(MultipleObjectFieldRequest)] = (manager, request, workspaceId) => manager.CreateMultipleObjectFieldAsync(workspaceId, request as MultipleObjectFieldRequest),
-				[typeof(SingleChoiceFieldRequest)] = (manager, request, workspaceId) => manager.CreateSingleChoiceFieldAsync(workspaceId, request as SingleChoiceFieldRequest),
-				[typeof(MultipleChoiceFieldRequest)] = (manager, request, workspaceId) => manager.CreateMultipleChoiceFieldAsync(workspaceId, request as MultipleChoiceFieldRequest),
-				[typeof(WholeNumberFieldRequest)] = (manager, request, workspaceId) => manager.CreateWholeNumberFieldAsync(workspaceId, request as WholeNumberFieldRequest),
-				[typeof(LongTextFieldRequest)] = (manager, request, workspaceId) => manager.CreateLongTextFieldAsync(workspaceId, request as LongTextFieldRequest),
-				[typeof(FixedLengthFieldRequest)] = (manager, request, workspaceId) => manager.CreateFixedLengthFieldAsync(workspaceId, request as FixedLengthFieldRequest),
-				[typeof(FileFieldRequest)] = (manager, request, workspaceId) => manager.CreateFileFieldAsync(workspaceId, request as FileFieldRequest),
+				[typeof(SingleObjectFieldRequest)] = (manager) => manager.CreateSingleObjectFieldAsync(parameters.WorkspaceId, fieldRequest as SingleObjectFieldRequest),
+				[typeof(MultipleObjectFieldRequest)] = (manager) => manager.CreateMultipleObjectFieldAsync(parameters.WorkspaceId, fieldRequest as MultipleObjectFieldRequest),
+				[typeof(SingleChoiceFieldRequest)] = (manager) => manager.CreateSingleChoiceFieldAsync(parameters.WorkspaceId, fieldRequest as SingleChoiceFieldRequest),
+				[typeof(MultipleChoiceFieldRequest)] = (manager) => manager.CreateMultipleChoiceFieldAsync(parameters.WorkspaceId, fieldRequest as MultipleChoiceFieldRequest),
+				[typeof(WholeNumberFieldRequest)] = (manager) => manager.CreateWholeNumberFieldAsync(parameters.WorkspaceId, fieldRequest as WholeNumberFieldRequest),
+				[typeof(LongTextFieldRequest)] = (manager) => manager.CreateLongTextFieldAsync(parameters.WorkspaceId, fieldRequest as LongTextFieldRequest),
+				[typeof(FixedLengthFieldRequest)] = (manager) => manager.CreateFixedLengthFieldAsync(parameters.WorkspaceId, fieldRequest as FixedLengthFieldRequest),
+				[typeof(FileFieldRequest)] = (manager) => manager.CreateFileFieldAsync(parameters.WorkspaceId, fieldRequest as FileFieldRequest),
 			};
 
-			if (!supportedFieldTypesToCreateMethodMapping.ContainsKey(typeof(T)))
-			{
-				throw new InvalidOperationException("This method does not support creation of requested field. Please see source code of that method for more details.");
-			}
+			return await ExecuteMethodForFieldType(parameters, supportedFieldTypesToCreateMethodMapping, fieldRequest).ConfigureAwait(false);
+		}
 
-			var createMethod = supportedFieldTypesToCreateMethodMapping[typeof(T)];
-
-			using (var fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(parameters))
+		public static async Task<int> UpdateFieldAsync(IntegrationTestParameters parameters, int fieldIdentifier, BaseFieldRequest fieldRequest)
+		{
+			var supportedFieldTypesToCreateMethodMapping = new Dictionary<Type, Func<IFieldManager, Task>>
 			{
-				int fieldId = await Policy
-					       .Handle<Exception>()
-					       .WaitAndRetryAsync(3, retryNumber => TimeSpan.FromSeconds(3 ^ retryNumber))
-					       .ExecuteAsync(() => createMethod(fieldManager, fieldRequest, parameters.WorkspaceId))
-					       .ConfigureAwait(false);
-				return fieldId;
-			}
+				[typeof(SingleObjectFieldRequest)] = (manager) => manager.UpdateSingleObjectFieldAsync(parameters.WorkspaceId, fieldIdentifier, fieldRequest as SingleObjectFieldRequest),
+				[typeof(MultipleObjectFieldRequest)] = (manager) => manager.UpdateMultipleObjectFieldAsync(parameters.WorkspaceId, fieldIdentifier, fieldRequest as MultipleObjectFieldRequest),
+				[typeof(SingleChoiceFieldRequest)] = (manager) => manager.UpdateSingleChoiceFieldAsync(parameters.WorkspaceId, fieldIdentifier, fieldRequest as SingleChoiceFieldRequest),
+				[typeof(MultipleChoiceFieldRequest)] = (manager) => manager.UpdateMultipleChoiceFieldAsync(parameters.WorkspaceId, fieldIdentifier, fieldRequest as MultipleChoiceFieldRequest),
+				[typeof(WholeNumberFieldRequest)] = (manager) => manager.UpdateWholeNumberFieldAsync(parameters.WorkspaceId, fieldIdentifier, fieldRequest as WholeNumberFieldRequest),
+				[typeof(LongTextFieldRequest)] = (manager) => manager.UpdateLongTextFieldAsync(parameters.WorkspaceId, fieldIdentifier, fieldRequest as LongTextFieldRequest),
+				[typeof(FixedLengthFieldRequest)] = (manager) => manager.UpdateFixedLengthFieldAsync(parameters.WorkspaceId, fieldIdentifier, fieldRequest as FixedLengthFieldRequest),
+				[typeof(FileFieldRequest)] = (manager) => manager.UpdateFileFieldAsync(parameters.WorkspaceId, fieldIdentifier, fieldRequest as FileFieldRequest),
+			};
+
+			Func<IFieldManager, Task<int>> AddReturnValue(Func<IFieldManager, Task> f) => manager => f.Invoke(manager).ContinueWith((task) => fieldIdentifier);
+			Dictionary<Type, Func<IFieldManager, Task<int>>> methodsWithReturnValues =
+				supportedFieldTypesToCreateMethodMapping.ToDictionary(x => x.Key, x => AddReturnValue(x.Value));
+
+			return await ExecuteMethodForFieldType(parameters, methodsWithReturnValues, fieldRequest).ConfigureAwait(false);
 		}
 
 		public static void CreateField(
@@ -300,6 +305,13 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return fieldsValuesForDocuments;
 		}
 
+		public static async Task EnsureWellKnownFieldsAsync(IntegrationTestParameters parameters)
+		{
+			WellKnownFields.ControlNumberId = QueryIdentifierFieldId(parameters, WellKnownArtifactTypes.DocumentArtifactTypeName);
+			await UpdateFieldAsync(parameters, WellKnownFields.ControlNumberId, WellKnownFieldRequests.IdentifierFieldRequest).ConfigureAwait(false);
+			await CreateOrUpdateFieldsAsync(parameters, WellKnownFieldRequests.NonSystemFieldRequests).ConfigureAwait(false);
+		}
+
 		private static RelativityObject QueryIdentifierRelativityObject(IntegrationTestParameters parameters, string artifactTypeName)
 		{
 			using (IObjectManager client = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
@@ -346,6 +358,31 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
+		private static async Task CreateOrUpdateFieldsAsync(IntegrationTestParameters parameters, IEnumerable<BaseFieldRequest> fieldRequests)
+		{
+			var createOrUpdateTaskList = fieldRequests.Select(fieldRequest => CreateOrUpdateFieldAsync(parameters, fieldRequest)).ToList();
+			await Task.WhenAll(createOrUpdateTaskList).ConfigureAwait(false);
+		}
+
+		private static async Task<int> CreateOrUpdateFieldAsync(
+			IntegrationTestParameters parameters,
+			BaseFieldRequest fieldRequest)
+		{
+			var results = await QueryFieldByNameAsync(
+							  parameters,
+							  new TestNullLogger(),
+							  fieldRequest.Name).ConfigureAwait(false);
+
+			if (results.TotalCount == 0)
+			{
+				return await CreateFieldAsync(parameters, fieldRequest)
+					.ConfigureAwait(false);
+			}
+
+			return await UpdateFieldAsync(parameters, results.Objects[0].ArtifactID, fieldRequest)
+					.ConfigureAwait(false);
+		}
+
 		private static async Task CreateMultipleObjectFieldUsingHttpClientAsync(
 			IntegrationTestParameters parameters,
 			string fieldName,
@@ -382,7 +419,35 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = destinationRdoArtifactTypeId },
 			};
 
-			await TestFramework.RelativityHelpers.FieldHelper.CreateFieldAsync(parameters, request).ConfigureAwait(false);
+			await CreateFieldAsync(parameters, request).ConfigureAwait(false);
+		}
+
+		private static Task<int> ExecuteMethodForFieldType(IntegrationTestParameters parameters, Dictionary<Type, Func<IFieldManager, Task<int>>> methodMapping, BaseFieldRequest fieldRequest)
+		{
+			Func<IFieldManager, Task<int>> method = GetMethodForFieldType(methodMapping, fieldRequest);
+			return ExecuteMethod(parameters, method);
+		}
+
+		private static Func<IFieldManager, Task<int>> GetMethodForFieldType(Dictionary<Type, Func<IFieldManager, Task<int>>> methodMapping, BaseFieldRequest fieldRequest)
+		{
+			if (!methodMapping.TryGetValue(fieldRequest.GetType(), out var method))
+			{
+				throw new InvalidOperationException(
+					"This method does not support requested field type. Please see source code of that method for more details.");
+			}
+
+			return method;
+		}
+
+		private static async Task<int> ExecuteMethod(IntegrationTestParameters parameters, Func<IFieldManager, Task<int>> method)
+		{
+			using (var fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(parameters))
+			{
+				int fieldId = await Policy.Handle<Exception>()
+								  .WaitAndRetryAsync(3, retryNumber => TimeSpan.FromSeconds(3 ^ retryNumber))
+								  .ExecuteAsync(() => method(fieldManager)).ConfigureAwait(false);
+				return fieldId;
+			}
 		}
 	}
 }

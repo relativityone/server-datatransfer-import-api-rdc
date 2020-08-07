@@ -27,11 +27,6 @@ namespace Relativity.DataExchange.TestFramework
 		public const string ControlNumber = "Control Number";
 
 		/// <summary>
-		/// The control number field identifier.
-		/// </summary>
-		public const int ControlNumberId = 1003667;
-
-		/// <summary>
 		/// The extracted text field.
 		/// </summary>
 		public const string ExtractedText = "Extracted Text";
@@ -52,17 +47,17 @@ namespace Relativity.DataExchange.TestFramework
 		public const string FilePath = "file path";
 
 		/// <summary>
-		/// The folder name field.
+		/// The folder name field. System field.
 		/// </summary>
 		public const string FolderName = "folder name";
 
 		/// <summary>
-		/// The 'Has Images' field.
+		/// The 'Has Images' field. System field.
 		/// </summary>
 		public const string HasImages = "has images";
 
 		/// <summary>
-		/// The 'Has Native' field.
+		/// The 'Has Native' field. System field.
 		/// </summary>
 		public const string HasNative = "has native";
 
@@ -82,7 +77,7 @@ namespace Relativity.DataExchange.TestFramework
 		public const string OutsideInFileType = "OutsideInFileType";
 
 		/// <summary>
-		/// The relativity image count.
+		/// The relativity image count. System field.
 		/// </summary>
 		public const string RelativityImageCount = "relativity image count";
 
@@ -107,7 +102,7 @@ namespace Relativity.DataExchange.TestFramework
 		public const string DomainsEmailFrom = "Domains (Email From)";
 
 		/// <summary>
-		/// The originating imaging document error.
+		/// The originating imaging document error. System field.
 		/// </summary>
 		public const string OriginatingImagingDocumentError = "Originating Imaging Document Error";
 
@@ -140,5 +135,10 @@ namespace Relativity.DataExchange.TestFramework
 		/// Relational field.
 		/// </summary>
 		public const string RelationalFieldName = "Relational Field";
+
+		/// <summary>
+		/// Gets or sets the control number field identifier.
+		/// </summary>
+		public static int ControlNumberId { get; set; } = 1003667;
 	}
 }

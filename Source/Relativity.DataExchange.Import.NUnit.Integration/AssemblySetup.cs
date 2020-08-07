@@ -11,7 +11,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.DataExchange.TestFramework.SqlDataComparer;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 
 	[SetUpFixture]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -51,6 +51,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			if (TestParameters.SkipIntegrationTests)
 			{
 				return;
+			}
+
+			if (TestParameters.PerformAdditionalWorkspaceSetup)
+			{
+				await FieldHelper.EnsureWellKnownFieldsAsync(TestParameters).ConfigureAwait(false);
 			}
 
 			await UserSetup().ConfigureAwait(false);
