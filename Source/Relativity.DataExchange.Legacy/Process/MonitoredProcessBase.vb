@@ -27,6 +27,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected MustOverride ReadOnly Property TapiClient As TapiClient
 	Private _initialTapiClient As TapiClient = TapiClient.None
 	Protected Property RunId As String
+	Private _jobStatus As TelemetryConstants.JobStatus
 
 	Public Property CaseInfo As CaseInfo
 
@@ -66,6 +67,8 @@ Public MustInherit Class MonitoredProcessBase
 		Catch ex As Exception
 			OnFatalError()
 			throw
+		Finally
+			SendSummaryMetrics()
 		End Try
 	End Sub
 
@@ -78,18 +81,19 @@ Public MustInherit Class MonitoredProcessBase
 	End Sub
 
 	Protected Overridable Sub OnFatalError()
-		OnJobEndWithStatus(TelemetryConstants.JobStatus.Failed)
+		Me.SetEndTime()
+		Me._jobStatus = TelemetryConstants.JobStatus.Failed
 		Me.Context.PublishStatusEvent("", $"{TransferDirection} aborted")
 	End Sub
 
 	Protected Overridable Sub OnSuccess()
-		Dim jobStatus As TelemetryConstants.JobStatus = CType(IIf(IsCancelled, TelemetryConstants.JobStatus.Cancelled, TelemetryConstants.JobStatus.Completed), TelemetryConstants.JobStatus)
-		OnJobEndWithStatus(jobStatus)
+		Me.SetEndTime()
+		Me._jobStatus = CType(IIf(IsCancelled, TelemetryConstants.JobStatus.Cancelled, TelemetryConstants.JobStatus.Completed), TelemetryConstants.JobStatus)
 	End Sub
 
 	Protected Overridable Sub OnHasErrors()
-		Dim jobStatus As TelemetryConstants.JobStatus = CType(IIf(IsCancelled, TelemetryConstants.JobStatus.Cancelled, TelemetryConstants.JobStatus.Completed), TelemetryConstants.JobStatus)
-		OnJobEndWithStatus(jobStatus)
+		Me.SetEndTime()
+		Me._jobStatus = CType(IIf(IsCancelled, TelemetryConstants.JobStatus.Cancelled, TelemetryConstants.JobStatus.Completed), TelemetryConstants.JobStatus)
 	End Sub
 
 	Protected MustOverride Function HasErrors() As Boolean
@@ -187,9 +191,8 @@ Public MustInherit Class MonitoredProcessBase
 	''' <returns>Number of completed records.</returns>
 	Protected MustOverride Function GetCompletedRecordsCount() As Long
 
-	Private Sub OnJobEndWithStatus(jobStatus As TelemetryConstants.JobStatus)
-		SetEndTime()
-		SendMetricJobEndReport(jobStatus)
+	Private Sub SendSummaryMetrics()
+		SendMetricJobEndReport(Me._jobStatus)
 		' This is to ensure we send non-zero JobProgressMessage even with small job
 		SendMetricJobProgress(Statistics, checkThrottling := False)
 	End Sub
