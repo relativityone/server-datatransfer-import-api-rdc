@@ -18,7 +18,7 @@ Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
 		Inherits LoadFileBase
 		Implements IImportJob
-		implements IDisposable
+		Implements IDisposable
 
 #Region "Const Fields"
 
@@ -75,8 +75,8 @@ Namespace kCura.WinEDDS
 
 		Public MaxNumberOfErrorsInGrid As Int32 = AppSettings.Instance.DefaultMaxErrorCount
 		Private _errorCount As Int32 = 0
-		private prePushErrorWriter as ErrorMessageWriter(Of ErrorBeforeMassImportArgs) = New ErrorMessageWriter(Of ErrorBeforeMassImportArgs)()
-		private errorMessageFileWriter as ErrorMessageWriter(Of ErrorDuringMassImportArgs) = New ErrorMessageWriter(Of ErrorDuringMassImportArgs)()
+		Private prePushErrorWriter As ErrorMessageWriter(Of ErrorBeforeMassImportArgs) = New ErrorMessageWriter(Of ErrorBeforeMassImportArgs)()
+		Private errorMessageFileWriter As ErrorMessageWriter(Of ErrorDuringMassImportArgs) = New ErrorMessageWriter(Of ErrorDuringMassImportArgs)()
 
 		Private _processId As Guid
 		Private _parentArtifactTypeId As Int32?
@@ -106,11 +106,11 @@ Namespace kCura.WinEDDS
 		''' Gets total number of records. This property is used in our telemetry system.
 		''' </summary>
 		''' <returns>Total number of records.</returns>
-		Friend Readonly Property TotalRecords As Long
+		Friend ReadOnly Property TotalRecords As Long
 			Get
 				' check if RecordCount has already been updated to avoid unnecessary file I/O operation
-					If RecordCount = -1 OrElse RecordCount = 0 Then Return _artifactReader.CountRecords()
-					Return RecordCount
+				If RecordCount = -1 OrElse RecordCount = 0 Then Return _artifactReader.CountRecords()
+				Return RecordCount
 			End Get
 		End Property
 
@@ -323,32 +323,32 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(args As LoadFile, _
-		               context As ProcessContext, _
-		               reporter As IIoReporter, _
-		               logger As Global.Relativity.Logging.ILog, _
-		               timeZoneOffset As Int32, _
-		               initializeUploaders As Boolean, _
-		               processID As Guid, _
-		               doRetryLogic As Boolean, _
-		               bulkLoadFileFieldDelimiter As String, _
-		               enforceDocumentLimit As Boolean, _
-		               tokenSource As CancellationTokenSource, _
+		Public Sub New(args As LoadFile,
+					   context As ProcessContext,
+					   reporter As IIoReporter,
+					   logger As Global.Relativity.Logging.ILog,
+					   timeZoneOffset As Int32,
+					   initializeUploaders As Boolean,
+					   processID As Guid,
+					   doRetryLogic As Boolean,
+					   bulkLoadFileFieldDelimiter As String,
+					   enforceDocumentLimit As Boolean,
+					   tokenSource As CancellationTokenSource,
 					   ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
-			Me.New(args, _
-			       context, _
-			       reporter, _
-			       logger, _
-			       timeZoneOffset, _
-			       True, _
-			       initializeUploaders, _
-			       processID, _
-			       doRetryLogic, _
-			       bulkLoadFileFieldDelimiter, _
-			       enforceDocumentLimit, _
-			       tokenSource, _
-			       initializeArtifactReader:=True, _
-			       executionSource:=executionSource)
+			Me.New(args,
+				   context,
+				   reporter,
+				   logger,
+				   timeZoneOffset,
+				   True,
+				   initializeUploaders,
+				   processID,
+				   doRetryLogic,
+				   bulkLoadFileFieldDelimiter,
+				   enforceDocumentLimit,
+				   tokenSource,
+				   initializeArtifactReader:=True,
+				   executionSource:=executionSource)
 		End Sub
 
 		''' <summary>
@@ -368,33 +368,33 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(args As LoadFile, _
-		               context As ProcessContext, _
-		               reporter As IIoReporter, _
-		               logger As Global.Relativity.Logging.ILog, _
-		               timeZoneOffset As Int32, _
-		               autoDetect As Boolean, _
-		               initializeUploaders As Boolean, _
-		               processID As Guid, _
-		               doRetryLogic As Boolean, _
-		               bulkLoadFileFieldDelimiter As String, _
-		               enforceDocumentLimit As Boolean, _
-		               tokenSource As CancellationTokenSource, _
-		               ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
-			Me.New(args, _
-			       context, _
-			       reporter, _
-			       logger, _
-			       timeZoneOffset, _
-			       autoDetect, _
-			       initializeUploaders, _
-			       processID, _
-			       doRetryLogic,
-			       bulkLoadFileFieldDelimiter, _
-			       enforceDocumentLimit, _
-			       tokenSource, _
-			       initializeArtifactReader:=True, _
-			       executionSource:=executionSource)
+		Public Sub New(args As LoadFile,
+					   context As ProcessContext,
+					   reporter As IIoReporter,
+					   logger As Global.Relativity.Logging.ILog,
+					   timeZoneOffset As Int32,
+					   autoDetect As Boolean,
+					   initializeUploaders As Boolean,
+					   processID As Guid,
+					   doRetryLogic As Boolean,
+					   bulkLoadFileFieldDelimiter As String,
+					   enforceDocumentLimit As Boolean,
+					   tokenSource As CancellationTokenSource,
+					   ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
+			Me.New(args,
+				   context,
+				   reporter,
+				   logger,
+				   timeZoneOffset,
+				   autoDetect,
+				   initializeUploaders,
+				   processID,
+				   doRetryLogic,
+				   bulkLoadFileFieldDelimiter,
+				   enforceDocumentLimit,
+				   tokenSource,
+				   initializeArtifactReader:=True,
+				   executionSource:=executionSource)
 		End Sub
 
 		''' <summary>
@@ -414,29 +414,29 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(args As LoadFile, _
-		               context As ProcessContext, _
-		               reporter As IIoReporter, _
-		               logger As Global.Relativity.Logging.ILog, _
-		               timeZoneOffset As Int32, _
-		               autoDetect As Boolean, _
-		               initializeUploaders As Boolean, _
-		               processID As Guid, _
-		               doRetryLogic As Boolean, _
-		               bulkLoadFileFieldDelimiter As String, _
-		               enforceDocumentLimit As Boolean, _
-		               tokenSource As CancellationTokenSource,
-		               initializeArtifactReader As Boolean,
-		               ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
-			MyBase.New(args, _
-			           reporter, _
-			           logger, _
-			           timeZoneOffset, _
-			           doRetryLogic, _
-			           autoDetect, _
-			           tokenSource, _
-			           initializeArtifactReader, _
-			           executionSource:=executionSource)
+		Public Sub New(args As LoadFile,
+					   context As ProcessContext,
+					   reporter As IIoReporter,
+					   logger As Global.Relativity.Logging.ILog,
+					   timeZoneOffset As Int32,
+					   autoDetect As Boolean,
+					   initializeUploaders As Boolean,
+					   processID As Guid,
+					   doRetryLogic As Boolean,
+					   bulkLoadFileFieldDelimiter As String,
+					   enforceDocumentLimit As Boolean,
+					   tokenSource As CancellationTokenSource,
+					   initializeArtifactReader As Boolean,
+					   ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
+			MyBase.New(args,
+					   reporter,
+					   logger,
+					   timeZoneOffset,
+					   doRetryLogic,
+					   autoDetect,
+					   tokenSource,
+					   initializeArtifactReader,
+					   executionSource:=executionSource)
 
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
 			_usePipeliningForNativeAndObjectImports = AppSettings.Instance.UsePipeliningForNativeAndObjectImports
@@ -446,7 +446,7 @@ Namespace kCura.WinEDDS
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
 			_enforceDocumentLimit = enforceDocumentLimit
 
-			Statistics.ImportObjectType = CType(IIf(args.ArtifactTypeID = ArtifactType.Document, TelemetryConstants.ImportObjectType.Native, TelemetryConstants.ImportObjectType.Objects),TelemetryConstants.ImportObjectType)
+			Statistics.ImportObjectType = CType(IIf(args.ArtifactTypeID = ArtifactType.Document, TelemetryConstants.ImportObjectType.Native, TelemetryConstants.ImportObjectType.Objects), TelemetryConstants.ImportObjectType)
 
 			ShouldImport = True
 			If (String.IsNullOrEmpty(args.OverwriteDestination)) Then
@@ -542,7 +542,7 @@ Namespace kCura.WinEDDS
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or AppSettings.Instance.TapiForceBcpHttpClient
 
 			' Never preserve timestamps for BCP load files.
-			bcpParameters.PreserveFileTimestamps = false
+			bcpParameters.PreserveFileTimestamps = False
 			CreateTapiBridges(nativeParameters, bcpParameters, args.WebApiCredential.TokenProvider)
 		End Sub
 
@@ -716,7 +716,7 @@ Namespace kCura.WinEDDS
 										Me.LogError("OI Configuration Info")
 										Me.LogError("OI version: {Version}", fileTypeConfiguration.Version)
 										Me.LogError("OI idle worker timeout: {Timeout} seconds", fileTypeConfiguration.Timeout)
-									Me.LogError("OI install path: {InstallPath}", fileTypeConfiguration.InstallDirectory.Secure())
+										Me.LogError("OI install path: {InstallPath}", fileTypeConfiguration.InstallDirectory.Secure())
 										If Not fileTypeConfiguration.Exception Is Nothing Then
 											Me.LogError(fileTypeConfiguration.Exception, "OI runtime exception.", fileTypeConfiguration.Exception)
 										End If
@@ -724,7 +724,7 @@ Namespace kCura.WinEDDS
 										Me.LogInformation("OI Configuration Info")
 										Me.LogInformation("OI version: {Version}", fileTypeConfiguration.Version)
 										Me.LogInformation("OI idle worker timeout: {Timeout}", fileTypeConfiguration.Timeout)
-									Me.LogInformation("OI install path: {InstallPath}", fileTypeConfiguration.InstallDirectory.Secure())
+										Me.LogInformation("OI install path: {InstallPath}", fileTypeConfiguration.InstallDirectory.Secure())
 									End If
 								Catch ex As FileTypeIdentifyException
 									Me.LogError(ex, "Failed to retrieve OI configuration info.")
@@ -762,8 +762,8 @@ Namespace kCura.WinEDDS
 
 						If Not Me.OutputFileWriter Is Nothing Then
 							Dim numberOfNotDeletedFiles As Integer = Me.OutputFileWriter.TryCloseAndDeleteAllTempFiles()
-							If numberOfNotDeletedFiles > 0
-								WriteStatusLine(EventType2.Warning, $"Process was not able to delete {numberOfNotDeletedFiles} temporary file(s).", lineNumber := 0)
+							If numberOfNotDeletedFiles > 0 Then
+								WriteStatusLine(EventType2.Warning, $"Process was not able to delete {numberOfNotDeletedFiles} temporary file(s).", lineNumber:=0)
 							End If
 							Me.OutputFileWriter.Dispose()
 							Me.OutputFileWriter = Nothing
@@ -857,7 +857,7 @@ Namespace kCura.WinEDDS
 						Dim foundFileName As String = Me.GetExistingFilePath(filename, retry)
 						fileExists = Not String.IsNullOrEmpty(foundFileName)
 
-						If fileExists AndAlso (Not String.Equals(filename, foundFileName))
+						If fileExists AndAlso (Not String.Equals(filename, foundFileName)) Then
 							WriteWarning($"File {filename} does not exist. File {foundFileName} will be used instead.")
 							filename = foundFileName
 						End If
@@ -900,7 +900,8 @@ Namespace kCura.WinEDDS
 									fileTypeInfo = policy.WaitAndRetry(
 										Function(exception)
 											Dim outsideInException As FileTypeIdentifyException = TryCast(exception, FileTypeIdentifyException)
-											If (Not outsideInException Is Nothing)
+											If (Not outsideInException Is Nothing) Then
+
 												If (outsideInException.Error = FileTypeIdentifyError.Permissions) Then
 													' Only perform a retry operation if configured to do so.
 													Return Me.RetryOptions.HasFlag(RetryOptions.Permissions)
@@ -988,7 +989,7 @@ Namespace kCura.WinEDDS
 							End If
 						Else
 							'Client side folder creation (added back for Dominus# 1127879)
-						parentFolderID = FolderCache.GetFolderId(CleanDestinationFolderPath(value))
+							parentFolderID = FolderCache.GetFolderId(CleanDestinationFolderPath(value))
 						End If
 					Else
 						'TODO: If we are going to do this for more than documents, fix this as well...
@@ -1019,7 +1020,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			End Using
-			
+
 			identityValue = PrepareFieldCollectionAndExtractIdentityValue(record)
 			If identityValue = String.Empty Then
 				'lineStatus += ImportStatus.EmptyIdentifier				'
@@ -1305,7 +1306,7 @@ Namespace kCura.WinEDDS
 						End If
 						sw.Write(c)
 						charactersProcessed += 1
-						hasReachedEof = (sr.Peek = -1) 
+						hasReachedEof = (sr.Peek = -1)
 					End While
 					sw.Flush()
 				End Using
@@ -1341,7 +1342,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		protected Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
+		Protected Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
 			If _lastRunMetadataImport > 0 Then
 				Me.Statistics.MetadataWaitTime += System.DateTime.Now.Ticks - _lastRunMetadataImport
 			End If
@@ -1413,22 +1414,30 @@ Namespace kCura.WinEDDS
 			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 			settings.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
 			settings.Billable = _settings.Billable
-			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing AndAlso Not _Task.IsFaulted AndAlso Not _Task.IsCanceled Then
+			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing AndAlso Not _task.IsFaulted AndAlso Not _task.IsCanceled Then
 				WaitOnPushBatchTask()
 				_task = Nothing
 			End If
 			Dim makeServiceCalls As Action =
-				    Sub()
-					    Dim start As Int64 = DateTime.Now.Ticks
-					    Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
+					Sub()
+						' Here we are assuming issue with the next batch (Statistics.BatchCount will be increased only after BulkImport process will be successful)
+						Dim trackErrBatchNumber As Integer = Statistics.BatchCount + 1
+						Try
+							Dim start As Int64 = DateTime.Now.Ticks
+							Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
-					    Statistics.ProcessRunResults(runResults)
-					    Statistics.SqlTime += (DateTime.Now.Ticks - start)
-					    Statistics.BatchCount += 1
+							Statistics.ProcessRunResults(runResults)
+							Statistics.SqlTime += (DateTime.Now.Ticks - start)
+							Statistics.BatchCount += 1
 
-					    UpdateStatisticsSnapshot(DateTime.Now)
-					    Me.ManageErrors(_artifactTypeID)
-				    End Sub
+							UpdateStatisticsSnapshot(DateTime.Now)
+							Me.ManageErrors(_artifactTypeID)
+						Catch ex As Exception
+							StopImport()
+							OnFatalError($"A fatal error occurred while executing a mass import task. Batch number: {trackErrBatchNumber}", ex, Me.RunId)
+						End Try
+					End Sub
+
 			If _usePipeliningForNativeAndObjectImports Then
 				Dim f As New System.Threading.Tasks.TaskFactory()
 				_task = f.StartNew(makeServiceCalls)
@@ -1619,7 +1628,7 @@ Namespace kCura.WinEDDS
 			If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
 				Dim supportedByViewerProvider As IHasSupportedByViewer = TryCast(mdoc.FileTypeInfo, IHasSupportedByViewer)
 
-				If supportedByViewerProvider Is Nothing
+				If supportedByViewerProvider Is Nothing Then
 					WriteDocumentNativeInfo(Me.IsSupportedRelativityFileType(mdoc.FileTypeInfo), mdoc.GetFileType(), True)
 				Else
 					WriteDocumentNativeInfo(supportedByViewerProvider.SupportedByViewer(), mdoc.GetFileType(), True)
@@ -2002,7 +2011,7 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(EventType2.Error, line)
 		End Sub
 
-		Private Sub RaiseReportError(ByVal row As Hashtable,ByVal identifier As String, ByVal type As String)
+		Private Sub RaiseReportError(ByVal row As Hashtable, ByVal identifier As String, ByVal type As String)
 			_errorCount += 1
 			If _errorCount < MaxNumberOfErrorsInGrid Then
 				OnReportErrorEvent(row)
@@ -2087,8 +2096,8 @@ Namespace kCura.WinEDDS
 			errorMessageFileWriter.ReleaseLock()
 			prePushErrorWriter.ReleaseLock()
 			'' logic downstream is going to expect string.empty if the file is not there physically on disk
-			Dim errorMessageFileWriterFilePath As String =If(errorMessageFileWriter.FileCreated, errorMessageFileWriter.FilePath,  String.Empty)
-			Dim prePushErrorWriterFilePath As String =If(prePushErrorWriter.FileCreated, prePushErrorWriter.FilePath,  String.Empty)
+			Dim errorMessageFileWriterFilePath As String = If(errorMessageFileWriter.FileCreated, errorMessageFileWriter.FilePath, String.Empty)
+			Dim prePushErrorWriterFilePath As String = If(prePushErrorWriter.FileCreated, prePushErrorWriter.FilePath, String.Empty)
 
 			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriterFilePath, prePushErrorWriterFilePath)
 			Dim rootFileName As String = _filePath
