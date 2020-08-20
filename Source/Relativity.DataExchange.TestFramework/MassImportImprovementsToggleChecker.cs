@@ -6,13 +6,24 @@ namespace Relativity.DataExchange.TestFramework
 {
 	using System;
 	using System.Data.SqlClient;
+	using System.Threading.Tasks;
 	using NUnit.Framework;
 
 	public static class MassImportImprovementsToggleChecker
 	{
 		public static void SkipTestIfMassImportImprovementToggleOff(IntegrationTestParameters parameter)
 		{
-			bool toggleValue = GetMassImportToggleValueFromDatabase(parameter);
+			bool toggleValue;
+
+			try
+			{
+				toggleValue = GetMassImportToggleValueFromDatabase(parameter);
+			}
+			catch (SqlException)
+			{
+				toggleValue = GetMassImportToggleValueAsync(parameter).ConfigureAwait(false).GetAwaiter().GetResult();
+			}
+
 			if (!toggleValue)
 			{
 				Assert.Ignore(TestStrings.SkipTestMessage, $"MassImportImprovementToggle {toggleValue} ");
@@ -36,6 +47,14 @@ namespace Relativity.DataExchange.TestFramework
 					Console.WriteLine($"Mass import improvements toggle value {result.ToString()}");
 					return result;
 				}
+			}
+		}
+
+		private static async Task<bool> GetMassImportToggleValueAsync(IntegrationTestParameters parameters)
+		{
+			using (var toggleService = ServiceHelper.GetServiceProxy<Services.Environmental.IToggleService>(parameters))
+			{
+				return await toggleService.IsEnabledAsync("Relativity.Core.Toggle.MassImportImprovementsToggle, Relativity.Data").ConfigureAwait(false);
 			}
 		}
 	}

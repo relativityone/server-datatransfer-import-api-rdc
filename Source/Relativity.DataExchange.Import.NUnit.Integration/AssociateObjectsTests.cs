@@ -292,6 +292,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[IdentifiedTest("2FD966EA-FC20-4D2F-B86D-4EF692DC07E2")]
 		public void ShouldPreventReferencesToDuplicateAssociateMultiObjects()
 		{
+			MassImportImprovementsToggleChecker.SkipTestIfMassImportImprovementToggleOff(this.TestParameters);
+
 			// ARRANGE
 			const int RowsReferencingDuplicateObject = 5;
 			const int RowsReferencingNonDuplicateObject = 5;
