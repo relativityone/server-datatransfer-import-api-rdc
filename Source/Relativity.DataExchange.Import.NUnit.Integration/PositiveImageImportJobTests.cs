@@ -18,7 +18,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
-	using global::NUnit.Framework.Constraints;
 
 	using kCura.Relativity.DataReaderClient;
 

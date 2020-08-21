@@ -36,7 +36,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private const string ReferenceToMultiObjectFieldName = "ReferenceToMultiObject";
 		private const string ReferenceToDocumentFieldName = "ReferenceToDocument";
 
-		private const RelativityVersion MinSupportedVersion = RelativityVersion.Goatsbeard;
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
 		private bool testsSkipped;
 
 		/// <summary>

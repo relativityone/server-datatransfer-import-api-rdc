@@ -25,7 +25,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	public class PermissionTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const int _WAIT_TIME_FOR_INSTANCE_SETTING_CHANGE_IN_MS = 30 * 1000;
-		private const RelativityVersion MinSupportedVersion = RelativityVersion.Goatsbeard;
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
 		private bool testsSkipped;
 
 		private int groupId;

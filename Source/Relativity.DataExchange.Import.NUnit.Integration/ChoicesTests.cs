@@ -28,7 +28,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	public class ChoicesTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const int NumberOfDocumentsToImport = 10;
-		private const RelativityVersion MinSupportedVersion = RelativityVersion.Goatsbeard;
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
 		private readonly string multiValueDelimiter = SettingsConstants.DefaultMultiValueDelimiter.ToString();
 
 		private bool testsSkipped = false;

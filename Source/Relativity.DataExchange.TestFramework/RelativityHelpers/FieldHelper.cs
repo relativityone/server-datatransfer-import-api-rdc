@@ -23,6 +23,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using Relativity.Services.Interfaces.Field;
 	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Interfaces.Shared.Models;
+	using Relativity.Services.LinkManager.Interfaces;
 	using Relativity.Services.Objects;
 	using Relativity.Services.Objects.DataContracts;
 	using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
@@ -77,18 +78,40 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return CreateFieldAsync(testParameters, request);
 		}
 
-		public static Task<int> CreateFixedLengthTextFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId, bool isOpenToAssociations, int length)
+		public static async Task<int> CreateFixedLengthTextFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId, bool isOpenToAssociations, int length)
 		{
-			var request = new FixedLengthFieldRequest()
+			if (RelativityVersionChecker.VersionIsLowerThan(testParameters, RelativityVersion.Goatsbeard))
 			{
-			  Name = fieldName,
-			  ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = destinationRdoArtifactTypeId },
-			  OpenToAssociations = isOpenToAssociations,
-			  HasUnicode = true,
-			  Length = length,
-			};
+				var request = FieldHelper.PrepareFixedLengthFieldRequest(
+					testParameters.WorkspaceId,
+					fieldName,
+					destinationRdoArtifactTypeId,
+					isOpenToAssociations,
+					string.Empty,
+					length,
+					true);
 
-			return CreateFieldAsync(testParameters, request);
+				return await CreateFixedLengthTextFieldUsingHttpClientAsync(
+					testParameters,
+					request)
+					.ConfigureAwait(false);
+			}
+			else
+			{
+				var request = new FixedLengthFieldRequest()
+				{
+					Name = fieldName,
+					ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = destinationRdoArtifactTypeId },
+					OpenToAssociations = isOpenToAssociations,
+					HasUnicode = true,
+					Length = length,
+				};
+
+				return await CreateFixedLengthTextFieldUsingKeplerAsync(
+							   testParameters,
+							   request)
+						   .ConfigureAwait(false);
+			}
 		}
 
 		public static Task CreateLongTextFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId, bool isOpenToAssociations)
@@ -165,7 +188,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return await ExecuteMethodForFieldType(parameters, methodsWithReturnValues, fieldRequest).ConfigureAwait(false);
 		}
 
-		public static void CreateField(
+		public static int CreateField(
 			IntegrationTestParameters parameters,
 			int workspaceObjectTypeId,
 			kCura.Relativity.Client.DTOs.Field field)
@@ -194,7 +217,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				resultSet = client.Repositories.Field.Create(field);
 				if (resultSet.Success)
 				{
-					return;
+					return resultSet.Results[0].Artifact.ArtifactID;
 				}
 
 				List<Exception> innerExceptions = new List<Exception>();
@@ -303,6 +326,52 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 
 			return fieldsValuesForDocuments;
+		}
+
+		public static string PrepareFixedLengthFieldRequest(
+			int parentArtifactId,
+			string name,
+			int destinationRdoArtifactTypeId,
+			bool openToAssociations,
+			string width,
+			int length,
+			bool unicode)
+		{
+			var fixedLengthFieldRequest = ResourceFileHelper.GetResourceFolderPath("FixedLengthTextFieldRequest.json");
+			JObject request = JObject.Parse(File.ReadAllText(fixedLengthFieldRequest));
+
+			request["Parent Artifact"]["Artifact ID"] = parentArtifactId;
+			request["Name"] = name;
+			request["Object Type"]["Descriptor Artifact Type ID"] = destinationRdoArtifactTypeId;
+			request["Open To Associations"] = openToAssociations;
+			request["Width"] = width;
+			request["Length"] = length;
+			request["Unicode"] = unicode;
+
+			if (destinationRdoArtifactTypeId == (int)ArtifactTypeID.Document)
+			{
+				request["Is Relational"] = false;
+			}
+
+			return request.ToString();
+		}
+
+		public static async Task<int> CreateFixedLengthTextFieldUsingHttpClientAsync(IntegrationTestParameters testParameters, string request)
+		{
+			string url =
+				$"{testParameters.RelativityRestUrl.AbsoluteUri}/Relativity.REST/Workspace/{testParameters.WorkspaceId}/Field";
+
+			var queryResult = HttpClientHelper.PostAsync(testParameters, new Uri(url), request).GetAwaiter().GetResult();
+
+			JObject result = JObject.Parse(queryResult);
+			int resultArtifactId = (int)result["Results"][0]["ArtifactID"];
+
+			return await Task.FromResult(resultArtifactId).ConfigureAwait(false);
+		}
+
+		public static async Task<int> CreateFixedLengthTextFieldUsingKeplerAsync(IntegrationTestParameters testParameters, FixedLengthFieldRequest request)
+		{
+			return await CreateFieldAsync(testParameters, request).ConfigureAwait(false);
 		}
 
 		public static async Task EnsureWellKnownFieldsAsync(IntegrationTestParameters parameters)

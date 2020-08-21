@@ -1,0 +1,32 @@
+{
+    "fieldRequest":{
+        "Name":  "Updated Fixed-length Field",
+        "ObjectType": {
+                "ArtifactID": 1035231,
+                "ArtifactTypeID": 10,
+                "Name": "Document"
+        },
+        "Length": 100,
+        "IsRequired": false,
+        "IncludeInTextIndex": false,
+        "HasUnicode": false,
+        "AllowHtml": false,
+        "OpenToAssociations": false,
+        "PropagateTo": [],
+        "IsLinked": false,
+        "FilterType": "None",
+        "AllowSortTally": false,
+        "Width": null, 
+        "AllowGroupBy": false,
+        "AllowPivot": false,
+        "Wrapping": false,
+        "IsRelational": false,
+        "Key": null,
+        "SHIFT": false,
+        "CTRL": false,
+        "ALT": false,
+        "RelativityApplications": [],
+        "Keywords": "",
+        "Notes": "Updated the field"
+    }
+}

@@ -44,7 +44,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private const string MultiObjectFieldName1 = "MULTI_OBJECT_FIELD_1";
 		private const string MultiObjectFieldName2 = "MULTI_OBJECT_FIELD_2";
 
-		private const RelativityVersion MinSupportedVersion = RelativityVersion.Goatsbeard;
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
 		private bool testsSkipped = false;
 
 		private int createdObjectArtifactTypeId = 0;
@@ -126,7 +126,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.NotInCompatibility)]
-		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Goatsbeard)]
 		[IdentifiedTest("b9b6897f-ea3f-4694-80d2-db0852938789")]
 		public void ShouldImportFolders()
 		{

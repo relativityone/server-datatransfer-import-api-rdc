@@ -19,15 +19,17 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	using global::NUnit.Framework;
 	using kCura.Relativity.DataReaderClient;
+
+	using Newtonsoft.Json.Linq;
+
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Services.Interfaces.Field;
 	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Interfaces.Shared.Models;
-
-	using FieldHelper = Relativity.FieldHelper;
 
 	public abstract class ImportJobTestBase<TJobExecutionContext> : IDisposable
 		where TJobExecutionContext : class, IDisposable, new()
@@ -41,9 +43,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			this.SetTestParameters(testParameters);
 
-			ServicePointManager.SecurityProtocol =
-				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
-				| SecurityProtocolType.Tls12;
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls
+																			 | SecurityProtocolType.Tls11
+																			 | SecurityProtocolType.Tls12;
 		}
 
 		protected IntegrationTestParameters TestParameters { get; private set; }
@@ -101,7 +103,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.SetTestParameters(newParameters);
 		}
 
-		protected static void ThenTheErrorRowsHaveCorrectMessage(IEnumerable<IDictionary> errorRows, string expectedMessage)
+		protected static void ThenTheErrorRowsHaveCorrectMessage(
+			IEnumerable<IDictionary> errorRows,
+			string expectedMessage)
 		{
 			errorRows = errorRows ?? throw new ArgumentNullException(nameof(errorRows));
 
@@ -123,7 +127,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				return;
 			}
 
-			Assert.That(testJobResult.SwitchedToWebMode, Is.False, $"Job was expected to run in {expectedClient} mode but switched to Web mode");
+			Assert.That(
+				testJobResult.SwitchedToWebMode,
+				Is.False,
+				$"Job was expected to run in {expectedClient} mode but switched to Web mode");
 		}
 
 		protected static IEnumerable<string> GetControlNumberEnumerable(
@@ -131,9 +138,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			int numberOfDocumentsToAppend,
 			string nameSuffix)
 		{
-			IEnumerable<string> controlNumber = (overwriteMode == OverwriteModeEnum.Overlay || overwriteMode == OverwriteModeEnum.AppendOverlay) ?
-				                                    TestData.SampleDocFiles.Select(Path.GetFileName) :
-				                                    Enumerable.Empty<string>();
+			IEnumerable<string> controlNumber =
+				(overwriteMode == OverwriteModeEnum.Overlay || overwriteMode == OverwriteModeEnum.AppendOverlay)
+					? TestData.SampleDocFiles.Select(Path.GetFileName)
+					: Enumerable.Empty<string>();
 
 			if (overwriteMode == OverwriteModeEnum.Append || overwriteMode == OverwriteModeEnum.AppendOverlay)
 			{
@@ -169,38 +177,28 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			string objectName = Guid.NewGuid().ToString();
 
 			var objectId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, objectName).ConfigureAwait(false);
-			await TestFramework.RelativityHelpers.FieldHelper.CreateFileFieldAsync(this.TestParameters, "FilePath", objectId).ConfigureAwait(false);
+			await FieldHelper
+				.CreateFileFieldAsync(this.TestParameters, "FilePath", objectId).ConfigureAwait(false);
 
-			var controlNumberFieldRequest = new FixedLengthFieldRequest()
-				                                {
-					                                Name = WellKnownFields.ControlNumber,
-					                                ObjectType = new ObjectTypeIdentifier() { Name = objectName },
-					                                Length = 255,
-					                                IsRequired = true,
-					                                IncludeInTextIndex = true,
-					                                FilterType = FilterType.TextBox,
-					                                AllowSortTally = true,
-					                                AllowGroupBy = false,
-					                                AllowPivot = false,
-					                                HasUnicode = true,
-					                                OpenToAssociations = false,
-					                                IsRelational = false,
-					                                AllowHtml = false,
-					                                IsLinked = true,
-					                                Wrapping = true,
-				                                };
-			using (IFieldManager fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(this.TestParameters))
+			int artifactId =
+				FieldHelper.QueryIdentifierFieldId(this.TestParameters, objectName);
+
+			if (RelativityVersionChecker.VersionIsLowerThan(this.TestParameters, RelativityVersion.Goatsbeard))
 			{
-				await fieldManager.UpdateFixedLengthFieldAsync(
-					this.TestParameters.WorkspaceId,
-					TestFramework.RelativityHelpers.FieldHelper.QueryIdentifierFieldId(this.TestParameters, objectName),
-					controlNumberFieldRequest).ConfigureAwait(false);
+				await this.UpdateFixedLengthFieldUsingHttpClientAsync(objectName, artifactId).ConfigureAwait(false);
+			}
+			else
+			{
+				await this.UpdateFixedLengthFieldUsingKeplerAsync(objectName, artifactId).ConfigureAwait(false);
 			}
 
 			return objectId;
 		}
 
-		protected void ThenTheImportJobIsSuccessful(ImportTestJobResult testJobResult, int expectedTotalRows) // TODO create extension method for that
+		protected void
+			ThenTheImportJobIsSuccessful(
+				ImportTestJobResult testJobResult,
+				int expectedTotalRows) // TODO create extension method for that
 		{
 			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
@@ -209,7 +207,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ValidateErrorRowsCount(testJobResult, 0);
 		}
 
-		protected void ThenTheImportJobFailedWithFatalError(ImportTestJobResult testJobResult, int expectedErrorRows, int expectedTotalRows)
+		protected void ThenTheImportJobFailedWithFatalError(
+			ImportTestJobResult testJobResult,
+			int expectedErrorRows,
+			int expectedTotalRows)
 		{
 			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
@@ -220,7 +221,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(testJobResult.FatalException, Is.Not.Null);
 		}
 
-		protected void ThenTheImportJobCompletedWithErrors(ImportTestJobResult testJobResult, int expectedErrorRows, int expectedTotalRows)
+		protected void ThenTheImportJobCompletedWithErrors(
+			ImportTestJobResult testJobResult,
+			int expectedErrorRows,
+			int expectedTotalRows)
 		{
 			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
@@ -256,14 +260,84 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
-			Assert.That(testJobResult.FatalException, Is.Null, $"Import was aborted due to the fatal exception: {testJobResult.FatalException?.Message}.");
-			Assert.That(testJobResult.JobFatalExceptions, Has.Count.Zero, $"{testJobResult.JobFatalExceptions.Count} fatal exceptions were thrown during import.");
+			Assert.That(
+				testJobResult.FatalException,
+				Is.Null,
+				$"Import was aborted due to the fatal exception: {testJobResult.FatalException?.Message}.");
+			Assert.That(
+				testJobResult.JobFatalExceptions,
+				Has.Count.Zero,
+				$"{testJobResult.JobFatalExceptions.Count} fatal exceptions were thrown during import.");
+		}
+
+		private static async Task<string> PrepareUpdateFixedLengthFieldRequestAsync(IntegrationTestParameters testParameters, string objectName, int artifactId)
+		{
+			var url =
+				$"{testParameters.RelativityRestUrl.AbsoluteUri}/Relativity.Fields/workspace/{testParameters.WorkspaceId}/fields/{artifactId}";
+
+			JObject objectData = JObject.Parse(await HttpClientHelper.GetAsync(testParameters, new Uri(url)).ConfigureAwait(false));
+
+			var updateFixedLengthField = ResourceFileHelper.GetResourceFolderPath("UpdateFixedLengthTextFieldRequest.json");
+			JObject request = JObject.Parse(File.ReadAllText(updateFixedLengthField));
+
+			request["fieldRequest"]["Name"] = WellKnownFields.ControlNumber;
+			request["fieldRequest"]["ObjectType"]["Name"] = objectName;
+			request["fieldRequest"]["ObjectType"]["ArtifactID"] = objectData["ObjectType"]["ArtifactID"];
+			request["fieldRequest"]["ObjectType"]["ArtifactTypeID"] = objectData["ObjectType"]["ArtifactTypeID"];
+
+			return request.ToString();
 		}
 
 		private void SetTestParameters(IntegrationTestParameters testParameters)
 		{
 			this.TestParameters = testParameters ?? throw new ArgumentNullException(nameof(testParameters));
-			Assume.That(testParameters.WorkspaceId, Is.Positive, "The test workspace must be created or specified in order to run this integration test. One possible reason for this error is that Skip Integration Tests is set to true.");
+			Assume.That(
+				testParameters.WorkspaceId,
+				Is.Positive,
+				"The test workspace must be created or specified in order to run this integration test. One possible reason for this error is that Skip Integration Tests is set to true.");
+		}
+
+		private async Task UpdateFixedLengthFieldUsingKeplerAsync(string objectName, int queryFieldId)
+		{
+			var controlNumberFieldRequest = new FixedLengthFieldRequest()
+			{
+				Name = WellKnownFields.ControlNumber,
+				ObjectType = new ObjectTypeIdentifier() { Name = objectName },
+				Length = 255,
+				IsRequired = true,
+				IncludeInTextIndex = true,
+				FilterType = FilterType.TextBox,
+				AllowSortTally = true,
+				AllowGroupBy = false,
+				AllowPivot = false,
+				HasUnicode = true,
+				OpenToAssociations = false,
+				IsRelational = false,
+				AllowHtml = false,
+				IsLinked = true,
+				Wrapping = true,
+			};
+
+			using (IFieldManager fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(this.TestParameters))
+			{
+				await fieldManager.UpdateFixedLengthFieldAsync(
+					this.TestParameters.WorkspaceId,
+					queryFieldId,
+					controlNumberFieldRequest).ConfigureAwait(false);
+			}
+		}
+
+		private async Task UpdateFixedLengthFieldUsingHttpClientAsync(string objectName, int artifactId)
+		{
+			string request =
+				await PrepareUpdateFixedLengthFieldRequestAsync(this.TestParameters, objectName, artifactId)
+					.ConfigureAwait(false);
+
+			var url =
+				$"{this.TestParameters.RelativityRestUrl.AbsoluteUri}/relativity.fields/workspace/{this.TestParameters.WorkspaceId}/fixedlengthfields/{artifactId}";
+
+			await HttpClientHelper.PutAsync(this.TestParameters, new Uri(url), request.ToString())
+							 .ConfigureAwait(false);
 		}
 	}
 }

@@ -26,15 +26,19 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		public static async Task<int> CreateNewGroupAsync(IntegrationTestParameters parameters, string name)
 		{
 			return RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.Lanceleaf)
-			? await CreateNewGroupAsyncUsingHttpClient(parameters, name).ConfigureAwait(false)
-			: await CreateNewGroupAsyncUsingKepler(parameters, name).ConfigureAwait(false);
+			? await CreateNewGroupUsingHttpClientAsync(parameters, name).ConfigureAwait(false)
+			: await CreateNewGroupUsingKeplerAsync(parameters, name).ConfigureAwait(false);
 		}
 
 		public static async Task RemoveGroupAsync(IntegrationTestParameters parameters, int groupId)
 		{
-			using (var groupManager = ServiceHelper.GetServiceProxy<IGroupManager>(parameters))
+			if (RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.Goatsbeard))
 			{
-				await groupManager.DeleteAsync(groupId).ConfigureAwait(false);
+				await GroupHelper.RemoveGroupUsingHttpClientAsync(parameters, groupId).ConfigureAwait(false);
+			}
+			else
+			{
+				await GroupHelper.RemoveGroupUsingKelperAsync(parameters, groupId).ConfigureAwait(false);
 			}
 		}
 
@@ -46,11 +50,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 			else
 			{
-				await AddMemberAsyncUsingKepler(parameters, groupId, userId).ConfigureAwait(false);
+				await AddMemberUsingKeplerAsync(parameters, groupId, userId).ConfigureAwait(false);
 			}
 		}
 
-		private static async Task<int> CreateNewGroupAsyncUsingKepler(IntegrationTestParameters parameters, string name)
+		private static async Task<int> CreateNewGroupUsingKeplerAsync(IntegrationTestParameters parameters, string name)
 		{
 			using (var groupManager = ServiceHelper.GetServiceProxy<IGroupManager>(parameters))
 			{
@@ -73,7 +77,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		private static async Task<int> CreateNewGroupAsyncUsingHttpClient(IntegrationTestParameters parameters, string name)
+		private static async Task<int> CreateNewGroupUsingHttpClientAsync(IntegrationTestParameters parameters, string name)
 		{
 			string createGroupJson = ResourceFileHelper.GetResourceFolderPath("CreateGroupRequest.json");
 			JObject request = JObject.Parse(File.ReadAllText(createGroupJson));
@@ -91,7 +95,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return (int)resultObject["Results"][0]["ArtifactID"];
 		}
 
-		private static async Task AddMemberAsyncUsingKepler(IntegrationTestParameters parameters, int groupId, int userId)
+		private static async Task AddMemberUsingKeplerAsync(IntegrationTestParameters parameters, int groupId, int userId)
 		{
 			using (var groupManager = ServiceHelper.GetServiceProxy<IGroupManager>(parameters))
 			{
@@ -101,7 +105,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		private static async Task AddMemberAsyncUsingHttpClient(IntegrationTestParameters parameters, int groupId, int userId)
 		{
-			string request = await PrepareAddMemberToGroupRequest(parameters, groupId, userId).ConfigureAwait(false);
+			string request = await PrepareAddMemberToGroupRequestAsync(parameters, groupId, userId).ConfigureAwait(false);
 
 			string url =
 				$"{parameters.RelativityRestUrl.AbsoluteUri}/Relativity.REST/Relativity/User/{userId}";
@@ -109,7 +113,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			await HttpClientHelper.PutAsync(parameters, new Uri(url), request).ConfigureAwait(false);
 		}
 
-		private static async Task<string> PrepareAddMemberToGroupRequest(IntegrationTestParameters parameters, int groupId, int userId)
+		private static async Task<string> PrepareAddMemberToGroupRequestAsync(IntegrationTestParameters parameters, int groupId, int userId)
 		{
 			string addGroupMemberJson = ResourceFileHelper.GetResourceFolderPath("AddGroupMemberRequest.json");
 			JObject request = JObject.Parse(File.ReadAllText(addGroupMemberJson));
@@ -134,6 +138,22 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			groupsArray.Add(groupToAdd);
 
 			return groupsArray;
+		}
+
+		private static async Task RemoveGroupUsingKelperAsync(IntegrationTestParameters parameters, int groupId)
+		{
+			using (var groupManager = ServiceHelper.GetServiceProxy<IGroupManager>(parameters))
+			{
+				await groupManager.DeleteAsync(groupId).ConfigureAwait(false);
+			}
+		}
+
+		private static async Task RemoveGroupUsingHttpClientAsync(IntegrationTestParameters parameters, int groupId)
+		{
+			string url =
+				$"{parameters.RelativityRestUrl.AbsoluteUri}/Relativity.REST/Relativity/Group/{groupId}";
+
+			await HttpClientHelper.DeleteAsync(parameters, new Uri(url)).ConfigureAwait(false);
 		}
 	}
 }

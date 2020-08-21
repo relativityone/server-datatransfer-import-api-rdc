@@ -24,7 +24,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
     [Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
     public class OverlayIdentifierTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
-		private const RelativityVersion MinSupportedVersion = RelativityVersion.Goatsbeard;
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
 		private bool testsSkipped = false;
 
 		private int createdObjectArtifactTypeId;
@@ -43,13 +43,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			if (!this.testsSkipped)
 			{
 				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false); // Remove all Documents imported in AssemblySetup
-				createdObjectArtifactTypeId = await this.CreateObjectInWorkspaceAsync().ConfigureAwait(false);
+
+				this.createdObjectArtifactTypeId = await this.CreateObjectInWorkspaceAsync().ConfigureAwait(false);
+
 				await Task.WhenAll(
-						this.CreateTextFieldAsync(this.createdObjectArtifactTypeId, WellKnownFields.KeyFieldName).ContinueWith(task => this.objectKeyFieldId = task.Result),
-						this.CreateTextFieldAsync((int)ArtifactTypeID.Document, WellKnownFields.KeyFieldName).ContinueWith(task => this.documentKeyFieldId = task.Result),
-						this.CreateTextFieldAsync(this.createdObjectArtifactTypeId, WellKnownFields.TextFieldName).ContinueWith(task => this.objectTextFieldId = task.Result),
-						this.CreateTextFieldAsync((int)ArtifactTypeID.Document, WellKnownFields.TextFieldName).ContinueWith(task => this.documentTextFieldId = task.Result))
-					.ConfigureAwait(false);
+					   this.CreateTextFieldAsync(this.createdObjectArtifactTypeId, WellKnownFields.KeyFieldName).ContinueWith(task => this.objectKeyFieldId = task.Result),
+					   this.CreateTextFieldAsync((int)ArtifactTypeID.Document, WellKnownFields.KeyFieldName).ContinueWith(task => this.documentKeyFieldId = task.Result),
+					   this.CreateTextFieldAsync(this.createdObjectArtifactTypeId, WellKnownFields.TextFieldName).ContinueWith(task => this.objectTextFieldId = task.Result),
+					   this.CreateTextFieldAsync((int)ArtifactTypeID.Document, WellKnownFields.TextFieldName).ContinueWith(task => this.documentTextFieldId = task.Result))
+				   .ConfigureAwait(false);
 			}
 		}
 
@@ -247,14 +249,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		private async Task<int> CreateTextFieldAsync(int rdoArtifactTypeId, string fieldName)
 		{
-			int fieldId = await FieldHelper.CreateFixedLengthTextFieldAsync(
+			return await FieldHelper.CreateFixedLengthTextFieldAsync(
 				this.TestParameters,
 				fieldName,
 				rdoArtifactTypeId,
 				false,
-				length: 50).ConfigureAwait(false);
-
-			return fieldId;
+				length: 50)
+				.ConfigureAwait(false);
 		}
 
 		private int GetKeyFieldIdForTest(ArtifactType artifactType)
