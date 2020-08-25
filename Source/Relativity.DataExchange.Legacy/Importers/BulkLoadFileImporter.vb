@@ -742,7 +742,6 @@ Namespace kCura.WinEDDS
 						Using Timekeeper.CaptureTime("ReadFile_OtherFinalization")
 							Me.TryPushNativeBatch(True, True, True)
 							WaitOnPushBatchTask()
-							RaiseEvent EndFileImport(RunId)
 							WriteEndImport("Finish")
 							_artifactReader.Close()
 						End Using
@@ -757,6 +756,7 @@ Namespace kCura.WinEDDS
 					Me.LogStatistics()
 				Finally
 					Using Timekeeper.CaptureTime("ReadFile_CleanupTempTables")
+						RaiseEvent EndFileImport(RunId)
 						DestroyTapiBridges()
 						CleanupTempTables()
 

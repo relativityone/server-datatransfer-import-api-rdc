@@ -204,7 +204,7 @@ Namespace kCura.WinEDDS
 			Me.Context.InputArgs = LoadFile.FilePath
 		End Sub
 
-		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
+		Private Sub AuditRun(ByVal hasFatalErrorOccurred As Boolean, ByVal runID As String)
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics
 				retval.ArtifactTypeID = LoadFile.ArtifactTypeID
@@ -292,8 +292,9 @@ Namespace kCura.WinEDDS
 				retval.SendNotification = LoadFile.SendEmailOnLoadCompletion
 				Dim auditManager As New kCura.WinEDDS.Service.AuditManager(LoadFile.Credentials, LoadFile.CookieContainer)
 
-				auditManager.AuditObjectImport(LoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
-			Catch
+				auditManager.AuditObjectImport(LoadFile.CaseInfo.ArtifactID, runID, hasFatalErrorOccurred, retval)
+			Catch ex As Exception
+				logger.LogError(ex, "An error has occurred during audit")
 			End Try
 		End Sub
 
@@ -345,7 +346,6 @@ Namespace kCura.WinEDDS
 				Me.Context.PublishProcessCompleted(False, "", True)
 				_hasFatalErrorOccured = True
 			End SyncLock
-			Me.AuditRun(False, runID)
 		End Sub
 
 		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String) Handles _loadFileImporter.UploadModeChangeEvent
@@ -397,7 +397,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _loadFileImporter_EndFileImport(ByVal runID As String) Handles _loadFileImporter.EndFileImport
-			Me.AuditRun(True, runID)
+			Me.AuditRun(_hasFatalErrorOccured, runID)
 		End Sub
 
 		Dim isDisposed as Boolean
