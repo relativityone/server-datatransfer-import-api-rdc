@@ -1255,24 +1255,13 @@ Namespace kCura.WinEDDS
 
 					Me.Statistics.FileWaitTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 				Catch ex As Exception
-					If BatchResizeEnabled AndAlso IsTimeoutException(ex) AndAlso ShouldImport Then
-						Me.LogWarning(ex, "A SQL or HTTP timeout error has occurred bulk importing the native batch and the batch will be resized.")
-						Dim originalBatchSize As Int32 = Me.ImportBatchSize
-						LowerBatchLimits()
-						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
-						If Not ShouldImport Then Throw 'after the pause
-						Me.LowerBatchSizeAndRetry(outputNativePath, originalBatchSize)
-					Else
-						If ShouldImport AndAlso Not BatchResizeEnabled Then
-							Me.LogError("Pushing the native batch failed but lowering the batch and performing a retry is disabled.", ex)
-						End If
-
-						If ShouldImport AndAlso BatchResizeEnabled Then
-							Me.LogError("Pushing the native batch failed but lowering the batch isn't supported because the error isn't timeout related.", ex)
-						End If
-
-						Throw
+					' the code responsible for retries has been removed as it could cause the silent data loss issue.
+					If ShouldImport Then
+						Me.LogError("Pushing the native batch failed but lowering the batch and performing a retry is disabled.", ex)
 					End If
+
+					Throw
+
 				End Try
 			End If
 
@@ -1414,7 +1403,7 @@ Namespace kCura.WinEDDS
 			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 			settings.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
 			settings.Billable = _settings.Billable
-			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing AndAlso Not _task.IsFaulted AndAlso Not _task.IsCanceled Then
+			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing Then
 				WaitOnPushBatchTask()
 				_task = Nothing
 			End If
@@ -1422,20 +1411,16 @@ Namespace kCura.WinEDDS
 					Sub()
 						' Here we are assuming issue with the next batch (Statistics.BatchCount will be increased only after BulkImport process will be successful)
 						Dim trackErrBatchNumber As Integer = Statistics.BatchCount + 1
-						Try
-							Dim start As Int64 = DateTime.Now.Ticks
-							Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
+						
+						Dim start As Int64 = DateTime.Now.Ticks
+						Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
-							Statistics.ProcessRunResults(runResults)
-							Statistics.SqlTime += (DateTime.Now.Ticks - start)
-							Statistics.BatchCount += 1
+						Statistics.ProcessRunResults(runResults)
+						Statistics.SqlTime += (DateTime.Now.Ticks - start)
+						Statistics.BatchCount += 1
 
-							UpdateStatisticsSnapshot(DateTime.Now)
-							Me.ManageErrors(_artifactTypeID)
-						Catch ex As Exception
-							StopImport()
-							OnFatalError($"A fatal error occurred while executing a mass import task. Batch number: {trackErrBatchNumber}", ex, Me.RunId)
-						End Try
+						UpdateStatisticsSnapshot(DateTime.Now)
+						Me.ManageErrors(_artifactTypeID)
 					End Sub
 
 			If _usePipeliningForNativeAndObjectImports Then
