@@ -161,7 +161,7 @@ Namespace kCura.WinEDDS
 			Return returnImporter
 		End Function
 
-		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
+		Private Sub AuditRun(ByVal runID As String)
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ImageImportStatistics
 				retval.DestinationFolderArtifactID = ImageLoadFile.DestinationFolderID
@@ -206,8 +206,9 @@ Namespace kCura.WinEDDS
 				retval.SendNotification = ImageLoadFile.SendEmailOnLoadCompletion
 				Dim auditmanager As New kCura.WinEDDS.Service.AuditManager(ImageLoadFile.Credential, ImageLoadFile.CookieContainer)
 
-				auditmanager.AuditImageImport(ImageLoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
-			Catch
+				auditmanager.AuditImageImport(ImageLoadFile.CaseInfo.ArtifactID, runID, _hasFatalErrorOccured, retval)
+			Catch ex As Exception
+				logger.LogError(ex, "An error has occurred during audit")
 			End Try
 		End Sub
 
@@ -240,11 +241,13 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _imageFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _imageFileImporter.FatalErrorEvent
-			SyncLock Me.Context
-				Me.Context.PublishFatalException(ex)
-				Me.Context.PublishProcessCompleted(False, _imageFileImporter.ErrorLogFileName, True)
-				_hasFatalErrorOccured = True
-			End SyncLock
+			If Not _hasFatalErrorOccured Then
+				SyncLock Me.Context
+					Me.Context.PublishFatalException(ex)
+					Me.Context.PublishProcessCompleted(False, _imageFileImporter.ErrorLogFileName, True)
+					_hasFatalErrorOccured = True
+				End SyncLock
+			End If
 		End Sub
 
 		Private Sub _imageFileImporter_ReportErrorEvent(ByVal row As System.Collections.IDictionary) Handles _imageFileImporter.ReportErrorEvent
@@ -266,8 +269,8 @@ Namespace kCura.WinEDDS
 			End SyncLock
 		End Sub
 
-		Private Sub _imageFileImporter_EndRun(ByVal success As Boolean, ByVal runID As String) Handles _imageFileImporter.EndRun
-			Me.AuditRun(success, runID)
+		Private Sub _imageFileImporter_EndRun(ByVal runID As String) Handles _imageFileImporter.EndRun
+			Me.AuditRun(runID)
 		End Sub
 	End Class
 End Namespace

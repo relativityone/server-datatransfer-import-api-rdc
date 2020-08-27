@@ -766,6 +766,7 @@ Namespace kCura.WinEDDS
 				Me.LogStatistics()
 				Me.CompleteError(ex)
 			Finally
+				RaiseEvent EndRun(_runId)
 				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
 				DestroyTapiBridges()
 				CleanupTempTables()
@@ -775,15 +776,12 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Public Event EndRun(ByVal success As Boolean, ByVal runID As String)
+		Public Event EndRun(ByVal runID As String)
 
 		Private Sub CompleteSuccess()
 			If Not _imageReader Is Nothing Then _imageReader.Close()
 			If _productionArtifactID <> 0 Then _productionManager.DoPostImportProcessing(Me.FileTapiBridge.WorkspaceId, _productionArtifactID)
-			Try
-				RaiseEvent EndRun(True, _runId)
-			Catch
-			End Try
+
 			If CancellationToken.IsCancellationRequested Then
 				OnWriteStatusMessage(EventType2.Status, "Job has been finalized", TapiConstants.NoLineNumber, TapiConstants.NoLineNumber)
 			Else
@@ -811,11 +809,7 @@ Namespace kCura.WinEDDS
 			Catch ex As Exception
 				Me.LogWarning(ex, "Failed to manage errors before raising the image import fatal error.")
 			End Try
-			Try
-				RaiseEvent EndRun(False, _runId)
-			Catch ex As Exception
-				Me.LogWarning(ex, "Failed to raise the EndRun event before raising the image import fatal error.")
-			End Try
+
 			RaiseFatalError(exception)
 		End Sub
 
