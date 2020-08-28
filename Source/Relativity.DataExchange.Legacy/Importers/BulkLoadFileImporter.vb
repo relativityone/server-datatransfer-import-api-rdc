@@ -655,7 +655,6 @@ Namespace kCura.WinEDDS
 											FileTapiProgressCount += 1
 										Else
 											Using Timekeeper.CaptureTime("ReadFile_GetLine")
-												Statistics.DocCount += 1
 												'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
 												' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
 												' -Phil S. 06/12/2012
@@ -748,15 +747,15 @@ Namespace kCura.WinEDDS
 					End Using
 					Timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
 					Me.LogInformation("Successfully imported {ImportCount} documents via WinEDDS.", Me.FileTapiProgressCount)
-					Me.LogStatistics()
 					Return True
 				Catch ex As System.Exception
 					Me.WriteFatalError(Me.CurrentLineNumber, ex)
 					Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
-					Me.LogStatistics()
 				Finally
 					Using Timekeeper.CaptureTime("ReadFile_CleanupTempTables")
 						RaiseEvent EndFileImport(RunId)
+						'has to be called after Raise EndFileImport event
+						Me.LogStatistics()
 						DestroyTapiBridges()
 						CleanupTempTables()
 

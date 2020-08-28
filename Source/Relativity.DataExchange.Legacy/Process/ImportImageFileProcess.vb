@@ -270,6 +270,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _imageFileImporter_EndRun(ByVal runID As String) Handles _imageFileImporter.EndRun
+			Statistics.DocsErrorsCount = _errorCount
 			Me.AuditRun(runID)
 		End Sub
 	End Class

@@ -399,6 +399,10 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _loadFileImporter_EndFileImport(ByVal runID As String) Handles _loadFileImporter.EndFileImport
+			'We want DocCount to represent how many documents have been sent to import
+			'in case of BulkLoadFileImporter this is represented best by TotalTransferredFilesCount
+			Statistics.DocCount = _loadFileImporter.TotalTransferredFilesCount
+			Statistics.DocsErrorsCount = _errorCount
 			Me.AuditRun(runID)
 		End Sub
 

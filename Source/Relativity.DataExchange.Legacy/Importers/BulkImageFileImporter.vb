@@ -756,17 +756,17 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkStart("ReadFile_Cleanup")
 				Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, True, True, False)
 				Me.LogInformation("Successfully imported {ImportCount} images via WinEDDS.", Me.FileTapiProgressCount)
-				Me.LogStatistics()
 				Me.CompleteSuccess()
 				_timekeeper.MarkEnd("ReadFile_Cleanup")
 				_timekeeper.MarkEnd("TOTAL")
 				_timekeeper.GenerateCsvReportItemsAsRows("_winedds_image", "C:\")
 			Catch ex As Exception
 				Me.LogFatal(ex, "A serious unexpected error has occurred importing images.")
-				Me.LogStatistics()
 				Me.CompleteError(ex)
 			Finally
 				RaiseEvent EndRun(_runId)
+				'has to be called after Raise EndRun event
+				Me.LogStatistics()
 				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
 				DestroyTapiBridges()
 				CleanupTempTables()
@@ -815,7 +815,9 @@ Namespace kCura.WinEDDS
 
 		Private Sub ProcessDocument(ByVal al As System.Collections.Generic.List(Of Api.ImageRecord), ByVal status As Int64)
 			GetImagesForDocument(al, status)
-			Me.Statistics.DocCount += 1
+			'We want DocCount to represent the how many documents have been sent to import
+			'in case of BulkImageFileImporter this is represented best by count of IsNewDoc
+			Statistics.DocCount += 1
 		End Sub
 
 #End Region

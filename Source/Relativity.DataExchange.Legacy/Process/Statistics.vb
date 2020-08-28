@@ -16,6 +16,7 @@ Namespace kCura.WinEDDS
 		Public Const NativeFileThroughputKey As String = "NativeFileThroughput"
 		Public Const NativeFileTimeKey As String = "NativeFileTime"
 		Public Const NativeFilesTransferredKey As String = "NativeFilesTransferred"
+		Public Const DocsErrorsCountKey As String = "DocsErrorsCount"
 
 		Private _metadataBytes As Int64 = 0
 		Private _metadataTime As Int64 = 0
@@ -31,6 +32,7 @@ Namespace kCura.WinEDDS
 		Private _documentsCreated As Int32 = 0
 		Private _documentsUpdated As Int32 = 0
 		Private _filesProcessed As Int32 = 0
+		Private _docsErrorsCount As Int32 = 0
 
 		Public ReadOnly Property LastAccessed() As System.DateTime
 			Get
@@ -77,6 +79,16 @@ Namespace kCura.WinEDDS
 		Public Property BatchSize As Int32 = 0
 
 		Public Property ImportObjectType As TelemetryConstants.ImportObjectType = TelemetryConstants.ImportObjectType.NotApplicable
+
+		Public Property DocsErrorsCount() As Int32
+			Get
+				Return _docsErrorsCount
+			End Get
+			Set(ByVal value As Int32)
+				_lastAccessed = System.DateTime.Now
+				_docsErrorsCount = value
+			End Set
+		End Property
 
 		''' <summary>
 		'''  Gets or sets transferred metadata bytes.
@@ -284,6 +296,7 @@ Namespace kCura.WinEDDS
 
 			Dim statisticsDict As System.Collections.Generic.Dictionary(Of String, Object) = New System.Collections.Generic.Dictionary(Of String, Object) From
 				    {
+						{DocsErrorsCountKey, Me.DocsErrorsCount},
 					    {BatchCountKey, Me.BatchCount},
 					    {DocsCountKey, Me.DocCount},
 					    {DocsCreatedKey, Me.DocumentsCreated},

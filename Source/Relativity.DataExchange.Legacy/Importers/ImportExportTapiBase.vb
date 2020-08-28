@@ -152,9 +152,25 @@ Namespace kCura.WinEDDS
 
 		Public Property DisableNativeLocationValidation As Boolean = AppSettings.Instance.DisableThrowOnIllegalCharacters
 
-		Protected Property FileTapiProgressCount As Int32
+		Private _fileTapiProgressCount As Int32
+		Public Property FileTapiProgressCount As Int32
+			Get
+				Return _fileTapiProgressCount
+			End Get
+			Protected Set(value As Int32)
+				_fileTapiProgressCount = value
+			End Set
+		End Property
 
-		Protected Property TotalTransferredFilesCount As Long
+		Private _totalTransferredFilesCount As Int32
+		Public Property TotalTransferredFilesCount As Int32
+			Get
+				Return _totalTransferredFilesCount
+			End Get
+			Protected Set(value As Int32)
+				_totalTransferredFilesCount = value
+			End Set
+		End Property
 
 		Protected Property ShouldImport As Boolean
 
