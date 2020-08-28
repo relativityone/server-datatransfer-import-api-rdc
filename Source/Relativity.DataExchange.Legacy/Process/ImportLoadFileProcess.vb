@@ -205,7 +205,7 @@ Namespace kCura.WinEDDS
 			Me.Context.InputArgs = LoadFile.FilePath
 		End Sub
 
-		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
+		Private Sub AuditRun(ByVal runID As String)
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics
 				retval.ArtifactTypeID = LoadFile.ArtifactTypeID
@@ -293,8 +293,9 @@ Namespace kCura.WinEDDS
 				retval.SendNotification = LoadFile.SendEmailOnLoadCompletion
 				Dim auditManager As New kCura.WinEDDS.Service.AuditManager(LoadFile.Credentials, LoadFile.CookieContainer)
 
-				auditManager.AuditObjectImport(LoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
-			Catch
+				auditManager.AuditObjectImport(LoadFile.CaseInfo.ArtifactID, runID, _hasFatalErrorOccured, retval)
+			Catch ex As Exception
+				logger.LogError(ex, "An error has occurred during audit")
 			End Try
 		End Sub
 
@@ -342,13 +343,14 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _loadFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception, ByVal runID As String) Handles _loadFileImporter.FatalErrorEvent
-			SyncLock Me.Context
-				Me.Context.PublishFatalException(ex)
-				'TODO: _loadFileImporter.ErrorLogFileName
-				Me.Context.PublishProcessCompleted(False, "", True)
-				_hasFatalErrorOccured = True
-			End SyncLock
-			Me.AuditRun(False, runID)
+			If Not _hasFatalErrorOccured Then
+				SyncLock Me.Context
+					Me.Context.PublishFatalException(ex)
+					'TODO: _loadFileImporter.ErrorLogFileName
+					Me.Context.PublishProcessCompleted(False, "", True)
+					_hasFatalErrorOccured = True
+				End SyncLock
+			End If
 		End Sub
 
 		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String) Handles _loadFileImporter.UploadModeChangeEvent
@@ -390,7 +392,11 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _loadFileImporter_EndFileImport(ByVal runID As String) Handles _loadFileImporter.EndFileImport
-			Me.AuditRun(True, runID)
+			'We want DocCount to represent how many documents have been sent to import
+			'in case of BulkLoadFileImporter this is represented best by TotalTransferredFilesCount
+			Statistics.DocumentsCount = _loadFileImporter.TotalTransferredFilesCount
+			Statistics.DocsErrorsCount = _errorCount
+			Me.AuditRun(runID)
 		End Sub
 
 		Private Sub _loadFileImporter_OnBatchCompleted(batchInformation As BatchInformation) Handles _loadFileImporter.BatchCompleted
