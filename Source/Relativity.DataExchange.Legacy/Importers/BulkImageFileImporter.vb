@@ -730,16 +730,17 @@ Namespace kCura.WinEDDS
 					_timekeeper.MarkStart("ReadFile_Cleanup")
 					Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, True, True, False)
 					Me.LogInformation("Successfully imported {ImportCount} images via WinEDDS.", Me.FileTapiProgressCount)
-					Me.LogStatistics()
 					Me.CompleteSuccess()
 					_timekeeper.MarkEnd("ReadFile_Cleanup")
 					_timekeeper.MarkEnd("TOTAL")
 					_timekeeper.GenerateCsvReportItemsAsRows("_winedds_image", "C:\")
 				Catch ex As Exception
 					Me.LogFatal(ex, "A serious unexpected error has occurred importing images.")
-					Me.LogStatistics()
 					Me.CompleteError(ex)
 				Finally
+					RaiseEvent EndRun(_runId)
+					'has to be called after Raise EndRun event
+					Me.LogStatistics()
 					_timekeeper.MarkStart("ReadFile_CleanupTempTables")
 					DestroyTapiBridges()
 					CleanupTempTables()
@@ -749,15 +750,12 @@ Namespace kCura.WinEDDS
 			End Using
 		End Sub
 
-		Public Event EndRun(ByVal success As Boolean, ByVal runID As String)
+		Public Event EndRun(ByVal runID As String)
 
 		Private Sub CompleteSuccess()
 			If Not _imageReader Is Nothing Then _imageReader.Close()
 			If _productionArtifactID <> 0 Then _productionManager.DoPostImportProcessing(Me.FileTapiBridge.WorkspaceId, _productionArtifactID)
-			Try
-				RaiseEvent EndRun(True, _runId)
-			Catch
-			End Try
+
 			If CancellationToken.IsCancellationRequested Then
 				OnWriteStatusMessage(EventType2.Status, "Job has been finalized", TapiConstants.NoLineNumber, TapiConstants.NoLineNumber)
 			Else
@@ -785,16 +783,14 @@ Namespace kCura.WinEDDS
 			Catch ex As Exception
 				Me.LogWarning(ex, "Failed to manage errors before raising the image import fatal error.")
 			End Try
-			Try
-				RaiseEvent EndRun(False, _runId)
-			Catch ex As Exception
-				Me.LogWarning(ex, "Failed to raise the EndRun event before raising the image import fatal error.")
-			End Try
+
 			RaiseFatalError(exception)
 		End Sub
 
 		Private Sub ProcessDocument(ByVal al As List(Of Api.ImageRecord), ByVal status As Int64)
 			GetImagesForDocument(al, status)
+			'We want DocCount to represent the how many documents have been sent to import
+			'in case of BulkImageFileImporter this is represented best by count of IsNewDoc
 			Me.Statistics.DocumentsCount += 1
 		End Sub
 

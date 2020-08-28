@@ -16,6 +16,7 @@ Namespace kCura.WinEDDS
 		Public Const NativeFileThroughputKey As String = "NativeFileThroughput"
 		Public Const NativeFileTimeKey As String = "NativeFileTime"
 		Public Const NativeFilesTransferredKey As String = "NativeFilesTransferred"
+		Public Const DocsErrorsCountKey As String = "DocsErrorsCount"
 
 		Public Const FileTransferRateKey As String = "Average file transfer rate"
 		Public Const MetadataTransferRateKey As String = "Average metadata transfer rate"
@@ -69,6 +70,8 @@ Namespace kCura.WinEDDS
 		Public Property BatchSize As Integer = 0
 
 		Public Property ImportObjectType As TelemetryConstants.ImportObjectType = TelemetryConstants.ImportObjectType.NotApplicable
+
+		Public Property DocsErrorsCount As Integer = 0
 
 		''' <summary>
 		''' Gets or sets the total number of metadata load and extracted text files transferred for import and export respectively.
@@ -198,6 +201,7 @@ Namespace kCura.WinEDDS
 
 			Dim statisticsDict As System.Collections.Generic.Dictionary(Of String, Object) = New System.Collections.Generic.Dictionary(Of String, Object) From
 				    {
+						{DocsErrorsCountKey, Me.DocsErrorsCount},
 					    {BatchCountKey, Me.BatchCount},
 					    {DocsCountKey, Me.DocumentsCount},
 					    {DocsCreatedKey, Me.DocumentsCreated},
