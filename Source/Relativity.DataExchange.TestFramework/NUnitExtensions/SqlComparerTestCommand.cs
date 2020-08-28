@@ -21,6 +21,13 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 		private int _workspaceId;
 		private TestWorkspaceToCompareDto _testWorkspaceToAdd;
 
+		private int testIteration;
+
+		private int leftInputWorkspaceId;
+		private int rightInputWorkspaceId;
+		private string leftInputFilePath;
+		private string rightInputFilePath;
+
 		public SqlComparerTestCommand(TestCommand innerCommand, SqlComparerInputCollector sqlComparerInputCollector)
 			: base(innerCommand)
 		{
@@ -43,25 +50,53 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 			string databaseName = $"EDDS{this._workspaceId}";
 
 			this._testWorkspaceToAdd = new TestWorkspaceToCompareDto(fullTestCaseName, databaseName, comparerConfigFilePath);
+
+			testIteration += 1;
+			MassImportImprovementsToggleHelper.SetMassImportImprovementsToggle(IntegrationTestHelper.IntegrationTestParameters, testIteration == 1);
 		}
 
 		private void ExecuteAfterTest(TestExecutionContext context)
 		{
 			if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Skipped)
 			{
+				testIteration = 0;
 				return;
 			}
 
-			bool massImportImprovementsToggle = MassImportImprovementsToggleChecker.GetMassImportToggleValueFromDatabase(IntegrationTestHelper.IntegrationTestParameters);
-			string filePath = Path.Combine(
-				IntegrationTestHelper.IntegrationTestParameters.SqlComparerOutputPath,
-				$"sqlComparerInput-{massImportImprovementsToggle}.xml");
-			this._sqlComparerInputCollector.AddTestWorkspaceToCompare(this._testWorkspaceToAdd, filePath);
+			bool massImportImprovementsToggle = MassImportImprovementsToggleHelper.GetMassImportImprovementsToggle(IntegrationTestHelper.IntegrationTestParameters);
+			string inputFilePath = Path.Combine(IntegrationTestHelper.IntegrationTestParameters.SqlComparerOutputPath, $"sqlComparerInput-{massImportImprovementsToggle}.xml");
+
+			this._sqlComparerInputCollector.AddTestWorkspaceToCompare(this._testWorkspaceToAdd, inputFilePath);
 			string testOutputMessage = $"Added test workspace to compare. Test: {this._testWorkspaceToAdd.FullTestCaseName}, database: {this._testWorkspaceToAdd.DatabaseName}, comparerConfig: {this._testWorkspaceToAdd.ComparerConfigFilePath}";
 			TestContext.Out.WriteLine(testOutputMessage);
 
-			// We need to rename a workspace, because it's name is present in the database.
-			WorkspaceHelper.RenameTestWorkspace(IntegrationTestHelper.IntegrationTestParameters, this._workspaceId, "ImportApi-SqlComparer");
+			// For 'DeleteWorkspaceAfterTest'='true' workspace has been already deleted
+			if (!IntegrationTestHelper.IntegrationTestParameters.DeleteWorkspaceAfterTest)
+			{
+				// We need to rename a workspace, because it's name is present in the database.
+				WorkspaceHelper.RenameTestWorkspace(IntegrationTestHelper.IntegrationTestParameters, this._workspaceId, "ImportApi-SqlComparer");
+			}
+
+			if (testIteration == 1)
+			{
+				leftInputWorkspaceId = this._workspaceId;
+				this.leftInputFilePath = inputFilePath;
+			}
+			else if (testIteration == 2)
+			{
+				rightInputWorkspaceId = this._workspaceId;
+				this.rightInputFilePath = inputFilePath;
+
+				string resultFile = Path.Combine(IntegrationTestHelper.IntegrationTestParameters.SqlComparerOutputPath, "sqlComparer_result.txt");
+
+				SqlComparerExecutor.RunSqlComparer(leftInputFilePath, rightInputFilePath, resultFile);
+				SqlComparerExecutor.StoreSqlComparerDataForCurrentTest(leftInputFilePath, rightInputFilePath, resultFile, this._testWorkspaceToAdd.ComparerConfigFilePath);
+
+				IntegrationTestHelper.DeleteTestWorkspace(IntegrationTestHelper.IntegrationTestParameters, this.leftInputWorkspaceId);
+				IntegrationTestHelper.DeleteTestWorkspace(IntegrationTestHelper.IntegrationTestParameters, this.rightInputWorkspaceId);
+
+				testIteration = 0;
+			}
 		}
 	}
 }

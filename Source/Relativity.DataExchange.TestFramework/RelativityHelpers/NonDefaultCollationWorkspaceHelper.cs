@@ -37,7 +37,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			{
 				WorkspaceHelper.CreateWorkspaceFromTemplate(parameters, logger, parameters.WorkspaceTemplate, NonDefaultCollationTemplateName);
 				string workspaceDatabaseBackupScript = GenerateSqlScriptOfWorkspaceDatabase(parameters, logger, NonDefaultCollationTemplateName);
-				IntegrationTestHelper.DropWorkspaceDatabase(parameters, logger);
+				IntegrationTestHelper.DropWorkspaceDatabase(parameters, parameters.WorkspaceId, logger);
 
 				ReplaceCollationInDatabaseScript(workspaceDatabaseBackupScript, DefaultCollation, NonDefaultCollation);
 				RestoreDatabaseFromScript(parameters, workspaceDatabaseBackupScript);

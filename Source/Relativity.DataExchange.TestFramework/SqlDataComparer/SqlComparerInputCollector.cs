@@ -5,7 +5,6 @@
 namespace Relativity.DataExchange.TestFramework.SqlDataComparer
 {
 	using System;
-	using System.Collections.Generic;
 	using System.IO;
 	using System.Xml;
 
@@ -55,7 +54,7 @@ namespace Relativity.DataExchange.TestFramework.SqlDataComparer
 			string comparerConfigFileName = Path.GetFileName(this._testWorkspaceToCompareDto.ComparerConfigFilePath);
 			string destinationComparerConfigFilePath = Path.Combine(outputDirectory, comparerConfigFileName);
 			File.Copy(this._testWorkspaceToCompareDto.ComparerConfigFilePath, destinationComparerConfigFilePath, overwrite: true);
-			return comparerConfigFileName;
+			return destinationComparerConfigFilePath;
 		}
 
 		private void AddTestWorkspaceToXml(string xmlFilePath)

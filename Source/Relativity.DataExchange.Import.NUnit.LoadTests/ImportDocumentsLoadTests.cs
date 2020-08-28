@@ -29,7 +29,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
-	[Explicit]
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	public class ImportDocumentsLoadTests : ImportLoadTestsBase<NativeImportExecutionContext, Settings>
@@ -39,12 +38,13 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		private const string SingleObjectFieldName = "SingleObject";
 		private const string MultiObjectFieldName = "MultiObject";
 
-		[UseSqlComparer]
 		[CollectDeadlocks]
 		[Performance]
+		[UseSqlComparer]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.TransferApi)]
 		[Category(TestCategories.LoadTest)]
+		[Category(TestCategories.SqlComparer)]
 		[IdentifiedTest("b9b6897f-ea3f-4694-80d2-db08529387AB")]
 		public async Task ShouldImportFoldersParallelAsync(
 			[Values(2, 4, 8, 16)] int parallelIApiClientCount,
@@ -84,12 +84,13 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			ThenTheJobCompletedInCorrectTransferMode(results, client);
 		}
 
-		[UseSqlComparer]
 		[CollectDeadlocks]
 		[Performance]
+		[UseSqlComparer]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.TransferApi)]
 		[Category(TestCategories.LoadTest)]
+		[Category(TestCategories.SqlComparer)]
 		[IdentifiedTest("bbbc5de9-f6a4-4a4c-97a7-6f1f88d96c93")]
 		public async Task ShouldImportChoicesInParallelAsync(
 			[Values(2, 4, 8, 16)] int parallelIApiClientCount,
@@ -216,7 +217,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			// ARRANGE
 			if (parallelIApiClientCount == 16)
 			{
-				MassImportImprovementsToggleChecker.SkipTestIfMassImportImprovementToggleOff(this.TestParameters);
+				MassImportImprovementsToggleHelper.SkipTestIfMassImportImprovementsToggleOff(this.TestParameters);
 			}
 
 			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithSingleAndMultiObjectsInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
@@ -311,7 +312,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			TapiClient client)
 		{
 			// ARRANGE
-			MassImportImprovementsToggleChecker.SkipTestIfMassImportImprovementToggleOff(this.TestParameters);
+			MassImportImprovementsToggleHelper.SkipTestIfMassImportImprovementsToggleOff(this.TestParameters);
 			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithBigNumberOfMultiObjectsPerDocumentParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, maxNumberOfMultiValues, client, this.TestParameters);
 			ForceClient(client);
 

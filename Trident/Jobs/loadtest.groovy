@@ -15,6 +15,7 @@ properties([
 testResultsPassed = 0
 testResultsFailed = 0
 testResultsSkipped = 0
+sqlComparerTestsResultFailed = 0
 
 def globalVmInfo = null
 numberOfErrors = 0	
@@ -65,43 +66,43 @@ timestamps
 						echo "Getting hopper for ${hopperTemplate}"
 						globalVmInfo = tools.createHopperInstance(hopperTemplate, relativityInstallerSource)
 						
-						echo "Replacing variables"
-						replaceTestVariables(globalVmInfo.Url)
-						
 						try
-						{        
+						{   
 							try
 							{
-								stage("Run load tests for MassImportImprovementsToggle On")
+								stage("Run tests for SqlComparer tool")
 								{
-									runLoadTests(globalVmInfo.Url, true)
+									echo "Replacing variables"
+									replaceTestVariables(globalVmInfo.Url, true)
+									
+									runTestsForSqlComparerTool(globalVmInfo.Url)
 								}
 							}
-							finally{
-								
+							finally
+							{	
 								try
 								{
-									stage("Run load tests for MassImportImprovementsToggle Off")
-									{
-										runLoadTests(globalVmInfo.Url, false)
-									}
+									echo "Get SqlComparer results"
+									checkSqlComparerToolResults()
 								}
 								finally
 								{
 									try
 									{
-										stage("Run sql comparer tool")
+										stage("Run load tests for MassImportImprovementsToggle On")
 										{
-											runSqlComparerTool(globalVmInfo.Url)
+											echo "Replacing variables"
+											replaceTestVariables(globalVmInfo.Url, false)
+									
+											runLoadTests(globalVmInfo.Url, true)
 										}
 									}
-									catch(err)
+									finally
 									{
-										echo err.toString()
-										numberOfErrors++
-										echo "Number of errors: ${numberOfErrors}"
-										summaryMessage = "Compare databases using SQL Comparer Tool finished with errors"
-										currentBuild.result = 'FAILED'
+										stage("Run load tests for MassImportImprovementsToggle Off")
+										{
+											runLoadTests(globalVmInfo.Url, false)
+										}
 									}
 								}
 							}
@@ -136,6 +137,14 @@ timestamps
 								echo "Failed tests count bigger than 0"
 								currentBuild.result = 'FAILED'
 								throw new Exception("One or more tests failed")
+							}
+							
+							if(sqlComparerTestsResultFailed > 0)
+							{
+								echo "One or more test for SqlComparer failed"
+								currentBuild.result = 'FAILED'
+								summaryMessage = "Compare databases using SQL Comparer Tool finished with errors"
+								numberOfErrors++
 							}
 						}
 					}
@@ -224,11 +233,30 @@ def runLoadTests(String vmUrl, Boolean massImportImprovementsToggleOn)
 	echo output 								
 }
 
-def runSqlComparerTool(String vmUrl)
+def runTestsForSqlComparerTool(String vmUrl)
 {
-	echo "Running SQL Comparer tool"
-	output = powershell ".\\build.ps1 RunSqlComparerTool -TestTarget '${(new URI(vmUrl)).getHost()}'"
+	echo "Run LoadTests for both MassImportImprovementsToggle values and run SqlComparer after each test"
+	
+	String pathToJsonFile = getPathToTestParametersFile()
+	
+	output = powershell ".\\build.ps1 LoadTestsForSqlComparer -ILMerge -TestTimeoutInMS 4800000 -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
 	echo output
+}
+
+def checkSqlComparerToolResults()
+{
+	echo "Check SqlComparer tool results"
+	def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 CheckSqlComparerToolResults")
+
+	// Search for specific tokens within the response.
+	echo "Extracting the loadtests result parameters for SqlComparer"
+	def int sqlComparerTestsPassed = tools.extractValue("sqlComparerTestsResultPassed", testResultOutputString)
+	def int sqlComparerTestsFailed = tools.extractValue("sqlComparerTestsResultFailed", testResultOutputString)
+	
+	echo "SqlComparer test passed: $sqlComparerTestsPassed"
+	echo "SqlComparer test failed: $sqlComparerTestsFailed"
+	
+	sqlComparerTestsResultFailed += sqlComparerTestsFailed
 }
 
 def GetTestResults()
@@ -254,12 +282,14 @@ def GetTestResults()
 	testResultsSkipped += skipped	
 }
 
-def replaceTestVariables(String vmUrl)
+def replaceTestVariables(String vmUrl, Boolean sqlComparerEnabled)
 {
 	String pathToJsonFile = getPathToTestParametersFile()
 	powershell ".\\build.ps1 CreateTemplateTestParametersFileForLoadTests -TestParametersFile '${pathToJsonFile}'"
+	
 	echo "replacing test variables"
-	output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}' -SqlProfiling -SqlDataComparer"
+	def sqlComparerEnabledInTests = sqlComparerEnabled ? "-SqlDataComparer" : ""
+	output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}' -SqlProfiling ${sqlComparerEnabledInTests}"
 	echo output
 }
 

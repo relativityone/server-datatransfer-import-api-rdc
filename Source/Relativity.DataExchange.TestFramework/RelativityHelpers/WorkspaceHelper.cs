@@ -74,7 +74,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					});
 		}
 
-		public static void DeleteTestWorkspace(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
+		public static void DeleteTestWorkspace(IntegrationTestParameters parameters, int workspaceToRemoveId, Relativity.Logging.ILog logger)
 		{
 			if (parameters == null)
 			{
@@ -86,19 +86,19 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				throw new ArgumentNullException(nameof(logger));
 			}
 
-			if (parameters.WorkspaceId != 0)
+			if (workspaceToRemoveId != 0)
 			{
 				using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
 				{
 					client.APIOptions.WorkspaceID = -1;
-					logger.LogInformation("Deleting the {WorkspaceId} workspace.", parameters.WorkspaceId);
-					client.Repositories.Workspace.DeleteSingle(parameters.WorkspaceId);
-					logger.LogInformation("Deleted the {WorkspaceId} workspace.", parameters.WorkspaceId);
+					logger.LogInformation("Deleting the {WorkspaceId} workspace.", workspaceToRemoveId);
+					client.Repositories.Workspace.DeleteSingle(workspaceToRemoveId);
+					logger.LogInformation("Deleted the {WorkspaceId} workspace.", workspaceToRemoveId);
 				}
 			}
 			else
 			{
-				logger.LogInformation("Skipped deleting the {WorkspaceId} workspace.", parameters.WorkspaceId);
+				logger.LogInformation("Skipped deleting the {WorkspaceId} workspace.", workspaceToRemoveId);
 			}
 		}
 

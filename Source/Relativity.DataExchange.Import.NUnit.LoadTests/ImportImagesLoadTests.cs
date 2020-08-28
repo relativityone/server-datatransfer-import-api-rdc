@@ -21,7 +21,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
-	[Explicit]
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportImages]
 	public class ImportImagesLoadTests : ImportLoadTestsBase<ImageImportExecutionContext, ImageSettings>

@@ -197,18 +197,18 @@ namespace Relativity.DataExchange.TestFramework
 			"Microsoft.Design",
 			"CA1031:DoNotCatchGeneralExceptionTypes",
 			Justification = "We can swallow exception in that case.")]
-		public static void DropWorkspaceDatabase(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
+		public static void DropWorkspaceDatabase(IntegrationTestParameters parameters, int workspaceToRemoveId, Relativity.Logging.ILog logger)
 		{
 			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
 			logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-			if (parameters.WorkspaceId <= 0)
+			if (workspaceToRemoveId <= 0)
 			{
-				Logger.LogWarning("Skipped dropping the SQL workspace database, because Id in not valid: {workspaceId}.", parameters.WorkspaceId);
+				Logger.LogWarning("Skipped dropping the SQL workspace database, because Id in not valid: {workspaceId}.", workspaceToRemoveId);
 				return;
 			}
 
-			string databaseName = $"EDDS{parameters.WorkspaceId}";
+			string databaseName = $"EDDS{workspaceToRemoveId}";
 
 			try
 			{
@@ -239,18 +239,25 @@ END";
 			}
 		}
 
-		private static void DeleteTestWorkspace(IntegrationTestParameters parameters)
+		public static void DeleteTestWorkspace(IntegrationTestParameters parameters, int workspaceToRemoveId)
 		{
-			WorkspaceHelper.DeleteTestWorkspace(parameters, Logger);
+			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+
+			WorkspaceHelper.DeleteTestWorkspace(parameters, workspaceToRemoveId, Logger);
 
 			if (parameters.SqlDropWorkspaceDatabase)
 			{
-				DropWorkspaceDatabase(parameters, Logger);
+				DropWorkspaceDatabase(parameters, workspaceToRemoveId, Logger);
 			}
 			else
 			{
 				Logger.LogInformation("Skipped dropping the SQL workspace database for workspace {workspaceId}.", parameters.WorkspaceId);
 			}
+		}
+
+		private static void DeleteTestWorkspace(IntegrationTestParameters parameters)
+		{
+			DeleteTestWorkspace(parameters, parameters.WorkspaceId);
 		}
 
 		private static string GetConfigurationStringValue(string key)

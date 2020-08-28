@@ -12,6 +12,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 	using NUnit.Framework.Internal.Commands;
 
 	using Relativity.DataExchange.TestFramework.PerformanceTests;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.TestFramework.WebApiSqlProfiling;
 
 	internal class ProfilingSessionTestCommand : BeforeAndAfterTestCommand
@@ -65,17 +66,15 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 		private string GetDirectoryPath(TestExecutionContext context)
 		{
 			const string PropertyKey = "ProfilerReportDirectory";
+			string testName = context.CurrentTest.Name;
+			string currentUtcTime = DateTime.UtcNow.ToString("yyyyMMddTHHmmss");
 
-			if (!context.CurrentTest.Properties.ContainsKey(PropertyKey))
-			{
-				string testName = context.CurrentTest.Name;
-				string currentUtcTime = DateTime.UtcNow.ToString("yyyyMMddTHHmmss");
-				string subDirectoryName = $"{testName.Replace(",", "_")}-{currentUtcTime}";
-				string outputPath = Path.Combine(this.rootOutputPath, subDirectoryName);
-				Directory.CreateDirectory(outputPath);
+			var toggleValue = MassImportImprovementsToggleHelper.GetMassImportImprovementsToggle(IntegrationTestHelper.IntegrationTestParameters).ToString();
+			string subDirectoryName = $"{testName.Replace(",", "_")}_Toggle{toggleValue}-{currentUtcTime}";
+			string outputPath = Path.Combine(this.rootOutputPath, subDirectoryName);
+			Directory.CreateDirectory(outputPath);
 
-				context.CurrentTest.Properties.Set(PropertyKey, outputPath);
-			}
+			context.CurrentTest.Properties.Set(PropertyKey, outputPath);
 
 			return context.CurrentTest.Properties.Get(PropertyKey) as string;
 		}

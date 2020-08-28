@@ -99,5 +99,10 @@ namespace Relativity.DataExchange.TestFramework
 		/// The load test test category.
 		/// </summary>
 		public const string LoadTest = "LoadTest";
+
+		/// <summary>
+		/// The SqlComparer test category.
+		/// </summary>
+		public const string SqlComparer = "SqlComparer";
 	}
 }

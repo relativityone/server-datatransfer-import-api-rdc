@@ -102,7 +102,7 @@
     <Compile Include="Import\JobExecutionContext\ImportApiSetupExtensions.cs" />
     <Compile Include="Import\JobExecutionContext\NativeImportExecutionContext.cs" />
     <Compile Include="Import\JobExecutionContext\NativeImportSettingsProvider.cs" />
-    <Compile Include="MassImportImprovementsToggleChecker.cs" />
+    <Compile Include="RelativityHelpers\MassImportImprovementsToggleHelper.cs" />
     <Compile Include="NUnitExtensions\PerformanceAttribute.cs" />
     <Compile Include="NUnitExtensions\CollectDeadlocksAttribute.cs" />
     <Compile Include="NUnitExtensions\IgnoreIfVersionLowerThanAttribute.cs" />
@@ -129,6 +129,7 @@
     <Compile Include="RelativityHelpers\ViewHelper.cs" />
     <Compile Include="RelativityVersions\RelativityVersionChecker.cs" />
     <Compile Include="RelativityVersions\RelativityVersion.cs" />
+    <Compile Include="SqlDataComparer\SqlComparerExecutor.cs" />
     <Compile Include="SqlDataComparer\SqlComparerInputCollector.cs" />
     <Compile Include="SqlDataComparer\TestWorkspaceToCompareDto.cs" />
     <Compile Include="TestFilesRepository.cs" />

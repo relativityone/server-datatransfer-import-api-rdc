@@ -472,12 +472,10 @@ task CodeCoverageReport -Description "Create a code coverage report" {
         ### 0. Get tests list to execute
         $UnitTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.dll -Exclude *Desktop*.dll,*TestFramework*.dll | Where-Object { $_.FullName -Match "\\*NUnit\\bin" }        
         $IntegrationTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.Integration.dll -Exclude *Desktop*.dll,*TestFramework*.dll | Where-Object { $_.FullName -Match "\\*NUnit.Integration\\bin" }        
-        $LoadTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.LoadTests.dll -Exclude *Desktop*.dll,*TestFramework*.dll | Where-Object { $_.FullName -Match "\\*NUnit.LoadTests\\bin" }        
-
+        
         $assemblies = @()
         $assemblies += $UnitTests
         $assemblies += $IntegrationTests
-        $assemblies += $LoadTests
 
         $assemblyCount = $assemblies.Length
         if ($assemblyCount -le 0) {
@@ -610,7 +608,30 @@ task LoadTests -Description "Run all load tests for the loadtest pipeline" {
 	SetMassImportToggleValue -IsEnabled $massImportToggleOn
 	
 	Write-Host "Execute LoadTests"
-	Invoke-LoadTests -TestCategoryFilter "--where=`"cat==LoadTest`"" -MassImportImprovementsToggle $MassImportImprovementsToggle
+	Invoke-LoadTests -TestCategoryFilter "--where=`"cat==LoadTest and cat!=SqlComparer`"" -MassImportImprovementsToggle $MassImportImprovementsToggle
+}
+
+task LoadTestsForSqlComparer -Description "Run tests for both toggle values and then run SqlComparer tool" {
+	folders\Initialize-Folder $TestReportsDir -Safe
+    folders\Initialize-Folder $LoadTestsReportDir -Safe
+	
+	Write-Host "Execute LoadTests for SqlComparer"
+	
+	[string]$ResultXmlFile = Join-Path $LoadTestsReportDir "test-results-SqlComparerTests.xml"
+	[string]$OutputTxtFile = Join-Path $LoadTestsReportDir "test-output-SqlComparerTests.txt"
+	[string]$TestCategoryFilter = "--where=`"cat==LoadTest and cat==SqlComparer`""
+	
+	Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
+	
+    exec { & $NunitExe $MasterSolution `
+            "--labels=All" `
+            "--agents=$NumberOfProcessors" `
+            "--skipnontestassemblies" `
+            "--timeout=$TestTimeoutInMS" `
+            "--result=$ResultXmlFile" `
+            "--out=$OutputTxtFile" `
+            $TestCategoryFilter `
+    } -errorMessage "There was an error running the tests."
 }
 
 task IntegrationTestsForMassImportImprovementsToggle -Description "Set MassImportImprovementsToggle value and run all integration tests" {
@@ -986,6 +1007,66 @@ task RunSqlComparerTool -Description "Run SQL Comparer Tool for previous prepare
 						($sqlComparerInputRight)) | Out-File $sqlComparerResultFile
 						
 	} -errorMessage "Compare databases using SQL Comparer Tool finished with errors. Details in '..\TestReports\SqlComparer\sqlComparer_result.txt'"
+}
+
+task CheckSqlComparerToolResults -Description "Parse all results from SqlComparer tool" {
+	
+	$allResults = Get-ChildItem -LiteralPath $SqlComparerOutputPath -Filter "sqlComparer_result.txt" -Recurse -Force
+
+	$correctResults = @()
+	$coparisonFailed = @()
+	$runToolFailed = @()
+
+	foreach($result in $allResults){
+		if((Select-String -LiteralPath $result.FullName -Pattern "All workspaces are identical") -ne $null)
+		{
+			$correctResults += $result.Directory.Name
+		}
+		elseif((Select-String -LiteralPath $result.FullName -Pattern "Non-identical workspaces") -ne $null)
+		{
+			$coparisonFailed += $result.Directory.Name
+		}
+		else 
+		{
+			$runToolFailed += $result.Directory.Name
+		}
+	}
+
+	[int]$passed = $correctResults.Count
+	[int]$failed = $coparisonFailed.Count + $runToolFailed.Count
+
+	Write-Host
+	Write-Host "SqlComparer tests summary:"
+	Write-Host "Number of tests: " $allResults.Count
+	Write-Host "Passed: $passed"
+	Write-Host "Failed: $failed"
+
+	if($failed -gt 0)
+	{
+		Write-Host
+		Write-Host "Details:"
+		Write-Host "Workspaces are identical for tests:"
+		foreach($item in $correctResults){
+			Write-Host $item
+		}
+
+		Write-Host
+		Write-Host "Non-identical workspaces for tests:"
+		foreach($item in $coparisonFailed){
+			Write-Host $item
+		}
+
+		Write-Host
+		Write-Host "Run SqlComparer tool failed for tests: "
+		foreach($item in $runToolFailed){
+			Write-Host $item
+		}
+	}
+
+	# So Jenkins can get the results
+	Write-Host
+	Write-Output "sqlComparerTestsResultPassed=$passed"
+	Write-Output "sqlComparerTestsResultFailed=$failed"
 }
 
 Function Invoke-IntegrationTests {

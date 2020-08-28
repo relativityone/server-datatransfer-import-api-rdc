@@ -9,6 +9,7 @@ namespace Relativity.DataExchange.TestFramework.PerformanceTests
 	using System.Diagnostics;
 	using NUnit.Framework;
 	using NUnit.Framework.Interfaces;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.DataExchange.Transfer;
 
@@ -58,7 +59,7 @@ namespace Relativity.DataExchange.TestFramework.PerformanceTests
 			this.numberOfImagesPerDocument = imagesPerDocument;
 			this.maxNumberOfMultiValues = maximumNumberOfMultiValues;
 			this.tapiClient = tapiClientName;
-			this.massImportImprovementsToggle = MassImportImprovementsToggleChecker.GetMassImportToggleValueFromDatabase(parameters);
+			this.massImportImprovementsToggle = MassImportImprovementsToggleHelper.GetMassImportImprovementsToggle(parameters);
 		}
 
 		public void StorePerformanceResults()
