@@ -136,6 +136,8 @@ The optional parameter used to execute tests with sql profiling turned on.
 .EXAMPLE SqlDataComparer
 The optional parameter used to execute tests with sql data comparer tool on.
 
+.EXAMPLE TestOnWorkspaceWithNonDefaultCollation
+The optional parameter used to execute tests on workspace created from template with non default collation.
 #>
 
 #Requires -Version 5.0
@@ -197,7 +199,9 @@ param(
 	[Parameter()]
     [Switch]$SqlProfiling,
 	[Parameter()]
-    [Switch]$SqlDataComparer
+    [Switch]$SqlDataComparer,
+	[Parameter()]
+	[Switch]$TestOnWorkspaceWithNonDefaultCollation
 )
 
 $BaseDir = $PSScriptRoot
@@ -279,6 +283,7 @@ $Params = @{
 		EnableDataGrid = $EnableDataGrid
 		SqlProfiling = $SqlProfiling
 		SqlDataComparer = $SqlDataComparer
+		TestOnWorkspaceWithNonDefaultCollation = $TestOnWorkspaceWithNonDefaultCollation
     }
 
     Verbose = $VerbosePreference

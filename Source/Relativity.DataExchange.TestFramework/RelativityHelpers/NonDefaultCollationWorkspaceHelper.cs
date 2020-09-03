@@ -11,7 +11,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Linq;
 	using System.Reflection;
 	using System.Text;
-
+	using System.Threading;
 	using Microsoft.SqlServer.Management.Common;
 	using Microsoft.SqlServer.Management.Sdk.Sfc;
 	using Microsoft.SqlServer.Management.Smo;
@@ -22,29 +22,53 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	/// </summary>
 	internal class NonDefaultCollationWorkspaceHelper
 	{
-		public static string GetOrCreateWorkspaceTemplateWithNonDefaultCollation(
-			IntegrationTestParameters parameters,
-			Relativity.Logging.ILog logger)
+		// Tests on pipelines can be executed in parallel
+		// Mutex is required to process synchronization and prevent creation of workspace template by more than one test in the same time
+		private static readonly Mutex CollationTemplateMutex = new Mutex(false, "API_Tests_CollationTemplateMutex");
+
+		public static string GetOrCreateWorkspaceTemplateWithNonDefaultCollation(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
 		{
-			const string DefaultCollation = "SQL_Latin1_General_CP1_CI_AS";
-			const string NonDefaultCollation = "Latin1_General_CI_AI";
 			const string NonDefaultCollationTemplateName = "Import API Collation Template";
 
-			int nonDefaultCollationTemplateId = WorkspaceHelper.RetrieveWorkspaceId(parameters, logger, NonDefaultCollationTemplateName);
-
-			// create workspace template if it does not exist
-			if (nonDefaultCollationTemplateId == -1)
+			if (CollationTemplateMutex.WaitOne(TimeSpan.FromMinutes(30)))
 			{
-				WorkspaceHelper.CreateWorkspaceFromTemplate(parameters, logger, parameters.WorkspaceTemplate, NonDefaultCollationTemplateName);
-				string workspaceDatabaseBackupScript = GenerateSqlScriptOfWorkspaceDatabase(parameters, logger, NonDefaultCollationTemplateName);
-				IntegrationTestHelper.DropWorkspaceDatabase(parameters, parameters.WorkspaceId, logger);
-
-				ReplaceCollationInDatabaseScript(workspaceDatabaseBackupScript, DefaultCollation, NonDefaultCollation);
-				RestoreDatabaseFromScript(parameters, workspaceDatabaseBackupScript);
-				ChangeColumnNameCollationInArtifactViewFieldTable(parameters);
+				try
+				{
+					// create workspace template if it does not exist
+					if (WorkspaceHelper.RetrieveWorkspaceId(parameters, logger, NonDefaultCollationTemplateName) == -1)
+					{
+						CreateWorkspaceTemplateWithNonDefaultCollation(parameters, logger, NonDefaultCollationTemplateName);
+					}
+				}
+				finally
+				{
+					CollationTemplateMutex.ReleaseMutex();
+				}
+			}
+			else
+			{
+				throw new TimeoutException("Failed on get or create workspace template with non default collation, seems like it's doing by another process longer than 30 minutes");
 			}
 
 			return NonDefaultCollationTemplateName;
+		}
+
+		private static void CreateWorkspaceTemplateWithNonDefaultCollation(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string nonDefaultCollationTemplateName)
+		{
+			const string DefaultCollation = "SQL_Latin1_General_CP1_CI_AS";
+			const string NonDefaultCollation = "Latin1_General_CI_AI";
+
+			string nonDefaultCollationTemplateNameDuringCreation = $"{nonDefaultCollationTemplateName} Creation...";
+
+			WorkspaceHelper.CreateWorkspaceFromTemplate(parameters, logger, parameters.WorkspaceTemplate, nonDefaultCollationTemplateNameDuringCreation);
+			string workspaceDatabaseBackupScript = GenerateSqlScriptOfWorkspaceDatabase(parameters, logger, nonDefaultCollationTemplateNameDuringCreation);
+			IntegrationTestHelper.DropWorkspaceDatabase(parameters, parameters.WorkspaceId, logger);
+
+			ReplaceCollationInDatabaseScript(workspaceDatabaseBackupScript, DefaultCollation, NonDefaultCollation);
+			RestoreDatabaseFromScript(parameters, workspaceDatabaseBackupScript);
+			ChangeColumnNameCollationInArtifactViewFieldTable(parameters);
+
+			WorkspaceHelper.RenameTestWorkspace(parameters, parameters.WorkspaceId, nonDefaultCollationTemplateName);
 		}
 
 		private static string GenerateSqlScriptOfWorkspaceDatabase(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string workspaceName)

@@ -85,6 +85,7 @@ properties {
 	$EnableDataGrid = $Null
 	$SqlProfiling = $Null
 	$SqlDataComparer = $Null
+	$TestOnWorkspaceWithNonDefaultCollation = $Null
 }
 
 $code = @"
@@ -648,12 +649,17 @@ task IntegrationTestsForMassImportImprovementsToggle -Description "Set MassImpor
 		$dataGridShouldBeEnabled = $true
 	}
 	
+	[bool]$workspaceWithNonDefaultCollation = $false
+	if($TestOnWorkspaceWithNonDefaultCollation){
+		$workspaceWithNonDefaultCollation = $true
+	}
+	
 	Write-Host "Set MassImportImprovementsToggle value to $massImportToggleOn"
 	InsertMassImportToggleRecord
 	SetMassImportToggleValue -IsEnabled $massImportToggleOn
 	
 	Write-Host "Execute Integration tests"
-	Invoke-MassImportVerification-Tests -TestCategoryFilter "--where=`"cat==Integration`"" -TestReportDirectory $IntegrationTestsReportDir -MassImportImprovementsToggle $massImportToggleOn -EnableDataGrid $dataGridShouldBeEnabled	
+	Invoke-MassImportVerification-Tests -TestCategoryFilter "--where=`"cat==Integration`"" -TestReportDirectory $IntegrationTestsReportDir -MassImportImprovementsToggle $massImportToggleOn -EnableDataGrid $dataGridShouldBeEnabled -TestOnWorkspaceWithNonDefaultCollation $workspaceWithNonDefaultCollation
 } 
 
 task PackageVersion -Description "Retrieves the package version from powershell" {
@@ -816,6 +822,11 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
 			$sqlDataComparerShouldBeEnabled = 'true'
 			$deleteWorkspaceAfterTest = 'false'
 		}
+		
+		[string]$workspaceWithNonDefaultCollation = 'false'
+		if($TestOnWorkspaceWithNonDefaultCollation){
+			$workspaceWithNonDefaultCollation = 'true'
+		}
 
         [Environment]::SetEnvironmentVariable("IAPI_DELETEWORKSPACEAFTERTEST", $deleteWorkspaceAfterTest, "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_RELATIVITYURL", "https://$hostname", "Process")
@@ -835,7 +846,7 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLINSTANCENAME", "$hostname\\EDDSINSTANCE001", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINUSERNAME", "sa", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINPASSWORD", $SqlPassword, "Process")
-        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_TESTONWORKSPACEWITHNONDEFAULTCOLLATION", "false", "Process")
+        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_TESTONWORKSPACEWITHNONDEFAULTCOLLATION", $workspaceWithNonDefaultCollation, "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_WORKSPACETEMPLATE", "Relativity Starter Template", "Process")
 		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_ENABLEDATAGRID", $dataGridShouldBeEnabled , "Process")
 		
@@ -885,6 +896,7 @@ task ReplaceTestVariables -Description "Replace test variables in file" {
 	
 	$replaceTarget = [Paths.UriScheme]::AddHttpsIfMissing($TestTarget)
 	$sqlserveraddress = [Paths.UriScheme]::GetHost($TestTarget)
+	[bool]$useSqlSAUser = $false
 	 
 	[string]$dataGridShouldBeEnabled = 'false'
 	if($EnableDataGrid){
@@ -894,6 +906,7 @@ task ReplaceTestVariables -Description "Replace test variables in file" {
 	[string]$sqlProfilingShouldBeEnabled = 'false'
 	if($SqlProfiling){
 		$sqlProfilingShouldBeEnabled = 'true'
+		$useSqlSAUser = $true
 	}
 	
 	[string]$sqlDataComparerShouldBeEnabled = 'false'
@@ -901,6 +914,12 @@ task ReplaceTestVariables -Description "Replace test variables in file" {
 	if($SqlDataComparer){
 		$sqlDataComparerShouldBeEnabled = 'true'
 		$deleteWorkspaceAfterTest = 'false'
+	}
+	
+	[string]$workspaceWithNonDefaultCollation = 'false'
+	if($TestOnWorkspaceWithNonDefaultCollation){
+		$workspaceWithNonDefaultCollation = 'true'
+		$useSqlSAUser = $true
 	}
 	
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_instance_name>',$sqlserveraddress) | Set-Content -Path $pathToFile
@@ -913,11 +932,13 @@ task ReplaceTestVariables -Description "Replace test variables in file" {
 	
 	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sqlcaptureprofiling>', $sqlProfilingShouldBeEnabled) | Set-Content -Path $pathToFile
 	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sqlprofilingreportsoutputpath>', $SqlProfilingOutputPath.Replace("\", "\\")) | Set-Content -Path $pathToFile
-	if($SqlProfiling) {((Get-Content -path $pathToFile -Raw) -replace 'eddsdbo','sa') | Set-Content -Path $pathToFile }
+	if($useSqlSAUser) {((Get-Content -path $pathToFile -Raw) -replace 'eddsdbo','sa') | Set-Content -Path $pathToFile }
 	
 	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_enable_sql_comparer>', $sqlDataComparerShouldBeEnabled) | Set-Content -Path $pathToFile
 	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_comparer_output_path>', $SqlComparerOutputPath.Replace("\", "\\")) | Set-Content -Path $pathToFile
 	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_delete_workspace_after_test>', $deleteWorkspaceAfterTest) | Set-Content -Path $pathToFile
+	
+	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_testonworkspacewithnondefaultcollation>', $workspaceWithNonDefaultCollation) | Set-Content -Path $pathToFile
 	
 	Write-Host (Get-Content -path $pathToFile -Raw)
 }
@@ -1092,19 +1113,23 @@ Function Invoke-LoadTests {
 		[bool]$MassImportImprovementsToggle
     )
 	
-	Invoke-MassImportVerification-Tests -TestCategoryFilter $TestCategoryFilter -TestReportDirectory $LoadTestsReportDir -MassImportImprovementsToggle $MassImportImprovementsToggle -EnableDataGrid $EnableDataGrid
+	Invoke-MassImportVerification-Tests -TestCategoryFilter $TestCategoryFilter -TestReportDirectory $LoadTestsReportDir -MassImportImprovementsToggle $MassImportImprovementsToggle -EnableDataGrid $EnableDataGrid -TestOnWorkspaceWithNonDefaultCollation $TestOnWorkspaceWithNonDefaultCollation
 }
 
-Function Invoke-MassImportVerification-Tests{
+Function Invoke-MassImportVerification-Tests {
 	param(
 		[String] $TestCategoryFilter,
 		[String] $TestReportDirectory,
 		[bool]$MassImportImprovementsToggle,
-		[bool]$EnableDataGrid
+		[bool]$EnableDataGrid,
+		[bool]$TestOnWorkspaceWithNonDefaultCollation
 )
 
-	[string]$ResultXmlFile = Join-Path $TestReportDirectory "test-results-Toggle$MassImportImprovementsToggle-DataGrid$EnableDataGrid.xml"
-	[string]$OutputTxtFile = Join-Path $TestReportDirectory "test-output-Toggle$MassImportImprovementsToggle-DataGrid$EnableDataGrid.txt"
+	[string]$workspaceWithNonDefaultCollation = ''
+	if($TestOnWorkspaceWithNonDefaultCollation){ $workspaceWithNonDefaultCollation = 'NonDefaultCollationWorkspace' }
+
+	[string]$ResultXmlFile = Join-Path $TestReportDirectory "test-results-$workspaceWithNonDefaultCollation-Toggle$MassImportImprovementsToggle-DataGrid$EnableDataGrid.xml"
+	[string]$OutputTxtFile = Join-Path $TestReportDirectory "test-output-$workspaceWithNonDefaultCollation-Toggle$MassImportImprovementsToggle-DataGrid$EnableDataGrid.txt"
 	
     Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
 	
@@ -1117,6 +1142,8 @@ Function Invoke-MassImportVerification-Tests{
             "--out=$OutputTxtFile" `
             $TestCategoryFilter `
     } -errorMessage "There was an error running the tests."
+	
+	
 }
 
 Function InsertMassImportToggleRecord{

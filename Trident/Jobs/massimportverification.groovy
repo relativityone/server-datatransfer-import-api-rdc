@@ -64,38 +64,46 @@ timestamps
 						
 						try
 						{        
-							try{
-							
-								stage('MassImportImprovementsToggle On and DataGrid enabled')
+							try
+							{
+								stage('Workspace with non default collation MassImportImprovementsToggle On and DataGrid disabled')
 								{
-									echo "Test 1"
-									runIntegrationTests(globalVmInfo.Url, true, true)
+									runIntegrationTests(globalVmInfo.Url, true, false, true)
 								}
 							}
 							finally
 							{
 								try
 								{
-									stage('MassImportImprovementsToggle On and DataGrid disabled')
+									stage('MassImportImprovementsToggle On and DataGrid enabled')
 									{
-										echo "Test 2"
-										runIntegrationTests(globalVmInfo.Url, true, false)
+										runIntegrationTests(globalVmInfo.Url, true, true, false)
 									}
 								}
 								finally
 								{
-									try 
+									try
 									{
-										stage('MassImportImprovementsToggle Off and DataGrid enabled')
+										stage('MassImportImprovementsToggle On and DataGrid disabled')
 										{
-											runIntegrationTests(globalVmInfo.Url, false, true)
+											runIntegrationTests(globalVmInfo.Url, true, false, false)
 										}
 									}
 									finally
 									{
-										stage('MassImportImprovementsToggle Off and DataGrid disabled')
+										try 
 										{
-											runIntegrationTests(globalVmInfo.Url, false, false)
+											stage('MassImportImprovementsToggle Off and DataGrid enabled')
+											{
+												runIntegrationTests(globalVmInfo.Url, false, true, false)
+											}
+										}
+										finally
+										{
+											stage('MassImportImprovementsToggle Off and DataGrid disabled')
+											{
+												runIntegrationTests(globalVmInfo.Url, false, false, false)
+											}
 										}
 									}
 								}
@@ -181,7 +189,7 @@ def getPathToTestParametersFile()
 	return ".\\Source\\Relativity.DataExchange.TestFramework\\Resources\\develop.json"
 }
 
-def runIntegrationTests(String vmUrl, Boolean massImportImprovementsToggleOn, Boolean enableDataGrid)
+def runIntegrationTests(String vmUrl, Boolean massImportImprovementsToggleOn, Boolean enableDataGrid, Boolean workspaceWithNonDefaultCollation)
 {
 	String pathToJsonFile = getPathToTestParametersFile()
 
@@ -191,12 +199,13 @@ def runIntegrationTests(String vmUrl, Boolean massImportImprovementsToggleOn, Bo
 
 	def massImportImprovementsToggle = massImportImprovementsToggleOn ? "-MassImportImprovementsToggle" : ""
 	def dataGridEnabled = enableDataGrid ? "-EnableDataGrid" : ""
-
+	def testWorkspaceWithNonDefaultCollation = workspaceWithNonDefaultCollation ? "-TestOnWorkspaceWithNonDefaultCollation" : ""
+	
 	echo "Replace test variables"
-	replaceTestVariableForDataGrid(vmUrl, enableDataGrid)
+	replaceTestVariables(vmUrl, enableDataGrid, workspaceWithNonDefaultCollation)
 
 	echo "Run tests"
-	output = powershell ".\\build.ps1 IntegrationTestsForMassImportImprovementsToggle ${massImportImprovementsToggle} ${dataGridEnabled} -ILMerge -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
+	output = powershell ".\\build.ps1 IntegrationTestsForMassImportImprovementsToggle ${massImportImprovementsToggle} ${dataGridEnabled} ${testWorkspaceWithNonDefaultCollation} -ILMerge -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
 	echo output 								
 }
 
@@ -223,13 +232,16 @@ def GetTestResults()
 	testResultsSkipped += skipped	
 }
 
-def replaceTestVariableForDataGrid(String vmUrl, Boolean enableDataGrid)
+def replaceTestVariables(String vmUrl, Boolean enableDataGrid, Boolean workspaceWithNonDefaultCollation)
 {
 	String pathToJsonFile = getPathToTestParametersFile()
 	powershell ".\\build.ps1 CreateTemplateTestParametersFile -TestParametersFile '${pathToJsonFile}'"
+	
 	echo "Replacing test variables"
 	def dataGridEnabled = enableDataGrid ? "-EnableDataGrid" : ""
-	output = powershell ".\\build.ps1 ReplaceTestVariables ${dataGridEnabled} -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}'"
+	def testWorkspaceWithNonDefaultCollation = workspaceWithNonDefaultCollation ? "-TestOnWorkspaceWithNonDefaultCollation" : ""
+
+	output = powershell ".\\build.ps1 ReplaceTestVariables ${dataGridEnabled} ${testWorkspaceWithNonDefaultCollation} -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}'"
     echo output
 }
 

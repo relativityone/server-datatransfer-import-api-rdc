@@ -40,9 +40,18 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				throw new ArgumentNullException(nameof(logger));
 			}
 
-			string workspaceTemplateName = parameters.TestOnWorkspaceWithNonDefaultCollation
-				? NonDefaultCollationWorkspaceHelper.GetOrCreateWorkspaceTemplateWithNonDefaultCollation(parameters, logger)
-				: parameters.WorkspaceTemplate;
+			string workspaceTemplateName = parameters.WorkspaceTemplate;
+			if (parameters.TestOnWorkspaceWithNonDefaultCollation)
+			{
+				workspaceTemplateName =
+					NonDefaultCollationWorkspaceHelper.GetOrCreateWorkspaceTemplateWithNonDefaultCollation(
+						parameters,
+						logger);
+
+				// Prevent using just created workspace(workspace template with non default collation) name for new workspace in test
+				parameters.WorkspaceId = -1;
+				parameters.WorkspaceName = null;
+			}
 
 			string newWorkspaceName = GetWorkspaceName(parameters);
 

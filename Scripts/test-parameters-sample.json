@@ -20,6 +20,6 @@
 	"SqlAdminUserName": "sa",
 	"SqlAdminPassword": "SomePassword!",
 	"WorkspaceTemplate": "Relativity Starter Template",
-	"TestOnWorkspaceWithNonDefaultCollation": "False",
+	"TestOnWorkspaceWithNonDefaultCollation": "<replaced_in_build_testonworkspacewithnondefaultcollation>",
 	"EnableDataGrid": "<replaced_in_build_enabledatagrid>"
 }
