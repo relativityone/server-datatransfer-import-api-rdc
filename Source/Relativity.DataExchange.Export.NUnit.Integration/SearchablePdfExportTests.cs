@@ -8,6 +8,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 {
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
 	using System.Threading.Tasks;
 	using global::NUnit.Framework;
 	using kCura.WinEDDS;
@@ -50,6 +51,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// ASSERT
 			ExportedFilesValidator.ValidateSearchablePdfsCount(this.ExtendedExportFile, TestData.SampleSearchablePdfTestFiles.Count());
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
+			await this.ThenTheAuditIsCorrectAsync().ConfigureAwait(false);
 		}
 
 		[Category(TestCategories.Integration)]

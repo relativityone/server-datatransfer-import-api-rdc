@@ -40,6 +40,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.Process;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.Transfer;
 
 	using ArtifactType = Relativity.DataExchange.Service.ArtifactType;
@@ -55,6 +56,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		private CookieContainer cookieContainer;
 		private NetworkCredential credentials;
 		private CancellationTokenSource cancellationTokenSource;
+		private DateTime testExecutionStartTime;
 
 		protected ExportTestBase()
 		{
@@ -382,6 +384,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected void ExecuteFolderAndSubfoldersAndVerify()
 		{
+			this.testExecutionStartTime = DateTime.Now;
 			this.WhenCreatingTheExportFile();
 			this.WhenExportingTheDocs();
 		}
@@ -484,6 +487,49 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		protected void ThenTheStatusMessageWasAdded(string expectedMessage)
 		{
 			Assert.That(this.exporterTestJobResult.StatusMessages.Where((actualMessage) => actualMessage.Contains(expectedMessage)), Is.Not.Empty);
+		}
+
+		/// <summary>
+		/// Verifies audit for export operation.
+		/// This method might be expensive due to the wait and retry policy in <see cref="AuditHelper"/>.
+		/// </summary>
+		/// <returns>Task.</returns>
+		protected async Task ThenTheAuditIsCorrectAsync()
+		{
+			var actualAuditDetails = await AuditHelper.GetLastAuditDetailsForActionAsync(this.TestParameters, AuditHelper.AuditAction.Export, this.testExecutionStartTime)
+				.ConfigureAwait(false);
+			var expectedAuditDetails = ToAuditDetails(this.ExtendedExportFile);
+
+			foreach (string key in expectedAuditDetails.Keys)
+			{
+				Assert.AreEqual(expectedAuditDetails[key], actualAuditDetails[key], $"Audit verification failed for field '{key}'");
+			}
+		}
+
+		private static Dictionary<string, string> ToAuditDetails(ExtendedExportFile exportFile)
+		{
+			string ToYesNo(bool value)
+			{
+				return value ? "Yes" : "No";
+			}
+
+			return new Dictionary<string, string>
+			{
+				{ "Export Images", ToYesNo(exportFile.ExportImages) },
+				{ "Export Native Files", ToYesNo(exportFile.ExportNative) },
+				{ "Export PDF Files", ToYesNo(exportFile.ExportPdf) },
+				{ "Overwrite Files", ToYesNo(exportFile.Overwrite) },
+				{ "Append Original Filenames", ToYesNo(exportFile.AppendOriginalFileName) },
+				{ "Volume Prefix", exportFile.VolumeInfo.VolumePrefix },
+				{ "Volume Start Number", exportFile.VolumeInfo.VolumeStartNumber.ToString() },
+				{ "Volume Max Size", exportFile.VolumeInfo.VolumeMaxSize.ToString() },
+				{ "Subdirectory Max Files", exportFile.VolumeInfo.SubdirectoryMaxSize.ToString() },
+				{ "Subdirectory Start Number", exportFile.VolumeInfo.SubdirectoryStartNumber.ToString() },
+				{ "Subdirectory Native Prefix", exportFile.VolumeInfo.get_SubdirectoryNativePrefix(false) },
+				{ "Subdirectory Text Prefix", exportFile.VolumeInfo.get_SubdirectoryFullTextPrefix(false) },
+				{ "Subdirectory PDF Prefix", exportFile.VolumeInfo.get_SubdirectoryPdfPrefix(false) },
+				{ "Subdirectory Image Prefix", exportFile.VolumeInfo.get_SubdirectoryImagePrefix(false) },
+			};
 		}
 
 		private static string GetPathToTemplatesFolder()

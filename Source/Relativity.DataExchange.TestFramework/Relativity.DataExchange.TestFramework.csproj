@@ -54,6 +54,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\iTextSharp\5.5.13.1\x64\itextsharp.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Audit.Services.Interface">
+      <HintPath>..\..\packages\Relativity.Audit.Services.SDK\lib\net462\Relativity.Audit.Services.Interface.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -102,6 +105,7 @@
     <Compile Include="Import\JobExecutionContext\ImportApiSetupExtensions.cs" />
     <Compile Include="Import\JobExecutionContext\NativeImportExecutionContext.cs" />
     <Compile Include="Import\JobExecutionContext\NativeImportSettingsProvider.cs" />
+    <Compile Include="RelativityHelpers\AuditHelper.cs" />
     <Compile Include="RelativityHelpers\MassImportImprovementsToggleHelper.cs" />
     <Compile Include="NUnitExtensions\PerformanceAttribute.cs" />
     <Compile Include="NUnitExtensions\CollectDeadlocksAttribute.cs" />

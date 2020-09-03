@@ -66,6 +66,7 @@ nuget relativity.services.interfaces.private = 11.2.151.22
 # The Relativity packages below are required ONLY for test projects!
 nuget kcura.relativity.client = 11.2.8.6-DEV
 nuget relativity.logging = 2018.11.8
+nuget Relativity.Audit.Services.SDK
 nuget relativity.productions.services.interfaces = 11.0.7
 nuget relativity.testing.identification = 1.6.0
 nuget NUnitExtras.HierarchicalCategories = 1.1
