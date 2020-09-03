@@ -89,14 +89,22 @@
             </th>
             <th colspan="1" class="confluenceTh">
                 <p>Goatsbeard</p>
+            </th>            
+			<th colspan="1" class="confluenceTh">
+                <p>Indigo</p>
+            </th>            
+			<th colspan="1" class="confluenceTh">
+                <p>Lanceleaf</p>
             </th>
-            <th colspan="1" class="confluenceTh">Indigo</th>
+            <th colspan="1" class="confluenceTh">Mayapple</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td style="text-align: center;" colspan="1" class="confluenceTd"><img class="emoticon emoticon-cross" title="(error)" border="0" src="https://einstein.kcura.com/s/en_US/7901/82d1878e5453caf898e8095ad2298b41f59676da/_/images/icons/emoticons/error.svg" alt="(error)" /></td>
             <td style="text-align: center;" class="confluenceTd"><img class="emoticon emoticon-tick" title="(tick)" border="0" src="https://einstein.kcura.com/s/en_US/7901/82d1878e5453caf898e8095ad2298b41f59676da/_/images/icons/emoticons/check.svg" alt="(tick)" /></td>
+            <td style="text-align: center;" colspan="1" class="confluenceTd"><img class="emoticon emoticon-tick" title="(tick)" border="0" src="https://einstein.kcura.com/s/en_US/7901/82d1878e5453caf898e8095ad2298b41f59676da/_/images/icons/emoticons/check.svg" alt="(tick)" /></td>
+            <td style="text-align: center;" colspan="1" class="confluenceTd"><img class="emoticon emoticon-tick" title="(tick)" border="0" src="https://einstein.kcura.com/s/en_US/7901/82d1878e5453caf898e8095ad2298b41f59676da/_/images/icons/emoticons/check.svg" alt="(tick)" /></td>
             <td style="text-align: center;" colspan="1" class="confluenceTd"><img class="emoticon emoticon-tick" title="(tick)" border="0" src="https://einstein.kcura.com/s/en_US/7901/82d1878e5453caf898e8095ad2298b41f59676da/_/images/icons/emoticons/check.svg" alt="(tick)" /></td>
             <td style="text-align: center;" colspan="1" class="confluenceTd"><img class="emoticon emoticon-tick" title="(tick)" border="0" src="https://einstein.kcura.com/s/en_US/7901/82d1878e5453caf898e8095ad2298b41f59676da/_/images/icons/emoticons/check.svg" alt="(tick)" /></td>
             <td style="text-align: center;" colspan="1" class="confluenceTd"><img class="emoticon emoticon-tick" title="(tick)" border="0" src="https://einstein.kcura.com/s/en_US/7901/82d1878e5453caf898e8095ad2298b41f59676da/_/images/icons/emoticons/check.svg" alt="(tick)" /></td>

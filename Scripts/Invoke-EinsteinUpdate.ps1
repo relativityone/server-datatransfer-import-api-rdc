@@ -96,6 +96,18 @@ Function Replace-VariablesInTemplate{
 	$MessageToUse = $MessageToUse -replace '<SHA256_of_build>', $fileHash
 	$MessageToUse = $MessageToUse -replace '<link_to_setup_exe_in_bld_pkg>', $LinkToSetupExeOnSharedDisk
 	$MessageToUse = $MessageToUse -replace '<section_with_dependencies>', (Get-DependencyList).ToString()
+	
+	if($Branch.IndexOf("release", [System.StringComparison]::InvariantCultureIgnoreCase) -ge 0)
+	{
+		# This is a release branch check to see if the name of the relativity version is mentioned in the template. This is done because we need to manually opdate the template for each version, 
+		# and if you forget we want the pipeline to warn us by throwing an exception, so you actually fix it. $Branch is something like "release-1.11-mayapple"
+		# the documentation just needs 2 more lines of HTML if this throws.
+		$RelVersion = $Branch.Split('-')[2]
+		if(-Not $MessageToUse.IndexOf($RelVersion, [System.StringComparison]::InvariantCultureIgnoreCase) -ge 0)
+		{
+			Throw "This operation cannot be performed because the message on einstein does not have a green check for $RelVersion. Add this check in .\Scripts\Template_einstein.txt, so our documentation is updated."
+		}
+	}
 	return $MessageToUse
 }
 
