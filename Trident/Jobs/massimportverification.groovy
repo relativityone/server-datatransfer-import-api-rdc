@@ -2,6 +2,9 @@ import groovy.json.JsonOutput
 library 'ProjectMayhem@v1'
 library 'SlackHelpers@5.2.0-Trident'
 
+// Execute tests on 'develop' branch automatically every Monday and Thursday at 5 AM
+def cronString = env.BRANCH_NAME == 'develop' ? "0 5 * * 1,4" : ""
+
 properties([
 	buildDiscarder(logRotator(artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30')),
 	parameters([
@@ -9,7 +12,8 @@ properties([
 		choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
 		choice(defaultValue: 'lanceleafAA1', choices: ["lanceleafAA1"], description: 'The template used to prepare hopper instance', name: 'hopperTemplate'),
 		string(defaultValue: 'develop', description: 'Name of folder in bld-pkgs Packages Relativity', name: 'relativityInstallerSource'),
-	])
+	]),
+	pipelineTriggers([cron(cronString)])
 ])
 
 testResultsPassed = 0
