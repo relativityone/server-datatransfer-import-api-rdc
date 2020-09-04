@@ -51,6 +51,21 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 			}
 		}
 
+		public static void SkipTestIfRelativityVersionIsGreaterOrEqual(
+			IntegrationTestParameters testParameters,
+			RelativityVersion version)
+		{
+			testParameters = testParameters ?? throw new ArgumentNullException(nameof(testParameters));
+
+			Version currentVersion = GetCurrentRelativityVersion(testParameters);
+			Version firstIncompatibleVersion = VersionsSource[version];
+
+			if (currentVersion >= firstIncompatibleVersion)
+			{
+				Assert.Ignore(TestStrings.SkipTestMessage, $"current Relativity version {currentVersion} is greater than or equal to {firstIncompatibleVersion}");
+			}
+		}
+
 		public static Version GetCurrentRelativityVersion(IntegrationTestParameters testParameters)
 		{
 			testParameters = testParameters ?? throw new ArgumentNullException(nameof(testParameters));

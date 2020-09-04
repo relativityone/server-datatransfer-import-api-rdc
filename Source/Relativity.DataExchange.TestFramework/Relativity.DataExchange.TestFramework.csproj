@@ -104,6 +104,7 @@
     <Compile Include="Import\JobExecutionContext\NativeImportSettingsProvider.cs" />
     <Compile Include="MassImportImprovementsToggleChecker.cs" />
     <Compile Include="NUnitExtensions\CollectDeadlocksAttribute.cs" />
+    <Compile Include="NUnitExtensions\IgnoreIfVersionGreaterOrEqualAttribute.cs" />
     <Compile Include="NUnitExtensions\IgnoreIfVersionLowerThanAttribute.cs" />
     <Compile Include="NUnitExtensions\PerformanceDataCollector.cs" />
     <Compile Include="NUnitExtensions\SqlComparerTestCommand.cs" />
