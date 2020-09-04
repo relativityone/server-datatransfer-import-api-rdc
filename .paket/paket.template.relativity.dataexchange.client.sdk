@@ -39,14 +39,14 @@ dependencies
   framework: net462
 	Newtonsoft.Json >= 6.0.8
 	Polly >= 5.7
-	kCura.OutsideIn.FI.Win32 >= 2020.4.0
+	kCura.OutsideIn.FI.Win32 >= 2020.5.0
 	Relativity.Kepler.Client >= 2.6.2
 	Relativity.Logging.Interfaces >= 2018.11.8
 	Relativity.OAuth2Client >= 1.5.2
 	Relativity.OAuth2Client.Implicit >= 1.5.2
 	Relativity.OAuth2Client.Interfaces >= 1.5.2
-	Relativity.Services.DataContracts >= 11.2.151.22
-	Relativity.Services.Interfaces >= 11.2.151.22
+	Relativity.Services.DataContracts >= 11.3.11.1
+	Relativity.Services.Interfaces >= 11.3.11.1
 	relativity.transfer.client ~> 7.2.7
 	Relativity.Telemetry.Services.Interface ~> 3000.0
 	Relativity.Telemetry.DataContracts.Shared ~> 3000.0
