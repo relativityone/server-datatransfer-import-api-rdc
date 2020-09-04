@@ -127,6 +127,16 @@ def createHopperInstance(String sutTemplate, String relativityBranch)
 		}
 	}
 	
+	// workaround for REL-469686 - First request to Relativity.Distributed/Download.aspx fails due to FileLoadException
+	echo "Sending a request to the Relativity.Distributed/Download.aspx - workaround for REL-469686"
+	def relativityUrl = vmInfo.Url // format: http://xxx.yyy/Relativity/
+	def ditributedDownloadUrl = relativityUrl.replaceAll("Relativity/", "Relativity.Distributed/Download.aspx")
+	echo "Distributed download URL: ${ditributedDownloadUrl}"
+	def httpConnection = new URL(ditributedDownloadUrl).openConnection()
+	def responseCode = httpConnection.getResponseCode()
+	echo "Relativity.Distributed/Download.aspx returned ${responseCode} response code."
+	// end of workaround for REL-469686
+	
     return vmInfo
 }
 
