@@ -44,6 +44,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			SetupDefaultExportFile(this.ExtendedExportFile);
 			this.ExtendedExportFile.ExportPdf = exportPdf;
 			this.ExtendedExportFile.VolumeInfo.CopyPdfFilesFromRepository = copyPdfFromRepository;
+			this.ExtendedExportFile.VolumeInfo.set_SubdirectoryPdfPrefix(false, RandomHelper.NextString(10, 15));
 
 			// ACT
 			this.ExecuteFolderAndSubfoldersAndVerify();
