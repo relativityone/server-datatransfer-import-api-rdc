@@ -56,7 +56,6 @@ namespace Relativity.DataExchange.Service
 			// The Relativity.Services URL should require a separate configurable base URL but RSAPI isn't used.
 			this.httpClientHandler = new HttpClientHandler();
 			ServiceFactorySettings factorySettings = new ServiceFactorySettings(
-				new Uri(this.serviceConnectionInfo.WebServiceBaseUrl, "/Relativity.Services"),
 				new Uri(this.serviceConnectionInfo.WebServiceBaseUrl, "/Relativity.Rest/api"),
 				this.serviceConnectionInfo.Credentials,
 				this.httpClientHandler);
