@@ -1183,6 +1183,7 @@ Namespace kCura.WinEDDS
 			Else
 				args.ExportImages = False
 			End If
+			args.ExportSearchablePDFs = Me.Settings.ExportPdf
 			args.OverwriteFiles = Me.Settings.Overwrite
 			Dim preclist As New System.Collections.ArrayList
 			For Each pair As WinEDDS.Pair In Me.Settings.ImagePrecedence
@@ -1198,7 +1199,7 @@ Namespace kCura.WinEDDS
 			args.SubdirectoryNativePrefix = Me.Settings.VolumeInfo.SubdirectoryNativePrefix(False)
 			args.SubdirectoryStartNumber = Me.Settings.VolumeInfo.SubdirectoryStartNumber
 			args.SubdirectoryTextPrefix = Me.Settings.VolumeInfo.SubdirectoryFullTextPrefix(False)
-			args.SubdirectoryPdfPrefix = Me.Settings.VolumeInfo.SubdirectoryPdfPrefix(False)
+			args.SubdirectoryPDFPrefix = Me.Settings.VolumeInfo.SubdirectoryPdfPrefix(False)
 			'args.TextAndNativeFilesNamedAfterFieldID = Me.ExportNativesToFileNamedFrom
 			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier Then
 				For Each field As ViewFieldInfo In Me.Settings.AllExportableFields

@@ -1217,7 +1217,7 @@ Namespace kCura.EDDS.WebAPI.AuditManagerBase
         End Property
 
         '''<remarks/>
-        Public Property SubdirectoryPdfPrefix() As String
+        Public Property SubdirectoryPDFPrefix() As String
             Get
                 Return Me.subdirectoryPdfPrefixField
             End Get
@@ -1227,7 +1227,7 @@ Namespace kCura.EDDS.WebAPI.AuditManagerBase
         End Property
 
         '''<remarks/>
-        Public Property ExportSearchablePdfs() As Boolean
+        Public Property ExportSearchablePDFs() As Boolean
             Get
                 Return Me.exportSearchablePdfsField
             End Get
