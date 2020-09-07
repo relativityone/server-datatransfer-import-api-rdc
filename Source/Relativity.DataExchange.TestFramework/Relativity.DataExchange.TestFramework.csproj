@@ -109,6 +109,7 @@
     <Compile Include="RelativityHelpers\MassImportImprovementsToggleHelper.cs" />
     <Compile Include="NUnitExtensions\PerformanceAttribute.cs" />
     <Compile Include="NUnitExtensions\CollectDeadlocksAttribute.cs" />
+    <Compile Include="NUnitExtensions\IgnoreIfVersionGreaterOrEqualAttribute.cs" />
     <Compile Include="NUnitExtensions\IgnoreIfVersionLowerThanAttribute.cs" />
     <Compile Include="GitInformation.cs" />
     <Compile Include="PerformanceTests\PerformanceDataCollector.cs" />
