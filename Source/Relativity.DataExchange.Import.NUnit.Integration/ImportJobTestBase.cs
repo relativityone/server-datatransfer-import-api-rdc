@@ -169,7 +169,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			string objectName = Guid.NewGuid().ToString();
 
 			var objectId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, objectName).ConfigureAwait(false);
-			await TestFramework.RelativityHelpers.FieldHelper.CreateFileFieldAsync(this.TestParameters, "FilePath", objectId).ConfigureAwait(false);
+			await TestFramework.RelativityHelpers.FieldHelper.CreateFileFieldAsync(this.TestParameters, WellKnownFields.FilePath, objectId).ConfigureAwait(false);
 
 			var controlNumberFieldRequest = new FixedLengthFieldRequest()
 				                                {

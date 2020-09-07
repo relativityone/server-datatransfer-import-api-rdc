@@ -11,6 +11,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Dynamic;
 	using System.IO;
 	using System.Linq;
 	using System.Threading.Tasks;
@@ -57,8 +59,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public async Task SetupObjectAsync()
 		{
 			testsSkipped = RelativityVersionChecker.VersionIsLowerThan(
-				               this.TestParameters,
-				               MinSupportedVersion);
+							   this.TestParameters,
+							   MinSupportedVersion);
 			if (!testsSkipped)
 			{
 				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false); // Remove all Documents imported in AssemblySetup
@@ -83,6 +85,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
+		[SuppressMessage("Microsoft.Maintainability", "CA1506", Justification = "It is just integration test")]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
@@ -98,7 +101,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			[Values(true, false)] bool disableNativeValidation)
 		{
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.DefaultSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.GetFileCopySettings(artifactTypeId);
 
 			// ARRANGE
 			ForceClient(client);
@@ -116,11 +119,27 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(results, NumberOfFilesToImport);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
-			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfFilesToImport));
+
+			// Progress count is doubled in case of the Object so we can't fix the assert on expected record count
+			Assert.That(results.NumberOfCompletedRows, Is.GreaterThanOrEqualTo(NumberOfFilesToImport));
 			ThenTheJobCompletedInCorrectTransferMode(results, client);
 
-			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, artifactTypeId, fields: new[] { WellKnownFields.ControlNumber });
+			string fileNameField = artifactTypeId == (int)ArtifactType.Document
+									   ? WellKnownFields.HasNative
+									   : WellKnownFields.FilePath;
+
+			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, artifactTypeId, fields: new[] { WellKnownFields.ControlNumber, fileNameField });
 			Assert.That(relativityObjects.Count, Is.EqualTo(NumberOfFilesToImport));
+
+			// Check the files are there - document has different field to check than object
+			if (artifactTypeId == (int)ArtifactType.Document)
+			{
+				Assert.That(relativityObjects.All(item => (bool)item.FieldValues[1].Value));
+			}
+			else
+			{
+				Assert.That(relativityObjects.All(item => ((ExpandoObject)item.FieldValues[1].Value) != null));
+			}
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -135,7 +154,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ForceClient(Client);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, Client);
 
-			Settings settings = NativeImportSettingsProvider.DefaultSettings();
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
@@ -170,7 +189,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ForceClient(Client);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, Client);
 
-			Settings settings = NativeImportSettingsProvider.DefaultSettings();
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
 			settings.MoveDocumentsInAppendOverlayMode = true;
 			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
@@ -201,7 +220,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.DefaultSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings(artifactTypeId);
 
 			// Import initial data to workspace
 			if (overwriteMode == OverwriteModeEnum.AppendOverlay || overwriteMode == OverwriteModeEnum.Overlay)
@@ -306,7 +325,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.DefaultSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings(artifactTypeId);
 			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
@@ -345,7 +364,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.DefaultSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings(artifactTypeId);
 
 			// Import initial data to workspace
 			if (overwriteMode == OverwriteModeEnum.AppendOverlay || overwriteMode == OverwriteModeEnum.Overlay)
@@ -438,7 +457,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.DefaultSettings(artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings(artifactTypeId);
 
 			// Prepare data for import under test
 			settings.OverwriteMode = overwriteMode;
@@ -479,8 +498,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private int GetArtifactTypeIdForTest(ArtifactType artifactType)
 		{
 			int artifactTypeId = artifactType == ArtifactType.Document
-				                     ? (int)ArtifactTypeID.Document
-				                     : this.createdObjectArtifactTypeId;
+									 ? (int)ArtifactTypeID.Document
+									 : this.createdObjectArtifactTypeId;
 			return artifactTypeId;
 		}
 
@@ -506,7 +525,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private async Task CreateObjectFieldsAsync(int artifactTypeId)
 		{
 			int multiObjectArtifactTypeId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, $"Multi object type for artifactTypeId {artifactTypeId}")
-				                     .ConfigureAwait(false);
+									 .ConfigureAwait(false);
 			await FieldHelper.CreateMultiObjectFieldAsync(
 				this.TestParameters,
 				MultiObjectFieldName1,
@@ -519,7 +538,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				artifactTypeId).ConfigureAwait(false);
 
 			int singleObjectArtifactTypeId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, $"Single object type for artifactTypeId {artifactTypeId}")
-				                         .ConfigureAwait(false);
+										 .ConfigureAwait(false);
 			await FieldHelper.CreateSingleObjectFieldAsync(
 				this.TestParameters,
 				SingleObjectFieldName,

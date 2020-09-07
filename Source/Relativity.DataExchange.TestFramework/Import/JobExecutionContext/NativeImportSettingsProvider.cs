@@ -14,35 +14,32 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 
 	public static class NativeImportSettingsProvider
 	{
-		public static Settings FileCopySettings
+		public static Settings GetFileCopySettings(int artifactTypeId)
 		{
-			get
-			{
-				Settings settings = DefaultSettings();
-				settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
-				settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
+			Settings settings = GetDefaultSettings(artifactTypeId);
+			settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
+			settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
 
-				settings.OIFileIdMapped = true;
-				settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
-				settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
+			settings.OIFileIdMapped = true;
+			settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
+			settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
 
-				settings.FileSizeMapped = true;
-				settings.FileSizeColumn = WellKnownFields.NativeFileSize;
-				return settings;
-			}
+			settings.FileSizeMapped = true;
+			settings.FileSizeColumn = WellKnownFields.NativeFileSize;
+			return settings;
+	}
+
+		public static Settings GetDefaultSettings()
+		{
+			return GetDefaultSettings((int)ArtifactType.Document, WellKnownFields.ControlNumber);
 		}
 
-		public static Settings DefaultSettings()
+		public static Settings GetDefaultSettings(int artifactTypeId)
 		{
-			return DefaultSettings((int)ArtifactType.Document, WellKnownFields.ControlNumber);
+			return GetDefaultSettings(artifactTypeId, WellKnownFields.ControlNumber);
 		}
 
-		public static Settings DefaultSettings(int artifactTypeId)
-		{
-			return DefaultSettings(artifactTypeId, WellKnownFields.ControlNumber);
-		}
-
-		public static Settings DefaultSettings(int artifactTypeId, string selectedIdentifierFieldName)
+		public static Settings GetDefaultSettings(int artifactTypeId, string selectedIdentifierFieldName)
 		{
 			Settings settings = new Settings
 			{
