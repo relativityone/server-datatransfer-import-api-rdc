@@ -7,7 +7,7 @@ properties([
     parameters([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-        string(defaultValue: 'aio-larkspur-3,aio-blazingstar-3,aio-foxglove-3,aio-goatsbeard-3,aio-indigo-2,aio-juniper-2,aio-lanceleaf-ea', description: 'Comma separated list of SUT templates', name: 'temlatesStr')
+        string(defaultValue: 'aio-larkspur-3,aio-blazingstar-3,aio-foxglove-3,aio-goatsbeard-3,aio-indigo-2,aio-juniper-2,aio-lanceleaf-ea,aio-mayapple-eau', description: 'Comma separated list of SUT templates', name: 'temlatesStr')
     ]),
     pipelineTriggers([cron("H 22 * * *")])
 ])

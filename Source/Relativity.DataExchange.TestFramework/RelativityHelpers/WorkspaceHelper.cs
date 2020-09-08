@@ -10,13 +10,18 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading.Tasks;
-
 	using kCura.Relativity.Client;
 	using kCura.Relativity.Client.DTOs;
 
 	using Polly;
 
 	using Relativity.DataExchange.Logger;
+	using Relativity.DataExchange.TestFramework;
+	using Relativity.Services.Interfaces.Field.Models;
+	using Relativity.Services.Interfaces.Shared.Models;
+
+	using ArtifactType = Relativity.ArtifactType;
+	using IFieldManager = Relativity.Services.Interfaces.Field.IFieldManager;
 
 	/// <summary>
 	/// Defines static helper methods to manage workspaces.
@@ -252,10 +257,39 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		private static void EnableDataGrid(IRSAPIClient client, IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
 		{
-			var createdWorkspace = client.Repositories.Workspace.ReadSingle(parameters.WorkspaceId);
-			createdWorkspace.EnableDataGrid = parameters.EnableDataGrid;
-			client.Repositories.Workspace.UpdateSingle(createdWorkspace);
-			logger.LogInformation(parameters.EnableDataGrid ? $"Set DataGrid enabled for workspace with id {parameters.WorkspaceId}" : $"Set DataGrid disabled for workspace with id {parameters.WorkspaceId}");
+			// By default DataGrid is disable on workspace templates used in tests
+			// It is impossible to disable DataGrid for workspace if it was enabled before
+			if (parameters.EnableDataGrid)
+			{
+				var createdWorkspace = client.Repositories.Workspace.ReadSingle(parameters.WorkspaceId);
+				createdWorkspace.EnableDataGrid = true;
+				client.Repositories.Workspace.UpdateSingle(createdWorkspace);
+				logger.LogInformation($"DataGrid enabled for workspace with id {parameters.WorkspaceId}");
+
+				UpdateExtractedTextField(parameters, logger).ConfigureAwait(false);
+				logger.LogInformation($"'Extracted Text' field values in workspace updated");
+			}
+		}
+
+		private static async Task UpdateExtractedTextField(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
+		{
+			var longTextFieldRequest = new LongTextFieldRequest()
+				                           {
+					                           Name = WellKnownFields.ExtractedText,
+					                           ObjectType = new ObjectTypeIdentifier() { ArtifactTypeID = (int)ArtifactType.Document },
+					                           EnableDataGrid = true,
+					                           IncludeInTextIndex = false,
+					                           FilterType = FilterType.None,
+					                           AvailableInViewer = true,
+					                           HasUnicode = true,
+				                           };
+			using (IFieldManager fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(parameters))
+			{
+				int fieldId = TestFramework.RelativityHelpers.FieldHelper.GetFieldArtifactId(parameters, logger, WellKnownFields.ExtractedText);
+
+				await fieldManager.UpdateLongTextFieldAsync(parameters.WorkspaceId, fieldId, longTextFieldRequest)
+					.ConfigureAwait(false);
+			}
 		}
 	}
 }

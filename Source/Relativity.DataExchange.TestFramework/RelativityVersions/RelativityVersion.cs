@@ -65,6 +65,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 		Mayapple,
 
 		/// <summary>
+		/// Relativity 11.3.
+		/// </summary>
+		MayappleEAU,
+
+		/// <summary>
 		/// Relativity 11.3.16 - version containing functionality for export searchable pdfs.
 		/// </summary>
 		MayappleExportPDFs,

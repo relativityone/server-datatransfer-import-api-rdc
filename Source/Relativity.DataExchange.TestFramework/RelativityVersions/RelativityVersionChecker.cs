@@ -25,6 +25,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 			[RelativityVersion.LanceleafREL425922] = new Version(11, 2, 158),
 			[RelativityVersion.LanceleafREL438573] = new Version(11, 2, 170),
 			[RelativityVersion.Mayapple] = new Version(11, 3, 1),
+			[RelativityVersion.MayappleEAU] = new Version(11, 3, 101, 10),
 			[RelativityVersion.MayappleExportPDFs] = new Version(11, 3, 16),
 		};
 
@@ -48,6 +49,21 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 			if (currentVersion < firstCompatibleVersion)
 			{
 				Assert.Ignore(TestStrings.SkipTestMessage, $"current Relativity version {currentVersion} is lower than required {firstCompatibleVersion}");
+			}
+		}
+
+		public static void SkipTestIfRelativityVersionIsEqualTo(
+			IntegrationTestParameters testParameters,
+			RelativityVersion version)
+		{
+			testParameters = testParameters ?? throw new ArgumentNullException(nameof(testParameters));
+
+			Version currentVersion = GetCurrentRelativityVersion(testParameters);
+			Version versionToSkip = VersionsSource[version];
+
+			if (currentVersion == versionToSkip)
+			{
+				Assert.Ignore(TestStrings.SkipTestMessage, $"current Relativity version {currentVersion} is equal to {versionToSkip} so this test is skipped (most likely there is a bug in this version)");
 			}
 		}
 

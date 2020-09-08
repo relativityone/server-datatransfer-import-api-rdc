@@ -17,12 +17,12 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using Polly;
 
 	using Relativity.DataExchange.TestFramework;
-
 	using Relativity.Services.Interfaces.Field;
 	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Interfaces.Shared.Models;
 	using Relativity.Services.Objects;
 	using Relativity.Services.Objects.DataContracts;
+	using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
 	/// <summary>
 	/// Defines static helper methods to manage fields.
@@ -237,6 +237,19 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return ro.FieldValues[0].Value as string;
 		}
 
+		public static int GetFieldArtifactId(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string fieldName)
+		{
+			QueryResult result = QueryFieldByNameAsync(parameters, logger, fieldName).ConfigureAwait(false).GetAwaiter().GetResult();
+
+			if (result.TotalCount != 1)
+			{
+				throw new InvalidOperationException(
+					$"Failed to retrieve the result for field {fieldName}.");
+			}
+
+			return result.Objects[0].ArtifactID;
+		}
+
 		public static async Task<Dictionary<string, List<string>>> GetFieldValuesAsync(IntegrationTestParameters testParameters, string fieldName, string identifierFieldName, int artifactTypeId)
 		{
 			var request = new Services.Objects.DataContracts.QueryRequest
@@ -314,6 +327,24 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				}
 
 				return result.Objects[0];
+			}
+		}
+
+		private static async Task<QueryResult> QueryFieldByNameAsync(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string fieldName)
+		{
+			logger.LogVerbose("Querying for field.");
+			using (IObjectManager objectManager = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
+			{
+				QueryRequest queryRequest = new QueryRequest()
+					                            {
+						                            ObjectType = new ObjectTypeRef()
+							                                         {
+								                                         ArtifactTypeID = (int)ArtifactType.Field,
+							                                         },
+						                            Condition = $"'Name' == '{fieldName}'",
+					                            };
+				QueryResult queryResult = await objectManager.QueryAsync(parameters.WorkspaceId, queryRequest, 0, 1).ConfigureAwait(false);
+				return queryResult;
 			}
 		}
 	}

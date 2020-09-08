@@ -100,6 +100,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			[Values(true, false)] bool disableNativeLocationValidation,
 			[Values(true, false)] bool disableNativeValidation)
 		{
+			// There is a bug in Mayapple EAU that prevents to import file for object types
+			RelativityVersionChecker.SkipTestIfRelativityVersionIsEqualTo(TestParameters, RelativityVersion.MayappleEAU);
+
 			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
 			Settings settings = NativeImportSettingsProvider.GetFileCopySettings(artifactTypeId);
 
