@@ -3,11 +3,9 @@ Imports Relativity.DataExchange
 
 Namespace kCura.WinEDDS
 	Public Class Statistics
+		Public Const BatchSizeKey As String = "BatchSize"
 		Public Const BatchCountKey As String = "Batches"
-		Public Const DocsCreatedKey As String = "DocsCreated"
 		Public Const DocsCountKey As String = "Docs"
-		Public Const DocsUpdatedKey As String = "DocsUpdated"
-		Public Const FilesProcessedKey As String = "MassImportFilesProcessed"
 		Public Const MetadataBytesKey As String = "MetadataBytes"
 		Public Const MetadataFilesTransferredKey As String = "MetadataFilesTransferred"
 		Public Const MetadataThroughputKey As String = "MetadataThroughput"
@@ -23,40 +21,6 @@ Namespace kCura.WinEDDS
 		Public Const SqlProcessRateKey As String = "Average SQL process rate"
 		Public Const CurrentBatchSizeKey As String = "Current batch size"
 
-		Private _documentsCreated As Integer = 0
-		Private _documentsUpdated As Integer = 0
-		Private _filesProcessed As Integer = 0
-
-		''' <summary>
-		''' Gets number of documents created in mass import.
-		''' </summary>
-		''' <value>The number of documents created in mass import.</value>
-		Public ReadOnly Property DocumentsCreated As Integer
-			Get
-				Return _documentsCreated
-			End Get
-		End Property
-
-		''' <summary>
-		''' Gets number of documents updated in mass import.
-		''' </summary>
-		''' <value>The number of documents updated in mass import.</value>
-		Public ReadOnly Property DocumentsUpdated As Integer
-			Get
-				Return _documentsUpdated
-			End Get
-		End Property
-
-		''' <summary>
-		''' Gets total number of records processed in mass import.
-		''' </summary>
-		''' <value>The total number of records processed in mass import.</value>
-		Public ReadOnly Property FilesProcessed As Integer
-			Get
-				Return _filesProcessed
-			End Get
-		End Property
-
 		''' <summary>
 		''' Gets or sets the total number of import or export batches.
 		''' </summary>
@@ -69,8 +33,10 @@ Namespace kCura.WinEDDS
 		''' <value>The maximum number of documents or objects in batch.</value>
 		Public Property BatchSize As Integer = 0
 
-		Public Property ImportObjectType As TelemetryConstants.ImportObjectType = TelemetryConstants.ImportObjectType.NotApplicable
-
+		''' <summary>
+		''' Gets or sets number of documents processed with errors.
+		''' </summary>
+		''' <value>The total number of records with errors.</value>
 		Public Property DocsErrorsCount As Integer = 0
 
 		''' <summary>
@@ -132,12 +98,7 @@ Namespace kCura.WinEDDS
 		Public Property MassImportDuration As New TimeSpan
 
 		Public Property DocumentsCount As Integer = 0
-
-		''' <summary>
-		''' Gets or sets number of records processed with errors.
-		''' </summary>
-		''' <value>The total number of records with errors.</value>
-		Public Property RecordsWithErrorsCount As Integer = 0
+		
 
 		''' <summary>
 		''' General function calculating throughput in units per second.
@@ -153,12 +114,7 @@ Namespace kCura.WinEDDS
 			Return ByteSize.FromBytes(value).ToString("0.##")
 		End Function
 
-		Public Sub ProcessMassImportResults(ByVal results As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
-			_documentsCreated += results.ArtifactsCreated
-			_documentsUpdated += results.ArtifactsUpdated
-			_filesProcessed += results.FilesProcessed
-		End Sub
-
+		
 		''' <summary>
 		''' Converts this instance into a dictionary containing limited name/value pairs.
 		''' </summary>
@@ -168,7 +124,7 @@ Namespace kCura.WinEDDS
 		''' <returns>
 		''' The <see cref="IDictionary"/> instance.
 		''' </returns>
-		Public Overridable Function ToDictionary() As IDictionary
+		Public Overridable Function ToDictionaryForProgress() As IDictionary
 			Dim retval As New System.Collections.Specialized.HybridDictionary
 			If Not Me.FileTransferDuration.Equals(TimeSpan.Zero) Then
 				Dim fileDuration As TimeSpan = Me.FileTransferDuration - Me.FileWaitDuration
@@ -202,11 +158,9 @@ Namespace kCura.WinEDDS
 			Dim statisticsDict As System.Collections.Generic.Dictionary(Of String, Object) = New System.Collections.Generic.Dictionary(Of String, Object) From
 				    {
 						{DocsErrorsCountKey, Me.DocsErrorsCount},
+						{BatchSizeKey, Me.BatchSize},
 					    {BatchCountKey, Me.BatchCount},
 					    {DocsCountKey, Me.DocumentsCount},
-					    {DocsCreatedKey, Me.DocumentsCreated},
-					    {DocsUpdatedKey, Me.DocumentsUpdated},
-					    {FilesProcessedKey, Me.FilesProcessed},
 					    {MetadataBytesKey, Me.MetadataTransferredBytes},
 					    {MetadataFilesTransferredKey, Me.MetadataFilesTransferredCount},
 					    {MetadataThroughputKey, Me.MetadataTransferThroughput},
@@ -216,11 +170,6 @@ Namespace kCura.WinEDDS
 					    {NativeFileTimeKey, Me.FileTransferDuration},
 					    {NativeFilesTransferredKey, Me.NativeFilesTransferredCount}
 				    }
-
-			Dim pair As DictionaryEntry
-			For Each pair In Me.ToDictionary()
-				statisticsDict.Add(pair.Key.ToString(), pair.Value)
-			Next
 
 			Return statisticsDict
 		End Function

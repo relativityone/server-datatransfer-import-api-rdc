@@ -65,9 +65,15 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected Overrides ReadOnly Property Statistics As Statistics
+		Private ReadOnly Property ImportStatistics As ImportStatistics
 			Get
 				Return _loadFileImporter.Statistics
+			End Get
+		End Property 
+
+		Protected Overrides ReadOnly Property Statistics As Statistics
+			Get
+				Return ImportStatistics
 			End Get
 		End Property
 
@@ -205,6 +211,15 @@ Namespace kCura.WinEDDS
 			Me.Context.InputArgs = LoadFile.FilePath
 		End Sub
 
+		Protected Overrides Sub BuildBaseMetric(metric As MetricJobBase)
+			MyBase.BuildBaseMetric(metric)
+			metric.ImportObjectType = ImportStatistics.ImportObjectType
+		End Sub
+
+		Protected Overrides Sub BuildEndMetric(metric As MetricJobEndReport)
+			metric.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(ImportStatistics.DocumentsCreated + ImportStatistics.DocumentsUpdated, Statistics.MassImportDuration.TotalSeconds)
+		End Sub
+
 		Private Sub AuditRun(ByVal runID As String)
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics
@@ -315,7 +330,6 @@ Namespace kCura.WinEDDS
 					Case EventType2.Error
 						_errorCount += 1
 						_perBatchErrorCount += 1
-						Statistics.RecordsWithErrorsCount = _errorCount
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Progress
@@ -362,8 +376,6 @@ Namespace kCura.WinEDDS
 			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)
 		End Sub
 
-
-
 		Private Sub _loadFileImporter_DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs) Handles _loadFileImporter.DataSourcePrepEvent
 			SyncLock Me.Context
 				Dim totalBytesDisplay As String = FileSizeHelper.ConvertBytesNumberToDisplayString(e.TotalBytes)
@@ -402,7 +414,7 @@ Namespace kCura.WinEDDS
 		Private Sub _loadFileImporter_OnBatchCompleted(batchInformation As BatchInformation) Handles _loadFileImporter.BatchCompleted
 			batchInformation.NumberOfRecordsWithErrors = _perBatchErrorCount
 			_perBatchErrorCount = 0
-			MyBase.SendMetricJobBatch(batchInformation)
+			SendMetricJobBatch(batchInformation)
 		End Sub
 
 		Dim isDisposed as Boolean

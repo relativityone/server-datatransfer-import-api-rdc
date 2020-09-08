@@ -30,7 +30,7 @@ namespace Relativity.DataExchange.NUnit
 			this._statistics.BatchSize = 0;
 
 			// Act
-			var actual = this._statistics.ToDictionary();
+			var actual = this._statistics.ToDictionaryForProgress();
 
 			// Assert
 			Assert.False(actual.Contains(Statistics.CurrentBatchSizeKey));
@@ -48,7 +48,7 @@ namespace Relativity.DataExchange.NUnit
 			this._statistics.BatchSize = batchSize;
 
 			// Act
-			var actual = this._statistics.ToDictionary()[Statistics.CurrentBatchSizeKey];
+			var actual = this._statistics.ToDictionaryForProgress()[Statistics.CurrentBatchSizeKey];
 
 			// Assert
 			Assert.AreEqual(expected, actual);
@@ -61,7 +61,7 @@ namespace Relativity.DataExchange.NUnit
 			this._statistics.MassImportDuration = new TimeSpan(0);
 
 			// Act
-			var actual = this._statistics.ToDictionary();
+			var actual = this._statistics.ToDictionaryForProgress();
 
 			// Assert
 			Assert.False(actual.Contains(Statistics.SqlProcessRateKey));
@@ -80,7 +80,7 @@ namespace Relativity.DataExchange.NUnit
 			this._statistics.MassImportDuration = new TimeSpan(numberOfTicks);
 
 			// Act
-			var actual = this._statistics.ToDictionary()[Statistics.SqlProcessRateKey];
+			var actual = this._statistics.ToDictionaryForProgress()[Statistics.SqlProcessRateKey];
 
 			// Assert
 			Assert.AreEqual(expected, actual);
@@ -93,7 +93,7 @@ namespace Relativity.DataExchange.NUnit
 			this._statistics.FileTransferDuration = new TimeSpan(0);
 
 			// Act
-			var actual = this._statistics.ToDictionary();
+			var actual = this._statistics.ToDictionaryForProgress();
 
 			// Assert
 			Assert.False(actual.Contains(Statistics.FileTransferRateKey));
@@ -113,7 +113,7 @@ namespace Relativity.DataExchange.NUnit
 			this._statistics.FileWaitDuration = new TimeSpan(waitTicks);
 
 			// Act
-			var actual = this._statistics.ToDictionary()[Statistics.FileTransferRateKey];
+			var actual = this._statistics.ToDictionaryForProgress()[Statistics.FileTransferRateKey];
 
 			// Assert
 			Assert.AreEqual(expected, actual);
@@ -126,7 +126,7 @@ namespace Relativity.DataExchange.NUnit
 			this._statistics.MetadataTransferDuration = new TimeSpan(0);
 
 			// Act
-			var actual = this._statistics.ToDictionary();
+			var actual = this._statistics.ToDictionaryForProgress();
 
 			// Assert
 			Assert.False(actual.Contains(Statistics.MetadataTransferRateKey));
@@ -146,7 +146,7 @@ namespace Relativity.DataExchange.NUnit
 			this._statistics.MetadataWaitDuration = new TimeSpan(waitTicks);
 
 			// Act
-			var actual = this._statistics.ToDictionary()[Statistics.MetadataTransferRateKey];
+			var actual = this._statistics.ToDictionaryForProgress()[Statistics.MetadataTransferRateKey];
 
 			// Assert
 			Assert.AreEqual(expected, actual);

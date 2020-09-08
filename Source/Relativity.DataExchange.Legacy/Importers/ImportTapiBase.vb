@@ -1,5 +1,5 @@
 ﻿' ----------------------------------------------------------------------------
-' <copyright file="ImportExportTapiBase.vb" company="kCura Corp">
+' <copyright file="ImportTapiBase.vb" company="kCura Corp">
 '   kCura Corp (C) 2017 All Rights Reserved.
 ' </copyright>
 ' ----------------------------------------------------------------------------
@@ -23,7 +23,7 @@ Namespace kCura.WinEDDS
 	''' <summary>
 	''' Represents the base-class object for all TAPI-based import and export instances.
 	''' </summary>
-	Public MustInherit Class ImportExportTapiBase
+	Public MustInherit Class ImportTapiBase
 
 #Region "Members"
 		Private Const _fileCheckRetryCount As Int32 = 6000
@@ -32,7 +32,7 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _syncRoot As Object = New Object
 		Private ReadOnly _fileSystem As Global.Relativity.DataExchange.Io.IFileSystem
 		Private ReadOnly _cancellationTokenSource As CancellationTokenSource
-		Private ReadOnly _statistics As New Statistics
+		Private ReadOnly _statistics As New ImportStatistics
 		Private WithEvents _bulkLoadTapiBridge As UploadTapiBridge2
 		Private WithEvents _fileTapiBridge As UploadTapiBridge2
 		Private _bulkLoadTapiClient As TapiClient = TapiClient.None
@@ -75,7 +75,7 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Properties"
-		Public ReadOnly Property Statistics As Statistics
+		Public ReadOnly Property Statistics As ImportStatistics
 			Get
 				Return _statistics
 			End Get
@@ -500,7 +500,7 @@ Namespace kCura.WinEDDS
 		Protected Sub UpdateStatisticsSnapshot(time As System.DateTime, Optional ByVal force As Boolean = False)
 			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > TimeSpan.TicksPerSecond
 			If updateCurrentStats OrElse force Then
-				CurrentStatisticsSnapshot = Me.Statistics.ToDictionary()
+				CurrentStatisticsSnapshot = Me.Statistics.ToDictionaryForProgress()
 				_statisticsLastUpdated = time
 				Me.OnWriteStatusMessage(EventType2.Statistics, "", 0, 0)
 			End If

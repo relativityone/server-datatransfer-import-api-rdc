@@ -74,9 +74,15 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected Overrides ReadOnly Property Statistics As Statistics
+		Private ReadOnly Property ImportStatistics As ImportStatistics
 			Get
 				Return _imageFileImporter.Statistics
+			End Get
+		End Property 
+
+		Protected Overrides ReadOnly Property Statistics As Statistics
+			Get
+				Return ImportStatistics
 			End Get
 		End Property
 
@@ -143,6 +149,15 @@ Namespace kCura.WinEDDS
 			End If
 
 			_imageFileImporter.SkipExtractedTextEncodingCheck = SkipExtractedTextEncodingCheck.GetValueOrDefault(False)
+		End Sub
+
+		Protected Overrides Sub BuildBaseMetric(metric As MetricJobBase)
+			MyBase.BuildBaseMetric(metric)
+			metric.ImportObjectType = ImportStatistics.ImportObjectType
+		End Sub
+
+		Protected Overrides Sub BuildEndMetric(metric As MetricJobEndReport)
+			metric.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(ImportStatistics.DocumentsCreated + ImportStatistics.DocumentsUpdated, Statistics.MassImportDuration.TotalSeconds)
 		End Sub
 
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
@@ -221,7 +236,6 @@ Namespace kCura.WinEDDS
 						If e.CountsTowardsTotal Then
 							_errorCount += 1
 							_perBatchErrorCount += 1
-							Statistics.RecordsWithErrorsCount = _errorCount
 						End If
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 						Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
@@ -281,7 +295,7 @@ Namespace kCura.WinEDDS
 		Private Sub _imageFileImporter_OnBatchCompleted(batchInformation As BatchInformation) Handles _imageFileImporter.BatchCompleted
 			batchInformation.NumberOfRecordsWithErrors = _perBatchErrorCount
 			_perBatchErrorCount = 0
-			MyBase.SendMetricJobBatch(batchInformation)
+			SendMetricJobBatch(batchInformation)
 		End Sub
 
 	End Class

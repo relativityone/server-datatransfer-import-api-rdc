@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS
 		''' <returns>
 		''' The <see cref="IDictionary"/> instance.
 		''' </returns>
-		Public Overrides Function ToDictionary() As IDictionary
+		Public Overrides Function ToDictionaryForProgress() As IDictionary
 			Dim retval As New System.Collections.Specialized.HybridDictionary
 			If Not Me.FileTransferDuration.Equals(TimeSpan.Zero) Then
 				retval.Add("Average file transfer rate", ToFileSizeSpecification(Me.FileTransferredBytes / Me.FileTransferDuration.TotalSeconds) & "/sec")
@@ -33,22 +33,10 @@ Namespace kCura.WinEDDS
 		Public Overrides Function ToDictionaryForLogs() As System.Collections.Generic.IDictionary(Of String, Object)
 
 			' Note: Removed all mass import NV pairs.
-			Dim statisticsDict As System.Collections.Generic.Dictionary(Of String, Object) = New System.Collections.Generic.Dictionary(Of String, Object) From
-				    {
-					    {BatchCountKey, Me.BatchCount},
-					    {DocsCountKey, Me.DocumentsCount},
-					    {MetadataBytesKey, Me.MetadataTransferredBytes},
-					    {MetadataFilesTransferredKey, Me.MetadataFilesTransferredCount},
-					    {MetadataThroughputKey, Me.MetadataTransferThroughput},
-					    {MetadataTimeKey, Me.MetadataTransferDuration},
-					    {NativeFileBytesKey, Me.FileTransferredBytes},
-					    {NativeFileThroughputKey, Me.FileTransferThroughput},
-					    {NativeFileTimeKey, Me.FileTransferDuration},
-					    {NativeFilesTransferredKey, Me.NativeFilesTransferredCount}
-				    }
+			Dim statisticsDict As System.Collections.Generic.IDictionary(Of String, Object) = MyBase.ToDictionaryForLogs()
 
 			Dim pair As DictionaryEntry
-			For Each pair In Me.ToDictionary()
+			For Each pair In Me.ToDictionaryForProgress()
 				statisticsDict.Add(pair.Key.ToString(), pair.Value)
 			Next
 

@@ -1343,7 +1343,7 @@ Namespace kCura.WinEDDS
 		Protected Sub UpdateStatisticsSnapshot(time As System.DateTime)
 			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > TimeSpan.TicksPerSecond
 			If updateCurrentStats Then
-				_lastStatisticsSnapshot = Statistics.ToDictionary()
+				_lastStatisticsSnapshot = Statistics.ToDictionaryForProgress()
 				_statisticsLastUpdated = time
 				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType2.Statistics, _lastStatisticsSnapshot, Statistics))
 			End If

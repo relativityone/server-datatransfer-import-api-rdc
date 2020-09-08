@@ -16,7 +16,7 @@ Imports Relativity.DataExchange.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class BulkImageFileImporter
-		Inherits ImportExportTapiBase
+		Inherits ImportTapiBase
 
 #Region "Members"
 		Protected _imageReader As Api.IImageReader

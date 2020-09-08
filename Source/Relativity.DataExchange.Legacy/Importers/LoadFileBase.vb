@@ -9,7 +9,7 @@ Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public MustInherit Class LoadFileBase
-		Inherits ImportExportTapiBase
+		Inherits ImportTapiBase
 
 #Region "Members"
 

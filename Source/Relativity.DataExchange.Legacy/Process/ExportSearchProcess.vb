@@ -144,7 +144,7 @@ Namespace kCura.WinEDDS
 			Select Case e.EventType
 				Case EventType2.Error
 					Interlocked.Increment(_errorCount)
-					Statistics.RecordsWithErrorsCount = _errorCount
+					Statistics.DocsErrorsCount = _errorCount
 					Me.Context.PublishErrorEvent(e.DocumentsExported.ToString, e.Message)
 				Case EventType2.Progress
 					SendMetricJobProgress(e.Statistics, checkThrottling := True)
