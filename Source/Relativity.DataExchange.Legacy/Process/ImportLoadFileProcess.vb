@@ -211,14 +211,32 @@ Namespace kCura.WinEDDS
 			Me.Context.InputArgs = LoadFile.FilePath
 		End Sub
 
-		Protected Overrides Sub BuildBaseMetric(metric As MetricJobBase)
-			MyBase.BuildBaseMetric(metric)
+		Protected Overrides Sub SetBaseMetrics(metric As MetricJobBase)
+			MyBase.SetBaseMetrics(metric)
 			metric.ImportObjectType = ImportStatistics.ImportObjectType
 		End Sub
 
-		Protected Overrides Sub BuildEndMetric(metric As MetricJobEndReport)
+		Protected Overrides Function BuildProgressMetric(statistics As Statistics) As MetricJobProgress
+			Dim metric As MetricJobProgress = MyBase.BuildProgressMetric(statistics)
+
+			Dim importStatistics As ImportStatistics = TryCast(statistics, ImportStatistics)
+			If importStatistics Is Nothing Then
+				Logger.LogWarning("Unable to parse ImportStatistics in BuildProgressMetric")
+				Return metric
+			End If
+
+			metric.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(importStatistics.DocumentsCreated + importStatistics.DocumentsUpdated, statistics.MassImportDuration.TotalSeconds)
+
+			Return metric			
+		End Function
+
+		Protected Overrides Function BuildEndMetric(jobStatus As TelemetryConstants.JobStatus) As MetricJobEndReport
+			Dim metric As MetricJobEndReport = MyBase.BuildEndMetric(jobStatus)
+			
 			metric.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(ImportStatistics.DocumentsCreated + ImportStatistics.DocumentsUpdated, Statistics.MassImportDuration.TotalSeconds)
-		End Sub
+		
+			Return metric
+		End Function
 
 		Private Sub AuditRun(ByVal runID As String)
 			Try

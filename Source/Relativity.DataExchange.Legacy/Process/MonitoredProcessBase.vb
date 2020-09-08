@@ -116,46 +116,17 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected Sub SendMetricJobStarted()
 		Dim metric As MetricJobStarted = New MetricJobStarted
-		BuildBaseMetric(metric)
+		SetBaseMetrics(metric)
 		MetricService.Log(metric)
 	End Sub
 
 	Protected Sub SendMetricJobEndReport(jobStatus As TelemetryConstants.JobStatus)
-		Dim totalRecordsCount As Long = GetTotalRecordsCount()
-		Dim completedRecordsCount As Long = GetCompletedRecordsCount()
-		Dim jobDuration As Double = (EndTime - StartTime).TotalSeconds
-		Dim totalTransferredBytes As Long = Statistics.FileTransferredBytes + Statistics.MetadataTransferredBytes
-		Dim jobStartTimeStamp As Double = EpochDateConverter.ConvertDateTimeToEpoch(StartTime)
-		Dim jobEndTimeStamp As Double = EpochDateConverter.ConvertDateTimeToEpoch(EndTime)
-
-		Dim metric As MetricJobEndReport = New MetricJobEndReport() With {
-				.JobStatus = jobStatus,
-				.TotalSizeBytes = totalTransferredBytes,
-				.FileSizeBytes = Statistics.FileTransferredBytes,
-				.MetadataSizeBytes = Statistics.MetadataTransferredBytes,
-				.TotalRecords = totalRecordsCount,
-				.CompletedRecords = completedRecordsCount,
-				.RecordsWithErrors = Statistics.DocsErrorsCount,
-				.ThroughputBytesPerSecond = Statistics.CalculateThroughput(totalTransferredBytes, jobDuration),
-				.ThroughputRecordsPerSecond = Statistics.CalculateThroughput(completedRecordsCount, jobDuration),
-				.JobDurationInSeconds = jobDuration,
-				.InitialTransferMode = _initialTapiClient,
-				.JobStartTimeStamp = jobStartTimeStamp,
-				.JobEndTimeStamp = jobEndTimeStamp,
-				.JobRunId = RunId}
-		BuildBaseMetric(metric)
-		BuildEndMetric(metric)
+		Dim metric As MetricJobEndReport = BuildEndMetric(jobStatus)
 		MetricService.Log(metric)
 	End Sub
 
 	Protected Sub SendMetricJobBatch(batchInformation As BatchInformation)
-		Dim metric As MetricJobBatch = New MetricJobBatch() With {
-					.MassImportDurationMilliseconds = batchInformation.MassImportDuration.TotalMilliseconds,
-					.BatchNumber = batchInformation.OrdinalNumber,
-					.NumberOfRecords = batchInformation.NumberOfRecords,
-					.NumberOfRecordsWithErrors = batchInformation.NumberOfRecordsWithErrors
-				}
-		BuildBaseMetric(metric)
+		Dim metric As MetricJobBatch = BuildBatchMetric(batchInformation)
 		MetricService.Log(metric)
 	End Sub
 
@@ -167,11 +138,8 @@ Public MustInherit Class MonitoredProcessBase
 			If currentTime - LastSendTime < MetricThrottling And checkThrottling Then Return
 			LastSendTime = currentTime
 		End SyncLock
-		Dim metric As MetricJobProgress = New MetricJobProgress With {
-			.MetadataThroughputBytesPerSecond = statistics.MetadataTransferThroughput,
-			.FileThroughputBytesPerSecond = statistics.FileTransferThroughput
-		}
-		BuildBaseMetric(metric)
+		
+		Dim metric As MetricJobProgress = BuildProgressMetric(statistics)
 		MetricService.Log(metric)
 	End Sub
 
@@ -196,11 +164,11 @@ Public MustInherit Class MonitoredProcessBase
 	Private Sub OnInitializationError()
 		' send only a basic version of metric since objects may not be initialized correctly
 		Dim metric As MetricJobEndReport = New MetricJobEndReport() With { .JobStatus = TelemetryConstants.JobStatus.Failed }
-		BuildBaseMetric(metric)
+		SetBaseMetrics(metric)
 		MetricService.Log(metric)
 	End Sub
 
-	Protected Overridable Sub BuildBaseMetric(metric As MetricJobBase)
+	Protected Overridable Sub SetBaseMetrics(metric As MetricJobBase)
 		' To be overriden in import or export to add Metrics from ImportStatistics or ExportStatistics
 		metric.TransferDirection = TransferDirection
 		metric.TransferMode = TapiClient
@@ -214,9 +182,62 @@ Public MustInherit Class MonitoredProcessBase
 		End If
 	End Sub
 
-	Protected Overridable Sub BuildEndMetric(metric As MetricJobEndReport)
+	Protected Overridable Function BuildBatchMetric(batchInformation As BatchInformation) As MetricJobBatch
 		' To be overriden in import or export to add Metrics from ImportStatistics or ExportStatistics
-	End Sub
+		Dim metric As MetricJobBatch = New MetricJobBatch()
+
+		metric.MassImportDurationMilliseconds = batchInformation.MassImportDuration.TotalMilliseconds
+		metric.BatchNumber = batchInformation.OrdinalNumber
+		metric.NumberOfRecords = batchInformation.NumberOfRecords
+		metric.NumberOfRecordsWithErrors = batchInformation.NumberOfRecordsWithErrors
+
+		SetBaseMetrics(metric)
+
+		Return metric
+	End Function
+
+	Protected Overridable Function BuildProgressMetric(statistics As Statistics) As MetricJobProgress
+		' To be overriden in import or export to add Metrics from ImportStatistics or ExportStatistics
+		Dim metric As MetricJobProgress = New MetricJobProgress()
+
+		metric.MetadataThroughputBytesPerSecond = statistics.MetadataTransferThroughput
+		metric.FileThroughputBytesPerSecond = statistics.FileTransferThroughput
+
+		SetBaseMetrics(metric)
+
+		Return metric
+	End Function
+
+	Protected Overridable Function BuildEndMetric(jobStatus As TelemetryConstants.JobStatus) As MetricJobEndReport
+		' To be overriden in import or export to add Metrics from ImportStatistics or ExportStatistics
+		Dim metric As MetricJobEndReport = New MetricJobEndReport()
+
+		Dim totalRecordsCount As Long = GetTotalRecordsCount()
+		Dim completedRecordsCount As Long = GetCompletedRecordsCount()
+		Dim jobDuration As Double = (EndTime - StartTime).TotalSeconds
+		Dim totalTransferredBytes As Long = Statistics.FileTransferredBytes + Statistics.MetadataTransferredBytes
+		Dim jobStartTimeStamp As Double = EpochDateConverter.ConvertDateTimeToEpoch(StartTime)
+		Dim jobEndTimeStamp As Double = EpochDateConverter.ConvertDateTimeToEpoch(EndTime)
+
+		metric.JobStatus = jobStatus
+		metric.TotalSizeBytes = totalTransferredBytes
+		metric.FileSizeBytes = Statistics.FileTransferredBytes
+		metric.MetadataSizeBytes = Statistics.MetadataTransferredBytes
+		metric.TotalRecords = totalRecordsCount
+		metric.CompletedRecords = completedRecordsCount
+		metric.RecordsWithErrors = Statistics.DocsErrorsCount
+		metric.ThroughputBytesPerSecond = Statistics.CalculateThroughput(totalTransferredBytes, jobDuration)
+		metric.ThroughputRecordsPerSecond = Statistics.CalculateThroughput(completedRecordsCount, jobDuration)
+		metric.JobDurationInSeconds = jobDuration
+		metric.InitialTransferMode = _initialTapiClient
+		metric.JobStartTimeStamp = jobStartTimeStamp
+		metric.JobEndTimeStamp = jobEndTimeStamp
+		metric.JobRunId = RunId
+
+		SetBaseMetrics(metric)
+
+		Return metric
+	End Function
 
 	''' <summary>
 	''' Provides application name for telemetry purpose
