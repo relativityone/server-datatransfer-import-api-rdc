@@ -118,7 +118,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			await PermissionsHelper.ApplyItemLevelSecurityAsync(TestParameters, this.folderId, this.groupId, false).ConfigureAwait(false);
 
 			this.WithNewUser();
-			Settings settings = NativeImportSettingsProvider.DefaultSettings();
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			settings.OverwriteMode = OverwriteModeEnum.Append;
 			settings.DestinationFolderArtifactID = this.folderId;
 
@@ -145,7 +145,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			this.WithNewUser();
-			Settings settings = NativeImportSettingsProvider.DefaultSettings();
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			settings.OverwriteMode = overwriteMode;
 			settings.DestinationFolderArtifactID = this.folderId;
 
@@ -172,7 +172,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			this.WithNewUser();
-			Settings settings = NativeImportSettingsProvider.DefaultSettings();
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			settings.OverwriteMode = overwriteMode;
 			settings.DestinationFolderArtifactID = this.folderId;
 

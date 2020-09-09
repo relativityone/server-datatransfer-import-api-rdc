@@ -46,7 +46,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			AppSettings.Instance.IoErrorNumberOfRetries = 3;
 			AppSettings.Instance.IoErrorWaitTimeInSeconds = 10;
 
-			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, NativeImportSettingsProvider.FileCopySettings);
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, NativeImportSettingsProvider.GetFileCopySettings((int)ArtifactType.Document));
 
 			const int NumberOfFilesToImport = 5;
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport)

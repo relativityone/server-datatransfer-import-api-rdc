@@ -178,7 +178,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			var objectId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, objectName).ConfigureAwait(false);
 			await FieldHelper
-				.CreateFileFieldAsync(this.TestParameters, "FilePath", objectId).ConfigureAwait(false);
+				.CreateFileFieldAsync(this.TestParameters, WellKnownFields.FilePath, objectId).ConfigureAwait(false);
 
 			int artifactId =
 				FieldHelper.QueryIdentifierFieldId(this.TestParameters, objectName);

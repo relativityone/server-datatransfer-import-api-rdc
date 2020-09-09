@@ -45,7 +45,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = DisableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = DisableNativeValidation;
 
-			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, NativeImportSettingsProvider.FileCopySettings);
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, NativeImportSettingsProvider.GetFileCopySettings((int)ArtifactType.Document));
 
 			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, numberOfDocuments);
 
@@ -75,7 +75,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = DisableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = DisableNativeValidation;
 
-			Settings settings = NativeImportSettingsProvider.DefaultSettings();
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			char multiValueDelimiter = settings.MultiValueDelimiter;
 			char nestedValueDelimiter = settings.NestedValueDelimiter;
 
@@ -102,7 +102,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 				multiValueDelimiter: multiValueDelimiter,
 				nestedValueDelimiter: nestedValueDelimiter);
 
-			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, NativeImportSettingsProvider.DefaultSettings());
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, NativeImportSettingsProvider.GetDefaultSettings());
 
 			ImportDataSource<object[]> dataSource = ImportDataSourceBuilder.New()
 				.AddField(WellKnownFields.ControlNumber, Enumerable.Range((2 * numberOfDocuments) + 1, numberOfDocuments).Select(p => p.ToString()))

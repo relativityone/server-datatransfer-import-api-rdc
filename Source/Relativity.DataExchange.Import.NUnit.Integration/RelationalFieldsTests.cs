@@ -92,7 +92,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldReplaceBlankValuesWithIdentifier([Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode)
 		{
 			// ARRANGE
-			Settings settings = NativeImportSettingsProvider.DefaultSettings();
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 
 			if (overwriteMode == OverwriteModeEnum.Overlay)
 			{
@@ -134,7 +134,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldReplaceBlankValuesWithIdentifierWhenRelationalFieldIsNotMappedInAppendMode()
 		{
 			// ARRANGE
-			Settings settings = NativeImportSettingsProvider.DefaultSettings();
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 
 			DocumentWithKeyFieldDto[] importData =
 				{
@@ -169,7 +169,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldNotReplaceBlankValuesWithIdentifierWhenRelationalFieldIsNotMappedInOverlayMode()
 		{
 			// ARRANGE
-			Settings settings = NativeImportSettingsProvider.DefaultSettings();
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 			this.JobExecutionContext.Execute(this.initialData);
 
@@ -207,7 +207,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldReplaceBlankValuesWithIdentifierWhenIdentifierIsNotMapped()
 		{
 			// ARRANGE
-			Settings settings = NativeImportSettingsProvider.DefaultSettings();
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 			this.JobExecutionContext.Execute(this.initialData);
 

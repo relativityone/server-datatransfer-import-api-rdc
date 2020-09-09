@@ -173,7 +173,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			this.artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.DefaultSettings(this.artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings(this.artifactTypeId);
 
 			// Prepare data for import under test
 			DocumentWithKeyFieldDto[] initialData =
@@ -226,7 +226,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private ImportTestJobResult ArrangeAndActOverlayIndetifierTest(ArtifactType artifactType, OverwriteModeEnum overwriteMode, DocumentWithKeyFieldDto[] initialData, DocumentWithKeyFieldDto[] importData)
 		{
 			this.artifactTypeId = GetArtifactTypeIdForTest(artifactType);
-			Settings settings = NativeImportSettingsProvider.DefaultSettings(this.artifactTypeId);
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings(this.artifactTypeId);
 
 			// Prepare data for import under test
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);

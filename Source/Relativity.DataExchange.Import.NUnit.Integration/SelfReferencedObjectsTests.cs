@@ -110,7 +110,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		private ImportTestJobResult ImportDataWithOverwriteMode(Dictionary<string, IEnumerable<string>> dataToImport, OverwriteModeEnum overwriteMode)
 		{
-			Settings settings = NativeImportSettingsProvider.DefaultSettings(
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings(
 				this.objectArtifactTypeId,
 				WellKnownFields.RdoIdentifier);
 			settings.OverwriteMode = overwriteMode;
