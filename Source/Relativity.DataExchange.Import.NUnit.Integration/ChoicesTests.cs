@@ -31,7 +31,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
 		private readonly string multiValueDelimiter = SettingsConstants.DefaultMultiValueDelimiter.ToString();
 
-		private bool testsSkipped = false;
+		private bool testsSkipped;
 
 		private int originalImportBatchSize;
 		private List<int> createdFieldsIds = new List<int>();
@@ -69,14 +69,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			if (!testsSkipped)
 			{
-				var deleteDocumentsTask = RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document);
+				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
 
 				foreach (var createdFieldId in this.createdFieldsIds)
 				{
 					await FieldHelper.DeleteFieldAsync(this.TestParameters, createdFieldId).ConfigureAwait(false);
 				}
-
-				await deleteDocumentsTask.ConfigureAwait(false);
 
 				this.createdFieldsIds = new List<int>();
 			}
