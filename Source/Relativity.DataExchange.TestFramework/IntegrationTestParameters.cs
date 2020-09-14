@@ -76,6 +76,8 @@ namespace Relativity.DataExchange.TestFramework
 			this.SqlInstanceName = copy.SqlInstanceName;
 			this.WorkspaceId = copy.WorkspaceId;
 			this.EnableDataGrid = copy.EnableDataGrid;
+			this.DeleteWorkspaceAfterTest = copy.DeleteWorkspaceAfterTest;
+			this.RDCPath = copy.RDCPath;
 		}
 
 		/// <summary>
@@ -309,6 +311,16 @@ namespace Relativity.DataExchange.TestFramework
 		[JsonProperty("DeleteWorkspaceAfterTest")]
 		[IntegrationTestParameter(true)]
 		public bool DeleteWorkspaceAfterTest { get; set; }
+
+		/// <summary>
+		/// Gets or sets the path where RelativityDesktopClient used in UI tests is installed.
+		/// </summary>
+		/// <value>
+		/// The template name.
+		/// </value>
+		[JsonProperty("RDCPath")]
+		[IntegrationTestParameter(true)]
+		public string RDCPath { get; set; }
 
 		/// <summary>
 		/// Performs a deep copy of this instance.

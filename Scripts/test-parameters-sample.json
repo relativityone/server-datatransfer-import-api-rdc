@@ -20,5 +20,6 @@
 	"SqlAdminUserName": "sa",
 	"SqlAdminPassword": "SomePassword!",
 	"WorkspaceTemplate": "Relativity Starter Template",
-	"EnableDataGrid": "<replaced_in_build_enabledatagrid>"
+	"EnableDataGrid": "<replaced_in_build_enabledatagrid>",
+	"RDCPath": "..\\..\\..\\Relativity.Desktop.Client.Legacy\\bin\\Relativity.Desktop.Client.exe"
 }
