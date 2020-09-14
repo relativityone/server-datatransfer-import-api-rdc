@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.IO;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -13,13 +12,11 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 	internal abstract class RdcTestBase
 	{
 		protected static readonly TestPathsProvider PathsProvider = new TestPathsProvider();
-		private static readonly string Password = ConfigurationManager.AppSettings["RelativityPassword"];
-		private static readonly string UserLogin = ConfigurationManager.AppSettings["RelativityUserName"];
-
-		private static readonly string WindowsApplicationDriverUrl =
-			ConfigurationManager.AppSettings["WindowsApplicationDriverUrl"];
-
-		protected RdcWindowsManager RdcWindowsManager;
+		private static readonly string Password = IntegrationTestHelper.IntegrationTestParameters.RelativityPassword;
+		private static readonly string UserLogin = IntegrationTestHelper.IntegrationTestParameters.RelativityUserName;
+		
+		private static readonly string WindowsApplicationDriverUrl = "http://127.0.0.1:4723";
+		protected RdcWindowsManager RdcWindowsManager; 
 		private WindowsDriver<WindowsElement> session;
 		protected IntegrationTestParameters TestParameters;
 		private string screenshotsFolder;
@@ -30,7 +27,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			OnSetUp();
 
 			var sessionFactory = new WindowsDriverSessionFactory(new Uri(WindowsApplicationDriverUrl));
-			session = sessionFactory.CreateExeAppSession(PathsProvider.RdcPath);
+			session = sessionFactory.CreateExeAppSession(TestPathsProvider.RdcPath(IntegrationTestHelper.IntegrationTestParameters));
 			RdcWindowsManager = new RdcWindowsManager(Relativity.Logging.Log.Logger, new WindowsManager(session));
 			AllowUntrustedCertificate();
 
@@ -44,8 +41,10 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		{
 			CloseSession();
 			OnTearDown();
-			
-			if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Passed)
+
+			var testStatus = TestContext.CurrentContext.Result.Outcome.Status;
+
+			if (testStatus != TestStatus.Skipped && testStatus != TestStatus.Passed)
 			{
 				CaptureScreenshot.GetInstance().CaptureDesktopScreenshot(Relativity.Logging.Log.Logger);
 				throw new Exception($"================> SEE IMAGES FROM TEST EXECUTION: '{screenshotsFolder}' <================"); // The only way to add information to NUnit html log

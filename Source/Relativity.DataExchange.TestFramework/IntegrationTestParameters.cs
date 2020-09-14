@@ -80,6 +80,8 @@ namespace Relativity.DataExchange.TestFramework
 			this.EnableDataGrid = copy.EnableDataGrid;
 			this.TestOnWorkspaceWithNonDefaultCollation = copy.TestOnWorkspaceWithNonDefaultCollation;
 			this.PerformAdditionalWorkspaceSetup = copy.PerformAdditionalWorkspaceSetup;
+			this.DeleteWorkspaceAfterTest = copy.DeleteWorkspaceAfterTest;
+			this.RDCPath = copy.RDCPath;
 		}
 
 		/// <summary>
@@ -334,6 +336,16 @@ namespace Relativity.DataExchange.TestFramework
 		[JsonProperty("PerformAdditionalWorkspaceSetup")]
 		[IntegrationTestParameter(true)]
 		public bool PerformAdditionalWorkspaceSetup { get; set; }
+
+		/// <summary>
+		/// Gets or sets the path where RelativityDesktopClient used in UI tests is installed.
+		/// </summary>
+		/// <value>
+		/// The template name.
+		/// </value>
+		[JsonProperty("RDCPath")]
+		[IntegrationTestParameter(true)]
+		public string RDCPath { get; set; }
 
 		/// <summary>
 		/// Performs a deep copy of this instance.

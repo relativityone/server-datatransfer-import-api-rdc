@@ -1,7 +1,7 @@
-﻿using System.Configuration;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.Win32;
 using NUnit.Framework;
+using Relativity.DataExchange.TestFramework;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI
 {
@@ -42,8 +42,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 					originalRelativityWebApiUrl = relativityKey.GetValue(WebApiUrlRegistryKeyValue) as string;
 				}
 
-				relativityKey.SetValue(WebApiUrlRegistryKeyValue,
-					ConfigurationManager.AppSettings["RelativityWebApiUrl"], RegistryValueKind.String);
+				relativityKey.SetValue(WebApiUrlRegistryKeyValue, IntegrationTestHelper.IntegrationTestParameters.RelativityWebApiUrl, RegistryValueKind.String);
 			}
 		}
 

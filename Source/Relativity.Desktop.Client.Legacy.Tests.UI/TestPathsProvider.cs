@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Configuration;
 using System.IO;
 using System.Reflection;
+using Relativity.DataExchange.TestFramework;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI
 {
@@ -9,16 +9,13 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 	{
 		private static readonly string CurrentPath = GetCurrentPath();
 
-		private static readonly string TestInputDirectory =
-			GetFullPath(ConfigurationManager.AppSettings["TestInputDirectory"]);
+		private static readonly string TestInputDirectory = 
+			GetFullPath(@"..\..\..\..\packages\ui-automation\Relativity.DataExchange.TestData\content");
 
-		private static readonly string TestOutputDirectory =
-			GetFullPath(ConfigurationManager.AppSettings["TestOutputDirectory"]);
+		private static readonly string TestOutputDirectory = GetFullPath(@"..\..\..\..\TestOutput");
+		private static readonly string TestReportsDirectory = TestOutputDirectory.Replace("TestOutput", "TestReports");
 
-		private static readonly string TestReportsDirectory =
-			GetFullPath(ConfigurationManager.AppSettings["TestOutputDirectory"]).Replace("TestOutput", "TestReports");
-
-		public string RdcPath { get; } = GetFullPath(ConfigurationManager.AppSettings["RdcPath"]);
+		public static string RdcPath(IntegrationTestParameters parameters) => GetFullPath(parameters.RDCPath);
 
 		public string GetTestInputFilePath(string relativePath)
 		{

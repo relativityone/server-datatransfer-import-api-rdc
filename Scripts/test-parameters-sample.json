@@ -21,5 +21,6 @@
 	"SqlAdminPassword": "SomePassword!",
 	"WorkspaceTemplate": "Relativity Starter Template",
 	"TestOnWorkspaceWithNonDefaultCollation": "<replaced_in_build_testonworkspacewithnondefaultcollation>",
-	"EnableDataGrid": "<replaced_in_build_enabledatagrid>"
+	"EnableDataGrid": "<replaced_in_build_enabledatagrid>",
+	"RDCPath": "..\\..\\..\\Relativity.Desktop.Client.Legacy\\bin\\Relativity.Desktop.Client.exe"
 }

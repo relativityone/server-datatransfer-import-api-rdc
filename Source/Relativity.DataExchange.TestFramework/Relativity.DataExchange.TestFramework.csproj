@@ -206,6 +206,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="app.manifest" />
+    <None Include="appSettings.config" />
     <None Include="paket.references" />
     <EmbeddedResource Include="Resources\test-parameters-hopper.json" />
     <None Include="Resources\AddGroupMemberRequest.json">
