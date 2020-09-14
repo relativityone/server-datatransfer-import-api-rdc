@@ -42,8 +42,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 				OverwriteMode = "Append Only"
 			};
 
-			ProductionHelper.CreateProduction(TestParameters, parameters.ProductionName, "BATES",
-				IntegrationTestHelper.Logger);
+			_ = ProductionHelper.CreateProductionAsync(TestParameters, parameters.ProductionName, "BATES").ConfigureAwait(false).GetAwaiter().GetResult();
 
 			RunImportTest(x =>
 			{

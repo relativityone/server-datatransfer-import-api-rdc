@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Relativity.DataExchange.TestFramework;
 using Relativity.DataExchange.TestFramework.RelativityHelpers;
@@ -18,10 +19,10 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		private readonly string allDocumentsViewName = ConfigurationManager.AppSettings["AllDocumentsViewName"];
 
 		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		public async Task OneTimeSetUp()
 		{
 			TestParameters = IntegrationTestHelper.Create();
-			ImportDataForExport();
+			await ImportDataForExport().ConfigureAwait(false);
 		}
 
 		[OneTimeTearDown]
@@ -186,11 +187,11 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			return exportPath;
 		}
 
-		private void ImportDataForExport()
+		private async Task ImportDataForExport()
 		{
 			var documents = ImportHelper.ImportDocuments(TestParameters).ToList();
 			ImportHelper.ImportImagesForDocuments(TestParameters, documents);
-			ImportHelper.ImportProduction(TestParameters, ProductionName, documents);
+			await ImportHelper.ImportProductionAsync(TestParameters, ProductionName, documents).ConfigureAwait(false);
 		}
 	}
 }
