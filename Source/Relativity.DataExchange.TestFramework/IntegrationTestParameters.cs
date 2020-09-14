@@ -72,6 +72,7 @@ namespace Relativity.DataExchange.TestFramework
 			this.SqlProfilingReportsOutputPath = copy.SqlProfilingReportsOutputPath;
 			this.SqlInstanceName = copy.SqlInstanceName;
 			this.WorkspaceId = copy.WorkspaceId;
+			this.RDCPath = copy.RDCPath;
 		}
 
 		/// <summary>
@@ -367,6 +368,16 @@ namespace Relativity.DataExchange.TestFramework
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Gets or sets the path where RelativityDesktopClient used in UI tests is installed.
+		/// </summary>
+		/// <value>
+		/// The template name.
+		/// </value>
+		[JsonProperty("RDCPath")]
+		[IntegrationTestParameter(true)]
+		public string RDCPath { get; set; }
 
 		/// <summary>
 		/// Performs a deep copy of this instance.

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 {
@@ -7,22 +6,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI.Appium
 	{
 		public static readonly TimeSpan WaitForProperty = TimeSpan.FromSeconds(1);
 		public static readonly TimeSpan FindElement = TimeSpan.FromSeconds(1);
-
-		public static readonly TimeSpan WaitForWindow =
-			GetTimeoutFromConfig("DefaultWaitForWindowTimeoutInMilliseconds", 30000);
-
-		public static readonly TimeSpan DefaultWaitTimeout =
-			GetTimeoutFromConfig("DefaultWaitTimeoutInMilliseconds", 60000);
-
-		public static readonly TimeSpan DefaultWaitCheckInterval =
-			GetTimeoutFromConfig("DefaultWaitCheckIntervalInMilliseconds", 200);
-
-		private static TimeSpan GetTimeoutFromConfig(string settingsKey, double defaultTimeoutInMilliseconds)
-		{
-			var settingsValue = ConfigurationManager.AppSettings[settingsKey];
-			var timeoutInMilliseconds =
-				settingsValue != null ? double.Parse(settingsValue) : defaultTimeoutInMilliseconds;
-			return TimeSpan.FromMilliseconds(timeoutInMilliseconds);
-		}
+		public static readonly TimeSpan WaitForWindow = TimeSpan.FromMilliseconds(60000);
+		public static readonly TimeSpan DefaultWaitTimeout = TimeSpan.FromMilliseconds(60000);
+		public static readonly TimeSpan DefaultWaitCheckInterval = TimeSpan.FromMilliseconds(200);
 	}
 }

@@ -40,7 +40,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		{
 			var exportParameters = new ExportWindowSetupParameters
 			{
-				FieldSourceName = allDocumentsViewName,
+				FieldSourceName = GetDocumentsViewName(TestParameters),
 				ExportPath = CreateExportPath(),
 				VolumeInformationDigitPadding = 3,
 				FilesNamedAfter = "Identifier",
@@ -61,7 +61,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		{
 			var exportParameters = new ExportWindowSetupParameters
 			{
-				FieldSourceName = allDocumentsViewName,
+				FieldSourceName = GetDocumentsViewName(TestParameters),
 				ExportPath = CreateExportPath(),
 				VolumeInformationDigitPadding = 3,
 				FilesNamedAfter = "Identifier",
@@ -137,6 +137,13 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			};
 
 			RunExportTest(exportParameters, x => x.ExportImagingProfileObjects(), 1);
+		}
+
+		private string GetDocumentsViewName(IntegrationTestParameters parameters)
+		{
+			return parameters.RelativityUrl.ToString().Contains(".r1.")
+				? "All Documents"
+				: "Documents";
 		}
 
 		private void RunExportTest(ExportWindowSetupParameters exportParameters,

@@ -13,5 +13,6 @@
   "SqlInstanceName": "hostname.mycompany.corp\\EDDSINSTANCE001",
   "SqlAdminUserName": "sa",
   "SqlAdminPassword": "SomePassword!",
-  "WorkspaceTemplate": "Relativity Starter Template"
+  "WorkspaceTemplate": "Relativity Starter Template",
+  "RDCPath": "..\\..\\..\\Relativity.Desktop.Client.Legacy\\bin\\Relativity.Desktop.Client.exe"
 }

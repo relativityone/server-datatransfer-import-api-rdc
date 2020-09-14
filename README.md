@@ -191,23 +191,24 @@ The majority of integration tests require a Relativity instance to work properly
 #### App.Config and environment variables
 The following table outlines all available `App.Config` and environment variable test parameters.
 
-|Application Setting         |Environment Variable                          |Description                                                        |Example                                              |
-|:---------------------------|:---------------------------------------------|:------------------------------------------------------------------|:----------------------------------------------------|
-|RelativityUrl               | IAPI_INTEGRATION_RELATIVITYURL               | The Relativity instance URL.                                      | https://hostname.mycompany.corp                     |
-|RelativityRestUrl           | IAPI_INTEGRATION_RELATIVITYRESTURL           | The Relativity Rest API URL.                                      | https://hostname.mycompany.corp/relativity.rest/api |
-|RelativityServicesUrl       | IAPI_INTEGRATION_RELATIVITYSERVICEURL        | The Relativity Services API URL.                                  | https://hostname.mycompany.corp/relativity.services |
-|RelativityWebApiUrl         | IAPI_INTEGRATION_RELATIVITYWEBAPIURL         | The Relativity Web API URL.	                                    | https://hostname.mycompany.corp/relativitywebapi    |
-|RelativityUserName          | IAPI_INTEGRATION_RELATIVITYUSERNAME          | The Relativity login user name.                                   | email@company.com                                   |
-|RelativityPassword          | IAPI_INTEGRATION_RELATIVITYPASSWORD          | The Relativity login password.                                    | SomePassword!                                       |
-|ServerCertificateValidation | IAPI_INTEGRATION_SERVERCERTIFICATEVALIDATION | Specify whether to enforce server certificate validation errors.  | false                                               |
-|SkipAsperaModeTests         | IAPI_INTEGRATION_SKIPASPERAMODETESTS         | Skips any tests that require Aspera mode.                         | true                                                |
-|SkipDirectModeTests         | IAPI_INTEGRATION_SKIPDIRECTMODETESTS         | Skips any tests that require Direct mode.                         | false                                               |
-|SkipIntegrationTests        | IAPI_INTEGRATION_SKIPINTEGRATIONTESTS        | Skips running all integration tests.                              | false                                               |
-|SqlDropWorkspaceDatabase    | IAPI_INTEGRATION_SQLDROPWORKSPACEDATABASE    | Specify whether to drop the SQL database when the test completes. | true                                                |
-|SqlInstanceName             | IAPI_INTEGRATION_SQLINSTANCENAME             | The SQL instance where the workspace databases are stored.        | hostname.mycompany.corp\EDDSINSTANCE001             |
-|SqlAdminUserName            | IAPI_INTEGRATION_SQLADMINUSERNAME            | The SQL system administrator user name.                           | sa                                                  |
-|SqlAdminPassword            | IAPI_INTEGRATION_SQLADMINPASSWORD            | The SQL system administrator password.                            | SomePassword!                                       |
-|WorkspaceTemplate           | IAPI_INTEGRATION_WORKSPACETEMPLATE           | The workspace template used to create the test workspace.         |	Relativity Starter Template                       |
+|Application Setting         |Environment Variable                          |Description                                                        |Example                                                                          |
+|:---------------------------|:---------------------------------------------|:------------------------------------------------------------------|:--------------------------------------------------------------------------------|
+|RelativityUrl               | IAPI_INTEGRATION_RELATIVITYURL               | The Relativity instance URL.                                      | https://hostname.mycompany.corp                                                 |
+|RelativityRestUrl           | IAPI_INTEGRATION_RELATIVITYRESTURL           | The Relativity Rest API URL.                                      | https://hostname.mycompany.corp/relativity.rest/api                             |
+|RelativityServicesUrl       | IAPI_INTEGRATION_RELATIVITYSERVICEURL        | The Relativity Services API URL.                                  | https://hostname.mycompany.corp/relativity.services                             |
+|RelativityWebApiUrl         | IAPI_INTEGRATION_RELATIVITYWEBAPIURL         | The Relativity Web API URL.	                                    | https://hostname.mycompany.corp/relativitywebapi                                |
+|RelativityUserName          | IAPI_INTEGRATION_RELATIVITYUSERNAME          | The Relativity login user name.                                   | email@company.com                                                               |
+|RelativityPassword          | IAPI_INTEGRATION_RELATIVITYPASSWORD          | The Relativity login password.                                    | SomePassword!                                                                   |
+|ServerCertificateValidation | IAPI_INTEGRATION_SERVERCERTIFICATEVALIDATION | Specify whether to enforce server certificate validation errors.  | false                                                                           |
+|SkipAsperaModeTests         | IAPI_INTEGRATION_SKIPASPERAMODETESTS         | Skips any tests that require Aspera mode.                         | true                                                                            |
+|SkipDirectModeTests         | IAPI_INTEGRATION_SKIPDIRECTMODETESTS         | Skips any tests that require Direct mode.                         | false                                                                           |
+|SkipIntegrationTests        | IAPI_INTEGRATION_SKIPINTEGRATIONTESTS        | Skips running all integration tests.                              | false                                                                           |
+|SqlDropWorkspaceDatabase    | IAPI_INTEGRATION_SQLDROPWORKSPACEDATABASE    | Specify whether to drop the SQL database when the test completes. | true                                                                            |
+|SqlInstanceName             | IAPI_INTEGRATION_SQLINSTANCENAME             | The SQL instance where the workspace databases are stored.        | hostname.mycompany.corp\EDDSINSTANCE001                                         |
+|SqlAdminUserName            | IAPI_INTEGRATION_SQLADMINUSERNAME            | The SQL system administrator user name.                           | sa                                                                              |
+|SqlAdminPassword            | IAPI_INTEGRATION_SQLADMINPASSWORD            | The SQL system administrator password.                            | SomePassword!                                                                   |
+|WorkspaceTemplate           | IAPI_INTEGRATION_WORKSPACETEMPLATE           | The workspace template used to create the test workspace.         |	Relativity Starter Template                                                   |
+|RDCPath                     | IAPI_INTEGRATION_RDCPATH                     | Relativity Desktop Client path used in UI tests                   | ..\\..\\..\\Relativity.Desktop.Client.Legacy\\bin\\Relativity.Desktop.Client.exe|
 
 #### JSON File
 The same test parameters described above can also be used in JSON.
@@ -228,7 +229,8 @@ The same test parameters described above can also be used in JSON.
 	"SqlInstanceName" : "hostname.mycompany.corp\\EDDSINSTANCE001",
 	"SqlAdminUserName" : "sa",
 	"SqlAdminPassword" : "SomePassword!",
-	"WorkspaceTemplate" : "Relativity Starter Template"
+	"WorkspaceTemplate" : "Relativity Starter Template",
+	"RDCPath" : "..\\..\\..\\Relativity.Desktop.Client.Legacy\\bin\\Relativity.Desktop.Client.exe"
 }
 ```
 
