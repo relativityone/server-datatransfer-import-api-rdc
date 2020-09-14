@@ -25,11 +25,29 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			try
 			{
+				// Hoppers and TestVMs - having added MassImportImprovementsToggle record to database
 				massImportToggle = GetMassImportToggleValueFromDatabase(parameters);
 			}
 			catch (SqlException)
 			{
+				// Regression environments - no access to SQL
 				massImportToggle = GetMassImportToggleValueAsync(parameters).GetAwaiter().GetResult();
+			}
+			catch (NullReferenceException)
+			{
+				// Hoppers - having not added MassImportImprovementsToggle record to database
+				// Tests are executed on default value set in another repository, so no possibility to check it from this code
+
+				// Workaround to enable checking toggle value to decide if specified test(details in REL-462958) should be executed or not
+				if (!RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersions.RelativityVersion.Mayapple))
+				{
+					massImportToggle = true;
+				}
+				else
+				{
+					throw new NotImplementedException($"Default Mass Import Improvements Toggle value not implemented in tests against Relativity version "
+					                                  + $"{RelativityVersions.RelativityVersionChecker.GetCurrentRelativityVersion(parameters)}");
+				}
 			}
 
 			return massImportToggle;
