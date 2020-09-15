@@ -773,8 +773,7 @@ task UnitTests -Description "Run all unit tests" {
             "--skipnontestassemblies" `
             "--timeout=$TestTimeoutInMS" `
             "--result=$UnitTestsResultXmlFile" `
-            "--out=$UnitTestsOutputFile" `
-            $testCategoryFilter `
+            $testCategoryFilter | Tee-Object -file $UnitTestsOutputFile
     } -errorMessage "There was an error running the unit tests."
 }
 
@@ -907,8 +906,7 @@ Function Invoke-IntegrationTests {
             "--skipnontestassemblies" `
             "--timeout=$TestTimeoutInMS" `
             "--result=$IntegrationTestsResultXmlFile" `
-            "--out=$IntegrationTestsOutputFile" `
-            $TestCategoryFilter `
+            "$TestCategoryFilter" | Tee-Object -file $IntegrationTestsOutputFile
     } -errorMessage "There was an error running the integration tests."
 }
 

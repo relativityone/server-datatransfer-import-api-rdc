@@ -92,6 +92,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 				ImportCredentialManager.WebServiceURL = testParameters.RelativityWebApiUrl.AbsoluteUri;
 				ImportCredentialManager.GetCredentials(testParameters.RelativityUserName, testParameters.RelativityPassword, runningContext);
 				cachedRelativityVersion = runningContext.RelativityVersion;
+				Console.WriteLine($"Relativity version of {ImportCredentialManager.WebServiceURL} is {cachedRelativityVersion}");
 			}
 
 			return cachedRelativityVersion;
