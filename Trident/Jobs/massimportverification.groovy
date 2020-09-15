@@ -19,11 +19,14 @@ properties([
 testResultsPassed = 0
 testResultsFailed = 0
 testResultsSkipped = 0
+sqlComparerTestsResultFailed = 0
 
 def globalVmInfo = null
 numberOfErrors = 0	
 tools = null
 Slack = null
+
+summaryMessage = ""
 
 timestamps
 {
@@ -70,43 +73,64 @@ timestamps
 						{        
 							try
 							{
-								stage('Workspace with non default collation MassImportImprovementsToggle On and DataGrid disabled')
+								stage("Run tests for SqlComparer tool")
 								{
-									runIntegrationTests(globalVmInfo.Url, true, false, true)
+									echo "Replacing variables"
+									replaceTestVariables(globalVmInfo.Url, false, false, true)
+									
+									runTestsForSqlComparerTool(globalVmInfo.Url)
 								}
 							}
 							finally
 							{
 								try
 								{
-									stage('MassImportImprovementsToggle On and DataGrid enabled')
-									{
-										runIntegrationTests(globalVmInfo.Url, true, true, false)
-									}
+									echo "Get SqlComparer results"
+									checkSqlComparerToolResults()
 								}
 								finally
 								{
 									try
 									{
-										stage('MassImportImprovementsToggle On and DataGrid disabled')
+										stage('Workspace with non default collation MassImportImprovementsToggle On and DataGrid disabled')
 										{
-											runIntegrationTests(globalVmInfo.Url, true, false, false)
+											runIntegrationTests(globalVmInfo.Url, true, false, true)
 										}
 									}
 									finally
 									{
-										try 
+										try
 										{
-											stage('MassImportImprovementsToggle Off and DataGrid enabled')
+											stage('MassImportImprovementsToggle On and DataGrid enabled')
 											{
-												runIntegrationTests(globalVmInfo.Url, false, true, false)
+												runIntegrationTests(globalVmInfo.Url, true, true, false)
 											}
 										}
 										finally
 										{
-											stage('MassImportImprovementsToggle Off and DataGrid disabled')
+											try
 											{
-												runIntegrationTests(globalVmInfo.Url, false, false, false)
+												stage('MassImportImprovementsToggle On and DataGrid disabled')
+												{
+													runIntegrationTests(globalVmInfo.Url, true, false, false)
+												}
+											}
+											finally
+											{
+												try 
+												{
+													stage('MassImportImprovementsToggle Off and DataGrid enabled')
+													{
+														runIntegrationTests(globalVmInfo.Url, false, true, false)
+													}
+												}
+												finally
+												{
+													stage('MassImportImprovementsToggle Off and DataGrid disabled')
+													{
+														runIntegrationTests(globalVmInfo.Url, false, false, false)
+													}
+												}
 											}
 										}
 									}
@@ -135,6 +159,14 @@ timestamps
 								currentBuild.result = 'FAILED'
 								throw new Exception("One or more tests failed")
 							}
+							
+							if(sqlComparerTestsResultFailed > 0)
+							{
+								echo "One or more test for SqlComparer failed"
+								currentBuild.result = 'FAILED'
+								summaryMessage = "Compare databases using SQL Comparer Tool finished with errors"
+								numberOfErrors++
+							}
 						}
 					}
 					catch(err)
@@ -157,35 +189,50 @@ timestamps
 		finally{
 			stage("Send slack and bitbucket notification")
 			{
-				def int numberOfFailedTests = testResultsFailed
-				if(numberOfErrors > 0 || numberOfFailedTests > 0)
-				{
-					message = "Something went wrong"
-					currentBuild.result = 'FAILED'
-				}
-				else
-				{
-					if(testResultsPassed == 0 && testResultsFailed == 0 && testResultsSkipped == 0)
-					{
-						message = "No test was executed"
-						currentBuild.result = 'FAILED'
-					}
-					else 
-					{
-						message = "All tests passed"
-						currentBuild.result = 'SUCCESS'
-					}
-				}
-
+				currentBuild.result = prepareSummaryMessage(numberOfErrors, testResultsPassed, testResultsFailed, testResultsSkipped)
 				notifyBitbucket()
 
-				Slack.SendSlackNotification("Newest Relativity from '${relativityInstallerSource}'", "Complex cases tests", env.BRANCH_NAME, params.buildConfig, "mass-import-verification", testResultsFailed, testResultsPassed, testResultsSkipped, message)
+				Slack.SendSlackNotification("Newest Relativity from '${relativityInstallerSource}'", "Mass import verification tests", env.BRANCH_NAME, params.buildConfig, "mass-import-verification", testResultsFailed, testResultsPassed, testResultsSkipped, summaryMessage)
 			}
 		}
 	}
 }
 
 //################################ functions ###################################################
+
+def prepareSummaryMessage(int numberOfErrors, int testResultsPassed, int testResultsFailed, int testResultsSkipped)
+{
+	def buildResult = 'FAILED'
+	
+	if(numberOfErrors > 0)
+	{
+		if(summaryMessage == "")
+		{
+			summaryMessage = "Something went wrong"
+		}
+	}
+	else
+	{
+		if(testResultsFailed > 0)
+		{
+			summaryMessage = "One or more tests finished with errors"
+		}
+		else 
+		{
+			if(testResultsPassed == 0 && testResultsFailed == 0 && testResultsSkipped == 0)
+			{
+				summaryMessage = "No test was executed"
+			}
+			else 
+			{
+				summaryMessage = "All tests passed"
+				buildResult = 'SUCCESS'
+			}
+		}
+	}
+	
+	return buildResult
+}
 
 def getPathToTestParametersFile()
 {
@@ -206,11 +253,37 @@ def runIntegrationTests(String vmUrl, Boolean massImportImprovementsToggleOn, Bo
 	def testWorkspaceWithNonDefaultCollation = workspaceWithNonDefaultCollation ? "-TestOnWorkspaceWithNonDefaultCollation" : ""
 	
 	echo "Replace test variables"
-	replaceTestVariables(vmUrl, enableDataGrid, workspaceWithNonDefaultCollation)
+	replaceTestVariables(vmUrl, enableDataGrid, workspaceWithNonDefaultCollation, false)
 
 	echo "Run tests"
 	output = powershell ".\\build.ps1 IntegrationTestsForMassImportImprovementsToggle ${massImportImprovementsToggle} ${dataGridEnabled} ${testWorkspaceWithNonDefaultCollation} -ILMerge -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
 	echo output 								
+}
+
+def runTestsForSqlComparerTool(String vmUrl)
+{
+	echo "Run Integration tests for both MassImportImprovementsToggle values and run SqlComparer after each test"
+	
+	String pathToJsonFile = getPathToTestParametersFile()
+	
+	output = powershell ".\\build.ps1 IntegrationTestsForSqlComparer -ILMerge -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
+	echo output
+}
+
+def checkSqlComparerToolResults()
+{
+	echo "Check SqlComparer tool results"
+	def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 CheckSqlComparerToolResults")
+
+	// Search for specific tokens within the response.
+	echo "Extracting the loadtests result parameters for SqlComparer"
+	def int sqlComparerTestsPassed = tools.extractValue("sqlComparerTestsResultPassed", testResultOutputString)
+	def int sqlComparerTestsFailed = tools.extractValue("sqlComparerTestsResultFailed", testResultOutputString)
+	
+	echo "SqlComparer test passed: $sqlComparerTestsPassed"
+	echo "SqlComparer test failed: $sqlComparerTestsFailed"
+	
+	sqlComparerTestsResultFailed += sqlComparerTestsFailed
 }
 
 def GetTestResults()
@@ -236,7 +309,7 @@ def GetTestResults()
 	testResultsSkipped += skipped	
 }
 
-def replaceTestVariables(String vmUrl, Boolean enableDataGrid, Boolean workspaceWithNonDefaultCollation)
+def replaceTestVariables(String vmUrl, Boolean enableDataGrid, Boolean workspaceWithNonDefaultCollation, Boolean sqlComparerEnabled)
 {
 	String pathToJsonFile = getPathToTestParametersFile()
 	powershell ".\\build.ps1 CreateTemplateTestParametersFile -TestParametersFile '${pathToJsonFile}'"
@@ -244,8 +317,9 @@ def replaceTestVariables(String vmUrl, Boolean enableDataGrid, Boolean workspace
 	echo "Replacing test variables"
 	def dataGridEnabled = enableDataGrid ? "-EnableDataGrid" : ""
 	def testWorkspaceWithNonDefaultCollation = workspaceWithNonDefaultCollation ? "-TestOnWorkspaceWithNonDefaultCollation" : ""
+	def sqlComparerEnabledInTests = sqlComparerEnabled ? "-SqlDataComparer" : ""
 
-	output = powershell ".\\build.ps1 ReplaceTestVariables ${dataGridEnabled} ${testWorkspaceWithNonDefaultCollation} -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}'"
+	output = powershell ".\\build.ps1 ReplaceTestVariables ${dataGridEnabled} ${testWorkspaceWithNonDefaultCollation} -TestTarget '${(new URI(vmUrl)).getHost()}' -TestParametersFile '${pathToJsonFile}' ${sqlComparerEnabledInTests}"
     echo output
 }
 
