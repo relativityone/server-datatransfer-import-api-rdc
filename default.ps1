@@ -423,9 +423,12 @@ task CodeCoverageReport -Description "Create a code coverage report" {
         Write-Output "Searching for code coverage test assemblies..."
 
         ### 0. Get tests list to execute
-        $UnitTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.dll -Exclude *Desktop*.dll,*TestFramework*.dll | Where-Object { $_.FullName -Match "\\*NUnit\\bin" }        
-        $IntegrationTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.Integration.dll -Exclude *Desktop*.dll,*TestFramework*.dll | Where-Object { $_.FullName -Match "\\*NUnit.Integration\\bin" }        
-        $LoadTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.LoadTests.dll -Exclude *Desktop*.dll,*TestFramework*.dll | Where-Object { $_.FullName -Match "\\*NUnit.LoadTests\\bin" }        
+        $UnitTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.dll -Exclude *Desktop*.dll,*TestFramework*.dll,*Samples.NUnit.dll |
+                     Where-Object { $_.FullName -Match "\\*NUnit\\bin" }
+        $IntegrationTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.Integration.dll,*Samples.NUnit.dll -Exclude *Desktop*.dll,*TestFramework*.dll |
+                            Where-Object { $_.FullName -Match "\\*NUnit.Integration\\bin" -Or $_.FullName -Match "\\*Samples.NUnit\\bin"}
+        $LoadTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.LoadTests.dll -Exclude *Desktop*.dll,*TestFramework*.dll |
+                     Where-Object { $_.FullName -Match "\\*NUnit.LoadTests\\bin" }
 
         $assemblies = @()
         $assemblies += $UnitTests
@@ -450,7 +453,7 @@ task CodeCoverageReport -Description "Create a code coverage report" {
             [string]$fileName  = ($assembly.Name).Replace("Relativity.DataExchange.", "")
             [string]$ReportDir = ""
 
-            if ($fileName.Contains("Integration")) { $ReportDir = $IntegrationTestsReportDir } else { $ReportDir = $UnitTestsReportDir}
+            if ($IntegrationTests.Contains($assembly)) { $ReportDir = $IntegrationTestsReportDir } else { $ReportDir = $UnitTestsReportDir}
 
             Write-Host
             Write-Host " Execute tests for '$assembly'"
