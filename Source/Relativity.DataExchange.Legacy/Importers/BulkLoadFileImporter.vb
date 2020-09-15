@@ -1400,7 +1400,21 @@ Namespace kCura.WinEDDS
 				makeServiceCalls()
 			End If
 
-			Me.TotalTransferredFilesCount = Me.FileTapiProgressCount
+			'FileTapiProgressCount represents progress bar and its max will be a number of lines in data reader.
+			'It won't be lower no matter what is the _startLineNumber, but TotalTransferredFilesCount must be to represent the number of lines that were processed.
+			'If _firstLineContainsColumnNames is True, then we skip one line for headers and it doesn't matter if _startLineNumber is 0 or 1 then.
+
+			'Case 1, we have a header and we skip some lines, while remembering that 1 line is already skipped because of the header
+			If _firstLineContainsColumnNames AndAlso _startLineNumber > 1 Then
+				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount - CType(_startLineNumber,Integer) + 1
+				'Case 2, we don't have a header and we want to skip some lines
+			ElseIf Not _firstLineContainsColumnNames AndAlso _startLineNumber > 0 Then
+				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount - CType(_startLineNumber,Integer)
+				'Case 3, we don't have a header and we don't want to skip any lines
+				'Case 4, we have a header and we don't skip any lines, while remembering that 1 line is already skipped because of the header
+			Else
+				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount
+			End If
 		End Sub
 
 		Private Sub WaitOnPushBatchTask()
