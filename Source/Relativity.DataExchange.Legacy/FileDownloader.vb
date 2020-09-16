@@ -1,5 +1,7 @@
 Imports System.Collections.Concurrent
 Imports System.Collections.Generic
+Imports System.Net
+Imports System.Threading
 Imports kCura.WinEDDS.Service.Export
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Service
@@ -171,19 +173,37 @@ Namespace kCura.WinEDDS
 		Public Shared TotalWebTime As Long = 0
 
 		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, ByVal forFullText As Boolean, ByVal longTextFieldArtifactID As Int32, ByVal fileID As Int32, ByVal fileFieldArtifactID As Int32) As Boolean
-			Dim tries As Int32 = 0
-			While tries < AppSettings.Instance.MaxReloginTries
+			Dim reloginTries As Int32 = 0
+			Dim httpTries As Int32 = 0
+			Dim lastException As Exception = Nothing
+
+			While reloginTries < AppSettings.Instance.MaxReloginTries AndAlso httpTries < AppSettings.Instance.HttpErrorNumberOfRetries
 				Try
 					Return DoWebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, remotelocationkey, forFullText, longTextFieldArtifactID, fileID, fileFieldArtifactID)
 				Catch ex As DistributedReLoginException
-					tries += 1
-					RaiseEvent UploadStatusEvent(String.Format("Download Manager credentials failed.  Attempting to re-login ({0} of {1})", tries, AppSettings.Instance.MaxReloginTries))
+					reloginTries += 1
+					lastException = ex
+
+					RaiseEvent UploadStatusEvent($"Download Manager credentials failed. Attempting to re-login ({reloginTries} of {AppSettings.Instance.MaxReloginTries})")
 					_userManager.AttemptReLogin()
+				Catch ex As WebException When TryCast(ex.Response, HttpWebResponse)?.StatusCode = HttpStatusCode.InternalServerError
+					httpTries += 1
+					lastException = ex
+
+					RaiseEvent UploadStatusEvent($"Error Downloading File. Attempting to retry ({httpTries} of {AppSettings.Instance.HttpErrorNumberOfRetries}) in {AppSettings.Instance.HttpErrorWaitTimeInSeconds} seconds")
+					Thread.Sleep(TimeSpan.FromSeconds(AppSettings.Instance.HttpErrorWaitTimeInSeconds))
 				End Try
 			End While
 			RaiseEvent UploadStatusEvent("Error Downloading File")
-			Throw New ApplicationException("Error Downloading File: Unable to authenticate against Distributed server" & vbNewLine, New DistributedReLoginException)
-		End Function
+
+			Dim errorMessage As String
+			If reloginTries = AppSettings.Instance.MaxReloginTries Then
+				errorMessage = "Error Downloading File: Unable to authenticate against Distributed server"
+			Else
+				errorMessage = "Error Downloading File: Distributed server error"
+			End If
+			Throw New ApplicationException(errorMessage & vbNewLine, lastException)
+			End Function
 
 		Private Function DoWebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, ByVal forFullText As Boolean, ByVal longTextFieldArtifactID As Int32, ByVal fileID As Int32, ByVal fileFieldArtifactID As Int32) As Boolean
 			Dim now As Long = System.DateTime.Now.Ticks
@@ -240,19 +260,20 @@ Namespace kCura.WinEDDS
 				Throw
 			Catch ex As System.Net.WebException
 				Me.CloseStream(localStream)
-				If TypeOf ex.Response Is System.Net.HttpWebResponse Then
-					Dim r As System.Net.HttpWebResponse = DirectCast(ex.Response, System.Net.HttpWebResponse)
-					If r.StatusCode = Net.HttpStatusCode.Forbidden AndAlso r.StatusDescription.ToLower = "kcuraaccessdeniedmarker" Then
+				Dim response As HttpWebResponse = TryCast(ex.Response, HttpWebResponse)
+				If response IsNot Nothing
+					If response.StatusCode = HttpStatusCode.Forbidden AndAlso response.StatusDescription.ToLower = "kcuraaccessdeniedmarker" Then
 						Throw New DistributedReLoginException
+					ElseIf response.StatusCode = HttpStatusCode.InternalServerError Then ' 500
+						Throw ' this exception is handled by the caller method
+					ElseIf response.StatusCode = HttpStatusCode.Conflict Then ' 409
+						RaiseEvent UploadStatusEvent("Error Downloading File")                  'TODO: Change this to a separate error-type event'
+						Throw New ApplicationException("Error Downloading File: the file associated with the guid " & remoteFileGuid & " cannot be found" & vbNewLine, ex)
 					End If
 				End If
-				If ex.Message.IndexOf("409") <> -1 Then
-					RaiseEvent UploadStatusEvent("Error Downloading File")                  'TODO: Change this to a separate error-type event'
-					Throw New ApplicationException("Error Downloading File: the file associated with the guid " & remoteFileGuid & " cannot be found" & vbNewLine, ex)
-				Else
-					RaiseEvent UploadStatusEvent("Error Downloading File")                  'TODO: Change this to a separate error-type event'
-					Throw New ApplicationException("Error Downloading File:", ex)
-				End If
+
+				RaiseEvent UploadStatusEvent("Error Downloading File")                  'TODO: Change this to a separate error-type event'
+				Throw New ApplicationException("Error Downloading File:", ex)
 			Catch ex As System.Exception
 				Me.CloseStream(localStream)
 				RaiseEvent UploadStatusEvent("Error Downloading File")               'TODO: Change this to a separate error-type event'
