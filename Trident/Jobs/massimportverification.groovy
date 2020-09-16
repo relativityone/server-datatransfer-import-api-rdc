@@ -56,7 +56,7 @@ timestamps
 			stage('Build binaries')
 			{
 				echo "Building the binaries"
-				output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge -Sign -Branch '${env.BRANCH_NAME}'"
+				output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build,BuildSQLDataComparer -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge -Sign -Branch '${env.BRANCH_NAME}'"
 				echo output
 			}
 
