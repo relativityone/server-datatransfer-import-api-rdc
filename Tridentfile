@@ -2,13 +2,14 @@
 import groovy.json.JsonOutput 
 library 'ProjectMayhem@v1'
 library 'SlackHelpers@5.2.0-Trident'
+
 properties([
     buildDiscarder(logRotator(artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30')),
     parameters([
         choice(defaultValue: 'DEV',choices: ["DEV", "GOLD - RDC AND SDK", "GOLD - RDC ONLY", "GOLD - SDK ONLY"], description: "Choose your build type, only gold can produce production packages.", name: 'buildType'),
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-        string(defaultValue: '', description: 'Relativity branch to test against, leave null for latest hopper image', name: 'relativityBranch'),
+        string(defaultValue: 'release-11.3-mayapple', description: 'Relativity branch to test against, leave null for latest hopper image', name: 'relativityBranch'),
         booleanParam(defaultValue: true, description: "Enable or disable running unit tests", name: 'runUnitTests'),
         booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests'),
         booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport'),
