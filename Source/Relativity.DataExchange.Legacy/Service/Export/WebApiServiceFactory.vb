@@ -11,10 +11,6 @@
 			Return New AuditManager(ExportSettings.Credential, ExportSettings.CookieContainer)
 		End Function
 
-		Public Function CreateExportFileDownloader() As IExportFileDownloader Implements IServiceFactory.CreateExportFileDownloader
-			Return New FileDownloader(ExportSettings.Credential, ExportSettings.CaseInfo.DocumentPath & "\EDDS" & ExportSettings.CaseInfo.ArtifactID, ExportSettings.CaseInfo.DownloadHandlerURL, ExportSettings.CookieContainer)
-		End Function
-
 		Public Function CreateExportManager() As IExportManager Implements IServiceFactory.CreateExportManager
 			Return New ExportManager(ExportSettings.Credential, ExportSettings.CookieContainer)
 		End Function

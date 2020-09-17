@@ -2214,14 +2214,14 @@ Namespace kCura.WinEDDS
 		Private Sub ManageErrors(ByVal artifactTypeID As Int32)
 			If Not Me.BulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, _runId) Then Exit Sub
 			Dim sr As GenericCsvReader2 = Nothing
-			Dim downloader As FileDownloader = Nothing
+			Dim errorFileService As ErrorFileService = Nothing
 			Try
 				With Me.BulkImportManager.GenerateNonImageErrorFiles(_caseInfo.ArtifactID, _runId, artifactTypeID, True, _keyFieldID)
 					Me.WriteStatusLine(EventType2.Status, "Retrieving errors from server")
-					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer)
-					AddHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
+					errorFileService = New ErrorFileService(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer)
+					AddHandler errorFileService.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
 					Dim errorsLocation As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
-					sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)
+					sr = AttemptErrorFileDownload(errorFileService, errorsLocation, .LogKey, _caseInfo)
 
 					If sr Is Nothing Then
 						'If we're here and still have an empty response, we can at least notify
@@ -2247,11 +2247,11 @@ Namespace kCura.WinEDDS
 						RemoveHandler sr.Context.IoWarningEvent, AddressOf Me.IoWarningHandler
 					End If
 
-					RemoveHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
+					RemoveHandler errorFileService.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
 				End With
 			Catch ex As Exception
 				Try
-					If downloader IsNot Nothing Then RemoveHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
+					If errorFileService IsNot Nothing Then RemoveHandler errorFileService.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
 					sr.Close()
 					RemoveHandler sr.Context.IoWarningEvent, AddressOf Me.IoWarningHandler
 				Catch
@@ -2260,19 +2260,18 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Private Function AttemptErrorFileDownload(ByVal downloader As FileDownloader, ByVal errorFileOutputPath As String, ByVal logKey As String, ByVal caseInfo As CaseInfo) As GenericCsvReader2
+		Private Function AttemptErrorFileDownload(ByVal errorFileService As ErrorFileService, ByVal errorFileOutputPath As String, ByVal logKey As String, ByVal caseInfo As CaseInfo) As GenericCsvReader2
 			Dim triesLeft As Integer = 3
 			Dim sr As GenericCsvReader2 = Nothing
 
 			While triesLeft > 0
-				downloader.MoveTempFileToLocal(errorFileOutputPath, logKey, caseInfo, False)
+				errorFileService.DownloadErrorFile(errorFileOutputPath, logKey, caseInfo, False)
 				sr = New GenericCsvReader2(errorFileOutputPath, System.Text.Encoding.UTF8, True)
 				Dim firstChar As Int32 = sr.Peek()
 
 				If firstChar = -1 Then
 					'Try again--assuming an empty error file is invalid, try the download one more time. The motivation
-					' behind the retry is a rare SQL error that caused the DownloadHandler (used by the supplied instance
-					' of FileDownloader) to return an empty response.
+					' behind the retry is a rare SQL error that caused the DownloadHandler to return an empty response.
 					' -Phil S. 08/13/2012
 					triesLeft -= 1
 					sr.Close()
@@ -2283,7 +2282,7 @@ Namespace kCura.WinEDDS
 				End If
 			End While
 
-			downloader.RemoveRemoteTempFile(logKey, caseInfo)
+			errorFileService.RemoveErrorFile(logKey, caseInfo)
 			Return sr
 		End Function
 

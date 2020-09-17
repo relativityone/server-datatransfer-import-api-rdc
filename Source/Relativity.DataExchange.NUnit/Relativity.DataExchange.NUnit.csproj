@@ -173,6 +173,8 @@
     <Compile Include="Monitoring\Sinks\SumMetricFormatterTest.cs" />
     <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
     <Compile Include="ErrorMessageFormatterTests.cs" />
+    <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeAuthenticationDecoratorTests.cs" />
+    <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeRetriesDecoratorTests.cs" />
     <Compile Include="Service\TriggerManagerTests.cs" />
     <Compile Include="StatisticsTest.cs" />
     <Compile Include="UrlHelperTests.cs" />
@@ -387,14 +389,18 @@
       </ItemGroup>
     </When>
   </Choose>
-  <ItemGroup>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup>
+  <Choose>
+    <When Condition="'$(Configuration)'!='Debug'">
+      <ItemGroup>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -612,6 +618,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

@@ -54,12 +54,6 @@ namespace Relativity.DataExchange.Import.NUnit
 					new kCura.WinEDDS.Exceptions.WebApiException("Message", new InvalidOperationException()),
 					validateNoOp);
 				yield return new TestCaseData(
-					new kCura.WinEDDS.Exceptions.WebDownloadCorruptException("Message"),
-					validateNoOp);
-				yield return new TestCaseData(
-					new kCura.WinEDDS.FileDownloader.DistributedReLoginException(),
-					validateNoOp);
-				yield return new TestCaseData(
 					new kCura.WinEDDS.BulkLoadFileImporter.IdentityValueNotSetException(),
 					validateNoOp);
 				yield return new TestCaseData(

@@ -205,9 +205,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Exceptions\WebApiException.vb" />
-    <Compile Include="Exceptions\WebDownloadCorruptException.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Exporters\Container\ContainerFactoryProvider.vb" />
     <Compile Include="Exporters\Container\IContainerFactory.vb" />
     <Compile Include="Exporters\ExportConfig.vb" />
@@ -266,7 +263,7 @@
     </Compile>
     <Compile Include="Exporters\VolumePredictions.vb" />
     <Compile Include="FieldProviderCache.vb" />
-    <Compile Include="FileDownloader.vb">
+    <Compile Include="ErrorFileService.vb">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="FileNaming\CustomFileNaming\CustomFileNameProvider.vb" />
@@ -442,7 +439,6 @@
     <Compile Include="Service\Export\IExportManager.vb" />
     <Compile Include="Service\Export\IFieldManager.vb" />
     <Compile Include="Service\Export\IAuditManager.vb" />
-    <Compile Include="Service\Export\IExportFileDownloader.vb" />
     <Compile Include="Service\Export\IProductionManager.vb" />
     <Compile Include="Service\Export\ISearchManager.vb" />
     <Compile Include="Service\Export\IServiceFactory.vb" />

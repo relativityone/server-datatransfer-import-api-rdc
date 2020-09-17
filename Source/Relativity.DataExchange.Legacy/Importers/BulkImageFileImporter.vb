@@ -1168,9 +1168,9 @@ Namespace kCura.WinEDDS
 			Try
 				With _bulkImportManager.GenerateImageErrorFiles(_caseInfo.ArtifactID, _runId, True, _keyFieldDto.ArtifactID)
 					Me.RaiseStatusEvent(EventType2.Status, "Retrieving errors from server", Me.CurrentLineNumber)
-					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer)
+					Dim errorFileService As New ErrorFileService(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer)
 					Dim errorsLocation As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
-					sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)
+					sr = AttemptErrorFileDownload(errorFileService, errorsLocation, .LogKey, _caseInfo)
 
 					If sr Is Nothing Then
 						'If we're here and still have an empty response, we can at least notify
@@ -1205,7 +1205,7 @@ Namespace kCura.WinEDDS
 						End While
 						sr.Close()
 						Dim tmp As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
-						downloader.MoveTempFileToLocal(tmp, .OpticonKey, _caseInfo)
+						errorFileService.DownloadErrorFile(tmp, .OpticonKey, _caseInfo)
 						w = New System.IO.StreamWriter(_errorRowsFileLocation, True, System.Text.Encoding.Default)
 						r = New System.IO.StreamReader(tmp, System.Text.Encoding.Default)
 						Dim c As Int32 = r.Read
@@ -1251,12 +1251,12 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Private Function AttemptErrorFileDownload(ByVal downloader As FileDownloader, ByVal errorFileOutputPath As String, ByVal logKey As String, ByVal caseInfo As CaseInfo) As GenericCsvReader2
+		Private Function AttemptErrorFileDownload(ByVal errorFileService As ErrorFileService, ByVal errorFileOutputPath As String, ByVal logKey As String, ByVal caseInfo As CaseInfo) As GenericCsvReader2
 			Dim triesLeft As Integer = 3
 			Dim sr As GenericCsvReader2 = Nothing
 
 			While triesLeft > 0
-				downloader.MoveTempFileToLocal(errorFileOutputPath, logKey, caseInfo, False)
+				errorFileService.DownloadErrorFile(errorFileOutputPath, logKey, caseInfo, False)
 				sr = New GenericCsvReader2(errorFileOutputPath, True)
 				Dim firstChar As Int32 = sr.Peek()
 
@@ -1274,7 +1274,7 @@ Namespace kCura.WinEDDS
 				End If
 			End While
 
-			downloader.RemoveRemoteTempFile(logKey, caseInfo)
+			errorFileService.RemoveErrorFile(logKey, caseInfo)
 			Return sr
 		End Function
 

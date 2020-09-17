@@ -173,6 +173,12 @@
     <Compile Include="Process\ExportErrorEventArgs.cs" />
     <Compile Include="Process\RecordNumberEventArgs.cs" />
     <Compile Include="Process\ShowReportEventArgs.cs" />
+    <Compile Include="Service\IReLoginService.cs" />
+    <Compile Include="Service\RelativityDistributed\FileDownloadRequest.cs" />
+    <Compile Include="Service\RelativityDistributed\RelativityDistributedFacade.cs" />
+    <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeAuthenticationDecorator.cs" />
+    <Compile Include="Service\RelativityDistributed\FileDownloadResponse.cs" />
+    <Compile Include="Service\RelativityDistributed\IRelativityDistributedFacade.cs" />
     <Compile Include="Service\IServiceNotification.cs" />
     <Compile Include="ErrorMessageFormatter.cs" />
     <Compile Include="Service\ObjectManagerExceptionHelper.cs" />
@@ -182,6 +188,9 @@
     <Compile Include="Service\IServiceRetryPolicyFactory.cs" />
     <Compile Include="Service\KeplerRetryPolicyFactory.cs" />
     <Compile Include="Service\KeplerServiceProxyFactory.cs" />
+    <Compile Include="Service\RelativityDistributed\RelativityDistributedErrorType.cs" />
+    <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeFactory.cs" />
+    <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeRetriesDecorator.cs" />
     <Compile Include="Service\TriggerManager.cs" />
     <Compile Include="SettingsConstants.cs" />
     <Compile Include="Transfer\ILongTextStreamService.cs" />
@@ -401,14 +410,14 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
+  <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
     <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
       <Paket>True</Paket>
     </Analyzer>
     <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
       <Paket>True</Paket>
     </Analyzer>
-  </ItemGroup>
+  </ItemGroup></When></Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

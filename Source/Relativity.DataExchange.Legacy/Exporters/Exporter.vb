@@ -40,7 +40,6 @@ Namespace kCura.WinEDDS
 		Private _columns As System.Collections.ArrayList
 		Public TotalExportArtifactCount As Int32
 		Private WithEvents _processContext As ProcessContext
-		Private _downloadHandler As Service.Export.IExportFileDownloader
 		Private WithEvents _downloadModeStatus As Service.Export.IExportFileDownloaderStatus
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
 		Private _beginBatesColumn As String = ""
@@ -187,8 +186,6 @@ Namespace kCura.WinEDDS
 		               logger As ILog,
 		               cancellationToken As CancellationToken)
 			_searchManager = serviceFactory.CreateSearchManager()
-			_downloadHandler = serviceFactory.CreateExportFileDownloader()
-			_downloadModeStatus = _downloadHandler
 			_productionManager = serviceFactory.CreateProductionManager()
 			_auditManager = serviceFactory.CreateAuditManager()
 			_fieldManager = serviceFactory.CreateFieldManager()
@@ -516,7 +513,6 @@ Namespace kCura.WinEDDS
 				' REL-292896: nextRecordIndex represents the total number of records and should match.
 				ValidateExportedRecordCount(nextRecordIndex, Me.TotalExportArtifactCount)
 
-				Me.WriteStatusLine(EventType2.Status, FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
 
 				Me.AuditRun(True)
