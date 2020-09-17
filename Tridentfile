@@ -2,6 +2,7 @@
 import groovy.json.JsonOutput 
 library 'ProjectMayhem@v1'
 library 'SlackHelpers@5.2.0-Trident'
+
 properties([
     buildDiscarder(logRotator(artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30')),
     parameters([
@@ -38,6 +39,14 @@ def publishRdc =(!isReleaseBranch || (isReleaseBranch && params.buildType == 'GO
 def publishSdk =(!isReleaseBranch || (isReleaseBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseBranch && params.buildType == 'GOLD - SDK ONLY'))
 def publishSdkAndRdc = (publishSdk && publishRdc)
 build = params.build
+
+// On release branches tests should be executed against newest Relativity version from specified folder in \\bld-pkgs\Packages\Relativity\
+// Example: relativityBranch = 'release-11.3-mayapple' for branchName = 'release-1.11-mayapple'
+if(isReleaseBranch && (relativityBranch == null || relativityBranch.isEmpty()))
+{
+	currentBuild.result = 'FAILED' 
+	throw new Exception("Build failed because relativity installer source folder 'relativityBranch' is not defined in the script")
+}
 
 def config = [
 	sutTemplate: "aio-mayapple-eau",
