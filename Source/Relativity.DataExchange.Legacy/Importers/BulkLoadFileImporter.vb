@@ -2218,7 +2218,7 @@ Namespace kCura.WinEDDS
 			Try
 				With Me.BulkImportManager.GenerateNonImageErrorFiles(_caseInfo.ArtifactID, _runId, artifactTypeID, True, _keyFieldID)
 					Me.WriteStatusLine(EventType2.Status, "Retrieving errors from server")
-					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer)
+					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer)
 					AddHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
 					Dim errorsLocation As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 					sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)

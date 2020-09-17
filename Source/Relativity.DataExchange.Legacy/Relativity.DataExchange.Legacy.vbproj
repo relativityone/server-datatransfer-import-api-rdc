@@ -442,7 +442,6 @@
     <Compile Include="Service\Export\IExportManager.vb" />
     <Compile Include="Service\Export\IFieldManager.vb" />
     <Compile Include="Service\Export\IAuditManager.vb" />
-    <Compile Include="Service\Export\IExportFileDownloader.vb" />
     <Compile Include="Service\Export\IProductionManager.vb" />
     <Compile Include="Service\Export\ISearchManager.vb" />
     <Compile Include="Service\Export\IServiceFactory.vb" />
