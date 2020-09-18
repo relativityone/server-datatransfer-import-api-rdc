@@ -98,7 +98,7 @@ Namespace kCura.WinEDDS.Service
 			Return ExecuteWithRetry(Function() MyBase.BeginFill(caseContextArtifactID, b, documentDirectory, fileGuid))
 		End Function
 
-		Public Shadows Function FileFill(ByVal caseContextArtifactID As Int32, ByVal documentDirectory As String, ByVal fileName As String, ByVal b() As Byte, ByVal contextArtifactID As Int32) As kCura.EDDS.WebAPI.FileIOBase.IoResponse
+		Public Shadows Function FileFill(ByVal caseContextArtifactID As Int32, ByVal documentDirectory As String, ByVal fileName As String, ByVal b() As Byte) As kCura.EDDS.WebAPI.FileIOBase.IoResponse
 			Return ExecuteWithRetry(Function() MyBase.FileFill(caseContextArtifactID, documentDirectory, fileName, b))
 		End Function
 

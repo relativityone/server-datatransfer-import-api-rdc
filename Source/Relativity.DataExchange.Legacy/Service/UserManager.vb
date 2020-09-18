@@ -1,8 +1,10 @@
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS.Service
 	Public Class UserManager
 		Inherits kCura.EDDS.WebAPI.UserManagerBase.UserManager
+		Implements IReLoginService
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			Me.New(credentials, cookieContainer, AppSettings.Instance.WebApiServiceUrl)
@@ -50,7 +52,7 @@ Namespace kCura.WinEDDS.Service
 
 #End Region
 
-		Public Function AttemptReLogin(Optional ByVal retryOnFailure As Boolean = True) As Boolean
+		Public Function AttemptReLogin(Optional ByVal retryOnFailure As Boolean = True) As Boolean Implements IReLoginService.AttemptReLogin
 			Try
 				System.Threading.Thread.CurrentThread.Join(AppSettings.Instance.WaitBeforeReconnect)
 				Dim cred As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
@@ -69,6 +71,5 @@ Namespace kCura.WinEDDS.Service
 				Return False
 			End Try
 		End Function
-
 	End Class
 End Namespace

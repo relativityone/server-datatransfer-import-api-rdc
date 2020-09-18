@@ -19,6 +19,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Interfaces.Shared.Models;
+	using Relativity.Services.Interfaces.Workspace;
 
 	using ArtifactType = Relativity.ArtifactType;
 	using IFieldManager = Relativity.Services.Interfaces.Field.IFieldManager;
@@ -170,6 +171,15 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 						client.Repositories.Workspace.UpdateSingle(workspace);
 					}
 				});
+		}
+
+		public static async Task<string> GetDefaultFileRepositoryAsync(IntegrationTestParameters parameters)
+		{
+			using (var workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
+			{
+				var workspace = await workspaceManager.ReadAsync(parameters.WorkspaceId).ConfigureAwait(false);
+				return workspace.DefaultFileRepository.Value.Name;
+			}
 		}
 
 		internal static void CreateWorkspaceFromTemplate(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string workspaceTemplateName, string newWorkspaceName)
