@@ -17,6 +17,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using Polly.Retry;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Interfaces.Shared.Models;
 	using Relativity.Services.Interfaces.Workspace;
@@ -175,6 +176,18 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		public static async Task<string> GetDefaultFileRepositoryAsync(IntegrationTestParameters parameters)
 		{
+			// kepler endpoint exists since Lanceleaf release.
+			bool shouldUseRsApi = RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.Lanceleaf);
+
+			if (shouldUseRsApi)
+			{
+				using (var client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
+				{
+					var workspace = client.Repositories.Workspace.ReadSingle(parameters.WorkspaceId);
+					return workspace.DefaultFileLocation.Name;
+				}
+			}
+
 			using (var workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
 			{
 				var workspace = await workspaceManager.ReadAsync(parameters.WorkspaceId).ConfigureAwait(false);
@@ -311,8 +324,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		private static string GetWorkspaceName(IntegrationTestParameters parameters)
 		{
 			return string.IsNullOrEmpty(parameters.WorkspaceName)
-		       ? $"Import API Sample Workspace ({DateTime.Now:MM-dd HH.mm.ss.fff})"
-		       : parameters.WorkspaceName;
+			   ? $"Import API Sample Workspace ({DateTime.Now:MM-dd HH.mm.ss.fff})"
+			   : parameters.WorkspaceName;
 		}
 
 		private static void EnableDataGrid(IRSAPIClient client, IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
@@ -334,15 +347,15 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		private static async Task UpdateExtractedTextField(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
 		{
 			var longTextFieldRequest = new LongTextFieldRequest()
-				                           {
-											   Name = WellKnownFields.ExtractedText,
-											   ObjectType = new ObjectTypeIdentifier() { ArtifactTypeID = (int)ArtifactType.Document },
-											   EnableDataGrid = true,
-											   IncludeInTextIndex = false,
-											   FilterType = FilterType.None,
-											   AvailableInViewer = true,
-											   HasUnicode = true,
-				                           };
+			{
+				Name = WellKnownFields.ExtractedText,
+				ObjectType = new ObjectTypeIdentifier() { ArtifactTypeID = (int)ArtifactType.Document },
+				EnableDataGrid = true,
+				IncludeInTextIndex = false,
+				FilterType = FilterType.None,
+				AvailableInViewer = true,
+				HasUnicode = true,
+			};
 			using (IFieldManager fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(parameters))
 			{
 				int fieldId = TestFramework.RelativityHelpers.FieldHelper.GetFieldArtifactId(parameters, logger, WellKnownFields.ExtractedText);

@@ -16,7 +16,9 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Service.RelativityDistributed;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Kepler.Transport;
 	using Relativity.Services.FileSystem;
 	using Relativity.Testing.Identification;
@@ -33,9 +35,10 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 
 		private int originalWebBasedFileDownloadChunkSize;
 
-		[IdentifiedTest("TODO")]
+		[IdentifiedTest("2d7d0e40-72d3-48fc-a1bc-459f597ed99b")]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.WebService)]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // IFileSystemManager exists since Indigo release
 		public async Task ShouldDownloadFileAsync()
 		{
 			// arrange
@@ -79,7 +82,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 			}
 		}
 
-		[IdentifiedTest("TODO")]
+		[IdentifiedTest("dd861031-fed3-4287-bca6-e21c2f2d1f6a")]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.WebService)]
 		public void ShouldReturnNotFoundForFileWhichDoesNotExist()
@@ -96,7 +99,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 			Assert.That(actualResponse.ErrorType, Is.EqualTo(RelativityDistributedErrorType.NotFound));
 		}
 
-		[IdentifiedTest("TODO")]
+		[IdentifiedTest("bce2497b-dd6f-44da-a88f-02608cd7a9d7")]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.WebService)]
 		public void ShouldReturnNotAuthenticated()
