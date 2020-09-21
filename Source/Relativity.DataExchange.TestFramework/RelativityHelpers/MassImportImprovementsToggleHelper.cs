@@ -11,11 +11,12 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 	public static class MassImportImprovementsToggleHelper
 	{
-		public static void SkipTestIfMassImportImprovementsToggleOff(IntegrationTestParameters parameters)
+		public static void SkipTestIfMassImportImprovementsToggleHasValue(IntegrationTestParameters parameters, bool isEnabled)
 		{
-			if (!GetMassImportImprovementsToggle(parameters))
+			if (GetMassImportImprovementsToggle(parameters) == isEnabled)
 			{
-				Assert.Ignore(TestStrings.SkipTestMessage, $"MassImportImprovementToggle Off");
+				string toggleValue = isEnabled ? "enabled" : "disabled";
+				Assert.Ignore(TestStrings.SkipTestMessage, $"MassImportImprovementToggle is {toggleValue}");
 			}
 		}
 
