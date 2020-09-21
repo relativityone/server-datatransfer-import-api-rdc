@@ -30,8 +30,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 	[Explicit("These tests don't work on Trident, because they are executed there in a non-interactive process.")]
 	public class IntegratedAuthenticationTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
-		private const int _WAIT_TIME_FOR_INSTANCE_SETTING_CHANGE_IN_MS = 30 * 1000;
-
 		/// <summary>
 		/// it's 30s for cache invalidation and 40s for tests execution.
 		/// in negative case we need to wait 30s for implicit flow timeout, 10s is for other calls.
@@ -97,19 +95,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Authentication
 
 		private static async Task ChangeStateOfIntegratedAuthentication(bool isEnabled)
 		{
-			const string section = "Relativity.Authentication";
-			const string setting = "UseWindowsAuthentication";
+			const string Section = "Relativity.Authentication";
+			const string Setting = "UseWindowsAuthentication";
 			string newValue = isEnabled.ToString();
 
-			bool wasChanged = await InstanceSettingsHelper
-								  .ChangeInstanceSetting(AssemblySetup.TestParameters, section, setting, newValue)
-								  .ConfigureAwait(false);
-
-			if (wasChanged)
-			{
-				await Task.Delay(TimeSpan.FromMilliseconds(_WAIT_TIME_FOR_INSTANCE_SETTING_CHANGE_IN_MS))
-					.ConfigureAwait(false);
-			}
+			await InstanceSettingsHelper.ChangeInstanceSettingAndWait(AssemblySetup.TestParameters, Section, Setting, newValue)
+				.ConfigureAwait(false);
 		}
 	}
 }

@@ -56,8 +56,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				this.newPassword = "Test1234!";
 				this.userId = await UsersHelper.CreateNewUserAsync(
 								  this.TestParameters,
-								  "ImportAPI",
-								  lastName,
+								  this.newUsername,
 								  this.newPassword,
 								  new List<int> { EveryoneGroupId }).ConfigureAwait(false);
 
