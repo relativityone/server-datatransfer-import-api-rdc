@@ -101,8 +101,8 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		[Test]
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
-		[IgnoreIfVersionLowerThan(RelativityVersion.Mayapple)]
 		[IgnoreIfMassImportImprovementsToggleHasValue(isEnabled: true)]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Mayapple)]
 		public void ShouldReportFatalExceptionWithMeaningfulErrorWhenImportingDuplicatedMultiObjectFieldsSinceMayappleForToggleOff()
 		{
 			// Arrange & Act
@@ -116,8 +116,8 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		[Test]
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
-		[IgnoreIfVersionLowerThan(RelativityVersion.Mayapple)]
 		[IgnoreIfMassImportImprovementsToggleHasValue(isEnabled: false)]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Mayapple)]
 		public void ShouldReportItemLevelErrorWhenImportingDuplicatedMultiObjectFieldsSinceMayappleForToggleOn()
 		{
 			// Arrange & Act

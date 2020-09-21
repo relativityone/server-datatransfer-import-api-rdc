@@ -11,6 +11,11 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 
+	/// <summary>
+	/// This attribute throws an exception when tests are executed on a hopper with Relativity Lanceleaf.
+	/// Therefore, for the tests which we are executing on hoppers, we should always define that attribute
+	/// before IgnoreIfVersionLowerThan or IgnoreIfVersionGreaterOrEqual attributes on the attributes list.
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false)]
 	public sealed class IgnoreIfMassImportImprovementsToggleHasValueAttribute : Attribute, ITestAction
 	{

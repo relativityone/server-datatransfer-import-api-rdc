@@ -288,8 +288,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		}
 
 		[Category(TestCategories.Integration)]
-		[IgnoreIfVersionLowerThan(RelativityVersion.Mayapple)]
 		[IgnoreIfMassImportImprovementsToggleHasValue(isEnabled: false)]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Mayapple)]
 		[IdentifiedTest("2FD966EA-FC20-4D2F-B86D-4EF692DC07E2")]
 		public void ShouldPreventReferencesToDuplicateAssociateMultiObjects()
 		{
