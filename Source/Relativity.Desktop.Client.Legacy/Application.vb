@@ -342,7 +342,7 @@ Namespace Relativity.Desktop.Client
 		Private Function IdentifierFieldIsMappedButNotKey(ByVal fieldMap As kCura.WinEDDS.LoadFileFieldMap, ByVal keyFieldID As Int32) As Boolean
 			Dim idField As DocumentField = Nothing
 			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In fieldMap
-				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 And item.DocumentField.FieldCategory = FieldCategory.Identifier Then
+				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 AndAlso item.DocumentField.FieldCategory = FieldCategory.Identifier Then
 					idField = item.DocumentField
 					Exit For
 				End If
