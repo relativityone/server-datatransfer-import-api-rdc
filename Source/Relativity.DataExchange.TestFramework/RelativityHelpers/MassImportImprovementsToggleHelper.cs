@@ -11,11 +11,12 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 	public static class MassImportImprovementsToggleHelper
 	{
-		public static void SkipTestIfMassImportImprovementsToggleOff(IntegrationTestParameters parameters)
+		public static void SkipTestIfMassImportImprovementsToggleHasValue(IntegrationTestParameters parameters, bool isEnabled)
 		{
-			if (!GetMassImportImprovementsToggle(parameters))
+			if (GetMassImportImprovementsToggle(parameters) == isEnabled)
 			{
-				Assert.Ignore(TestStrings.SkipTestMessage, $"MassImportImprovementToggle Off");
+				string toggleValue = isEnabled ? "enabled" : "disabled";
+				Assert.Ignore(TestStrings.SkipTestMessage, $"MassImportImprovementToggle is {toggleValue}");
 			}
 		}
 
@@ -39,12 +40,17 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				// Tests are executed on default value set in another repository, so no possibility to check it from this code
 
 				// Workaround to enable checking toggle value to decide if specified test(details in REL-462958) should be executed or not
-				if (!RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersions.RelativityVersion.Mayapple))
+				if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersions.RelativityVersion.Lanceleaf))
 				{
-					massImportToggle = true;
+					massImportToggle = false; // toggle was disabled before Lanceleaf release
+				}
+				else if (!RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersions.RelativityVersion.Mayapple))
+				{
+					massImportToggle = true; // toggle is enabled since Mayapple release
 				}
 				else
 				{
+					// for Lanceleaf release, we have been changing value of an toggle many times, so it is hard to determine its value.
 					throw new NotImplementedException($"Default Mass Import Improvements Toggle value not implemented in tests against Relativity version "
 					                                  + $"{RelativityVersions.RelativityVersionChecker.GetCurrentRelativityVersion(parameters)}");
 				}
