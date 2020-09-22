@@ -10,7 +10,7 @@ properties([
 	parameters([
 		choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
 		choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-		choice(defaultValue: 'aio-mayapple-eau', choices: ["lanceleafAA1","aio-mayapple-eau"], description: 'The template used to prepare hopper instance', name: 'hopperTemplate'),
+		string(defaultValue: 'aio-mayapple-eau', description: 'The template used to prepare hopper instance', name: 'hopperTemplate'),
 		string(defaultValue: 'develop', description: 'Name of folder in bld-pkgs Packages Relativity', name: 'relativityInstallerSource'),
 	]),
 	pipelineTriggers([cron(cronString)])
