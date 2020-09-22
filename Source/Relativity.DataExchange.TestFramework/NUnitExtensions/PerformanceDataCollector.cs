@@ -64,7 +64,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 			this.numberOfImagesPerDocument = imagesPerDocument;
 			this.maxNumberOfMultiValues = maximumNumberOfMultiValues;
 			this.tapiClient = tapiClientName;
-			this.massImportImprovementsToggle = MassImportImprovementsToggleChecker.GetMassImportToggleValueFromDatabase(parameters);
+			this.massImportImprovementsToggle = MassImportImprovementsToggleChecker.GetMassImportImprovementsToggle(parameters);
 		}
 
 		public void StorePerformanceResults()

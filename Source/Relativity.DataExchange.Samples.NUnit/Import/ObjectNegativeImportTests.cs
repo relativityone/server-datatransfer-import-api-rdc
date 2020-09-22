@@ -102,8 +102,26 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(RelativityVersion.Mayapple)]
-		public void ShouldReportItemLevelErrorWhenImportingDuplicatedMultiObjectFieldsSinceMayapple()
+		public void ShouldReportFatalExceptionWithMeaningfulErrorWhenImportingDuplicatedMultiObjectFieldsSinceMayappleForToggleOff()
 		{
+			MassImportImprovementsToggleChecker.SkipTestIfMassImportImprovementToggleOn(this.TestParameters);
+
+			// Arrange & Act
+			this.ImportDuplicatedMultiObjectFields();
+
+			// Assert
+			const string ExpectedExceptionMessage = "Failed to create the associated multi-object artifact";
+			this.AssertFatalExceptionOccuredDuringImport(ExpectedExceptionMessage);
+		}
+
+		[Test]
+		[Category(TestCategories.ImportObject)]
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Mayapple)]
+		public void ShouldReportItemLevelErrorWhenImportingDuplicatedMultiObjectFieldsSinceMayappleForToggleOn()
+		{
+			MassImportImprovementsToggleChecker.SkipTestIfMassImportImprovementToggleOff(this.TestParameters);
+
 			// Arrange & Act
 			string identifierValue = this.ImportDuplicatedMultiObjectFields();
 

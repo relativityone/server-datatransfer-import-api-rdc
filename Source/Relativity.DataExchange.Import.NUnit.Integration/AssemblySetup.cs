@@ -38,7 +38,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[OneTimeTearDown]
 		public static void TearDown()
 		{
-			var massImportImprovementsToggle = MassImportImprovementsToggleChecker.GetMassImportToggleValueFromDatabase(TestParameters);
+			var massImportImprovementsToggle = MassImportImprovementsToggleChecker.GetMassImportImprovementsToggle(TestParameters);
 			_sqlComparerInputCollector.SaveComparerInput(TestParameters.SqlComparerOutputPath, massImportImprovementsToggle);
 			DestroyTestContext();
 		}
