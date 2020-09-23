@@ -86,6 +86,7 @@ properties {
 	$SqlProfiling = $Null
 	$SqlDataComparer = $Null
 	$TestOnWorkspaceWithNonDefaultCollation = $Null
+	$ReleasedVersionName = $Null
 }
 
 $code = @"
@@ -471,8 +472,7 @@ task CodeCoverageReport -Description "Create a code coverage report" {
         Write-Output "Searching for code coverage test assemblies..."
 
         ### 0. Get tests list to execute
-        $UnitTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.dll -Exclude *Desktop*.dll,*TestFramework*.dll,*Samples.NUnit.dll |
-					 Where-Object { $_.FullName -Match "\\*NUnit\\bin" }
+        $UnitTests = GetUnitTestsAssemblies
         $IntegrationTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.Integration.dll,*Samples.NUnit.dll -Exclude *Desktop*.dll,*TestFramework*.dll |
 							Where-Object { $_.FullName -Match "\\*NUnit.Integration\\bin" -Or $_.FullName -Match "\\*Samples.NUnit\\bin"}
         
@@ -850,15 +850,16 @@ task UnitTests -Description "Run all unit tests" {
     folders\Initialize-Folder $TestReportsDir -Safe
     folders\Initialize-Folder $UnitTestsReportDir
 
-    $testCategoryFilter = "--where=`"cat!=Integration`""
+	$UnitTests = GetUnitTestsAssemblies
+					 
     testing\Invoke-SetTestParameters -SkipIntegrationTests $true -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
-    exec { & $NunitExe $MasterSolution `
+    
+	exec { & $NunitExe $UnitTests `
             "--labels=All" `
             "--agents=$NumberOfProcessors" `
             "--skipnontestassemblies" `
             "--timeout=$TestTimeoutInMS" `
-            "--result=$UnitTestsResultXmlFile" `
-            $testCategoryFilter | Tee-Object -file $UnitTestsOutputFile
+            "--result=$UnitTestsResultXmlFile" ` | Tee-Object -file $UnitTestsOutputFile
     } -errorMessage "There was an error running the unit tests."
 }
 
@@ -1082,6 +1083,46 @@ task CheckSqlComparerToolResults -Description "Parse all results from SqlCompare
 	Write-Output "sqlComparerTestsResultFailed=$failed"
 }
 
+task GetRelativityBranchesForTests -Description "Get names of release branches for specified version" {
+
+	[string]$branchesForTests = ''
+	
+	Write-Output "GetRelativityBranchesForTests for version '$ReleasedVersionName'"
+	
+	if($ReleasedVersionName)
+	{
+		[string]$installersFolder = "\\bld-pkgs\Packages\Relativity\"
+		
+		# Main version for tests
+		$folders = Get-ChildItem -LiteralPath $installersFolder -Directory -Filter "*$ReleasedVersionName*" | Where-Object {$_.Name -match "release-[0-9]{2}.[0-9]{1}-$ReleasedVersionName\z" }
+		if($folders)
+		{
+			$branchesForTests = $folders.Name
+		}
+		else
+		{
+			Write-Error "Relativity branch 'release-xx.x-$ReleasedVersionName' not found in '\\bld-pkgs\Packages\Relativity\'"
+		}
+		
+		# Additional version for tests
+		$folders = Get-ChildItem -LiteralPath $installersFolder -Directory -Filter "*$ReleasedVersionName*" | Sort-Object -Property {[string]$_.Name} -Descending | Where-Object {$_.Name -match "release-[0-9]{2}.[0-9]{1}-$ReleasedVersionName-[0-9]{1}" }
+		
+		if($folders)
+		{
+			$selectedFolder = $folders.Item(0).Name
+			Write-Output "Relativity branch found: '$selectedFolder'"
+			$branchesForTests += ",$selectedFolder"
+		}
+	}
+	else
+	{
+		Write-Error "GetRelativityBranchesForTests: no relativity version specified"
+	}
+	
+	# So Jenkins can get the results
+	Write-Output "relativityBranchesForTests=$branchesForTests"
+}
+
 Function Invoke-IntegrationTests {
     param(
         [String] $TestCategoryFilter
@@ -1216,4 +1257,11 @@ Function ExecuteSqlCommand{
 	}
 
 	Invoke-Sqlcmd -ServerInstance $sqlserveraddress -Database $SQLDatabaseName -Username $SQLUserName -Password $SQLPassword -Query $SQLCommand
+}
+
+Function GetUnitTestsAssemblies{
+	$UnitTests = Get-ChildItem -Path $SourceDir -Recurse -Include *Relativity*NUnit.dll -Exclude *Desktop*.dll,*TestFramework*.dll,*Samples.NUnit.dll |
+					 Where-Object { $_.FullName -Match "\\*NUnit\\bin" }
+					 
+	return $UnitTests
 }

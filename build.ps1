@@ -73,6 +73,10 @@ Skips building the solution, setup the integration test parameters using the Hop
 .\build.ps1 RunSqlComparerTool
 Skips building the solution, run Sql Comparer Tool for previous prepared comparer input
 
+.EXAMPLE
+.\build.ps1 GetRelativityBranchesForTests -ReleasedVersionName "lanceleaf"
+Get names of folders with Relativity installers in location '\\bld-pkgs\Packages\Relativity\' for release branches in specified version.
+
 .PARAMETER Target
 The target to build (e.g. Build, Rebuild).
 
@@ -124,20 +128,24 @@ The optional parameter that forces publishing the RDC package.
 .PARAMETER Simulate
 The optional parameter that simulates executing a command. This is generally reserved for debug purposes.
 
-.EXAMPLE MassImportImprovementsToggle
+.PARAMETER MassImportImprovementsToggle
 The optional parameter used to execute LoadTests for two MassImportImprovementsToggle values.
 
-.EXAMPLE EnableDataGrid
+.PARAMETER EnableDataGrid
 The optional parameter used to execute tests for two enabled or disabled DataGrid.
 
-.EXAMPLE SqlProfiling
+.PARAMETER SqlProfiling
 The optional parameter used to execute tests with sql profiling turned on.
 
-.EXAMPLE SqlDataComparer
+.PARAMETER SqlDataComparer
 The optional parameter used to execute tests with sql data comparer tool on.
 
-.EXAMPLE TestOnWorkspaceWithNonDefaultCollation
+.PARAMETER TestOnWorkspaceWithNonDefaultCollation
 The optional parameter used to execute tests on workspace created from template with non default collation.
+
+.PARAMETER ReleasedVersionName
+The optional parameter used in Release branches pipeline to decide which Relativity versions should be tested.
+
 #>
 
 #Requires -Version 5.0
@@ -201,7 +209,9 @@ param(
 	[Parameter()]
     [Switch]$SqlDataComparer,
 	[Parameter()]
-	[Switch]$TestOnWorkspaceWithNonDefaultCollation
+	[Switch]$TestOnWorkspaceWithNonDefaultCollation,
+	[Parameter()]
+	[String]$ReleasedVersionName
 )
 
 $BaseDir = $PSScriptRoot
@@ -284,6 +294,7 @@ $Params = @{
 		SqlProfiling = $SqlProfiling
 		SqlDataComparer = $SqlDataComparer
 		TestOnWorkspaceWithNonDefaultCollation = $TestOnWorkspaceWithNonDefaultCollation
+		ReleasedVersionName = $ReleasedVersionName
     }
 
     Verbose = $VerbosePreference
