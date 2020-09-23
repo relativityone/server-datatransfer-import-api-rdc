@@ -999,6 +999,12 @@ task CreateTemplateTestParametersFileForLoadTests -Description "Create template 
     Copy-Item $pathToTemplateFile $TestParametersFile
 }
 
+task UpdatePackages -Description "Updates the packages and disables the analyzers when debugging correctly" {
+    Write-Host "Updating packages and setting DisableAnalyzers"
+    exec { & $Root\.paket\paket.exe install } -errorMessage "updating paket.exe did not succeed."
+	exec { & $Root\buildtools\DisableAnalyzersForDebug.ps1 } -errorMessage "There was a problem with disabling the analyzers in debug mode."
+}
+
 task RunSqlComparerTool -Description "Run SQL Comparer Tool for previous prepared input" {
 
 	exec {
