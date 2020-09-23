@@ -70,7 +70,7 @@ timestamps
 						globalVmInfo = tools.createHopperInstance(hopperTemplate, relativityInstallerSource)
 						
 						try
-						{        
+						{
 							try
 							{
 								stage("Run tests for SqlComparer tool")
@@ -78,58 +78,67 @@ timestamps
 									echo "Replacing variables"
 									replaceTestVariables(globalVmInfo.Url, false, false, true)
 									
-									runTestsForSqlComparerTool(globalVmInfo.Url)
+									try
+									{
+										echo "Run tests for SqlComparer tool" 
+										runTestsForSqlComparerTool(globalVmInfo.Url)
+									}
+									finally
+									{
+										echo "Get SqlComparer results"
+										checkSqlComparerToolResults()
+											
+										if(sqlComparerTestsResultFailed > 0)
+										{
+											echo "SqlComparer detected one or more non identical databases"
+											currentBuild.result = 'FAILED'
+											summaryMessage = "Compare databases using SQL Comparer Tool finished with errors"
+											throw new Exception("Compare databases using SQL Comparer Tool finished with errors")
+										}
+									}
 								}
 							}
 							finally
 							{
 								try
 								{
-									echo "Get SqlComparer results"
-									checkSqlComparerToolResults()
+									stage('Workspace with non default collation MassImportImprovementsToggle On and DataGrid disabled')
+									{
+										runIntegrationTests(globalVmInfo.Url, true, false, true)
+									}
 								}
 								finally
 								{
 									try
 									{
-										stage('Workspace with non default collation MassImportImprovementsToggle On and DataGrid disabled')
+										stage('MassImportImprovementsToggle On and DataGrid enabled')
 										{
-											runIntegrationTests(globalVmInfo.Url, true, false, true)
+											runIntegrationTests(globalVmInfo.Url, true, true, false)
 										}
 									}
 									finally
 									{
 										try
 										{
-											stage('MassImportImprovementsToggle On and DataGrid enabled')
+											stage('MassImportImprovementsToggle On and DataGrid disabled')
 											{
-												runIntegrationTests(globalVmInfo.Url, true, true, false)
+												runIntegrationTests(globalVmInfo.Url, true, false, false)
 											}
 										}
 										finally
 										{
-											try
+											try 
 											{
-												stage('MassImportImprovementsToggle On and DataGrid disabled')
+												stage('MassImportImprovementsToggle Off and DataGrid enabled')
 												{
-													runIntegrationTests(globalVmInfo.Url, true, false, false)
+													runIntegrationTests(globalVmInfo.Url, false, true, false)
 												}
 											}
 											finally
 											{
-												try 
+												stage('MassImportImprovementsToggle Off and DataGrid disabled')
 												{
-													stage('MassImportImprovementsToggle Off and DataGrid enabled')
-													{
-														runIntegrationTests(globalVmInfo.Url, false, true, false)
-													}
-												}
-												finally
-												{
-													stage('MassImportImprovementsToggle Off and DataGrid disabled')
-													{
-														runIntegrationTests(globalVmInfo.Url, false, false, false)
-													}
+													runIntegrationTests(globalVmInfo.Url, false, false, false)
 												}
 											}
 										}
@@ -158,14 +167,6 @@ timestamps
 								echo "Failed tests count bigger than 0"
 								currentBuild.result = 'FAILED'
 								throw new Exception("One or more tests failed")
-							}
-							
-							if(sqlComparerTestsResultFailed > 0)
-							{
-								echo "One or more test for SqlComparer failed"
-								currentBuild.result = 'FAILED'
-								summaryMessage = "Compare databases using SQL Comparer Tool finished with errors"
-								numberOfErrors++
 							}
 						}
 					}

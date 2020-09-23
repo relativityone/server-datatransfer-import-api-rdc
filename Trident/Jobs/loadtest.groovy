@@ -79,34 +79,43 @@ timestamps
 									echo "Replacing variables"
 									replaceTestVariables(globalVmInfo.Url, true)
 									
-									runTestsForSqlComparerTool(globalVmInfo.Url)
+									try
+									{
+										echo "Run tests for SqlComparer tool" 
+										runTestsForSqlComparerTool(globalVmInfo.Url)
+									}
+									finally
+									{
+										echo "Get SqlComparer results"
+										checkSqlComparerToolResults()
+										
+										if(sqlComparerTestsResultFailed > 0)
+										{
+											echo "SqlComparer detected one or more non identical databases"
+											currentBuild.result = 'FAILED'
+											summaryMessage = "Compare databases using SQL Comparer Tool finished with errors"
+											throw new Exception("Compare databases using SQL Comparer Tool finished with errors")
+										}
+									}
 								}
 							}
 							finally
 							{	
 								try
 								{
-									echo "Get SqlComparer results"
-									checkSqlComparerToolResults()
+									stage("Run load tests for MassImportImprovementsToggle On")
+									{
+										echo "Replacing variables"
+										replaceTestVariables(globalVmInfo.Url, false)
+								
+										runLoadTests(globalVmInfo.Url, true)
+									}
 								}
 								finally
 								{
-									try
+									stage("Run load tests for MassImportImprovementsToggle Off")
 									{
-										stage("Run load tests for MassImportImprovementsToggle On")
-										{
-											echo "Replacing variables"
-											replaceTestVariables(globalVmInfo.Url, false)
-									
-											runLoadTests(globalVmInfo.Url, true)
-										}
-									}
-									finally
-									{
-										stage("Run load tests for MassImportImprovementsToggle Off")
-										{
-											runLoadTests(globalVmInfo.Url, false)
-										}
+										runLoadTests(globalVmInfo.Url, false)
 									}
 								}
 							}
@@ -141,14 +150,6 @@ timestamps
 								echo "Failed tests count bigger than 0"
 								currentBuild.result = 'FAILED'
 								throw new Exception("One or more tests failed")
-							}
-							
-							if(sqlComparerTestsResultFailed > 0)
-							{
-								echo "One or more test for SqlComparer failed"
-								currentBuild.result = 'FAILED'
-								summaryMessage = "Compare databases using SQL Comparer Tool finished with errors"
-								numberOfErrors++
 							}
 						}
 					}
