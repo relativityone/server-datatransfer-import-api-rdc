@@ -10,9 +10,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading.Tasks;
-
-	using kCura.Relativity.Client.DTOs;
-
 	using Newtonsoft.Json.Linq;
 
 	using Polly;
@@ -143,27 +140,37 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			IntegrationTestParameters parameters,
 			AuditAction action)
 		{
-			using (IObjectManager client = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
+			async Task<int> QueryArtifactId()
 			{
-				QueryRequest queryRequest = new QueryRequest
+				using (IObjectManager client = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
 				{
-					Condition = $"'{ArtifactTypeNames.ObjectType}' == 'Data Grid Audit' AND 'Name' == '{action.ToString()}'",
-					Fields = new List<FieldRef>(),
-					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Code },
-				};
-				QueryResult result = await client.QueryAsync(
-										 parameters.WorkspaceId,
-										 queryRequest,
-										 1,
-										 ServiceHelper.MaxItemsToFetch).ConfigureAwait(false);
-				if (result.TotalCount != 1)
-				{
-					throw new InvalidOperationException(
-						$"Failed to retrieve artifact ID for {action.ToString()} audit action. Expected single artifact but {result.TotalCount} were found.");
-				}
+					QueryRequest queryRequest = new QueryRequest
+					{
+						Condition = $"'Name' == '{action.ToString()}'",
+						Fields = new List<FieldRef>(),
+						ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Code },
+					};
+					QueryResult result = await client.QueryAsync(
+											 parameters.WorkspaceId,
+											 queryRequest,
+											 1,
+											 ServiceHelper.MaxItemsToFetch).ConfigureAwait(false);
+					if (result.TotalCount != 1)
+					{
+						throw new InvalidOperationException(
+							$"Failed to retrieve artifact ID for {action.ToString()} audit action. Expected single artifact but {result.TotalCount} were found.");
+					}
 
-				return result.Objects[0].ArtifactID;
+					return result.Objects[0].ArtifactID;
+				}
 			}
+
+			const int RetryAttempts = 3;
+			const int WaitTimeInSeconds = 3;
+			return await Policy.Handle<InvalidOperationException>().WaitAndRetryAsync(
+							RetryAttempts,
+							retry => TimeSpan.FromSeconds(WaitTimeInSeconds)).ExecuteAsync(QueryArtifactId)
+						.ConfigureAwait(false);
 		}
 
 		private static string ToAuditTimeFormat(this DateTime dt)
