@@ -10,6 +10,10 @@ This script is responsible for all build processes.
 Build the solution.
 
 .EXAMPLE
+.\build.ps1 UpdatePackages
+Updates the packages and disables the analyzers when debugging correctly.
+
+.EXAMPLE
 .\build.ps1 BuildVersion  -Branch '${env.BRANCH_NAME}'
 Does not build, returns version name for the branch name
 
