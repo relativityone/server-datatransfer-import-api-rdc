@@ -1975,8 +1975,6 @@ Namespace Relativity.Desktop.Client
 					End If
 				Next
 			End If
-
-			Await InitializeDocumentSpecificComponents()
 		End Function
 
 		Private Async Function EnsureConnection() As Task(Of Boolean)
