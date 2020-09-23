@@ -55,7 +55,7 @@ namespace Relativity.DataExchange.NUnit.Logger
 			string directory = Directory.GetParent(Assembly.GetCallingAssembly().Location).FullName;
 			string logConfigFilePath = Path.Combine(directory, "Logger", "LogConfig.xml");
 			string defaultLogConfigFilePath = Path.Combine(directory, "LogConfig.xml");
-			File.Move(logConfigFilePath, defaultLogConfigFilePath);
+			File.Copy(logConfigFilePath, defaultLogConfigFilePath);
 
 			var secureLogFactory = new RdcSecureLogFactory();
 

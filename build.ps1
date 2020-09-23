@@ -65,6 +65,10 @@ Skips building the solution, set MassImportImprovementsToggle value and execute 
 .\build.ps1 CodeCoverageReport -TestEnvironment "Hopper"
 Skips building the solution, setup the integration test parameters using the Hopper test environment, executes a code coverage report, and creates the code coverage report within the ".\Reports" sub-folder.
 
+.EXAMPLE
+.\build.ps1 GetRelativityBranchesForTests -ReleasedVersionName "lanceleaf"
+Get names of folders with Relativity installers in location '\\bld-pkgs\Packages\Relativity\' for release branches in specified version.
+
 .PARAMETER Target
 The target to build (e.g. Build, Rebuild).
 
@@ -116,12 +120,14 @@ The optional parameter that forces publishing the RDC package.
 .PARAMETER Simulate
 The optional parameter that simulates executing a command. This is generally reserved for debug purposes.
 
-.EXAMPLE MassImportImprovementsToggle
+.PARAMETER MassImportImprovementsToggle
 The optional parameter used to execute LoadTests for two MassImportImprovementsToggle values.
 
-.EXAMPLE EnableDataGrid
+.PARAMETER EnableDataGrid
 The optional parameter used to execute tests for two enabled or disabled DataGrid.
 
+.PARAMETER ReleasedVersionName
+The optional parameter used in Release branches pipeline to decide which Relativity versions should be tested.
 #>
 
 #Requires -Version 5.0
@@ -179,7 +185,9 @@ param(
 	[Parameter()]
     [Switch]$MassImportImprovementsToggle,
 	[Parameter()]
-    [Switch]$EnableDataGrid
+    [Switch]$EnableDataGrid,
+	[Parameter()]
+	[String]$ReleasedVersionName
 )
 
 $BaseDir = $PSScriptRoot
@@ -259,6 +267,7 @@ $Params = @{
 		ProgetApiKey = $ProgetApiKey
 		MassImportImprovementsToggle = $MassImportImprovementsToggle
 		EnableDataGrid = $EnableDataGrid
+		ReleasedVersionName = $ReleasedVersionName
     }
 
     Verbose = $VerbosePreference
