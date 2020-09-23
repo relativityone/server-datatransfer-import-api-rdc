@@ -29,17 +29,25 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		}
 
 		[OneTimeSetUp]
-		public static Task SetupAsync()
+		public static async Task SetupAsync()
 		{
-			_sqlComparerInputCollector.Initialize();
-			return CreateTestContext();
+			await CreateTestContext().ConfigureAwait(false);
+
+			if (TestParameters.SqlComparerEnabled)
+			{
+				_sqlComparerInputCollector.Initialize();
+			}
 		}
 
 		[OneTimeTearDown]
 		public static void TearDown()
 		{
-			var massImportImprovementsToggle = MassImportImprovementsToggleChecker.GetMassImportImprovementsToggle(TestParameters);
-			_sqlComparerInputCollector.SaveComparerInput(TestParameters.SqlComparerOutputPath, massImportImprovementsToggle);
+			if (TestParameters.SqlComparerEnabled)
+			{
+				var massImportImprovementsToggle = MassImportImprovementsToggleChecker.GetMassImportImprovementsToggle(TestParameters);
+				_sqlComparerInputCollector.SaveComparerInput(TestParameters.SqlComparerOutputPath, massImportImprovementsToggle);
+			}
+
 			DestroyTestContext();
 		}
 
