@@ -10,9 +10,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading.Tasks;
-
-	using kCura.Relativity.Client.DTOs;
-
 	using Newtonsoft.Json.Linq;
 
 	using Polly;
@@ -44,10 +41,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		public static async Task<Dictionary<string, string>> GetLastAuditDetailsForActionAsync(
 			IntegrationTestParameters parameters,
 			AuditAction action,
-			DateTime actionExecutionTime)
+			DateTime actionExecutionTime,
+			int userId)
 		{
 			RelativityObject auditObject =
-				await GetLastAuditObjectForActionAsync(parameters, action, actionExecutionTime).ConfigureAwait(false);
+				await GetLastAuditObjectForActionAsync(parameters, action, actionExecutionTime, userId).ConfigureAwait(false);
 			string detailsJson = (string)auditObject.FieldValues.FirstOrDefault(x => x.Field.Name == DetailsFieldName)?.Value;
 
 			return ToDictionary(detailsJson);
@@ -56,7 +54,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		private static async Task<RelativityObject> GetLastAuditObjectForActionAsync(
 			IntegrationTestParameters parameters,
 			AuditAction action,
-			DateTime actionExecutionTime)
+			DateTime actionExecutionTime,
+			int userId)
 		{
 			int auditActionArtifactId = await GetAuditActionArtifactIdAsync(parameters, action).ConfigureAwait(false);
 
@@ -66,7 +65,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					{
 						new FieldRef { Name = DetailsFieldName },
 					},
-				Condition = $"(('Action' == CHOICE {auditActionArtifactId})) AND (('{TimestampFieldName}' >= {actionExecutionTime.ToAuditTimeFormat()}))",
+				Condition = $"(('Action' == CHOICE {auditActionArtifactId})) AND (('{TimestampFieldName}' >= {actionExecutionTime.ToAuditTimeFormat()})) AND (('UserID' == {userId}))",
 				RowCondition = string.Empty,
 				Sorts = new List<Sort>
 					{
@@ -100,7 +99,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					if (result.TotalCount == 0)
 					{
 						throw new InvalidOperationException(
-							$"Failed to retrieve audit object for {action.ToString()} audit action");
+							$"Failed to retrieve audit object for {action.ToString()} audit action performed by user with ID: {userId}");
 					}
 
 					return result.Objects[0];
@@ -111,7 +110,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			const int WaitTimeInSeconds = 10;
 			return await Policy.Handle<InvalidOperationException>().WaitAndRetryAsync(
 						   RetryAttempts,
-						   retry => TimeSpan.FromSeconds(WaitTimeInSeconds)).ExecuteAsync(QueryAuditAsync)
+						   retry => TimeSpan.FromSeconds(retry * WaitTimeInSeconds)).ExecuteAsync(QueryAuditAsync)
 					   .ConfigureAwait(false);
 		}
 
@@ -141,27 +140,37 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			IntegrationTestParameters parameters,
 			AuditAction action)
 		{
-			using (IObjectManager client = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
+			async Task<int> QueryArtifactId()
 			{
-				QueryRequest queryRequest = new QueryRequest
+				using (IObjectManager client = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
 				{
-					Condition = $"'{ArtifactTypeNames.ObjectType}' == 'Data Grid Audit' AND 'Name' == '{action.ToString()}'",
-					Fields = new List<FieldRef>(),
-					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Code },
-				};
-				QueryResult result = await client.QueryAsync(
-										 parameters.WorkspaceId,
-										 queryRequest,
-										 1,
-										 ServiceHelper.MaxItemsToFetch).ConfigureAwait(false);
-				if (result.TotalCount != 1)
-				{
-					throw new InvalidOperationException(
-						$"Failed to retrieve artifact ID for {action.ToString()} audit action");
-				}
+					QueryRequest queryRequest = new QueryRequest
+					{
+						Condition = $"'Name' == '{action.ToString()}'",
+						Fields = new List<FieldRef>(),
+						ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Code },
+					};
+					QueryResult result = await client.QueryAsync(
+											 parameters.WorkspaceId,
+											 queryRequest,
+											 1,
+											 ServiceHelper.MaxItemsToFetch).ConfigureAwait(false);
+					if (result.TotalCount != 1)
+					{
+						throw new InvalidOperationException(
+							$"Failed to retrieve artifact ID for {action.ToString()} audit action. Expected single artifact but {result.TotalCount} were found.");
+					}
 
-				return result.Objects[0].ArtifactID;
+					return result.Objects[0].ArtifactID;
+				}
 			}
+
+			const int RetryAttempts = 3;
+			const int WaitTimeInSeconds = 3;
+			return await Policy.Handle<InvalidOperationException>().WaitAndRetryAsync(
+							RetryAttempts,
+							retry => TimeSpan.FromSeconds(WaitTimeInSeconds)).ExecuteAsync(QueryArtifactId)
+						.ConfigureAwait(false);
 		}
 
 		private static string ToAuditTimeFormat(this DateTime dt)

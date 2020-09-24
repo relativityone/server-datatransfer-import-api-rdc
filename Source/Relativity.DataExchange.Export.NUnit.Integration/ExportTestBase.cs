@@ -493,10 +493,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		/// Verifies audit for export operation.
 		/// This method might be expensive due to the wait and retry policy in <see cref="AuditHelper"/>.
 		/// </summary>
+		/// <param name="userId">ID of user who performed the export.</param>
 		/// <returns>Task.</returns>
-		protected async Task ThenTheAuditIsCorrectAsync()
+		protected async Task ThenTheAuditIsCorrectAsync(int userId)
 		{
-			var actualAuditDetails = await AuditHelper.GetLastAuditDetailsForActionAsync(this.TestParameters, AuditHelper.AuditAction.Export, this.testExecutionStartTime)
+			var actualAuditDetails = await AuditHelper.GetLastAuditDetailsForActionAsync(this.TestParameters, AuditHelper.AuditAction.Export, this.testExecutionStartTime, userId)
 				.ConfigureAwait(false);
 			var expectedAuditDetails = ToAuditDetails(this.ExtendedExportFile);
 

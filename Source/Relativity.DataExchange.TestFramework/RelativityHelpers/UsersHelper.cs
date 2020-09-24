@@ -9,7 +9,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
-	using System.Linq;
 	using System.Threading.Tasks;
 
 	using Newtonsoft.Json.Linq;
@@ -61,36 +60,15 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		public static async Task<int> EnsureUserAsync(IntegrationTestParameters parameters, string firstName, string lastName, string password, IEnumerable<int> groupArtifactIds)
-		{
-			UserRef[] users = await GetUserListAsync(parameters).ConfigureAwait(false);
-			string name = $"{lastName}, {firstName}";
-			UserRef user = users.FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-			if (user != null)
-			{
-				return user.ArtifactID;
-			}
-
-			return await CreateNewUserAsync(parameters, firstName, lastName, password, groupArtifactIds).ConfigureAwait(false);
-		}
-
-		public static async Task<UserRef[]> GetUserListAsync(IntegrationTestParameters parameters)
-		{
-			using (IUserManager userManager = ServiceHelper.GetServiceProxy<IUserManager>(parameters))
-			{
-				WorkspaceUserData user = await userManager.RetrieveAllActiveAsync(parameters.WorkspaceId).ConfigureAwait(false);
-				return user.ActiveUsers;
-			}
-		}
-
-		public static async Task<int> CreateNewUserAsync(IntegrationTestParameters parameters, string firstName, string lastName, string password, IEnumerable<int> groupArtifactIds)
+		public static async Task<int> CreateNewUserAsync(
+			IntegrationTestParameters parameters,
+			string username,
+			string password,
+			IEnumerable<int> groupArtifactIds)
 		{
 			string createInputJson = ResourceFileHelper.GetResourceFolderPath("CreateInput.json");
 			JObject request = JObject.Parse(File.ReadAllText(createInputJson));
-			request["First Name"] = firstName;
-			request["Last Name"] = lastName;
-			request["Email Address"] = $"{firstName}.{lastName}@relativity.com";
+			request["Email Address"] = username;
 			request["Password"] = password;
 
 			var groups = (JArray)request["Groups"];
@@ -107,7 +85,14 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			absoluteUri = absoluteUri.Substring(0, absoluteUri.IndexOf("/api", StringComparison.OrdinalIgnoreCase));
 			absoluteUri = $"{absoluteUri}/Relativity/User";
 
+			bool adminsCanSetPasswordsInstanceSettingWasChanged =
+				await ChangeAdminsCanSetPasswordsInstanceSettingAsync(parameters, true).ConfigureAwait(false);
 			string result = await HttpClientHelper.PostAsync(parameters, new Uri(absoluteUri), request.ToString()).ConfigureAwait(false);
+			if (adminsCanSetPasswordsInstanceSettingWasChanged)
+			{
+				await ChangeAdminsCanSetPasswordsInstanceSettingAsync(parameters, false).ConfigureAwait(false);
+			}
+
 			JObject resultObject = JObject.Parse(result);
 
 			return (int)resultObject["Results"][0]["ArtifactID"];
@@ -148,6 +133,17 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				$"{parameters.RelativityRestUrl.AbsoluteUri}/Relativity.REST/Relativity/User/{userId}";
 
 			await HttpClientHelper.DeleteAsync(parameters, new Uri(url)).ConfigureAwait(false);
+		}
+
+		private static async Task<bool> ChangeAdminsCanSetPasswordsInstanceSettingAsync(IntegrationTestParameters parameters, bool isEnabled)
+		{
+			const string Section = "Relativity.Authentication";
+			const string Setting = "AdminsCanSetPasswords";
+			string newValue = isEnabled.ToString();
+
+			return await InstanceSettingsHelper
+					   .ChangeInstanceSettingAndWait(parameters, Section, Setting, newValue)
+					   .ConfigureAwait(false);
 		}
 	}
 }

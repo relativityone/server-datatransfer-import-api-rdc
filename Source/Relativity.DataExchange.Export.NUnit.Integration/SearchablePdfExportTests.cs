@@ -6,14 +6,16 @@
 
 namespace Relativity.DataExchange.Export.NUnit.Integration
 {
+	using System;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
-	using System.Threading;
 	using System.Threading.Tasks;
 	using global::NUnit.Framework;
 	using kCura.WinEDDS;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.NUnitExtensions;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
@@ -44,7 +46,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			SetupDefaultExportFile(this.ExtendedExportFile);
 			this.ExtendedExportFile.ExportPdf = exportPdf;
 			this.ExtendedExportFile.VolumeInfo.CopyPdfFilesFromRepository = copyPdfFromRepository;
-			this.ExtendedExportFile.VolumeInfo.set_SubdirectoryPdfPrefix(false, RandomHelper.NextString(10, 15));
 
 			// ACT
 			this.ExecuteFolderAndSubfoldersAndVerify();
@@ -52,7 +53,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// ASSERT
 			ExportedFilesValidator.ValidateSearchablePdfsCount(this.ExtendedExportFile, TestData.SampleSearchablePdfTestFiles.Count());
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
-			await this.ThenTheAuditIsCorrectAsync().ConfigureAwait(false);
 		}
 
 		[Category(TestCategories.Integration)]
@@ -102,6 +102,26 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
 		}
 
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
+		[IdentifiedTest("48d687a6-0206-40f0-850b-681818192760")]
+		public async Task ShouldAuditExportOfSearchablePdfAsync()
+		{
+			// ARRANGE
+			int userId = await this.SetupNewUserAsync().ConfigureAwait(false);
+			SetupDefaultExportFile(this.ExtendedExportFile);
+			this.ExtendedExportFile.VolumeInfo.set_SubdirectoryPdfPrefix(false, RandomHelper.NextString(10, 15));
+
+			// ACT
+			this.ExecuteFolderAndSubfoldersAndVerify();
+
+			// ASSERT
+			ExportedFilesValidator.ValidateSearchablePdfsCount(this.ExtendedExportFile, TestData.SampleSearchablePdfTestFiles.Count());
+			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
+			await this.ThenTheAuditIsCorrectAsync(userId).ConfigureAwait(false);
+			await UsersHelper.RemoveUserAsync(this.TestParameters, userId).ConfigureAwait(false);
+		}
+
 		private static void SetupDefaultExportFile(ExportFile exportFile)
 		{
 			exportFile.TypeOfExport = ExportFile.ExportType.ParentSearch;
@@ -125,6 +145,19 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			exportFile.NewlineDelimiter = '@';
 			exportFile.QuoteDelimiter = 'þ';
 			exportFile.RecordDelimiter = '¶';
+		}
+
+		private async Task<int> SetupNewUserAsync()
+		{
+			string newUsername = $"ImportAPI.{Guid.NewGuid()}@relativity.com";
+			this.ExtendedExportFile.Credential = new NetworkCredential(newUsername, this.TestParameters.RelativityPassword);
+
+			const int SystemAdministratorsGroupId = 20;
+			return await UsersHelper.CreateNewUserAsync(
+							  this.TestParameters,
+							  newUsername,
+							  this.TestParameters.RelativityPassword,
+							  new[] { SystemAdministratorsGroupId }).ConfigureAwait(false);
 		}
 	}
 }
