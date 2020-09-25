@@ -11,6 +11,8 @@ namespace Relativity.DataExchange.NUnit.Integration
 
 	using global::NUnit.Framework;
 
+	using kCura.WinEDDS.Service;
+
 	using Moq;
 
 	using Relativity.DataExchange;
@@ -132,6 +134,17 @@ namespace Relativity.DataExchange.NUnit.Integration
 		/// </summary>
 		protected virtual void OnTeardown()
 		{
+		}
+
+		/// <summary>
+		/// Re-logging in Relativity WebAPI and Relativity.Distributed.
+		/// </summary>
+		protected void ReLogOn()
+		{
+			using (var userManager = new UserManager(this.RelativityInstance.Credentials, this.RelativityInstance.CookieContainer))
+			{
+				userManager.AttemptReLogin(retryOnFailure: true);
+			}
 		}
 
 		/// <summary>
