@@ -2,14 +2,16 @@ import groovy.json.JsonOutput
 library 'ProjectMayhem@v1'
 library 'SlackHelpers@5.2.0-Trident'
 
+def cronString = env.BRANCH_NAME == "Trident" ? "": "0 22 * * *"
+
 properties([
-    buildDiscarder(logRotator(artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30')),
-    parameters([
-        choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
-        choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-        string(defaultValue: 'aio-larkspur-3,aio-blazingstar-3,aio-foxglove-3,aio-goatsbeard-3,aio-indigo-2,aio-juniper-2,aio-lanceleaf-0,aio-mayapple-eau', description: 'Comma separated list of SUT templates', name: 'temlatesStr')
-    ]),
-    pipelineTriggers([cron("H 22 * * *")])
+	buildDiscarder(logRotator(artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30')),
+	parameters([
+		choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
+		choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
+		string(defaultValue: 'aio-larkspur-3,aio-blazingstar-3,aio-foxglove-3,aio-goatsbeard-3,aio-indigo-2,aio-juniper-2,aio-lanceleaf-0,aio-mayapple-eau', description: 'Comma separated list of SUT templates', name: 'temlatesStr')
+	]),
+	pipelineTriggers([cron(cronString)])
 ])
 
 testResultsPassed = 0
@@ -61,9 +63,9 @@ timestamps
 			{
 				timeout(time: 3, unit: 'HOURS')
 				{
-					stage("Run integration tests against ${sutTemplate}")
+					try
 					{
-						try
+						stage("Run integration tests against ${sutTemplate}")
 						{
 							echo "Getting hopper for ${sutTemplate}"
 							globalVmInfo = tools.createHopperInstance(sutTemplate, null)
@@ -72,14 +74,14 @@ timestamps
 							replaceTestVariables(sutTemplate, globalVmInfo.Url)
 							
 							try
-							{                        
+							{
 								echo "Running integration tests for ${sutTemplate}"
 								runIntegrationTests(sutTemplate)
 							}
 							finally
 							{ 
-                                echo "Get test results"
-                                GetTestResults(sutTemplate)
+								echo "Get test results"
+								GetTestResults(sutTemplate)
 								
 								echo "Test results report for ${sutTemplate}"
 								createTestReport(sutTemplate)
@@ -90,30 +92,30 @@ timestamps
 								echo "Publishing the integration tests report"
 								archiveArtifacts artifacts: "TestReports/${sutTemplate}/**/*.*"		
 
-                                def int numberOfFailedTests = testResultsFailedForsutTemplate
-                                if (numberOfFailedTests > 0)
-                                {
-                                    echo "Failed tests count for '${sutTemplate}' bigger than 0"
-                                    currentBuild.result = 'FAILED'
-                                    throw new Exception("One or more tests failed")
-                                }
+								def int numberOfFailedTests = testResultsFailedForsutTemplate
+								if (numberOfFailedTests > 0)
+								{
+									echo "Failed tests count for '${sutTemplate}' bigger than 0"
+									currentBuild.result = 'FAILED'
+									throw new Exception("One or more tests failed")
+								}
 							}
 						}
-						catch(err)
+					}
+					catch(err)
+					{
+						echo err.toString()
+						numberOfErrors++
+						echo "Number of errors: ${numberOfErrors}"
+						currentBuild.result = 'FAILED'
+						inCompatibleEnvironments = inCompatibleEnvironments + sutTemplate + " "
+					}
+					finally
+					{
+						if(globalVmInfo != null) 
 						{
-							echo err.toString()
-							numberOfErrors++
-							echo "Number of errors: ${numberOfErrors}"
-							currentBuild.result = 'FAILED'
-							inCompatibleEnvironments = inCompatibleEnvironments + sutTemplate + " "
-						}
-						finally
-						{
-							if(globalVmInfo != null) 
-							{
-								tools.deleteHopperInstance(globalVmInfo.Id)
-							}	
-						}
+							tools.deleteHopperInstance(globalVmInfo.Id)
+						}	
 					}
 				}
 			}
