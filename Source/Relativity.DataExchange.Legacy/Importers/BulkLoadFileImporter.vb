@@ -1102,38 +1102,38 @@ Namespace kCura.WinEDDS
 
 		Protected Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			If BatchSizeHistoryList.Count = 0 Then BatchSizeHistoryList.Add(ImportBatchSize)
-			Dim totalTries As Int32 = NumberOfRetries
-			Dim tries As Int32 = totalTries
-			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-			While tries > 0
-				Try
-					retval = BatchBulkImport(settings, includeExtractedTextEncoding)
-					Exit While
-				Catch ex As Exception
-					tries -= 1
-					If tries = 0 Then
-						Me.LogFatal(ex, "The native bulk import service call failed and exceeded the max retry attempts.")
-						Throw
-					ElseIf IsTimeoutException(ex) Then
-						' A timeout exception can be retried.
-						Me.LogError(ex, "A SQL or HTTP timeout error has occurred bulk importing the native batch.")
-						Throw
-					ElseIf Not ShouldImport Then
-						' Don't log cancel requests
-						Throw
-					ElseIf IsBulkImportSqlException(ex) Then
-						Me.LogFatal(ex, "A fatal SQL error has occurred bulk importing the native batch.")
-						Throw
-					ElseIf IsInsufficientPermissionsForImportException(ex) Then
-						Me.LogFatal(ex, "A fatal insufficient permissions error has occurred bulk importing the native batch.")
-						Throw
-					Else
-						Me.LogWarning(ex, "A serious error has occurred bulk importing the native batch. Retry info: {Count} of {TotalRetry}.", totalTries - tries, totalTries)
-						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts, totalTries - tries, totalTries)
-					End If
-				End Try
-			End While
-			Return retval
+
+			'Bulk Import retry logic removed
+			'Fix to REL-347352
+			'retry logic wasn't reworked due to REL-473460
+
+			Try
+				return  BatchBulkImport(settings, includeExtractedTextEncoding)
+			Catch ex As Exception
+
+				If ShouldImport Then
+					Dim errorMsg As String = GetBulkImportErrorMessage(ex)
+					LogFatal(ex, errorMsg)
+				End If
+
+				Throw
+			End Try
+		End Function
+
+		Private Function GetBulkImportErrorMessage(ByVal ex As Exception) As String
+			Dim errorMsg As String
+
+			If IsTimeoutException(ex) Then
+				errorMsg = "A SQL or HTTP timeout error has occurred bulk importing the native batch."
+			ElseIf IsBulkImportSqlException(ex) Then
+				errorMsg = "A fatal SQL error has occurred bulk importing the native batch."
+			ElseIf IsInsufficientPermissionsForImportException(ex) Then
+				errorMsg = "A fatal insufficient permissions error has occurred bulk importing the native batch."
+			Else
+				errorMsg = "A serious error has occurred bulk importing the native batch."
+			End If
+
+			Return errorMsg
 		End Function
 
 		Private Function BatchBulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
