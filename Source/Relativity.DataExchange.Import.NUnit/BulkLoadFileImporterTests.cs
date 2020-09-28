@@ -108,22 +108,6 @@ namespace Relativity.DataExchange.Import.NUnit
 		}
 
 		[Test]
-		public void ShouldRetrySystemExceptions()
-		{
-			this.MockBulkImportManager
-				.Setup(
-					x => x.BulkImportObjects(
-						It.IsAny<int>(),
-						It.IsAny<kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo>(),
-						It.IsAny<bool>())).Throws(new InvalidOperationException("bombed out"));
-			InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
-				() => this.importer.TryBulkImport(new kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo()));
-			Assert.That(exception.Message, Is.EqualTo("bombed out"));
-			Assert.That(this.importer.BatchSize, Is.EqualTo(500));
-			Assert.That(this.importer.PauseCalled, Is.EqualTo(2));
-		}
-
-		[Test]
 		public void ShouldEnsureTheBatchSizeIsLessThenTheMinimumBatchSize()
 		{
 			this.importer.MinimumBatch = 100;
