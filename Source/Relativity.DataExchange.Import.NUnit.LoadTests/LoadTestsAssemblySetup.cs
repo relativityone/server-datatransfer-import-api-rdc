@@ -6,26 +6,60 @@
 
 namespace Relativity.DataExchange.Import.NUnit.LoadTests
 {
+	using System.Linq;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Import.NUnit.Integration;
+	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1053:StaticHolderTypesShouldNotHaveConstructors", Justification = "It is a NUnit requirement that setup class is not static.")]
 	[SetUpFixture]
 	public class LoadTestsAssemblySetup
 	{
+		private readonly global::System.Collections.Generic.List<int> disabledAgentsArtifactIds = new global::System.Collections.Generic.List<int>();
+
 		[OneTimeSetUp]
-		public static Task SetupAsync()
+		public async Task SetupAsync()
 		{
-			return AssemblySetup.SetupAsync();
+			await this.DisableAuditAgents().ConfigureAwait(false);
+			await AssemblySetup.SetupAsync().ConfigureAwait(false);
 		}
 
 		[OneTimeTearDown]
-		public static void TearDown()
+		public async Task TearDownAsync()
 		{
+			await this.RestoreAgentsToOriginalStateAsync().ConfigureAwait(false);
 			AssemblySetup.TearDown();
+		}
+
+		private async Task DisableAuditAgents()
+		{
+			const string AuditAgentsType = "Data Grid Audit%";
+			int[] auditAgentsArtifactIds = await AgentHelper
+												.QueryAgentsArtifactIdsByAgentTypeAsync(
+													IntegrationTestHelper.IntegrationTestParameters,
+													AuditAgentsType).ConfigureAwait(false);
+
+			async Task DisableAgentAsync(int artifactId)
+			{
+				if (await AgentHelper.SetEnabledAsync(IntegrationTestHelper.IntegrationTestParameters, artifactId, false)
+						.ConfigureAwait(false))
+				{
+					this.disabledAgentsArtifactIds.Add(artifactId);
+				}
+			}
+
+			var disableAgentsTasks = auditAgentsArtifactIds.Select(DisableAgentAsync);
+			await Task.WhenAll(disableAgentsTasks).ConfigureAwait(false);
+		}
+
+		private async Task RestoreAgentsToOriginalStateAsync()
+		{
+			var enableAgentsTasks = this.disabledAgentsArtifactIds.Select(
+				id => AgentHelper.SetEnabledAsync(IntegrationTestHelper.IntegrationTestParameters, id, true));
+			await Task.WhenAll(enableAgentsTasks).ConfigureAwait(false);
 		}
 	}
 }
