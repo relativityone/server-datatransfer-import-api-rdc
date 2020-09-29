@@ -178,6 +178,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(results, NumberOfDocumentsToImport);
 			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(NumberOfDocumentsToImport));
+
+			this.ValidateFieldsAfterImport(
+				NumberOfDocumentsToImport,
+				(int)ArtifactType.Document,
+				new[] { WellKnownFields.ControlNumber, WellKnownFields.FolderName });
+
 			ThenTheJobCompletedInCorrectTransferMode(results, Client);
 		}
 
@@ -188,6 +194,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldAppendOverlayDocumentsAndMoveToNewFolders()
 		{
 			// ARRANGE
+			const string DestinationFolderName = "cc";
 			const TapiClient Client = TapiClient.Direct;
 			ForceClient(Client);
 			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, Client);
@@ -200,7 +207,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			int numberOfDocumentsToImport = TestData.SampleDocFiles.Count();
 			IEnumerable<FolderImportDto> importData =
-				TestData.SampleDocFiles.Select(p => new FolderImportDto(Path.GetFileName(p), @"\aaa \cc"));
+				TestData.SampleDocFiles.Select(p => new FolderImportDto(Path.GetFileName(p), @"\aaa \" + DestinationFolderName));
 
 			// ACT
 			ImportTestJobResult result = this.JobExecutionContext.Execute(importData);
@@ -209,6 +216,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobIsSuccessful(result, numberOfDocumentsToImport);
 			Assert.That(result.NumberOfJobMessages, Is.GreaterThan(0));
 			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(numberOfDocumentsToImport));
+
+			this.ValidateFieldsAfterImport(
+				numberOfDocumentsToImport,
+				(int)ArtifactType.Document,
+				new[] { WellKnownFields.ControlNumber, WellKnownFields.FolderName });
+
+			this.ValidateFilesWereMoved(DestinationFolderName, new[] { WellKnownFields.FolderName });
+
 			ThenTheJobCompletedInCorrectTransferMode(result, Client);
 		}
 
@@ -547,6 +562,24 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				SingleObjectFieldName,
 				singleObjectArtifactTypeId,
 				artifactTypeId).ConfigureAwait(false);
+		}
+
+		private void ValidateFieldsAfterImport(int numberOfDocumentsToImport, int artifactTypeId, string[] fieldsToValidate)
+		{
+			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, artifactTypeId, fieldsToValidate);
+
+			Assert.That(relativityObjects.Count, Is.EqualTo(numberOfDocumentsToImport));
+			ObjectsValidator.ThenObjectsFieldsAreImported(relativityObjects, fieldsToValidate);
+		}
+
+		private void ValidateFilesWereMoved(string expectedFolderName, string[] actualFolderNames)
+		{
+			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, (int)ArtifactType.Document, actualFolderNames);
+
+			foreach (RelativityObject relativityObject in relativityObjects)
+			{
+				Assert.AreEqual(expectedFolderName, relativityObject.FieldValues[0].Value.ToString(), "Files were not moved to an expected destination folder.");
+			}
 		}
 	}
 }
