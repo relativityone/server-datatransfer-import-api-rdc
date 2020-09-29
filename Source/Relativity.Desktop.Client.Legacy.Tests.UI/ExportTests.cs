@@ -47,8 +47,10 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 
 		[Test]
 		[IgnoreIfVersionLowerThan(RelativityVersion.MayappleExportPDFs)]
+		[IgnoreIfRegressionEnvironment("Ignored because test set up requires access to SQL to prepare pdfs to export.")]
 		public Task ExportRenderedPdfsAsync()
 		{
+			// Test requires 'UseSearchablePDF' flag set to True in RDC config file
 			_ = RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int) ArtifactType.Document);
 			ImportHelper.ImportDefaultTestData(TestParameters);
 			SetPdfTypeForDocumentsInWorkspace();

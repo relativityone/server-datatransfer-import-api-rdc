@@ -205,6 +205,11 @@ namespace Relativity.DataExchange.TestFramework
 			Logger = logger;
 		}
 
+		public static bool IsRegressionEnvironment()
+		{
+			return IntegrationTestParameters.RelativityUrl.ToString().Contains(".r1.");
+		}
+
 		private static string GetConfigurationStringValue(string key)
 		{
 			string envVariable = $"IAPI_INTEGRATION_{key.ToUpperInvariant()}";
