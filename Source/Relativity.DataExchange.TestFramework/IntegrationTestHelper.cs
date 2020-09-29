@@ -255,6 +255,11 @@ END";
 			}
 		}
 
+		public static bool IsRegressionEnvironment()
+		{
+			return IntegrationTestParameters.RelativityUrl.ToString().Contains(".r1.");
+		}
+
 		private static void DeleteTestWorkspace(IntegrationTestParameters parameters)
 		{
 			DeleteTestWorkspace(parameters, parameters.WorkspaceId);
