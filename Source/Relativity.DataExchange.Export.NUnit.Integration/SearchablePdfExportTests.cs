@@ -30,11 +30,15 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[OneTimeSetUp]
 		public void OneTimeSetup()
 		{
-			SearchablePdfTestHelper.SetupTestData(this.TestParameters);
+			if (!IntegrationTestHelper.IsRegressionEnvironment())
+			{
+				SearchablePdfTestHelper.SetupTestData(this.TestParameters);
+			}
 		}
 
 		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
+		[IgnoreIfRegressionEnvironment("Ignored because 'SetupTestData' requires access to SQL to prepare pdfs to export.")]
 		[IdentifiedTest("c1ea287a-44af-43fb-8a38-4956a5072de6")]
 		public async Task ShouldExportSearchablePdfAsync(
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client,
@@ -57,6 +61,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
+		[IgnoreIfRegressionEnvironment("Ignored because 'SetupTestData' requires access to SQL to prepare pdfs to export.")]
 		[IdentifiedTest("e5976b64-107b-4d23-bd37-b748526768d9")]
 		public async Task ShouldAddCorrectSubDirectoryPrefixWhenExportSearchablePdfAsync(
 			[Values(null, "test_prefix")] string subDirectoryPrefix)
@@ -77,6 +82,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
+		[IgnoreIfRegressionEnvironment("Ignored because 'SetupTestData' requires access to SQL to prepare pdfs to export.")]
 		[IdentifiedTest("baa7ad81-c688-43f3-bb1a-9f953fe5b6d6")]
 		public async Task ShouldDisplayWarningWhenInsufficientSubDirectoryPaddingAsync()
 		{
@@ -104,6 +110,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
+		[IgnoreIfRegressionEnvironment("Ignored because 'SetupTestData' requires access to SQL to prepare pdfs to export.")]
 		[IdentifiedTest("48d687a6-0206-40f0-850b-681818192760")]
 		public async Task ShouldAuditExportOfSearchablePdfAsync()
 		{
