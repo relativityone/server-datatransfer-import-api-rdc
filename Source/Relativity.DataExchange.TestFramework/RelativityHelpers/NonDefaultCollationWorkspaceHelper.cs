@@ -196,6 +196,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			scripter.Options.DriAllConstraints = true;
 
+			scripter.Options.Permissions = true;
+
 			return scripter;
 		}
 
@@ -212,14 +214,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				if (!schema.IsSystemObject)
 				{
 					urns.Add(schema.Urn);
-				}
-			}
-
-			foreach (User user in database.Users)
-			{
-				if (!user.IsSystemObject)
-				{
-					urns.Add(user.Urn);
 				}
 			}
 
