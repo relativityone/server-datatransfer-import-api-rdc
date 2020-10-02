@@ -145,11 +145,17 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			if (overwriteMode == OverwriteModeEnum.Append || overwriteMode == OverwriteModeEnum.AppendOverlay)
 			{
-				controlNumber = controlNumber.Concat(
-					Enumerable.Range(1, numberOfDocumentsToAppend).Select(p => $"{p}-{nameSuffix}"));
+				controlNumber = controlNumber.Concat(GetIdentifiersEnumerable(numberOfDocumentsToAppend, nameSuffix));
 			}
 
 			return controlNumber;
+		}
+
+		protected static IEnumerable<string> GetIdentifiersEnumerable(
+			int numberOfDocumentsToAppend,
+			string nameSuffix)
+		{
+			return Enumerable.Range(1, numberOfDocumentsToAppend).Select(p => $"{p}-{nameSuffix}");
 		}
 
 		protected static void ForceClient(TapiClient tapiClient)

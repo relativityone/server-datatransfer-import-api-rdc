@@ -46,6 +46,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private const string MultiObjectFieldName1 = "MULTI_OBJECT_FIELD_1";
 		private const string MultiObjectFieldName2 = "MULTI_OBJECT_FIELD_2";
 
+		private const string SingleObjectDocFieldName = "SINGLE_OBJECT_DOC_FIELD";
+		private const string MultiObjectDocFieldName = "MULTI_OBJECT_DOC_FIELD";
+
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
 		private bool testsSkipped = false;
 
@@ -69,7 +72,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				await CreateChoiceFieldsAsync((int)ArtifactTypeID.Document).ConfigureAwait(false);
 				await CreateObjectFieldsAsync(this.createdObjectArtifactTypeId).ConfigureAwait(false);
 				await CreateObjectFieldsAsync((int)ArtifactTypeID.Document).ConfigureAwait(false);
-
+				await CreateAssociatedDocumentsFieldsAsync(this.createdObjectArtifactTypeId).ConfigureAwait(false);
 				this.objectsValidator = new ObjectsValidator(this.TestParameters);
 				this.choicesValidator = new ChoicesValidator(this.TestParameters);
 			}
@@ -512,6 +515,87 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				artifactTypeId).ConfigureAwait(false);
 		}
 
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
+		[IdentifiedTest("13dc1d17-4a2b-4b48-9015-b61e58bc5168")]
+		public async Task ShouldImportObjectsWithAssociatedChildDocuments(
+			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.AppendOverlay, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode)
+		{
+			// ARRANGE
+			int recordCount = 2000;
+			List<string> controlNumberValues = GetIdentifiersEnumerable(
+				recordCount,
+				$"{nameof(this.ShouldImportObjectsWithAssociatedChildDocuments)}{overwriteMode}").ToList();
+
+			ImportDataSource<object[]> childDocumentDataSource = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, controlNumberValues).Build();
+
+			// First insert Documents to be later linked with objects - for now mass import does not allow to create new documents when importing objects
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings((int)ArtifactType.Document);
+			settings.OverwriteMode = OverwriteModeEnum.Append;
+
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+			ImportTestJobResult results = this.JobExecutionContext.Execute(childDocumentDataSource);
+
+			this.ThenTheImportJobIsSuccessful(results, recordCount);
+
+			// Next, for append/overlay and overlay test case, insert objects with only identifiers
+			int artifactTypeId = GetArtifactTypeIdForTest(ArtifactType.ObjectType);
+			settings = NativeImportSettingsProvider.GetDefaultSettings(artifactTypeId);
+
+			List<string> objectIdentifiersValues = controlNumberValues.Select(ctrlNumber => $"Obj-{ctrlNumber}").ToList();
+
+			if (overwriteMode != OverwriteModeEnum.Append)
+			{
+				ImportDataSource<object[]> initObjectsDataSource = ImportDataSourceBuilder.New()
+					.AddField(WellKnownFields.ControlNumber, objectIdentifiersValues)
+					.Build();
+
+				this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+
+				results = this.JobExecutionContext.Execute(initObjectsDataSource);
+				this.ThenTheImportJobIsSuccessful(results, recordCount);
+			}
+
+			char multiValueDelimiter = settings.MultiValueDelimiter;
+
+			IEnumerable<string> shiftedControlNumberValues = controlNumberValues.Skip(1).Concat(new[] { controlNumberValues.First() }).ToList();
+
+			IEnumerable<string> multiObjectDocFieldValues = controlNumberValues.Zip(shiftedControlNumberValues, (s, s1) => string.Join(multiValueDelimiter.ToString(), s, s1)).ToList();
+
+			ImportDataSource<object[]> objectsDataSource = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, objectIdentifiersValues)
+				.AddField(SingleObjectDocFieldName, controlNumberValues)
+				.AddField(MultiObjectDocFieldName, multiObjectDocFieldValues)
+				.Build();
+			settings.OverwriteMode = overwriteMode;
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+
+			// ACT
+
+			// Now import objects and link the documents
+			results = this.JobExecutionContext.Execute(objectsDataSource);
+
+			// ASSERT
+			Dictionary<string, IEnumerable<string>> fieldsAndValuesToValidate =
+				new Dictionary<string, IEnumerable<string>>
+					{
+						{ SingleObjectDocFieldName, controlNumberValues },
+						{ MultiObjectDocFieldName, multiObjectDocFieldValues },
+					};
+
+			this.ThenTheImportJobIsSuccessful(results, recordCount);
+			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(recordCount));
+
+			await this.objectsValidator.ValidateObjectFieldsValuesWithExpectedAsync(
+				new Tuple<string, IEnumerable<string>>(WellKnownFields.ControlNumber, objectIdentifiersValues),
+				fieldsAndValuesToValidate,
+				multiValueDelimiter,
+				artifactTypeId).ConfigureAwait(false);
+		}
+
 		private int GetArtifactTypeIdForTest(ArtifactType artifactType)
 		{
 			int artifactTypeId = artifactType == ArtifactType.Document
@@ -578,6 +662,24 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			foreach (RelativityObject relativityObject in relativityObjects)
 			{
 				Assert.AreEqual(expectedFolderName, relativityObject.FieldValues[0].Value.ToString(), "Files were not moved to an expected destination folder.");
+			}
+		}
+
+		private async Task CreateAssociatedDocumentsFieldsAsync(int artifactTypeId)
+		{
+			if (artifactTypeId != (int)ArtifactType.Document)
+			{
+				await FieldHelper.CreateMultiObjectFieldAsync(
+					this.TestParameters,
+					MultiObjectDocFieldName,
+					(int)ArtifactType.Document,
+					artifactTypeId).ConfigureAwait(false);
+
+				await FieldHelper.CreateSingleObjectFieldAsync(
+					this.TestParameters,
+					SingleObjectDocFieldName,
+					(int)ArtifactType.Document,
+					artifactTypeId).ConfigureAwait(false);
 			}
 		}
 	}
