@@ -35,7 +35,7 @@ namespace Relativity.DataExchange.Import.NUnit
 			string bulkLoadFileFieldDelimiter,
 			kCura.WinEDDS.Service.IBulkImportManager manager,
 			CancellationTokenSource tokenSource,
-			Relativity.DataExchange.Service.ExecutionSource executionSource)
+			IRunningContext runningContext)
 			: base(
 				args,
 				context,
@@ -48,7 +48,7 @@ namespace Relativity.DataExchange.Import.NUnit
 				doRetryLogic,
 				bulkLoadFileFieldDelimiter,
 				tokenSource,
-				executionSource)
+				runningContext)
 		{
 			this._bulkImportManager = manager;
 			this.ImportBatchSize = 500;

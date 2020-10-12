@@ -136,7 +136,7 @@ Namespace kCura.WinEDDS
 				True, _
 				BulkLoadFileFieldDelimiter, _
 				Me.CancellationTokenSource, _
-				Me.RunningContext.ExecutionSource)
+				Me.RunningContext)
 			Return returnImporter
 		End Function
 

@@ -18,7 +18,7 @@ Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
 		Inherits LoadFileBase
 		Implements IImportJob
-		implements IDisposable
+		Implements IDisposable
 
 #Region "Const Fields"
 
@@ -74,8 +74,8 @@ Namespace kCura.WinEDDS
 
 		Public MaxNumberOfErrorsInGrid As Int32 = AppSettings.Instance.DefaultMaxErrorCount
 		Private _errorCount As Int32 = 0
-		private prePushErrorWriter as ErrorMessageWriter(Of ErrorBeforeMassImportArgs) = New ErrorMessageWriter(Of ErrorBeforeMassImportArgs)()
-		private errorMessageFileWriter as ErrorMessageWriter(Of ErrorDuringMassImportArgs) = New ErrorMessageWriter(Of ErrorDuringMassImportArgs)()
+		Private prePushErrorWriter As ErrorMessageWriter(Of ErrorBeforeMassImportArgs) = New ErrorMessageWriter(Of ErrorBeforeMassImportArgs)()
+		Private errorMessageFileWriter As ErrorMessageWriter(Of ErrorDuringMassImportArgs) = New ErrorMessageWriter(Of ErrorDuringMassImportArgs)()
 
 		Private _processId As Guid
 		Private _parentArtifactTypeId As Int32?
@@ -300,57 +300,56 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-        Protected Overridable ReadOnly Property BatchResizeEnabled As Boolean
-            Get
-                Return AppSettings.Instance.DynamicBatchResizingOn
-            End Get
-        End Property
+		Protected Overridable ReadOnly Property BatchResizeEnabled As Boolean
+			Get
+				Return AppSettings.Instance.DynamicBatchResizingOn
+			End Get
+		End Property
 
 #End Region
 
 #Region "Constructors"
 
-        ''' <summary>
-        ''' Constructs a new importer that will prepare a bulk load file from a provided file.
-        ''' </summary>
-        ''' <param name="args">Information about the file being loaded</param>
-        ''' <param name="context">The process context</param>
-        ''' <param name="reporter">The object that performs I/O operations and publishes messages during retry operations.</param>
-        ''' <param name="logger">The Relativity logger.</param>
-        ''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
-        ''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
-        ''' for use</param>
-        ''' <param name="processID">The identifier of the process running</param>
-        ''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
-        ''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
-        ''' <param name="executionSource">Optional parameter that states where the import
-        ''' is coming from.</param>
-        ''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
-        ''' is <c>null</c> or <c>String.Empty</c>.</exception>
-        Public Sub New(args As LoadFile, _
-		               context As ProcessContext, _
-		               reporter As IIoReporter, _
-		               logger As Global.Relativity.Logging.ILog, _
-		               timeZoneOffset As Int32, _
-		               initializeUploaders As Boolean, _
-		               processID As Guid, _
-		               doRetryLogic As Boolean, _
-		               bulkLoadFileFieldDelimiter As String, _
-		               tokenSource As CancellationTokenSource, _
-					   ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
-			Me.New(args, _
-			       context, _
-			       reporter, _
-			       logger, _
-			       timeZoneOffset, _
-			       True, _
-			       initializeUploaders, _
-			       processID, _
-			       doRetryLogic, _
-			       bulkLoadFileFieldDelimiter, _
-			       tokenSource, _
-			       initializeArtifactReader:=True, _
-			       executionSource:=executionSource)
+		''' <summary>
+		''' Constructs a new importer that will prepare a bulk load file from a provided file.
+		''' </summary>
+		''' <param name="args">Information about the file being loaded</param>
+		''' <param name="context">The process context</param>
+		''' <param name="reporter">The object that performs I/O operations and publishes messages during retry operations.</param>
+		''' <param name="logger">The Relativity logger.</param>
+		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
+		''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
+		''' for use</param>
+		''' <param name="processID">The identifier of the process running</param>
+		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
+		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
+		''' <param name="runningContext">Optional parameter that represents running context of the import job.</param>
+		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
+		''' is <c>null</c> or <c>String.Empty</c>.</exception>
+		Public Sub New(args As LoadFile,
+					   context As ProcessContext,
+					   reporter As IIoReporter,
+					   logger As Global.Relativity.Logging.ILog,
+					   timeZoneOffset As Int32,
+					   initializeUploaders As Boolean,
+					   processID As Guid,
+					   doRetryLogic As Boolean,
+					   bulkLoadFileFieldDelimiter As String,
+					   tokenSource As CancellationTokenSource,
+					   ByVal Optional runningContext As IRunningContext = Nothing)
+			Me.New(args,
+				   context,
+				   reporter,
+				   logger,
+				   timeZoneOffset,
+				   True,
+				   initializeUploaders,
+				   processID,
+				   doRetryLogic,
+				   bulkLoadFileFieldDelimiter,
+				   tokenSource,
+				   initializeArtifactReader:=True,
+				   runningContext:=runningContext)
 		End Sub
 
 		''' <summary>
@@ -366,35 +365,34 @@ Namespace kCura.WinEDDS
 		''' <param name="processID">The identifier of the process running</param>
 		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
 		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
-		''' <param name="executionSource">Optional parameter that states where the import
-		''' is coming from.</param>
+		''' <param name="runningContext">Optional parameter that represents running context of the import job.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(args As LoadFile, _
-		               context As ProcessContext, _
-		               reporter As IIoReporter, _
-		               logger As Global.Relativity.Logging.ILog, _
-		               timeZoneOffset As Int32, _
-		               autoDetect As Boolean, _
-		               initializeUploaders As Boolean, _
-		               processID As Guid, _
-		               doRetryLogic As Boolean, _
-		               bulkLoadFileFieldDelimiter As String, _
-		               tokenSource As CancellationTokenSource, _
-		               ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
-			Me.New(args, _
-			       context, _
-			       reporter, _
-			       logger, _
-			       timeZoneOffset, _
-			       autoDetect, _
-			       initializeUploaders, _
-			       processID, _
-			       doRetryLogic,
-			       bulkLoadFileFieldDelimiter, _
-			       tokenSource, _
-			       initializeArtifactReader:=True, _
-			       executionSource:=executionSource)
+		Public Sub New(args As LoadFile,
+					   context As ProcessContext,
+					   reporter As IIoReporter,
+					   logger As Global.Relativity.Logging.ILog,
+					   timeZoneOffset As Int32,
+					   autoDetect As Boolean,
+					   initializeUploaders As Boolean,
+					   processID As Guid,
+					   doRetryLogic As Boolean,
+					   bulkLoadFileFieldDelimiter As String,
+					   tokenSource As CancellationTokenSource,
+					   ByVal Optional runningContext As IRunningContext = Nothing)
+			Me.New(args,
+				   context,
+				   reporter,
+				   logger,
+				   timeZoneOffset,
+				   autoDetect,
+				   initializeUploaders,
+				   processID,
+				   doRetryLogic,
+				   bulkLoadFileFieldDelimiter,
+				   tokenSource,
+				   initializeArtifactReader:=True,
+				   runningContext:=runningContext)
 		End Sub
 
 		''' <summary>
@@ -410,39 +408,38 @@ Namespace kCura.WinEDDS
 		''' <param name="processID">The identifier of the process running</param>
 		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
 		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
-		''' <param name="executionSource">Optional parameter that states where the import
-		''' is coming from.</param>
+		''' <param name="runningContext">Optional parameter that represents running context of the import job.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(args As LoadFile, _
-		               context As ProcessContext, _
-		               reporter As IIoReporter, _
-		               logger As Global.Relativity.Logging.ILog, _
-		               timeZoneOffset As Int32, _
-		               autoDetect As Boolean, _
-		               initializeUploaders As Boolean, _
-		               processID As Guid, _
-		               doRetryLogic As Boolean, _
-		               bulkLoadFileFieldDelimiter As String, _
-		               tokenSource As CancellationTokenSource,
-		               initializeArtifactReader As Boolean,
-		               ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
-			MyBase.New(args, _
-			           reporter, _
-			           logger, _
-			           timeZoneOffset, _
-			           doRetryLogic, _
-			           autoDetect, _
-			           tokenSource, _
-			           initializeArtifactReader, _
-			           executionSource:=executionSource)
+		Public Sub New(args As LoadFile,
+					   context As ProcessContext,
+					   reporter As IIoReporter,
+					   logger As Global.Relativity.Logging.ILog,
+					   timeZoneOffset As Int32,
+					   autoDetect As Boolean,
+					   initializeUploaders As Boolean,
+					   processID As Guid,
+					   doRetryLogic As Boolean,
+					   bulkLoadFileFieldDelimiter As String,
+					   tokenSource As CancellationTokenSource,
+					   initializeArtifactReader As Boolean,
+					   ByVal Optional runningContext As IRunningContext = Nothing)
+			MyBase.New(args,
+					   reporter,
+					   logger,
+					   timeZoneOffset,
+					   doRetryLogic,
+					   autoDetect,
+					   tokenSource,
+					   initializeArtifactReader,
+			           runningContext:=runningContext)
 
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
 			_usePipeliningForNativeAndObjectImports = AppSettings.Instance.UsePipeliningForNativeAndObjectImports
 			_createFoldersInWebApi = AppSettings.Instance.CreateFoldersInWebApi
 			_createErrorForEmptyNativeFile = AppSettings.Instance.CreateErrorForEmptyNativeFile
 
-			Statistics.ImportObjectType = CType(IIf(args.ArtifactTypeID = ArtifactType.Document, TelemetryConstants.ImportObjectType.Native, TelemetryConstants.ImportObjectType.Objects),TelemetryConstants.ImportObjectType)
+			Statistics.ImportObjectType = CType(IIf(args.ArtifactTypeID = ArtifactType.Document, TelemetryConstants.ImportObjectType.Native, TelemetryConstants.ImportObjectType.Objects), TelemetryConstants.ImportObjectType)
 
 			ShouldImport = True
 			If (String.IsNullOrEmpty(args.OverwriteDestination)) Then
@@ -538,7 +535,7 @@ Namespace kCura.WinEDDS
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or AppSettings.Instance.TapiForceBcpHttpClient
 
 			' Never preserve timestamps for BCP load files.
-			bcpParameters.PreserveFileTimestamps = false
+			bcpParameters.PreserveFileTimestamps = False
 			CreateTapiBridges(nativeParameters, bcpParameters, args.WebApiCredential.TokenProvider)
 		End Sub
 
@@ -612,7 +609,7 @@ Namespace kCura.WinEDDS
 							If Not InitializeMembers() Then
 								Return False
 							End If
-							_processedKeyFieldValues = New Dictionary(Of String,Integer)
+							_processedKeyFieldValues = New Dictionary(Of String, Integer)
 						End Using
 
 						Me.LogInformation("Preparing to import documents via WinEDDS.")
@@ -832,7 +829,7 @@ Namespace kCura.WinEDDS
 						Dim foundFileName As String = Me.GetExistingFilePath(filename, retry)
 						fileExists = Not String.IsNullOrEmpty(foundFileName)
 
-						If fileExists AndAlso (Not String.Equals(filename, foundFileName))
+						If fileExists AndAlso (Not String.Equals(filename, foundFileName)) Then
 							WriteWarning($"File {filename} does not exist. File {foundFileName} will be used instead.")
 							filename = foundFileName
 						End If
@@ -875,7 +872,8 @@ Namespace kCura.WinEDDS
 									fileTypeInfo = policy.WaitAndRetry(
 										Function(exception)
 											Dim outsideInException As FileTypeIdentifyException = TryCast(exception, FileTypeIdentifyException)
-											If (Not outsideInException Is Nothing)
+											If (Not outsideInException Is Nothing) Then
+
 												If (outsideInException.Error = FileTypeIdentifyError.Permissions) Then
 													' Only perform a retry operation if configured to do so.
 													Return Me.RetryOptions.HasFlag(RetryOptions.Permissions)
@@ -963,7 +961,7 @@ Namespace kCura.WinEDDS
 							End If
 						Else
 							'Client side folder creation (added back for Dominus# 1127879)
-						parentFolderID = FolderCache.GetFolderId(CleanDestinationFolderPath(value))
+							parentFolderID = FolderCache.GetFolderId(CleanDestinationFolderPath(value))
 						End If
 					Else
 						'TODO: If we are going to do this for more than documents, fix this as well...
@@ -991,7 +989,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			End Using
-			
+
 			identityValue = PrepareFieldCollectionAndExtractIdentityValue(record, CurrentLineNumber)
 
 			Dim dataGridID As String = Nothing
@@ -1108,7 +1106,7 @@ Namespace kCura.WinEDDS
 			'retry logic wasn't reworked due to REL-473460
 
 			Try
-				return  BatchBulkImport(settings, includeExtractedTextEncoding)
+				Return BatchBulkImport(settings, includeExtractedTextEncoding)
 			Catch ex As Exception
 
 				If ShouldImport Then
@@ -1257,7 +1255,7 @@ Namespace kCura.WinEDDS
 						End If
 						sw.Write(c)
 						charactersProcessed += 1
-						hasReachedEof = (sr.Peek = -1) 
+						hasReachedEof = (sr.Peek = -1)
 					End While
 					sw.Flush()
 				End Using
@@ -1292,7 +1290,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		protected Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
+		Protected Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
 			If _lastRunMetadataImport > 0 Then
 				Me.Statistics.MetadataWaitDuration += New TimeSpan(System.DateTime.Now.Ticks - _lastRunMetadataImport)
 			End If
@@ -1390,7 +1388,7 @@ Namespace kCura.WinEDDS
 							}
 						MyBase.OnBatchCompleted(batchInformation)
 
-							
+
 					End Sub
 
 			If _usePipeliningForNativeAndObjectImports Then
@@ -1400,7 +1398,21 @@ Namespace kCura.WinEDDS
 				makeServiceCalls()
 			End If
 
-			Me.TotalTransferredFilesCount = Me.FileTapiProgressCount
+			'FileTapiProgressCount represents progress bar and its max will be a number of lines in data reader.
+			'It won't be lower no matter what is the _startLineNumber, but TotalTransferredFilesCount must be to represent the number of lines that were processed.
+			'If _firstLineContainsColumnNames is True, then we skip one line for headers and it doesn't matter if _startLineNumber is 0 or 1 then.
+
+			'Case 1, we have a header and we skip some lines, while remembering that 1 line is already skipped because of the header
+			If _firstLineContainsColumnNames AndAlso _startLineNumber > 1 Then
+				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount - CType(_startLineNumber, Integer) + 1
+				'Case 2, we don't have a header and we want to skip some lines
+			ElseIf Not _firstLineContainsColumnNames AndAlso _startLineNumber > 0 Then
+				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount - CType(_startLineNumber, Integer)
+				'Case 3, we don't have a header and we don't want to skip any lines
+				'Case 4, we have a header and we don't skip any lines, while remembering that 1 line is already skipped because of the header
+			Else
+				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount
+			End If
 		End Sub
 
 		Private Sub WaitOnPushBatchTask()
@@ -1583,7 +1595,7 @@ Namespace kCura.WinEDDS
 			If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
 				Dim supportedByViewerProvider As IHasSupportedByViewer = TryCast(mdoc.FileTypeInfo, IHasSupportedByViewer)
 
-				If supportedByViewerProvider Is Nothing
+				If supportedByViewerProvider Is Nothing Then
 					WriteDocumentNativeInfo(Me.IsSupportedRelativityFileType(mdoc.FileTypeInfo), mdoc.GetFileType(), True)
 				Else
 					WriteDocumentNativeInfo(supportedByViewerProvider.SupportedByViewer(), mdoc.GetFileType(), True)
@@ -1967,7 +1979,7 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(EventType2.Error, line)
 		End Sub
 
-		Private Sub RaiseReportError(ByVal row As Hashtable,ByVal identifier As String, ByVal type As String)
+		Private Sub RaiseReportError(ByVal row As Hashtable, ByVal identifier As String, ByVal type As String)
 			_errorCount += 1
 			If _errorCount < MaxNumberOfErrorsInGrid Then
 				OnReportErrorEvent(row)
@@ -2052,8 +2064,8 @@ Namespace kCura.WinEDDS
 			errorMessageFileWriter.ReleaseLock()
 			prePushErrorWriter.ReleaseLock()
 			'' logic downstream is going to expect string.empty if the file is not there physically on disk
-			Dim errorMessageFileWriterFilePath As String =If(errorMessageFileWriter.FileCreated, errorMessageFileWriter.FilePath,  String.Empty)
-			Dim prePushErrorWriterFilePath As String =If(prePushErrorWriter.FileCreated, prePushErrorWriter.FilePath,  String.Empty)
+			Dim errorMessageFileWriterFilePath As String = If(errorMessageFileWriter.FileCreated, errorMessageFileWriter.FilePath, String.Empty)
+			Dim prePushErrorWriterFilePath As String = If(prePushErrorWriter.FileCreated, prePushErrorWriter.FilePath, String.Empty)
 
 			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(errorMessageFileWriterFilePath, prePushErrorWriterFilePath)
 			Dim rootFileName As String = _filePath

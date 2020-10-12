@@ -1,5 +1,6 @@
 Imports System.Collections.Generic
 Imports System.Threading
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
@@ -33,15 +34,14 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' <param name="bulkLoadFileFieldDelimiter">The field delimiter that
 		''' was used to create the bulk load file. Line delimiters are a field
 		''' delimiter followed by a new line.</param>
-		''' <param name="executionSource">Optional parameter that states where the import
-		''' is coming from.</param>
+		''' <param name="runningContext">Optional parameter that represents running context of the import job.</param>
 		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, _
 		               ByVal context As ProcessContext, _
 		               ByVal ioReporterInstance As IIoReporter, _
 		               ByVal logger As ILog,
 		               ByVal bulkLoadFileFieldDelimiter As String, _
 		               ByVal tokenSource As CancellationTokenSource,
-		               Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
+		               ByVal Optional runningContext As IRunningContext = Nothing)
 			Me.New(loadFile, _
 			       context, _
 			       ioReporterInstance, _
@@ -50,7 +50,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			       Nothing, _
 			       tokenSource, _
 			       initializeArtifactReader:=True, _
-			       executionSource:=executionSource)
+			       runningContext:= runningContext)
 		End Sub
 
 		''' <summary>
@@ -68,8 +68,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' Files are copied to this location and their names are changed before being imported to Relativity</param>
 		''' <param name="initializeArtifactReader">If True, the ArtifactReader is created and initialized within the constructor.
 		''' If False, you should initialize the artifact reader later by calling Initialize().</param>
-		''' <param name="executionSource">Optional parameter that states where the import
-		''' is coming from.</param>
+		''' <param name="runningContext">Optional parameter that represents running context of the import job.</param>
 		Public Sub New(loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, _
 		               ByVal context As ProcessContext, _
 		               ByVal ioReporterInstance As IIoReporter, _
@@ -78,7 +77,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		               temporaryLocalDirectory As String, _
 		               ByVal tokenSource As CancellationTokenSource,
 		               initializeArtifactReader As Boolean,
-		               Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
+		               ByVal Optional runningContext As IRunningContext = Nothing)
 			MyBase.New(loadFile, _
 			           context, _
 			           ioReporterInstance, _
@@ -90,7 +89,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			           True, _
 			           bulkLoadFileFieldDelimiter, _
 			           tokenSource, _
-			           executionSource)
+			           runningContext)
 			Me.OIFileIdColumnName = loadFile.OIFileIdColumnName
 			Me.OIFileIdMapped = loadFile.OIFileIdMapped
 			Me.OIFileTypeColumnName = loadFile.OIFileTypeColumnName

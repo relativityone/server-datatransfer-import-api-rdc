@@ -41,5 +41,14 @@ namespace Relativity.DataExchange
 		/// The <see cref="Version"/> instance.
 		/// </value>
 		public static Version WebApiStartFromRelativityVersion { get; } = new Version(10, 3);
+
+		/// <summary>
+		/// Gets WebApi version for feature: https://jira.kcura.com/browse/REL-408645, when we started support of processing on the server side
+		/// the associated documents for objects being imported.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Version"/> instance.
+		/// </value>
+		public static Version AssociatedDocsImportServerSideSupportFromWebApiVersion { get; } = new Version(1, 1);
 	}
 }

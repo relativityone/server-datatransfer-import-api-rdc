@@ -299,7 +299,7 @@ namespace Relativity.DataExchange.Import.NUnit
 				"S",
 				this.MockBulkImportManager.Object,
 				this.TokenSource,
-				ExecutionSource.Unknown);
+				null);
 		}
 	}
 }
