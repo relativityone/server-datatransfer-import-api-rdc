@@ -616,7 +616,7 @@ Namespace Relativity.Desktop.Client
 			Dim importer As kCura.WinEDDS.BulkLoadFileImporter = Nothing
 
 			Try
-				importer = New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, Nothing, _logger, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Nothing, ExecutionSource.Rdc)
+				importer = New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, Nothing, _logger, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Nothing, RunningContext)
 				Return importer.GetColumnNames(loadfile)
 			Finally
 				' All load files are auto-generated when the importer is constructed. This prevents excessive temp files from accumulating.

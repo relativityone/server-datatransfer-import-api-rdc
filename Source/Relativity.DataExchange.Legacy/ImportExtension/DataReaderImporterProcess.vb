@@ -55,7 +55,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				_temporaryLocalDirectory, _
 				Me.CancellationTokenSource, _
 				initializeArtifactReader:=False, _
-				executionSource := Me.RunningContext.ExecutionSource) With
+				runningContext := Me.RunningContext) With
 				    {
 						.OnBehalfOfUserToken = Me.OnBehalfOfUserToken,
 						.Timekeeper = Me.TimeKeeperManager
