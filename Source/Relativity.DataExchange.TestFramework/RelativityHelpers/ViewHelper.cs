@@ -17,7 +17,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	{
 		private const int DefaultViewOrder = 9999;
 
-		public static Task<int> CreateViewAsync(
+		public static async Task<int> CreateViewAsync(
 			IntegrationTestParameters parameters,
 			string viewName,
 			int artifactTypeId,
@@ -36,7 +36,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			using (var viewManager = ServiceHelper.GetServiceProxy<IViewManager>(parameters))
 			{
-				return viewManager.CreateSingleAsync(parameters.WorkspaceId, view);
+				int viewArtifactId = await viewManager.CreateSingleAsync(parameters.WorkspaceId, view).ConfigureAwait(false);
+				return viewArtifactId;
 			}
 		}
 	}
