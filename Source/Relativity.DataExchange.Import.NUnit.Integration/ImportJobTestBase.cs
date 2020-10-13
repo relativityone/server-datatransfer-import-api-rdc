@@ -107,13 +107,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			IEnumerable<IDictionary> errorRows,
 			string expectedMessage)
 		{
-			errorRows = errorRows ?? throw new ArgumentNullException(nameof(errorRows));
+			ThenCheckCorrectMessage(errorRows, expectedMessage, StringAssert.AreEqualIgnoringCase);
+		}
 
-			foreach (var row in errorRows)
-			{
-				string actualMessage = (string)row["Message"];
-				StringAssert.AreEqualIgnoringCase(expectedMessage, actualMessage);
-			}
+		protected static void ThenTheErrorRowsContainsCorrectMessage(
+			IEnumerable<IDictionary> errorRows,
+			string expectedMessage)
+		{
+			ThenCheckCorrectMessage(errorRows, expectedMessage, StringAssert.Contains);
 		}
 
 		protected static void ThenTheJobCompletedInCorrectTransferMode(
@@ -274,6 +275,20 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				testJobResult.JobFatalExceptions,
 				Has.Count.Zero,
 				$"{testJobResult.JobFatalExceptions.Count} fatal exceptions were thrown during import.");
+		}
+
+		private static void ThenCheckCorrectMessage(
+			IEnumerable<IDictionary> errorRows,
+			string expectedMessage,
+			Action<string, string> validationAction)
+		{
+			errorRows = errorRows ?? throw new ArgumentNullException(nameof(errorRows));
+
+			foreach (var row in errorRows)
+			{
+				string actualMessage = (string)row["Message"];
+				validationAction(expectedMessage, actualMessage);
+			}
 		}
 
 		private static async Task<string> PrepareUpdateFixedLengthFieldRequestAsync(IntegrationTestParameters testParameters, string objectName, int artifactId)
