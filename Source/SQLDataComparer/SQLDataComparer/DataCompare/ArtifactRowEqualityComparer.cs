@@ -11,7 +11,7 @@ namespace SQLDataComparer.DataCompare
 		{
 		}
 
-		protected override void AddMappingsToMappingTable(List<Row> leftRows, List<Row> rightRows, Dictionary<int, int> matchedRows)
+		protected override void AddMappingsToMappingTable(IDictionary<Row, Row> matchedRows)
 		{
 		}
 	}

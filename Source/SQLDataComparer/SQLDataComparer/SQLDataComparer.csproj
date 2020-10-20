@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigCheck\ConfigChecker.cs" />
+    <Compile Include="Config\MappedStringConfig.cs" />
     <Compile Include="Config\SideEnum.cs" />
     <Compile Include="Config\WhereConfig.cs" />
     <Compile Include="Config\CompareConfig.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="DataCompare\AuditRowEqualityComparer.cs" />
     <Compile Include="DataCompare\ObjectMappingEqualityComparer.cs" />
     <Compile Include="DataCompare\ChoiceMappingEqualityComparer.cs" />
+    <Compile Include="DataCompare\ArtifactMappingEqualityComparer.cs" />
     <Compile Include="DataCompare\RowDataEqualityComparer.cs" />
     <Compile Include="DataCompare\RowEqualityComparer.cs" />
     <Compile Include="DataCompare\RowMappingEqualityComparer.cs" />

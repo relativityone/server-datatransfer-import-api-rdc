@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SQLDataComparer.Config;
 using SQLDataComparer.Log;
 using SQLDataComparer.Model;
 
@@ -19,25 +20,28 @@ namespace SQLDataComparer.DataCompare
 			this._tableName = tableName;
 		}
 
-		protected abstract List<string> GetDifferences(Row leftRow, Row rightRow);
+		protected abstract List<string> GetDifferences(Row row1, Row row2);
 
-		protected abstract void AddMappingsToMappingTable(List<Row> leftRows, List<Row> rightRows, Dictionary<int, int> matchedRows);
+		protected abstract void AddMappingsToMappingTable(IDictionary<Row, Row> matchedRows);
 
 		public virtual List<string> MatchAndCompareRowsValues(List<Row> leftRows, List<Row> rightRows)
 		{
 			var differences = new List<string>();
-			var matchedRows = new Dictionary<int, int>();
+			var matchedRows = new Dictionary<Row,Row>();
 
-			for (int i = 0; i < leftRows.Count; i++)
+			var rowsToOuterIteration = rightRows.Count >= leftRows.Count ? leftRows : rightRows;
+			var rowsToInnerIteration = rightRows.Count >= leftRows.Count ?  rightRows : leftRows;
+
+			foreach (Row i in rowsToOuterIteration)
 			{
-				int matchedTo = -1;
+				Row matchedTo = null;
 				List<string> differencesOneRow = null;
 
-				for (int j = 0; j < rightRows.Count; j++)
+				foreach (Row j in rowsToInnerIteration)
 				{
 					if (!matchedRows.ContainsKey(j))
 					{
-						List<string> differencesWithCurrentRow = GetDifferences(leftRows[i], rightRows[j]);
+						List<string> differencesWithCurrentRow = GetDifferences(i, j);
 
 						if (differencesOneRow == null || differencesWithCurrentRow.Count < differencesOneRow.Count)
 						{
@@ -47,7 +51,7 @@ namespace SQLDataComparer.DataCompare
 					}
 				}
 
-				if (matchedTo != -1)
+				if (matchedTo != null)
 				{
 					matchedRows.Add(matchedTo, i);
 
@@ -58,9 +62,29 @@ namespace SQLDataComparer.DataCompare
 				}
 			}
 
-			AddMappingsToMappingTable(leftRows, rightRows, matchedRows);
+			AddMappingsToMappingTable(matchedRows);
 
 			return differences;
+		}
+
+		protected class ComparableRows
+		{
+			public ComparableRows(Row row1, Row row2)
+			{
+				if (row1.Table.Side == SideEnum.Left)
+				{
+					this.LeftRow = row1;
+					this.RightRow = row2;
+				}
+				else
+				{
+					this.RightRow = row1;
+					this.LeftRow = row2;
+				}
+			}
+
+			public Row LeftRow { get; }
+			public Row RightRow { get; }
 		}
 	}
 }

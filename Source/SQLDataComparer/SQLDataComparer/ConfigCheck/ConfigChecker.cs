@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Linq;
 using SQLDataComparer.Config;
 using SQLDataComparer.Log;
 
@@ -42,30 +43,16 @@ namespace SQLDataComparer.ConfigCheck
 
 		private bool CheckIgnoresConfig(TableConfig table, string tableSchema, string tableName)
 		{
-			foreach (var column in table.IgnoreConfig)
-			{
-				if (!CheckColumn(tableSchema, tableName, column.Name, SideEnum.Left)
-					|| !CheckColumn(tableSchema, tableName, column.Name, SideEnum.Right))
-				{
-					return false;
-				}
-			}
-
-			return true;
+			return table.IgnoreConfig.All(column =>
+				CheckColumn(tableSchema, tableName, column.Name, SideEnum.Left) 
+				&& CheckColumn(tableSchema, tableName, column.Name, SideEnum.Right));
 		}
 
 		private bool CheckBoundsConfig(TableConfig table, string tableSchema, string tableName)
 		{
-			foreach (var column in table.WhereConfig)
-			{
-				if (!CheckColumn(tableSchema, tableName, column.Name, SideEnum.Left)
-					|| !CheckColumn(tableSchema, tableName, column.Name, SideEnum.Right))
-				{
-					return false;
-				}
-			}
-
-			return true;
+			return table.WhereConfig.All(column => 
+				CheckColumn(tableSchema, tableName, column.Name, SideEnum.Left) 
+				&& CheckColumn(tableSchema, tableName, column.Name, SideEnum.Right));
 		}
 
 		private bool CheckTables(TableConfig table, string tableSchema, string tableName)
@@ -89,8 +76,7 @@ namespace SQLDataComparer.ConfigCheck
 				SqlParameter tableSchemaParameter = new SqlParameter("@TableSchema", tableSchema);
 				SqlParameter tableNameParameter = new SqlParameter("@TableName", tableName);
 
-				string query =
-					"IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = @TableSchema AND TABLE_NAME = @TableName) SELECT 1 ELSE SELECT 0";
+				const string query = "IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = @TableSchema AND TABLE_NAME = @TableName) SELECT 1 ELSE SELECT 0";
 
 				using (var dbCommand = new SqlCommand(query, connection))
 				{
@@ -121,8 +107,7 @@ namespace SQLDataComparer.ConfigCheck
 				SqlParameter tableNameParameter = new SqlParameter("@TableName", tableName);
 				SqlParameter columnNameParameter = new SqlParameter("@ColumnName", columnName);
 
-				string query =
-					"IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @TableSchema AND TABLE_NAME = @TableName AND COLUMN_NAME = @ColumnName) SELECT 1 ELSE SELECT 0";
+				const string query = "IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @TableSchema AND TABLE_NAME = @TableName AND COLUMN_NAME = @ColumnName) SELECT 1 ELSE SELECT 0";
 
 				using (var dbCommand = new SqlCommand(query, connection))
 				{

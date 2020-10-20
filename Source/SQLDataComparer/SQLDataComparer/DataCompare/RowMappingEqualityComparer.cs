@@ -18,18 +18,18 @@ namespace SQLDataComparer.DataCompare
 
 			if (!string.IsNullOrEmpty(leftMapId) && !string.IsNullOrEmpty(rightMapId))
 			{
-				if (!_mappingTable.ContainsKey(leftMapId))
+				if (!_mappingTable.TryGetValue(leftMapId, out string leftValue))
 				{
 					// this means there are artifact ids missing from mapping table and we can't fully be sure whether those rows are equal or not
 					_log.LogError($"{_tableName}.{rowId} : Missing {_mapId} in the mapping table: {leftMapId}");
 				}
-				else if (_mappingTable[leftMapId] != rightMapId)
+				else if (leftValue != rightMapId)
 				{
 					differences.Add($"{_tableName}.{rowId} : Rows have different mapping {_mapId} : {_mappingTable[leftMapId]} != {rightMapId}");
 				}
 			}
-			else if ((!string.IsNullOrEmpty(leftMapId) && string.IsNullOrEmpty(rightMapId))
-						|| (string.IsNullOrEmpty(leftMapId) && !string.IsNullOrEmpty(rightMapId)))
+			else if (!string.IsNullOrEmpty(leftMapId) && string.IsNullOrEmpty(rightMapId)
+						|| string.IsNullOrEmpty(leftMapId) && !string.IsNullOrEmpty(rightMapId))
 			{
 				differences.Add($"{_tableName}.{rowId} : Node mapped only on one side, left: {leftMapId}, right: {rightMapId}");
 			}
@@ -37,7 +37,7 @@ namespace SQLDataComparer.DataCompare
 			return differences;
 		}
 
-		protected override void AddMappingsToMappingTable(List<Row> leftRows, List<Row> rightRows, Dictionary<int, int> matchedRows)
+		protected override void AddMappingsToMappingTable(IDictionary<Row, Row> matchedRows)
 		{
 		}
 	}

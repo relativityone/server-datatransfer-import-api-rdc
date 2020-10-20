@@ -53,7 +53,7 @@ namespace SQLDataComparer.DataCompare
 
 			foreach (var tableConfig in compareConfig.TablesConfig)
 			{
-				// step 3 - compare mappings loading row by row
+				// step 3 - compare mappings loading row by row except Artifact mappings
 				foreach (var mappingConfig in tableConfig.MappingsConfig)
 				{
 					string logTableName = tableConfig.Name + "->" + mappingConfig.Name;
@@ -76,6 +76,14 @@ namespace SQLDataComparer.DataCompare
 			if (artifactConfig != null)
 			{
 				Compare(artifactConfig, new ArtifactRowEqualityComparer(_log, _mappingTable["ArtifactID"], artifactConfig.Name), artifactConfig.Name);
+
+				foreach (var artifactMappingConfig in artifactConfig.MappingsConfig)
+				{
+					if (artifactMappingConfig.Type == MappingType.Artifact)
+					{
+						Compare(artifactConfig, artifactMappingConfig, new ArtifactMappingEqualityComparer(_log, _mappingTable["ArtifactID"], artifactConfig.Name), artifactConfig.Name);
+					}
+				}
 			}
 
 			TableConfig auditConfig = compareConfig.TablesConfig.FirstOrDefault(x => x.Name == "EDDSDBO.AuditRecord_PrimaryPartition");
@@ -211,7 +219,15 @@ namespace SQLDataComparer.DataCompare
 			string leftRowId = leftSubTable.Rows[0][leftSubTable.RowId];
 			string rightRowId = rightSubTable.Rows[0][leftSubTable.RowId];
 
-			int rowIdComparisonResult = String.Compare(leftRowId, rightRowId, StringComparison.CurrentCultureIgnoreCase);
+			int rowIdComparisonResult = string.Compare(leftRowId, rightRowId, StringComparison.CurrentCultureIgnoreCase);
+
+			if (leftSubTable.MappedStrings.ContainsKey(leftSubTable.RowId) 
+			    && rowIdComparisonResult != 0 
+			    && leftRowId == leftSubTable.MappedStrings[leftSubTable.RowId].Key
+			    && rightRowId == leftSubTable.MappedStrings[leftSubTable.RowId].Value)
+			{
+				rowIdComparisonResult = 0;
+			}
 
 			if (rowIdComparisonResult == 0)
 			{

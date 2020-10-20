@@ -25,11 +25,16 @@ namespace SQLDataComparer.Config
 		[XmlArrayItem("where")]
 		public WhereConfig[] WhereConfig { get; set; }
 
+		[XmlArray("mappedStrings")]
+		[XmlArrayItem("mappedString")]
+		public MappedStringConfig[] MappedStringConfig { get; set; }
+
 		public TableConfig()
 		{
 			MappingsConfig = new MappingConfig[0];
 			IgnoreConfig = new IgnoreConfig[0];
 			WhereConfig = new WhereConfig[0];
+			MappedStringConfig = new MappedStringConfig[0];
 		}
 	}
 }

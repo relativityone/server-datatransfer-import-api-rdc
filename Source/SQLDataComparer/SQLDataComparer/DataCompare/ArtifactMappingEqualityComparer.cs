@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SQLDataComparer.Log;
 using SQLDataComparer.Model;
 
 namespace SQLDataComparer.DataCompare
 {
-	public class RowDataEqualityComparer : RowEqualityComparer
+	public class ArtifactMappingEqualityComparer : RowEqualityComparer
 	{
-		public RowDataEqualityComparer(ILog log, string mapId, Dictionary<string, string> mappingTable, string tableName)
-		: base(log, mapId, mappingTable, tableName)
+		public ArtifactMappingEqualityComparer(ILog log, Dictionary<string, string> mappingTable, string tableName)
+			: base(log, "ArtifactID", mappingTable, tableName)
 		{
 		}
 
@@ -52,30 +51,6 @@ namespace SQLDataComparer.DataCompare
 
 		protected override void AddMappingsToMappingTable(IDictionary<Row, Row> matchedRows)
 		{
-			foreach (var pair in matchedRows)
-			{
-				AddRowsMappingsToMappingTable(pair.Value, pair.Key);
-			}
-		}
-
-		protected void AddRowsMappingsToMappingTable(Row leftRow, Row rightRow)
-		{
-			string leftValue = leftRow[_mapId];
-			string rightValue = rightRow[_mapId];
-
-			if (string.IsNullOrEmpty(leftValue) || string.IsNullOrEmpty(rightValue))
-			{
-				throw new Exception($"{_tableName} : {_mapId} missing for table. Left: {leftValue} Right: {rightValue}");
-			}
-
-			if (!_mappingTable.TryGetValue(leftValue, out string output))
-			{
-				_mappingTable.Add(leftValue, rightValue);
-			}
-			else if (output != rightValue)
-			{
-				throw new Exception($"Mapping was already mapped differently for {leftValue} : {_mappingTable[leftValue]} != {rightValue}");
-			}
 		}
 	}
 }

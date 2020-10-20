@@ -11,8 +11,12 @@ namespace SQLDataComparer.DataCompare
 		{
 		}
 
-		protected override List<string> GetDifferences(Row leftRow, Row rightRow)
+		protected override List<string> GetDifferences(Row row1, Row row2)
 		{
+			ComparableRows rows = new ComparableRows(row1, row2);
+			var leftRow = rows.LeftRow;
+			var rightRow = rows.RightRow;
+
 			var differences = new List<string>();
 
 			if (leftRow.Values.Count != rightRow.Values.Count)

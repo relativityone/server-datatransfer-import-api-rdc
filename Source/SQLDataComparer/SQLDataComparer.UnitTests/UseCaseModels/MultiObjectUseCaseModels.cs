@@ -76,13 +76,13 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Left))
 				.Returns(GetDocumentTable(leftSide))
-				.Returns(GetMutliObjTable(leftSide));
+				.Returns(GetMultiObjTable(leftSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Left))
 				.Returns(GetMultiObjectMappingTable(leftSide));
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Right))
 				.Returns(GetDocumentTable(rightSide))
-				.Returns(GetMutliObjTable(rightSide));
+				.Returns(GetMultiObjTable(rightSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Right))
 				.Returns(GetMultiObjectMappingTable(rightSide));
 		}
@@ -133,13 +133,13 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Left))
 				.Returns(GetDocumentTable(leftSide))
-				.Returns(GetMutliObjTable(leftSide));
+				.Returns(GetMultiObjTable(leftSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Left))
 				.Returns(GetMultiObjectMappingTable(leftSide));
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Right))
 				.Returns(GetDocumentTable(rightSide))
-				.Returns(GetMutliObjTable(rightSide));
+				.Returns(GetMultiObjTable(rightSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Right))
 				.Returns(GetMultiObjectMappingTable(rightSide));
 		}
@@ -190,13 +190,13 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Left))
 				.Returns(GetDocumentTable(leftSide))
-				.Returns(GetMutliObjTable(leftSide));
+				.Returns(GetMultiObjTable(leftSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Left))
 				.Returns(GetMultiObjectMappingTable(leftSide));
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Right))
 				.Returns(GetDocumentTable(rightSide))
-				.Returns(GetMutliObjTable(rightSide));
+				.Returns(GetMultiObjTable(rightSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Right))
 				.Returns(GetMultiObjectMappingTable(rightSide));
 		}
@@ -247,13 +247,13 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Left))
 				.Returns(GetDocumentTable(leftSide))
-				.Returns(GetMutliObjTable(leftSide));
+				.Returns(GetMultiObjTable(leftSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Left))
 				.Returns(GetMultiObjectMappingTable(leftSide));
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Right))
 				.Returns(GetDocumentTable(rightSide))
-				.Returns(GetMutliObjTable(rightSide));
+				.Returns(GetMultiObjTable(rightSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Right))
 				.Returns(GetMultiObjectMappingTable(rightSide));
 		}
@@ -304,13 +304,13 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Left))
 				.Returns(GetDocumentTable(leftSide))
-				.Returns(GetMutliObjTable(leftSide));
+				.Returns(GetMultiObjTable(leftSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Left))
 				.Returns(GetMultiObjectMappingTable(leftSide));
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Right))
 				.Returns(GetDocumentTable(rightSide))
-				.Returns(GetMutliObjTable(rightSide));
+				.Returns(GetMultiObjTable(rightSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Right))
 				.Returns(GetMultiObjectMappingTable(rightSide));
 		}
@@ -361,13 +361,13 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Left))
 				.Returns(GetDocumentTable(leftSide))
-				.Returns(GetMutliObjTable(leftSide));
+				.Returns(GetMultiObjTable(leftSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Left))
 				.Returns(GetMultiObjectMappingTable(leftSide));
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Right))
 				.Returns(GetDocumentTable(rightSide))
-				.Returns(GetMutliObjTable(rightSide));
+				.Returns(GetMultiObjTable(rightSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Right))
 				.Returns(GetMultiObjectMappingTable(rightSide));
 		}
@@ -418,13 +418,13 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Left))
 				.Returns(GetDocumentTable(leftSide))
-				.Returns(GetMutliObjTable(leftSide));
+				.Returns(GetMultiObjTable(leftSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Left))
 				.Returns(GetMultiObjectMappingTable(leftSide));
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Right))
 				.Returns(GetDocumentTable(rightSide))
-				.Returns(GetMutliObjTable(rightSide));
+				.Returns(GetMultiObjTable(rightSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Right))
 				.Returns(GetMultiObjectMappingTable(rightSide));
 		}
@@ -476,13 +476,13 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Left))
 				.Returns(GetDocumentTable(leftSide))
-				.Returns(GetMutliObjTable(leftSide));
+				.Returns(GetMultiObjTable(leftSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Left))
 				.Returns(GetMultiObjectMappingTable(leftSide));
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Right))
 				.Returns(GetDocumentTable(rightSide))
-				.Returns(GetMutliObjTable(rightSide));
+				.Returns(GetMultiObjTable(rightSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Right))
 				.Returns(GetMultiObjectMappingTable(rightSide));
 		}
@@ -536,13 +536,13 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Left))
 				.Returns(GetDocumentTable(leftSide))
-				.Returns(GetMutliObjTable(leftSide));
+				.Returns(GetMultiObjTable(leftSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Left))
 				.Returns(GetMultiObjectMappingTable(leftSide));
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Right))
 				.Returns(GetDocumentTable(rightSide))
-				.Returns(GetMutliObjTable(rightSide));
+				.Returns(GetMultiObjTable(rightSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Right))
 				.Returns(rightTables);
 		}
@@ -597,13 +597,13 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Left))
 				.Returns(GetDocumentTable(leftSide))
-				.Returns(GetMutliObjTable(leftSide));
+				.Returns(GetMultiObjTable(leftSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Left))
 				.Returns(leftTables);
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Right))
 				.Returns(GetDocumentTable(rightSide))
-				.Returns(GetMutliObjTable(rightSide));
+				.Returns(GetMultiObjTable(rightSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Right))
 				.Returns(GetMultiObjectMappingTable(rightSide));
 		}
@@ -658,13 +658,13 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Left))
 				.Returns(GetDocumentTable(leftSide))
-				.Returns(GetMutliObjTable(leftSide));
+				.Returns(GetMultiObjTable(leftSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Left))
 				.Returns(GetMultiObjectMappingTable(leftSide));
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Right))
 				.Returns(GetDocumentTable(rightSide))
-				.Returns(GetMutliObjTable(rightSide));
+				.Returns(GetMultiObjTable(rightSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Right))
 				.Returns(rightTables);
 		}
@@ -719,13 +719,13 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Left))
 				.Returns(GetDocumentTable(leftSide))
-				.Returns(GetMutliObjTable(leftSide));
+				.Returns(GetMultiObjTable(leftSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Left))
 				.Returns(leftTables);
 
 			dataLoader.SetupSequence(x => x.GetDataTable(It.IsAny<TableConfig>(), SideEnum.Right))
 				.Returns(GetDocumentTable(rightSide))
-				.Returns(GetMutliObjTable(rightSide));
+				.Returns(GetMultiObjTable(rightSide));
 			dataLoader.Setup(x => x.GetMappingTable(It.IsAny<TableConfig>(), It.IsAny<MappingConfig>(), It.IsAny<Dictionary<string, string>>(), SideEnum.Right))
 				.Returns(GetMultiObjectMappingTable(rightSide));
 		}
@@ -811,7 +811,7 @@ namespace SQLDataComparer.UnitTests.UseCaseModels
 			};
 		}
 
-		private static List<Table> GetMutliObjTable(OneSide side)
+		private static List<Table> GetMultiObjTable(OneSide side)
 		{
 			var firstMultiObjTable = new Table
 			{

@@ -15,18 +15,21 @@ namespace SQLDataComparer.DataCompare
 		public override List<string> MatchAndCompareRowsValues(List<Row> leftRows, List<Row> rightRows)
 		{
 			var differences = new List<string>();
-			var matchedRows = new Dictionary<int, int>();
+			var matchedRows = new Dictionary<Row, Row>();
 
-			for (int i = 0; i < leftRows.Count; i++)
+			var rowsToOuterIteration = rightRows.Count >= leftRows.Count ? leftRows : rightRows;
+			var rowsToInnerIteration = rightRows.Count >= leftRows.Count ? rightRows : leftRows;
+
+			foreach (Row i in rowsToOuterIteration)
 			{
-				int matchedTo = -1;
+				Row matchedTo = null;
 				List<string> differencesOneRow = null;
 
-				for (int j = 0; j < rightRows.Count; j++)
+				foreach (Row j in rowsToInnerIteration)
 				{
 					if (!matchedRows.ContainsKey(j))
 					{
-						List<string> differencesWithCurrentRow = GetDifferences(leftRows[i], rightRows[j]);
+						List<string> differencesWithCurrentRow = GetDifferences(i, j);
 
 						if (differencesOneRow == null || differencesWithCurrentRow.Count < differencesOneRow.Count)
 						{
@@ -36,7 +39,7 @@ namespace SQLDataComparer.DataCompare
 					}
 				}
 
-				if (matchedTo != -1)
+				if (matchedTo != null)
 				{
 					matchedRows.Add(matchedTo, i);
 
@@ -50,8 +53,12 @@ namespace SQLDataComparer.DataCompare
 			return differences;
 		}
 
-		protected override List<string> GetDifferences(Row leftRow, Row rightRow)
+		protected override List<string> GetDifferences(Row row1, Row row2)
 		{
+			ComparableRows rows = new ComparableRows(row1, row2);
+			var leftRow = rows.LeftRow;
+			var rightRow = rows.RightRow;
+
 			var differences = new List<string>();
 
 			if (leftRow.Values.Count != rightRow.Values.Count)
@@ -140,12 +147,7 @@ namespace SQLDataComparer.DataCompare
 			leftValue = leftNode.Attributes["name"].Value;
 			rightValue = rightNode.Attributes["name"].Value;
 
-			if (leftValue != rightValue)
-			{
-				return false;
-			}
-
-			return true;
+			return leftValue == rightValue;
 		}
 
 		protected List<string> GetDetailsDifferences(XmlNode leftNode, XmlNode rightNode, string rowId)

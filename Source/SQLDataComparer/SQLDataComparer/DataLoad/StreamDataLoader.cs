@@ -43,6 +43,8 @@ namespace SQLDataComparer.DataLoad
 					return GetChoiceTable(tableConfig, mappingConfig, mappingTable, side);
 				case MappingType.MultiObject:
 					return GetMultiObjectTable(tableConfig, mappingConfig, mappingTable, side);
+				case MappingType.Artifact:
+					return GetArtifactMappingTable(tableConfig, mappingConfig, mappingTable, side);
 				default:
 					return null;
 			}
@@ -82,6 +84,15 @@ namespace SQLDataComparer.DataLoad
 			return GetTable(tableConfig, connectionString, query, side);
 		}
 
+		private IEnumerable<Table> GetArtifactMappingTable(TableConfig tableConfig, MappingConfig mappingConfig, Dictionary<string, string> mappingTable, SideEnum side)
+		{
+			string connectionString = GetConnectionString(side);
+
+			string query = GetArtifactMappingQuery(tableConfig, mappingConfig, mappingTable, side);
+
+			return GetTable(tableConfig, connectionString, query, side);
+		}
+
 		private IEnumerable<Table> GetTable(TableConfig tableConfig, string connectionString, string query, SideEnum side)
 		{
 			using (var connection = new SqlConnection(connectionString))
@@ -96,13 +107,19 @@ namespace SQLDataComparer.DataLoad
 				Table table = CreateTable(reader, tableConfig, side);
 				table.Name = tableConfig.Name;
 				table.RowId = tableConfig.RowId;
-				table.Ignores = new HashSet<string>(tableConfig.IgnoreConfig.Select(x => x.Name)); 
+				table.Side = side;
+				table.Ignores = new HashSet<string>(tableConfig.IgnoreConfig.Select(x => x.Name));
+
+				foreach (var mappedString in tableConfig.MappedStringConfig)
+				{
+					table.MappedStrings.Add(mappedString.Name, new KeyValuePair<string, string>(mappedString.Left, mappedString.Right));
+				}
 
 				if (reader.HasRows)
 				{
 					reader.Read();
 					IDataRecord firstRecord = reader;
-					Row row = CreateRow(firstRecord, table, tableConfig, side);
+					Row row = CreateRow(firstRecord, table);
 					table.Rows.Add(row);
 
 					string currentRowId = row.Id;
@@ -110,9 +127,9 @@ namespace SQLDataComparer.DataLoad
 					foreach (IDataRecord record in reader)
 					{
 						// case 1 row with the same row id
-						if (String.Compare(currentRowId, record[tableConfig.RowId].ToString(), StringComparison.CurrentCultureIgnoreCase) == 0)
+						if (string.Compare(currentRowId, record[tableConfig.RowId].ToString(), StringComparison.CurrentCultureIgnoreCase) == 0)
 						{
-							row = CreateRow(record, table, tableConfig, side);
+							row = CreateRow(record, table);
 							table.Rows.Add(row);
 						}
 						// case 2 row with different row id
@@ -120,7 +137,7 @@ namespace SQLDataComparer.DataLoad
 						{
 							yield return table;
 							table.Rows.Clear();
-							row = CreateRow(record, table, tableConfig, side);
+							row = CreateRow(record, table);
 							table.Rows.Add(row);
 							currentRowId = row.Id;
 						}
@@ -144,7 +161,7 @@ namespace SQLDataComparer.DataLoad
 			return table;
 		}
 
-		private Row CreateRow(IDataRecord record, Table table, TableConfig tableConfig, SideEnum side)
+		private Row CreateRow(IDataRecord record, Table table)
 		{
 			var row = new Row(table);
 
@@ -335,7 +352,24 @@ namespace SQLDataComparer.DataLoad
 			queryBuilder.Append(" JOIN EDDSDBO.Artifact as artifact");
 			queryBuilder.Append(" ON artifact.ArtifactID = audit.ArtifactID");
 			queryBuilder.Append(" WHERE audit.Action = 47");
-			queryBuilder.Append($" ORDER BY artifact.TextIdentifier, audit.ID");
+			queryBuilder.Append(" ORDER BY artifact.TextIdentifier, audit.ID");
+
+			return queryBuilder.ToString();
+		}
+
+		private string GetArtifactMappingQuery(TableConfig tableConfig, MappingConfig mappingConfig, Dictionary<string, string> mappingTable, SideEnum side)
+		{
+			StringBuilder queryBuilder = new StringBuilder();
+
+			queryBuilder.Append($"SELECT main.{tableConfig.RowId}, sub.{tableConfig.RowId} AS {tableConfig.RowId}_sub");
+			queryBuilder.Append($" FROM {tableConfig.Name} AS main");
+			queryBuilder.Append($" JOIN {mappingConfig.TargetTable} AS mapped");
+			queryBuilder.Append($" ON main.{tableConfig.MapId}");
+			queryBuilder.Append($" = mapped.{mappingConfig.TargetColumn}");
+			queryBuilder.Append($" JOIN {tableConfig.Name} AS sub");
+			queryBuilder.Append($" ON mapped.{mappingConfig.Name}");
+			queryBuilder.Append($" = sub.{tableConfig.MapId}");
+			queryBuilder.Append($" ORDER BY main.{tableConfig.RowId}");
 
 			return queryBuilder.ToString();
 		}

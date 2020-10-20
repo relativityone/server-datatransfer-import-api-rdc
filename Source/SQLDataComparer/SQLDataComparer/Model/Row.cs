@@ -6,7 +6,7 @@ namespace SQLDataComparer.Model
 	{
 		public string Id { get; set; }
 		public List<string> Values { get; set; } = new List<string>();
-		public Table Table { get; set; }
+		public Table Table { get; }
 
 		public Row(Table table)
 		{

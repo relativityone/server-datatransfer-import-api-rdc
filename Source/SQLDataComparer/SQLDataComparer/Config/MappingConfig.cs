@@ -7,7 +7,8 @@ namespace SQLDataComparer.Config
 		SingleObject,
 		SingleChoice,
 		MultiChoice,
-		MultiObject
+		MultiObject,
+		Artifact
 	}
 
 	public class MappingConfig

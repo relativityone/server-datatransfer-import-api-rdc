@@ -16,7 +16,7 @@ namespace SQLDataComparer
 			string username = args[1];
 			string password = args[2];
 
-			string compareConfigPath = args[4];
+			string compareConfigPath = args[3];
 			string leftDatabase = args[4];
 			string rightDatabase = args[5];
 
