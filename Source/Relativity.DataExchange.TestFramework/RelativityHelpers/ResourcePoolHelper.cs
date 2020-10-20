@@ -80,7 +80,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		private void UpdateWorkspace(int resourcePoolId, int fileShareId, int sqlServerId, int cacheLocationServerId)
 		{
-			using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(testParameters))
+#pragma warning disable CS0618 // Type or member is obsolete
+			using (IRSAPIClient client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(testParameters))
+#pragma warning restore CS0618 // Type or member is obsolete
 			{
 				var artifactIdCondition = new WholeNumberCondition(ArtifactQueryFieldNames.ArtifactID, NumericConditionEnum.EqualTo, testParameters.WorkspaceId);
 				var query = new Query<kCura.Relativity.Client.DTOs.Workspace>

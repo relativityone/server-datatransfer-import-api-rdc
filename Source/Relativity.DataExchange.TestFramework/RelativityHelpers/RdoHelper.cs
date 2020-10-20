@@ -11,9 +11,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Linq;
 	using System.Threading.Tasks;
 
-	using kCura.Relativity.Client;
-	using kCura.Relativity.Client.DTOs;
-
 	using Relativity.Services.Interfaces.ObjectType;
 	using Relativity.Services.Interfaces.ObjectType.Models;
 	using Relativity.Services.Interfaces.Shared;
@@ -27,44 +24,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	public static class RdoHelper
 	{
 		private const int WorkspaceArtifactTypeId = 8;
-
-		public static int CreateObjectType(IntegrationTestParameters parameters, string objectTypeName)
-		{
-			if (parameters == null)
-			{
-				throw new ArgumentNullException(nameof(parameters));
-			}
-
-			using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
-			{
-				client.APIOptions.WorkspaceID = parameters.WorkspaceId;
-				Result<kCura.Relativity.Client.DTOs.ObjectType> objectType = client.Repositories.ObjectType.Query(
-					new Query<kCura.Relativity.Client.DTOs.ObjectType>
-					{
-						Condition = new TextCondition("Name", TextConditionEnum.EqualTo, objectTypeName),
-						Fields = FieldValue.AllFields,
-					}).Results.FirstOrDefault();
-				if (objectType != null)
-				{
-					return objectType.Artifact.ArtifactID;
-				}
-
-				kCura.Relativity.Client.DTOs.ObjectType objectTypeDto = new kCura.Relativity.Client.DTOs.ObjectType
-				{
-					Name = objectTypeName,
-					ParentArtifactTypeID = 8,
-					SnapshotAuditingEnabledOnDelete = true,
-					Pivot = true,
-					CopyInstancesOnWorkspaceCreation =
-																					false,
-					Sampling = true,
-					PersistentLists = false,
-					CopyInstancesOnParentCopy = false,
-				};
-				int artifactId = client.Repositories.ObjectType.CreateSingle(objectTypeDto);
-				return artifactId;
-			}
-		}
 
 		public static async Task<int> CreateObjectTypeAsync(IntegrationTestParameters parameters, string objectTypeName)
 		{
@@ -215,26 +174,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		public static int QueryObjectType(IntegrationTestParameters parameters, string objectTypeName)
-		{
-			if (parameters == null)
-			{
-				throw new ArgumentNullException(nameof(parameters));
-			}
-
-			using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
-			{
-				client.APIOptions.WorkspaceID = parameters.WorkspaceId;
-				Result<kCura.Relativity.Client.DTOs.ObjectType> objectType = client.Repositories.ObjectType.Query(
-					new Query<kCura.Relativity.Client.DTOs.ObjectType>
-					{
-						Condition = new TextCondition("Name", TextConditionEnum.EqualTo, objectTypeName),
-						Fields = FieldValue.AllFields,
-					}).Results.FirstOrDefault();
-				return objectType?.Artifact?.ArtifactTypeID ?? 0;
-			}
-		}
-
 		public static IList<RelativityObject> QueryRelativityObjects(
 			IntegrationTestParameters parameters,
 			int artifactTypeId,
@@ -288,37 +227,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					ServiceHelper.MaxItemsToFetch).GetAwaiter().GetResult();
 				return result.Objects;
 			}
-		}
-
-		public static int QueryWorkspaceObjectTypeDescriptorId(IntegrationTestParameters parameters, int artifactId)
-		{
-			if (parameters == null)
-			{
-				throw new ArgumentNullException(nameof(parameters));
-			}
-
-			kCura.Relativity.Client.DTOs.ObjectType objectType =
-				new kCura.Relativity.Client.DTOs.ObjectType(artifactId) { Fields = FieldValue.AllFields };
-			ResultSet<kCura.Relativity.Client.DTOs.ObjectType> resultSet;
-			using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
-			{
-				client.APIOptions.WorkspaceID = parameters.WorkspaceId;
-				resultSet = client.Repositories.ObjectType.Read(objectType);
-			}
-
-			int? descriptorArtifactTypeId = null;
-			if (resultSet.Success && resultSet.Results.Any())
-			{
-				descriptorArtifactTypeId = resultSet.Results.First().Artifact.DescriptorArtifactTypeID;
-			}
-
-			if (!descriptorArtifactTypeId.HasValue)
-			{
-				throw new InvalidOperationException(
-					"Failed to retrieve Object Type descriptor artifact type identifier.");
-			}
-
-			return descriptorArtifactTypeId.Value;
 		}
 
 		public static RelativityObject ReadRelativityObject(

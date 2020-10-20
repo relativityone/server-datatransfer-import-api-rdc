@@ -8,6 +8,7 @@ nbuilder
 NUnit
 reportunit
 newtonsoft.json
+relativity.kepler.client
 relativity.logging
 relativity.logging.interfaces
 relativity.productions.services.interfaces
@@ -23,4 +24,3 @@ relativity.telemetry.services.interface
 
 group integration-tests
 System.ValueTuple
-relativity.kepler.client

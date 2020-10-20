@@ -85,4 +85,3 @@ group integration-tests
 source https://relativity.jfrog.io/relativity/api/nuget/v3/nuget-anthology
 framework: net462
 	nuget System.ValueTuple = 4.5.0
-	nuget relativity.kepler.client = 2.6.2

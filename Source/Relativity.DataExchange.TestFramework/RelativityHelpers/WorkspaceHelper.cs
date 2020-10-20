@@ -99,7 +99,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			if (workspaceToRemoveId != 0)
 			{
-				using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
+#pragma warning disable CS0618 // Type or member is obsolete
+				using (IRSAPIClient client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
+#pragma warning restore CS0618 // Type or member is obsolete
 				{
 					client.APIOptions.WorkspaceID = -1;
 					logger.LogInformation("Deleting the {WorkspaceId} workspace.", workspaceToRemoveId);
@@ -125,7 +127,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				throw new ArgumentNullException(nameof(logger));
 			}
 
-			using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
+#pragma warning disable CS0618 // Type or member is obsolete
+			using (IRSAPIClient client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
+#pragma warning restore CS0618 // Type or member is obsolete
 			{
 				client.APIOptions.WorkspaceID = parameters.WorkspaceId;
 				logger.LogInformation("Retrieving the {WorkspaceId} workspace folders...", parameters.WorkspaceId);
@@ -165,7 +169,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				}).Execute(
 				() =>
 				{
-					using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
+#pragma warning disable CS0618 // Type or member is obsolete
+					using (IRSAPIClient client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
+#pragma warning restore CS0618 // Type or member is obsolete
 					{
 						Workspace workspace = client.Repositories.Workspace.ReadSingle(workspaceId);
 						workspace.Name = newName;
@@ -181,7 +187,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			if (shouldUseRsApi)
 			{
-				using (var client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
+#pragma warning disable CS0618 // Type or member is obsolete
+				using (var client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
+#pragma warning restore CS0618 // Type or member is obsolete
 				{
 					var workspace = client.Repositories.Workspace.ReadSingle(parameters.WorkspaceId);
 					return workspace.DefaultFileLocation.Name;
@@ -208,7 +216,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					$"Trying to create a workspace. Template with the following name does not exist: {workspaceTemplateName}");
 			}
 
-			using (var client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
+#pragma warning disable CS0618 // Type or member is obsolete
+			using (var client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
+#pragma warning restore CS0618 // Type or member is obsolete
 			{
 				var workspace = new Workspace
 				{
@@ -234,7 +244,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			Relativity.Logging.ILog logger,
 			string workspaceName)
 		{
-			using (var client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
+#pragma warning disable CS0618 // Type or member is obsolete
+			using (var client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
+#pragma warning restore CS0618 // Type or member is obsolete
 			{
 				int workspaceId;
 
