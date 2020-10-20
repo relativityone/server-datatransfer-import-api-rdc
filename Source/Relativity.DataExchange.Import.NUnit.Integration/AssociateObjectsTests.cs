@@ -224,7 +224,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// ASSERT
 			ThenTheImportJobCompletedWithErrors(result, RowsWithNonExistingDocuments, totalRows);
 			Assert.That(result.NumberOfJobMessages, Is.Positive, () => "Wrong number of job messages.");
-			ThenTheErrorRowsHaveCorrectMessage(result.ErrorRows, " - An object field references a document which does not exist");
+			ThenTheErrorRowsContainsCorrectMessage(result.ErrorRows, " - An object field references a document which does not exist");
 		}
 
 		[Category(TestCategories.Integration)]
