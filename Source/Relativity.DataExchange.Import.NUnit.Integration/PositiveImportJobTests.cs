@@ -518,6 +518,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
+		[IgnoreIfMassImportImprovementsToggleHasValue(isEnabled: false)]
 		[IdentifiedTest("13dc1d17-4a2b-4b48-9015-b61e58bc5168")]
 		public async Task ShouldImportObjectsWithAssociatedChildDocuments(
 			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.AppendOverlay, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode)
