@@ -19,8 +19,10 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Services.Interfaces.Field.Models;
+	using Relativity.Services.Interfaces.Shared;
 	using Relativity.Services.Interfaces.Shared.Models;
 	using Relativity.Services.Interfaces.Workspace;
+	using Relativity.Services.Interfaces.Workspace.Models;
 
 	using ArtifactType = Relativity.ArtifactType;
 	using IFieldManager = Relativity.Services.Interfaces.Field.IFieldManager;
@@ -30,6 +32,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	/// </summary>
 	public static class WorkspaceHelper
 	{
+		private static readonly RelativityVersion WorkspaceManagerReleaseVersion = RelativityVersion.Lanceleaf;
+
 		public static void CreateTestWorkspace(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
 		{
 			if (parameters == null)
@@ -180,27 +184,38 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				});
 		}
 
+		public static async Task UpdateWorkspaceResourcesAsync(
+			IntegrationTestParameters parameters,
+			int resourcePoolId,
+			int fileShareId,
+			int sqlServerId,
+			int cacheLocationServerId)
+		{
+			if (CanUseWorkspaceManagerKepler(parameters))
+			{
+				await UpdateWorkspaceUsingKeplerAsync(
+					parameters,
+					resourcePoolId,
+					fileShareId,
+					sqlServerId,
+					cacheLocationServerId).ConfigureAwait(false);
+			}
+			else
+			{
+				UpdateWorkspaceUsingRSAPI(
+					parameters,
+					resourcePoolId,
+					fileShareId,
+					sqlServerId,
+					cacheLocationServerId);
+			}
+		}
+
 		public static async Task<string> GetDefaultFileRepositoryAsync(IntegrationTestParameters parameters)
 		{
-			// kepler endpoint exists since Lanceleaf release.
-			bool shouldUseRsApi = RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.Lanceleaf);
-
-			if (shouldUseRsApi)
-			{
-#pragma warning disable CS0618 // Type or member is obsolete
-				using (var client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
-#pragma warning restore CS0618 // Type or member is obsolete
-				{
-					var workspace = client.Repositories.Workspace.ReadSingle(parameters.WorkspaceId);
-					return workspace.DefaultFileLocation.Name;
-				}
-			}
-
-			using (var workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
-			{
-				var workspace = await workspaceManager.ReadAsync(parameters.WorkspaceId).ConfigureAwait(false);
-				return workspace.DefaultFileRepository.Value.Name;
-			}
+			return CanUseWorkspaceManagerKepler(parameters)
+				? await GetDefaultFileRepositoryUsingKeplerAsync(parameters).ConfigureAwait(false)
+				: GetDefaultFileRepositoryUsingRSAPI(parameters);
 		}
 
 		internal static void CreateWorkspaceFromTemplate(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string workspaceTemplateName, string newWorkspaceName)
@@ -374,6 +389,83 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 				await fieldManager.UpdateLongTextFieldAsync(parameters.WorkspaceId, fieldId, longTextFieldRequest)
 						.ConfigureAwait(false);
+			}
+		}
+
+		private static bool CanUseWorkspaceManagerKepler(IntegrationTestParameters parameters) =>
+			!RelativityVersionChecker.VersionIsLowerThan(parameters, WorkspaceManagerReleaseVersion);
+
+		private static async Task UpdateWorkspaceUsingKeplerAsync(
+			IntegrationTestParameters parameters,
+			int resourcePoolId,
+			int fileShareId,
+			int sqlServerId,
+			int cacheLocationServerId)
+		{
+			using (IWorkspaceManager workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
+			{
+				WorkspaceResponse existingWorkspace = await workspaceManager.ReadAsync(parameters.WorkspaceId, includeMetadata: false, includeActions: false).ConfigureAwait(false);
+				WorkspaceRequest updateRequest = new WorkspaceRequest(existingWorkspace)
+				{
+					ResourcePool = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = resourcePoolId }),
+					DefaultFileRepository = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = fileShareId }),
+					DataGridFileRepository = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = fileShareId }),
+					SqlServer = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = sqlServerId }),
+					DefaultCacheLocation = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = cacheLocationServerId }),
+				};
+
+				await workspaceManager.UpdateAsync(parameters.WorkspaceId, updateRequest).ConfigureAwait(false);
+			}
+		}
+
+		private static void UpdateWorkspaceUsingRSAPI(
+			IntegrationTestParameters parameters,
+			int resourcePoolId,
+			int fileShareId,
+			int sqlServerId,
+			int cacheLocationServerId)
+		{
+#pragma warning disable CS0618 // Type or member is obsolete
+			using (IRSAPIClient client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
+#pragma warning restore CS0618 // Type or member is obsolete
+			{
+				var artifactIdCondition = new WholeNumberCondition(ArtifactQueryFieldNames.ArtifactID, NumericConditionEnum.EqualTo, parameters.WorkspaceId);
+				var query = new Query<Workspace>
+					            {
+						            Condition = artifactIdCondition,
+						            Fields = FieldValue.AllFields,
+					            };
+
+				Workspace workspace = client.Repositories.Workspace.Query(query).Results.First().Artifact;
+
+				workspace.ResourcePoolID = resourcePoolId;
+				var fileShareChoice = new kCura.Relativity.Client.DTOs.Choice(fileShareId);
+				workspace.DefaultFileLocation = fileShareChoice;
+				workspace.DefaultDataGridLocation = fileShareChoice;
+				workspace.ServerID = sqlServerId;
+				workspace.DefaultCacheLocation = cacheLocationServerId;
+
+				client.Repositories.Workspace.UpdateSingle(workspace);
+			}
+		}
+
+		private static async Task<string> GetDefaultFileRepositoryUsingKeplerAsync(IntegrationTestParameters parameters)
+		{
+			using (var workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
+			{
+				var workspace = await workspaceManager.ReadAsync(parameters.WorkspaceId).ConfigureAwait(false);
+				return workspace.DefaultFileRepository.Value.Name;
+			}
+		}
+
+		private static string GetDefaultFileRepositoryUsingRSAPI(IntegrationTestParameters parameters)
+		{
+#pragma warning disable CS0618 // Type or member is obsolete
+			using (var client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
+#pragma warning restore CS0618 // Type or member is obsolete
+			{
+				var workspace = client.Repositories.Workspace.ReadSingle(parameters.WorkspaceId);
+				return workspace.DefaultFileLocation.Name;
 			}
 		}
 	}
