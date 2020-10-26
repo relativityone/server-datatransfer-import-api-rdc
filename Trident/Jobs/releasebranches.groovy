@@ -271,10 +271,10 @@ def GetHopperTemplate(String branchName)
 			hopperImage = "aio-lanceleaf-0"
 			break
 		case "mayapple":
-			hopperImage = "aio-mayapple-eau"
+			hopperImage = "aio-mayapple-0"
 			break
 		case "ninebark":
-			hopperImage = "aio-mayapple-eau"
+			hopperImage = "aio-ninebark-ea"
 			break
 		default:
 			echo "Define the hopper image which should be used in tests on branch '${branchName}'"
