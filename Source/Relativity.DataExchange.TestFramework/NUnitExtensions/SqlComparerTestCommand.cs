@@ -19,12 +19,15 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 	{
 		private readonly SqlComparerInputCollector _sqlComparerInputCollector;
 		private int _workspaceId;
+		private string _workspaceName;
 		private TestWorkspaceToCompareDto _testWorkspaceToAdd;
 
 		private int testIteration;
 
 		private int leftInputWorkspaceId;
 		private int rightInputWorkspaceId;
+		private string leftInputWorkspaceName;
+		private string rightInputWorkspaceName;
 		private string leftInputFilePath;
 		private string rightInputFilePath;
 
@@ -39,6 +42,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 		private void ExecuteBeforeTest(TestExecutionContext context)
 		{
 			this._workspaceId = IntegrationTestHelper.IntegrationTestParameters.WorkspaceId;
+			this._workspaceName = IntegrationTestHelper.IntegrationTestParameters.WorkspaceName;
 
 			string className = context.CurrentTest.TypeInfo.Name;
 			string fileName = Path.ChangeExtension(context.CurrentTest.MethodName, "xml");
@@ -70,22 +74,28 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 			string testOutputMessage = $"Added test workspace to compare. Test: {this._testWorkspaceToAdd.FullTestCaseName}, database: {this._testWorkspaceToAdd.DatabaseName}, comparerConfig: {this._testWorkspaceToAdd.ComparerConfigFilePath}";
 			TestContext.Out.WriteLine(testOutputMessage);
 
-			// For 'DeleteWorkspaceAfterTest'='true' workspace has been already deleted
-			if (!IntegrationTestHelper.IntegrationTestParameters.DeleteWorkspaceAfterTest)
-			{
-				// We need to rename a workspace, because it's name is present in the database.
-				WorkspaceHelper.RenameTestWorkspace(IntegrationTestHelper.IntegrationTestParameters, this._workspaceId, "ImportApi-SqlComparer");
-			}
-
 			if (testIteration == 1)
 			{
 				leftInputWorkspaceId = this._workspaceId;
+				this.leftInputWorkspaceName = this._workspaceName;
 				this.leftInputFilePath = inputFilePath;
 			}
 			else if (testIteration == 2)
 			{
 				rightInputWorkspaceId = this._workspaceId;
+				this.rightInputWorkspaceName = this._workspaceName;
 				this.rightInputFilePath = inputFilePath;
+
+				var compareConfigPath = Path.Combine(
+					IntegrationTestHelper.IntegrationTestParameters.SqlComparerOutputPath,
+					$"{context.CurrentTest.MethodName}.xml");
+
+				string compareConfig = File.ReadAllText(compareConfigPath);
+
+				compareConfig = compareConfig.Replace("{leftWorkspaceName}", this.leftInputWorkspaceName);
+				compareConfig = compareConfig.Replace("{rightWorkspaceName}", this.rightInputWorkspaceName);
+
+				File.WriteAllText(compareConfigPath, compareConfig);
 
 				string resultFile = Path.Combine(IntegrationTestHelper.IntegrationTestParameters.SqlComparerOutputPath, "sqlComparer_result.txt");
 

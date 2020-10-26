@@ -20,13 +20,20 @@
 				<ignore name="LastModifiedOn"/>
 				<ignore name="LastModifiedBy"/>
 			</ignored>
+			<mappedStrings>
+				<mappedString name="TextIdentifier" left="{leftWorkspaceName}" right="{rightWorkspaceName}"/>
+				<mappedString name="TextIdentifier_sub" left="{leftWorkspaceName}" right="{rightWorkspaceName}"/>
+			</mappedStrings>
 			<whereClauses>
 				<where name="ArtifactTypeID" type="IsNot" value="1000051"/>
 				<where name="TextIdentifier" type="IsNot" value="'Relativity Starter Template','ImportApi-SqlComparer'"/>
 			</whereClauses>
+			<mappings>
+				<mapping name="AncestorArtifactID" type="Artifact" targetTable="EDDSDBO.ArtifactAncestry"/>
+			</mappings>
 		</table>
 		<table name="EDDSDBO.Code" rowId="Name">
-		  <ignored>
+			<ignored>
 			<ignore name="ArtifactID"/>
 			<ignore name="CodeTypeID"/>
 		  </ignored>
