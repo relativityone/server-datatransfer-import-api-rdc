@@ -11,12 +11,18 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Linq;
 	using System.Threading.Tasks;
 
+	using kCura.Relativity.Client;
+	using kCura.Relativity.Client.DTOs;
+
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Services.Interfaces.ObjectType;
 	using Relativity.Services.Interfaces.ObjectType.Models;
 	using Relativity.Services.Interfaces.Shared;
 	using Relativity.Services.Interfaces.Shared.Models;
 	using Relativity.Services.Objects;
 	using Relativity.Services.Objects.DataContracts;
+
+	using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 	/// <summary>
 	/// Defines static helper methods to manage Relativity Dynamic Objects.
@@ -25,21 +31,13 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	{
 		private const int WorkspaceArtifactTypeId = 8;
 
-		public static async Task<int> CreateObjectTypeAsync(IntegrationTestParameters parameters, string objectTypeName)
+		private static readonly RelativityVersion ObjectTypeManagerReleaseVersion = RelativityVersion.Blazingstar;
+
+		public static Task<int> CreateObjectTypeAsync(IntegrationTestParameters parameters, string objectTypeName)
 		{
-			using (var objectManager = ServiceHelper.GetServiceProxy<IObjectTypeManager>(parameters))
-			{
-				var request = new ObjectTypeRequest
-				{
-					Name = objectTypeName,
-					ParentObjectType = new Securable<ObjectTypeIdentifier>(new ObjectTypeIdentifier { ArtifactTypeID = WorkspaceArtifactTypeId }),
-				};
-
-				int newObjectId = await objectManager.CreateAsync(parameters.WorkspaceId, request).ConfigureAwait(false);
-
-				ObjectTypeResponse objectTypeResponse = await objectManager.ReadAsync(parameters.WorkspaceId, newObjectId).ConfigureAwait(false);
-				return objectTypeResponse.ArtifactTypeID;
-			}
+			return CanUseObjectTypeManagerKepler(parameters)
+					   ? CreateObjectTypeUsingKeplerAsync(parameters, objectTypeName)
+					   : Task.FromResult(CreateObjectTypeUsingRSAPI(parameters, objectTypeName));
 		}
 
 		public static int CreateObjectTypeInstance(
@@ -252,5 +250,68 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				return result.Object;
 			}
 		}
+
+		private static async Task<int> CreateObjectTypeUsingKeplerAsync(IntegrationTestParameters parameters, string objectTypeName)
+		{
+			using (var objectManager = ServiceHelper.GetServiceProxy<IObjectTypeManager>(parameters))
+			{
+				var request = new ObjectTypeRequest
+				{
+					Name = objectTypeName,
+					ParentObjectType = new Securable<ObjectTypeIdentifier>(new ObjectTypeIdentifier { ArtifactTypeID = WorkspaceArtifactTypeId }),
+				};
+
+				int newObjectId = await objectManager.CreateAsync(parameters.WorkspaceId, request).ConfigureAwait(false);
+
+				ObjectTypeResponse objectTypeResponse = await objectManager.ReadAsync(parameters.WorkspaceId, newObjectId).ConfigureAwait(false);
+				return objectTypeResponse.ArtifactTypeID;
+			}
+		}
+
+		private static int CreateObjectTypeUsingRSAPI(IntegrationTestParameters parameters, string objectTypeName)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			using (IRSAPIClient client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
+#pragma warning restore CS0618 // Type or member is obsolete
+			{
+				client.APIOptions.WorkspaceID = parameters.WorkspaceId;
+
+				var query = new Query<ObjectType>
+				{
+					Condition = new TextCondition("Name", TextConditionEnum.EqualTo, objectTypeName),
+					Fields = FieldValue.AllFields,
+				};
+				Result<ObjectType> objectType = client.Repositories.ObjectType.Query(query).Results.FirstOrDefault();
+
+				if (objectType != null)
+				{
+					return objectType.Artifact.DescriptorArtifactTypeID.Value;
+				}
+
+				var objectTypeDto = new ObjectType
+				{
+					Name = objectTypeName,
+					ParentArtifactTypeID = 8,
+					SnapshotAuditingEnabledOnDelete = true,
+					Pivot = true,
+					CopyInstancesOnWorkspaceCreation = false,
+					Sampling = true,
+					PersistentLists = false,
+					CopyInstancesOnParentCopy = false,
+				};
+				int artifactId = client.Repositories.ObjectType.CreateSingle(objectTypeDto);
+
+				ObjectType createdObjectType = client.Repositories.ObjectType.ReadSingle(artifactId);
+				return createdObjectType.DescriptorArtifactTypeID.Value;
+			}
+		}
+
+		private static bool CanUseObjectTypeManagerKepler(IntegrationTestParameters parameters) =>
+			!RelativityVersionChecker.VersionIsLowerThan(parameters, ObjectTypeManagerReleaseVersion);
 	}
 }
