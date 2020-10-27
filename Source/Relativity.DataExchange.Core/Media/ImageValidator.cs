@@ -105,7 +105,7 @@ namespace Relativity.DataExchange.Media
 						Strings.ImageFormatNotSupportedError,
 						file,
 						imageFormat.ToString());
-					throw new ImageValidationException(formatMessage);
+					throw new ImageFileValidationException(formatMessage);
 			}
 		}
 
@@ -143,22 +143,22 @@ namespace Relativity.DataExchange.Media
 				if (bitDepth > 1)
 				{
 					string message = string.Format(CultureInfo.CurrentCulture, Strings.TiffImageNotOneBitError, file, bitDepth);
-					throw new ImageValidationException(message);
+					throw new ImageFileValidationException(message);
 				}
 			}
-			catch (ImageValidationException)
+			catch (ImageFileValidationException)
 			{
 				throw;
 			}
 			catch (NullReferenceException e)
 			{
 				string message = string.Format(CultureInfo.CurrentCulture, Strings.TiffImageNotSupportedError, file);
-				throw new ImageValidationException(message, e);
+				throw new ImageFileValidationException(message, e);
 			}
 			catch (Exception e)
 			{
 				string message = string.Format(CultureInfo.CurrentCulture, Strings.ImageReadError, file);
-				throw new ImageValidationException(message, e);
+				throw new ImageFileValidationException(message, e);
 			}
 			finally
 			{
@@ -181,7 +181,7 @@ namespace Relativity.DataExchange.Media
 			if (fileInfo.Length == 0)
 			{
 				string message = string.Format(CultureInfo.CurrentCulture, Strings.ImageZeroBytesError, file);
-				throw new ImageValidationException(message);
+				throw new ImageFileValidationException(message);
 			}
 
 			FreeImageAPI.FREE_IMAGE_FORMAT freeImageFormat = FreeImageAPI.FreeImage.GetFileType(file, 0);
@@ -206,7 +206,7 @@ namespace Relativity.DataExchange.Media
 					file,
 					GetTiffEncodingDescription(encoding),
 					GetTiffEncodingDescription(SupportedEncoding));
-				throw new ImageValidationException(message);
+				throw new ImageFileValidationException(message);
 			}
 		}
 
@@ -241,7 +241,7 @@ namespace Relativity.DataExchange.Media
 						CultureInfo.CurrentCulture,
 						Strings.TiffMultiPageNotSupportedError,
 						file);
-					throw new ImageValidationException(message);
+					throw new ImageFileValidationException(message);
 				}
 
 				fileStream.Position = currentPosition;

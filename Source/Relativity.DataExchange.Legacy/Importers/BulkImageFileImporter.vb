@@ -1,5 +1,6 @@
 Imports System.Threading
 Imports System.Collections.Generic
+Imports kCura.WinEDDS.Api
 
 Imports kCura.WinEDDS.Service
 Imports Monitoring
@@ -70,6 +71,7 @@ Namespace kCura.WinEDDS
 		Private _timekeeper As New Timekeeper2
 		Private _doRetryLogic As Boolean
 		Private _verboseErrorCollection As New ClientSideErrorCollection
+		Private _prePushErrors As New List(Of Tuple(Of ImageRecord, String))
 		Private _cancelledByUser As Boolean = False
 
 		Public Property SkipExtractedTextEncodingCheck As Boolean
@@ -579,6 +581,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Sub PushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
+			ManagePrePushErrors()
 			If _lastRunMetadataImport > 0 Then
 				Me.Statistics.MetadataWaitDuration += New TimeSpan(System.DateTime.Now.Ticks - _lastRunMetadataImport)
 			End If
@@ -719,7 +722,14 @@ Namespace kCura.WinEDDS
 								Me.ProcessList(al, status, bulkLoadFilePath, dataGridFilePath)
 							End If
 							status = status Or Me.ProcessImageLine(record)
-							al.Add(record)
+							Try
+								ValidateImageRecord(record)
+								al.Add(record)
+							Catch ex As ImageDataValidationException
+								_verboseErrorCollection.AddError(record.OriginalIndex, ex)
+								_prePushErrors.Add(New Tuple(Of ImageRecord, String)(record, ex.Message))
+							End Try
+
 							If Not Me.[Continue] Then
 								Me.ProcessList(al, status, bulkLoadFilePath, dataGridFilePath)
 								Exit While
@@ -833,19 +843,29 @@ Namespace kCura.WinEDDS
 				End If
 
 				Me.RaiseStatusEvent(EventType2.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64))
-			Catch ex As Exception
-				If TypeOf ex Is ImageValidationException Then
+			Catch ex As ImageFileValidationException
 				Me.LogError(ex, "Failed to validate the {Path} image.", imageFilePath.Secure())
-					retval = ImportStatus.InvalidImageFormat
-					_verboseErrorCollection.AddError(imageRecord.OriginalIndex, ex)
-				Else
+				retval = ImportStatus.InvalidImageFormat
+				_verboseErrorCollection.AddError(imageRecord.OriginalIndex, ex)
+			Catch ex As Exception
 				Me.LogFatal(ex, "Unexpected failure to validate the {Path} image file.", imageFilePath.Secure())
 					Throw
-				End If
 			End Try
 
 			Return retval
 		End Function
+
+		Private Sub ValidateImageRecord(ByVal record As Api.ImageRecord)
+			If record.BatesNumber?.IndexOf(",") > -1 Then
+				Throw New ImageDataValidationException("Bates number contains unsupported char ','")
+			End If
+			If record.FileName?.IndexOf(",") > -1 Then
+				Throw New ImageDataValidationException("File name contains unsupported char ','")
+			End If
+			If record.FileLocation?.IndexOf(",") > -1 Then
+				Throw New ImageDataValidationException("File location contains unsupported char ','")
+			End If
+		End Sub
 
 		Public Shared Function GetFileLocation(ByVal record As Api.ImageRecord) As String
 			Dim fileLocation As String = record.FileLocation
@@ -1151,15 +1171,28 @@ Namespace kCura.WinEDDS
 			Me.PublishIoWarningEvent(ioWarningEventArgs)
 		End Sub
 
+		Private Sub ManagePrePushErrors()
+			If Not _prePushErrors.Any Then Exit Sub
+			InitializeErrorFiles
+
+			Using stream As System.IO.StreamWriter = New System.IO.StreamWriter(_errorRowsFileLocation, True, System.Text.Encoding.Default)
+				For Each prePushError As Tuple(Of ImageRecord, String) In _prePushErrors
+					Dim record As ImageRecord = prePushError.Item1
+					Dim errorMessage As String = prePushError.Item2
+					Dim line As String() = new String() { record.OriginalIndex.ToString(), record.BatesNumber, record.FileName, errorMessage }
+					ProcessError(line)
+					Dim newRecordMarker As String = If(record.IsNewDoc, "Y", String.Empty)
+					' must be the same format as returned from server 
+					stream.WriteLine(String.Format("{0},{1},{2},{3},,,", record.BatesNumber, RunId, record.FileLocation, newRecordMarker))
+				Next
+			End Using
+
+			_prePushErrors = New List(Of Tuple(Of ImageRecord, String))
+		End Sub
+
 		Private Sub ManageErrors()
 			If Not _bulkImportManager.ImageRunHasErrors(_caseInfo.ArtifactID, _runId) Then Exit Sub
-			If _errorMessageFileLocation = "" Then
-				_errorMessageFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
-			End If
-
-			If _errorRowsFileLocation = "" Then
-				_errorRowsFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
-			End If
+			InitializeErrorFiles 
 
 			Dim w As System.IO.StreamWriter = Nothing
 			Dim r As System.IO.StreamReader = Nothing
@@ -1183,24 +1216,7 @@ Namespace kCura.WinEDDS
 						AddHandler sr.Context.IoWarningEvent, AddressOf Me.IoWarningHandler
 						Dim line As String() = sr.ReadLine
 						While Not line Is Nothing
-							Dim originalIndex As Int64 = Int64.Parse(line(0))
-							Dim ht As New System.Collections.Hashtable
-							ht.Add("Line Number", Ctype(originalIndex,Int32))
-							ht.Add("DocumentID", line(1))
-							ht.Add("FileID", line(2))
-							Dim errorMessages As String = line(3)
-							If _verboseErrorCollection.ContainsLine(originalIndex) Then
-								Dim sb As New System.Text.StringBuilder
-								For Each message As String In _verboseErrorCollection(originalIndex)
-									sb.Append(ImportStatusHelper.ConvertToMessageLineInCell(message))
-								Next
-								errorMessages = sb.ToString.TrimEnd(ChrW(10))
-							End If
-							ht.Add("Message", errorMessages)
-							RaiseReportError(ht)
-							'TODO: track stats
-							Dim recordNumber As Long = originalIndex + ImportFilesCount
-							RaiseEvent StatusMessage(New StatusEventArgs(EventType2.Error, recordNumber - 1, _recordCount, "[Line " & line(0) & "]" & errorMessages, Nothing, Statistics))
+							ProcessError(line)
 							line = sr.ReadLine
 						End While
 						sr.Close()
@@ -1251,6 +1267,37 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
+		Private Sub InitializeErrorFiles 
+			If _errorMessageFileLocation = "" Then
+				_errorMessageFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
+			End If
+
+			If _errorRowsFileLocation = "" Then
+				_errorRowsFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
+			End If
+		End Sub
+
+		Private Sub ProcessError(ByVal line As String())
+			Dim originalIndex As Int64 = Int64.Parse(line(0))
+			Dim ht As New System.Collections.Hashtable
+			ht.Add("Line Number", Ctype(originalIndex,Int32))
+			ht.Add("DocumentID", line(1))
+			ht.Add("FileID", line(2))
+			Dim errorMessages As String = line(3)
+			If _verboseErrorCollection.ContainsLine(originalIndex) Then
+				Dim sb As New System.Text.StringBuilder
+				For Each message As String In _verboseErrorCollection(originalIndex)
+					sb.Append(ImportStatusHelper.ConvertToMessageLineInCell(message))
+				Next
+				errorMessages = sb.ToString.TrimEnd(ChrW(10))
+			End If
+			ht.Add("Message", errorMessages)
+			RaiseReportError(ht)
+			'TODO: track stats
+			Dim recordNumber As Long = originalIndex + ImportFilesCount
+			RaiseEvent StatusMessage(New StatusEventArgs(EventType2.Error, recordNumber - 1, _recordCount, "[Line " & line(0) & "]" & errorMessages, Nothing, Statistics))
+		End Sub
+		
 		Private Function AttemptErrorFileDownload(ByVal errorFileService As ErrorFileService, ByVal errorFileOutputPath As String, ByVal logKey As String, ByVal caseInfo As CaseInfo) As GenericCsvReader2
 			Dim triesLeft As Integer = 3
 			Dim sr As GenericCsvReader2 = Nothing

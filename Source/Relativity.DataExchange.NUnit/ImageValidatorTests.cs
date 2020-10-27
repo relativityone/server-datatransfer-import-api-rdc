@@ -82,7 +82,7 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldThrowWhenTheTiffEncodingIsNotSupported(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Tiff", fileName);
-			ImageValidationException exception = Assert.Throws<ImageValidationException>(() => this.validator.Validate(file));
+			ImageFileValidationException exception = Assert.Throws<ImageFileValidationException>(() => this.validator.Validate(file));
 			Assert.That(exception.Message, Contains.Substring("is encoded"));
 		}
 
@@ -96,7 +96,7 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldThrowWhenTheTiffHeaderBitCountIsGreaterThanOne(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Tiff", fileName);
-			ImageValidationException exception = Assert.Throws<ImageValidationException>(() => this.validator.Validate(file));
+			ImageFileValidationException exception = Assert.Throws<ImageFileValidationException>(() => this.validator.Validate(file));
 			Assert.That(exception.Message, Contains.Substring("bits"));
 		}
 
@@ -109,7 +109,7 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldThrowWhenThePngImageFormatIsNotSupported(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Png", fileName);
-			ImageValidationException exception = Assert.Throws<ImageValidationException>(() => this.validator.Validate(file));
+			ImageFileValidationException exception = Assert.Throws<ImageFileValidationException>(() => this.validator.Validate(file));
 			Assert.That(exception.Message, Contains.Substring("isn't a valid TIFF or JPEG"));
 		}
 
@@ -135,7 +135,7 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldThrowWhenTheImageFileIsEmptyFile()
 		{
 			string file = RandomHelper.NextBinaryFile(0, 0, this.tempDirectory.Directory);
-			Assert.Throws<ImageValidationException>(() => this.validator.Validate(file));
+			Assert.Throws<ImageFileValidationException>(() => this.validator.Validate(file));
 		}
 	}
 }

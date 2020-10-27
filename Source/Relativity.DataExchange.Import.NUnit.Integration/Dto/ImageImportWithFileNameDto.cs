@@ -30,12 +30,17 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 
 		public static IEnumerable<ImageImportWithFileNameDto> GetRandomImageFiles(string directory, int numberOfDocumentsToImport, int numberOfImagesPerDocument, ImageFormat imageFormat)
 		{
+			return GetRandomImageFiles(directory, numberOfDocumentsToImport, numberOfImagesPerDocument, imageFormat, false);
+		}
+
+		public static IEnumerable<ImageImportWithFileNameDto> GetRandomImageFiles(string directory, int numberOfDocumentsToImport, int numberOfImagesPerDocument, ImageFormat imageFormat, bool useInvalidIdentifier)
+		{
 			const int imageWidth = 200;
 			const int imageHeight = 200;
 
 			for (int documentIndex = 1; documentIndex <= numberOfDocumentsToImport; documentIndex++)
 			{
-				string documentIdentifier = documentIndex.ToString();
+				string documentIdentifier = useInvalidIdentifier ? $"{documentIndex}," : $"{documentIndex}";
 				for (int imageIndex = 1; imageIndex <= numberOfImagesPerDocument; imageIndex++)
 				{
 					string batesNumber = $"{documentIdentifier}_{imageIndex}";

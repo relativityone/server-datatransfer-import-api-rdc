@@ -128,13 +128,14 @@
     <Compile Include="Logger\SecurePropertyValueExtensions.cs" />
     <Compile Include="Media\ByteOrdering.cs" />
     <Compile Include="Media\IByteArrayConverter.cs" />
+    <Compile Include="Media\ImageDataValidationException.cs" />
     <Compile Include="Media\ImageValidator.cs" />
     <Compile Include="Media\IImageConverter.cs" />
     <Compile Include="Media\IImageValidator.cs" />
     <Compile Include="Media\ImageConversionException.cs" />
     <Compile Include="Media\ImageConverterService.cs" />
     <Compile Include="Media\ImageFormat.cs" />
-    <Compile Include="Media\ImageValidationException.cs" />
+    <Compile Include="Media\ImageFileValidationException.cs" />
     <Compile Include="Media\MultiPagePdfConversionException.cs" />
     <Compile Include="Media\MultiPageTiffConversionException.cs" />
     <Compile Include="MemoryCacheRepository.cs" />
@@ -410,14 +411,18 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup></When></Choose>
+  <Choose>
+    <When Condition="'$(Configuration)'!='Debug'">
+      <ItemGroup>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -610,6 +615,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

@@ -140,6 +140,35 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobCompletedWithErrors(results, ExpectedNumberOfErrors, ExpectedNumberOfImportedImages);
 		}
 
+		[Category(TestCategories.ImportImage)]
+		[Category(TestCategories.Integration)]
+		[Category(TestCategories.TransferApi)]
+		[IdentifiedTest("6bfb799e-5c8f-4a5c-8092-c9042af62072")]
+		[Pairwise]
+		public void ShouldReturnItemErrorsWhenIdentifierContainsComma()
+		{
+			const int NumberOfDocumentsToImport = 5;
+			const int NumberOfImagesPerDocument = 2;
+			const bool UseInvalidIdentifier = true;
+
+			IEnumerable<ImageImportWithFileNameDto> importData = ImageImportWithFileNameDto.GetRandomImageFiles(this.TempDirectory.Directory, NumberOfDocumentsToImport, NumberOfImagesPerDocument, ImageFormat.Jpeg, UseInvalidIdentifier);
+
+			var imageSettingsBuilder = new ImageSettingsBuilder();
+			imageSettingsBuilder.WithDefaultFieldNames();
+			imageSettingsBuilder.WithOverlayMode(OverwriteModeEnum.Append);
+
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, imageSettingsBuilder);
+			this.JobExecutionContext.UseFileNames = true;
+
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
+
+			// ASSERT
+			const int ExpectedNumberOfImportedImages = NumberOfDocumentsToImport * NumberOfImagesPerDocument;
+			const int ExpectedNumberOfErrors = ExpectedNumberOfImportedImages;
+			this.ThenTheImportJobCompletedWithErrors(results, ExpectedNumberOfErrors, ExpectedNumberOfImportedImages);
+		}
+
 		[Test]
 		[Category(TestCategories.ImportImage)]
 		[Category(TestCategories.Integration)]
