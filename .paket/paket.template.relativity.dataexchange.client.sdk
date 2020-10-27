@@ -47,7 +47,7 @@ dependencies
 	Relativity.OAuth2Client.Interfaces >= 1.5.2
 	Relativity.Services.DataContracts >= 11.3.11.1
 	Relativity.Services.Interfaces >= 11.3.11.1
-	relativity.transfer.client ~> 7.2.7
+	relativity.transfer.client ~> 7.2.26
 	Relativity.Telemetry.Services.Interface ~> 3000.0
 	Relativity.Telemetry.DataContracts.Shared ~> 3000.0
 frameworkAssemblies
