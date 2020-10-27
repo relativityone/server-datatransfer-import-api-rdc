@@ -6,6 +6,7 @@
 
 namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 {
+	using System;
 	using System.Linq;
 	using System.Threading.Tasks;
 
@@ -23,6 +24,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			int artifactTypeId,
 			params int[] fieldIds)
 		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
 			View view = new View
 			{
 				ArtifactTypeID = artifactTypeId,

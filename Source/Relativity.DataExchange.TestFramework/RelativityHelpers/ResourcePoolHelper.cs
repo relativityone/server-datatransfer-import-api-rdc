@@ -9,9 +9,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Linq;
 	using System.Threading.Tasks;
 
-	using kCura.Relativity.Client;
-	using kCura.Relativity.Client.DTOs;
-
 	using Relativity.DataExchange.TestFramework.ObjectManagers;
 	using Relativity.Services.Choice;
 	using Relativity.Services.ResourceServer;
@@ -64,8 +61,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		{
 			ResourcePool resourcePool = await resourcePoolManager.ReadAsync(ResourcePoolName).ConfigureAwait(false);
 			IEnumerable<ResourceServerRef> servers = (await resourcePoolManager
-				                                          .GetResourceServersAsync(resourcePool.ArtifactID)
-				                                          .ConfigureAwait(false)).ToList();
+														  .GetResourceServersAsync(resourcePool.ArtifactID)
+														  .ConfigureAwait(false)).ToList();
 
 			var fileShareServer = servers.First(
 				x => x.Name == FileShareName && x.ServerType.Name == ResourceServerTypeName.FileShare);
@@ -75,31 +72,12 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			var cacheLocationServer = servers.First(
 				x => x.ServerType.Name == ResourceServerTypeName.CacheLocationServer);
 
-			UpdateWorkspace(resourcePool.ArtifactID, fileShareServer.ArtifactID, sqlServer.ArtifactID, cacheLocationServer.ArtifactID);
-		}
-
-		private void UpdateWorkspace(int resourcePoolId, int fileShareId, int sqlServerId, int cacheLocationServerId)
-		{
-			using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(testParameters))
-			{
-				var artifactIdCondition = new WholeNumberCondition(ArtifactQueryFieldNames.ArtifactID, NumericConditionEnum.EqualTo, testParameters.WorkspaceId);
-				var query = new Query<kCura.Relativity.Client.DTOs.Workspace>
-					            {
-						            Condition = artifactIdCondition,
-						            Fields = FieldValue.AllFields,
-					            };
-
-				kCura.Relativity.Client.DTOs.Workspace workspace = client.Repositories.Workspace.Query(query).Results.First().Artifact;
-
-				workspace.ResourcePoolID = resourcePoolId;
-				var fileShareChoice = new kCura.Relativity.Client.DTOs.Choice(fileShareId);
-				workspace.DefaultFileLocation = fileShareChoice;
-				workspace.ServerID = sqlServerId;
-				workspace.DefaultCacheLocation = cacheLocationServerId;
-				workspace.DefaultDataGridLocation = fileShareChoice;
-
-				client.Repositories.Workspace.UpdateSingle(workspace);
-			}
+			await WorkspaceHelper.UpdateWorkspaceResourcesAsync(
+				this.testParameters,
+				resourcePool.ArtifactID,
+				fileShareServer.ArtifactID,
+				sqlServer.ArtifactID,
+				cacheLocationServer.ArtifactID).ConfigureAwait(false);
 		}
 
 		private async Task<bool> ResourcePoolExistsAsync()
@@ -112,7 +90,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		{
 			Client relativityClient = await clientManager.ReadAsync("Relativity").ConfigureAwait(false);
 			int resourcePoolId = await resourcePoolManager.CreateAsync(ResourcePoolName, relativityClient.ArtifactID)
-				                     .ConfigureAwait(false);
+									 .ConfigureAwait(false);
 			await resourcePoolManager.AddDefaultResourceServersToPoolAsync(resourcePoolId).ConfigureAwait(false);
 			return resourcePoolId;
 		}
@@ -122,7 +100,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			ChoiceRef activeStatus =
 				await resourceServerManager.GetServerStatusChoiceByName("Active").ConfigureAwait(false);
 			return await fileShareServerManager.CreateAsync(FileShareName, fileSharePath, activeStatus)
-				       .ConfigureAwait(false);
+					   .ConfigureAwait(false);
 		}
 
 		private async Task AddFileShareToResourcePool()

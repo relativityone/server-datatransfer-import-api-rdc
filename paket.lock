@@ -92,8 +92,6 @@ GROUP integration-tests
 RESTRICTION: == net462
 NUGET
   remote: https://relativity.jfrog.io/relativity/api/nuget/v3/nuget-anthology
-    Relativity.Kepler.Client (2.6.2)
-      Relativity.Kepler (>= 2.6.2)
     System.ValueTuple (4.5.0)
 
 GROUP ui-automation

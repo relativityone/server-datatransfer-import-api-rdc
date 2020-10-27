@@ -12,6 +12,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	using System.Data;
 	using System.Linq;
 	using System.Net;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
@@ -796,14 +797,14 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
 		}
 
-		protected int CreateObjectType(string objectTypeName)
+		protected async Task<int> CreateObjectTypeAsync(string objectTypeName)
 		{
-			int artifactId = RdoHelper.CreateObjectType(this.TestParameters, objectTypeName);
+			int objectTypeArtifactId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, objectTypeName).ConfigureAwait(false);
 			this.Logger.LogInformation(
 				"Successfully created object type '{ObjectTypeName}' - {ArtifactId}.",
 				objectTypeName,
-				artifactId);
-			return artifactId;
+				objectTypeArtifactId);
+			return objectTypeArtifactId;
 		}
 
 		protected int CreateObjectTypeInstance(int artifactTypeId, IDictionary<string, object> fields)
@@ -1016,11 +1017,6 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		protected IList<string> QueryWorkspaceFolders()
 		{
 			return WorkspaceHelper.QueryWorkspaceFolders(this.TestParameters, this.Logger);
-		}
-
-		protected int QueryWorkspaceObjectTypeDescriptorId(int artifactId)
-		{
-			return RdoHelper.QueryWorkspaceObjectTypeDescriptorId(this.TestParameters, artifactId);
 		}
 
 		protected Relativity.Services.Objects.DataContracts.RelativityObject ReadRelativityObject(

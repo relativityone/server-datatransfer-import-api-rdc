@@ -9,6 +9,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
@@ -148,14 +149,14 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		}
 
 		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		public async Task OneTimeSetUpAsync()
 		{
 			// Create the object types in reverse order.
 			this.AssignTestSettings();
 			objectTypeUniqueSuffix++;
-			this.CreateTransferDetailObjectType();
-			this.CreateTransferDataSourceObjectType();
-			this.CreateTransferObjectType();
+			await this.CreateTransferDetailObjectTypeAsync().ConfigureAwait(false);
+			await this.CreateTransferDataSourceObjectTypeAsync().ConfigureAwait(false);
+			await this.CreateTransferObjectTypeAsync().ConfigureAwait(false);
 			this.OnOneTimeSetup();
 		}
 
@@ -284,13 +285,11 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			return job;
 		}
 
-		protected void CreateTransferDetailObjectType()
+		protected async Task CreateTransferDetailObjectTypeAsync()
 		{
 			// This is a 1-to-1 relationship.
 			string objectType = $"{TransferDetailArtifactTypeName}-{objectTypeUniqueSuffix}";
-			int transferDetailArtifactId = this.CreateObjectType(objectType);
-			this.TransferDetailWorkspaceObjectTypeId =
-				this.QueryWorkspaceObjectTypeDescriptorId(transferDetailArtifactId);
+			this.TransferDetailWorkspaceObjectTypeId = await this.CreateObjectTypeAsync(objectType).ConfigureAwait(false);
 			this.CreateDecimalField(
 				this.TransferDetailWorkspaceObjectTypeId,
 				TransferDetailFieldTransferredBytes);
@@ -302,13 +301,11 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			this.TransferDetailArtifactTypeId = this.QueryArtifactTypeId(objectType);
 		}
 
-		protected void CreateTransferDataSourceObjectType()
+		protected async Task CreateTransferDataSourceObjectTypeAsync()
 		{
 			// This is a many-to-many relationship.
 			string objectType = $"{TransferDataSourceArtifactTypeName}-{objectTypeUniqueSuffix}";
-			int transferDataSourceArtifactId = this.CreateObjectType(objectType);
-			this.TransferDataSourceWorkspaceObjectTypeId =
-				this.QueryWorkspaceObjectTypeDescriptorId(transferDataSourceArtifactId);
+			this.TransferDataSourceWorkspaceObjectTypeId = await this.CreateObjectTypeAsync(objectType).ConfigureAwait(false);
 			this.CreateDecimalField(
 				this.TransferDataSourceWorkspaceObjectTypeId,
 				TransferDataSourceFieldNumber);
@@ -332,12 +329,10 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			this.DeleteObjects(this.detailArtifacts);
 		}
 
-		private void CreateTransferObjectType()
+		private async Task CreateTransferObjectTypeAsync()
 		{
 			string objectType = $"{TransferArtifactTypeName}-{objectTypeUniqueSuffix}";
-			int transferArtifactId = this.CreateObjectType(objectType);
-			this.TransferWorkspaceObjectTypeId =
-				this.QueryWorkspaceObjectTypeDescriptorId(transferArtifactId);
+			this.TransferWorkspaceObjectTypeId = await this.CreateObjectTypeAsync(objectType).ConfigureAwait(false);
 			this.CreateFixedLengthTextField(
 				this.TransferWorkspaceObjectTypeId,
 				TransferFieldDescription,

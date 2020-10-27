@@ -203,7 +203,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				throw new ArgumentNullException(nameof(field));
 			}
 
-			using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
+#pragma warning disable CS0618 // Type or member is obsolete
+			using (IRSAPIClient client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
+#pragma warning restore CS0618 // Type or member is obsolete
 			{
 				client.APIOptions.WorkspaceID = parameters.WorkspaceId;
 				List<kCura.Relativity.Client.DTOs.Field>
