@@ -1062,6 +1062,8 @@ Namespace Relativity.Desktop.Client
 				If _overlayExtractedText.SelectedItem IsNot Nothing Then
 					LoadFile.LongTextColumnThatContainsPathToFullText = _overlayExtractedText.SelectedItem.ToString
 				End If
+			Else
+				LoadFile.LongTextColumnThatContainsPathToFullText = Nothing
 			End If
 
 			LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
