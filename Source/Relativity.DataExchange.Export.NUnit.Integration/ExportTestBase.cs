@@ -497,9 +497,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		/// <returns>Task.</returns>
 		protected async Task ThenTheAuditIsCorrectAsync(int userId)
 		{
-			var actualAuditDetails = await AuditHelper.GetLastAuditDetailsForActionAsync(this.TestParameters, AuditHelper.AuditAction.Export, this.testExecutionStartTime, userId)
-				.ConfigureAwait(false);
+			int nrOfLastAuditsToTake = 1;
+			var auditsDetails = await AuditHelper.GetLastAuditDetailsForActionAsync(this.TestParameters, AuditHelper.AuditAction.Export, this.testExecutionStartTime, nrOfLastAuditsToTake, userId)
+				                    .ConfigureAwait(false);
 			var expectedAuditDetails = ToAuditDetails(this.ExtendedExportFile);
+
+			var actualAuditDetails = auditsDetails.First();
 
 			foreach (string key in expectedAuditDetails.Keys)
 			{

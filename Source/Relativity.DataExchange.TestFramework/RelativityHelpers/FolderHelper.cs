@@ -16,13 +16,21 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 	public static class FolderHelper
 	{
-		public static async Task<List<int>> CreateFolders(IntegrationTestParameters parameters, IEnumerable<string> folders)
+		public static async Task<int> GetWorkspaceRootArtifactIdAsync(IntegrationTestParameters parameters)
+		{
+			using (IFolderManager folderManager = ServiceHelper.GetServiceProxy<IFolderManager>(parameters))
+			{
+				var folder = await folderManager.GetWorkspaceRootAsync(parameters.WorkspaceId).ConfigureAwait(false);
+				return folder.ArtifactID;
+			}
+		}
+
+		public static async Task<List<int>> CreateFolders(IntegrationTestParameters parameters, IEnumerable<string> folders, int rootFolderArtifactId)
 		{
 			var folderIds = new List<int>();
 			using (IFolderManager folderManager = ServiceHelper.GetServiceProxy<IFolderManager>(parameters))
 			{
-				Folder rootFolder = await folderManager.GetWorkspaceRootAsync(parameters.WorkspaceId).ConfigureAwait(false);
-				var folderRef = new FolderRef(rootFolder.ArtifactID);
+				var folderRef = new FolderRef(rootFolderArtifactId);
 
 				foreach (string folderName in folders)
 				{

@@ -36,25 +36,56 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			/// Import audit action.
 			/// </summary>
 			Import,
+
+			/// <summary>
+			/// Move audit action.
+			/// </summary>
+			Move,
 		}
 
-		public static async Task<Dictionary<string, string>> GetLastAuditDetailsForActionAsync(
+		public static async Task<IEnumerable<Dictionary<string, string>>> GetLastAuditDetailsForActionAsync(
 			IntegrationTestParameters parameters,
 			AuditAction action,
 			DateTime actionExecutionTime,
+			int nrOfLastAuditsToTake,
 			int userId)
 		{
-			RelativityObject auditObject =
-				await GetLastAuditObjectForActionAsync(parameters, action, actionExecutionTime, userId).ConfigureAwait(false);
-			string detailsJson = (string)auditObject.FieldValues.FirstOrDefault(x => x.Field.Name == DetailsFieldName)?.Value;
+			var results = new List<Dictionary<string, string>>();
+			IEnumerable<RelativityObject> auditObjects =
+				await GetLastAuditObjectForActionAsync(parameters, action, actionExecutionTime, nrOfLastAuditsToTake, userId).ConfigureAwait(false);
 
-			return ToDictionary(detailsJson);
+			foreach (var auditObject in auditObjects)
+			{
+				string artifactId = auditObject.ArtifactID.ToString();
+				string detailsJson = (string)auditObject.FieldValues.FirstOrDefault(x => x.Field.Name == DetailsFieldName)?.Value;
+				switch (action)
+				{
+					case AuditAction.Export:
+						var exportAudit = ToDictionaryWithItem(detailsJson, "export");
+						exportAudit["ArtifactID"] = artifactId;
+						results.Add(exportAudit);
+						break;
+					case AuditAction.Import:
+						var importAudit = ToDictionaryWithItem(detailsJson, "import");
+						importAudit["ArtifactID"] = artifactId;
+						results.Add(importAudit);
+						break;
+					case AuditAction.Move:
+						var moveAudit = ToDictionaryWithoutItem(detailsJson, "moveDetails");
+						moveAudit["ArtifactID"] = artifactId;
+						results.Add(moveAudit);
+						break;
+				}
+			}
+
+			return results;
 		}
 
-		private static async Task<RelativityObject> GetLastAuditObjectForActionAsync(
+		private static async Task<IEnumerable<RelativityObject>> GetLastAuditObjectForActionAsync(
 			IntegrationTestParameters parameters,
 			AuditAction action,
 			DateTime actionExecutionTime,
+			int nrOfLastAuditsToTake,
 			int userId)
 		{
 			int auditActionArtifactId = await GetAuditActionArtifactIdAsync(parameters, action).ConfigureAwait(false);
@@ -86,7 +117,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				ReturnRawDetails = true,
 			};
 
-			async Task<RelativityObject> QueryAuditAsync()
+			async Task<IEnumerable<RelativityObject>> QueryAuditAsync()
 			{
 				using (var auditObjectManager = ServiceHelper.GetServiceProxy<IAuditObjectManagerUIService>(parameters))
 				{
@@ -98,29 +129,43 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 											 queryOptions).ConfigureAwait(false);
 					if (result.TotalCount == 0)
 					{
-						throw new InvalidOperationException(
-							$"Failed to retrieve audit object for {action.ToString()} audit action performed by user with ID: {userId}");
+						return Enumerable.Empty<RelativityObject>();
 					}
 
-					return result.Objects[0];
+					return result.Objects.Take(nrOfLastAuditsToTake);
 				}
 			}
 
 			const int RetryAttempts = 3;
 			const int WaitTimeInSeconds = 10;
-			return await Policy.Handle<InvalidOperationException>().WaitAndRetryAsync(
+			return await Policy.HandleResult<IEnumerable<RelativityObject>>(x => x?.Count() == 0).WaitAndRetryAsync(
 						   RetryAttempts,
 						   retry => TimeSpan.FromSeconds(retry * WaitTimeInSeconds)).ExecuteAsync(QueryAuditAsync)
 					   .ConfigureAwait(false);
 		}
 
-		private static Dictionary<string, string> ToDictionary(string detailsJson)
+		private static Dictionary<string, string> ToDictionaryWithItem(string detailsJson, string action)
 		{
 			JObject details = JObject.Parse(detailsJson);
-			JEnumerable<JToken> detailTokens = details["auditElement"]["export"]["item"].Children();
+			JEnumerable<JToken> detailTokens;
+
+			detailTokens = details["auditElement"][action]["item"].Children();
+
 			return detailTokens.ToDictionary(
 				token => (string)token["@name"],
 				token => (string)token["#text"]);
+		}
+
+		private static Dictionary<string, string> ToDictionaryWithoutItem(string detailsJson, string action)
+		{
+			JObject details = JObject.Parse(detailsJson);
+			JEnumerable<JToken> detailTokens;
+
+			detailTokens = details["auditElement"][action].Children();
+
+			return detailTokens.Select(x => x.Value<JProperty>()).ToDictionary(
+				x => x.Name,
+				x => (string)x.Value);
 		}
 
 		private static async Task<int> GetAuditActionArtifactIdAsync(

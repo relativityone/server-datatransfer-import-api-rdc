@@ -60,7 +60,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 								  this.newPassword,
 								  new List<int> { EveryoneGroupId }).ConfigureAwait(false);
 
-				List<int> folderIds = await FolderHelper.CreateFolders(this.TestParameters, new List<string> { "TestFolder" }).ConfigureAwait(false);
+				var rootArtifactId = await FolderHelper.GetWorkspaceRootArtifactIdAsync(this.TestParameters).ConfigureAwait(false);
+				List<int> folderIds = await FolderHelper.CreateFolders(this.TestParameters, new List<string> { "TestFolder" }, rootArtifactId).ConfigureAwait(false);
 
 				this.folderId = folderIds.First();
 

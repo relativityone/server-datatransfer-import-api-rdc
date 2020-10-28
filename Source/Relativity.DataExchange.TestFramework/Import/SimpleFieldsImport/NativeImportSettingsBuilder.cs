@@ -16,11 +16,12 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 	public class NativeImportSettingsBuilder : ISettingsBuilder<Settings>
 	{
 		private bool withNativeFilePath;
+		private bool withMove;
 		private string folderPathSourceFieldName;
 		private string identifierField;
 		private kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior? overlayBehavior;
 		private OverwriteModeEnum? overwriteMode;
-
+		private int destinationFolderArtifactId = -1;
 		private int destinationArtifactTypeId = (int)ArtifactType.Document;
 
 		public static NativeImportSettingsBuilder New()
@@ -52,6 +53,12 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 				settings.OverwriteMode = this.overwriteMode.Value;
 			}
 
+			if (this.destinationFolderArtifactId != -1)
+			{
+				settings.DestinationFolderArtifactID = this.destinationFolderArtifactId;
+			}
+
+			settings.MoveDocumentsInAppendOverlayMode = this.withMove;
 			settings.ArtifactTypeId = this.destinationArtifactTypeId;
 			settings.SelectedIdentifierFieldName = this.identifierField;
 
@@ -91,6 +98,18 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 		public NativeImportSettingsBuilder WithIdentifierField(string identifierFieldName)
 		{
 			this.identifierField = identifierFieldName;
+			return this;
+		}
+
+		public NativeImportSettingsBuilder WithMove(bool move)
+		{
+			this.withMove = move;
+			return this;
+		}
+
+		public NativeImportSettingsBuilder WithDestinationFolderArtifactId(int folderArtifactId)
+		{
+			this.destinationFolderArtifactId = folderArtifactId;
 			return this;
 		}
 
