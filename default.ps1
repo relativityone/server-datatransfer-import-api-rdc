@@ -1115,7 +1115,7 @@ task GetRelativityBranchesForTests -Description "Get names of folders for relase
 		
 		if($folders)
 		{
-			$selectedFolder = $folders.Item(0).Name
+			$selectedFolder = $folders[0].Name 
 			Write-Output "Relativity branch found: '$selectedFolder'"
 			$branchesForTests += ",$selectedFolder"
 		}
