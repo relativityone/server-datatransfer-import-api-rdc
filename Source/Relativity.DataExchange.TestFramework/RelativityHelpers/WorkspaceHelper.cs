@@ -365,10 +365,10 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				createdWorkspace.EnableDataGrid = true;
 				client.Repositories.Workspace.UpdateSingle(createdWorkspace);
 				logger.LogInformation($"DataGrid enabled for workspace with id {parameters.WorkspaceId}");
-
-				UpdateExtractedTextField(parameters, logger).ConfigureAwait(false);
-				logger.LogInformation($"'Extracted Text' field values in workspace updated");
 			}
+
+			UpdateExtractedTextField(parameters, logger).ConfigureAwait(false);
+			logger.LogInformation($"'Extracted Text' field values in workspace updated");
 		}
 
 		private static async Task UpdateExtractedTextField(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
@@ -377,18 +377,18 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			{
 				Name = WellKnownFields.ExtractedText,
 				ObjectType = new ObjectTypeIdentifier() { ArtifactTypeID = (int)ArtifactType.Document },
-				EnableDataGrid = true,
-				IncludeInTextIndex = false,
+				EnableDataGrid = parameters.EnableDataGrid,
+				IncludeInTextIndex = !parameters.EnableDataGrid,
 				FilterType = FilterType.None,
 				AvailableInViewer = true,
 				HasUnicode = true,
 			};
+
 			using (IFieldManager fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(parameters))
 			{
 				int fieldId = TestFramework.RelativityHelpers.FieldHelper.GetFieldArtifactId(parameters, logger, WellKnownFields.ExtractedText);
-
 				await fieldManager.UpdateLongTextFieldAsync(parameters.WorkspaceId, fieldId, longTextFieldRequest)
-						.ConfigureAwait(false);
+					.ConfigureAwait(false);
 			}
 		}
 
