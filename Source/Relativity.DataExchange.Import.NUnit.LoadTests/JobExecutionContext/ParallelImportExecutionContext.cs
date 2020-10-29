@@ -46,7 +46,9 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 		public ParallelImportExecutionContext<TExecutionContext, TSettings> ConfigureImportApiInstanceCount(int importApiInstanceCount)
 		{
 			ValidateInstanceCount(importApiInstanceCount);
+			this.DisposeCurrentContext();
 			this.importExecutionContexts.Clear();
+			this.appDomains.Clear();
 			for (int index = 0; index < importApiInstanceCount; index++)
 			{
 				this.InitializeNewExecutionContextInNewAppDomain(index);
@@ -107,18 +109,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 		{
 			if (disposing)
 			{
-				if (this.importExecutionContexts != null)
-				{
-					foreach (TExecutionContext context in this.importExecutionContexts)
-					{
-						context.Dispose();
-					}
-				}
-
-				foreach (var appDomain in this.appDomains)
-				{
-					AppDomain.Unload(appDomain);
-				}
+				this.DisposeCurrentContext();
 			}
 		}
 
@@ -193,6 +184,22 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 			appDomainSetup.SetupAppDomain(AssemblySetup.TestParameters);
 			var executionContext = CreateInstanceAndUnwrap<TExecutionContext>(appDomain);
 			this.importExecutionContexts.Add(executionContext);
+		}
+
+		private void DisposeCurrentContext()
+		{
+			if (this.importExecutionContexts != null)
+			{
+				foreach (TExecutionContext context in this.importExecutionContexts)
+				{
+					context.Dispose();
+				}
+			}
+
+			foreach (var appDomain in this.appDomains)
+			{
+				AppDomain.Unload(appDomain);
+			}
 		}
 	}
 }

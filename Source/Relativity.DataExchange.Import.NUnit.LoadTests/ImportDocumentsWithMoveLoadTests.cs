@@ -89,7 +89,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			dataSourceBuilder = ImportDataSourceBuilder.New()
 				.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource());
 
-			this.ReinitializeImportApiWithUserAndPwd(settingsBuilder);
+			this.InitializeImportApiWithUserAndPwd(settingsBuilder, parallelIApiClientCount);
 
 			// ACT
 			ImportTestJobResult results = await this.JobExecutionContext

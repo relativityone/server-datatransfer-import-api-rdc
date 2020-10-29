@@ -68,11 +68,5 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 				.ConfigureImportApiInstanceCount(instanceCount)
 				.InitializeImportApiWithUserAndPassword(this.TestParameters, settingsBuilder);
 		}
-
-		protected void ReinitializeImportApiWithUserAndPwd(ISettingsBuilder<TSettings> settingsBuilder)
-		{
-			this.JobExecutionContext
-				.InitializeImportApiWithUserAndPassword(this.TestParameters, settingsBuilder);
-		}
 	}
 }
