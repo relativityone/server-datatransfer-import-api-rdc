@@ -35,6 +35,7 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 	{
 		private readonly object testJobResultLock = new object();
 		private bool isDisposed;
+		private ImportTestJobResult testJobResultValue = new ImportTestJobResult();
 
 		protected BaseExecutionContext()
 		{
@@ -46,7 +47,20 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 			this.Dispose(false);
 		}
 
-		public ImportTestJobResult TestJobResult { get; protected set; } = new ImportTestJobResult();
+		public ImportTestJobResult TestJobResult
+		{
+			get => this.testJobResultValue;
+
+			protected set
+			{
+				if (this.testJobResultValue != null && !object.ReferenceEquals(this.testJobResultValue, value))
+				{
+					this.testJobResultValue.Dispose();
+				}
+
+				this.testJobResultValue = value;
+			}
+		}
 
 		protected ILog Logger { get; }
 
@@ -54,6 +68,7 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 
 		protected TImportJob ImportJob { get; private set; }
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "false positive")]
 		public virtual void SetUpImportApi(Func<ImportAPI> importApiFactory, TSettings settings)
 		{
 			importApiFactory = importApiFactory ?? throw new ArgumentNullException(nameof(importApiFactory));
@@ -151,6 +166,8 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 					this.ImportJob.OnProgress -= this.ImportJobOnProgress;
 					this.ImportJob.OnFatalException -= this.ImportJobOnFatalException;
 				}
+
+				this.TestJobResult = null;
 			}
 
 			this.DisconnectFromRemoteObject();

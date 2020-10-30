@@ -32,10 +32,25 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 		private readonly List<TExecutionContext> importExecutionContexts = new List<TExecutionContext>();
 		private readonly List<AppDomain> appDomains = new List<AppDomain>();
 
+		private ImportTestJobResult testJobResultValue = new ImportTestJobResult();
+
 		/// <summary>
 		/// Gets or sets the aggregation of all import api instance reports.
 		/// </summary>
-		public ImportTestJobResult TestJobResult { get; protected set; } = new ImportTestJobResult();
+		public ImportTestJobResult TestJobResult
+		{
+			get => this.testJobResultValue;
+
+			protected set
+			{
+				if (this.testJobResultValue != null && !object.ReferenceEquals(this.testJobResultValue, value))
+				{
+					this.testJobResultValue.Dispose();
+				}
+
+				this.testJobResultValue = value;
+			}
+		}
 
 		public int CompletedTotalRowsCountFromReport => this.importExecutionContexts.Sum(context => context.TestJobResult.JobReportTotalRows);
 
@@ -47,8 +62,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 		{
 			ValidateInstanceCount(importApiInstanceCount);
 			this.DisposeCurrentContext();
-			this.importExecutionContexts.Clear();
-			this.appDomains.Clear();
 			for (int index = 0; index < importApiInstanceCount; index++)
 			{
 				this.InitializeNewExecutionContextInNewAppDomain(index);
@@ -147,6 +160,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 				typeName);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "false positive")]
 		private void SetUpImportApi(ISettingsBuilder<TSettings> settingsBuilder)
 		{
 			this.TestJobResult = new ImportTestJobResult();
@@ -194,12 +208,18 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 				{
 					context.Dispose();
 				}
+
+				this.importExecutionContexts.Clear();
 			}
 
 			foreach (var appDomain in this.appDomains)
 			{
 				AppDomain.Unload(appDomain);
 			}
+
+			this.appDomains.Clear();
+
+			this.TestJobResult = null;
 		}
 	}
 }

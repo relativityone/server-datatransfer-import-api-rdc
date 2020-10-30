@@ -10,16 +10,24 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 	using System.Collections;
 	using System.Collections.Concurrent;
 	using System.Collections.Generic;
+	using System.Runtime.Remoting;
 
 	/// <summary>
 	/// This class represents results of import test.
 	/// </summary>
 	/// <remarks>It can be accessed across App Domain boundaries.</remarks>
-	public class ImportTestJobResult : MarshalByRefObject
+	public class ImportTestJobResult : MarshalByRefObject, IDisposable
 	{
 		private const int JobMessagesLimit = 10000; // that value is referenced in doc comments
 
 		private readonly ConcurrentQueue<string> jobMessages = new ConcurrentQueue<string>();
+
+		private bool isDisposed;
+
+		~ImportTestJobResult()
+		{
+			this.Dispose(disposing: false);
+		}
 
 		public List<Exception> JobFatalExceptions { get; } = new List<Exception>();
 
@@ -77,6 +85,33 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 			// When messages are added concurrently, we can end up with slightly more messages than we should, but it is acceptable in case of tests
 			// The real limit is: '10k + number of threads adding messages'
 			this.jobMessages.Enqueue(message);
+		}
+
+		public override object InitializeLifetimeService() // required for Cross AppDomain communication
+		{
+			return null;
+		}
+
+		public void Dispose()
+		{
+			Dispose(disposing: true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (this.isDisposed)
+			{
+				return;
+			}
+
+			DisconnectFromRemoteObject();
+			this.isDisposed = true;
+		}
+
+		private void DisconnectFromRemoteObject() // required for Cross AppDomain communication
+		{
+			RemotingServices.Disconnect(this);
 		}
 	}
 }
