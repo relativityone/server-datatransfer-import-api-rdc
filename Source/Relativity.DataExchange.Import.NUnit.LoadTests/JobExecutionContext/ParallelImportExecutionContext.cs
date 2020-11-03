@@ -19,6 +19,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 	using Relativity.DataExchange.TestFramework.PerformanceTests;
+	using Relativity.Logging;
 
 	public class ParallelImportExecutionContext<TExecutionContext, TSettings> : IDisposable, IImportApiSetup<TSettings>
 		where TSettings : ImportSettingsBase
@@ -29,10 +30,16 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 		/// </summary>
 		private const int MaxInstanceLimit = 32;
 
+		private readonly ILog logger;
 		private readonly List<TExecutionContext> importExecutionContexts = new List<TExecutionContext>();
 		private readonly List<AppDomain> appDomains = new List<AppDomain>();
 
 		private ImportTestJobResult testJobResultValue = new ImportTestJobResult();
+
+		public ParallelImportExecutionContext()
+		{
+			this.logger = IntegrationTestHelper.Logger;
+		}
 
 		/// <summary>
 		/// Gets or sets the aggregation of all import api instance reports.
@@ -214,7 +221,17 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 
 			foreach (var appDomain in this.appDomains)
 			{
-				AppDomain.Unload(appDomain);
+				try
+				{
+					AppDomain.Unload(appDomain);
+				}
+				catch (AppDomainUnloadedException ex)
+				{
+					// it is not always possible to unload an AppDomain:
+					// https://docs.microsoft.com/en-us/dotnet/api/system.appdomain.unload?view=netframework-4.6.2#remarks
+					// Since it is only used in tests, we can ignore that exception.
+					this.logger.LogWarning(ex, "Exception occured while unloading AppDomain.");
+				}
 			}
 
 			this.appDomains.Clear();
