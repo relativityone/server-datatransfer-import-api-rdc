@@ -191,6 +191,10 @@ param(
 	[Parameter()]
     [Switch]$EnableDataGrid,
 	[Parameter()]
+    [Switch]$SkipPublishSdkPackage,
+	[Parameter()]
+    [Switch]$SkipPublishRdcPackage,
+	[Parameter()]
 	[String]$ReleasedVersionName
 )
 
