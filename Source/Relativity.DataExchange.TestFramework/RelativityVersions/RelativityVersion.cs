@@ -73,5 +73,15 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 		/// Relativity 11.3.16 - version containing functionality for export searchable pdfs.
 		/// </summary>
 		MayappleExportPDFs,
+
+		/// <summary>
+		/// Relativity 11.3.170.2 - mass import improvements toggle was disabled in that version.
+		/// </summary>
+		MayappleToggleOff,
+
+		/// <summary>
+		/// Relativity 12.0.
+		/// </summary>
+		Ninebark,
 	}
 }

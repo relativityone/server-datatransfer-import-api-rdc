@@ -54,15 +54,23 @@ namespace Relativity.DataExchange.TestFramework
 				{
 					massImportToggle = false; // toggle was disabled before Lanceleaf release
 				}
-				else if (!RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersions.RelativityVersion.Mayapple))
-				{
-					massImportToggle = true; // toggle is enabled since Mayapple release
-				}
-				else
+				else if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersions.RelativityVersion.Mayapple))
 				{
 					// for Lanceleaf release, we have been changing value of an toggle many times, so it is hard to determine its value.
 					throw new NotImplementedException($"Default Mass Import Improvements Toggle value not implemented in tests against Relativity version "
-					                                  + $"{RelativityVersions.RelativityVersionChecker.GetCurrentRelativityVersion(parameters)}");
+													  + $"{RelativityVersions.RelativityVersionChecker.GetCurrentRelativityVersion(parameters)}");
+				}
+				else if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersions.RelativityVersion.MayappleToggleOff))
+				{
+					massImportToggle = true; // toggle is enabled in [RelativityVersion.Mayapple, RelativityVersion.MayappleToggleOff)
+				}
+				else if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersions.RelativityVersion.Ninebark))
+				{
+					massImportToggle = false; // toggle is disabled since RelativityVersion.MayappleToggleOff on the mayapple branch.
+				}
+				else
+				{
+					massImportToggle = true; // toggle is enabled since Ninebark release
 				}
 			}
 
