@@ -1112,6 +1112,7 @@ task GetRelativityBranchesForTests -Description "Get names of release branches f
 		
 		# Additional version for tests
 		$folders = Get-ChildItem -LiteralPath $installersFolder -Directory -Filter "*$ReleasedVersionName*" | Sort-Object -Property {[string]$_.Name} -Descending | Where-Object {$_.Name -match "release-[0-9]{2}.[0-9]{1}-$ReleasedVersionName-[0-9]{1}" }
+		$folders = @($folders) # this is needed to ensure that $folders is an array when there is a single folder
 		
 		if($folders)
 		{
