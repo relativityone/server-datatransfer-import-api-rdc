@@ -225,12 +225,16 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 				{
 					AppDomain.Unload(appDomain);
 				}
-				catch (AppDomainUnloadedException ex)
+				catch (CannotUnloadAppDomainException ex)
 				{
 					// it is not always possible to unload an AppDomain:
 					// https://docs.microsoft.com/en-us/dotnet/api/system.appdomain.unload?view=netframework-4.6.2#remarks
 					// Since it is only used in tests, we can ignore that exception.
 					this.logger.LogWarning(ex, "Exception occured while unloading AppDomain.");
+				}
+				catch (AppDomainUnloadedException ex)
+				{
+					this.logger.LogWarning(ex, "AppDomain was already unloaded.");
 				}
 			}
 
