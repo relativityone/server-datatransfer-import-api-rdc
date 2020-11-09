@@ -25,8 +25,10 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 			[RelativityVersion.LanceleafEAU] = new Version(11, 2, 158),
 			[RelativityVersion.LanceleafREL438573] = new Version(11, 2, 170),
 			[RelativityVersion.Mayapple] = new Version(11, 3, 1),
-			[RelativityVersion.MayappleExportPDFs] = new Version(11, 3, 16),
 			[RelativityVersion.MayappleEAU] = new Version(11, 3, 101, 10),
+			[RelativityVersion.MayappleExportPDFs] = new Version(11, 3, 16),
+			[RelativityVersion.MayappleToggleOff] = new Version(11, 3, 170, 2),
+			[RelativityVersion.Ninebark] = new Version(12, 0),
 		};
 
 		private static Version cachedRelativityVersion;
