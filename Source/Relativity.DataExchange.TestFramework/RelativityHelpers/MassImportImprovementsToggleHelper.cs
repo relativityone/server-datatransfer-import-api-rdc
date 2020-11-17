@@ -13,58 +13,46 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	{
 		public static void SkipTestIfMassImportImprovementsToggleHasValue(IntegrationTestParameters parameters, bool isEnabled)
 		{
-			if (GetMassImportImprovementsToggle(parameters) == isEnabled)
+			if (!TryGetMassImportImprovementsToggle(parameters, out var toggle))
+			{
+				Assert.Ignore(TestStrings.SkipTestMessage, "Could not determine toggle value for this instance");
+			}
+			else if (toggle == isEnabled)
 			{
 				string toggleValue = isEnabled ? "enabled" : "disabled";
 				Assert.Ignore(TestStrings.SkipTestMessage, $"MassImportImprovementToggle is {toggleValue}");
 			}
 		}
 
-		public static bool GetMassImportImprovementsToggle(IntegrationTestParameters parameters)
+		public static bool TryGetMassImportImprovementsToggle(IntegrationTestParameters parameters, out bool toggleValue)
 		{
-			bool massImportToggle;
+			toggleValue = false;
 
 			try
 			{
-				// Hoppers and TestVMs - having added MassImportImprovementsToggle record to database
-				massImportToggle = GetMassImportToggleValueFromDatabase(parameters);
+				// Hoppers and TestVMs - toggle set in database
+				toggleValue = GetMassImportToggleValueFromDatabase(parameters);
+				return true;
 			}
 			catch (SqlException)
 			{
 				// Regression environments - no access to SQL
-				massImportToggle = GetMassImportToggleValueAsync(parameters).GetAwaiter().GetResult();
+				toggleValue = GetMassImportToggleValueAsync(parameters).GetAwaiter().GetResult();
+				return true;
 			}
 			catch (NullReferenceException)
 			{
-				// Hoppers - having not added MassImportImprovementsToggle record to database
-				// Tests are executed on default value set in another repository, so no possibility to check it from this code
-
-				// Workaround to enable checking toggle value to decide if specified test(details in REL-462958) should be executed or not
-				if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersions.RelativityVersion.Lanceleaf))
-				{
-					massImportToggle = false; // toggle was disabled before Lanceleaf release
-				}
-				else if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersions.RelativityVersion.Mayapple))
-				{
-					// for Lanceleaf release, we have been changing value of an toggle many times, so it is hard to determine its value.
-					throw new NotImplementedException($"Default Mass Import Improvements Toggle value not implemented in tests against Relativity version "
-													  + $"{RelativityVersions.RelativityVersionChecker.GetCurrentRelativityVersion(parameters)}");
-				}
-				else if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersions.RelativityVersion.MayappleToggleOff))
-				{
-					massImportToggle = true; // toggle is enabled in [RelativityVersion.Mayapple, RelativityVersion.MayappleToggleOff)
-				}
-				else if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersions.RelativityVersion.Ninebark))
-				{
-					massImportToggle = false; // toggle is disabled since RelativityVersion.MayappleToggleOff on the mayapple branch.
-				}
-				else
-				{
-					massImportToggle = true; // toggle is enabled since Ninebark release
-				}
+				// Hoppers with default toggle value
+				return TryGetMassImportImprovementsToggleFromRelativityVersion(parameters, out toggleValue);
 			}
+		}
 
-			return massImportToggle;
+		public static string GetDisplayableMassImportImprovementsToggle(IntegrationTestParameters parameters)
+		{
+			return TryGetMassImportImprovementsToggle(
+				parameters, out var toggle)
+				? toggle.ToString()
+				: "Unknown";
 		}
 
 		public static void SetMassImportImprovementsToggle(IntegrationTestParameters parameters, bool toggleValue)
@@ -112,6 +100,48 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			{
 				return await toggleService.IsEnabledAsync("Relativity.Core.Toggle.MassImportImprovementsToggle, Relativity.Data").ConfigureAwait(false);
 			}
+		}
+
+		private static bool TryGetMassImportImprovementsToggleFromRelativityVersion(
+			IntegrationTestParameters parameters,
+			out bool toggleValue)
+		{
+			toggleValue = false;
+
+			if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(
+				parameters,
+				RelativityVersions.RelativityVersion.Lanceleaf))
+			{
+				toggleValue = false;
+				return true;
+			}
+
+			if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(
+				parameters,
+				RelativityVersions.RelativityVersion.Mayapple))
+			{
+				// for Lanceleaf release, we have been changing value of an toggle many times, so it is hard to determine its value.
+				return false;
+			}
+
+			if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(
+				parameters,
+				RelativityVersions.RelativityVersion.MayappleToggleOff))
+			{
+				toggleValue = true; // toggle is enabled in [RelativityVersion.Mayapple, RelativityVersion.MayappleToggleOff)
+				return true;
+			}
+
+			if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(
+				parameters,
+				RelativityVersions.RelativityVersion.Ninebark))
+			{
+				toggleValue = false; // toggle is disabled since RelativityVersion.MayappleToggleOff on the mayapple branch.
+				return true;
+			}
+
+			toggleValue = true; // toggle is enabled since Ninebark release
+			return true;
 		}
 
 		private static void AddMassImportImprovementsToggle(IntegrationTestParameters parameters)

@@ -17,7 +17,7 @@ namespace Relativity.DataExchange.TestFramework.PerformanceTests
 	{
 		private static PerformanceDataCollector _instance;
 		private readonly Stopwatch stopwatch;
-		private bool massImportImprovementsToggle;
+		private string massImportImprovementsToggle;
 		private TimeSpan jobExecutionTime;
 		private int numberOfClients;
 		private int numberOfDocumentsToImport;
@@ -59,7 +59,7 @@ namespace Relativity.DataExchange.TestFramework.PerformanceTests
 			this.numberOfImagesPerDocument = imagesPerDocument;
 			this.maxNumberOfMultiValues = maximumNumberOfMultiValues;
 			this.tapiClient = tapiClientName;
-			this.massImportImprovementsToggle = MassImportImprovementsToggleHelper.GetMassImportImprovementsToggle(parameters);
+			this.massImportImprovementsToggle = MassImportImprovementsToggleHelper.GetDisplayableMassImportImprovementsToggle(parameters);
 		}
 
 		public void StorePerformanceResults()
@@ -74,7 +74,7 @@ namespace Relativity.DataExchange.TestFramework.PerformanceTests
 					{ "Date", DateTime.UtcNow.ToShortDateString() },
 					{ "TestCaseName", this.testCaseName },
 					{ "TestResultStatus", TestContext.CurrentContext.Result.Outcome.Status.ToString() },
-					{ "MassImportImprovementsToggle", this.massImportImprovementsToggle.ToString() },
+					{ "MassImportImprovementsToggle", this.massImportImprovementsToggle },
 					{ "NumberOfParallelApiClients", this.numberOfClients.ToString() },
 					{ "NumberOfDocumentsToImportByClient", this.numberOfDocumentsToImport.ToString() },
 					{ "NumberOfImagesPerDocument", this.numberOfImagesPerDocument.ToString() },

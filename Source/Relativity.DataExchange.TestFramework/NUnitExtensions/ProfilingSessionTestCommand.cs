@@ -69,7 +69,7 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 			string testName = context.CurrentTest.Name;
 			string currentUtcTime = DateTime.UtcNow.ToString("yyyyMMddTHHmmss");
 
-			var toggleValue = MassImportImprovementsToggleHelper.GetMassImportImprovementsToggle(IntegrationTestHelper.IntegrationTestParameters).ToString();
+			var toggleValue = MassImportImprovementsToggleHelper.GetDisplayableMassImportImprovementsToggle(IntegrationTestHelper.IntegrationTestParameters);
 			string subDirectoryName = $"{testName.Replace(",", "_")}_Toggle{toggleValue}-{currentUtcTime}";
 			string outputPath = Path.Combine(this.rootOutputPath, subDirectoryName);
 			Directory.CreateDirectory(outputPath);

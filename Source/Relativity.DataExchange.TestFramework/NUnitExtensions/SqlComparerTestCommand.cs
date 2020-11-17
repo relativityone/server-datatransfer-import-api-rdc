@@ -67,7 +67,8 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 				return;
 			}
 
-			bool massImportImprovementsToggle = MassImportImprovementsToggleHelper.GetMassImportImprovementsToggle(IntegrationTestHelper.IntegrationTestParameters);
+			string massImportImprovementsToggle =
+				MassImportImprovementsToggleHelper.GetDisplayableMassImportImprovementsToggle(IntegrationTestHelper.IntegrationTestParameters);
 			string inputFilePath = Path.Combine(IntegrationTestHelper.IntegrationTestParameters.SqlComparerOutputPath, $"sqlComparerInput-{massImportImprovementsToggle}.xml");
 
 			this._sqlComparerInputCollector.AddTestWorkspaceToCompare(this._testWorkspaceToAdd, inputFilePath);
