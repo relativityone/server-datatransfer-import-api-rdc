@@ -107,19 +107,41 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		/// <returns><see cref="Task"/> which completes when all RDOs are deleted.</returns>
 		public static async Task DeleteAllObjectsByTypeAsync(IntegrationTestParameters parameters, int artifactTypeID)
 		{
+			const int DeleteBatchSize = 250;
+
+			// Deleting objects in a small batches is more stable than deleting all objects of a given type at one go.
+			// Please see https://jira.kcura.com/browse/REL-496822 and https://jira.kcura.com/browse/REL-478746 for details.
 			using (var objectManager = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
 			{
-				var deleteAllDocumentsRequest = new MassDeleteByCriteriaRequest
+				var queryAllObjectsRequest = new QueryRequest
 				{
-					ObjectIdentificationCriteria = new ObjectIdentificationCriteria
+					ObjectType = new ObjectTypeRef
 					{
-						ObjectType = new ObjectTypeRef
-						{
-							ArtifactTypeID = artifactTypeID,
-						},
+						ArtifactTypeID = artifactTypeID,
 					},
 				};
-				await objectManager.DeleteAsync(parameters.WorkspaceId, deleteAllDocumentsRequest).ConfigureAwait(false);
+
+				while (true)
+				{
+					var existingArtifacts = await objectManager
+						.QuerySlimAsync(parameters.WorkspaceId, queryAllObjectsRequest, start: 0, length: DeleteBatchSize)
+						.ConfigureAwait(false);
+					var objectRefs = existingArtifacts.Objects
+						.Select(x => x.ArtifactID)
+						.Select(x => new RelativityObjectRef { ArtifactID = x })
+						.ToList();
+
+					if (!objectRefs.Any())
+					{
+						return;
+					}
+
+					var massDeleteByIds = new MassDeleteByObjectIdentifiersRequest
+					{
+						Objects = objectRefs,
+					};
+					await objectManager.DeleteAsync(parameters.WorkspaceId, massDeleteByIds).ConfigureAwait(false);
+				}
 			}
 		}
 
