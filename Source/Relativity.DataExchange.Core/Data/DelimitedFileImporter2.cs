@@ -666,10 +666,8 @@ namespace Relativity.DataExchange.Data
 
 					IoWarningEventArgs args = new IoWarningEventArgs(waitTime, e, this.CurrentLineNumber);
 					this.PublishWarningMessage(args);
-					if (this.Reader.BaseStream is System.IO.FileStream && e is System.IO.IOException
-					                                                   && e.ToString().ToLowerInvariant().IndexOf(
-						                                                   "network",
-						                                                   StringComparison.OrdinalIgnoreCase) != -1)
+					if ((this.Reader.BaseStream is FileStream || this.Reader.BaseStream is RestartableFileStream) && e is IOException
+					    && e.Message.ToLowerInvariant().Contains("network"))
 					{
 						reInitReader = true;
 					}
@@ -1198,31 +1196,61 @@ namespace Relativity.DataExchange.Data
 		/// </summary>
 		private void ReInitializeReader()
 		{
-			FileStream fileStream = this.Reader.BaseStream as FileStream;
-			if (fileStream == null)
+			if (this.Reader.BaseStream is RestartableFileStream restartableFileStream)
 			{
-				throw new InvalidOperationException(Strings.ReinitializeReaderNotFileStreamError);
-			}
+				this.PublishWarningMessage(
+					new IoWarningEventArgs(
+						"Re-initializing stream for broken network connection",
+						this.CurrentLineNumber));
 
-			this.Reader = new System.IO.StreamReader(fileStream.Name, this.Reader.CurrentEncoding);
-			if (this.CharacterPosition > 0)
+				restartableFileStream.Restart();
+			}
+			else if (this.Reader.BaseStream is FileStream fileStream)
 			{
 				this.PublishWarningMessage(
 					new IoWarningEventArgs(
 						"Re-initializing reader for broken network connection",
 						this.CurrentLineNumber));
-				if (this.CharacterPosition > 100000)
+
+				string filename = fileStream.Name;
+				long position = fileStream.Position;
+				Encoding readerCurrentEncoding = this.Reader.CurrentEncoding;
+
+				this.Reader.Dispose();
+
+				Stream stream = new RestartableFileStream(filename);
+				try
 				{
-					this.PublishWarningMessage(
-						new IoWarningEventArgs(
-							"This could take up to several minutes.",
-							this.CurrentLineNumber));
+					this.Reader = new StreamReader(stream, readerCurrentEncoding, position == 0);
+				}
+				catch
+				{
+					stream.Dispose();
+					throw;
 				}
 
+				long delta = Math.Max(this.CharacterPosition / 10L, 100000L);
 				for (int i = 0; i <= this.CharacterPosition; i++)
 				{
+					if (i % delta == 0)
+					{
+						this.PublishWarningMessage(
+							new IoWarningEventArgs(
+								$"{i} out of {this.CharacterPosition} characters skipped.",
+								this.CurrentLineNumber));
+					}
+
 					this.Reader.Read();
 				}
+
+				this.PublishWarningMessage(
+					new IoWarningEventArgs(
+						$"{this.CharacterPosition} characters skipped.",
+						this.CurrentLineNumber));
+			}
+			else
+			{
+				throw new InvalidOperationException(Strings.ReinitializeReaderNotFileStreamError);
 			}
 		}
 	}

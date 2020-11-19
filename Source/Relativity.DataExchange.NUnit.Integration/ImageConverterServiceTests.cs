@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents <see cref="ImageConverterServiceTests"/> tests.
+//   Represents <see cref="ImageConverterService"/> tests.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 namespace Relativity.DataExchange.NUnit.Integration

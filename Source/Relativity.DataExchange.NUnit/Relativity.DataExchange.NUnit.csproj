@@ -143,6 +143,7 @@
     <Compile Include="ByteSize\ParsingMethods.cs" />
     <Compile Include="ByteSize\ToStringMethod.cs" />
     <Compile Include="ChoiceInfoTests.cs" />
+    <Compile Include="RestartableFileStreamTests.cs" />
     <Compile Include="ImageValidatorTests.cs" />
     <Compile Include="Helpers\HashingHelperTestCases.cs" />
     <Compile Include="Helpers\HashingHelperTests.cs" />
@@ -389,14 +390,18 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup></When></Choose>
+  <Choose>
+    <When Condition="'$(Configuration)'!='Debug'">
+      <ItemGroup>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
