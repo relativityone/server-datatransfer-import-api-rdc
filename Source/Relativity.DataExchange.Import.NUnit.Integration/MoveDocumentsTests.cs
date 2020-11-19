@@ -35,7 +35,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	public class MoveDocumentsTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
-		private const RelativityVersion MinSupportedVersion = RelativityVersion.Juniper;
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.NinebarkFolderMove;
 		private const string TestDestinationFolder = "TestDestinationFolder";
 		private const string TestSourceFolder = "TestSourceFolder";
 
@@ -126,7 +126,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		[Ignore(@"To be fixed by https://jira.kcura.com/browse/REL-423995 sub-task 3")]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
@@ -147,7 +146,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 														["@sourceFolderArtifactID"] = this.workspaceFolderId.ToString(),
 														["@sourceFolderName"] = this.TestParameters.WorkspaceName,
 														["@destinationFolderArtifactID"] = this.testDestinationFolderId.ToString(),
-														["ArtifactID"] = (string)this.importedDocuments[0].FieldValues[0].Value,
+														["ArtifactID"] = this.importedDocuments[0].FieldValues[1].Value.ToString(),
 													},
 											};
 
@@ -207,7 +206,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[3].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testSourceFolderId));
 		}
 
-		[Ignore(@"To be fixed by https://jira.kcura.com/browse/REL-423995 sub-task 3")]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
@@ -228,7 +226,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 														["@sourceFolderArtifactID"] = this.workspaceFolderId.ToString(),
 														["@sourceFolderName"] = this.TestParameters.WorkspaceName,
 														["@destinationFolderArtifactID"] = this.testDestinationFolderId.ToString(),
-														["ArtifactID"] = (string)this.importedDocuments[0].FieldValues[0].Value,
+														["ArtifactID"] = this.importedDocuments[0].FieldValues[1].Value.ToString(),
 													},
 											};
 
@@ -324,7 +322,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[3].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testSourceFolderId));
 		}
 
-		[Ignore(@"To be fixed by https://jira.kcura.com/browse/REL-423995 sub-task 3")]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
@@ -335,7 +332,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			settings.OverwriteMode = OverwriteModeEnum.Overlay;
 
-			// settings.DestinationFolderArtifactID = this.testDestinationFolderId;
+			settings.DestinationFolderArtifactID = this.testDestinationFolderId;
 			settings.MoveDocumentsInAppendOverlayMode = true;
 			var executionStart = DateTime.Now;
 			var expectedAuditDetails = new List<Dictionary<string, string>>
@@ -346,7 +343,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 														["@sourceFolderArtifactID"] = this.workspaceFolderId.ToString(),
 														["@sourceFolderName"] = this.TestParameters.WorkspaceName,
 														["@destinationFolderArtifactID"] = this.testDestinationFolderId.ToString(),
-														["ArtifactID"] = (string)this.importedDocuments[0].FieldValues[0].Value,
+														["ArtifactID"] = this.importedDocuments[1].FieldValues[1].Value.ToString(),
 													},
 												new Dictionary<string, string>
 													{
@@ -354,7 +351,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 														["@sourceFolderArtifactID"] = this.workspaceFolderId.ToString(),
 														["@sourceFolderName"] = this.TestParameters.WorkspaceName,
 														["@destinationFolderArtifactID"] = this.testDestinationFolderId.ToString(),
-														["ArtifactID"] = (string)this.importedDocuments[1].FieldValues[0].Value,
+														["ArtifactID"] = this.importedDocuments[0].FieldValues[1].Value.ToString(),
 													},
 											};
 
@@ -382,11 +379,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(relativityObjects.Count, Is.EqualTo(4));
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[0].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testDestinationFolderId));
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[1].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testDestinationFolderId));
-			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[2].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testSourceFolderName));
-			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[3].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testSourceFolderName));
+			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[2].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testSourceFolderId));
+			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[3].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testSourceFolderId));
 		}
 
-		[Ignore(@"To be fixed by https://jira.kcura.com/browse/REL-423995 sub-task 3")]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
@@ -404,19 +400,19 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 											{
 												new Dictionary<string, string>
 													{
-														["@destinationFolderName"] = this.testDestinationFolderName,
-														["@sourceFolderArtifactID"] = this.workspaceFolderId.ToString(),
-														["@sourceFolderName"] = this.TestParameters.WorkspaceName,
-														["@destinationFolderArtifactID"] = this.testDestinationFolderId.ToString(),
-														["ArtifactID"] = (string)this.importedDocuments[0].FieldValues[0].Value,
-													},
-												new Dictionary<string, string>
-													{
 														["@destinationFolderName"] = this.testDeeperDestinationFolderName,
 														["@sourceFolderArtifactID"] = this.testSourceFolderId.ToString(),
 														["@sourceFolderName"] = this.testSourceFolderName,
 														["@destinationFolderArtifactID"] = this.testDeeperDestinationFolderId.ToString(),
-														["ArtifactID"] = (string)this.importedDocuments[2].FieldValues[0].Value,
+														["ArtifactID"] = this.importedDocuments[2].FieldValues[1].Value.ToString(),
+													},
+												new Dictionary<string, string>
+													{
+														["@destinationFolderName"] = this.testDestinationFolderName,
+														["@sourceFolderArtifactID"] = this.workspaceFolderId.ToString(),
+														["@sourceFolderName"] = this.TestParameters.WorkspaceName,
+														["@destinationFolderArtifactID"] = this.testDestinationFolderId.ToString(),
+														["ArtifactID"] = this.importedDocuments[0].FieldValues[1].Value.ToString(),
 													},
 											};
 
@@ -454,7 +450,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[3].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testSourceFolderId));
 		}
 
-		[Ignore(@"To be fixed by https://jira.kcura.com/browse/REL-423995 sub-task 3")]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
@@ -474,7 +469,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 							                           ["@sourceFolderArtifactID"] = this.testSourceFolderId.ToString(),
 							                           ["@sourceFolderName"] = this.testSourceFolderName,
 							                           ["@destinationFolderArtifactID"] = this.workspaceFolderId.ToString(),
-							                           ["ArtifactID"] = (string)this.importedDocuments[2].FieldValues[0].Value,
+							                           ["ArtifactID"] = this.importedDocuments[2].FieldValues[1].Value.ToString(),
 						                           },
 				                           };
 
@@ -503,7 +498,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[0].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.workspaceFolderId));
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[1].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.workspaceFolderId));
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[2].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.workspaceFolderId));
-			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[3].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testSourceFolderName));
+			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[3].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testSourceFolderId));
 		}
 	}
 }
