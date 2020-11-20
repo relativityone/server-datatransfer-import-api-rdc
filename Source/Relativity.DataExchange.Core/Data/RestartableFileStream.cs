@@ -23,11 +23,23 @@ namespace Relativity.DataExchange.Data
 		/// Initializes a new instance of the <see cref="RestartableFileStream"/> class.
 		/// </summary>
 		/// <param name="filename">Filename to open.</param>
-		public RestartableFileStream(string filename)
+		/// <param name="initialCharacterPosition">Initial CharacterPosition when the stream was created.</param>
+		public RestartableFileStream(string filename, long initialCharacterPosition)
 		{
 			this.filename = filename;
 			this.stream = OpenFileStream(filename);
+			this.InitialCharacterPosition = initialCharacterPosition;
 		}
+
+		/// <summary>
+		/// Gets initial CharacterPosition when the stream was created.
+		/// </summary>
+		public long InitialCharacterPosition { get; }
+
+		/// <summary>
+		/// Gets or sets current initial CharacterPosition when the stream was created.
+		/// </summary>
+		public long CurrentInitialCharacterPosition { get; set; }
 
 		/// <inheritdoc />
 		public override bool CanRead => stream.CanRead;
@@ -80,11 +92,8 @@ namespace Relativity.DataExchange.Data
 		/// <inheritdoc />
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-			// grab the position first in case there is a partial read.
-			restartPosition = stream.Position;
-
 			int toReturn = stream.Read(buffer, offset, count);
-			restartPosition = stream.Position;
+			restartPosition += toReturn;
 			return toReturn;
 		}
 

@@ -7,6 +7,7 @@
 namespace Relativity.DataExchange.Data
 {
 	using System;
+	using System.Diagnostics;
 	using System.Globalization;
 	using System.IO;
 	using System.Text;
@@ -667,7 +668,7 @@ namespace Relativity.DataExchange.Data
 					IoWarningEventArgs args = new IoWarningEventArgs(waitTime, e, this.CurrentLineNumber);
 					this.PublishWarningMessage(args);
 					if ((this.Reader.BaseStream is FileStream || this.Reader.BaseStream is RestartableFileStream) && e is IOException
-					    && e.Message.ToLowerInvariant().Contains("network"))
+						&& e.Message.ToLowerInvariant().Contains("network"))
 					{
 						reInitReader = true;
 					}
@@ -781,8 +782,8 @@ namespace Relativity.DataExchange.Data
 				{
 					hasAlertedError = true;
 					string message = "Contents of cell has exceeded maximum length of "
-					                 + Conversions.ToString(maxCharacterLength) + " (character "
-					                 + Conversions.ToString(this.CharacterPosition) + ")";
+									 + Conversions.ToString(maxCharacterLength) + " (character "
+									 + Conversions.ToString(this.CharacterPosition) + ")";
 					this.PublishWarningMessage(new IoWarningEventArgs(message, this.CurrentLineNumber));
 				}
 
@@ -873,8 +874,8 @@ namespace Relativity.DataExchange.Data
 				// The Read character is NOT used.
 				Microsoft.VisualBasic.Strings.ChrW(this.Read());
 				if (Microsoft.VisualBasic.Strings.ChrW(this.Peek()) == this.Delimiter ||
-				    this.Peek() == EofChar ||
-				    this.Peek() == 13)
+					this.Peek() == EofChar ||
+					this.Peek() == 13)
 				{
 					if (this.Peek() == 13)
 					{
@@ -922,7 +923,7 @@ namespace Relativity.DataExchange.Data
 				if (ch1 == this.Bound)
 				{
 					if (this.TrimOption == TrimOption.Both ||
-					    this.TrimOption == TrimOption.Trailing)
+						this.TrimOption == TrimOption.Trailing)
 					{
 						char[] whitespace = { ' ', Microsoft.VisualBasic.ControlChars.Tab };
 						while (System.Array.IndexOf(whitespace, Microsoft.VisualBasic.Strings.ChrW(this.Peek())) != EofChar)
@@ -1025,9 +1026,9 @@ namespace Relativity.DataExchange.Data
 				}
 
 				while ((Microsoft.VisualBasic.Strings.ChrW(charCode) == ' '
-				        || Microsoft.VisualBasic.Strings.ChrW(charCode) == '\t')
-				       && (this.TrimOption == TrimOption.Both
-				          || this.TrimOption == TrimOption.Leading))
+						|| Microsoft.VisualBasic.Strings.ChrW(charCode) == '\t')
+					   && (this.TrimOption == TrimOption.Both
+						  || this.TrimOption == TrimOption.Leading))
 				{
 					charCode = this.Read();
 				}
@@ -1064,9 +1065,9 @@ namespace Relativity.DataExchange.Data
 					}
 				}
 				else if (!((Microsoft.VisualBasic.Strings.ChrW(charCode) == ' '
-				            || Microsoft.VisualBasic.Strings.ChrW(charCode) == '\t')
-				           && (this.TrimOption == TrimOption.Both ||
-				               this.TrimOption == TrimOption.Leading)))
+							|| Microsoft.VisualBasic.Strings.ChrW(charCode) == '\t')
+						   && (this.TrimOption == TrimOption.Both ||
+							   this.TrimOption == TrimOption.Leading)))
 				{
 					currentArrayList.Add(
 						Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(charCode))
@@ -1078,7 +1079,7 @@ namespace Relativity.DataExchange.Data
 			if (currentArrayList != returnValue)
 			{
 				string message = "This line's column length has exceeded the maximum defined column length of "
-				                 + Conversions.ToString(10000) + ".  Remaining columns in line truncated";
+								 + Conversions.ToString(10000) + ".  Remaining columns in line truncated";
 				IoWarningEventArgs args = new IoWarningEventArgs(message, this.CurrentLineNumber);
 				this.PublishWarningMessage(args);
 			}
@@ -1204,6 +1205,12 @@ namespace Relativity.DataExchange.Data
 						this.CurrentLineNumber));
 
 				restartableFileStream.Restart();
+
+				if (restartableFileStream.CurrentInitialCharacterPosition
+				    != restartableFileStream.InitialCharacterPosition)
+				{
+					this.RestoreCharacterPosition(restartableFileStream);
+				}
 			}
 			else if (this.Reader.BaseStream is FileStream fileStream)
 			{
@@ -1213,15 +1220,14 @@ namespace Relativity.DataExchange.Data
 						this.CurrentLineNumber));
 
 				string filename = fileStream.Name;
-				long position = fileStream.Position;
 				Encoding readerCurrentEncoding = this.Reader.CurrentEncoding;
 
 				this.Reader.Dispose();
 
-				Stream stream = new RestartableFileStream(filename);
+				var stream = new RestartableFileStream(filename, this.CharacterPosition);
 				try
 				{
-					this.Reader = new StreamReader(stream, readerCurrentEncoding, position == 0);
+					this.Reader = new StreamReader(stream, readerCurrentEncoding, this.CharacterPosition == 0);
 				}
 				catch
 				{
@@ -1229,29 +1235,32 @@ namespace Relativity.DataExchange.Data
 					throw;
 				}
 
-				long delta = Math.Max(this.CharacterPosition / 10L, 100000L);
-				for (int i = 0; i <= this.CharacterPosition; i++)
-				{
-					if (i % delta == 0)
-					{
-						this.PublishWarningMessage(
-							new IoWarningEventArgs(
-								$"{i} out of {this.CharacterPosition} characters skipped.",
-								this.CurrentLineNumber));
-					}
-
-					this.Reader.Read();
-				}
-
-				this.PublishWarningMessage(
-					new IoWarningEventArgs(
-						$"{this.CharacterPosition} characters skipped.",
-						this.CurrentLineNumber));
+				this.RestoreCharacterPosition(stream);
 			}
 			else
 			{
 				throw new InvalidOperationException(Strings.ReinitializeReaderNotFileStreamError);
 			}
+		}
+
+		private void RestoreCharacterPosition(RestartableFileStream stream)
+		{
+			long delta = Math.Max(stream.InitialCharacterPosition / 10L, 1024L);
+			for (; stream.CurrentInitialCharacterPosition < stream.InitialCharacterPosition; stream.CurrentInitialCharacterPosition++)
+			{
+				if (stream.CurrentInitialCharacterPosition % delta == 0)
+				{
+					this.PublishWarningMessage(
+						new IoWarningEventArgs(
+							$"{stream.CurrentInitialCharacterPosition} out of {this.CharacterPosition} characters skipped.",
+							this.CurrentLineNumber));
+				}
+
+				this.Reader.Read();
+			}
+
+			this.PublishWarningMessage(
+				new IoWarningEventArgs($"Character position restored to {this.CharacterPosition}.", this.CurrentLineNumber));
 		}
 	}
 }
