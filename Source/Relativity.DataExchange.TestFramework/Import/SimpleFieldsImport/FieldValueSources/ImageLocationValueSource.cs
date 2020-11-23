@@ -50,7 +50,7 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldV
 				for (int imageIndex = 0; imageIndex < this.NumberOfImagesPerDocument; imageIndex++)
 				{
 					string fileName = $"{this.FileNamePrefix}_{documentIndex}_{imageIndex}";
-					string imageLocation = RandomHelper.NextImageFile(this.ImageFormat, this.Directory, ImageWidth, ImageHeight, fileName);
+					string imageLocation = RandomHelper.NextImageFile(this.ImageFormat, this.Directory, ImageWidth, ImageHeight, fileName).FullName;
 					yield return imageLocation;
 				}
 			}

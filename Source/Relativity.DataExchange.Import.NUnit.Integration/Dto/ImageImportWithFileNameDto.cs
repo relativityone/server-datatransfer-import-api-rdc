@@ -6,6 +6,7 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 {
+	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.IO;
@@ -30,10 +31,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 
 		public static IEnumerable<ImageImportWithFileNameDto> GetRandomImageFiles(string directory, int numberOfDocumentsToImport, int numberOfImagesPerDocument, ImageFormat imageFormat)
 		{
-			return GetRandomImageFiles(directory, numberOfDocumentsToImport, numberOfImagesPerDocument, imageFormat, false);
+			return GetRandomImageFiles(directory, numberOfDocumentsToImport, numberOfImagesPerDocument, imageFormat, fileSize => { });
 		}
 
-		public static IEnumerable<ImageImportWithFileNameDto> GetRandomImageFiles(string directory, int numberOfDocumentsToImport, int numberOfImagesPerDocument, ImageFormat imageFormat, bool useInvalidIdentifier)
+		public static IEnumerable<ImageImportWithFileNameDto> GetRandomImageFiles(string directory, int numberOfDocumentsToImport, int numberOfImagesPerDocument, ImageFormat imageFormat, Action<long> aggregateFileSizeBytes)
+		{
+			return GetRandomImageFiles(directory, numberOfDocumentsToImport, numberOfImagesPerDocument, imageFormat, false, aggregateFileSizeBytes);
+		}
+
+		public static IEnumerable<ImageImportWithFileNameDto> GetRandomImageFiles(string directory, int numberOfDocumentsToImport, int numberOfImagesPerDocument, ImageFormat imageFormat, bool useInvalidIdentifier, Action<long> aggregateFileSizeBytes)
 		{
 			const int imageWidth = 200;
 			const int imageHeight = 200;
@@ -45,9 +51,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 				{
 					string batesNumber = $"{documentIdentifier}_{imageIndex}";
 					string fileName = batesNumber;
-					string fileLocation = RandomHelper.NextImageFile(imageFormat, directory, imageWidth, imageHeight, fileName);
-					string fileNameToImport = AddSpecialCharacters(Path.GetFileName(fileLocation));
-					yield return new ImageImportWithFileNameDto(batesNumber, documentIdentifier, fileLocation, fileNameToImport);
+					FileInfo imageFile = RandomHelper.NextImageFile(imageFormat, directory, imageWidth, imageHeight, fileName);
+					aggregateFileSizeBytes(imageFile.Length);
+					string fileNameToImport = AddSpecialCharacters(Path.GetFileName(imageFile.FullName));
+					yield return new ImageImportWithFileNameDto(batesNumber, documentIdentifier, imageFile.FullName, fileNameToImport);
 				}
 			}
 		}

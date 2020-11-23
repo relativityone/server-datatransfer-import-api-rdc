@@ -118,11 +118,13 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
+			Me.Context.PublishProcessEnded(Me.Statistics.FileTransferredBytes, Me.Statistics.MetadataTransferredBytes)
 			Me.Context.PublishProcessCompleted(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
+			Me.Context.PublishProcessEnded(Me.Statistics.FileTransferredBytes, Me.Statistics.MetadataTransferredBytes)
 			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
@@ -280,6 +282,7 @@ Namespace kCura.WinEDDS
 			If Not _hasFatalErrorOccured Then
 				SyncLock Me.Context
 					Me.Context.PublishFatalException(ex)
+					Me.Context.PublishProcessEnded(Me.Statistics.FileTransferredBytes, Me.Statistics.MetadataTransferredBytes)
 					Me.Context.PublishProcessCompleted(False, _imageFileImporter.ErrorLogFileName, True)
 					_hasFatalErrorOccured = True
 				End SyncLock

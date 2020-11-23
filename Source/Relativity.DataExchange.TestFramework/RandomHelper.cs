@@ -7,7 +7,6 @@
 namespace Relativity.DataExchange.TestFramework
 {
 	using System;
-	using System.Collections;
 	using System.Collections.Generic;
 	using System.Drawing;
 	using System.Drawing.Imaging;
@@ -352,9 +351,9 @@ namespace Relativity.DataExchange.TestFramework
 		/// The image height.
 		/// </param>
 		/// <returns>
-		/// The file.
+		/// Information about image file.
 		/// </returns>
-		public static string NextImageFile(Relativity.DataExchange.Media.ImageFormat imageFormat, string directory, int width, int height)
+		public static FileInfo NextImageFile(Relativity.DataExchange.Media.ImageFormat imageFormat, string directory, int width, int height)
 		{
 			var fileName = GetRandomFileName;
 			return NextImageFile(imageFormat, directory, width, height, fileName);
@@ -379,9 +378,9 @@ namespace Relativity.DataExchange.TestFramework
 		/// File name.
 		/// </param>
 		/// <returns>
-		/// The file.
+		/// Information about image file.
 		/// </returns>
-		public static string NextImageFile(Relativity.DataExchange.Media.ImageFormat imageFormat, string directory, int width, int height, string fileName)
+		public static FileInfo NextImageFile(Relativity.DataExchange.Media.ImageFormat imageFormat, string directory, int width, int height, string fileName)
 		{
 			switch (imageFormat)
 			{
@@ -410,9 +409,9 @@ namespace Relativity.DataExchange.TestFramework
 		/// The image height.
 		/// </param>
 		/// <returns>
-		/// The file.
+		/// Information about image file.
 		/// </returns>
-		public static string NextJpegFile(string directory, string fileName, int width, int height)
+		public static FileInfo NextJpegFile(string directory, string fileName, int width, int height)
 		{
 			Directory.CreateDirectory(directory);
 
@@ -430,7 +429,7 @@ namespace Relativity.DataExchange.TestFramework
 				bitmap.Save(file, System.Drawing.Imaging.ImageFormat.Jpeg);
 			}
 
-			return file;
+			return new FileInfo(file);
 		}
 
 		/// <summary>
@@ -449,9 +448,9 @@ namespace Relativity.DataExchange.TestFramework
 		/// The image height.
 		/// </param>
 		/// <returns>
-		/// The file.
+		/// Information about image file.
 		/// </returns>
-		public static string NextTiffFile(string directory, string fileName, int width, int height)
+		public static FileInfo NextTiffFile(string directory, string fileName, int width, int height)
 		{
 			Directory.CreateDirectory(directory);
 
@@ -480,7 +479,7 @@ namespace Relativity.DataExchange.TestFramework
 				}
 			}
 
-			return file;
+			return new FileInfo(file);
 		}
 
 		/// <summary>

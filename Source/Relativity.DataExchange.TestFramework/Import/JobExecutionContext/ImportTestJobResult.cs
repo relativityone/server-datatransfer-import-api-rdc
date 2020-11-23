@@ -52,6 +52,10 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 
 		public int JobReportErrorsCount => this.CompletedJobReport.ErrorRows.Count;
 
+		public long JobReportFileBytes => this.CompletedJobReport.FileBytes;
+
+		public long JobReportMetadataBytes => this.CompletedJobReport.MetadataBytes;
+
 		public Exception FatalException => this.CompletedJobReport.FatalException;
 
 		/// <summary>

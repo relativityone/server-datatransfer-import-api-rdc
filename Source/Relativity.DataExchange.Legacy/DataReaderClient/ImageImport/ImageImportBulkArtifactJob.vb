@@ -389,6 +389,11 @@ Namespace kCura.Relativity.DataReaderClient
 			RaiseComplete()
 		End Sub
 
+		Private Sub _processContext_OnProcessEnded(sender As Object, e As ProcessEndEventArgs) Handles _processContext.ProcessEnded
+			Me._jobReport.FileBytes = e.NativeFileBytes
+			Me._jobReport.MetadataBytes = e.MetadataBytes
+		End Sub
+
 		Private Sub _processContext_OnProcessEvent(ByVal sender As Object, ByVal e As ProcessEventArgs) Handles _processContext.ProcessEvent
 			If e.EventType = ProcessEventType.Error OrElse e.EventType = ProcessEventType.Warning OrElse e.EventType = ProcessEventType.Status Then
 				RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Record Info: {2}] {3} - {1}", e.Timestamp, e.Message, e.RecordInfo, e.EventType)))
