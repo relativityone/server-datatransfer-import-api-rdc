@@ -29,7 +29,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// <summary>
 		/// The random generator instance.
 		/// </summary>
-		private static readonly RandomGenerator RandomGeneratorInstance = new RandomGenerator();
+		private static readonly RandomGenerator RandomGeneratorInstance = new RandomGenerator(42);
 
 		/// <summary>
 		/// Gets random file name.

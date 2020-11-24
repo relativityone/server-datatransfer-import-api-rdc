@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SQLDataComparer.Log;
 using SQLDataComparer.Model;
 
 namespace SQLDataComparer.DataCompare
 {
-	public class ArtifactMappingEqualityComparer : RowEqualityComparer
+	public class SimpleRowDataEqualityComparer : RowEqualityComparer
 	{
-		public ArtifactMappingEqualityComparer(ILog log, Dictionary<string, string> mappingTable, string tableName)
-			: base(log, "ArtifactID", mappingTable, tableName)
+		public SimpleRowDataEqualityComparer(ILog log,  string tableName)
+		: base(log, null, null, tableName)
 		{
 		}
 

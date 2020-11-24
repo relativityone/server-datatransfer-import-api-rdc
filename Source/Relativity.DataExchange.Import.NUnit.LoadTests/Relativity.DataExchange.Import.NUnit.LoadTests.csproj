@@ -57,6 +57,7 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ImportDocumentsWithDifferentModesTests.cs" />
     <Compile Include="ImportDocumentsWithMoveLoadTests.cs" />
     <Compile Include="ImportImagesLoadTests.cs" />
     <Compile Include="ImportLoadTestsBase.cs" />
@@ -127,6 +128,9 @@
     <Compile Include="GlobalSuppressions.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="Resources\ImportDocumentsWithDifferentModesTests\ShouldImportForSqlComparerAsync.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\ImportDocumentsLoadTests\ShouldImportFoldersParallelAsync.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -558,6 +562,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

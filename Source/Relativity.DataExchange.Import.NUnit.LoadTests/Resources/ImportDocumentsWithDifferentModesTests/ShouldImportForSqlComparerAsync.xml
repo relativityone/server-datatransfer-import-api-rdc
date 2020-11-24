@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<compareConfig>
+	<tables>
+		<table name="EDDSDBO.Document" rowId="ControlNumber" mapId="ArtifactID">
+			<ignored>
+				<ignore name="ArtifactID"/>
+				<ignore name="ParentArtifactID_D"/>
+				<ignore name="OriginatingImagingDocumentError"/>
+			</ignored>
+			<mappings>
+				<mapping name="MultiChoice_SqlComparer" type="MultiChoice" targetTable="EDDSDBO.Code"/>
+				<mapping name="SingleChoice_SqlComparer" type="SingleChoice" targetTable="EDDSDBO.Code"/>
+				<mapping name="SingleObject_SqlComparer" type="SingleObject" targetTable="SingleObject_SqlComparer"/>
+				<mapping name="MultiObject_SqlComparer" type="MultiObject" targetTable="MultiObject_SqlComparer"/>
+			</mappings>
+		</table>
+		<table name="EDDSDBO.Code" rowId="Name" mapId="ArtifactID">
+			<ignored>
+				<ignore name="ArtifactID"/>
+				<ignore name="CodeTypeID"/>
+			</ignored>
+		</table>
+		<table name="EDDSDBO.SingleObject_SqlComparer" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.MultiObject_SqlComparer" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.[File]" rowId="Filename" mapId="FileID">
+			<ignored>
+				<ignore name="Guid"/>
+				<ignore name="Location"/>
+				<ignore name="FileID"/>
+			</ignored>
+		</table>
+	</tables>
+</compareConfig>

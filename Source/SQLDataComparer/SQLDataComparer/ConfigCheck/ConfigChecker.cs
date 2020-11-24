@@ -27,7 +27,7 @@ namespace SQLDataComparer.ConfigCheck
 				throw new Exception($"Invalid table name {table.Name}");
 
 			string tableSchema = tableNameParts[0];
-			string tableName = tableNameParts[1];
+			var tableName = tableNameParts[1].Replace("[", string.Empty).Replace("]", string.Empty);
 
 			return CheckTables(table, tableSchema, tableName)
 			       && CheckColumnsConfig(table, tableSchema, tableName)

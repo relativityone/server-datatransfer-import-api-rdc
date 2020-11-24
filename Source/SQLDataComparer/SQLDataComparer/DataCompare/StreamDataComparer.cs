@@ -41,13 +41,22 @@ namespace SQLDataComparer.DataCompare
 				// step 1 - check configuration - parameters have to be filled to check this
 				if (_configChecker.CheckTableConfig(tableConfig))
 				{
-					if (!_mappingTable.ContainsKey(tableConfig.MapId))
+					if (!String.IsNullOrEmpty(tableConfig.MapId))
 					{
-						_mappingTable[tableConfig.MapId] = new Dictionary<string, string>();
-					}
+						if (!_mappingTable.ContainsKey(tableConfig.MapId))
+						{
+							_mappingTable[tableConfig.MapId] = new Dictionary<string, string>();
+						}
 
-					// step 2 - compare tables loading row by row
-					Compare(tableConfig, new RowDataEqualityComparer(_log, tableConfig.MapId, _mappingTable[tableConfig.MapId], tableConfig.Name), tableConfig.Name);
+						// step 2 - compare tables loading row by row with mapping
+						Compare(tableConfig, new RowDataEqualityComparer(_log, tableConfig.MapId, _mappingTable[tableConfig.MapId], tableConfig.Name), tableConfig.Name);
+					}
+					else
+					{
+						// step 2 - compare tables loading row by row without mapping
+						Compare(tableConfig, new SimpleRowDataEqualityComparer(_log, tableConfig.Name), tableConfig.Name);
+					}
+					
 				}
 			}
 
@@ -81,7 +90,7 @@ namespace SQLDataComparer.DataCompare
 				{
 					if (artifactMappingConfig.Type == MappingType.Artifact)
 					{
-						Compare(artifactConfig, artifactMappingConfig, new ArtifactMappingEqualityComparer(_log, _mappingTable["ArtifactID"], artifactConfig.Name), artifactConfig.Name);
+						Compare(artifactConfig, artifactMappingConfig, new SimpleRowDataEqualityComparer(_log, artifactConfig.Name), artifactConfig.Name);
 					}
 				}
 			}
@@ -164,6 +173,11 @@ namespace SQLDataComparer.DataCompare
 					{
 						rightCanAdvance = rightEnumerator.MoveNext();
 					}
+
+					if (lastRow)
+					{
+						lastRow = false;
+					}
 				}
 				else
 				{
@@ -177,6 +191,11 @@ namespace SQLDataComparer.DataCompare
 					else
 					{
 						leftCanAdvance = leftEnumerator.MoveNext();
+					}
+
+					if (lastRow)
+					{
+						lastRow = false;
 					}
 				}
 			}

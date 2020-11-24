@@ -186,7 +186,11 @@ namespace SQLDataComparer.DataLoad
 				queryBuilder.Append(GetQuery(tableConfig.WhereConfig));
 			}
 
-			queryBuilder.Append($" ORDER BY {tableConfig.RowId} ASC, {tableConfig.MapId} ASC");
+			queryBuilder.Append($" ORDER BY {tableConfig.RowId}");
+			if (!String.IsNullOrEmpty(tableConfig.MapId))
+			{
+				queryBuilder.Append($", {tableConfig.MapId}");
+			}
 
 			return queryBuilder.ToString();
 		}
@@ -233,7 +237,11 @@ namespace SQLDataComparer.DataLoad
 
 			queryBuilder.Append($"SELECT {tableConfig.RowId}, {tableConfig.MapId}, {mappingConfig.Name}");
 			queryBuilder.Append($" FROM {tableConfig.Name}");
-			queryBuilder.Append($" ORDER BY {tableConfig.RowId}, {tableConfig.MapId} ASC");
+			queryBuilder.Append($" ORDER BY {tableConfig.RowId}");
+			if (!String.IsNullOrEmpty(tableConfig.MapId))
+			{
+				queryBuilder.Append($", {tableConfig.MapId}");
+			}
 
 			return queryBuilder.ToString();
 		}
@@ -296,7 +304,11 @@ namespace SQLDataComparer.DataLoad
 			queryBuilder.Append($" JOIN EDDSDBO.ZCodeArtifact_{codeTypeID}");
 			queryBuilder.Append($" ON {tableConfig.Name}.ArtifactID");
 			queryBuilder.Append(" = AssociatedArtifactID");
-			queryBuilder.Append($" ORDER BY {tableConfig.RowId}, {tableConfig.MapId} ASC");
+			queryBuilder.Append($" ORDER BY {tableConfig.RowId}");
+			if (!String.IsNullOrEmpty(tableConfig.MapId))
+			{
+				queryBuilder.Append($", {tableConfig.MapId}");
+			}
 
 			return queryBuilder.ToString();
 		}
@@ -338,7 +350,11 @@ namespace SQLDataComparer.DataLoad
 			queryBuilder.Append($" JOIN EDDSDBO.f{docArtifactID}f{objArtifactID}");
 			queryBuilder.Append($" ON {tableConfig.Name}.ArtifactID");
 			queryBuilder.Append($" = f{objArtifactID}ArtifactID");
-			queryBuilder.Append($" ORDER BY {tableConfig.RowId}, {tableConfig.MapId} ASC");
+			queryBuilder.Append($" ORDER BY {tableConfig.RowId}");
+			if (!String.IsNullOrEmpty(tableConfig.MapId))
+			{
+				queryBuilder.Append($", {tableConfig.MapId}");
+			}
 
 			return queryBuilder.ToString();
 		}

@@ -9,6 +9,7 @@ using SQLDataComparer.DataCompare;
 using SQLDataComparer.DataLoad;
 using SQLDataComparer.Log;
 using SQLDataComparer.Model;
+using SQLDataComparer.ConfigModifier;
 
 namespace SQLDataComparer
 {
@@ -55,6 +56,9 @@ namespace SQLDataComparer
 				_log.LogError("Tables missing from the configuration");
 				return false;
 			}
+
+			var configMod = new ConfigModifier.ConfigModifier(_log, leftDatabaseConnectionString);
+			configMod.AppendAdditionalTables(ref compareConfig);
 
 			var configChecker = new ConfigChecker(_log, leftDatabaseConnectionString, rightDatabaseConnectionString);
 

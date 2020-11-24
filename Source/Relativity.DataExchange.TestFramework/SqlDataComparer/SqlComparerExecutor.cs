@@ -49,10 +49,22 @@ namespace Relativity.DataExchange.TestFramework.SqlDataComparer
 				TestContext.CurrentContext.Test.Name).Replace(",", "_");
 
 			Directory.CreateDirectory(testFolder);
-			File.Move(leftInputFile, Path.Combine(testFolder, Path.GetFileName(leftInputFile)));
-			File.Move(rightInputFile, Path.Combine(testFolder, Path.GetFileName(rightInputFile)));
-			File.Move(resultFile, Path.Combine(testFolder, Path.GetFileName(resultFile)));
+
+			MoveFile(Path.Combine(testFolder, Path.GetFileName(leftInputFile)), leftInputFile);
+			MoveFile(Path.Combine(testFolder, Path.GetFileName(rightInputFile)), rightInputFile);
+			MoveFile(Path.Combine(testFolder, Path.GetFileName(resultFile)), resultFile);
+
 			File.Copy(comparerConfigFile, Path.Combine(testFolder, Path.GetFileName(comparerConfigFile)), true);
+		}
+
+		private static void MoveFile(string destinationFile, string inputFile)
+		{
+			if (File.Exists(destinationFile))
+			{
+				File.Delete(destinationFile);
+			}
+
+			File.Move(inputFile, destinationFile);
 		}
 	}
 }

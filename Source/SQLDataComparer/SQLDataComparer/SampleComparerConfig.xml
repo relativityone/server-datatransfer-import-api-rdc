@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <compareConfig>
 	<tables>
-		<table name="EDDSDBO.Document" rowId="ControlNumber">
+		<table name="EDDSDBO.Document" rowId="ControlNumber" mapId="ArtifactID">
 			<ignored>
 				<ignore name="ArtifactID"/>
 				<ignore name="ParentArtifactID_D"/>
@@ -15,7 +15,7 @@
         <mapping name="TestOnly" type="SingleObject" targetTable="EDDSDBO.ImagingSet"/>
 			</mappings>
 		</table>
-		<table name="EDDSDBO.Artifact" rowId="TextIdentifier">
+		<table name="EDDSDBO.Artifact" rowId="TextIdentifier" mapId="ArtifactID">
       <mappedStrings>
         <mappedString name="TextIdentifier_sub" left="ToggleOn" right="ToggleOff"/>
       </mappedStrings>
@@ -30,12 +30,12 @@
         <mapping name="AncestorArtifactID" type="Artifact" targetTable="EDDSDBO.ArtifactAncestry"/>
       </mappings>
 		</table>
-		<table name="EDDSDBO.Code" rowId="Name">
+		<table name="EDDSDBO.Code" rowId="Name" mapId="ArtifactID">
 			<ignored>
 				<ignore name="ArtifactID"/>
 			</ignored>
 		</table>
-		<table name="EDDSDBO.Field" rowId="DisplayName">
+		<table name="EDDSDBO.Field" rowId="DisplayName" mapId="ArtifactID">
 			<ignored>
 				<ignore name="ArtifactID"/>
 				<ignore name="ArtifactViewFieldID"/>
@@ -43,7 +43,7 @@
 				<ignore name="RelationalIndexViewArtifactID"/>
 			</ignored>
 		</table>
-		<table name="EDDSDBO.ImagingSet" rowId="Name">
+		<table name="EDDSDBO.ImagingSet" rowId="Name" mapId="ArtifactID">
 			<ignored>
 				<ignore name="ArtifactID"/>
 			</ignored>
