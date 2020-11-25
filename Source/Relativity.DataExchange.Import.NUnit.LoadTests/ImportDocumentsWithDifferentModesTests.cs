@@ -32,10 +32,9 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		private const string MultiChoiceFieldName = "MultiChoice_SqlComparer";
 		private const string SingleObjectFieldName = "SingleObject_SqlComparer";
 		private const string MultiObjectFieldName = "MultiObject_SqlComparer";
-		private int singleObjectTypeArtifactId;
-		private int multiObjectTypeArtifactId;
 
 		[UseSqlComparer]
+		[Category(TestCategories.LoadTest)]
 		[Category(TestCategories.SqlComparer)]
 		[IdentifiedTest("8ddb535f-6a0f-4b2b-b89e-2d16be3f4770")]
 		public async Task ShouldImportForSqlComparerAsync(
@@ -66,21 +65,19 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 				.WithIdentifierField(WellKnownFields.ControlNumber)
 				.WithOverwriteMode(overwriteMode);
 
-			await Task.WhenAll(
-				RdoHelper.CreateObjectTypeAsync(this.TestParameters, SingleObjectFieldName).ContinueWith(task => this.singleObjectTypeArtifactId = task.Result),
-				RdoHelper.CreateObjectTypeAsync(this.TestParameters, MultiObjectFieldName).ContinueWith(task => this.multiObjectTypeArtifactId = task.Result))
-				.ConfigureAwait(false);
+			int singleObjectTypeArtifactId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, SingleObjectFieldName).ConfigureAwait(false);
+			int multiObjectTypeArtifactId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, MultiObjectFieldName).ConfigureAwait(false);
 
 			await Task.WhenAll(
 				FieldHelper.CreateSingleObjectFieldAsync(
 					this.TestParameters,
 					SingleObjectFieldName,
-					this.singleObjectTypeArtifactId,
+					singleObjectTypeArtifactId,
 					(int)ArtifactType.Document),
 				FieldHelper.CreateMultiObjectFieldAsync(
 					this.TestParameters,
 					MultiObjectFieldName,
-					this.multiObjectTypeArtifactId,
+					multiObjectTypeArtifactId,
 					(int)ArtifactType.Document),
 				this.CreateChoiceFieldsAsync())
 				.ConfigureAwait(false);
