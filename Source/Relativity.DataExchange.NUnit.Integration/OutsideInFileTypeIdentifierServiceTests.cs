@@ -43,22 +43,16 @@ namespace Relativity.DataExchange.NUnit.Integration
 		{
 			OutsideInFileTypeIdentifierService.Shutdown();
 			this.service = new OutsideInFileTypeIdentifierService(timeoutSeconds);
-			string rootDirectory = Path.Combine(Path.GetTempPath(), "Relativity-Test-Datasets");
+			this.rootDatasetDocumentsDirectory = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataOI");
 
-			if (System.IO.Directory.Exists(rootDirectory))
+			if (Directory.Exists(this.rootDatasetDocumentsDirectory))
 			{
-				const bool Recursive = true;
-				System.IO.Directory.Delete(rootDirectory, Recursive);
+				Directory.Delete(this.rootDatasetDocumentsDirectory, recursive: true);
 			}
 
-			Directory.CreateDirectory(rootDirectory);
-			this.rootDatasetDocumentsDirectory = Path.Combine(rootDirectory, "Test-FileTypeId-List");
-			if (!System.IO.Directory.Exists(this.rootDatasetDocumentsDirectory))
-			{
-				System.IO.Directory.CreateDirectory(this.rootDatasetDocumentsDirectory);
-				string sourceZipFile = ResourceFileHelper.GetResourceFilePath("OutsideIn", "Test-FileTypeId-List.zip");
-				ZipFile.ExtractToDirectory(sourceZipFile, this.rootDatasetDocumentsDirectory);
-			}
+			Directory.CreateDirectory(this.rootDatasetDocumentsDirectory);
+			string sourceZipFile = ResourceFileHelper.GetResourceFilePath("OutsideIn", "Test-FileTypeId-List.zip");
+			ZipFile.ExtractToDirectory(sourceZipFile, this.rootDatasetDocumentsDirectory);
 		}
 
 		[TearDown]
@@ -68,6 +62,12 @@ namespace Relativity.DataExchange.NUnit.Integration
 			{
 				this.service.Dispose();
 				this.service = null;
+			}
+
+			if (this.rootDatasetDocumentsDirectory != null && Directory.Exists(this.rootDatasetDocumentsDirectory))
+			{
+				Directory.Delete(this.rootDatasetDocumentsDirectory, recursive: true);
+				this.rootDatasetDocumentsDirectory = null;
 			}
 		}
 
