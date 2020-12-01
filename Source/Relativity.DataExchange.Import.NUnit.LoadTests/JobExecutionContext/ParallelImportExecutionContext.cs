@@ -65,16 +65,21 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 
 		public int ErrorRowsCountFromReport => this.importExecutionContexts.Sum(context => context.TestJobResult.JobReportErrorsCount);
 
-		public ParallelImportExecutionContext<TExecutionContext, TSettings> ConfigureImportApiInstanceCount(int importApiInstanceCount)
+		public ParallelImportExecutionContext<TExecutionContext, TSettings> ConfigureImportApiInstanceCount(int importApiInstanceCount, List<int> workspaceIds)
 		{
-			ValidateInstanceCount(importApiInstanceCount);
+			ValidateInstanceCount(importApiInstanceCount, workspaceIds);
 			this.DisposeCurrentContext();
 			for (int index = 0; index < importApiInstanceCount; index++)
 			{
-				this.InitializeNewExecutionContextInNewAppDomain(index);
+				this.InitializeNewExecutionContextInNewAppDomain(index, workspaceIds);
 			}
 
 			return this;
+		}
+
+		public ParallelImportExecutionContext<TExecutionContext, TSettings> ConfigureImportApiInstanceCount(int importApiInstanceCount)
+		{
+			return this.ConfigureImportApiInstanceCount(importApiInstanceCount, null);
 		}
 
 		public void SetUpImportApi(Func<ImportAPI> importApiFactory, TSettings settings)
@@ -144,12 +149,18 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 			return dataSourceBuilderInAppDomain.Build(documentCountPerImportApiInstance);
 		}
 
-		private static void ValidateInstanceCount(int importApiInstanceCount)
+		private static void ValidateInstanceCount(int importApiInstanceCount, List<int> workspaceIds)
 		{
 			if (importApiInstanceCount < 0 || importApiInstanceCount > MaxInstanceLimit)
 			{
 				throw new ArgumentException(
 					$"{importApiInstanceCount} parameter should be positive number, not greater than {MaxInstanceLimit} limit");
+			}
+
+			if (workspaceIds != null && workspaceIds.Count != importApiInstanceCount)
+			{
+				throw new ArgumentException(
+					$"{workspaceIds} list parameter should contain exactly {importApiInstanceCount} elements");
 			}
 		}
 
@@ -190,7 +201,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 			}
 		}
 
-		private void InitializeNewExecutionContextInNewAppDomain(int index)
+		private void InitializeNewExecutionContextInNewAppDomain(int index, IReadOnlyList<int> workspaceIds = null)
 		{
 			var domainSetup = new System.AppDomainSetup
 			{
@@ -200,10 +211,12 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 				$"Parallel-Import-Test-{index}",
 				AppDomain.CurrentDomain.Evidence,
 				domainSetup);
+			int actualWorkspaceId = workspaceIds?[index] ?? IntegrationTestHelper.IntegrationTestParameters.WorkspaceId;
 			this.appDomains.Add(appDomain);
 			var appDomainSetup = CreateInstanceAndUnwrap<AppDomainSetup>(appDomain);
-			appDomainSetup.SetupAppDomain(AssemblySetup.TestParameters);
+			appDomainSetup.SetupAppDomain(AssemblySetup.TestParameters, actualWorkspaceId);
 			var executionContext = CreateInstanceAndUnwrap<TExecutionContext>(appDomain);
+
 			this.importExecutionContexts.Add(executionContext);
 		}
 

@@ -8,7 +8,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
@@ -66,6 +65,13 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		{
 			this.JobExecutionContext
 				.ConfigureImportApiInstanceCount(instanceCount)
+				.InitializeImportApiWithUserAndPassword(this.TestParameters, settingsBuilder);
+		}
+
+		protected void InitializeImportApiWithUserAndPwd(ISettingsBuilder<TSettings> settingsBuilder, int instanceCount, List<int> workspaceIds)
+		{
+			this.JobExecutionContext
+				.ConfigureImportApiInstanceCount(instanceCount, workspaceIds)
 				.InitializeImportApiWithUserAndPassword(this.TestParameters, settingsBuilder);
 		}
 	}

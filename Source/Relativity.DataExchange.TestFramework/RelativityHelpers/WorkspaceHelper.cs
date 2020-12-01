@@ -34,7 +34,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	{
 		private static readonly RelativityVersion WorkspaceManagerReleaseVersion = RelativityVersion.Lanceleaf;
 
-		public static void CreateTestWorkspace(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
+		public static (int workspaceId, string workspaceName) CreateTestWorkspace(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
 		{
 			if (parameters == null)
 			{
@@ -46,6 +46,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				throw new ArgumentNullException(nameof(logger));
 			}
 
+			(int workspaceId, string workspaceName) createdWorkspaceInfo = (-1, null);
+
 			string workspaceTemplateName = parameters.WorkspaceTemplate;
 			if (parameters.TestOnWorkspaceWithNonDefaultCollation)
 			{
@@ -53,10 +55,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					NonDefaultCollationWorkspaceHelper.GetOrCreateWorkspaceTemplateWithNonDefaultCollation(
 						parameters,
 						logger);
-
-				// Prevent using just created workspace(workspace template with non default collation) name for new workspace in test
-				parameters.WorkspaceId = -1;
-				parameters.WorkspaceName = null;
 			}
 
 			string newWorkspaceName = GetWorkspaceName(parameters);
@@ -80,13 +78,14 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			retryPolicy.Execute(
 				() =>
 					{
-						CreateWorkspaceFromTemplate(parameters, logger, workspaceTemplateName, newWorkspaceName);
+						createdWorkspaceInfo = CreateWorkspaceFromTemplate(parameters, logger, workspaceTemplateName, newWorkspaceName);
 
 						logger.LogInformation(
 							"Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
 							parameters.WorkspaceName,
 							parameters.WorkspaceId);
 					});
+			return createdWorkspaceInfo;
 		}
 
 		public static void DeleteTestWorkspace(IntegrationTestParameters parameters, int workspaceToRemoveId, Relativity.Logging.ILog logger)
@@ -218,7 +217,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				: GetDefaultFileRepositoryUsingRSAPI(parameters);
 		}
 
-		internal static void CreateWorkspaceFromTemplate(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string workspaceTemplateName, string newWorkspaceName)
+		internal static (int workspaceId, string workspaceName) CreateWorkspaceFromTemplate(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string workspaceTemplateName, string newWorkspaceName)
 		{
 			int templateWorkspaceId = RetrieveWorkspaceId(
 				parameters,
@@ -247,10 +246,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					client.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspace);
 				int workspaceId = QueryWorkspaceArtifactId(client, result, logger);
 
-				parameters.WorkspaceId = workspaceId;
-				parameters.WorkspaceName = workspaceName;
+				EnableDataGrid(client, parameters, workspaceId, logger);
 
-				EnableDataGrid(client, parameters, logger);
+				return (workspaceId, workspaceName);
 			}
 		}
 
@@ -355,7 +353,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			   : parameters.WorkspaceName;
 		}
 
-		private static void EnableDataGrid(IRSAPIClient client, IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
+		private static void EnableDataGrid(IRSAPIClient client, IntegrationTestParameters parameters, int workspaceId, Relativity.Logging.ILog logger)
 		{
 			// By default DataGrid is disable on workspace templates used in tests
 			// It is impossible to disable DataGrid for workspace if it was enabled before
@@ -367,11 +365,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				logger.LogInformation($"DataGrid enabled for workspace with id {parameters.WorkspaceId}");
 			}
 
-			UpdateExtractedTextField(parameters, logger).ConfigureAwait(false);
+			UpdateExtractedTextField(parameters, workspaceId, logger).ConfigureAwait(false);
 			logger.LogInformation($"'Extracted Text' field values in workspace updated");
 		}
 
-		private static async Task UpdateExtractedTextField(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
+		private static async Task UpdateExtractedTextField(IntegrationTestParameters parameters, int workspaceId, Relativity.Logging.ILog logger)
 		{
 			var longTextFieldRequest = new LongTextFieldRequest()
 			{
@@ -386,8 +384,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			using (IFieldManager fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(parameters))
 			{
-				int fieldId = TestFramework.RelativityHelpers.FieldHelper.GetFieldArtifactId(parameters, logger, WellKnownFields.ExtractedText);
-				await fieldManager.UpdateLongTextFieldAsync(parameters.WorkspaceId, fieldId, longTextFieldRequest)
+				int fieldId = FieldHelper.GetFieldArtifactId(parameters, workspaceId, logger, WellKnownFields.ExtractedText);
+				await fieldManager.UpdateLongTextFieldAsync(workspaceId, fieldId, longTextFieldRequest)
 					.ConfigureAwait(false);
 			}
 		}

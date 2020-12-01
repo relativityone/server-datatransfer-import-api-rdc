@@ -127,6 +127,7 @@
     </Compile>
     <Compile Include="GlobalSuppressions.cs">
     </Compile>
+    <Compile Include="MultiWorkspaceLoadTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Resources\ImportDocumentsWithDifferentModesTests\ShouldImportForSqlComparerAsync.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

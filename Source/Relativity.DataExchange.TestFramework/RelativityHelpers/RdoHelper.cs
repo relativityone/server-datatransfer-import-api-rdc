@@ -40,6 +40,13 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					   : Task.FromResult(CreateObjectTypeUsingRSAPI(parameters, objectTypeName));
 		}
 
+		public static Task<int> CreateObjectTypeAsync(IntegrationTestParameters parameters, string objectTypeName, int workspaceId)
+		{
+			return CanUseObjectTypeManagerKepler(parameters)
+				       ? CreateObjectTypeUsingKeplerAsync(parameters, objectTypeName, workspaceId)
+				       : Task.FromResult(CreateObjectTypeUsingRSAPI(parameters, objectTypeName, workspaceId));
+		}
+
 		public static int CreateObjectTypeInstance(
 			IntegrationTestParameters parameters,
 			int artifactTypeId,
@@ -273,7 +280,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		private static async Task<int> CreateObjectTypeUsingKeplerAsync(IntegrationTestParameters parameters, string objectTypeName)
+		private static async Task<int> CreateObjectTypeUsingKeplerAsync(IntegrationTestParameters parameters, string objectTypeName, int workspaceId)
 		{
 			using (var objectManager = ServiceHelper.GetServiceProxy<IObjectTypeManager>(parameters))
 			{
@@ -283,14 +290,19 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					ParentObjectType = new Securable<ObjectTypeIdentifier>(new ObjectTypeIdentifier { ArtifactTypeID = WorkspaceArtifactTypeId }),
 				};
 
-				int newObjectId = await objectManager.CreateAsync(parameters.WorkspaceId, request).ConfigureAwait(false);
+				int newObjectId = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
 
-				ObjectTypeResponse objectTypeResponse = await objectManager.ReadAsync(parameters.WorkspaceId, newObjectId).ConfigureAwait(false);
+				ObjectTypeResponse objectTypeResponse = await objectManager.ReadAsync(workspaceId, newObjectId).ConfigureAwait(false);
 				return objectTypeResponse.ArtifactTypeID;
 			}
 		}
 
-		private static int CreateObjectTypeUsingRSAPI(IntegrationTestParameters parameters, string objectTypeName)
+		private static async Task<int> CreateObjectTypeUsingKeplerAsync(IntegrationTestParameters parameters, string objectTypeName)
+		{
+			return await CreateObjectTypeUsingKeplerAsync(parameters, objectTypeName, parameters.WorkspaceId).ConfigureAwait(false);
+		}
+
+		private static int CreateObjectTypeUsingRSAPI(IntegrationTestParameters parameters, string objectTypeName, int workspaceId)
 		{
 			if (parameters == null)
 			{
@@ -301,7 +313,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			using (IRSAPIClient client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
 #pragma warning restore CS0618 // Type or member is obsolete
 			{
-				client.APIOptions.WorkspaceID = parameters.WorkspaceId;
+				client.APIOptions.WorkspaceID = workspaceId;
 
 				var query = new Query<ObjectType>
 				{
@@ -331,6 +343,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				ObjectType createdObjectType = client.Repositories.ObjectType.ReadSingle(artifactId);
 				return createdObjectType.DescriptorArtifactTypeID.Value;
 			}
+		}
+
+		private static int CreateObjectTypeUsingRSAPI(IntegrationTestParameters parameters, string objectTypeName)
+		{
+			return CreateObjectTypeUsingRSAPI(parameters, objectTypeName, parameters.WorkspaceId);
 		}
 
 		private static bool CanUseObjectTypeManagerKepler(IntegrationTestParameters parameters) =>

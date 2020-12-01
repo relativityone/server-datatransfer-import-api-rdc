@@ -71,7 +71,9 @@ namespace Relativity.DataExchange.TestFramework
 			}
 
 			Logger.LogInformation("Creating a test workspace...");
-			WorkspaceHelper.CreateTestWorkspace(parameters, Logger);
+			var (workspaceId, workspaceName) = WorkspaceHelper.CreateTestWorkspace(parameters, Logger);
+			parameters.WorkspaceId = workspaceId;
+			parameters.WorkspaceName = workspaceName;
 
 			var importApi = new ImportAPI(
 				parameters.RelativityUserName,
