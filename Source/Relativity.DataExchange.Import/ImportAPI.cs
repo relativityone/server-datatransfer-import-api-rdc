@@ -75,28 +75,6 @@ namespace kCura.Relativity.ImportAPI
 		protected ICredentials _credentials;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ImportAPI"/> class using the Integrated Authentication provider.
-		/// </summary>
-		/// <remarks>
-		/// The user will be validated against the Relativity WebAPI instance located at <paramref name="webServiceUrl"/>.
-		/// </remarks>
-		/// <param name="webServiceUrl">
-		/// The URL to the Relativity WebAPI instance.
-		/// </param>
-		/// <exception cref="kCura.WinEDDS.Exceptions.CredentialsNotSupportedException">
-		/// Thrown when integrated security is not supported when running within a service process.
-		/// </exception>
-		/// <exception cref="kCura.WinEDDS.Exceptions.InvalidLoginException">
-		/// Thrown when an authentication failure occurs.
-		/// </exception>
-		/// <exception cref="RelativityNotSupportedException">
-		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
-		/// </exception>
-		public ImportAPI(string webServiceUrl) : this(null, null, webServiceUrl)
-		{
-		}
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="ImportAPI"/> class.
 		/// Uses the Password Authentication provider when <paramref name="userName"/> and <paramref name="password"/> are specified; otherwise, Integrated Authentication provider.
 		/// </summary>

@@ -160,6 +160,11 @@
     <Compile Include="..\..\Version\RdcAssemblySharedInfo.vb">
       <Link>My Project\RdcAssemblySharedInfo.vb</Link>
     </Compile>
+    <Compile Include="Authentication\WindowsCredentialsLogin.vb" />
+    <Compile Include="Authentication\IntegratedAuthenticationOAuthCredentialsProvider.vb" />
+    <Compile Include="Authentication\OAuth2ClientCredentials.vb" />
+    <Compile Include="Authentication\OAuth2ImplicitCredentials.vb" />
+    <Compile Include="Authentication\OAuth2ImplicitCredentialsHelper.vb" />
     <Compile Include="Collection.vb" />
     <Compile Include="CommandLine\Command.vb" />
     <Compile Include="CommandLine\CommandLineParser.vb" />
@@ -504,6 +509,7 @@
       <Name>Relativity.DataExchange.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />

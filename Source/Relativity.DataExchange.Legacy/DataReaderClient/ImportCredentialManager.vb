@@ -5,13 +5,17 @@ Imports System.Threading
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Logger
 
-Friend Class ImportCredentialManager
+Public Class ImportCredentialManager
 
 	Private Shared CredentialCache As List(Of CredentialEntry)
 	Private ReadOnly Shared _versionCache As ConcurrentDictionary(Of String, VersionEntry) = New ConcurrentDictionary(Of String,VersionEntry)()
 	Private Shared _WebServiceURL As String
-
-	Private Shared _lockObject As New System.Object
+	
+	Private Shared _lockObject As New Object
+	''' <summary>
+	''' This is set by RDC, to inject the function, so we don't have a reference to windows authentication in IAPI.
+	''' </summary>
+	Public Shared WindowsAuthenticationCredentialsProvider As Func(Of cookieContainer, String, CancellationToken, IRunningContext, Relativity.Logging.ILog, NetworkCredential)
 
 	Public Shared Property WebServiceURL As String
 		Get
@@ -37,7 +41,9 @@ Friend Class ImportCredentialManager
 	''' <param name="Password">password or bearer token</param>
 	''' <param name="runningContext">Contains information about the context in which jobs are executed.</param>
 	''' <returns>Credentials <see cref="SessionCredentials"/></returns>
-	Public Shared Function GetCredentials(ByVal UserName As String, ByVal Password As String, ByVal runningContext As IRunningContext) As SessionCredentials
+	Public Shared Function GetCredentials(ByVal UserName As String, 
+	                                      ByVal Password As String, 
+	                                      ByVal runningContext As IRunningContext) As SessionCredentials
 		' this function needs to be thread safe so that multiple simultaneous threads could call it
 
 		' data cleanup first
@@ -74,7 +80,10 @@ Friend Class ImportCredentialManager
 
 				Try
 					If String.IsNullOrEmpty(UserName) Then
-						creds = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster, WebServiceURL, token, runningContext, logger)
+						If WindowsAuthenticationCredentialsProvider Is Nothing
+							Throw New InvalidOperationException("User name can't be null when no windows integrated flow is specified")
+						End If
+						creds = WindowsAuthenticationCredentialsProvider.Invoke(cookieMonster, WebServiceURL, token, runningContext, logger)
 					Else
 						creds = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(UserName.Trim(), Password.Trim(), cookieMonster, WebServiceURL, token, runningContext, logger)
 					End If

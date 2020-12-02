@@ -25,41 +25,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	/// </summary>
 	public static class UsersHelper
 	{
-		/// <summary>
-		/// Adds or removes integrated authentication provider for a current user.
-		/// </summary>
-		/// <param name="parameters">Test context parameters.</param>
-		/// <param name="isEnabled">Determines if integrated authentication should be enabled for current user.</param>
-		/// <returns><see cref="Task"/> which completes when setting was changed.</returns>
-		public static async Task SwitchIntegratedAuthenticationForCurrentUserAsync(IntegrationTestParameters parameters, bool isEnabled)
-		{
-			int currentUserId;
-			using (var userManager = ServiceHelper.GetServiceProxy<IUserManager>(parameters))
-			{
-				User currentUser = await userManager.RetrieveCurrentAsync(parameters.WorkspaceId).ConfigureAwait(false);
-				currentUserId = currentUser.ArtifactID;
-			}
-
-			using (var loginProfileManager = ServiceHelper.GetServiceProxy<ILoginProfileManager>(parameters))
-			{
-				LoginProfile loginProfile = await loginProfileManager.GetLoginProfileAsync(currentUserId).ConfigureAwait(false);
-
-				IntegratedAuthenticationMethod integratedAuthentication = null;
-				if (isEnabled)
-				{
-					string userNameWithDomain = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-					integratedAuthentication = new IntegratedAuthenticationMethod
-					{
-						Account = userNameWithDomain,
-						IsEnabled = true,
-					};
-				}
-
-				loginProfile.IntegratedAuthentication = integratedAuthentication;
-				await loginProfileManager.SaveLoginProfileAsync(loginProfile).ConfigureAwait(false);
-			}
-		}
-
 		public static async Task<int> CreateNewUserAsync(
 			IntegrationTestParameters parameters,
 			string username,

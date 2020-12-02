@@ -28,24 +28,12 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 			setup.SetUpImportApi(() => CreateImportApiWithUserCredentials(testParameters), settingsBuilder);
 		}
 
-		public static void InitializeImportApiWithIntegratedAuthentication<TSettings>(this IImportApiSetup<TSettings> setup, IntegrationTestParameters testParameters, TSettings settings)
-			where TSettings : ImportSettingsBase
-		{
-			setup = setup ?? throw new ArgumentNullException(nameof(setup));
-			setup.SetUpImportApi(() => CreateImportApiWithIntegratedAuthentication(testParameters), settings);
-		}
-
 		private static ImportAPI CreateImportApiWithUserCredentials(IntegrationTestParameters testParameters)
 		{
 			return new ImportAPI(
 				testParameters.RelativityUserName,
 				testParameters.RelativityPassword,
 				testParameters.RelativityWebApiUrl.ToString());
-		}
-
-		private static ImportAPI CreateImportApiWithIntegratedAuthentication(IntegrationTestParameters testParameters)
-		{
-			return new ImportAPI(testParameters.RelativityWebApiUrl.ToString());
 		}
 	}
 }

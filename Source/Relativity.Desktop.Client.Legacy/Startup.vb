@@ -36,6 +36,7 @@ Namespace Relativity.Desktop.Client
 
 		Public Sub Main()
 			SetupRelativityLogging()
+			ImportCredentialManager.WindowsAuthenticationCredentialsProvider = AddressOf WindowsCredentialsLogin.LoginWindowsAuth
 			ContainerFactoryProvider.ContainerFactory = New ContainerFactory(RelativityLogger.Instance)
 			Dim handler As ThreadExceptionHandler = New ThreadExceptionHandler(RelativityLogger.Instance)
 			AddHandler System.Windows.Forms.Application.ThreadException, AddressOf handler.Application_ThreadException

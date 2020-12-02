@@ -3,9 +3,6 @@ castle.windsor
 newtonsoft.json
 relativity.kepler.client
 relativity.logging.interfaces
-relativity.oauth2client
-relativity.oauth2client.implicit
-relativity.oauth2client.interfaces
 relativity.services.datacontracts
 relativity.services.interfaces
 relativity.telemetry.datacontracts.shared

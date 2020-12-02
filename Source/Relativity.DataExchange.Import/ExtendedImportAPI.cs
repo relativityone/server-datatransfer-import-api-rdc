@@ -15,10 +15,6 @@ namespace kCura.Relativity.ImportAPI {
 			: base(userName, password, webServiceUrl) {
 		}
 
-		public ExtendedImportAPI(string webServiceUrl)
-			: base(webServiceUrl) {
-		}
-
 		/// <summary>
 		/// This factory method returns new <see cref="ImportAPI"/> object initialized with <see cref="IRelativityTokenProvider"/>
 		/// </summary>
