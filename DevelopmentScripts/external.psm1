@@ -56,6 +56,9 @@ Function Invoke-SignFile {
 					}
 				}
 				catch {
+					Write-Host $_.ScriptStackTrace
+					Write-Host $_.Exception
+					Write-Host $_.ErrorDetails
 					Write-Host "Failed to sign" $File "using" $Site "..."
 				}
             }  
