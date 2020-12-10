@@ -26,7 +26,7 @@ Namespace Monitoring.Sinks
 		''' <param name="serviceFactory">Used to create proxies of Relativity Services.</param>
 		Public Sub New(metricSinkConfig As IMetricSinkConfig, serviceFactory As IServiceFactory)
 			Me.MetricSinkConfig = metricSinkConfig
-			_sinks = New List(Of IMetricSink) From {New MetricSinkApm(serviceFactory, Me.MetricSinkConfig.SendApmMetrics), New MetricSinkSum(serviceFactory, New SumMetricFormatter, Me.MetricSinkConfig.SendSumMetrics)}
+			_sinks = New List(Of IMetricSink) From {New MetricSinkApm(serviceFactory, Me.MetricSinkConfig.SendApmMetrics), New MetricSinkSum(serviceFactory, New SumMetricFormatter, Me.MetricSinkConfig.SendSumMetrics), New MetricSinkRelativityLogging(RelativityLogger.Instance.IsEnabled)}
 		End Sub
 
 		''' <inheritdoc/>

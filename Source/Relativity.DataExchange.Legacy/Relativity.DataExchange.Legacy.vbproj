@@ -355,6 +355,7 @@
     <Compile Include="Monitoring\Sinks\IMetricService.vb" />
     <Compile Include="Monitoring\Sinks\ImportApiMetricSinkConfig.vb" />
     <Compile Include="Monitoring\Sinks\ISumMetricFormatter.vb" />
+    <Compile Include="Monitoring\Sinks\MetricSinkRelativityLogging.vb" />
     <Compile Include="Monitoring\Sinks\SumMetricFormatter.vb" />
     <Compile Include="Monitoring\Sinks\MetricSinkApm.vb" />
     <Compile Include="Monitoring\Sinks\IMetricSink.vb" />

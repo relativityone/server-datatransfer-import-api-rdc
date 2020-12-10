@@ -115,8 +115,7 @@ Public MustInherit Class MonitoredProcessBase
 	End Sub
 
 	Protected Sub SendMetricJobStarted()
-		Dim metric As MetricJobStarted = New MetricJobStarted
-		SetBaseMetrics(metric)
+		Dim metric As MetricJobStarted = BuildStartMetric()
 		MetricService.Log(metric)
 	End Sub
 
@@ -181,6 +180,15 @@ Public MustInherit Class MonitoredProcessBase
 			metric.WorkspaceID = CaseInfo.ArtifactID
 		End If
 	End Sub
+
+	Protected Overridable Function BuildStartMetric() As MetricJobStarted
+		' To be overriden in import or export to add Metrics from ImportStatistics or ExportStatistics
+		Dim metric As MetricJobStarted = New MetricJobStarted()
+
+		SetBaseMetrics(metric)
+
+		Return metric
+	End Function
 
 	Protected Overridable Function BuildBatchMetric(batchInformation As BatchInformation) As MetricJobBatch
 		' To be overriden in import or export to add Metrics from ImportStatistics or ExportStatistics

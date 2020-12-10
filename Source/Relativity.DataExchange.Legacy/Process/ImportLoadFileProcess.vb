@@ -216,6 +216,66 @@ Namespace kCura.WinEDDS
 			metric.ImportObjectType = ImportStatistics.ImportObjectType
 		End Sub
 
+		Protected Overrides Function BuildStartMetric() As MetricJobStarted
+			Dim metric As MetricJobStarted = MyBase.BuildStartMetric()
+
+			metric.CustomData("OverwriteDestination") = LoadFile.OverwriteDestination
+
+			metric.CustomData("RunId") = _loadFileImporter.RunId
+			metric.CustomData("DestinationFolderID") = LoadFile.DestinationFolderID
+			metric.CustomData("FirstLineContainsHeaders") = LoadFile.FirstLineContainsHeaders
+			metric.CustomData("LoadNativeFiles") = LoadFile.LoadNativeFiles
+			metric.CustomData("RecordDelimiter") = LoadFile.RecordDelimiter
+			metric.CustomData("QuoteDelimiter") = LoadFile.QuoteDelimiter
+			metric.CustomData("NewlineDelimiter") = LoadFile.NewlineDelimiter
+			metric.CustomData("MultiRecordDelimiter") = LoadFile.MultiRecordDelimiter
+			metric.CustomData("HierarchicalValueDelimiter") = LoadFile.HierarchicalValueDelimiter
+			metric.CustomData("ArtifactTypeID") = LoadFile.ArtifactTypeID
+			metric.CustomData("StartLineNumber") = LoadFile.StartLineNumber
+			metric.CustomData("IdentityFieldId") = LoadFile.IdentityFieldId
+			metric.CustomData("SendEmailOnLoadCompletion") = LoadFile.SendEmailOnLoadCompletion
+			metric.CustomData("ForceFolderPreview") = LoadFile.ForceFolderPreview
+			metric.CustomData("OIFileIdMapped") = LoadFile.OIFileIdMapped
+			metric.CustomData("FileSizeMapped") = LoadFile.FileSizeMapped
+			metric.CustomData("MoveDocumentsInAppendOverlayMode") = LoadFile.MoveDocumentsInAppendOverlayMode
+			metric.CustomData("Billable") = LoadFile.Billable
+
+			metric.CustomData("TotalMappedFieldsCount") = LoadFile.FieldMap.Count
+
+			metric.CustomData("OverlayBehavior") = LoadFile.OverlayBehavior
+			
+			metric.CustomData("IsFolderIncluded") = LoadFile.CreateFolderStructure
+			metric.CustomData("IsExtractedTextIncluded") = Not LoadFile.ExtractedTextFileEncoding Is Nothing
+
+			Dim extractedTextColumn As String = LoadFile.LongTextColumnThatContainsPathToFullText
+			Dim fullTextsCount, singleObjectsCount, multiObjectsCount, singleChoicesCount, multiChoicesCount As Int32
+
+			For Each docField As DocumentField In LoadFile.FieldMap.DocumentFields
+				If docField.FieldCategory = FieldCategory.FullText Then
+					fullTextsCount += 1
+					If docField.FieldName = extractedTextColumn Then
+						metric.CustomData("IsExtractedTextDataGridEnabled") = docField.EnableDataGrid
+					End If
+				ElseIf docField.FieldTypeID = FieldType.Object Then
+					singleObjectsCount += 1
+				ElseIf docField.FieldTypeID = FieldType.Objects Then
+					multiObjectsCount += 1
+				ElseIf docField.FieldTypeID = FieldType.Code Then
+					singleChoicesCount += 1
+				ElseIf docField.FieldTypeID = FieldType.MultiCode Then
+					multiChoicesCount += 1
+				End If
+			Next
+			
+			metric.CustomData("FullTextsCount") = fullTextsCount
+			metric.CustomData("SingleObjectsCount") = singleObjectsCount
+			metric.CustomData("MultiObjectsCount") = multiObjectsCount
+			metric.CustomData("SingleChoicesCount") = singleChoicesCount
+			metric.CustomData("MultiChoicesCount") = multiChoicesCount
+
+			Return metric
+		End Function
+
 		Protected Overrides Function BuildProgressMetric(statistics As Statistics) As MetricJobProgress
 			Dim metric As MetricJobProgress = MyBase.BuildProgressMetric(statistics)
 
