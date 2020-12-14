@@ -30,6 +30,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 			[RelativityVersion.MayappleToggleOff] = new Version(11, 3, 170, 2),
 			[RelativityVersion.Ninebark] = new Version(12, 0),
 			[RelativityVersion.NinebarkFolderMove] = new Version(12, 0, 111, 3),
+			[RelativityVersion.NinebarkToggleOff] = new Version(12, 0, 126, 1),
+			[RelativityVersion.Osier] = new Version(12, 1),
 		};
 
 		private static Version cachedRelativityVersion;

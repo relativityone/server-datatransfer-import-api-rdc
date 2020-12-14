@@ -88,5 +88,15 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 		/// Relativity 12.0.111.3 - version containing fixes and performance improvement to Folder Move
 		/// </summary>
 		NinebarkFolderMove,
+
+		/// <summary>
+		/// Relativity 12.0.126.1
+		/// </summary>
+		NinebarkToggleOff,
+
+		/// <summary>
+		/// Relativity 12.1.
+		/// </summary>
+		Osier,
 	}
 }

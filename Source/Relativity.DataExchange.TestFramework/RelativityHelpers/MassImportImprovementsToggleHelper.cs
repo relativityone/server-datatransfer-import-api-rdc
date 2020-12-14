@@ -140,7 +140,23 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				return true;
 			}
 
-			toggleValue = true; // toggle is enabled since Ninebark release
+			if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(
+				parameters,
+				RelativityVersions.RelativityVersion.NinebarkToggleOff))
+			{
+				toggleValue = true; // toggle is enabled in [RelativityVersion.Ninebark, RelativityVersion.NinebarkToggleOff)
+				return true;
+			}
+
+			if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(
+				parameters,
+				RelativityVersions.RelativityVersion.Osier))
+			{
+				toggleValue = false; // toggle is disabled since RelativityVersion.NinebarkToggleOff on the ninebark branch.
+				return true;
+			}
+
+			toggleValue = true; // toggle is enabled since Osier release
 			return true;
 		}
 
