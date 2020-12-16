@@ -597,6 +597,58 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				artifactTypeId).ConfigureAwait(false);
 		}
 
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Ninebark)]
+		[IgnoreIfMassImportImprovementsToggleHasValue(isEnabled: false)]
+		[IdentifiedTest("ad3bde44-9722-4f2c-8ef2-04453a639365")]
+		[Description("This test verifies that we do not audit redundant information when appending a new document in an Append/Overlay mode.")]
+		public async Task ShouldOnlyAuditCreationOfNewDocument()
+		{
+			// ARRANGE
+			const int NumberOfDocumentsToAppend = 1;
+			const string ExpectedAction = "Create";
+			var testExecutionStartTime = DateTime.Now;
+
+			var settings = NativeImportSettingsProvider.GetDefaultSettings();
+			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+
+			IEnumerable<string> controlNumber = GetControlNumberEnumerable(
+				OverwriteModeEnum.Append,
+				NumberOfDocumentsToAppend,
+				$"{nameof(this.ShouldOnlyAuditCreationOfNewDocument)}");
+
+			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, controlNumber).Build();
+
+			// ACT
+			var results = this.JobExecutionContext.Execute(importDataSource);
+
+			// ASSERT
+			this.ThenTheImportJobIsSuccessful(results, NumberOfDocumentsToAppend);
+
+			var audits = await AuditHelper.GetAuditActionsForSpecificObjectAsync(this.TestParameters, testExecutionStartTime, 20, this.GetDocumentArtifactId())
+											 .ConfigureAwait(false);
+
+			ThenTheAuditActionsAreCorrect(audits, ExpectedAction);
+		}
+
+		private static void ThenTheAuditActionsAreCorrect(IList<string> audits, string expectedAction)
+		{
+			foreach (var audit in audits)
+			{
+				Assert.That(audit.Equals(expectedAction));
+			}
+		}
+
+		private int GetDocumentArtifactId()
+		{
+			IList<RelativityObject> listOfDocuments = RdoHelper.QueryRelativityObjects(this.TestParameters, (int)ArtifactType.Document, new string[] { WellKnownFields.ControlNumber });
+
+			return listOfDocuments[0].ArtifactID;
+		}
+
 		private int GetArtifactTypeIdForTest(ArtifactType artifactType)
 		{
 			int artifactTypeId = artifactType == ArtifactType.Document

@@ -15,6 +15,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using Polly;
 	using Relativity.Audit.Services.Interface.Query;
 	using Relativity.Audit.Services.Interface.Query.Models.AuditObjectManagerUI;
+	using Relativity.Audit.Services.Interface.Query.Models.AuditQuery;
 	using Relativity.Services.Objects;
 	using Relativity.Services.Objects.DataContracts;
 
@@ -51,8 +52,12 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			int userId)
 		{
 			var results = new List<Dictionary<string, string>>();
+
+			int auditActionArtifactId = await GetAuditActionArtifactIdAsync(parameters, action).ConfigureAwait(false);
+			QueryRequest request = GetRequestByActions(auditActionArtifactId, userId, actionExecutionTime);
+
 			IEnumerable<RelativityObject> auditObjects =
-				await GetLastAuditObjectForActionAsync(parameters, action, actionExecutionTime, nrOfLastAuditsToTake, userId).ConfigureAwait(false);
+				await GetLastAuditObjectForActionAsync(parameters, nrOfLastAuditsToTake, request).ConfigureAwait(false);
 
 			foreach (var auditObject in auditObjects)
 			{
@@ -81,37 +86,51 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return results;
 		}
 
+		public static async Task<IList<string>> GetAuditActionsForSpecificObjectAsync(
+			IntegrationTestParameters parameters,
+			DateTime actionExecutionTime,
+			int numberOfLastAuditsToTake,
+			int objectArtifactI)
+		{
+			var auditList = await GetAuditsForSpecificObjectAsync(
+					                parameters,
+					                actionExecutionTime,
+					                numberOfLastAuditsToTake,
+					                objectArtifactI)
+				                .ConfigureAwait(false);
+
+			return auditList.Select(audit => audit.ActionName).ToList();
+		}
+
+		public static async Task<IList<AuditLogItem>> GetAuditsForSpecificObjectAsync(
+			IntegrationTestParameters parameters,
+			DateTime actionExecutionTime,
+			int numberOfLastAuditsToTake,
+			int objectArtifactId)
+		{
+			var request = GetRequestByArtifactId(objectArtifactId, actionExecutionTime);
+
+			var results = await AuditHelper.GetLastAuditObjectForActionAsync(parameters, numberOfLastAuditsToTake, request)
+							  .ConfigureAwait(false);
+
+			IList<AuditLogItem> auditList = new List<AuditLogItem>();
+
+			foreach (var audit in results)
+			{
+				var auditId = audit.Name;
+				var timeStamp = (DateTime)audit.FieldValues[0].Value;
+
+				auditList.Add(await GetAuditAsync(parameters, auditId, timeStamp).ConfigureAwait(false));
+			}
+
+			return auditList;
+		}
+
 		private static async Task<IEnumerable<RelativityObject>> GetLastAuditObjectForActionAsync(
 			IntegrationTestParameters parameters,
-			AuditAction action,
-			DateTime actionExecutionTime,
 			int nrOfLastAuditsToTake,
-			int userId)
+			QueryRequest request)
 		{
-			int auditActionArtifactId = await GetAuditActionArtifactIdAsync(parameters, action).ConfigureAwait(false);
-
-			var request = new QueryRequest
-			{
-				Fields = new List<FieldRef>
-					{
-						new FieldRef { Name = DetailsFieldName },
-					},
-				Condition = $"(('Action' == CHOICE {auditActionArtifactId})) AND (('{TimestampFieldName}' >= {actionExecutionTime.ToAuditTimeFormat()})) AND (('UserID' == {userId}))",
-				RowCondition = string.Empty,
-				Sorts = new List<Sort>
-					{
-						new Sort
-						{
-							Direction = SortEnum.Descending,
-							FieldIdentifier = new FieldRef { Name = TimestampFieldName },
-						},
-					},
-				ExecutingSavedSearchID = 0,
-				ExecutingViewID = 0,
-				ActiveArtifactID = 0,
-				MaxCharactersForLongTextValues = 0,
-			};
-
 			var queryOptions = new AuditQueryOptions
 			{
 				ReturnRawDetails = true,
@@ -127,12 +146,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 											 1,
 											 ServiceHelper.MaxItemsToFetch,
 											 queryOptions).ConfigureAwait(false);
-					if (result.TotalCount == 0)
-					{
-						return Enumerable.Empty<RelativityObject>();
-					}
 
-					return result.Objects.Take(nrOfLastAuditsToTake);
+					return result.TotalCount == 0 ? Enumerable.Empty<RelativityObject>() : result.Objects.Take(nrOfLastAuditsToTake);
 				}
 			}
 
@@ -221,6 +236,73 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		private static string ToAuditTimeFormat(this DateTime dt)
 		{
 			return dt.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'ff'Z'");
+		}
+
+		private static string ToAuditTimePattern(this DateTime dt)
+		{
+			return dt.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff");
+		}
+
+		private static QueryRequest GetRequestByActions(int auditActionArtifactId, int userId, DateTime actionExecutionTime)
+		{
+			return new QueryRequest
+			{
+				Fields = new List<FieldRef>
+											   {
+												   new FieldRef { Name = DetailsFieldName },
+											   },
+				Condition = $"(('Action' == CHOICE {auditActionArtifactId})) AND (('{TimestampFieldName}' >= {actionExecutionTime.ToAuditTimeFormat()})) AND (('UserID' == {userId}))",
+				RowCondition = string.Empty,
+				Sorts = new List<Sort>
+											  {
+												  new Sort
+													  {
+														  Direction = SortEnum.Descending,
+														  FieldIdentifier = new FieldRef { Name = TimestampFieldName },
+													  },
+											  },
+				ExecutingSavedSearchID = 0,
+				ExecutingViewID = 0,
+				ActiveArtifactID = 0,
+				MaxCharactersForLongTextValues = 0,
+			};
+		}
+
+		private static QueryRequest GetRequestByArtifactId(int artifactId, DateTime actionExecutionTime)
+		{
+			return new QueryRequest
+			{
+				Fields = new List<FieldRef>()
+											   {
+												   new FieldRef { Name = TimestampFieldName },
+												   new FieldRef { Name = DetailsFieldName },
+											   },
+				Condition = $"(('{TimestampFieldName}' >= {actionExecutionTime.ToAuditTimeFormat()})) AND (('ArtifactID' == {artifactId}))",
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Code },
+			};
+		}
+
+		private static async Task<AuditLogItem> GetAuditAsync(IntegrationTestParameters parameters, string id, DateTime timestamp)
+		{
+			using (var auditQueryService = ServiceHelper.GetServiceProxy<IAuditQueryService>(parameters))
+			{
+				var request = new GetAuditRequest
+				{
+					Id = id,
+					Timestamp = timestamp.ToAuditTimePattern(),
+				};
+
+				try
+				{
+					return await auditQueryService.GetAuditAsync(parameters.WorkspaceId, request).ConfigureAwait(false);
+				}
+				catch (Exception e)
+				{
+					IntegrationTestHelper.Logger.LogError(e, $"Couldn't retrieve audit information using request: {request}");
+				}
+
+				return null;
+			}
 		}
 	}
 }
