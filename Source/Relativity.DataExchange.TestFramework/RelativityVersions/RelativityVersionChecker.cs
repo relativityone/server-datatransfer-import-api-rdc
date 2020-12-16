@@ -29,6 +29,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 			[RelativityVersion.MayappleExportPDFs] = new Version(11, 3, 16),
 			[RelativityVersion.MayappleToggleOff] = new Version(11, 3, 170, 2),
 			[RelativityVersion.Ninebark] = new Version(12, 0),
+			[RelativityVersion.NinebarkToggleOff] = new Version(12, 0, 126, 1),
+			[RelativityVersion.Osier] = new Version(12, 1, 0, 0),
 		};
 
 		private static Version cachedRelativityVersion;

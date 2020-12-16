@@ -58,9 +58,17 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				{
 					massImportToggle = false; // toggle is disabled since RelativityVersion.MayappleToggleOff on the mayapple branch.
 				}
-				else
+				else if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersions.RelativityVersion.NinebarkToggleOff))
 				{
 					massImportToggle = true; // toggle is enabled since Ninebark release
+				}
+				else if (RelativityVersions.RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersions.RelativityVersion.Osier))
+				{
+					massImportToggle = false; // toggle is disabled since RelativityVersion.NinebarkToggleOff on the ninebark branch.
+				}
+				else
+				{
+					massImportToggle = true; // toggle is enabled since Osier release
 				}
 			}
 

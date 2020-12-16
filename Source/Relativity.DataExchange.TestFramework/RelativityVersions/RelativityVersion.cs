@@ -83,5 +83,15 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 		/// Relativity 12.0.
 		/// </summary>
 		Ninebark,
+
+		/// <summary>
+		/// Relativity 12.0.126.1.
+		/// </summary>
+		NinebarkToggleOff,
+
+		/// <summary>
+		/// Relativity 12.1.
+		/// </summary>
+		Osier,
 	}
 }
