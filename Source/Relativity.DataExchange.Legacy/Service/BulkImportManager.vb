@@ -20,12 +20,15 @@ Namespace kCura.WinEDDS.Service
 
 #End Region
 
-		Private Sub CheckResultsForException(ByVal results As EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
+		Protected Sub CheckResultsForException(ByVal results As EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
 			If results.ExceptionDetail IsNot Nothing Then
 				If results.ExceptionDetail.ExceptionMessage IsNot Nothing AndAlso results.ExceptionDetail.ExceptionMessage.Contains("Timeout expired") Then
 					Throw New BulkImportSqlTimeoutException(results.ExceptionDetail)
 				ElseIf results.ExceptionDetail.ExceptionMessage IsNot Nothing AndAlso results.ExceptionDetail.ExceptionMessage.Contains("##InsufficientPermissionsForImportException##") Then
 					Throw New InsufficientPermissionsForImportException(results.ExceptionDetail)
+				ElseIf results.ExceptionDetail.ExceptionMessage IsNot Nothing AndAlso results.ExceptionDetail.ExceptionMessage.Contains("Server stack limit has been reached") Then
+					results.ExceptionDetail.ExceptionMessage += " This exception is known to be thrown when you import too many fields. This limit can vary tough, depending on the hardware, and the code. Try to import less fields."
+					Throw New BulkImportSqlException(results.ExceptionDetail)
 				Else
 					Throw New BulkImportSqlException(results.ExceptionDetail)
 				End If
