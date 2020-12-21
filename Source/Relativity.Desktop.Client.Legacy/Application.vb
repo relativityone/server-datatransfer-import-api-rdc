@@ -324,7 +324,7 @@ Namespace Relativity.Desktop.Client
 				End If
 			Next
 			Dim fieldName As String = (Await Me.CurrentFields(ArtifactTypeID, True)).Item(loadFile.IdentityFieldId).FieldName
-			If Not forPreview AndAlso Me.IdentifierFieldIsMappedButNotKey(loadFile.FieldMap, loadFile.IdentityFieldId) Then
+			If loadFile.OverwriteDestination <> ImportOverwriteType.AppendOverlay.ToString() AndAlso Not forPreview AndAlso Me.IdentifierFieldIsMappedButNotKey(loadFile.FieldMap, loadFile.IdentityFieldId) Then
 				MsgBox("The field marked [identifier] cannot be part of a field map when it's not the Overlay Identifier field", MsgBoxStyle.Critical, "Relativity Desktop Client")
 				Return False
 			End If

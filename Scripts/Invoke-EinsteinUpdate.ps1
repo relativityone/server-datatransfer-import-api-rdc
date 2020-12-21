@@ -22,9 +22,6 @@
   
 .PARAMETER PathToLocalRdcExe
   Filepath to the local RDC installer exe.
-  
-.PARAMETER PublishToRelease
-  Param to switch between develop builds and gold release builds.
 #>
 
 
@@ -54,10 +51,7 @@ param(
 	
 	[Parameter(Mandatory)]
 	[ValidateNotNullOrEmpty()]
-    [string]$PathToLocalRdcExe,
-	
-	[Parameter(Mandatory)]
-    [bool]$PublishToRelease
+    [string]$PathToLocalRdcExe
 )
 Function Get-DependencyList{
 	$results = ""
@@ -85,7 +79,7 @@ Function Get-DependencyList{
 }
 
 Function Replace-VariablesInTemplate{
-	$LinkToSetupExeOnSharedDisk = if ($PublishToRelease) { Join-Path $BuildPackagesDirGold "\Releases\$SdkVersion" } else { Join-Path $BuildPackagesDir "\$Branch\$SdkVersion" }  
+	$LinkToSetupExeOnSharedDisk = Join-Path $BuildPackagesDirGold "\Releases\$SdkVersion"
 	$MessageToUse = Get-Content -path .\Scripts\Template_einstein.txt -Raw -Encoding UTF8
 	if($Branch.StartsWith("release-", [System.StringComparison]::InvariantCultureIgnoreCase))
 	{
@@ -116,16 +110,7 @@ Function Replace-VariablesInTemplate{
 
 Function Get-ParentPageId{
 	# 153613395 is the id of the Data Transfer SDK - Releases page -> https://einstein.kcura.com/x/U-QnCQ
-	# 173240518 is the id of the Development Builds page -> https://einstein.kcura.com/x/xnBTCg
-	$idToUse = 0
-	if($PublishToRelease -eq $true)
-	{
-		$idToUse = 153613395
-	}
-	else
-	{
-		$idToUse = 173240518
-	}
+	$idToUse = 153613395
 	$UrlToGetChildren = "https://einstein.kcura.com/rest/api/content/search?cql=parent=$idToUse"
 
 	$response = Invoke-WebRequest -Uri $UrlToGetChildren -Method Get -Headers $Headers -UseBasicParsing
@@ -146,51 +131,51 @@ Function Get-ParentPageId{
 	return $objectToPostUnderId
 }
 
-$pair = "svc_conf_gbu:$Secret"
-$BasicAuthValue = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
-
-$Headers = @{
-  Authorization = "Basic $BasicAuthValue"
-}
-$TitleToUse = "Relativity.DataExchange.Client.SDK $SdkVersion Release Notes" 
-
-
-$PublishNewPageURL = "https://einstein.kcura.com/rest/api/content/"
-$BodyJSON = '{
-   "type":"page",
-   "ancestors":[
-      {
-         "id": 0
-      }
-   ],
-   "title":"",
-   "space":{
-      "key":"DTV"
-   },
-   "body":{
-      "storage":{
-         "value":"",
-         "representation":"storage"
-      }
-   }
-}'
-$MessageToUse = Replace-VariablesInTemplate
-$ObjectToPostUnderId = Get-ParentPageId
-$BodyJSONParsed = $BodyJSON | ConvertFrom-Json 
-$BodyJSONParsed.ancestors[0].id = $objectToPostUnderId
-$BodyJSONParsed.title = $TitleToUse
-$BodyJSONParsed.body.storage.value = $MessageToUse
-$BodyJSON = ConvertTo-Json $BodyJSONParsed 
-
 try{
-    $Returned = Invoke-WebRequest -Uri $PublishNewPageURL -Method Post -Headers $Headers  -body $BodyJSON -ContentType 'application/json' -UseBasicParsing
-    Write-Host $Returned.Content
+	$pair = "svc_conf_gbu:$Secret"
+	$BasicAuthValue = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
+
+	$Headers = @{
+	Authorization = "Basic $BasicAuthValue"
+	}
+	$TitleToUse = "Relativity.DataExchange.Client.SDK $SdkVersion Release Notes" 
+
+
+	$PublishNewPageURL = "https://einstein.kcura.com/rest/api/content/"
+	$BodyJSON = '{
+	"type":"page",
+	"ancestors":[
+		{
+			"id": 0
+		}
+	],
+	"title":"",
+	"space":{
+		"key":"DTV"
+	},
+	"body":{
+		"storage":{
+			"value":"",
+			"representation":"storage"
+		}
+	}
+	}'
+	$MessageToUse = Replace-VariablesInTemplate
+	$ObjectToPostUnderId = Get-ParentPageId
+	$BodyJSONParsed = $BodyJSON | ConvertFrom-Json 
+	$BodyJSONParsed.ancestors[0].id = $objectToPostUnderId
+	$BodyJSONParsed.title = $TitleToUse
+	$BodyJSONParsed.body.storage.value = $MessageToUse
+	$BodyJSON = ConvertTo-Json $BodyJSONParsed
+	$Returned = Invoke-WebRequest -Uri $PublishNewPageURL -Method Post -Headers $Headers  -body $BodyJSON -ContentType 'application/json' -UseBasicParsing
+	Write-Host $Returned.Content
 }
 catch [System.Net.WebException] {   
-        $respStream = $_.Exception.Response.GetResponseStream()
-        $reader = New-Object System.IO.StreamReader($respStream)
-        $respBody = $reader.ReadToEnd() | ConvertFrom-Json
-        $respBody;
+		$respStream = $_.Exception.Response.GetResponseStream()
+		$reader = New-Object System.IO.StreamReader($respStream)
+		$respBody = $reader.ReadToEnd() | ConvertFrom-Json
+		$respBody
+		throw
  }
 
 

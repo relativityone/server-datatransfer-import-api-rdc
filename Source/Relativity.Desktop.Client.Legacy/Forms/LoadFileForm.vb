@@ -1077,7 +1077,7 @@ Namespace Relativity.Desktop.Client
 				LoadFile.OverwriteDestination = Me.GetOverwrite.ToString
 			End If
 			'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-			If LoadFile.OverwriteDestination = ImportOverwriteType.Overlay.ToString Then
+			If LoadFile.OverwriteDestination = ImportOverwriteType.Overlay.ToString OrElse LoadFile.OverwriteDestination = ImportOverwriteType.AppendOverlay.ToString Then
 				LoadFile.IdentityFieldId = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
 			Else
 				LoadFile.IdentityFieldId = -1
@@ -1662,7 +1662,7 @@ Namespace Relativity.Desktop.Client
 						_destinationFolderPath.Enabled = True
 						_buildFolderStructure.Checked = True
 						_buildFolderStructure.Enabled = False
-						_overlayIdentifier.Enabled = False
+						_overlayIdentifier.Enabled = True
 				End Select
 			Else
 				_destinationFolderPath.Enabled = False
@@ -1672,6 +1672,8 @@ Namespace Relativity.Desktop.Client
 				_destinationFolderPath.Text = "Select ..."
 				Select Case overwriteDestination
 					Case ImportOverwriteType.Overlay
+						_overlayIdentifier.Enabled = True
+					Case ImportOverwriteType.AppendOverlay
 						_overlayIdentifier.Enabled = True
 					Case Else
 						_overlayIdentifier.Enabled = False
