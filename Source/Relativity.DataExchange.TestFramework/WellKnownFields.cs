@@ -112,6 +112,11 @@ namespace Relativity.DataExchange.TestFramework
 		public const string DocumentIdentifier = "Document Identifier";
 
 		/// <summary>
+		/// The text identifier.
+		/// </summary>
+		public const string TextIdentifier = "Text Identifier";
+
+		/// <summary>
 		/// Maximum number of errors.
 		/// </summary>
 		public const int MaximumErrorCount = 1000;

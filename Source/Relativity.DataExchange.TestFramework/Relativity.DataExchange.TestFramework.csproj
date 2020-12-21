@@ -74,6 +74,7 @@
     <Compile Include="Import\JobExecutionContext\IExecutionContext.cs" />
     <Compile Include="Import\JobExecutionContext\ImportTestJobResult.cs" />
     <Compile Include="Import\SimpleFieldsImport\FieldValueSources\IFieldValueSourceWithPrefix.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\OneValueSource.cs" />
     <Compile Include="Import\SimpleFieldsImport\SingleObjectImporter.cs" />
     <Compile Include="Import\RdoStructureImport\FieldDefinition.cs" />
     <Compile Include="Import\RdoStructureImport\RdoStructureDefinition.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="NUnitExtensions\IgnoreIfVersionEqualToAttribute.cs" />
     <Compile Include="RelativityHelpers\AgentHelper.cs" />
     <Compile Include="RelativityHelpers\AuditHelper.cs" />
+    <Compile Include="RelativityHelpers\BatchSetHelper.cs" />
     <Compile Include="RelativityHelpers\MassImportImprovementsToggleHelper.cs" />
     <Compile Include="NUnitExtensions\PerformanceAttribute.cs" />
     <Compile Include="NUnitExtensions\CollectDeadlocksAttribute.cs" />
@@ -358,14 +360,18 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup></When></Choose>
+  <Choose>
+    <When Condition="'$(Configuration)'!='Debug'">
+      <ItemGroup>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
