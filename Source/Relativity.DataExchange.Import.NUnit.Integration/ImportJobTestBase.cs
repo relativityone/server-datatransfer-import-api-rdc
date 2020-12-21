@@ -15,6 +15,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Text;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
@@ -34,6 +35,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	public abstract class ImportJobTestBase<TJobExecutionContext> : IDisposable
 		where TJobExecutionContext : class, IDisposable, new()
 	{
+		private const int MaxLoggedErrors = 100;
+
 		protected ImportJobTestBase()
 			: this(AssemblySetup.TestParameters)
 		{
@@ -258,9 +261,24 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
-			string failureMessage = "Number of errors was different than expected.";
-			Assert.That(testJobResult.JobReportErrorsCount, Is.EqualTo(expectedErrorRows), () => failureMessage);
-			Assert.That(testJobResult.ErrorRows.Count, Is.EqualTo(expectedErrorRows), () => failureMessage);
+			Assert.That(testJobResult.JobReportErrorsCount, Is.EqualTo(expectedErrorRows), () => this.GetFailureMessageIfNumberOfErrorsDifferentThanExpected(testJobResult));
+			Assert.That(testJobResult.ErrorRows.Count, Is.EqualTo(expectedErrorRows), () => this.GetFailureMessageIfNumberOfErrorsDifferentThanExpected(testJobResult));
+		}
+
+		protected string GetFailureMessageIfNumberOfErrorsDifferentThanExpected(ImportTestJobResult testJobResult)
+		{
+			var builder = new StringBuilder();
+			builder.AppendLine("Number of errors was different than expected.");
+
+			if (testJobResult?.ErrorRows?.Count() > 0)
+			{
+				foreach (var errorRow in testJobResult.ErrorRows.Take(MaxLoggedErrors))
+				{
+					builder.AppendLine(string.Join(string.Empty, errorRow.Values.OfType<string>()));
+				}
+			}
+
+			return builder.ToString();
 		}
 
 		protected virtual void ValidateFatalExceptionsNotExist(ImportTestJobResult testJobResult)

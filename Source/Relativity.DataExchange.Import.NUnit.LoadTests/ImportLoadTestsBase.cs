@@ -57,8 +57,8 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 			int numberOfErrorRows = this.JobExecutionContext.ErrorRowsCountFromReport;
 
-			Assert.That(numberOfErrorRows, Is.EqualTo(expectedErrorRows));
-			Assert.That(testJobResult.ErrorRows.Count, Is.EqualTo(expectedErrorRows));
+			Assert.That(numberOfErrorRows, Is.EqualTo(expectedErrorRows), () => this.GetFailureMessageIfNumberOfErrorsDifferentThanExpected(testJobResult));
+			Assert.That(testJobResult.ErrorRows.Count, Is.EqualTo(expectedErrorRows), () => this.GetFailureMessageIfNumberOfErrorsDifferentThanExpected(testJobResult));
 		}
 
 		protected void InitializeImportApiWithUserAndPwd(ISettingsBuilder<TSettings> settingsBuilder, int instanceCount)
