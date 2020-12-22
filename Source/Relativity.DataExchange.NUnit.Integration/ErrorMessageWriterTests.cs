@@ -16,11 +16,13 @@ namespace Relativity.DataExchange.NUnit.Integration
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents <see cref="ErrorMessageWriter{T}"/> tests.
 	/// </summary>
 	[TestFixture]
+	[TestLevel.L1]
 	public static class ErrorMessageWriterTests
 	{
 		[Test(Description = "Error message writer should not throw on concurrent access.")]

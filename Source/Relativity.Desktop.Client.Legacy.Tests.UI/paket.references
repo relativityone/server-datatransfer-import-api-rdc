@@ -1,4 +1,5 @@
 kcura.outsidein.fi.win32
+relativity.testing.identification
 
 group ui-automation	
 	Appium.WebDriver

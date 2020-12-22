@@ -371,7 +371,7 @@ namespace Relativity.DataExchange.NUnit
 			LongTextStreamRequest request = this.CreateLongTextStreamRequest();
 
 			// ACT/ASSERT
-			Assert.ThrowsAsync<TaskCanceledException>(
+			Assert.ThrowsAsync<OperationCanceledException>(
 				() => this.sut
 					            .SaveLongTextStreamAsync(request, this.cancellationTokenSource.Token, this.progress));
 			this.VerifyNoErrorsAreLogged();

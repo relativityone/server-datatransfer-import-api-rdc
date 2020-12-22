@@ -27,6 +27,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	/// Represents <see cref="OutsideInFileTypeIdentifierService"/> tests.
 	/// </summary>
 	[TestFixture]
+	[TestLevel.L2]
 	[Feature.DataTransfer.ImportApi]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",

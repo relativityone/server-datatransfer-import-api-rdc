@@ -167,7 +167,7 @@ namespace Relativity.DataExchange.NUnit
 			this.cancellationTokenSource.Cancel();
 
 			// ACT
-			Assert.ThrowsAsync<TaskCanceledException>(
+			Assert.ThrowsAsync<OperationCanceledException>(
 				async () => await this.policy.ExecuteAsync(
 					            (ctx, ct) => Task.FromResult(1),
 					            this.context,

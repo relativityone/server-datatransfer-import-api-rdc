@@ -21,6 +21,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
+	[TestLevel.L1]
 	[Feature.DataTransfer.RelativityDesktopClient.Export]
 	[Category(TestCategories.Export)]
 	[Category(TestCategories.Integration)]

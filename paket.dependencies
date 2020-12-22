@@ -20,8 +20,8 @@ nuget nbuilder = 6.0.0
 nuget newtonsoft.json == 6.0.8
 
 # Note: periodically update NUnit to the latest version.
-nuget nunit = 3.11.0
-nuget nunit.consolerunner = 3.10.0
+nuget nunit = 3.12.0
+nuget nunit.consolerunner = 3.11.1
 nuget nunit.extension.vsprojectloader = 3.8.0
 
 # These packages are used only in integration tests to backup and restore a database from script
@@ -68,8 +68,7 @@ nuget kcura.relativity.client = 11.2.8.6-DEV
 nuget relativity.logging = 2018.11.8
 nuget Relativity.Audit.Services.SDK
 nuget relativity.productions.services.interfaces = 11.0.7
-nuget relativity.testing.identification = 1.6.0
-nuget NUnitExtras.HierarchicalCategories = 1.1
+nuget relativity.testing.identification = 3.6.0
 nuget ReportUnit = 1.2.1
 
 # A group is used to address dependency conflicts and only required by UI automation tests.
