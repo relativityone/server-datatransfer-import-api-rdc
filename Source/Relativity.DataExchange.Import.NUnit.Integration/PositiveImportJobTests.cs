@@ -101,6 +101,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldImportTheFiles(
 			[Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType,
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client,
+			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode,
 			[Values(true, false)] bool disableNativeLocationValidation,
 			[Values(true, false)] bool disableNativeValidation)
 		{
@@ -116,7 +117,25 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 			const int NumberOfFilesToImport = 5;
-			IEnumerable<DefaultImportDto> importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport);
+			DefaultImportDto[] importData = DefaultImportDto.GetRandomTextFiles(this.TempDirectory.Directory, NumberOfFilesToImport).ToArray();
+
+			// Import initial data to workspace
+			if (overwriteMode == OverwriteModeEnum.AppendOverlay || overwriteMode == OverwriteModeEnum.Overlay)
+			{
+				settings.OverwriteMode = OverwriteModeEnum.Append;
+				this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+
+				DefaultImportDto[] initialData = overwriteMode == OverwriteModeEnum.AppendOverlay
+					                                 ? importData.Take(importData.Length / 2).ToArray()
+					                                 : importData;
+
+				ImportTestJobResult initialImportResults = this.JobExecutionContext.Execute(initialData);
+				this.ThenTheImportJobIsSuccessful(initialImportResults, initialData.Length);
+			}
+
+			// Prepare data for import under test
+			settings.OverwriteMode = overwriteMode;
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 			// ACT
 			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
