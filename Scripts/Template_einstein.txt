@@ -96,7 +96,10 @@
 			<th colspan="1" class="confluenceTh">
                 <p>Lanceleaf</p>
             </th>
-            <th colspan="1" class="confluenceTh">Mayapple</th>
+			<th colspan="1" class="confluenceTh">
+                <p>Mayapple</p>
+            </th>
+            <th colspan="1" class="confluenceTh">Ninebark</th>
         </tr>
     </thead>
     <tbody>

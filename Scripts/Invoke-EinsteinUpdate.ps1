@@ -79,7 +79,7 @@ Function Get-DependencyList{
 }
 
 Function Replace-VariablesInTemplate{
-	$LinkToSetupExeOnSharedDisk = Join-Path $BuildPackagesDirGold "\Releases\$SdkVersion"
+	$LinkToSetupExeOnSharedDisk = Join-Path $BuildPackagesDirGold "\Releases\$SdkVersion\installers"
 	$MessageToUse = Get-Content -path .\Scripts\Template_einstein.txt -Raw -Encoding UTF8
 	if($Branch.StartsWith("release-", [System.StringComparison]::InvariantCultureIgnoreCase))
 	{
