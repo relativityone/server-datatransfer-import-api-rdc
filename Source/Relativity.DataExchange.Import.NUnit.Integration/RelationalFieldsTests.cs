@@ -249,7 +249,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			CollectionAssert.AreEquivalent(expectedData.Select(d => d.ToString()), resultData.Select(d => d.ToString()));
 		}
 
-		private async Task<int> CreateRelationalFieldAsync()
+		private Task<int> CreateRelationalFieldAsync()
 		{
 			if (RelativityVersionChecker.VersionIsLowerThan(this.TestParameters, RelativityVersion.Goatsbeard))
 			{
@@ -278,10 +278,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					RelationalView = new View(0),
 				};
 
-				return FieldHelper.CreateField(
+				return Task.FromResult(FieldHelper.CreateField(
 					this.TestParameters,
 					(int)ArtifactTypeID.Document,
-					field);
+					field));
 			}
 			else
 			{
@@ -299,9 +299,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					Order = 1,
 				};
 
-				return await FieldHelper
-						   .CreateFixedLengthTextFieldUsingKeplerAsync(this.TestParameters, request)
-						   .ConfigureAwait(false);
+				return FieldHelper.CreateFieldAsync(this.TestParameters, request);
 			}
 		}
 
@@ -309,8 +307,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			return await TestFramework.RelativityHelpers.FieldHelper.CreateFixedLengthTextFieldAsync(
 					this.TestParameters,
-					WellKnownFields.KeyFieldName,
 					(int)ArtifactTypeID.Document,
+					WellKnownFields.KeyFieldName,
 					false,
 					length: 50)
 				.ConfigureAwait(false);

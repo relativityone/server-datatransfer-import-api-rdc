@@ -251,8 +251,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			return await FieldHelper.CreateFixedLengthTextFieldAsync(
 				this.TestParameters,
-				fieldName,
 				rdoArtifactTypeId,
+				fieldName,
 				false,
 				length: 50)
 				.ConfigureAwait(false);

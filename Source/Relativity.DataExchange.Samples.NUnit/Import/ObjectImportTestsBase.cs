@@ -14,6 +14,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 
 	/// <summary>
 	/// Represents an abstract test class object that imports objects and validates the results.
@@ -290,14 +291,10 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			// This is a 1-to-1 relationship.
 			string objectType = $"{TransferDetailArtifactTypeName}-{objectTypeUniqueSuffix}";
 			this.TransferDetailWorkspaceObjectTypeId = await this.CreateObjectTypeAsync(objectType).ConfigureAwait(false);
-			this.CreateDecimalField(
-				this.TransferDetailWorkspaceObjectTypeId,
-				TransferDetailFieldTransferredBytes);
-			this.CreateDecimalField(
-				this.TransferDetailWorkspaceObjectTypeId,
-				TransferDetailFieldTransferredFiles);
-			this.CreateDateField(this.TransferDetailWorkspaceObjectTypeId, TransferDetailFieldStartDate);
-			this.CreateDateField(this.TransferDetailWorkspaceObjectTypeId, TransferDetailFieldEndDate);
+			await FieldHelper.CreateDecimalFieldAsync(this.TestParameters, this.TransferDetailWorkspaceObjectTypeId, TransferDetailFieldTransferredBytes).ConfigureAwait(false);
+			await FieldHelper.CreateDecimalFieldAsync(this.TestParameters, this.TransferDetailWorkspaceObjectTypeId, TransferDetailFieldTransferredFiles).ConfigureAwait(false);
+			await FieldHelper.CreateDateFieldAsync(this.TestParameters, this.TransferDetailWorkspaceObjectTypeId, TransferDetailFieldStartDate).ConfigureAwait(false);
+			await FieldHelper.CreateDateFieldAsync(this.TestParameters, this.TransferDetailWorkspaceObjectTypeId, TransferDetailFieldEndDate).ConfigureAwait(false);
 			this.TransferDetailArtifactTypeId = this.QueryArtifactTypeId(objectType);
 		}
 
@@ -306,13 +303,11 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			// This is a many-to-many relationship.
 			string objectType = $"{TransferDataSourceArtifactTypeName}-{objectTypeUniqueSuffix}";
 			this.TransferDataSourceWorkspaceObjectTypeId = await this.CreateObjectTypeAsync(objectType).ConfigureAwait(false);
-			this.CreateDecimalField(
-				this.TransferDataSourceWorkspaceObjectTypeId,
-				TransferDataSourceFieldNumber);
-			this.CreateFixedLengthTextField(
+			await FieldHelper.CreateDecimalFieldAsync(this.TestParameters, this.TransferDataSourceWorkspaceObjectTypeId, TransferDataSourceFieldNumber).ConfigureAwait(false);
+			await this.CreateFixedLengthTextFieldAsync(
 				this.TransferDataSourceWorkspaceObjectTypeId,
 				TransferDataSourceFieldConnectionString,
-				500);
+				450).ConfigureAwait(false);
 			this.TransferDataSourceArtifactTypeId = this.QueryArtifactTypeId(objectType);
 		}
 
@@ -331,23 +326,29 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 
 		private async Task CreateTransferObjectTypeAsync()
 		{
-			string objectType = $"{TransferArtifactTypeName}-{objectTypeUniqueSuffix}";
-			this.TransferWorkspaceObjectTypeId = await this.CreateObjectTypeAsync(objectType).ConfigureAwait(false);
-			this.CreateFixedLengthTextField(
-				this.TransferWorkspaceObjectTypeId,
-				TransferFieldDescription,
-				500);
-			this.CreateSingleObjectField(
-				this.TransferWorkspaceObjectTypeId,
+			var objectType = $"{TransferArtifactTypeName}-{objectTypeUniqueSuffix}";
+			this.TransferWorkspaceObjectTypeId = this.CreateObjectTypeAsync(objectType).Result;
+			await this.CreateFixedLengthTextFieldAsync(this.TransferWorkspaceObjectTypeId, TransferFieldDescription, 450).ConfigureAwait(false);
+			await FieldHelper.CreateSingleObjectFieldAsync(
+				this.TestParameters,
+				TransferFieldDetailId,
+				objectArtifactTypeId: this.TransferWorkspaceObjectTypeId,
+				associativeObjectArtifactTypeId: this.TransferDetailWorkspaceObjectTypeId).ConfigureAwait(false);
+			await FieldHelper.CreateDateFieldAsync(
+				this.TestParameters,
 				this.TransferDetailWorkspaceObjectTypeId,
-				TransferFieldDetailId);
-			this.CreateMultiObjectField(
+				TransferFieldDetailId).ConfigureAwait(false);
+			await FieldHelper.CreateMultiObjectFieldAsync(
+				this.TestParameters,
+				TransferFieldDataSourceId,
+				objectArtifactTypeId: this.TransferWorkspaceObjectTypeId,
+				associativeObjectArtifactTypeId: this.TransferDataSourceWorkspaceObjectTypeId).ConfigureAwait(false);
+			await FieldHelper.CreateDecimalFieldAsync(this.TestParameters, this.TransferWorkspaceObjectTypeId, TransferFieldRequestBytes).ConfigureAwait(false);
+			await FieldHelper.CreateDecimalFieldAsync(this.TestParameters, this.TransferWorkspaceObjectTypeId, TransferFieldRequestFiles).ConfigureAwait(false);
+			await FieldHelper.CreateDateFieldAsync(
+				this.TestParameters,
 				this.TransferWorkspaceObjectTypeId,
-				this.TransferDataSourceWorkspaceObjectTypeId,
-				TransferFieldDataSourceId);
-			this.CreateDecimalField(this.TransferWorkspaceObjectTypeId, TransferFieldRequestBytes);
-			this.CreateDecimalField(this.TransferWorkspaceObjectTypeId, TransferFieldRequestFiles);
-			this.CreateDateField(this.TransferWorkspaceObjectTypeId, TransferFieldRequestDate);
+				TransferFieldRequestDate).ConfigureAwait(false);
 			this.TransferArtifactTypeId = this.QueryArtifactTypeId(objectType);
 			this.TransferIdentifierFieldId = this.QueryIdentifierFieldId(objectType);
 		}

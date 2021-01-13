@@ -173,8 +173,8 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 				return FieldHelper.CreateSingleObjectFieldAsync(
 					this.TestParameters,
 					fieldName,
-					objectTypeArtifactId,
-					(int)ArtifactType.Document);
+					objectArtifactTypeId: (int)ArtifactType.Document,
+					associativeObjectArtifactTypeId: objectTypeArtifactId);
 			}
 		}
 
@@ -188,8 +188,8 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 				return FieldHelper.CreateMultiObjectFieldAsync(
 					this.TestParameters,
 					fieldName,
-					objectTypeArtifactId,
-					(int)ArtifactType.Document);
+					objectArtifactTypeId: objectTypeArtifactId,
+					associativeObjectArtifactTypeId: (int)ArtifactType.Document);
 			}
 		}
 

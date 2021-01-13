@@ -370,8 +370,8 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 
 			int firstObjectTypeArtifactId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, SingleObjectFieldName).ConfigureAwait(false);
 			int secondObjectTypeArtifactId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, MultiObjectFieldName).ConfigureAwait(false);
-			await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, SingleObjectFieldName, firstObjectTypeArtifactId, (int)ArtifactType.Document).ConfigureAwait(false);
-			await FieldHelper.CreateMultiObjectFieldAsync(this.TestParameters, MultiObjectFieldName, secondObjectTypeArtifactId, (int)ArtifactType.Document).ConfigureAwait(false);
+			await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, SingleObjectFieldName, objectArtifactTypeId: (int)ArtifactType.Document, associativeObjectArtifactTypeId: firstObjectTypeArtifactId).ConfigureAwait(false);
+			await FieldHelper.CreateMultiObjectFieldAsync(this.TestParameters, MultiObjectFieldName, objectArtifactTypeId: (int)ArtifactType.Document, associativeObjectArtifactTypeId: secondObjectTypeArtifactId).ConfigureAwait(false);
 			await this.CreateChoiceFieldsAsync().ConfigureAwait(false);
 
 			var settingsBuilder = NativeImportSettingsBuilder.New()
@@ -438,8 +438,8 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 				return FieldHelper.CreateSingleObjectFieldAsync(
 					this.TestParameters,
 					fieldName,
-					objectTypeArtifactId,
-					(int)ArtifactType.Document);
+					objectArtifactTypeId: (int)ArtifactType.Document,
+					associativeObjectArtifactTypeId: objectTypeArtifactId);
 			}
 		}
 

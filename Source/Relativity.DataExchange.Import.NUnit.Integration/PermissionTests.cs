@@ -189,9 +189,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			await FieldHelper.CreateSingleObjectFieldAsync(
 					this.TestParameters,
 					referenceToObjectFieldName,
-					objectArtifactTypeId,
-					(int)ArtifactType.Document)
-												.ConfigureAwait(false);
+					objectArtifactTypeId: (int)ArtifactType.Document,
+					associativeObjectArtifactTypeId: objectArtifactTypeId)
+				.ConfigureAwait(false);
 
 			await PermissionsHelper.SetAllWorkspaceOtherSettingsAsync(this.TestParameters, this.groupId, EnablePermissions)
 				.ConfigureAwait(false);

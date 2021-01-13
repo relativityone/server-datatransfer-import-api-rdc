@@ -59,10 +59,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public async Task OneTimeSetupAsync()
 		{
 			this.objectArtifactTypeId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, $"{nameof(SelfReferencedObjectsTests)}-Object")
+											.ConfigureAwait(false);
+			await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, SingleObjectFieldName, objectArtifactTypeId: this.objectArtifactTypeId, associativeObjectArtifactTypeId: this.objectArtifactTypeId)
 				.ConfigureAwait(false);
-			await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, SingleObjectFieldName, this.objectArtifactTypeId, this.objectArtifactTypeId)
-				.ConfigureAwait(false);
-			await FieldHelper.CreateMultiObjectFieldAsync(this.TestParameters, MultiObjectFieldName, this.objectArtifactTypeId, this.objectArtifactTypeId)
+			await FieldHelper.CreateMultiObjectFieldAsync(this.TestParameters, MultiObjectFieldName, objectArtifactTypeId: this.objectArtifactTypeId, associativeObjectArtifactTypeId: this.objectArtifactTypeId)
 				.ConfigureAwait(false);
 		}
 

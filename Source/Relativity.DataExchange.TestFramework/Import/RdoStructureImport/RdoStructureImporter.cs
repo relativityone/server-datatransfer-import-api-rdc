@@ -165,7 +165,7 @@ namespace Relativity.DataExchange.TestFramework.Import.RdoStructureImport
 			ObjectFieldDefinition objectFieldDefinition)
 		{
 			int objectId = await RdoHelper.CreateObjectTypeAsync(this.testParameters, fieldName).ConfigureAwait(false);
-			await FieldHelper.CreateSingleObjectFieldAsync(this.testParameters, fieldName, objectId, this.rdoArtifactTypeId).ConfigureAwait(false);
+			await FieldHelper.CreateSingleObjectFieldAsync(this.testParameters, fieldName, objectArtifactTypeId: this.rdoArtifactTypeId, associativeObjectArtifactTypeId: objectId).ConfigureAwait(false);
 
 			var structureCreator = new RdoStructureImporter(this.testParameters, this.dataImporter, objectId);
 			await structureCreator.ImportAsync(objectFieldDefinition.ValuesSource).ConfigureAwait(false);
@@ -178,7 +178,7 @@ namespace Relativity.DataExchange.TestFramework.Import.RdoStructureImport
 			ObjectFieldDefinition objectFieldDefinition)
 		{
 			int objectId = await RdoHelper.CreateObjectTypeAsync(this.testParameters, fieldName).ConfigureAwait(false);
-			await FieldHelper.CreateMultiObjectFieldAsync(this.testParameters, fieldName, objectId, this.rdoArtifactTypeId).ConfigureAwait(false); // TODO
+			await FieldHelper.CreateMultiObjectFieldAsync(this.testParameters, fieldName, objectArtifactTypeId: objectId, associativeObjectArtifactTypeId: this.rdoArtifactTypeId).ConfigureAwait(false); // TODO
 
 			var structureCreator = new RdoStructureImporter(this.testParameters, this.dataImporter, objectId);
 			await structureCreator.ImportAsync(objectFieldDefinition.ValuesSource).ConfigureAwait(false);

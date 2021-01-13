@@ -58,12 +58,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					                            .ConfigureAwait(false);
 				this.childObjectArtifactTypeId = await this.CreateChildObjectTypeAsync($"{nameof(AssociateObjectsTests)}-ChildObject", this.objectArtifactTypeId)
 					                                 .ConfigureAwait(false);
-				this.referenceToObjectFieldId = await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, ReferenceToObjectFieldName, this.objectArtifactTypeId, (int)ArtifactType.Document)
+				this.referenceToObjectFieldId = await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, ReferenceToObjectFieldName, objectArtifactTypeId: (int)ArtifactType.Document,  associativeObjectArtifactTypeId: this.objectArtifactTypeId)
 					                                .ConfigureAwait(false);
-				await FieldHelper.CreateMultiObjectFieldAsync(this.TestParameters, ReferenceToMultiObjectFieldName, this.objectArtifactTypeId, (int)ArtifactType.Document)
-					                                     .ConfigureAwait(false);
+				await FieldHelper.CreateMultiObjectFieldAsync(this.TestParameters, ReferenceToMultiObjectFieldName, objectArtifactTypeId: (int)ArtifactType.Document, associativeObjectArtifactTypeId: this.objectArtifactTypeId)
+					.ConfigureAwait(false);
 
-				await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, ReferenceToDocumentFieldName, (int)ArtifactType.Document, this.objectArtifactTypeId)
+				await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, ReferenceToDocumentFieldName, objectArtifactTypeId: this.objectArtifactTypeId, associativeObjectArtifactTypeId: (int)ArtifactType.Document)
 					.ConfigureAwait(false);
 				this.initialImportBatchSize = AppSettings.Instance.ImportBatchSize;
 
@@ -329,8 +329,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			await FieldHelper.CreateSingleObjectFieldAsync(
 				this.TestParameters,
 				ReferenceToChildObjectFieldName,
-				this.childObjectArtifactTypeId,
-				(int)ArtifactType.Document).ConfigureAwait(false);
+				(int)ArtifactType.Document,
+				this.childObjectArtifactTypeId).ConfigureAwait(false);
 
 			IEnumerable<string> controlNumberSource = Enumerable.Range(1, TotalRows)
 				.Select(i => $"doc-{NamePrefix}-{i}");
@@ -370,7 +370,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			const string SingleObjectFieldName = "MySingleObject";
 			int firstObjectArtifactId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, "MySingleObject").ConfigureAwait(false);
-			await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, SingleObjectFieldName, firstObjectArtifactId, (int)ArtifactType.Document).ConfigureAwait(false);
+			await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, SingleObjectFieldName, objectArtifactTypeId: (int)ArtifactType.Document, associativeObjectArtifactTypeId: firstObjectArtifactId).ConfigureAwait(false);
 
 			List<string> singleObjectsSource = Enumerable.Repeat("SingleObjectInstance", NumberOfDocuments).ToList();
 

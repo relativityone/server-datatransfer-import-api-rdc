@@ -702,21 +702,21 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			await FieldHelper.CreateMultiObjectFieldAsync(
 				this.TestParameters,
 				MultiObjectFieldName1,
-				multiObjectArtifactTypeId,
-				artifactTypeId).ConfigureAwait(false);
+				objectArtifactTypeId: multiObjectArtifactTypeId,
+				associativeObjectArtifactTypeId: artifactTypeId).ConfigureAwait(false);
 			await FieldHelper.CreateMultiObjectFieldAsync(
 				this.TestParameters,
 				MultiObjectFieldName2,
-				multiObjectArtifactTypeId,
-				artifactTypeId).ConfigureAwait(false);
+				objectArtifactTypeId: multiObjectArtifactTypeId,
+				associativeObjectArtifactTypeId: artifactTypeId).ConfigureAwait(false);
 
 			int singleObjectArtifactTypeId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, $"Single object type for artifactTypeId {artifactTypeId}")
 										 .ConfigureAwait(false);
 			await FieldHelper.CreateSingleObjectFieldAsync(
 				this.TestParameters,
 				SingleObjectFieldName,
-				singleObjectArtifactTypeId,
-				artifactTypeId).ConfigureAwait(false);
+				objectArtifactTypeId: artifactTypeId,
+				associativeObjectArtifactTypeId: singleObjectArtifactTypeId).ConfigureAwait(false);
 		}
 
 		private void ValidateFieldsAfterImport(int numberOfDocumentsToImport, int artifactTypeId, string[] fieldsToValidate)
@@ -744,14 +744,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				await FieldHelper.CreateMultiObjectFieldAsync(
 					this.TestParameters,
 					MultiObjectDocFieldName,
-					(int)ArtifactType.Document,
-					artifactTypeId).ConfigureAwait(false);
+					objectArtifactTypeId: artifactTypeId,
+					associativeObjectArtifactTypeId: (int)ArtifactType.Document).ConfigureAwait(false);
 
 				await FieldHelper.CreateSingleObjectFieldAsync(
 					this.TestParameters,
 					SingleObjectDocFieldName,
-					(int)ArtifactType.Document,
-					artifactTypeId).ConfigureAwait(false);
+					objectArtifactTypeId: artifactTypeId,
+					associativeObjectArtifactTypeId: (int)ArtifactType.Document).ConfigureAwait(false);
 			}
 		}
 	}
