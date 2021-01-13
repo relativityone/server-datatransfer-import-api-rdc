@@ -15,9 +15,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
 	using Relativity.DataExchange.TestFramework.NUnitExtensions;
+	using Relativity.Testing.Identification;
 
 	[Explicit]
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.MainFlow]
 	public class ChoicesProfilingTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		[SetUp]
@@ -29,7 +32,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 		[CollectDeadlocks]
 		[CollectWebApiExecutionPlans]
 		[CollectWebApiSql]
-		[Test]
+		[IdentifiedTest("4adc46b6-f9d5-48cf-9650-39e95aa164ce")]
 		public Task SingleChoices()
 		{
 			const int NumberOfDocuments = 5_1000;
@@ -59,7 +62,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 		[CollectDeadlocks]
 		[CollectWebApiExecutionPlans]
 		[CollectWebApiSql]
-		[Test]
+		[IdentifiedTest("7064fdae-dd61-478a-9a75-79a8d3201bfe")]
 		public Task ComplexSingleChoices()
 		{
 			const int NumberOfDocuments = 5_1000;

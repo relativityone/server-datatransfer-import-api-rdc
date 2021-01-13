@@ -21,6 +21,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
+	[Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
+	[TestType.MainFlow]
 	public class SearchablePdfExportTests : ExportTestBase
 	{
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.MayappleExportPDFs;
@@ -36,7 +38,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			}
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IgnoreIfRegressionEnvironment("Ignored because 'SetupTestData' requires access to SQL to prepare pdfs to export.")]
 		[IdentifiedTest("c1ea287a-44af-43fb-8a38-4956a5072de6")]
@@ -59,7 +60,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IgnoreIfRegressionEnvironment("Ignored because 'SetupTestData' requires access to SQL to prepare pdfs to export.")]
 		[IdentifiedTest("e5976b64-107b-4d23-bd37-b748526768d9")]
@@ -80,7 +80,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IgnoreIfRegressionEnvironment("Ignored because 'SetupTestData' requires access to SQL to prepare pdfs to export.")]
 		[IdentifiedTest("baa7ad81-c688-43f3-bb1a-9f953fe5b6d6")]
@@ -108,7 +107,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IgnoreIfRegressionEnvironment("Ignored because 'SetupTestData' requires access to SQL to prepare pdfs to export.")]
 		[IdentifiedTest("48d687a6-0206-40f0-850b-681818192760")]

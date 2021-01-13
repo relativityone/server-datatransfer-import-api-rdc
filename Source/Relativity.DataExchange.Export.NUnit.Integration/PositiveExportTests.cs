@@ -22,9 +22,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
-	[Feature.DataTransfer.RelativityDesktopClient.Export]
-	[Category(TestCategories.Export)]
-	[Category(TestCategories.Integration)]
+	[TestFixture]
+	[Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
+	[TestType.MainFlow]
 	public class PositiveExportTests : ExportTestBase
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
@@ -72,7 +72,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		protected override IntegrationTestParameters TestParameters => AssemblySetup.TestParameters;
 
 		[IdentifiedTest("5b20c6f1-1196-41ea-9326-0e875e2cabe9")]
-		[Test]
 		[Pairwise]
 		public async Task ShouldExportAllSampleDocAndImagesAsync(
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client,

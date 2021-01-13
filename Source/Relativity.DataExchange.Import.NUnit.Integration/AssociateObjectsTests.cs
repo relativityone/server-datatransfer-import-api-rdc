@@ -29,7 +29,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
-	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestExecutionCategory.CI]
 	public class AssociateObjectsTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const string ReferenceToObjectFieldName = "ReferenceToObject";
@@ -91,9 +91,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			return Task.CompletedTask;
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(RelativityVersion.LanceleafEAU)]
 		[IdentifiedTest("4ae96850-4ef9-4a1d-95eb-3140a5d7efa5")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+		[TestType.Error]
 		public async Task ShouldNotAppendOverlayChildObjectsThatNotExist()
 		{
 			// ARRANGE
@@ -135,9 +136,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ThenTheErrorRowsHaveCorrectMessage(result.ErrorRows, " - Your account does not have rights to add a document or object to this case\n - No parent artifact specified for this new object");
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("0d9cd961-0b6a-42d0-99ac-b58ea4ef21b7")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+		[TestType.Error]
 		public void ShouldNotOverlayDocumentsWithSharedOverlayIdentifier()
 		{
 			// ARRANGE
@@ -194,9 +196,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ThenTheErrorRowsHaveCorrectMessage(result.ErrorRows, " - This record's Overlay Identifier is shared by multiple documents in the case, and cannot be imported");
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("1415cfe8-8c4a-4559-b0ec-36ded3925f55")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+		[TestType.Error]
 		public void ShouldNotCreateAssociatedDocumentThatNotExist()
 		{
 			// ARRANGE
@@ -227,9 +230,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ThenTheErrorRowsContainsCorrectMessage(result.ErrorRows, " - An object field references a document which does not exist");
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("0c543911-4d9f-441b-8949-511c84cb1701")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+		[TestType.Error]
 		public void ShouldNotCreateAssociatedObjectsReferencedByIdThatNotExist()
 		{
 			// ARRANGE
@@ -265,9 +269,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - An object field references an artifact ID which doesn't exist for the object.");
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("96ee72aa-e2d5-45b5-ab55-8c6059fe6637")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+		[TestType.Error]
 		public void ShouldPreventReferencesToDuplicateAssociateObjects()
 		{
 			// ARRANGE
@@ -287,10 +292,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - A non unique associated object is specified for this new object");
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfMassImportImprovementsToggleHasValue(isEnabled: false)]
 		[IgnoreIfVersionLowerThan(RelativityVersion.Mayapple)]
 		[IdentifiedTest("2FD966EA-FC20-4D2F-B86D-4EF692DC07E2")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+		[TestType.Error]
 		public void ShouldPreventReferencesToDuplicateAssociateMultiObjects()
 		{
 			// ARRANGE
@@ -310,9 +316,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - A non unique associated object is specified for this new object");
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("274340c0-e7ae-4c28-8be3-07863271a7a5")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+		[TestType.Error]
 		public async Task ShouldNotCreateAssociatedObjectsThatAreChildrenAsync()
 		{
 			// ARRANGE
@@ -353,10 +360,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, $" - 20.006. Failed to copy source field into destination field due to missing child object. Review the following destination field(s): '{ReferenceToChildObjectFieldName}'");
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("20fe9dfe-7e40-4c7f-85d2-1f37a88f6fcd")]
 		[Feature.DataTransfer.ImportApi.BulkInsert.SqlServer]
+		[TestType.MainFlow]
 		public async Task ShouldCreateOnlySingleInstanceOfAssociatedObjectWithGivenNameAsync() // test for https://jira.kcura.com/browse/REL-421458
 		{
 			// ARRANGE
@@ -390,11 +397,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(actualAssociatedObjectCount, Is.EqualTo(expectedAssociatedObjectCount), () => "Wrong number of associated objects created during import");
 		}
 
-		[Test]
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("7a83707e-ad9c-47da-b925-39a32784d0d2")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+		[TestType.Error]
 		public void ShouldNotOverlayDocumentsWhichDoNotExist()
 		{
 			// ARRANGE
@@ -426,10 +432,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - This document identifier does not exist in the workspace - no document to overwrite");
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("f6ea6c09-ffb8-4191-95b6-75e8f04c96e3")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+		[TestType.Error]
 		public void ShouldNotAppendDocumentsWhichAlreadyExist()
 		{
 			// ARRANGE

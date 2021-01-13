@@ -25,6 +25,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using OverlayBehavior = kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior;
 
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.MainFlow]
+	[TestExecutionCategory.CI]
 	public class ChoicesTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const int NumberOfDocumentsToImport = 10;
@@ -80,7 +83,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTestCase("0e72e6f1-6c53-45ca-9d5d-d9ccb46f2195", new[] { "a", "b", "c", "d" }, OverlayBehavior.MergeAll)]
 		[IdentifiedTestCase("5fa9f2a6-3a8a-47c3-aeac-b558f3ad0c02", new[] { "a", "b", "c", "d" }, OverlayBehavior.ReplaceAll)]
@@ -89,13 +91,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public Task ShouldReplaceExistingValuesForSingleChoiceFieldAsync(string[] initialUniqueChoices, OverlayBehavior overlayBehavior)
 			=> this.SingleChoiceTestAsync(overlayBehavior, initialUniqueChoices, uniqueChoices: new[] { "e", "f", "g", "h" });
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("14c4060d-51da-4187-b41a-3de675684239")]
 		public Task ShouldUnlinkExistingValuesForSingleChoiceFieldAsync()
 			=> this.SingleChoiceTestAsync(OverlayBehavior.ReplaceAll, initialUniqueChoices: new[] { "a", "b", "c", "d" }, uniqueChoices: new[] { string.Empty });
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTestCase("51c1ea5f-ffd3-43d4-b074-cd3db72c9301", new[] { "a", "b", "c", "d" }, Services.Interfaces.Field.Models.OverlayBehavior.MergeValues)]
 		[IdentifiedTestCase("2b265e75-c753-485d-bf9d-fe5e4568e752", new[] { "a", "" }, Services.Interfaces.Field.Models.OverlayBehavior.ReplaceValues)]
@@ -106,7 +106,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			uniqueChoices: new[] { "e", "f", "g", "h" },
 			expectedShouldMergeValues: false);
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTestCase("51c1ea5f-ffd3-43d4-b074-cd3db72c9301", new[] { "a", "b", "c", "d" }, new[] { "" })]
 		[IdentifiedTestCase("a8b602ba-c305-4185-8c31-b901388a15c4", new[] { "a", "b", "c", "d" }, new[] { "a", "" })]
@@ -118,7 +117,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			uniqueChoices,
 			expectedShouldMergeValues: false);
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTestCase("507a2802-7003-442f-8715-a3d1539410a8", new[] { "a", "b", "c", "d" }, Services.Interfaces.Field.Models.OverlayBehavior.ReplaceValues)]
 		[IdentifiedTestCase("9c5e6380-cdf9-44c5-b730-148b22043ce9", new[] { "a", "" }, Services.Interfaces.Field.Models.OverlayBehavior.MergeValues)]
@@ -130,7 +128,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				uniqueChoices: new[] { "e", "f", "g", "h" },
 				expectedShouldMergeValues: true);
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTestCase("ee4acebb-e5bd-4d70-a7b1-8474258972e6", Services.Interfaces.Field.Models.OverlayBehavior.MergeValues, true)]
 		[IdentifiedTestCase("67aa07ba-12ea-4a48-b615-3f767114a0d1", Services.Interfaces.Field.Models.OverlayBehavior.ReplaceValues, false)]
@@ -142,7 +139,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				uniqueChoices: new[] { "e", "f", "g", "h" },
 				expectedShouldMergeValues);
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTestCase("d3809802-e166-49a2-a30b-30b0cb53eef2", NumberOfDocumentsToImport)]
 		[IdentifiedTestCase("9c5952f2-5098-4ad4-876c-79109a369ae2", NumberOfDocumentsToImport / 2)]

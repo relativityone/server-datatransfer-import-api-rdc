@@ -15,18 +15,17 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
-	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[Feature.DataTransfer.TransferApi]
+	[TestType.Error]
+	[TestExecutionCategory.CI]
 	public class FileNotFoundImportJobTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.TransferApi)]
 		[IdentifiedTestCase("9361b3aa-1333-4606-a05c-9b89ef43a2dd", TapiClient.Direct, false, true)]
 		[IdentifiedTestCase("b4f90f5b-cf18-4d8a-bc42-259906bd27fd", TapiClient.Direct, true, true)]
 		[IdentifiedTestCase("bbee1077-fc95-42aa-a625-2caad809952a", TapiClient.Web, false, true)]

@@ -22,3 +22,5 @@ using System.Runtime.InteropServices;
 [assembly: CLSCompliant(false)]
 
 [assembly: Relativity.Testing.Identification.TestLevel.L3]
+[assembly: Relativity.Testing.Identification.Feature.DataTransfer.ImportApi.Documentation.Samples]
+[assembly: Relativity.Testing.Identification.TestExecutionCategory.CI]

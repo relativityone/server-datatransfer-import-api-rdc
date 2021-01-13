@@ -16,7 +16,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 
 	using global::NUnit.Framework;
 
-	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
@@ -25,6 +24,8 @@ namespace Relativity.DataExchange.NUnit.Integration
 	/// </summary>
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[Feature.DataTransfer.TransferApi]
+	[TestType.MainFlow]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
@@ -41,9 +42,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 		[IdentifiedTestCase("f4e8bc35-bf4c-47d2-9166-0603f4f34008", TapiClient.Direct, true)]
 		[IdentifiedTestCase("c344b1c8-3c39-4aa1-97a1-6a32f1f1e18c", TapiClient.Direct, false)]
 		[IdentifiedTestCase("50f47046-f2d0-4ffb-ba29-3b986233330b", TapiClient.Web, false)]
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.TransferApi)]
 		public void ShouldUploadTheFiles(TapiClient client, bool preserveTimestamps)
 		{
 			this.GivenTheTapiClientSetting(client);

@@ -12,19 +12,17 @@ namespace Relativity.DataExchange.NUnit.Integration
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Service;
-	using Relativity.DataExchange.TestFramework;
 	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents <see cref="kCura.WinEDDS.Service.CaseManager"/> tests.
 	/// </summary>
 	[TestFixture]
-	[Feature.DataTransfer.ImportApi]
+	[Feature.DeveloperPlatform.ExtensibilityPoints.Api.WebApi]
+	[TestType.MainFlow]
 	public class CaseManagerWebServiceTests : WebServiceTestsBase
 	{
 		[IdentifiedTest("010641be-b75c-4eac-b871-eab2cf153790")]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.WebService)]
 		public void ShouldReadTheCaseInfo()
 		{
 			using (kCura.WinEDDS.Service.CaseManager caseManager = new kCura.WinEDDS.Service.CaseManager(

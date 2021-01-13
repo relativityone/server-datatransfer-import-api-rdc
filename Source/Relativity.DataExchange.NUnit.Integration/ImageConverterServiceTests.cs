@@ -23,8 +23,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 	[TestFixture]
 	[TestLevel.L1]
 	[Feature.DataTransfer.RelativityDesktopClient.Export]
-	[Category(TestCategories.Export)]
-	[Category(TestCategories.Integration)]
 	public class ImageConverterServiceTests
 	{
 		private const string MultiTiffImageFileName = "MultiTiffImage";

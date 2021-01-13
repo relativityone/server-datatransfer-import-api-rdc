@@ -574,13 +574,13 @@ task Help -Alias ? -Description "Display task information" {
 task IntegrationTestsNightly -Description "Run all integration tests for the nightly pipeline" {
 	folders\Initialize-Folder $TestReportsDir -Safe
     folders\Initialize-Folder $IntegrationTestsReportDir
-	Invoke-IntegrationTests -TestCategoryFilter	"--where=`"cat==Integration and cat!=NotInCompatibility`""
+	Invoke-IntegrationTests -TestCategoryFilter	"--where=`"TestExecutionCategory == CI and cat!=NotInCompatibility`""
 }
 
 task IntegrationTests -Description "Run all integration tests" {
     folders\Initialize-Folder $TestReportsDir -Safe
     folders\Initialize-Folder $IntegrationTestsReportDir
-	Invoke-IntegrationTests -TestCategoryFilter	"--where=`"cat==Integration`""
+	Invoke-IntegrationTests -TestCategoryFilter	"--where=`"TestExecutionCategory == CI`""
 }
 
 task UIAutomationTests -Description "Runs all UI tests" {
@@ -609,19 +609,19 @@ task LoadTests -Description "Run all load tests for the loadtest pipeline" {
 	SetMassImportToggleValue -IsEnabled $massImportToggleOn
 	
 	Write-Host "Execute LoadTests"
-	Invoke-LoadTests -TestCategoryFilter "--where=`"cat==LoadTest and cat!=SqlComparer`"" -MassImportImprovementsToggle $MassImportImprovementsToggle
+	Invoke-LoadTests -TestCategoryFilter "--where=`"TestType ==Load and cat!=SqlComparer`"" -MassImportImprovementsToggle $MassImportImprovementsToggle
 }
 
 task LoadTestsForSqlComparer -Description "Run load tests for both toggle values and then run SqlComparer tool" {
 
 	Write-Host "Execute LoadTests for SqlComparer"
-	Invoke-SqlComparer-Tests -TestCategoryFilter "--where=`"cat==LoadTest and cat==SqlComparer`"" -TestReportDirectory $LoadTestsReportDir
+	Invoke-SqlComparer-Tests -TestCategoryFilter "--where=`"TestType ==Load and cat==SqlComparer`"" -TestReportDirectory $LoadTestsReportDir
 }
 
 task IntegrationTestsForSqlComparer -Description "Run integration tests for both toggle values and then run SqlComparer tool" {
 	
 	Write-Host "Execute Integration tests for SqlComparer"
-	Invoke-SqlComparer-Tests -TestCategoryFilter "--where=`"cat==Integration and cat==SqlComparer`"" -TestReportDirectory $IntegrationTestsReportDir
+	Invoke-SqlComparer-Tests -TestCategoryFilter "--where=`"TestExecutionCategory == CI and cat==SqlComparer`"" -TestReportDirectory $IntegrationTestsReportDir
 }
 
 task IntegrationTestsForMassImportImprovementsToggle -Description "Set MassImportImprovementsToggle value and run all integration tests" {
@@ -646,7 +646,7 @@ task IntegrationTestsForMassImportImprovementsToggle -Description "Set MassImpor
 	SetMassImportToggleValue -IsEnabled $massImportToggleOn
 	
 	Write-Host "Execute Integration tests"
-	Invoke-MassImportVerification-Tests -TestCategoryFilter "--where=`"cat==Integration`"" -TestReportDirectory $IntegrationTestsReportDir -MassImportImprovementsToggle $massImportToggleOn -EnableDataGrid $dataGridShouldBeEnabled -TestOnWorkspaceWithNonDefaultCollation $workspaceWithNonDefaultCollation
+	Invoke-MassImportVerification-Tests -TestCategoryFilter "--where=`"TestExecutionCategory == CI`"" -TestReportDirectory $IntegrationTestsReportDir -MassImportImprovementsToggle $massImportToggleOn -EnableDataGrid $dataGridShouldBeEnabled -TestOnWorkspaceWithNonDefaultCollation $workspaceWithNonDefaultCollation
 } 
 
 task PackageVersion -Description "Retrieves the package version from powershell" {

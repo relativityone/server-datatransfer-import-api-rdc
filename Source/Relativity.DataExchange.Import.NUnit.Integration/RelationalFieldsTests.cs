@@ -29,6 +29,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.MainFlow]
+	[TestExecutionCategory.CI]
 	public class RelationalFieldsTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
@@ -85,8 +87,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("bb8a9d7a-78b1-42a8-b25a-776f6214e283")]
 		public void ShouldReplaceBlankValuesWithIdentifier([Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode)
@@ -127,8 +127,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenExpectedDataAreImported(expectedData);
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("7ec1962f-54ed-41cd-bd0c-94c4e23c39df")]
 		public void ShouldReplaceBlankValuesWithIdentifierWhenRelationalFieldIsNotMappedInAppendMode()
@@ -162,8 +160,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenExpectedDataAreImported(expectedData);
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("7ec1962f-54ed-41cd-bd0c-94c4e23c39df")]
 		public void ShouldNotReplaceBlankValuesWithIdentifierWhenRelationalFieldIsNotMappedInOverlayMode()
@@ -200,8 +196,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenExpectedDataAreImported(expectedData);
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("6ad353b2-fe61-4d14-8a04-349ad8f3ef63")]
 		public void ShouldReplaceBlankValuesWithIdentifierWhenIdentifierIsNotMapped()

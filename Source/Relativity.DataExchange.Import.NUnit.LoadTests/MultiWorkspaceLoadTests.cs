@@ -20,6 +20,9 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
+	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.Load]
 	public class MultiWorkspaceLoadTests : ImportLoadTestsBase<NativeImportExecutionContext, Settings>
 	{
 		private const string SmallSingleObjectFieldName = "Small-SingleObject_MulitWorkspace";
@@ -30,7 +33,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		private const string SingleChoiceFieldName = "SingleChoice_MulitWorkspace";
 		private const string MultiChoiceFieldName = "MultiChoice_MulitWorkspace";
 
-		[Category(TestCategories.LoadTest)]
 		[IdentifiedTest("8ddb535f-6a0f-4b2b-b89e-2d16be3f4770")]
 		public async Task ShouldImportDocumentToDifferentWorkspaces(
 			[Values(2, 4, 8)] int parallelIApiClientCount,

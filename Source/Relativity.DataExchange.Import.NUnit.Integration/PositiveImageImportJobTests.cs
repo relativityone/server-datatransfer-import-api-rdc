@@ -33,6 +33,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportImages]
+	[Feature.DataTransfer.TransferApi]
+	[TestExecutionCategory.CI]
 	public class PositiveImageImportJobTests : ImportJobTestBase<ImageImportExecutionContext>
 	{
 		[OneTimeSetUp]
@@ -47,10 +49,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			return RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document);
 		}
 
-		[Category(TestCategories.ImportImage)]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("9db2e7f4-0bc8-46a8-9e95-621ca9bcc5c1")]
+		[TestType.MainFlow]
 		[Pairwise]
 		public void ShouldImportManyImages()
 		{
@@ -82,10 +82,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(results.JobReportMetadataBytes, Is.Positive);
 		}
 
-		[Category(TestCategories.ImportImage)]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("577e9faa-31e6-4bd8-b406-7a066cc0aeb4")]
+		[TestType.Error]
 		[Pairwise]
 		public void ShouldReturnAppendErrorsWhenImagesAlreadyExists()
 		{
@@ -121,10 +119,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(results.JobReportMetadataBytes, Is.Positive);
 		}
 
-		[Category(TestCategories.ImportImage)]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("6bfb799e-5c8f-4a5c-8092-c9042af62072")]
+		[TestType.Error]
 		[Pairwise]
 		public void ShouldReturnOverlayErrorsWhenNoImagesExists()
 		{
@@ -152,10 +148,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(results.JobReportMetadataBytes, Is.Positive);
 		}
 
-		[Category(TestCategories.ImportImage)]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("6bfb799e-5c8f-4a5c-8092-c9042af62072")]
+		[TestType.Error]
 		[Pairwise]
 		public void ShouldReturnItemErrorsWhenIdentifierContainsComma()
 		{
@@ -181,11 +175,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobCompletedWithErrors(results, ExpectedNumberOfErrors, ExpectedNumberOfImportedImages);
 		}
 
-		[Test]
-		[Category(TestCategories.ImportImage)]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.TransferApi)]
 		[IdentifiedTest("f5b4a1d7-9dfc-4931-ba55-0fb0d56564ad")]
+		[TestType.MainFlow]
 		[Pairwise]
 		public void ShouldImportTheImage(
 			[Values(true, false)] bool useFileNames,

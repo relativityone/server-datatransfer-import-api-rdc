@@ -17,8 +17,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	/// Represents a global assembly-wide setup routine that's guaranteed to be executed before ANY NUnit test.
 	/// </summary>
 	[SetUpFixture]
-	[Category(TestCategories.Export)]
-	[Category(TestCategories.Integration)]
 	public class AssemblySetup
 	{
 		/// <summary>

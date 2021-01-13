@@ -15,15 +15,17 @@ namespace Relativity.DataExchange.NUnit.Integration
 
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents <see cref="KeplerServiceProxyFactory"/> tests.
 	/// </summary>
 	[TestFixture]
+	[Feature.DeveloperPlatform.ExtensibilityPoints.Api.Kepler]
+	[TestType.MainFlow]
 	public static class KeplerServiceProxyFactoryTests
 	{
-		[Test]
-		[Category(TestCategories.Integration)]
+		[IdentifiedTest("e31a2690-f6cc-43cc-b2c4-f65f64f4bd89")]
 		public static void ShouldCreateAndDisposeTheServiceProxy()
 		{
 			// ARRANGE

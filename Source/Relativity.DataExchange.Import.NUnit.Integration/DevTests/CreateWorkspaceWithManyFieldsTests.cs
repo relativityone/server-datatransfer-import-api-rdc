@@ -14,9 +14,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
 	using Relativity.DataExchange.Transfer;
+	using Relativity.Testing.Identification;
 
 	[TestFixture]
 	[Explicit]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.MainFlow]
 	public class CreateWorkspaceWithManyFieldsTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		[SetUp]
@@ -34,7 +37,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 			return this.ResetContextAsync();
 		}
 
-		[Test]
+		[IdentifiedTest("aca05d54-bbaa-4dd1-95be-8bf2f706f168")]
 		public Task CreateWorkspace()
 		{
 			// arrange
@@ -107,7 +110,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 			return this.CreateWorkspaceAndImportDataAsync(workspaceDataDefinition);
 		}
 
-		[Test]
+		[IdentifiedTest("01f17ea2-3f8d-4aed-9d1f-7ce38d1346cb")]
 		public Task CreateWorkspaceWithSmallLongTextAndComplexChoices()
 		{
 			// arrange
@@ -181,7 +184,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 			return this.CreateWorkspaceAndImportDataAsync(workspaceDataDefinition);
 		}
 
-		[Test]
+		[IdentifiedTest("f2c74b2d-43ce-4d74-bccb-141b557fc867")]
 		public Task CreateWorkspaceWithComplexObjects()
 		{
 			// arrange
@@ -231,9 +234,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 			return this.CreateWorkspaceAndImportDataAsync(workspaceDataDefinition);
 		}
 
-		[TestCase(540, 5)]
-		[TestCase(540, 54)]
-		[TestCase(540, 540)]
+		[IdentifiedTestCase("72fca5d3-438d-442a-8481-032e2ab1cb63", 540, 5)]
+		[IdentifiedTestCase("bc1df367-6588-43ea-8986-c1c6f4a8f1bf", 540, 54)]
+		[IdentifiedTestCase("727426d2-a94b-4e01-9496-2fcfc8b4d30b", 540, 540)]
 		public Task CreateWorkspaceWithChoices(int numberOfChoices, int numberOfRelations)
 		{
 			// arrange

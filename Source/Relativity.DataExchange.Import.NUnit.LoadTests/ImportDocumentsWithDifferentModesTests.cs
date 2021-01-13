@@ -27,6 +27,9 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.Load]
+	[TestType.Performance]
 	public class ImportDocumentsWithDifferentModesTests : ImportLoadTestsBase<NativeImportExecutionContext, Settings>
 	{
 		private const string SingleChoiceFieldName = "SingleChoice_SqlComparer";
@@ -37,7 +40,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[CollectDeadlocks]
 		[Performance]
 		[UseSqlComparer]
-		[Category(TestCategories.LoadTest)]
 		[Category(TestCategories.SqlComparer)]
 		[IdentifiedTest("8ddb535f-6a0f-4b2b-b89e-2d16be3f4770")]
 		public async Task ShouldImportForSqlComparerAsync(

@@ -29,6 +29,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	/// </summary>
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi]
+	[TestType.MainFlow]
 	public class TapiObjectServiceTests
 	{
 		private TapiBridgeParameters2 parameters;
@@ -59,7 +60,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[IdentifiedTest("EE06BDD4-4A81-4499-B753-5225F2236793")]
-		[Category(TestCategories.Integration)]
 		public void ShouldCreateTheRelativityConnectionInfo()
 		{
 			RelativityConnectionInfo connectionInfo = this.service.CreateRelativityConnectionInfo(this.parameters);
@@ -76,7 +76,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[IdentifiedTest("9B6904C0-8E74-4313-A679-3057AF0B7463")]
-		[Category(TestCategories.Integration)]
 		public void ShouldCreateTheRelativityTransferHost()
 		{
 			RelativityConnectionInfo connectionInfo = this.service.CreateRelativityConnectionInfo(this.parameters);
@@ -87,7 +86,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[IdentifiedTest("F3EE7892-EBDA-4107-BAD5-2BC33475247A")]
-		[Category(TestCategories.Integration)]
 		public async Task ShouldGetTheWorkspaceClientAsync()
 		{
 			Guid clientId = await this.service.GetWorkspaceClientIdAsync(this.parameters).ConfigureAwait(false);
@@ -95,7 +93,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[IdentifiedTest("0ADE3B31-30E1-4ACD-ABB3-7BAA13D0D329")]
-		[Category(TestCategories.Integration)]
 		public async Task ShouldGetTheWorkspaceClientDisplayNameAsync()
 		{
 			string name = await this.service.GetWorkspaceClientDisplayNameAsync(this.parameters).ConfigureAwait(false);
@@ -103,7 +100,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[IdentifiedTest("F0C1E073-FD9C-4BDA-A71A-43F7392A6B71")]
-		[Category(TestCategories.Integration)]
 		public async Task ShouldGetTheWorkspaceDefaultFileShareAsync()
 		{
 			RelativityFileShare defaultFileShare = await this.service.GetWorkspaceDefaultFileShareAsync(
@@ -118,7 +114,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[IdentifiedTest("8CD2E655-629C-45C5-84AF-9D4EBAD76551")]
-		[Category(TestCategories.Integration)]
 		public async Task ShouldSearchForFileStorageAsync()
 		{
 			ITapiFileStorageSearchResults results = await this.service.SearchFileStorageAsync(

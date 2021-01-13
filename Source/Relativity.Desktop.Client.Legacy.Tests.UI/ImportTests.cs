@@ -6,13 +6,16 @@ using Relativity.DataExchange.TestFramework.RelativityHelpers;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Windows;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Windows.Names;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI
 {
 	[TestFixture]
+	[Feature.DataTransfer.RelativityDesktopClient.Import]
 	internal class ImportTests : RdcTestBase
 	{
-		[Test]
+		[IdentifiedTest("446c56de-7c5a-439c-b8c4-05107d1749a1")]
+		[Feature.DataTransfer.RelativityDesktopClient.Import.Documents]
 		public void ImportDatLoadFileUsingSavedKweSettings()
 		{
 			RunImportTest(x =>
@@ -32,7 +35,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			});
 		}
 
-		[Test]
+		[IdentifiedTest("9579f3d7-63d4-4132-b8f8-13da1d8f7e5a")]
+		[Feature.DataTransfer.RelativityDesktopClient.Import.Productions]
 		public async Task ImportProductionAsync()
 		{
 			var parameters = new ImageImportWindowSetupParameters
@@ -53,7 +57,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			});
 		}
 
-		[Test]
+		[IdentifiedTest("a22b3f16-43d6-489f-9465-5701acfff699")]
+		[Feature.DataTransfer.RelativityDesktopClient.Import.Images]
 		public void ImportImages()
 		{
 			var parameters = new ImageImportWindowSetupParameters
@@ -70,7 +75,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			});
 		}
 
-		[Test]
+		[IdentifiedTest("6905874b-bd5d-45f9-b125-105282ca3c0a")]
+		[Feature.DataTransfer.RelativityDesktopClient.Import.DynamicObjects]
 		public void ImportImageProfiles()
 		{
 			RunImportTest(x =>

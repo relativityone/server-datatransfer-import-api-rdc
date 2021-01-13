@@ -14,16 +14,17 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents tests that fails to import objects and validates the results.
 	/// </summary>
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+	[TestType.Error]
 	public class ObjectNegativeImportTests : ObjectImportTestsBase
 	{
-		[Test]
-		[Category(TestCategories.ImportObject)]
-		[Category(TestCategories.Integration)]
+		[IdentifiedTest("00c1b76f-d6d7-407f-b0c0-c84effaffeb2")]
 		public void ShouldReportItemLevelErrorWhenImportingDuplicatedSingleObjectFields()
 		{
 			// Arrange
@@ -69,9 +70,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			Assert.That(this.PublishedProgressRows.Count, Is.Positive);
 		}
 
-		[Test]
-		[Category(TestCategories.ImportObject)]
-		[Category(TestCategories.Integration)]
+		[IdentifiedTest("994ac3ba-dd7e-4130-8191-89bae32361c4")]
 		[IgnoreIfVersionGreaterOrEqual(RelativityVersion.Foxglove)]
 		public void ShouldReportFatalExceptionWithGenericErrorWhenImportingDuplicatedMultiObjectFieldsBeforeFoxglove()
 		{
@@ -83,9 +82,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			this.AssertFatalExceptionOccuredDuringImport(ExpectedExceptionMessage);
 		}
 
-		[Test]
-		[Category(TestCategories.ImportObject)]
-		[Category(TestCategories.Integration)]
+		[IdentifiedTest("1e1266ad-7e1c-4bf3-8ed3-cf3f8b8ee2d5")]
 		[IgnoreIfVersionLowerThan(RelativityVersion.Foxglove)]
 		[IgnoreIfVersionGreaterOrEqual(RelativityVersion.Mayapple)]
 		public void ShouldReportFatalExceptionWithMeaningfulErrorWhenImportingDuplicatedMultiObjectFieldsSinceFoxgloveBeforeMayapple()
@@ -98,9 +95,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			this.AssertFatalExceptionOccuredDuringImport(ExpectedExceptionMessage);
 		}
 
-		[Test]
-		[Category(TestCategories.ImportObject)]
-		[Category(TestCategories.Integration)]
+		[IdentifiedTest("73d8f3b3-feef-4cc1-9fa1-17ba4b0ac64a")]
 		[IgnoreIfMassImportImprovementsToggleHasValue(isEnabled: true)]
 		[IgnoreIfVersionLowerThan(RelativityVersion.Mayapple)]
 		public void ShouldReportFatalExceptionWithMeaningfulErrorWhenImportingDuplicatedMultiObjectFieldsSinceMayappleForToggleOff()
@@ -113,9 +108,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			this.AssertFatalExceptionOccuredDuringImport(ExpectedExceptionMessage);
 		}
 
-		[Test]
-		[Category(TestCategories.ImportObject)]
-		[Category(TestCategories.Integration)]
+		[IdentifiedTest("1199da43-19bc-4f6d-862b-272e00bc1bae")]
 		[IgnoreIfMassImportImprovementsToggleHasValue(isEnabled: false)]
 		[IgnoreIfVersionLowerThan(RelativityVersion.Mayapple)]
 		public void ShouldReportItemLevelErrorWhenImportingDuplicatedMultiObjectFieldsSinceMayappleForToggleOn()

@@ -22,3 +22,5 @@ using System.Runtime.InteropServices;
 [assembly: CLSCompliant(false)]
 
 [assembly: Relativity.Testing.Identification.TestLevel.L3]
+[assembly: Relativity.Testing.Identification.TestType.UI]
+[assembly: Relativity.Testing.Identification.TestType.MainFlow]

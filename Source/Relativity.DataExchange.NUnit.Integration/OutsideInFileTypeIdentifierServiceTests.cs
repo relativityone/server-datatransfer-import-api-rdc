@@ -73,7 +73,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[IdentifiedTest("12b6eb4c-37f6-4a8e-b2e5-f4e0735b1c02")]
-		[Category(TestCategories.Integration)]
 		[Category(TestCategories.OutsideIn)]
 		public void ShouldVerifyTheOutsideInGoldenDataset()
 		{

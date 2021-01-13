@@ -14,11 +14,14 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents a test that imports native documents and validates the results.
 	/// </summary>
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.MainFlow]
 	public class DocImportTests : DocImportTestsBase
 	{
 		/// <summary>
@@ -45,9 +48,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 					new TestCaseData(SampleDocWmfFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4"),
 				};
 
-		[Test]
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
+		[IdentifiedTest("142ab021-296d-4404-8d4d-2eecd9b99a8f")]
 		[TestCaseSource(nameof(TestCases))]
 		public void ShouldImportTheDoc(string fileName, string folderPath)
 		{

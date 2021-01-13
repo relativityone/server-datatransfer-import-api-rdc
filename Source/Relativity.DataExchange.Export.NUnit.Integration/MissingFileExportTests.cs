@@ -17,6 +17,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.Testing.Identification;
 
 	[Explicit]
+	[TestType.Error]
+	[Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
 	public class MissingFileExportTests : ExportTestBase
 	{
 		private IntegrationTestParameters testParameters;
@@ -33,9 +35,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await RemoveFileFromFileShare().ConfigureAwait(false);
 		}
 
-		[IdentifiedTest("2013DF1B-46DE-4755-B96B-AF454CA5D2CE")]
-		[TestCase(TapiClient.Direct)]
-		[TestCase(TapiClient.Web)]
+		[IdentifiedTestCase("2013DF1B-46DE-4755-B96B-AF454CA5D2CE", TapiClient.Direct)]
+		[IdentifiedTestCase("2CE35FD2-C6E4-46F0-A3DD-EA11C6C64E36", TapiClient.Web)]
 		public void ExportShouldReportErrorOnMissingFile(TapiClient client)
 		{
 			// ARRANGE

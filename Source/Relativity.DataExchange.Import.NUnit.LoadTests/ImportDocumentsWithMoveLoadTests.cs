@@ -9,9 +9,7 @@
 
 namespace Relativity.DataExchange.Import.NUnit.LoadTests
 {
-	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Threading.Tasks;
 
@@ -27,12 +25,13 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	using Relativity.DataExchange.TestFramework.PerformanceTests;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.Services.LinkManager.Interfaces;
-	using Relativity.Services.Objects.DataContracts;
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[Feature.DataTransfer.TransferApi]
+	[TestType.Load]
+	[TestType.Performance]
 	public class ImportDocumentsWithMoveLoadTests : ImportLoadTestsBase<NativeImportExecutionContext, Settings>
 	{
 		private int folderId;
@@ -55,9 +54,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[CollectDeadlocks]
 		[Performance]
 		[UseSqlComparer]
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.TransferApi)]
-		[Category(TestCategories.LoadTest)]
 		[IdentifiedTest("C91E748E-7447-496B-8113-D07F3F9BBB2B")]
 		public async Task ShouldImportDocumentsWithMoveFromOneFolderToOneFolderParallelAsync(
 			[Values(2, 4, 8, 16)] int parallelIApiClientCount,

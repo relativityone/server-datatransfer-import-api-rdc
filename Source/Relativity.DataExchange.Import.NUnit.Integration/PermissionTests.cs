@@ -22,6 +22,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.Error]
 	public class PermissionTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
@@ -91,9 +92,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("6920c59d-8ffc-43e1-9dc5-15909dcd8d8a")]
+		[TestExecutionCategory.CI]
 		public async Task ShouldPreventSecurityAdd()
 		{
 			// ARRANGE
@@ -133,9 +134,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(TotalRows));
 		}
 
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("aec57885-a9b9-40f3-ac30-f0538b6cb6cf")]
+		[TestExecutionCategory.CI]
 		public async Task ShouldPreventSecuredDocumentsEdit()
 		{
 			// ARRANGE

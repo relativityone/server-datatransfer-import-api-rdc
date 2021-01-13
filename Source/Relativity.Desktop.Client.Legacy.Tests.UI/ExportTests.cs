@@ -11,10 +11,12 @@ using Relativity.DataExchange.TestFramework.RelativityHelpers;
 using Relativity.DataExchange.TestFramework.RelativityVersions;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Windows;
 using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Desktop.Client.Legacy.Tests.UI
 {
 	[TestFixture]
+	[Feature.DataTransfer.RelativityDesktopClient.Export]
 	internal class ExportTests : RdcTestBase
 	{
 		private const string ProductionName = "Production-For-Export";
@@ -43,7 +45,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			return OneTimeSetUpAsync();
 		}
 
-		[Test]
+		[IdentifiedTest("143c68a9-dc4e-43b2-b7a7-39d6d26f9402")]
+		[Feature.DataTransfer.RelativityDesktopClient.Export.FolderAndSubfolders]
 		[IgnoreIfVersionLowerThan(RelativityVersion.MayappleExportPDFs)]
 		[IgnoreIfRegressionEnvironment("Ignored because test set up requires access to SQL to prepare pdfs to export.")]
 		public Task ExportRenderedPdfsAsync()
@@ -75,7 +78,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			return ResetContextAsync();
 		}
 
-		[Test]
+		[IdentifiedTest("e2a115ab-7905-4ec5-a600-61c747c79567")]
+		[Feature.DataTransfer.RelativityDesktopClient.Export.FolderAndSubfolders]
 		public void ExportNativesWithFullTextAsFilesFromFolderAndSubfoldersToDatFile()
 		{
 			var exportParameters = new ExportWindowSetupParameters
@@ -96,7 +100,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 21);
 		}
 
-		[Test]
+		[IdentifiedTest("3c502d9f-e354-4b25-b233-79579b3ce195")]
+		[Feature.DataTransfer.RelativityDesktopClient.Export.FolderAndSubfolders]
 		public void ExportImagesFromFolderAndSubfoldersToOpticonFile()
 		{
 			var exportParameters = new ExportWindowSetupParameters
@@ -117,7 +122,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 12);
 		}
 
-		[Test]
+		[IdentifiedTest("ad528f53-fb92-4497-92a1-e76671eb4812")]
+		[Feature.DataTransfer.RelativityDesktopClient.Export.Production]
 		public void ExportProductionSetAsNativesAndImagesAndTextFiles()
 		{
 			var exportParameters = new ExportWindowSetupParameters
@@ -140,7 +146,8 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			RunExportTest(exportParameters, x => x.ExportProductionSet(), 52);
 		}
 
-		[Test]
+		[IdentifiedTest("6f516fc9-259a-42dd-b3f3-dc0e39fc77a6")]
+		[Feature.DataTransfer.RelativityDesktopClient.Export.SavedSearch]
 		public void ExportSavedSearchAsNativesAndImagesAndTextFiles()
 		{
 			var exportParameters = new ExportWindowSetupParameters
@@ -163,7 +170,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			RunExportTest(exportParameters, x => x.ExportSavedSearch(), 32);
 		}
 
-		[Test]
+		[IdentifiedTest("49d09eb7-7802-4a99-8dbb-470c847236aa")]
 		public void ExportImagingProfiles()
 		{
 			var exportParameters = new ExportWindowSetupParameters

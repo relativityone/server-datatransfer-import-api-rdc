@@ -21,12 +21,11 @@ namespace Relativity.DataExchange.NUnit.Integration
 	/// Represents <see cref="RelativityManager"/> tests.
 	/// </summary>
 	[TestFixture]
-	[Feature.DataTransfer.ImportApi]
+	[Feature.DeveloperPlatform.ExtensibilityPoints.Api.WebApi]
+	[TestType.MainFlow]
 	public class RelativityManagerWebServiceTests : WebServiceTestsBase
 	{
 		[IdentifiedTest("c0c2a5b9-4149-4dc2-9cb3-df6de3612804")]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.WebService)]
 		[Category(TestCategories.NotInCompatibility)]
 		public void ShouldReadTheCaseInfo()
 		{

@@ -24,6 +24,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+	[TestType.EdgeCase]
 	public class SelfReferencedObjectsTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const string SingleObjectFieldName = "SingleSelfObject";

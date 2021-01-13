@@ -16,6 +16,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents a test that imports production images and validates the results.
@@ -24,6 +25,8 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	/// This test requires the Relativity.Productions.Client package but hasn't yet been published to nuget.org.
 	/// </remarks>
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportProduction]
+	[TestType.MainFlow]
 	public class ProductionImportTests : ImageImportTestsBase
 	{
 		/// <summary>
@@ -44,9 +47,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		/// </remarks>
 		private const int TotalImagesForFirstDocument = 1001;
 
-		[Test]
-		[Category(TestCategories.ImportProduction)]
-		[Category(TestCategories.Integration)]
+		[IdentifiedTest("52733679-207e-424f-b3bf-4bbf5feeaa54")]
 		public async Task ShouldImportTheProductionImagesAsync()
 		{
 			// Arrange

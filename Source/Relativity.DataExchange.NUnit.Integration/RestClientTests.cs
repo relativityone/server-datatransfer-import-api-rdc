@@ -21,14 +21,14 @@ namespace Relativity.DataExchange.NUnit.Integration
 	/// </summary>
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi]
+	[Feature.DeveloperPlatform.ExtensibilityPoints.Api.RestApi]
+	[TestType.MainFlow]
 	public class RestClientTests : WebServiceTestsBase
 	{
 		private const string InstanceDetailsServiceRelPath =
 			"/Relativity.Rest/api/Relativity.Services.InstanceDetails.IInstanceDetailsModule/InstanceDetailsService/GetRelativityVersionAsync";
 
 		[IdentifiedTest("38dc313f-a8d4-48ae-b1c5-6cde45305608")]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.WebService)]
 		[Category(TestCategories.NotInCompatibility)]
 		public async Task ShouldGetTheRelativityVersionFromKeplerAsync()
 		{

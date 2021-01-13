@@ -38,6 +38,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	/// </summary>
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi]
+	[Feature.DataTransfer.RelativityDesktopClient.Export]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
@@ -54,12 +55,10 @@ namespace Relativity.DataExchange.NUnit.Integration
 		private int fieldArtifactId;
 		private TestDirectoryManager testDirectoryManager;
 
-		[TestCase(1)]
-		[TestCase(4)]
-		[TestCase(8)]
-		[IdentifiedTest("9A0B34BA-6DCE-4F81-8D0C-E1C194B9AE86")]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.Export)]
+		[IdentifiedTestCase("9A0B34BA-6DCE-4F81-8D0C-E1C194B9AE86", 1)]
+		[IdentifiedTestCase("BE2A3EB6-74AF-4706-876B-861EB48C42A3", 4)]
+		[IdentifiedTestCase("020B62C6-45E9-40DB-BF61-863E79DCD343", 8)]
+		[TestType.MainFlow]
 		public async Task ShouldSaveTheLongTextStreamAsTextFileAsync(int taskCount)
 		{
 			// ARRANGE
@@ -108,8 +107,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[IdentifiedTestCase("9F6C2005-2CB6-437F-9A71-B12805036556")]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.Export)]
+		[TestType.Error]
 		public async Task ShouldNotThrowOnInvalidSourceObjectArtifactAsync()
 		{
 			// ARRANGE
@@ -129,8 +127,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		[IdentifiedTestCase("14D88D1E-AC49-4A6C-AB31-11F91982BBAB")]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.Export)]
+		[TestType.Error]
 		public async Task ShouldNotThrowOnInvalidSourceFieldArtifactAsync()
 		{
 			// ARRANGE

@@ -15,6 +15,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.Testing.Identification;
 
 	[Explicit]
+	[Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
+	[TestType.EdgeCase]
 	public class MultiResourcePoolExportTests : ExportTestBase
 	{
 		private ResourcePoolHelper resourcePoolHelper;
@@ -43,10 +45,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			IntegrationTestHelper.Destroy(testParameters);
 		}
 
-		[IdentifiedTest("2EAFF4D8-ED3B-412C-B506-D35574130C04")]
-		[TestCase(TapiClient.Aspera)]
-		[TestCase(TapiClient.Direct)]
-		[TestCase(TapiClient.Web)]
+		[IdentifiedTestCase("2EAFF4D8-ED3B-412C-B506-D35574130C04", TapiClient.Aspera)]
+		[IdentifiedTestCase("7CF052B9-836D-4E1A-A1EF-35D0C15DD22B", TapiClient.Direct)]
+		[IdentifiedTestCase("C3D2530A-0E1E-4498-8D57-58D7BE755FF0", TapiClient.Web)]
 		public void ShouldExportAllSampleDocAndImagesFromTwoFileShares(TapiClient client)
 		{
 			// ARRANGE

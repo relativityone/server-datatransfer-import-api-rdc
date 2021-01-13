@@ -23,6 +23,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.Error]
+	[TestExecutionCategory.CI]
 	public class ItemPermissionTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.Juniper;
@@ -108,8 +110,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("D27147B2-608C-42CA-8A4C-00AC932F04B6")]
 		public async Task ShouldPreventAppendWhenFolderIsSecured()
@@ -137,8 +137,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ValidateJobMessagesContainsText(results, "[Record Info: 0] Error - [Line 1] - Your account does not have rights to add a document or object to this case");
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("E87C404D-EA4B-47C4-806B-C5F04ACBE8D8")]
 		public void ShouldPreventOverlayWhenFolderIsSecured([Values(OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode)
@@ -164,8 +162,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ValidateJobMessagesContainsText(results, "[Record Info: 0] Error - [Line 1] - The document specified has been secured for editing");
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("480C870C-18E4-4220-A7B8-E669E3EF61C2")]
 		public void ShouldPreventOverlayWhenDocumentIsSecured([Values(OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode)

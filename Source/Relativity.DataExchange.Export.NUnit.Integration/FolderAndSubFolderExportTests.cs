@@ -25,16 +25,15 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
-	[Feature.DataTransfer.RelativityDesktopClient.Export]
-	[Category(TestCategories.Export)]
-	[Category(TestCategories.Integration)]
+	[TestFixture]
+	[Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
 	public class FolderAndSubFolderExportTests : ExportTestBase
 	{
 		protected override IntegrationTestParameters TestParameters => AssemblySetup.TestParameters;
 
-		[IdentifiedTest("3B50E3A9-0A28-4FA4-9ACD-5FB878DEF97A")]
-		[TestCase(false)]
-		[TestCase(true)]
+		[IdentifiedTestCase("3B50E3A9-0A28-4FA4-9ACD-5FB878DEF97A", false)]
+		[IdentifiedTestCase("12EC9F92-DE5E-4731-A423-96E0ABE84BD2", true)]
+		[TestType.Error]
 		public async Task ShouldExportWhenTheFileStorageSearchResultsAreEmptyAsync(bool cloudInstance)
 		{
 			// ARRANGE
@@ -52,9 +51,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await this.ThenTheExportedImageLoadFileIsAsExpectedAsync().ConfigureAwait(false);
 		}
 
-		[IdentifiedTest("F8F28759-EC5A-4C03-95A3-70ACB005BCCE")]
-		[TestCase(false)]
-		[TestCase(true)]
+		[IdentifiedTestCase("F8F28759-EC5A-4C03-95A3-70ACB005BCCE", false)]
+		[IdentifiedTestCase("4B7B8DA4-7875-4C7B-B65B-4CB9FF94F8BB", true)]
+		[TestType.Error]
 		public async Task ShouldExportWhenTheFileStorageSearchResultsAreInvalidAsync(bool cloudInstance)
 		{
 			// ARRANGE
@@ -73,6 +72,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		[IdentifiedTest("77A786A1-58E5-45E3-B0BF-CB70D3FFCE62")]
+		[TestType.Failure]
 		public async Task ShouldExportWhenTheFileStorageSearchThrowsNonFatalExceptionAsync()
 		{
 			// ARRANGE
@@ -92,6 +92,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		[IdentifiedTest("8DFA89C0-EB36-446B-92BC-2A0D8314ECD8")]
+		[TestType.Failure]
 		public void ShouldNotExportWhenTheFileStorageSearchThrowsFatalException()
 		{
 			// ARRANGE
@@ -108,9 +109,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
-		[IdentifiedTest("14A8EB3C-5662-428C-B1E6-FA95E8C79259")]
-		[TestCase(TapiClient.None)]
-		[TestCase(TapiClient.Aspera)]
+		[IdentifiedTestCase("14A8EB3C-5662-428C-B1E6-FA95E8C79259", TapiClient.None)]
+		[IdentifiedTestCase("76895B54-BD41-4C02-8C53-EC18E68BA98D", TapiClient.Aspera)]
+		[TestType.Error]
 		public async Task ShouldExportWhenTheSettingsForFileShareIsNullAsync(TapiClient tapiClient)
 		{
 			// ARRANGE
@@ -133,6 +134,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		/// It is used only to validate the total number of record processed is correct and the given exception is thrown on invalid source location path.
 		/// </summary>
 		[IdentifiedTest("1AB462A0-AF45-4D4E-99DB-43FF74D44131")]
+		[TestType.Error]
 		public void ShouldExportWhenTheNativeSourceLocationIsInvalid()
 		{
 			// ARRANGE
@@ -179,6 +181,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		/// It is used only to validate the total number of record processed is correct and the given exception is thrown on invalid destination location path.
 		/// </summary>
 		[IdentifiedTest("76FB096D-7948-4BFE-8CED-7E509505CA95")]
+		[TestType.Error]
 		public void ShouldExportWhenTheDestinationLocationIsInvalid()
 		{
 			// ARRANGE

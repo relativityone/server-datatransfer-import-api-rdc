@@ -15,7 +15,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 
 	using global::NUnit.Framework;
 
-	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
@@ -24,6 +23,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	/// </summary>
 	[TestFixture]
 	[Feature.DataTransfer.TransferApi]
+	[TestType.MainFlow]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
@@ -38,8 +38,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 		[IdentifiedTestCase("74777b4f-24dc-4772-9ae9-4ef4b442da89", TapiClient.Aspera, false)]
 		[IdentifiedTestCase("1616a14a-f239-42d4-b90d-c7c25d67d149", TapiClient.Direct, true)]
 		[IdentifiedTestCase("87d185f9-15c6-4146-b306-0549774a2e0d", TapiClient.Direct, false)]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.TransferApi)]
 		public void ShouldDownloadTheFiles(TapiClient client, bool preserveTimestamps)
 		{
 			// Note: TapiClient.Web is skipped for now because it requires a significant amount

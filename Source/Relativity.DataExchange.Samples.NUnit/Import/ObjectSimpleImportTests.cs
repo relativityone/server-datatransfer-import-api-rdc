@@ -12,11 +12,14 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents a test that imports simple objects and validates the results.
 	/// </summary>
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+	[TestType.MainFlow]
 	public class ObjectSimpleImportTests : ObjectImportTestsBase
 	{
 		/// <summary>
@@ -36,9 +39,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 					new TestCaseData("Simple-Transfer-Large-2"),
 				};
 
-		[Test]
-		[Category(TestCategories.ImportObject)]
-		[Category(TestCategories.Integration)]
+		[IdentifiedTest("d09ecba7-1610-42d9-9a8e-5ef5ee4bc560")]
 		[TestCaseSource(nameof(TestCases))]
 		public void ShouldImportTheObject(string name)
 		{

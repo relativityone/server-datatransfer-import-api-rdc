@@ -23,15 +23,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 	[TestFixture]
 	[Explicit]
 	[Feature.DataTransfer.ImportApi.Operations.ImportImages]
+	[Feature.DataTransfer.TransferApi]
 	public class ImageImportProfilingTests : ImportJobTestBase<ImageImportExecutionContext>
 	{
 		[CollectWebApiExecutionPlans]
 		[CollectWebApiSql]
-		[Category(TestCategories.ImportImage)]
-		[Category(TestCategories.TransferApi)]
 		[IdentifiedTestCase("9dd4459f-6c28-4162-b0ed-e7b19176f4b0", 40, 1000)]
 		[IdentifiedTestCase("57f26236-a9a2-4a08-85df-c65a3c604d0c", 400, 100)]
 		[IdentifiedTestCase("de509fc5-f5fc-45ff-8b4e-0ca9bf4a4874", 4000, 10)]
+		[TestType.MainFlow]
 		[Pairwise]
 		public async Task ShouldImportManyImages(int numberOfDocumentsToImport, int numberOfImagesPerDocument)
 		{
@@ -61,9 +61,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 
 		[CollectWebApiExecutionPlans]
 		[CollectWebApiSql]
-		[Category(TestCategories.ImportImage)]
-		[Category(TestCategories.TransferApi)]
 		[IdentifiedTestCase("4e30d60e-b160-4bb6-b62a-86b334d1b23a", 400, 100)]
+		[TestType.Error]
 		[Pairwise]
 		public async Task ShouldImportManyImagesWithAppendErrors(int numberOfDocumentsToImport, int numberOfImagesPerDocument)
 		{

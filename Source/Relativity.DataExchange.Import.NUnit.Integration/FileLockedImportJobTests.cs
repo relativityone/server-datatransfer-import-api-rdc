@@ -18,18 +18,17 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
-	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[Feature.DataTransfer.TransferApi]
+	[TestType.Error]
+	[TestExecutionCategory.CI]
 	public class FileLockedImportJobTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.TransferApi)]
 		[IdentifiedTestCase("e41a8da9-c562-467e-a638-5afa05b59224", TapiClient.Direct, false, true)]
 		[IdentifiedTestCase("4bfa1999-7ba2-4c66-bd07-cfb9dbe56b23", TapiClient.Direct, true, true)]
 		[IdentifiedTestCase("1b7e9bbc-eb2e-4eae-9d07-11a03778fa7d", TapiClient.Web, false, true)]

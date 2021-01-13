@@ -6,23 +6,23 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using global::NUnit.Framework;
-    using kCura.Relativity.DataReaderClient;
-    using Relativity.DataExchange.Import.NUnit.Integration.Dto;
-    using Relativity.DataExchange.TestFramework;
-    using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
-    using Relativity.DataExchange.TestFramework.NUnitExtensions;
-    using Relativity.DataExchange.TestFramework.RelativityHelpers;
-    using Relativity.DataExchange.TestFramework.RelativityVersions;
-    using Relativity.Services.LinkManager.Interfaces;
-    using Relativity.Testing.Identification;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
+	using System.Threading.Tasks;
+	using global::NUnit.Framework;
+	using kCura.Relativity.DataReaderClient;
+	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
+	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
+	using Relativity.Services.LinkManager.Interfaces;
+	using Relativity.Testing.Identification;
 
-    [TestFixture]
-    [Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-    public class OverlayIdentifierTests : ImportJobTestBase<NativeImportExecutionContext>
+	[TestFixture]
+	[TestExecutionCategory.CI]
+	public class OverlayIdentifierTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
 		private bool testsSkipped = false;
@@ -38,8 +38,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public async Task OneTimeSetUp()
 		{
 			testsSkipped = RelativityVersionChecker.VersionIsLowerThan(
-				               this.TestParameters,
-				               MinSupportedVersion);
+							   this.TestParameters,
+							   MinSupportedVersion);
 			if (!this.testsSkipped)
 			{
 				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false); // Remove all Documents imported in AssemblySetup
@@ -78,10 +78,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("53174721-9360-4708-8639-1b25e104c9ab")]
+		[Feature.DataTransfer.ImportApi.Configuration.Validation]
+		[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+		[TestType.Error]
 		public void ShouldNotOverlayControlNumber([Values(OverwriteModeEnum.AppendOverlay, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode)
 		{
 			DocumentWithKeyFieldDto[] initialData =
@@ -104,11 +105,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.Throws<ImportSettingsException>(() => ArrangeAndActOverlayIndetifierTest(ArtifactType.Document, overwriteMode, initialData, importData));
 		}
 
-		[Category(TestCategories.ImportObject)]
-		[Category(TestCategories.Integration)]
 		[TestCaseSource(typeof(OverlayIdentifierTestCases), nameof(OverlayIdentifierTestCases.ShouldOverlayIdentifierTestCaseData))]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("1c955071-67b1-40aa-819f-9c1fdc3020c0")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+		[TestType.MainFlow]
 		[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "caseName is needed to identify test case")]
 		[SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "caseName is needed to identify test case")]
 		public void ShouldOverlayIdentifier(
@@ -133,11 +134,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			CollectionAssert.AreEquivalent(expectedData.Select(d => d.ToString()), resultData.Select(d => d.ToString()));
 		}
 
-		[Category(TestCategories.ImportObject)]
-		[Category(TestCategories.Integration)]
 		[TestCaseSource(typeof(OverlayIdentifierTestCases), nameof(OverlayIdentifierTestCases.ShouldOverlayIdentifierWithErrorTestCaseData))]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("76377061-b274-4c22-abce-b0fa05aba143")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+		[TestType.Error]
 		[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "caseName is needed to identify test case")]
 		[SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "caseName is needed to identify test case")]
 		public void ShouldOverlayIdentifierWithError(
@@ -164,11 +165,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			CollectionAssert.AreEquivalent(expectedData.Select(d => d.ToString()), resultData.Select(d => d.ToString()));
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.ImportObject)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("4089f177-7332-40fc-9409-36fc4e9d00f9")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+		[TestType.MainFlow]
 		public void ShouldOverlayWithoutIdentifier([Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType)
 		{
 			// ARRANGE

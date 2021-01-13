@@ -15,14 +15,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	using kCura.Relativity.DataReaderClient;
 
-	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
-	using Relativity.Query;
 	using Relativity.Services.LinkManager.Interfaces;
 	using Relativity.Services.Objects.DataContracts;
 	using Relativity.Services.User;
@@ -33,6 +31,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.MainFlow]
+	[TestExecutionCategory.CI]
 	public class MoveDocumentsTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.NinebarkFolderMove;
@@ -126,8 +126,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("9AA8D3B6-4126-4AE5-A843-18A8565DF858")]
 		public async Task ShouldMoveDocumentFromFolderToDifferentFolderWhenOverlayAsync()
@@ -170,8 +168,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[1].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.workspaceFolderId));
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("1C69567F-A763-4E5D-9AFC-BF15C3126437")]
 		public async Task ShouldNotMoveDocumentFromFolderToDifferentFolderWhenOverlayAndMoveDisabledAsync()
@@ -206,8 +202,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[3].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testSourceFolderId));
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("992985BD-50CA-4927-BC69-B5036FBF5739")]
 		public async Task ShouldMoveDocumentFromFolderToDifferentFolderWhenAppendOverlayAsync()
@@ -250,8 +244,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[1].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.workspaceFolderId));
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("89788F06-C081-4D35-B175-71B64B642F32")]
 		public async Task ShouldNotMoveDocumentFromFolderToDifferentFolderWhenAppendOverlayAndMoveDisabledAsync()
@@ -286,8 +278,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[3].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testSourceFolderId));
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("D12C3757-A5FD-40D2-91E2-C435AB4AC4C2")]
 		public async Task ShouldNotMoveDocumentFromFolderToSameFolderWhenOverlayAsync()
@@ -322,8 +312,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[3].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testSourceFolderId));
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("992985BD-50CA-4927-BC69-B5036FBF5739")]
 		public async Task ShouldMoveTwoDocumentsFromFolderToFolderAsync()
@@ -383,8 +371,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[3].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testSourceFolderId));
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("C2B5860B-2082-497A-8A0F-68E7DDFE10F4")]
 		public async Task ShouldMoveTwoDocumentsFromDifferentFoldersToDifferentFoldersAsync()
@@ -450,8 +436,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(relativityObjects.First(x => x.ArtifactID == this.importedDocuments[3].ArtifactID).ParentObject.ArtifactID, Is.EqualTo(this.testSourceFolderId));
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("3E03098E-54E2-475F-B448-843C3481F8B1")]
 		public async Task ShouldMoveDocumentFromDifferentFolderEvenIfNoDestinationFolderAsync()

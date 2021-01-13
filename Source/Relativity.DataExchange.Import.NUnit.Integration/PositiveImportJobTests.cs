@@ -35,6 +35,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.MainFlow]
+	[TestExecutionCategory.CI]
 	public class PositiveImportJobTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const string SingleChoiceFieldName = "SINGLE_CHOICE_FIELD";
@@ -89,14 +91,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		}
 
 		[SuppressMessage("Microsoft.Maintainability", "CA1506", Justification = "It is just integration test")]
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.ImportObject)]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.TransferApi)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IgnoreIfVersionEqualTo(RelativityVersion.MayappleEAU)]
 		[IdentifiedTest("f808845d-c8c9-454b-9d84-51d84be70bd1")]
-		[Test]
+		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+		[Feature.DataTransfer.TransferApi]
 		[Pairwise]
 		public void ShouldImportTheFiles(
 			[Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType,
@@ -166,8 +165,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[Category(TestCategories.NotInCompatibility)]
 		[IgnoreIfVersionLowerThan(RelativityVersion.Goatsbeard)]
 		[IdentifiedTest("b9b6897f-ea3f-4694-80d2-db0852938789")]
@@ -208,8 +205,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ThenTheJobCompletedInCorrectTransferMode(results, Client);
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("3723e0e9-2ce1-472b-b655-8fbffb515c1a")]
 		public void ShouldAppendOverlayDocumentsAndMoveToNewFolders()
@@ -248,11 +243,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ThenTheJobCompletedInCorrectTransferMode(result, Client);
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.ImportObject)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("700bda86-6e9a-43c1-a69c-2a1972cba4f8")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
 		public async Task ShouldImportDocumentWithChoices(
 			[Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType,
 			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode)
@@ -354,11 +347,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				artifactTypeId).ConfigureAwait(false);
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.ImportObject)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("e555aa7f-9976-4a74-87b4-577853209b57")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
 		public void ShouldImportDocumentWithChoices2(
 			[Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType)
 		{
@@ -393,10 +384,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ObjectsValidator.ThenObjectsFieldsAreImported(relativityObjects, fieldsToValidate);
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("13dc1d17-4a2b-4b48-9015-b61e58bc5168")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
 		public async Task ShouldImportDocumentWithObjects(
 			[Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType,
 			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode)
@@ -485,11 +475,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				artifactTypeId).ConfigureAwait(false);
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.ImportObject)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("bfd19759-3ef5-4752-84ab-268e9fb54e3d")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
 		public async Task ShouldImportDocumentWithObjects2(
 			[Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType,
 			[Values(OverwriteModeEnum.Append)] OverwriteModeEnum overwriteMode)
@@ -534,8 +522,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				artifactTypeId).ConfigureAwait(false);
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IgnoreIfMassImportImprovementsToggleHasValue(isEnabled: false)]
 		[IdentifiedTest("13dc1d17-4a2b-4b48-9015-b61e58bc5168")]
@@ -616,8 +602,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				artifactTypeId).ConfigureAwait(false);
 		}
 
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(RelativityVersion.Ninebark)]
 		[IgnoreIfMassImportImprovementsToggleHasValue(isEnabled: false)]
 		[IdentifiedTest("ad3bde44-9722-4f2c-8ef2-04453a639365")]

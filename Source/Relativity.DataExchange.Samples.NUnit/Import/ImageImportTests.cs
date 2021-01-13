@@ -14,16 +14,17 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents a test that imports images and validates the results.
 	/// </summary>
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportImages]
+	[TestType.MainFlow]
 	public class ImageImportTests : ImageImportTestsBase
 	{
-		[Test]
-		[Category(TestCategories.ImportImage)]
-		[Category(TestCategories.Integration)]
+		[IdentifiedTest("7275e9a5-ba5a-4bee-973f-5e14e69ced9a")]
 		[TestCaseSource(nameof(AllSampleImageFileNames))]
 		public void ShouldImportTheImage(string fileName)
 		{

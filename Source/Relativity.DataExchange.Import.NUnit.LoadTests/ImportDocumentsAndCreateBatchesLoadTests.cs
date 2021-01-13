@@ -11,7 +11,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 {
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Runtime.ConstrainedExecution;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
@@ -34,6 +33,9 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[Feature.DataTransfer.TransferApi]
+	[TestType.Load]
+	[TestType.Performance]
 	public class ImportDocumentsAndCreateBatchesLoadTests : ImportLoadTestsBase<NativeImportExecutionContext, Settings>
 	{
 		private const string IdentifierPrefix = "1-IAPI-test";
@@ -47,9 +49,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[CollectDeadlocks]
 		[Performance]
 		[UseSqlComparer]
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.TransferApi)]
-		[Category(TestCategories.LoadTest)]
 		[IdentifiedTest("22429B4F-438B-4128-9A44-E7D26C7AE098")]
 		public async Task ShouldCreateBatchesDuringParallelImportAsync(
 			[Values(2, 4, 8, 16)] int parallelIApiClientCount,
