@@ -202,6 +202,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryFieldFactory.cs" />
+    <Compile Include="RelativityHelpers\WorkspaceHelperRsapi.cs" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\buildtools\stylecop.json">

@@ -926,7 +926,10 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 
 		protected IList<string> QueryWorkspaceFolders()
 		{
-			return WorkspaceHelper.QueryWorkspaceFolders(this.TestParameters, this.Logger);
+			using (Task<IList<string>> task = WorkspaceHelper.QueryWorkspaceFoldersAsync(this.TestParameters, this.Logger))
+			{
+				return task.Result;
+			}
 		}
 
 		protected Relativity.Services.Objects.DataContracts.RelativityObject ReadRelativityObject(

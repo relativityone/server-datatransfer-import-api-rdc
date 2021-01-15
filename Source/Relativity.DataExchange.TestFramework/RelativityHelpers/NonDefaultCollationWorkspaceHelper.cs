@@ -12,6 +12,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Reflection;
 	using System.Text;
 	using System.Threading;
+	using System.Threading.Tasks;
+
 	using Microsoft.SqlServer.Management.Common;
 	using Microsoft.SqlServer.Management.Sdk.Sfc;
 	using Microsoft.SqlServer.Management.Smo;
@@ -35,10 +37,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				try
 				{
 					// create workspace template if it does not exist
-					if (WorkspaceHelper.RetrieveWorkspaceId(parameters, logger, NonDefaultCollationTemplateName) == -1)
-					{
-						CreateWorkspaceTemplateWithNonDefaultCollation(parameters, logger, NonDefaultCollationTemplateName);
-					}
+					WorkspaceHelper.RetrieveWorkspaceId(parameters, logger, NonDefaultCollationTemplateName);
+				}
+				catch (InvalidOperationException)
+				{
+					CreateWorkspaceTemplateWithNonDefaultCollation(parameters, logger, NonDefaultCollationTemplateName);
 				}
 				finally
 				{
@@ -74,10 +77,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		private static string GenerateSqlScriptOfWorkspaceDatabase(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string workspaceName)
 		{
 			int workspaceId = WorkspaceHelper.RetrieveWorkspaceId(parameters, logger, workspaceName);
-			if (workspaceId == -1)
-			{
-				throw new InvalidOperationException($"Trying to backup a workspace which does not exist: {workspaceName}");
-			}
 
 			string databaseScriptFilePath = GetDatabaseScriptFilePath(workspaceName);
 			Scripter scripter = CreateScripter(parameters, databaseScriptFilePath);

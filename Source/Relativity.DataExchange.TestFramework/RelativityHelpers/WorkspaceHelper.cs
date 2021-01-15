@@ -18,14 +18,20 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
+	using Relativity.Services.DataContracts.DTOs;
+	using Relativity.Services.Folder;
 	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Interfaces.Shared;
 	using Relativity.Services.Interfaces.Shared.Models;
 	using Relativity.Services.Interfaces.Workspace;
 	using Relativity.Services.Interfaces.Workspace.Models;
+	using Relativity.Services.Objects.DataContracts;
 
+	using ArtifactQueryFieldNames = kCura.Relativity.Client.DTOs.ArtifactQueryFieldNames;
 	using ArtifactType = Relativity.ArtifactType;
 	using IFieldManager = Relativity.Services.Interfaces.Field.IFieldManager;
+	using NumericConditionEnum = kCura.Relativity.Client.NumericConditionEnum;
+	using WholeNumberCondition = kCura.Relativity.Client.WholeNumberCondition;
 
 	/// <summary>
 	/// Defines static helper methods to manage workspaces.
@@ -35,6 +41,14 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		private static readonly RelativityVersion WorkspaceManagerReleaseVersion = RelativityVersion.Lanceleaf;
 
 		public static (int workspaceId, string workspaceName) CreateTestWorkspace(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
+		{
+			using (Task<(int workspaceId, string workspaceName)> task = CreateTestWorkspaceAsync(parameters, logger))
+			{
+				return task.GetAwaiter().GetResult();
+			}
+		}
+
+		public static async Task<(int workspaceId, string workspaceName)> CreateTestWorkspaceAsync(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
 		{
 			if (parameters == null)
 			{
@@ -62,33 +76,49 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			// Prevent integration tests from failing due to workspace creation failures.
 			const int MaxRetryCount = 3;
 			int retryCount = 0;
-			RetryPolicy retryPolicy = Policy.Handle<Exception>().WaitAndRetry(
-				MaxRetryCount,
-				i => TimeSpan.FromSeconds(MaxRetryCount),
-				(exception, span) =>
-					{
-						retryCount++;
-						logger.LogError(
-							"The workspace helper failed to create a test workspace. Retry: {retryCount} of {MaxRetryCount}, Error: {exception}",
-							retryCount,
-							MaxRetryCount,
-							exception);
-					});
 
-			retryPolicy.Execute(
-				() =>
-					{
-						createdWorkspaceInfo = CreateWorkspaceFromTemplate(parameters, logger, workspaceTemplateName, newWorkspaceName);
+			Action<Exception, TimeSpan> onRetry = (exception, span) =>
+				{
+					retryCount++;
+					logger.LogError(
+						"The workspace helper failed to create a test workspace. Retry: {retryCount} of {MaxRetryCount}, Error: {exception}",
+						retryCount,
+						MaxRetryCount,
+						exception);
+				};
 
-						logger.LogInformation(
-							"Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
-							parameters.WorkspaceName,
-							parameters.WorkspaceId);
-					});
+			if (!CanUseWorkspaceManagerKepler(parameters))
+			{
+				Policy.Handle<Exception>().WaitAndRetry(
+					MaxRetryCount,
+					i => TimeSpan.FromSeconds(MaxRetryCount),
+					onRetry).Execute(
+					() =>
+						{
+							createdWorkspaceInfo = WorkspaceHelperRsapi.CreateWorkspaceFromTemplate(parameters, logger, workspaceTemplateName, newWorkspaceName);
+						});
+			}
+			else
+			{
+				await Policy.Handle<Exception>().WaitAndRetryAsync(
+					MaxRetryCount,
+					i => TimeSpan.FromSeconds(MaxRetryCount),
+					onRetry).ExecuteAsync(
+					async () =>
+						{
+							createdWorkspaceInfo = await CreateWorkspaceFromTemplateAsync(parameters, logger, workspaceTemplateName, newWorkspaceName).ConfigureAwait(false);
+						}).ConfigureAwait(false);
+			}
+
+			logger.LogInformation(
+				"Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
+				parameters.WorkspaceName,
+				parameters.WorkspaceId);
+
 			return createdWorkspaceInfo;
 		}
 
-		public static void DeleteTestWorkspace(IntegrationTestParameters parameters, int workspaceToRemoveId, Relativity.Logging.ILog logger)
+		public static async Task DeleteTestWorkspaceAsync(IntegrationTestParameters parameters, int workspaceToRemoveId, Relativity.Logging.ILog logger)
 		{
 			if (parameters == null)
 			{
@@ -102,13 +132,17 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			if (workspaceToRemoveId != 0)
 			{
-#pragma warning disable CS0618 // Type or member is obsolete
-				using (IRSAPIClient client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
-#pragma warning restore CS0618 // Type or member is obsolete
+				if (!CanUseWorkspaceManagerKepler(parameters))
 				{
-					client.APIOptions.WorkspaceID = -1;
+					WorkspaceHelperRsapi.DeleteTestWorkspace(parameters, workspaceToRemoveId, logger);
+					return;
+				}
+
+				using (IWorkspaceManager workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
+				{
 					logger.LogInformation("Deleting the {WorkspaceId} workspace.", workspaceToRemoveId);
-					client.Repositories.Workspace.DeleteSingle(workspaceToRemoveId);
+					await workspaceManager.DeleteAsync(workspaceToRemoveId).ConfigureAwait(false);
+
 					logger.LogInformation("Deleted the {WorkspaceId} workspace.", workspaceToRemoveId);
 				}
 			}
@@ -118,7 +152,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		public static IList<string> QueryWorkspaceFolders(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
+		public static async Task<IList<string>> QueryWorkspaceFoldersAsync(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
 		{
 			if (parameters == null)
 			{
@@ -130,15 +164,16 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				throw new ArgumentNullException(nameof(logger));
 			}
 
-#pragma warning disable CS0618 // Type or member is obsolete
-			using (IRSAPIClient client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
-#pragma warning restore CS0618 // Type or member is obsolete
+			if (!CanUseWorkspaceManagerKepler(parameters))
 			{
-				client.APIOptions.WorkspaceID = parameters.WorkspaceId;
-				logger.LogInformation("Retrieving the {WorkspaceId} workspace folders...", parameters.WorkspaceId);
-				Query<Folder> query = new Query<Folder> { Fields = FieldValue.AllFields };
-				QueryResultSet<Folder> resultSet = client.Repositories.Folder.Query(query);
-				List<string> folders = resultSet.Results.Select(x => x.Artifact.Name).ToList();
+				return WorkspaceHelperRsapi.QueryWorkspaceFolders(parameters, logger);
+			}
+
+			using (IFolderManager folderManager = ServiceHelper.GetServiceProxy<IFolderManager>(parameters))
+			{
+				var folderQuery = new Services.Query();
+				var queryResponse = await folderManager.QueryAsync(parameters.WorkspaceId, folderQuery).ConfigureAwait(false);
+				List<string> folders = queryResponse.Results.Select(x => x.Artifact.Name).ToList();
 				logger.LogInformation(
 					"Retrieved {FolderCount} {WorkspaceId} workspace folders.",
 					folders.Count,
@@ -148,6 +183,14 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		}
 
 		public static void RenameTestWorkspace(IntegrationTestParameters parameters, int workspaceId, string newName)
+		{
+			using (Task task = RenameTestWorkspaceAsync(parameters, workspaceId, newName))
+			{
+				task.Wait();
+			}
+		}
+
+		public static async Task RenameTestWorkspaceAsync(IntegrationTestParameters parameters, int workspaceId, string newName)
 		{
 			if (parameters == null)
 			{
@@ -162,25 +205,44 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			// Prevent integration tests from failing due to RSAPI failures.
 			const int MaxRetryCount = 3;
 			int retryCount = 0;
-			Policy.Handle<Exception>().WaitAndRetry(
-				3,
-				i => TimeSpan.FromSeconds(MaxRetryCount),
-				(exception, span) =>
-				{
-					retryCount++;
-					Console.WriteLine($"The workspace helper failed to rename a test workspace. Retry: {retryCount} of {MaxRetryCount}, Error: {exception}");
-				}).Execute(
-				() =>
-				{
-#pragma warning disable CS0618 // Type or member is obsolete
-					using (IRSAPIClient client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
-#pragma warning restore CS0618 // Type or member is obsolete
-					{
-						Workspace workspace = client.Repositories.Workspace.ReadSingle(workspaceId);
-						workspace.Name = newName;
-						client.Repositories.Workspace.UpdateSingle(workspace);
-					}
-				});
+			Action<Exception, TimeSpan> onRetry = (exception, span) =>
+			{
+				retryCount++;
+				Console.WriteLine($"The workspace helper failed to rename a test workspace. Retry: {retryCount} of {MaxRetryCount}, Error: {exception}");
+			};
+
+			if (!CanUseWorkspaceManagerKepler(parameters))
+			{
+				Policy.Handle<Exception>().WaitAndRetry(
+					3,
+					i => TimeSpan.FromSeconds(MaxRetryCount),
+					onRetry).Execute(
+					() =>
+						{
+							WorkspaceHelperRsapi.RenameTestWorkspace(parameters, workspaceId, newName);
+						});
+			}
+			else
+			{
+				await Policy.Handle<Exception>().WaitAndRetryAsync(
+					3,
+					i => TimeSpan.FromSeconds(MaxRetryCount),
+					onRetry).ExecuteAsync(
+					async () =>
+						{
+							using (IWorkspaceManager workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
+							using (Task<WorkspaceResponse> readTask = workspaceManager.ReadAsync(workspaceId))
+							{
+								WorkspaceResponse readResponse = readTask.Result;
+								var updateRequest = new WorkspaceRequest(readResponse)
+								{
+									Name = newName,
+									EnableDataGrid = parameters.EnableDataGrid,
+								};
+								await workspaceManager.UpdateAsync(workspaceId, updateRequest).ConfigureAwait(false);
+							}
+						}).ConfigureAwait(false);
+			}
 		}
 
 		public static async Task UpdateWorkspaceResourcesAsync(
@@ -190,186 +252,43 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			int sqlServerId,
 			int cacheLocationServerId)
 		{
-			if (CanUseWorkspaceManagerKepler(parameters))
+			if (!CanUseWorkspaceManagerKepler(parameters))
 			{
-				await UpdateWorkspaceUsingKeplerAsync(
-					parameters,
-					resourcePoolId,
-					fileShareId,
-					sqlServerId,
-					cacheLocationServerId).ConfigureAwait(false);
+				WorkspaceHelperRsapi.UpdateWorkspaceResources(parameters, resourcePoolId, fileShareId, sqlServerId, cacheLocationServerId);
+				return;
 			}
-			else
+
+			using (IWorkspaceManager workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
 			{
-				UpdateWorkspaceUsingRSAPI(
-					parameters,
-					resourcePoolId,
-					fileShareId,
-					sqlServerId,
-					cacheLocationServerId);
+				WorkspaceResponse existingWorkspace = await workspaceManager.ReadAsync(parameters.WorkspaceId, includeMetadata: false, includeActions: false).ConfigureAwait(false);
+				WorkspaceRequest updateRequest = new WorkspaceRequest(existingWorkspace)
+				{
+					ResourcePool = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = resourcePoolId }),
+					DefaultFileRepository = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = fileShareId }),
+					DataGridFileRepository = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = fileShareId }),
+					SqlServer = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = sqlServerId }),
+					DefaultCacheLocation = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = cacheLocationServerId }),
+				};
+
+				await workspaceManager.UpdateAsync(parameters.WorkspaceId, updateRequest).ConfigureAwait(false);
 			}
 		}
 
 		public static async Task<string> GetDefaultFileRepositoryAsync(IntegrationTestParameters parameters)
 		{
-			return CanUseWorkspaceManagerKepler(parameters)
-				? await GetDefaultFileRepositoryUsingKeplerAsync(parameters).ConfigureAwait(false)
-				: GetDefaultFileRepositoryUsingRSAPI(parameters);
-		}
-
-		internal static (int workspaceId, string workspaceName) CreateWorkspaceFromTemplate(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string workspaceTemplateName, string newWorkspaceName)
-		{
-			int templateWorkspaceId = RetrieveWorkspaceId(
-				parameters,
-				logger,
-				workspaceTemplateName);
-
-			if (templateWorkspaceId == -1)
+			if (!CanUseWorkspaceManagerKepler(parameters))
 			{
-				throw new InvalidOperationException(
-					$"Trying to create a workspace. Template with the following name does not exist: {workspaceTemplateName}");
+				return WorkspaceHelperRsapi.GetDefaultFileRepository(parameters);
 			}
 
-#pragma warning disable CS0618 // Type or member is obsolete
-			using (var client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
-#pragma warning restore CS0618 // Type or member is obsolete
+			using (var workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
 			{
-				var workspace = new Workspace
-				{
-					Name = newWorkspaceName,
-					DownloadHandlerApplicationPath = "Relativity.Distributed",
-				};
-
-				string workspaceName = workspace.Name;
-				logger.LogInformation("Creating the {WorkspaceName} workspace...", workspaceName);
-				ProcessOperationResult result =
-					client.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspace);
-				int workspaceId = QueryWorkspaceArtifactId(client, result, logger);
-
-				EnableDataGrid(client, parameters, workspaceId, logger);
-
-				return (workspaceId, workspaceName);
+				var workspace = await workspaceManager.ReadAsync(parameters.WorkspaceId).ConfigureAwait(false);
+				return workspace.DefaultFileRepository.Value.Name;
 			}
 		}
 
-		internal static int RetrieveWorkspaceId(
-			IntegrationTestParameters parameters,
-			Relativity.Logging.ILog logger,
-			string workspaceName)
-		{
-#pragma warning disable CS0618 // Type or member is obsolete
-			using (var client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
-#pragma warning restore CS0618 // Type or member is obsolete
-			{
-				int workspaceId;
-
-				logger.LogInformation("Retrieving the {workspaceName} workspace...", workspaceName);
-				client.APIOptions.WorkspaceID = -1;
-				QueryResultSet<Workspace> resultSet = QueryWorkspaceTemplate(client, workspaceName);
-				if (!resultSet.Success)
-				{
-					throw new InvalidOperationException(
-						$"An error occurred while attempting to create a workspace from template {workspaceName}: {resultSet.Message}");
-				}
-
-				if (resultSet.Results.Count == 0)
-				{
-					logger.LogWarning($"Workspace with the following name does not exist: {workspaceName}");
-					workspaceId = -1;
-				}
-				else
-				{
-					workspaceId = resultSet.Results[0].Artifact.ArtifactID;
-					logger.LogInformation(
-						$"Retrieved the {workspaceName} workspace. workspaceId={workspaceId}.",
-						workspaceName,
-						workspaceId);
-				}
-
-				return workspaceId;
-			}
-		}
-
-		private static QueryResultSet<Workspace> QueryWorkspaceTemplate(IRSAPIClient client, string templateName)
-		{
-			Query<Workspace> query = new Query<Workspace>
-			{
-				Condition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, templateName),
-				Fields = FieldValue.AllFields,
-			};
-
-			QueryResultSet<Workspace> resultSet = client.Repositories.Workspace.Query(query);
-			return resultSet;
-		}
-
-		private static int QueryWorkspaceArtifactId(
-			IRSAPIClient client,
-			ProcessOperationResult processResult,
-			Relativity.Logging.ILog logger)
-		{
-			if (processResult.Message != null)
-			{
-				logger.LogError("Failed to create the workspace. Message: {Message}", processResult.Message);
-				throw new InvalidOperationException(processResult.Message);
-			}
-
-			TaskCompletionSource<ProcessInformation> source = new TaskCompletionSource<ProcessInformation>();
-			client.ProcessComplete += (sender, args) =>
-			{
-				logger.LogInformation("Completed the create workspace process.");
-				source.SetResult(args.ProcessInformation);
-			};
-
-			client.ProcessCompleteWithError += (sender, args) =>
-			{
-				logger.LogError(
-					"The create process completed with errors. Message: {Message}",
-					args.ProcessInformation.Message);
-				source.SetResult(args.ProcessInformation);
-			};
-
-			client.ProcessFailure += (sender, args) =>
-			{
-				logger.LogError(
-					"The create process failed to complete. Message: {Message}",
-					args.ProcessInformation.Message);
-				source.SetResult(args.ProcessInformation);
-			};
-			client.MonitorProcessState(client.APIOptions, processResult.ProcessID);
-			ProcessInformation processInfo = source.Task.GetAwaiter().GetResult();
-			if (processInfo.OperationArtifactIDs.Any() && processInfo.OperationArtifactIDs[0] != null)
-			{
-				return processInfo.OperationArtifactIDs.FirstOrDefault().Value;
-			}
-
-			logger.LogError("The create process failed. Message: {Message}", processResult.Message);
-			throw new InvalidOperationException(processResult.Message);
-		}
-
-		private static string GetWorkspaceName(IntegrationTestParameters parameters)
-		{
-			return string.IsNullOrEmpty(parameters.WorkspaceName)
-			   ? $"Import API Sample Workspace ({DateTime.Now:MM-dd HH.mm.ss.fff})"
-			   : parameters.WorkspaceName;
-		}
-
-		private static void EnableDataGrid(IRSAPIClient client, IntegrationTestParameters parameters, int workspaceId, Relativity.Logging.ILog logger)
-		{
-			// By default DataGrid is disable on workspace templates used in tests
-			// It is impossible to disable DataGrid for workspace if it was enabled before
-			if (parameters.EnableDataGrid)
-			{
-				var createdWorkspace = client.Repositories.Workspace.ReadSingle(parameters.WorkspaceId);
-				createdWorkspace.EnableDataGrid = true;
-				client.Repositories.Workspace.UpdateSingle(createdWorkspace);
-				logger.LogInformation($"DataGrid enabled for workspace with id {parameters.WorkspaceId}");
-			}
-
-			UpdateExtractedTextField(parameters, workspaceId, logger).ConfigureAwait(false);
-			logger.LogInformation($"'Extracted Text' field values in workspace updated");
-		}
-
-		private static async Task UpdateExtractedTextField(IntegrationTestParameters parameters, int workspaceId, Relativity.Logging.ILog logger)
+		public static async Task UpdateExtractedTextFieldAsync(IntegrationTestParameters parameters, int workspaceId, Relativity.Logging.ILog logger)
 		{
 			var longTextFieldRequest = new LongTextFieldRequest()
 			{
@@ -390,81 +309,129 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		private static bool CanUseWorkspaceManagerKepler(IntegrationTestParameters parameters) =>
-			!RelativityVersionChecker.VersionIsLowerThan(parameters, WorkspaceManagerReleaseVersion);
-
-		private static async Task UpdateWorkspaceUsingKeplerAsync(
+		internal static (int workspaceId, string workspaceName) CreateWorkspaceFromTemplate(
 			IntegrationTestParameters parameters,
-			int resourcePoolId,
-			int fileShareId,
-			int sqlServerId,
-			int cacheLocationServerId)
+			Relativity.Logging.ILog logger,
+			string workspaceTemplateName,
+			string newWorkspaceName)
+		{
+			if (!CanUseWorkspaceManagerKepler(parameters))
+			{
+				return WorkspaceHelperRsapi.CreateWorkspaceFromTemplate(parameters, logger, workspaceTemplateName, newWorkspaceName);
+			}
+
+			using (Task<(int workspaceId, string workspaceName)> task = CreateWorkspaceFromTemplateAsync(parameters, logger, workspaceTemplateName, newWorkspaceName))
+			{
+				return task.Result;
+			}
+		}
+
+		internal static async Task<(int workspaceId, string workspaceName)> CreateWorkspaceFromTemplateAsync(
+			IntegrationTestParameters parameters,
+			Relativity.Logging.ILog logger,
+			string workspaceTemplateName,
+			string newWorkspaceName)
 		{
 			using (IWorkspaceManager workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
 			{
-				WorkspaceResponse existingWorkspace = await workspaceManager.ReadAsync(parameters.WorkspaceId, includeMetadata: false, includeActions: false).ConfigureAwait(false);
-				WorkspaceRequest updateRequest = new WorkspaceRequest(existingWorkspace)
+				try
 				{
-					ResourcePool = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = resourcePoolId }),
-					DefaultFileRepository = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = fileShareId }),
-					DataGridFileRepository = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = fileShareId }),
-					SqlServer = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = sqlServerId }),
-					DefaultCacheLocation = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = cacheLocationServerId }),
-				};
+					int templateWorkspaceId = await RetrieveWorkspaceIdAsync(workspaceManager, logger, workspaceTemplateName).ConfigureAwait(false);
 
-				await workspaceManager.UpdateAsync(parameters.WorkspaceId, updateRequest).ConfigureAwait(false);
+					WorkspaceResponse readResponse = await workspaceManager.ReadAsync(templateWorkspaceId).ConfigureAwait(false);
+
+					var createRequest = new WorkspaceRequest(readResponse)
+					{
+						Name = newWorkspaceName,
+						Template = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = templateWorkspaceId }),
+					};
+
+					logger.LogInformation("Creating the {WorkspaceName} workspace...", newWorkspaceName);
+
+					var progress = new Progress<ProgressReport>(
+						progressReport =>
+						{
+							logger.LogVerbose(progressReport.Message);
+						});
+
+					WorkspaceResponse createResponse =
+						await workspaceManager.CreateAsync(createRequest, progress).ConfigureAwait(false);
+					logger.LogInformation("Completed the create workspace process.");
+
+					if (parameters.EnableDataGrid)
+					{
+						var updateRequest = new WorkspaceRequest(createResponse)
+						{
+							EnableDataGrid = true,
+						};
+
+						await workspaceManager.UpdateAsync(createResponse.ArtifactID, updateRequest, createResponse.LastModifiedOn).ConfigureAwait(false);
+						logger.LogInformation($"DataGrid enabled for workspace with id {parameters.WorkspaceId}");
+					}
+
+					await UpdateExtractedTextFieldAsync(parameters, createResponse.ArtifactID, logger).ConfigureAwait(false);
+					logger.LogInformation($"'Extracted Text' field values in workspace updated");
+
+					return (createResponse.ArtifactID, newWorkspaceName);
+				}
+				catch (Exception ex)
+				{
+					logger.LogError(ex.Message);
+					throw;
+				}
 			}
 		}
 
-		private static void UpdateWorkspaceUsingRSAPI(
+		internal static int RetrieveWorkspaceId(
 			IntegrationTestParameters parameters,
-			int resourcePoolId,
-			int fileShareId,
-			int sqlServerId,
-			int cacheLocationServerId)
+			Relativity.Logging.ILog logger,
+			string workspaceName)
 		{
-#pragma warning disable CS0618 // Type or member is obsolete
-			using (IRSAPIClient client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
-#pragma warning restore CS0618 // Type or member is obsolete
+			if (!CanUseWorkspaceManagerKepler(parameters))
 			{
-				var artifactIdCondition = new WholeNumberCondition(ArtifactQueryFieldNames.ArtifactID, NumericConditionEnum.EqualTo, parameters.WorkspaceId);
-				var query = new Query<Workspace>
-					            {
-						            Condition = artifactIdCondition,
-						            Fields = FieldValue.AllFields,
-					            };
+				return WorkspaceHelperRsapi.RetrieveWorkspaceId(parameters, logger, workspaceName);
+			}
 
-				Workspace workspace = client.Repositories.Workspace.Query(query).Results.First().Artifact;
-
-				workspace.ResourcePoolID = resourcePoolId;
-				var fileShareChoice = new kCura.Relativity.Client.DTOs.Choice(fileShareId);
-				workspace.DefaultFileLocation = fileShareChoice;
-				workspace.DefaultDataGridLocation = fileShareChoice;
-				workspace.ServerID = sqlServerId;
-				workspace.DefaultCacheLocation = cacheLocationServerId;
-
-				client.Repositories.Workspace.UpdateSingle(workspace);
+			using (IWorkspaceManager workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
+			using (Task<int> workspaceId = RetrieveWorkspaceIdAsync(workspaceManager, logger, workspaceName))
+			{
+				return workspaceId.Result;
 			}
 		}
 
-		private static async Task<string> GetDefaultFileRepositoryUsingKeplerAsync(IntegrationTestParameters parameters)
+		internal static async Task<int> RetrieveWorkspaceIdAsync(
+			IWorkspaceManager workspaceManager,
+			Relativity.Logging.ILog logger,
+			string workspaceName)
 		{
-			using (var workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
+			logger.LogInformation("Retrieving the {workspaceName} workspace...", workspaceName);
+			var queryRequest = new QueryRequest { Condition = $"'Name' == '{workspaceName}'" };
+			QueryResultSlim queryResponse = await workspaceManager.QueryEligibleTemplatesAsync(queryRequest, 0, 2).ConfigureAwait(false);
+
+			switch (queryResponse.Objects.Count)
 			{
-				var workspace = await workspaceManager.ReadAsync(parameters.WorkspaceId).ConfigureAwait(false);
-				return workspace.DefaultFileRepository.Value.Name;
+				case 0:
+					throw new InvalidOperationException($"Workspace with the following name does not exist: {workspaceName}");
+				case 1:
+					int workspaceId = queryResponse.Objects[0].ArtifactID;
+					logger.LogInformation(
+						$"Retrieved the {workspaceName} workspace. workspaceId={workspaceId}.",
+						workspaceName,
+						workspaceId);
+					return workspaceId;
+				default:
+					throw new InvalidOperationException($"More then one Workspace with the following name exists: {workspaceName}");
 			}
 		}
 
-		private static string GetDefaultFileRepositoryUsingRSAPI(IntegrationTestParameters parameters)
+		private static string GetWorkspaceName(IntegrationTestParameters parameters)
 		{
-#pragma warning disable CS0618 // Type or member is obsolete
-			using (var client = ServiceHelper.GetRSAPIServiceProxy<IRSAPIClient>(parameters))
-#pragma warning restore CS0618 // Type or member is obsolete
-			{
-				var workspace = client.Repositories.Workspace.ReadSingle(parameters.WorkspaceId);
-				return workspace.DefaultFileLocation.Name;
-			}
+			return string.IsNullOrEmpty(parameters.WorkspaceName)
+			   ? $"Import API Sample Workspace ({DateTime.Now:MM-dd HH.mm.ss.fff})"
+			   : parameters.WorkspaceName;
 		}
+
+		private static bool CanUseWorkspaceManagerKepler(IntegrationTestParameters parameters) =>
+			!RelativityVersionChecker.VersionIsLowerThan(parameters, WorkspaceManagerReleaseVersion);
 	}
 }

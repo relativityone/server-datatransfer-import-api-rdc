@@ -15,6 +15,7 @@ namespace Relativity.DataExchange.TestFramework
 	using System.Linq;
 	using System.Net;
 	using System.Reflection;
+	using System.Threading.Tasks;
 
 	using kCura.Relativity.ImportAPI;
 
@@ -245,7 +246,10 @@ END";
 		{
 			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
 
-			WorkspaceHelper.DeleteTestWorkspace(parameters, workspaceToRemoveId, Logger);
+			using (Task task = WorkspaceHelper.DeleteTestWorkspaceAsync(parameters, workspaceToRemoveId, Logger))
+			{
+				task.Wait();
+			}
 
 			if (parameters.SqlDropWorkspaceDatabase)
 			{
