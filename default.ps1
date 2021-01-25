@@ -263,22 +263,27 @@ task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
     folders\Initialize-Folder $LogsDir -Safe
     folders\Initialize-Folder $PackagesArtifactsDir -Safe
     $version = versioning\Get-ReleaseVersion "$Branch"
-
+	$nugetExe = Join-Path $PaketDir "nuget.exe"
+	
     Write-Host "Package version: $version"
     Write-Host "Working directory: $PSScriptRoot"
     $packageLogFile = Join-Path $LogsDir "package-build.log"
 
     # Add any new package templates to the array.
-    $packageTemplateFileNames = @("paket.template.relativity.dataexchange.client.sdk")
-    foreach ($packageTemplateFileName in $packageTemplateFileNames) {
-        $packageTemplateFile = Join-Path $PaketDir $packageTemplateFileName
-        if (-Not (Test-Path $packageTemplateFile -PathType Leaf)) {
-            Throw "The package cannot be created from template file '$packageTemplateFile' because it doesn't exist."
+    $nuspecFiles = @("Relativity.DataExchange.Client.SDK.nuspec")
+    foreach ($nuspecFile in $nuspecFiles) {
+        $nuspecFileFull = Join-Path $PaketDir $nuspecFile
+        if (-Not (Test-Path $nuspecFileFull -PathType Leaf)) {
+            Throw "The package cannot be created from template file '$nuspecFileFull' because it doesn't exist."
         }
         
-        Write-Host "Creating package for template '$packageTemplateFile' and outputting to '$PackagesArtifactsDir'."
+        Write-Host "Creating package for template '$nuspecFileFull' and outputting to '$PackagesArtifactsDir'."
+        Write-Host $nugetExe
+        Write-Host $version 
+        Write-Host $nuspecFileFull 
         exec {
-             & $PaketExe pack --template `"$packageTemplateFile`" --version $version --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" 
+             & $nugetExe pack $nuspecFileFull -ForceEnglishOutput -version $version -OutputDirectory $PackagesArtifactsDir -IncludeReferencedProjects `
+			 -Exclude "paket.exe" -Exclude "nuget.exe" -Exclude "paket.*" -Exclude "Relativity.DataExchange.Client.SDK.targets"
         } -errorMessage "There was an error creating the SDK NUGet package."
     }
 }
