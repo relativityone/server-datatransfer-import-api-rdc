@@ -71,6 +71,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected override IntegrationTestParameters TestParameters => AssemblySetup.TestParameters;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Usage",
+			"CA1801: Review unused parameters",
+			Justification = "We are using TestExecutionContext.CurrentContext.CurrentTest.Arguments to retrieve value of client parameter.")]
 		[IdentifiedTest("5b20c6f1-1196-41ea-9326-0e875e2cabe9")]
 		[Pairwise]
 		public async Task ShouldExportAllSampleDocAndImagesAsync(
@@ -85,8 +89,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			[ValueSource(nameof(Delimiters))] DelimiterDto delimiterValue)
 		{
 			// ARRANGE
-			GivenTheTapiForceClientAppSettings(client);
-
 			// TODO REL-369935 enable ExportFile.ExportType.ArtifactSearch and ExportFile.ExportType.Production
 			this.ExtendedExportFile.TypeOfExport = exportType?.ExportType ?? ExportFile.ExportType.ParentSearch;
 

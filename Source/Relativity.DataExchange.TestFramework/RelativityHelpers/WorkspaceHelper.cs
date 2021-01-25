@@ -432,6 +432,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		}
 
 		private static bool CanUseWorkspaceManagerKepler(IntegrationTestParameters parameters) =>
-			!RelativityVersionChecker.VersionIsLowerThan(parameters, WorkspaceManagerReleaseVersion);
+			!RelativityVersionChecker.VersionIsLowerThan(parameters, WorkspaceManagerReleaseVersion) && false;
 	}
 }

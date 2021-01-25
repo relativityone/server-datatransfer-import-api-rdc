@@ -15,10 +15,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Runtime.CompilerServices;
 	using System.Text;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
+	using global::NUnit.Framework.Internal;
+
 	using kCura.Relativity.DataReaderClient;
 
 	using Newtonsoft.Json.Linq;
@@ -60,8 +63,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[SetUp]
 		public async Task SetupAsync()
 		{
-			TapiClientModeAvailabilityChecker.SkipTestIfTestParameterTransferModeNotAvailable(this.TestParameters);
-
+			TapiClientModeAvailabilityChecker.InitializeTapiClient(TestParameters);
 			await this.OnSetUpAsync().ConfigureAwait(false);
 			kCura.WinEDDS.Config.ConfigSettings["BadPathErrorsRetry"] = false;
 			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobRetryAttempts"] = 1;
@@ -160,13 +162,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			string nameSuffix)
 		{
 			return Enumerable.Range(1, numberOfDocumentsToAppend).Select(p => $"{p}-{nameSuffix}");
-		}
-
-		protected static void ForceClient(TapiClient tapiClient)
-		{
-			AppSettings.Instance.TapiForceAsperaClient = tapiClient == TapiClient.Aspera;
-			AppSettings.Instance.TapiForceFileShareClient = tapiClient == TapiClient.Direct;
-			AppSettings.Instance.TapiForceHttpClient = tapiClient == TapiClient.Web;
 		}
 
 		protected virtual Task OnSetUpAsync()

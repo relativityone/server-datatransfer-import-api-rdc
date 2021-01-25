@@ -251,11 +251,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				logger.LogInformation($"DataGrid enabled for workspace with id {parameters.WorkspaceId}");
 			}
 
-			using (Task task = WorkspaceHelper.UpdateExtractedTextFieldAsync(parameters, workspaceId, logger))
-			{
-				task.Wait();
-			}
-
+			WorkspaceHelper.UpdateExtractedTextFieldAsync(parameters, workspaceId, logger).ConfigureAwait(false);
 			logger.LogInformation($"'Extracted Text' field values in workspace updated");
 		}
 	}

@@ -37,11 +37,11 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		public async Task ShouldImportDocumentToDifferentWorkspaces(
 			[Values(2, 4, 8)] int parallelIApiClientCount,
 			[Values(50_000)] int numberOfDocumentsPerIApiClient,
-			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.AppendOverlay, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode)
+			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.AppendOverlay, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode,
+			[Values(TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
 			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocsForMultiWorkspaceConfiguration", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, TapiClient.Web, this.TestParameters);
-			ForceClient(TapiClient.Web);
 
 			using (var testScope = new TestScope(TestParameters, parallelIApiClientCount))
 			{
@@ -65,7 +65,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 				Assert.That(results.NumberOfJobMessages, Is.Positive);
 				Assert.That(results.NumberOfCompletedRows, Is.EqualTo(expectedNumberOfRows));
 
-				ThenTheJobCompletedInCorrectTransferMode(results, TapiClient.Web);
+				ThenTheJobCompletedInCorrectTransferMode(results, client);
 			}
 		}
 

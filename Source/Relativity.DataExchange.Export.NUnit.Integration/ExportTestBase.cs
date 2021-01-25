@@ -84,7 +84,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[SetUp]
 		public void Setup()
 		{
-			TapiClientModeAvailabilityChecker.SkipTestIfTestParameterTransferModeNotAvailable(this.TestParameters);
+			TapiClientModeAvailabilityChecker.InitializeTapiClient(this.TestParameters);
 			this.Logger = new TestNullLogger();
 
 			// This registers all components.
@@ -183,35 +183,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		public void Dispose()
 		{
 			this.Dispose(true);
-		}
-
-		protected static void GivenTheTapiForceClientAppSettings(TapiClient client)
-		{
-			// Export relies on the global parameters.
-			switch (client)
-			{
-				case TapiClient.Aspera:
-					AppSettings.Instance.TapiForceAsperaClient = true;
-					break;
-
-				case TapiClient.Direct:
-					AppSettings.Instance.TapiForceFileShareClient = true;
-					break;
-
-				case TapiClient.Web:
-					AppSettings.Instance.TapiForceHttpClient = true;
-					break;
-
-				case TapiClient.None:
-					AppSettings.Instance.TapiForceAsperaClient = false;
-					AppSettings.Instance.TapiForceFileShareClient = false;
-					AppSettings.Instance.TapiForceHttpClient = false;
-					break;
-
-				default:
-					Assert.Fail($"The Transfer API client {client} isn't supported by this test.");
-					break;
-			}
 		}
 
 		protected virtual void Dispose(bool disposing)

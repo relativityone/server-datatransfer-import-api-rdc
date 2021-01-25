@@ -133,6 +133,7 @@ Function Get-ReleaseVersion {
     # Different branches get different postfixes
     switch ($typeOfBranch) {
         ([BranchType]::Develop) {$postfix = "-dev"}
+		([BranchType]::Regression) {$postfix = "-regression"}
         ([BranchType]::FeatureBranch) {$postfix = "-$currentBranch"}
         ([BranchType]::Release) {$postfix = ""}
         ([BranchType]::HotfixRelease) {

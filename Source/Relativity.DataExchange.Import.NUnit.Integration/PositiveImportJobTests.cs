@@ -109,7 +109,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Settings settings = NativeImportSettingsProvider.GetFileCopySettings(artifactTypeId);
 
 			// ARRANGE
-			ForceClient(client);
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 
@@ -171,9 +170,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldImportFolders()
 		{
 			// ARRANGE
-			const TapiClient Client = TapiClient.Direct;
-			ForceClient(Client);
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, Client);
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
@@ -201,8 +197,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				NumberOfDocumentsToImport,
 				(int)ArtifactType.Document,
 				new[] { WellKnownFields.ControlNumber, WellKnownFields.FolderName });
-
-			ThenTheJobCompletedInCorrectTransferMode(results, Client);
 		}
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
@@ -211,9 +205,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			// ARRANGE
 			const string DestinationFolderName = "cc";
-			const TapiClient Client = TapiClient.Direct;
-			ForceClient(Client);
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, Client);
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
@@ -239,8 +230,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				new[] { WellKnownFields.ControlNumber, WellKnownFields.FolderName });
 
 			this.ValidateFilesWereMoved(DestinationFolderName, new[] { WellKnownFields.FolderName });
-
-			ThenTheJobCompletedInCorrectTransferMode(result, Client);
 		}
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]

@@ -62,7 +62,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		{
 			// ARRANGE
 			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithMoveFromOneFolderToOneFolderParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
-			ForceClient(client);
 
 			var settingsBuilder = NativeImportSettingsBuilder.New()
 				.WithDefaultSettings();

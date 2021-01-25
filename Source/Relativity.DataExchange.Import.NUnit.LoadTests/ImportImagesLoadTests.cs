@@ -38,7 +38,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		{
 			// ARRANGE
 			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportImagesParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, numberOfImagesPerDocument, 0, client, this.TestParameters);
-			ForceClient(client);
+
 			const ImageFormat ImageFormat = ImageFormat.Tiff;
 
 			var settingsBuilder = new ImageSettingsBuilder()

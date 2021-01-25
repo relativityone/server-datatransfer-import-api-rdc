@@ -18,6 +18,7 @@ namespace Relativity.DataExchange.Import.NUnit
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Process;
+	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 
 	/// <summary>

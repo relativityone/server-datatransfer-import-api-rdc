@@ -22,23 +22,18 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 	[TestType.MainFlow]
 	public class CreateWorkspaceWithManyFieldsTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
-		[SetUp]
-		public void SetUp()
-		{
-			const TapiClient TransferMode = TapiClient.Direct;
-
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(this.TestParameters, TransferMode);
-			ForceClient(TransferMode);
-		}
-
 		[TearDown]
 		public Task TearDown()
 		{
 			return this.ResetContextAsync();
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Usage",
+			"CA1801: Review unused parameters",
+			Justification = "We are using TestExecutionContext.CurrentContext.CurrentTest.Arguments to retrieve value of client parameter.")]
 		[IdentifiedTest("aca05d54-bbaa-4dd1-95be-8bf2f706f168")]
-		public Task CreateWorkspace()
+		public Task CreateWorkspace([Values(TapiClient.Direct)] TapiClient client)
 		{
 			// arrange
 			const int NumberOfDocuments = 10 * 1000;
@@ -110,8 +105,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 			return this.CreateWorkspaceAndImportDataAsync(workspaceDataDefinition);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Usage",
+			"CA1801: Review unused parameters",
+			Justification = "We are using TestExecutionContext.CurrentContext.CurrentTest.Arguments to retrieve value of client parameter.")]
 		[IdentifiedTest("01f17ea2-3f8d-4aed-9d1f-7ce38d1346cb")]
-		public Task CreateWorkspaceWithSmallLongTextAndComplexChoices()
+		public Task CreateWorkspaceWithSmallLongTextAndComplexChoices([Values(TapiClient.Direct)] TapiClient client)
 		{
 			// arrange
 			const int NumberOfDocuments = 10 * 1000;
@@ -184,8 +183,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 			return this.CreateWorkspaceAndImportDataAsync(workspaceDataDefinition);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Usage",
+			"CA1801: Review unused parameters",
+			Justification = "We are using TestExecutionContext.CurrentContext.CurrentTest.Arguments to retrieve value of client parameter.")]
 		[IdentifiedTest("f2c74b2d-43ce-4d74-bccb-141b557fc867")]
-		public Task CreateWorkspaceWithComplexObjects()
+		public Task CreateWorkspaceWithComplexObjects([Values(TapiClient.Direct)] TapiClient client)
 		{
 			// arrange
 			const int NumberOfDocuments = 10 * 1000;
@@ -234,10 +237,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 			return this.CreateWorkspaceAndImportDataAsync(workspaceDataDefinition);
 		}
 
-		[IdentifiedTestCase("72fca5d3-438d-442a-8481-032e2ab1cb63", 540, 5)]
-		[IdentifiedTestCase("bc1df367-6588-43ea-8986-c1c6f4a8f1bf", 540, 54)]
-		[IdentifiedTestCase("727426d2-a94b-4e01-9496-2fcfc8b4d30b", 540, 540)]
-		public Task CreateWorkspaceWithChoices(int numberOfChoices, int numberOfRelations)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Usage",
+			"CA1801: Review unused parameters",
+			Justification = "We are using TestExecutionContext.CurrentContext.CurrentTest.Arguments to retrieve value of client parameter.")]
+		[IdentifiedTestCase("72fca5d3-438d-442a-8481-032e2ab1cb63", 540, 5, TapiClient.Direct)]
+		[IdentifiedTestCase("bc1df367-6588-43ea-8986-c1c6f4a8f1bf", 540, 54, TapiClient.Direct)]
+		[IdentifiedTestCase("727426d2-a94b-4e01-9496-2fcfc8b4d30b", 540, 540, TapiClient.Direct)]
+		public Task CreateWorkspaceWithChoices(int numberOfChoices, int numberOfRelations, TapiClient client)
 		{
 			// arrange
 			const int numberOfDocuments = 10 * 1000;

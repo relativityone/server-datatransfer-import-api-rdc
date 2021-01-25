@@ -185,8 +185,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			[Values(ImageFormat.Jpeg, ImageFormat.Tiff)] ImageFormat imageFormat,
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
-			ForceClient(client);
-
 			var imageSettingsBuilder = new ImageSettingsBuilder();
 			if (useDefaultFieldNames || !useDataTableSource)
 			{

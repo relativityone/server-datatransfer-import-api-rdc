@@ -35,13 +35,15 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await RemoveFileFromFileShare().ConfigureAwait(false);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Usage",
+			"CA1801: Review unused parameters",
+			Justification = "We are using TestExecutionContext.CurrentContext.CurrentTest.Arguments to retrieve value of client parameter.")]
 		[IdentifiedTestCase("2013DF1B-46DE-4755-B96B-AF454CA5D2CE", TapiClient.Direct)]
 		[IdentifiedTestCase("2CE35FD2-C6E4-46F0-A3DD-EA11C6C64E36", TapiClient.Web)]
 		public void ExportShouldReportErrorOnMissingFile(TapiClient client)
 		{
 			// ARRANGE
-			GivenTheTapiForceClientAppSettings(client);
-
 			ExtendedExportFileSetup.SetupDocumentExport(ExtendedExportFile);
 			ExtendedExportFileSetup.SetupImageExport(ExtendedExportFile);
 			ExtendedExportFileSetup.SetupPaddings(ExtendedExportFile);

@@ -577,14 +577,28 @@ task Help -Alias ? -Description "Display task information" {
 }
 
 task IntegrationTestsNightly -Description "Run all integration tests for the nightly pipeline" {
-	folders\Initialize-Folder $TestReportsDir -Safe
-    folders\Initialize-Folder $IntegrationTestsReportDir
 	Invoke-IntegrationTests -TestCategoryFilter	"--where=`"TestExecutionCategory == CI and cat!=NotInCompatibility`""
 }
 
+task IntegrationTestsRegression -Description "Run all integration tests for the regression pipeline" {
+	Invoke-IntegrationTests -TestCategoryFilter	"--where=`"TestLevel==L3 and TestType=='Main Flow'`""
+}
+
+#PositiveExportTests are hardcoded temporarily here because executing all tests in regression takes too long
+task IntegrationTestsRegressionExport -Description "Run export integration tests for the regression pipeline" {
+	Invoke-SelectedIntegrationTests -TestCategoryFilter	"--where=`"TestLevel==L3 and TestType=='Main Flow' and class=='Relativity.DataExchange.Export.NUnit.Integration.PositiveExportTests'`"" -IncludeFilter "*Relativity.DataExchange.Export.NUnit.Integration.dll"
+}
+
+#PositiveImportJobTests are hardcoded temporarily here because executing all tests in regression takes too long
+task IntegrationTestsRegressionImport -Description "Run import integration tests for the regression pipeline" {
+	Invoke-SelectedIntegrationTests -TestCategoryFilter	"--where=`"TestLevel==L3 and TestType=='Main Flow' and class=='Relativity.DataExchange.Import.NUnit.Integration.PositiveImportJobTests'`"" -IncludeFilter "*Relativity.DataExchange.Import.NUnit.Integration.dll"
+}
+
+task IntegrationTestsRegressionShared -Description "Run api-shared integration tests for the regression pipeline" {
+	Invoke-SelectedIntegrationTests -TestCategoryFilter	"--where=`"TestLevel==L3 and TestType=='Main Flow'`"" -IncludeFilter "*Relativity.DataExchange.NUnit.Integration.dll"
+}
+
 task IntegrationTests -Description "Run all integration tests" {
-    folders\Initialize-Folder $TestReportsDir -Safe
-    folders\Initialize-Folder $IntegrationTestsReportDir
 	Invoke-IntegrationTests -TestCategoryFilter	"--where=`"TestExecutionCategory == CI`""
 }
 
@@ -935,6 +949,20 @@ task ReplaceTestVariables -Description "Replace test variables in file" {
 	Write-Host (Get-Content -path $pathToFile -Raw)
 }
 
+task ReplaceTestVariablesRegression -Description "Replace test variables in file for testing against a regression pipeline" {
+$pathToFile = ".\Source\Relativity.DataExchange.TestFramework\Resources\test-parameters-integration-test-template.json"
+if ($TestParametersFile) {
+    $pathToFile = $TestParametersFile
+}
+	$replaceTarget = [Paths.UriScheme]::AddHttpsIfMissing($TestTarget)
+	$servicesTarget = $replaceTarget -replace '.r1' , '-services.r1'
+
+	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_services_target_to_test>', $servicesTarget) | Set-Content -Path $pathToFile
+	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_relativity_user_name>','malgorzata.kwiatkowska@relativity.com') | Set-Content -Path $pathToFile
+
+	Write-Host (Get-Content -path $pathToFile -Raw)
+}
+
 task PostReleasePageOnEinstein -Description "Post the releae page on Einstein"{
     $localSdkVersion = versioning\Get-ReleaseVersion "$Branch"
     $rdcVersionWixFile = Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Setup") "Version.wxi"
@@ -1002,6 +1030,15 @@ task CreateTemplateTestParametersFileForLoadTests -Description "Create template 
     }
     $pathToTemplateFile = ".\Scripts\test-parameters-load-test-template.json"
     Copy-Item $pathToTemplateFile $TestParametersFile
+}
+
+task CreateTemplateTestParametersFileForRegressionTests -Description "Create template of test parameters file for regression tests" {
+    if (-Not $TestParametersFile) {
+        Throw "You need to specify path to new test parameters file (including file name and extension)"
+    }
+    $pathToTemplateFile = ".\Scripts\test-parameters-integration-test-template.json"
+    Copy-Item $pathToTemplateFile $TestParametersFile
+
 }
 
 task UpdatePackages -Depends CheckSdkDependencies -Description "Updates the packages and disables the analyzers when debugging correctly" {
@@ -1140,6 +1177,9 @@ Function Invoke-IntegrationTests {
         [String] $TestCategoryFilter
     )
 	
+	folders\Initialize-Folder $TestReportsDir -Safe
+    folders\Initialize-Folder $IntegrationTestsReportDir -Safe
+	
     Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
     exec { & $NunitExe $MasterSolution `
             "--labels=All" `
@@ -1149,6 +1189,34 @@ Function Invoke-IntegrationTests {
             "--result=$IntegrationTestsResultXmlFile" `
             "$TestCategoryFilter" | Tee-Object -file $IntegrationTestsOutputFile
     } -errorMessage "There was an error running the integration tests."
+}
+
+Function Invoke-SelectedIntegrationTests {
+	param(
+        [String] $TestCategoryFilter,
+		[String] $IncludeFilter
+    )
+			
+	folders\Initialize-Folder $TestReportsDir -Safe
+    folders\Initialize-Folder $IntegrationTestsReportDir -Safe
+			
+	$IntegrationTests = Get-ChildItem -Path $SourceDir -Recurse -Include $IncludeFilter -Exclude *Desktop*.dll,*TestFramework*.dll | Where-Object { $_.FullName -Match "\\*NUnit.Integration\\bin" }        
+	[string]$fileName  = ($IntegrationTests.Name).Replace("Relativity.DataExchange.", "").Replace("NUnit.Integration.dll", "").Replace("..", ".")
+
+	[string]$ResultXmlFile = Join-Path $IntegrationTestsReportDir "test-results-$fileName.xml"
+	[string]$OutputTxtFile = Join-Path $IntegrationTestsReportDir "test-output-$fileName.txt"
+	
+	Invoke-SetTestParameters -SkipIntegrationTests $false -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
+	
+	exec { & $NunitExe $IntegrationTests `
+			"--labels=All" `
+			"--agents=$NumberOfProcessors" `
+			"--skipnontestassemblies" `
+			"--timeout=$TestTimeoutInMS" `
+			"--result=$ResultXmlFile" `
+			"--trace=Debug" `
+			"$TestCategoryFilter" | Tee-Object -file $OutputTxtFile
+	} -errorMessage "There was an error running the integration tests."		
 }
 
 Function Invoke-LoadTests {
