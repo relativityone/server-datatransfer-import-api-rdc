@@ -223,6 +223,7 @@ $PackagesDir = Join-Path $BaseDir "packages"
 $PaketFilesDir = Join-Path $BaseDir "paket-files"
 $PaketDir = Join-Path $BaseDir ".paket"
 $PaketExe = Join-Path $PaketDir 'paket.exe'
+$NuGetExe = Join-Path $PaketDir 'nuget.exe'
 $PaketBootstrapperExe = Join-Path $PaketDir 'paket.bootstrapper.exe'
 Write-Verbose "The base directory resolves to $BaseDir"
 Write-Verbose "Checking for Paket in the .paket sub-directory..."
@@ -234,6 +235,10 @@ if ("Clean" -in $TaskList) {
 
     if (Test-Path $PaketExe -PathType Leaf) {
         Remove-Item $PaketExe
+    }
+	
+	if (Test-Path $NuGetExe -PathType Leaf) {
+        Remove-Item $NuGetExe
     }
 
     if (Test-Path $PaketBootstrapperExe -PathType Leaf) {
@@ -249,6 +254,11 @@ if (-Not (Test-Path $PaketExe -PathType Leaf)) {
 	[Net.ServicePointManager]::SecurityProtocol = ([Net.SecurityProtocolType]::Tls12)
     Invoke-WebRequest "https://relativity.jfrog.io/relativity/misc-files-local/paket.exe" -OutFile $PaketExe
 }
+if (-Not (Test-Path $NuGetExe -PathType Leaf)) {
+	[Net.ServicePointManager]::SecurityProtocol = ([Net.SecurityProtocolType]::Tls12)
+    Invoke-WebRequest "https://relativity.jfrog.io/artifactory/nuget-download/v5.3.0/nuget.exe" -OutFile $NuGetExe
+}
+
 
 $PaketVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "--verbose" } else { "" }
 Write-Verbose "Restoring packages via paket for $MasterSolution"
