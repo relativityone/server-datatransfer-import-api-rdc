@@ -10,15 +10,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading.Tasks;
-	using kCura.Relativity.Client;
-	using kCura.Relativity.Client.DTOs;
 
 	using Polly;
-	using Polly.Retry;
 
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
-	using Relativity.Services.DataContracts.DTOs;
 	using Relativity.Services.Folder;
 	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Interfaces.Shared;
@@ -27,11 +23,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using Relativity.Services.Interfaces.Workspace.Models;
 	using Relativity.Services.Objects.DataContracts;
 
-	using ArtifactQueryFieldNames = kCura.Relativity.Client.DTOs.ArtifactQueryFieldNames;
 	using ArtifactType = Relativity.ArtifactType;
 	using IFieldManager = Relativity.Services.Interfaces.Field.IFieldManager;
-	using NumericConditionEnum = kCura.Relativity.Client.NumericConditionEnum;
-	using WholeNumberCondition = kCura.Relativity.Client.WholeNumberCondition;
 
 	/// <summary>
 	/// Defines static helper methods to manage workspaces.
@@ -89,25 +82,24 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			if (!CanUseWorkspaceManagerKepler(parameters))
 			{
-				Policy.Handle<Exception>().WaitAndRetry(
-					MaxRetryCount,
-					i => TimeSpan.FromSeconds(MaxRetryCount),
-					onRetry).Execute(
-					() =>
-						{
-							createdWorkspaceInfo = WorkspaceHelperRsapi.CreateWorkspaceFromTemplate(parameters, logger, workspaceTemplateName, newWorkspaceName);
-						});
+				createdWorkspaceInfo = Policy
+					.Handle<Exception>()
+					.WaitAndRetry(
+						MaxRetryCount,
+						i => TimeSpan.FromSeconds(MaxRetryCount),
+						onRetry)
+					.Execute(() => WorkspaceHelperRsapi.CreateWorkspaceFromTemplate(parameters, logger, workspaceTemplateName, newWorkspaceName));
 			}
 			else
 			{
-				await Policy.Handle<Exception>().WaitAndRetryAsync(
-					MaxRetryCount,
-					i => TimeSpan.FromSeconds(MaxRetryCount),
-					onRetry).ExecuteAsync(
-					async () =>
-						{
-							createdWorkspaceInfo = await CreateWorkspaceFromTemplateAsync(parameters, logger, workspaceTemplateName, newWorkspaceName).ConfigureAwait(false);
-						}).ConfigureAwait(false);
+				createdWorkspaceInfo = await Policy
+					.Handle<Exception>()
+					.WaitAndRetryAsync(
+						MaxRetryCount,
+						i => TimeSpan.FromSeconds(MaxRetryCount),
+						onRetry)
+					.ExecuteAsync(() => CreateWorkspaceFromTemplateAsync(parameters, logger, workspaceTemplateName, newWorkspaceName))
+					.ConfigureAwait(false);
 			}
 
 			logger.LogInformation(
@@ -348,14 +340,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 					logger.LogInformation("Creating the {WorkspaceName} workspace...", newWorkspaceName);
 
-					var progress = new Progress<ProgressReport>(
-						progressReport =>
-						{
-							logger.LogVerbose(progressReport.Message);
-						});
-
 					WorkspaceResponse createResponse =
-						await workspaceManager.CreateAsync(createRequest, progress).ConfigureAwait(false);
+						await workspaceManager.CreateAsync(createRequest).ConfigureAwait(false);
 					logger.LogInformation("Completed the create workspace process.");
 
 					if (parameters.EnableDataGrid)
@@ -432,6 +418,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		}
 
 		private static bool CanUseWorkspaceManagerKepler(IntegrationTestParameters parameters) =>
-			!RelativityVersionChecker.VersionIsLowerThan(parameters, WorkspaceManagerReleaseVersion) && false;
+			!RelativityVersionChecker.VersionIsLowerThan(parameters, WorkspaceManagerReleaseVersion);
 	}
 }
