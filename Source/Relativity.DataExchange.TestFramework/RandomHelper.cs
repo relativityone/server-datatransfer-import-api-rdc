@@ -272,6 +272,33 @@ namespace Relativity.DataExchange.TestFramework
 		}
 
 		/// <summary>
+		/// Creates a new random text file whose file size is between <paramref name="minValue"/> and <paramref name="maxValue"/>.
+		/// </summary>
+		/// <param name="minValue">
+		/// The minimum value.
+		/// </param>
+		/// <param name="maxValue">
+		/// The maximum value.
+		/// </param>
+		/// <param name="file">
+		/// The full path to the file to create.
+		/// </param>
+		/// <param name="encoding">
+		/// File encoding.
+		/// </param>
+		public static void NextTextFile(int minValue, int maxValue, string file, System.Text.Encoding encoding)
+		{
+			string directory = System.IO.Path.GetDirectoryName(file);
+			if (!string.IsNullOrEmpty(directory))
+			{
+				Directory.CreateDirectory(directory);
+			}
+
+			var text = NextString(minValue, maxValue);
+			File.WriteAllText(file, text, encoding);
+		}
+
+		/// <summary>
 		/// Creates a new random pdf file with text content whose text size is between <paramref name="minLength"/> and <paramref name="maxLength"/>.
 		/// </summary>
 		/// <param name="minLength">

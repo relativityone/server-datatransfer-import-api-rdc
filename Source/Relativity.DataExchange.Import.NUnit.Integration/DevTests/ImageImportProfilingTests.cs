@@ -38,11 +38,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 			// ARRANGE
 			await this.ResetContextAsync().ConfigureAwait(false);
 
-			IEnumerable<ImageImportWithFileNameDto> importData = ImageImportWithFileNameDto.GetRandomImageFiles(
+			IEnumerable<ImageImportWithFileNameDto> importData = new ImageImportWithFileNameDtoBuilder(
 				this.TempDirectory.Directory,
 				numberOfDocumentsToImport,
 				numberOfImagesPerDocument,
-				ImageFormat.Jpeg);
+				ImageFormat.Jpeg).Build();
 
 			var imageSettingsBuilder = new ImageSettingsBuilder()
 				.WithDefaultFieldNames()
@@ -69,11 +69,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 			// ARRANGE
 			await this.ResetContextAsync().ConfigureAwait(false);
 
-			IEnumerable<ImageImportWithFileNameDto> importData = ImageImportWithFileNameDto.GetRandomImageFiles(
+			IEnumerable<ImageImportWithFileNameDto> importData = new ImageImportWithFileNameDtoBuilder(
 				this.TempDirectory.Directory,
 				numberOfDocumentsToImport,
 				numberOfImagesPerDocument,
-				ImageFormat.Jpeg);
+				ImageFormat.Jpeg).Build();
 
 			var imageSettingsBuilder = new ImageSettingsBuilder()
 				.WithDefaultFieldNames()

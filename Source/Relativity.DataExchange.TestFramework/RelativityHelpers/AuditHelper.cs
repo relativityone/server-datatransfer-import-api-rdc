@@ -29,19 +29,29 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		public enum AuditAction
 		{
 			/// <summary>
-			/// Export audit action.
+			/// Default, none audit action.
 			/// </summary>
-			Export,
+			None = 0,
 
 			/// <summary>
-			/// Import audit action.
+			/// Create audit action.
 			/// </summary>
-			Import,
+			Create = 2,
 
 			/// <summary>
 			/// Move audit action.
 			/// </summary>
-			Move,
+			Move = 11,
+
+			/// <summary>
+			/// Import audit action.
+			/// </summary>
+			Import = 32,
+
+			/// <summary>
+			/// Export audit action.
+			/// </summary>
+			Export = 33,
 		}
 
 		public static async Task<IEnumerable<Dictionary<string, string>>> GetLastAuditDetailsForActionAsync(
@@ -124,6 +134,31 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 
 			return auditList;
+		}
+
+		public static Task<IList<string>> GetAuditActionDetailsForObjectAsync(
+			IntegrationTestParameters parameters,
+			DateTime actionExecutionTime,
+			AuditAction action,
+			int minNumberOfAuditsToTake,
+			int objectArtifactId)
+		{
+			async Task<IList<string>> GetDetails()
+			{
+				IList<AuditLogItem> allAuditsForDocument = await GetAuditsForSpecificObjectAsync(
+															   parameters,
+															   actionExecutionTime,
+															   minNumberOfAuditsToTake,
+															   objectArtifactId).ConfigureAwait(false);
+
+				return allAuditsForDocument.Where(x => x.ActionID == (int)action).Select(x => x.Details.ToString()).ToList();
+			}
+
+			const int RetryAttempts = 3;
+			const int WaitTimeInSeconds = 10;
+			return Policy.HandleResult<IList<string>>(x => x.Count() < minNumberOfAuditsToTake).WaitAndRetryAsync(
+							RetryAttempts,
+							retry => TimeSpan.FromSeconds(retry * WaitTimeInSeconds)).ExecuteAsync(GetDetails);
 		}
 
 		private static async Task<IEnumerable<RelativityObject>> GetLastAuditObjectForActionAsync(

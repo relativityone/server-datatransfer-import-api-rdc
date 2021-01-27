@@ -11,10 +11,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Data;
 	using System.IO;
 	using System.Linq;
-	using System.Net;
+	using System.Text;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
@@ -58,12 +57,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			const int NumberOfImagesPerDocument = 10;
 
 			long expectedFileBytes = 0L;
-			IEnumerable<ImageImportWithFileNameDto> importData = ImageImportWithFileNameDto.GetRandomImageFiles(
+			IEnumerable<ImageImportWithFileNameDto> importData = new ImageImportWithFileNameDtoBuilder(
 				this.TempDirectory.Directory,
 				NumberOfDocumentsToImport,
 				NumberOfImagesPerDocument,
-				ImageFormat.Jpeg,
-				fileSize => expectedFileBytes += fileSize);
+				ImageFormat.Jpeg)
+				.WithFileSizeBytesAggregator(fileSize => expectedFileBytes += fileSize)
+				.Build();
 
 			var imageSettingsBuilder = new ImageSettingsBuilder()
 				.WithDefaultFieldNames()
@@ -91,12 +91,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			const int NumberOfImagesPerDocument = 10;
 
 			long expectedFileBytes = 0L;
-			IEnumerable<ImageImportWithFileNameDto> importData = ImageImportWithFileNameDto.GetRandomImageFiles(
+			IEnumerable<ImageImportWithFileNameDto> importData = new ImageImportWithFileNameDtoBuilder(
 				this.TempDirectory.Directory,
 				NumberOfDocumentsToImport,
 				NumberOfImagesPerDocument,
-				ImageFormat.Jpeg,
-				fileSize => expectedFileBytes += fileSize);
+				ImageFormat.Jpeg)
+				.WithFileSizeBytesAggregator(fileSize => expectedFileBytes += fileSize).Build();
 
 			var imageSettingsBuilder = new ImageSettingsBuilder()
 				.WithDefaultFieldNames()
@@ -128,7 +128,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			const int NumberOfImagesPerDocument = 10;
 
 			long expectedFileBytes = 0L;
-			IEnumerable<ImageImportWithFileNameDto> importData = ImageImportWithFileNameDto.GetRandomImageFiles(this.TempDirectory.Directory, NumberOfDocumentsToImport, NumberOfImagesPerDocument, ImageFormat.Jpeg, fileSize => expectedFileBytes += fileSize);
+			IEnumerable<ImageImportWithFileNameDto> importData = new ImageImportWithFileNameDtoBuilder(
+				this.TempDirectory.Directory,
+				NumberOfDocumentsToImport,
+				NumberOfImagesPerDocument,
+				ImageFormat.Jpeg).WithFileSizeBytesAggregator(fileSize => expectedFileBytes += fileSize).Build();
 
 			var imageSettingsBuilder = new ImageSettingsBuilder();
 			imageSettingsBuilder.WithDefaultFieldNames();
@@ -155,9 +159,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		{
 			const int NumberOfDocumentsToImport = 5;
 			const int NumberOfImagesPerDocument = 2;
-			const bool UseInvalidIdentifier = true;
 
-			IEnumerable<ImageImportWithFileNameDto> importData = ImageImportWithFileNameDto.GetRandomImageFiles(this.TempDirectory.Directory, NumberOfDocumentsToImport, NumberOfImagesPerDocument, ImageFormat.Jpeg, UseInvalidIdentifier, fileSize => { });
+			IEnumerable<ImageImportWithFileNameDto> importData = new ImageImportWithFileNameDtoBuilder(
+				this.TempDirectory.Directory,
+				NumberOfDocumentsToImport,
+				NumberOfImagesPerDocument,
+				ImageFormat.Jpeg).WithInvalidDocumentIdentifier().Build();
 
 			var imageSettingsBuilder = new ImageSettingsBuilder();
 			imageSettingsBuilder.WithDefaultFieldNames();
@@ -217,7 +224,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ImportTestJobResult testResult;
 			if (useFileNames)
 			{
-				string fileName = ImageImportWithFileNameDto.AddSpecialCharacters($"{RandomHelper.NextString(10, 10)}.{Path.GetExtension(imageFile.FullName)}");
+				string fileName = $"ႝ\\ /:*?{RandomHelper.NextString(10, 10)}.{Path.GetExtension(imageFile.FullName)}";
 				var imageImportWithFileNameDto = new ImageImportWithFileNameDto(batesNumber, documentIdentifier, imageFile.FullName, fileName);
 				imageImportDto = imageImportWithFileNameDto;
 				testResult = this.JobExecutionContext.Execute(new List<ImageImportWithFileNameDto>() { imageImportWithFileNameDto });
@@ -235,6 +242,109 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(testResult.JobReportFileBytes, Is.EqualTo(imageFile.Length));
 			Assert.That(testResult.JobReportMetadataBytes, Is.Positive);
 			ThenTheJobCompletedInCorrectTransferMode(testResult, client);
+		}
+
+		[TestCaseSource(nameof(GetExtractedTextDataSource))]
+		[TestType.MainFlow]
+		public void ShouldImportImagesWithExtractedText(ImageFormat imageFormat, Encoding extractedTextEncoding, bool disableEncodingCheck)
+		{
+			// ARRANGE
+			const int NumberOfDocumentsToImport = 1;
+			const int NumberOfImagesPerDocument = 2;
+			const int ExtractedTextLength = 100;
+
+			List<ImageImportWithFileNameDto> importData = new ImageImportWithFileNameDtoBuilder(
+				this.TempDirectory.Directory,
+				NumberOfDocumentsToImport,
+				NumberOfImagesPerDocument,
+				imageFormat)
+				.WithExtractedText(ExtractedTextLength, extractedTextEncoding).Build().ToList();
+
+			var imageSettingsBuilder = new ImageSettingsBuilder()
+				.WithDefaultFieldNames()
+				.WithExtractedText(extractedTextEncoding, disableEncodingCheck)
+				.WithOverlayMode(OverwriteModeEnum.Append);
+
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, imageSettingsBuilder);
+			this.JobExecutionContext.UseFileNames = true;
+
+			// ACT
+			ImportTestJobResult testResult = this.JobExecutionContext.Execute(importData);
+
+			// ASSERT
+			const int ExpectedNumberOfImportedImages = NumberOfDocumentsToImport * NumberOfImagesPerDocument;
+			this.ThenTheImportJobIsSuccessful(testResult, ExpectedNumberOfImportedImages);
+			ThenTheExtractedTextIsCorrect(importData, NumberOfImagesPerDocument, extractedTextEncoding);
+		}
+
+		[IdentifiedTest("ebf17f63-5b1b-4731-90c4-963410ad7902")]
+		[TestType.MainFlow]
+		public async Task ShouldAuditImportOfImagesWithExtractedTextAsync()
+		{
+			// ARRANGE
+			const int NumberOfDocumentsToImport = 1;
+			const int NumberOfImagesPerDocument = 2;
+			const int ExtractedTextLength = 100;
+			Encoding extractedTextEncoding = Encoding.UTF8;
+
+			List<ImageImportWithFileNameDto> importData = new ImageImportWithFileNameDtoBuilder(
+					this.TempDirectory.Directory,
+					NumberOfDocumentsToImport,
+					NumberOfImagesPerDocument,
+					ImageFormat.Tiff)
+				.WithExtractedText(ExtractedTextLength, extractedTextEncoding).Build().ToList();
+
+			var imageSettingsBuilder = new ImageSettingsBuilder()
+				.WithDefaultFieldNames()
+				.WithExtractedText(extractedTextEncoding, true)
+				.WithOverlayMode(OverwriteModeEnum.Append);
+
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, imageSettingsBuilder);
+			this.JobExecutionContext.UseFileNames = true;
+
+			// ACT
+			var executionTime = DateTime.Now;
+			ImportTestJobResult testResult = this.JobExecutionContext.Execute(importData);
+
+			// ASSERT
+			const int ExpectedNumberOfImportedImages = NumberOfDocumentsToImport * NumberOfImagesPerDocument;
+			this.ThenTheImportJobIsSuccessful(testResult, ExpectedNumberOfImportedImages);
+			await this.ThenTheAuditsContainExtractedTextDetails(importData, NumberOfImagesPerDocument, executionTime).ConfigureAwait(false);
+		}
+
+		private static IEnumerable<TestCaseData> GetExtractedTextDataSource()
+		{
+			const string IdPrefix = "dd4a5bc2-1ced-4150-9f5e-e601aad1f";
+			ImageFormat[] imageFormatSource = { ImageFormat.Jpeg, ImageFormat.Tiff };
+			Encoding[] encodingSource = { Encoding.UTF8, Encoding.ASCII, Encoding.BigEndianUnicode, Encoding.UTF7 };
+			bool[] disableEncodingCheckSource = { true, false };
+
+			for (var i = 0; i < imageFormatSource.Length; i++)
+			{
+				for (var j = 0; j < encodingSource.Length; j++)
+				{
+					for (var k = 0; k < disableEncodingCheckSource.Length; k++)
+					{
+						yield return new TestCaseData(imageFormatSource[i], encodingSource[j], disableEncodingCheckSource[k]).WithId($"{IdPrefix}{i}{j}{k}");
+					}
+				}
+			}
+		}
+
+		private static void ThenTheExtractedTextIsCorrect(List<ImageImportWithFileNameDto> importData, int numberOfImagesPerDocument, Encoding extractedTextEncoding)
+		{
+			for (int documentIndex = 0; documentIndex < importData.Count; documentIndex += numberOfImagesPerDocument)
+			{
+				string actualExtractedText = (string)GetDocumentFieldValue(QueryDocument(importData[documentIndex].BatesNumber), WellKnownFields.ExtractedText);
+				StringBuilder expectedExtractedTextBuilder = new StringBuilder();
+				for (int imageIndex = 0; imageIndex < numberOfImagesPerDocument; imageIndex++)
+				{
+					string extractedTextPath = Path.ChangeExtension(importData[documentIndex + imageIndex].FileLocation, ".txt");
+					expectedExtractedTextBuilder.Append(File.ReadAllText(extractedTextPath, extractedTextEncoding));
+				}
+
+				Assert.That(actualExtractedText, Is.EqualTo(expectedExtractedTextBuilder.ToString()), $"Invalid value of extracted text field for document: {importData[documentIndex].BatesNumber}");
+			}
 		}
 
 		private static void ThenRelativityObjectCountsIsCorrect(int expectedNumberOfImportedDocuments)
@@ -257,7 +367,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			int? relativityImageCount = Convert.ToInt32(GetDocumentFieldValue(document, WellKnownFields.RelativityImageCount));
 			Assert.That(relativityImageCount, Is.Positive);
 
-			IList<FileDto> documentImages = QueryImageFileInfo(document.ArtifactID).ToList();
+			IList<FileDto> documentImages = FileExportHelper.QueryImageFileInfo(document.ArtifactID).ToList();
 			Assert.That(documentImages, Is.Not.Null);
 			Assert.That(documentImages.Count, Is.EqualTo(1));
 			FileDto imageFile = documentImages[0];
@@ -286,7 +396,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			var documents = RdoHelper.QueryRelativityObjects(
 				AssemblySetup.TestParameters,
 				WellKnownArtifactTypes.DocumentArtifactTypeId,
-				new[] { WellKnownFields.ArtifactId, WellKnownFields.ControlNumber, WellKnownFields.HasImages, WellKnownFields.HasNative, WellKnownFields.BatesNumber, WellKnownFields.RelativityImageCount });
+				new[] { WellKnownFields.ArtifactId, WellKnownFields.ControlNumber, WellKnownFields.HasImages, WellKnownFields.HasNative, WellKnownFields.BatesNumber, WellKnownFields.RelativityImageCount, WellKnownFields.ExtractedText });
 
 			return (from document in documents
 					from pair in document.FieldValues
@@ -294,28 +404,19 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 					select document).FirstOrDefault();
 		}
 
-		private static IEnumerable<FileDto> QueryImageFileInfo(int artifactId)
+		private async Task ThenTheAuditsContainExtractedTextDetails(List<ImageImportWithFileNameDto> importData, int numberOfImagesPerDocument, DateTime executionTime)
 		{
-			using (kCura.WinEDDS.Service.Export.ISearchManager searchManager = CreateExportSearchManager())
+			for (int documentIndex = 0; documentIndex < importData.Count; documentIndex += numberOfImagesPerDocument)
 			{
-				var dataSet = searchManager.RetrieveImagesForDocuments(
-					AssemblySetup.TestParameters.WorkspaceId,
-					new[] { artifactId });
+				string documentControlNumber = importData[documentIndex].BatesNumber;
+				int documentArtifactId = (int)GetDocumentFieldValue(QueryDocument(documentControlNumber), WellKnownFields.ArtifactId);
 
-				if (dataSet == null || dataSet.Tables.Count == 0)
+				IList<string> auditDetails = await AuditHelper.GetAuditActionDetailsForObjectAsync(this.TestParameters, executionTime, AuditHelper.AuditAction.Create, numberOfImagesPerDocument, documentArtifactId).ConfigureAwait(false);
+				foreach (var details in auditDetails)
 				{
-					return new List<FileDto>();
+					Assert.That(details, Contains.Substring("extractedTextEncodingPageCode"), $"Extracted text encoding missing from audit details: {details}");
 				}
-
-				DataTable dataTable = dataSet.Tables[0];
-				return dataTable.Rows.Cast<DataRow>().Select(dataRow => new FileDto(dataRow));
 			}
-		}
-
-		private static kCura.WinEDDS.Service.Export.ISearchManager CreateExportSearchManager()
-		{
-			var credentials = new NetworkCredential(AssemblySetup.TestParameters.RelativityUserName, AssemblySetup.TestParameters.RelativityPassword);
-			return new kCura.WinEDDS.Service.SearchManager(credentials, new CookieContainer());
 		}
 	}
 }

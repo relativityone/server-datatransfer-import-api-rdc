@@ -5,6 +5,7 @@
 namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 {
 	using System;
+	using System.Text;
 
 	using kCura.Relativity.DataReaderClient;
 
@@ -17,6 +18,9 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 	{
 		private bool withDefaultFieldNames;
 		private bool withWellKnownFieldNames;
+		private bool withExtractedText;
+		private Encoding extractedTextEncoding;
+		private bool disableExtractedTextEncodingCheck;
 		private OverwriteModeEnum overwriteMode = OverwriteModeEnum.Append;
 
 		public ImageSettings Build()
@@ -42,6 +46,13 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 				SetWellKnownFieldNames(settings);
 			}
 
+			if (this.withExtractedText)
+			{
+				settings.ExtractedTextFieldContainsFilePath = true;
+				settings.ExtractedTextEncoding = this.extractedTextEncoding;
+				settings.DisableExtractedTextEncodingCheck = this.disableExtractedTextEncodingCheck;
+			}
+
 			return settings;
 		}
 
@@ -62,6 +73,14 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 		{
 			this.withDefaultFieldNames = true;
 			this.withWellKnownFieldNames = false;
+			return this;
+		}
+
+		public ImageSettingsBuilder WithExtractedText(Encoding encoding, bool disableEncodingCheck)
+		{
+			this.withExtractedText = true;
+			this.extractedTextEncoding = encoding;
+			this.disableExtractedTextEncodingCheck = disableEncodingCheck;
 			return this;
 		}
 
