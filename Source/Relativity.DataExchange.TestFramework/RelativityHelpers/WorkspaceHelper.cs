@@ -104,8 +104,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			logger.LogInformation(
 				"Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
-				parameters.WorkspaceName,
-				parameters.WorkspaceId);
+				createdWorkspaceInfo.workspaceName,
+				createdWorkspaceInfo.workspaceId);
 
 			return createdWorkspaceInfo;
 		}

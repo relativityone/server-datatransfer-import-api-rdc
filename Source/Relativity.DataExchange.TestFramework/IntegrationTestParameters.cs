@@ -77,6 +77,7 @@ namespace Relativity.DataExchange.TestFramework
 			this.SqlComparerOutputPath = copy.SqlComparerOutputPath;
 			this.SqlInstanceName = copy.SqlInstanceName;
 			this.WorkspaceId = copy.WorkspaceId;
+			this.WorkspaceName = copy.WorkspaceName;
 			this.EnableDataGrid = copy.EnableDataGrid;
 			this.TestOnWorkspaceWithNonDefaultCollation = copy.TestOnWorkspaceWithNonDefaultCollation;
 			this.PerformAdditionalWorkspaceSetup = copy.PerformAdditionalWorkspaceSetup;
@@ -356,6 +357,16 @@ namespace Relativity.DataExchange.TestFramework
 		public IntegrationTestParameters DeepCopy()
 		{
 			return new IntegrationTestParameters(this);
+		}
+
+		/// <summary>
+		/// This methods clears all references to a test workspace.
+		/// </summary>
+		/// <remarks>It needs to be called when a test workspace was destroyed.</remarks>
+		internal void ResetWorkspaceInformation()
+		{
+			this.WorkspaceId = 0;
+			this.WorkspaceName = null;
 		}
 	}
 }
