@@ -110,7 +110,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		internal static (int workspaceId, string workspaceName) CreateWorkspaceFromTemplate(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string workspaceTemplateName, string newWorkspaceName)
+		internal static async Task<(int workspaceId, string workspaceName)> CreateWorkspaceFromTemplateAsync(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string workspaceTemplateName, string newWorkspaceName)
 		{
 			int templateWorkspaceId = RetrieveWorkspaceId(
 				parameters,
@@ -139,7 +139,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					client.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspace);
 				int workspaceId = QueryWorkspaceArtifactId(client, result, logger);
 
-				EnableDataGrid(client, parameters, workspaceId, logger);
+				await EnableDataGridAsync(client, parameters, workspaceId, logger).ConfigureAwait(false);
 
 				return (workspaceId, workspaceName);
 			}
@@ -239,7 +239,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			throw new InvalidOperationException(processResult.Message);
 		}
 
-		private static void EnableDataGrid(IRSAPIClient client, IntegrationTestParameters parameters, int workspaceId, Relativity.Logging.ILog logger)
+		private static async Task EnableDataGridAsync(IRSAPIClient client, IntegrationTestParameters parameters, int workspaceId, Relativity.Logging.ILog logger)
 		{
 			// By default DataGrid is disable on workspace templates used in tests
 			// It is impossible to disable DataGrid for workspace if it was enabled before
@@ -251,8 +251,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				logger.LogInformation($"DataGrid enabled for workspace with id {parameters.WorkspaceId}");
 			}
 
-			WorkspaceHelper.UpdateExtractedTextFieldAsync(parameters, workspaceId, logger).ConfigureAwait(false);
-			logger.LogInformation($"'Extracted Text' field values in workspace updated");
+			await WorkspaceHelper.UpdateExtractedTextFieldAsync(parameters, workspaceId, logger).ConfigureAwait(false);
+			logger.LogInformation("'Extracted Text' field values in workspace updated");
 		}
 	}
 }

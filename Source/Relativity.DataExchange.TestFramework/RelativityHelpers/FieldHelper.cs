@@ -459,9 +459,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return ro.FieldValues[0].Value as string;
 		}
 
-		public static int GetFieldArtifactId(IntegrationTestParameters parameters, int workspaceId, Relativity.Logging.ILog logger, string fieldName)
+		public static async Task<int> GetFieldArtifactIdAsync(IntegrationTestParameters parameters, int workspaceId, Relativity.Logging.ILog logger, string fieldName)
 		{
-			QueryResult result = QueryFieldByNameAsync(parameters, workspaceId, logger, fieldName).ConfigureAwait(false).GetAwaiter().GetResult();
+			QueryResult result = await QueryFieldByNameAsync(parameters, workspaceId, logger, fieldName).ConfigureAwait(false);
 
 			if (result.TotalCount != 1)
 			{

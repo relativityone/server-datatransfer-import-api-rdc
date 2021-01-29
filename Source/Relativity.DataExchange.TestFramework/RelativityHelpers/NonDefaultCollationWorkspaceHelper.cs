@@ -28,7 +28,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		// Mutex is required to process synchronization and prevent creation of workspace template by more than one test in the same time
 		private static readonly Mutex CollationTemplateMutex = new Mutex(false, "API_Tests_CollationTemplateMutex");
 
-		public static string GetOrCreateWorkspaceTemplateWithNonDefaultCollation(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
+		public static async Task<string> GetOrCreateWorkspaceTemplateWithNonDefaultCollationAsync(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
 		{
 			const string NonDefaultCollationTemplateName = "Import API Collation Template";
 
@@ -37,11 +37,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				try
 				{
 					// create workspace template if it does not exist
-					WorkspaceHelper.RetrieveWorkspaceId(parameters, logger, NonDefaultCollationTemplateName);
+					await WorkspaceHelper.RetrieveWorkspaceIdAsync(parameters, logger, NonDefaultCollationTemplateName).ConfigureAwait(false);
 				}
 				catch (InvalidOperationException)
 				{
-					CreateWorkspaceTemplateWithNonDefaultCollation(parameters, logger, NonDefaultCollationTemplateName);
+					await CreateWorkspaceTemplateWithNonDefaultCollationAsync(parameters, logger, NonDefaultCollationTemplateName).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -56,15 +56,25 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return NonDefaultCollationTemplateName;
 		}
 
-		private static void CreateWorkspaceTemplateWithNonDefaultCollation(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string nonDefaultCollationTemplateName)
+		private static async Task CreateWorkspaceTemplateWithNonDefaultCollationAsync(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string nonDefaultCollationTemplateName)
 		{
 			const string DefaultCollation = "SQL_Latin1_General_CP1_CI_AS";
 			const string NonDefaultCollation = "Latin1_General_CI_AI";
 
 			string nonDefaultCollationTemplateNameDuringCreation = $"{nonDefaultCollationTemplateName} Creation...";
 
-			WorkspaceHelper.CreateWorkspaceFromTemplate(parameters, logger, parameters.WorkspaceTemplate, nonDefaultCollationTemplateNameDuringCreation);
-			string workspaceDatabaseBackupScript = GenerateSqlScriptOfWorkspaceDatabase(parameters, logger, nonDefaultCollationTemplateNameDuringCreation);
+			await WorkspaceHelper
+				.CreateWorkspaceFromTemplateAsync(
+					parameters,
+					logger,
+					parameters.WorkspaceTemplate,
+					nonDefaultCollationTemplateNameDuringCreation)
+				.ConfigureAwait(false);
+			string workspaceDatabaseBackupScript = await GenerateSqlScriptOfWorkspaceDatabaseAsync(
+															parameters,
+															logger,
+															nonDefaultCollationTemplateNameDuringCreation)
+														.ConfigureAwait(false);
 			IntegrationTestHelper.DropWorkspaceDatabase(parameters, parameters.WorkspaceId, logger);
 
 			ReplaceCollationInDatabaseScript(workspaceDatabaseBackupScript, DefaultCollation, NonDefaultCollation);
@@ -74,9 +84,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			WorkspaceHelper.RenameTestWorkspace(parameters, parameters.WorkspaceId, nonDefaultCollationTemplateName);
 		}
 
-		private static string GenerateSqlScriptOfWorkspaceDatabase(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string workspaceName)
+		private static async Task<string> GenerateSqlScriptOfWorkspaceDatabaseAsync(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string workspaceName)
 		{
-			int workspaceId = WorkspaceHelper.RetrieveWorkspaceId(parameters, logger, workspaceName);
+			int workspaceId = await WorkspaceHelper.RetrieveWorkspaceIdAsync(parameters, logger, workspaceName).ConfigureAwait(false);
 
 			string databaseScriptFilePath = GetDatabaseScriptFilePath(workspaceName);
 			Scripter scripter = CreateScripter(parameters, databaseScriptFilePath);

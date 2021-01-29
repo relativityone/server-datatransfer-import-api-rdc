@@ -58,10 +58,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			string workspaceTemplateName = parameters.WorkspaceTemplate;
 			if (parameters.TestOnWorkspaceWithNonDefaultCollation)
 			{
-				workspaceTemplateName =
-					NonDefaultCollationWorkspaceHelper.GetOrCreateWorkspaceTemplateWithNonDefaultCollation(
-						parameters,
-						logger);
+				workspaceTemplateName = await NonDefaultCollationWorkspaceHelper
+											.GetOrCreateWorkspaceTemplateWithNonDefaultCollationAsync(
+												parameters,
+												logger)
+											.ConfigureAwait(false);
 			}
 
 			string newWorkspaceName = GetWorkspaceName(parameters);
@@ -70,37 +71,29 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			const int MaxRetryCount = 3;
 			int retryCount = 0;
 
-			Action<Exception, TimeSpan> onRetry = (exception, span) =>
-				{
-					retryCount++;
-					logger.LogError(
-						"The workspace helper failed to create a test workspace. Retry: {retryCount} of {MaxRetryCount}, Error: {exception}",
-						retryCount,
-						MaxRetryCount,
-						exception);
-				};
+			void OnRetry(Exception exception, TimeSpan span)
+			{
+				retryCount++;
+				logger.LogError(
+					"The workspace helper failed to create a test workspace. Retry: {retryCount} of {MaxRetryCount}, Error: {exception}",
+					retryCount,
+					MaxRetryCount,
+					exception);
+			}
 
-			if (!CanUseWorkspaceManagerKepler(parameters))
-			{
-				createdWorkspaceInfo = Policy
-					.Handle<Exception>()
-					.WaitAndRetry(
-						MaxRetryCount,
-						i => TimeSpan.FromSeconds(MaxRetryCount),
-						onRetry)
-					.Execute(() => WorkspaceHelperRsapi.CreateWorkspaceFromTemplate(parameters, logger, workspaceTemplateName, newWorkspaceName));
-			}
-			else
-			{
-				createdWorkspaceInfo = await Policy
-					.Handle<Exception>()
-					.WaitAndRetryAsync(
-						MaxRetryCount,
-						i => TimeSpan.FromSeconds(MaxRetryCount),
-						onRetry)
-					.ExecuteAsync(() => CreateWorkspaceFromTemplateAsync(parameters, logger, workspaceTemplateName, newWorkspaceName))
-					.ConfigureAwait(false);
-			}
+			Task<(int workspaceId, string workspaceName)> CreateWorkspaceFunction() =>
+				CanUseWorkspaceManagerKepler(parameters)
+					? CreateWorkspaceFromTemplateUsingKeplerAsync(parameters, logger, workspaceTemplateName, newWorkspaceName)
+					: WorkspaceHelperRsapi.CreateWorkspaceFromTemplateAsync(parameters, logger, workspaceTemplateName, newWorkspaceName);
+
+			createdWorkspaceInfo = await Policy
+									   .Handle<Exception>()
+									   .WaitAndRetryAsync(
+										   MaxRetryCount,
+										   i => TimeSpan.FromSeconds(MaxRetryCount),
+										   OnRetry)
+									   .ExecuteAsync(() => CreateWorkspaceFunction())
+									   .ConfigureAwait(false);
 
 			logger.LogInformation(
 				"Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
@@ -282,12 +275,31 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		public static async Task UpdateExtractedTextFieldAsync(IntegrationTestParameters parameters, int workspaceId, Relativity.Logging.ILog logger)
 		{
-			var longTextFieldRequest = new LongTextFieldRequest()
+			int fieldId = await FieldHelper
+							  .GetFieldArtifactIdAsync(parameters, workspaceId, logger, WellKnownFields.ExtractedText)
+							  .ConfigureAwait(false);
+
+			bool enableDataGrid;
+			if (parameters.EnableDataGrid)
+			{
+				enableDataGrid = parameters.EnableDataGrid;
+			}
+			else
+			{
+				// it is not possible to disable DataGrid for field, if it is already enabled.
+				using (IFieldManager fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(parameters))
+				{
+					var fieldResponse = await fieldManager.ReadAsync(workspaceId, fieldId).ConfigureAwait(false);
+					enableDataGrid = fieldResponse.EnableDataGrid;
+				}
+			}
+
+			var longTextFieldRequest = new LongTextFieldRequest
 			{
 				Name = WellKnownFields.ExtractedText,
-				ObjectType = new ObjectTypeIdentifier() { ArtifactTypeID = (int)ArtifactType.Document },
-				EnableDataGrid = parameters.EnableDataGrid,
-				IncludeInTextIndex = !parameters.EnableDataGrid,
+				ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document },
+				EnableDataGrid = enableDataGrid,
+				IncludeInTextIndex = !enableDataGrid,
 				FilterType = FilterType.None,
 				AvailableInViewer = true,
 				HasUnicode = true,
@@ -295,41 +307,43 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			using (IFieldManager fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(parameters))
 			{
-				int fieldId = FieldHelper.GetFieldArtifactId(parameters, workspaceId, logger, WellKnownFields.ExtractedText);
-				await fieldManager.UpdateLongTextFieldAsync(workspaceId, fieldId, longTextFieldRequest)
-					.ConfigureAwait(false);
+				await fieldManager.UpdateLongTextFieldAsync(workspaceId, fieldId, longTextFieldRequest).ConfigureAwait(false);
 			}
 		}
 
-		internal static (int workspaceId, string workspaceName) CreateWorkspaceFromTemplate(
+		internal static Task<(int workspaceId, string workspaceName)> CreateWorkspaceFromTemplateAsync(
 			IntegrationTestParameters parameters,
 			Relativity.Logging.ILog logger,
 			string workspaceTemplateName,
 			string newWorkspaceName)
 		{
-			if (!CanUseWorkspaceManagerKepler(parameters))
-			{
-				return WorkspaceHelperRsapi.CreateWorkspaceFromTemplate(parameters, logger, workspaceTemplateName, newWorkspaceName);
-			}
-
-			using (Task<(int workspaceId, string workspaceName)> task = CreateWorkspaceFromTemplateAsync(parameters, logger, workspaceTemplateName, newWorkspaceName))
-			{
-				return task.Result;
-			}
+			return CanUseWorkspaceManagerKepler(parameters)
+				? CreateWorkspaceFromTemplateUsingKeplerAsync(parameters, logger, workspaceTemplateName, newWorkspaceName)
+				: WorkspaceHelperRsapi.CreateWorkspaceFromTemplateAsync(parameters, logger, workspaceTemplateName, newWorkspaceName);
 		}
 
-		internal static async Task<(int workspaceId, string workspaceName)> CreateWorkspaceFromTemplateAsync(
+		internal static Task<int> RetrieveWorkspaceIdAsync(
+			IntegrationTestParameters parameters,
+			Relativity.Logging.ILog logger,
+			string workspaceName)
+		{
+			return CanUseWorkspaceManagerKepler(parameters)
+					   ? RetrieveWorkspaceIdUsingKeplerAsync(parameters, logger, workspaceName)
+					   : Task.FromResult(WorkspaceHelperRsapi.RetrieveWorkspaceId(parameters, logger, workspaceName));
+		}
+
+		private static async Task<(int workspaceId, string workspaceName)> CreateWorkspaceFromTemplateUsingKeplerAsync(
 			IntegrationTestParameters parameters,
 			Relativity.Logging.ILog logger,
 			string workspaceTemplateName,
 			string newWorkspaceName)
 		{
-			using (IWorkspaceManager workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
+			try
 			{
-				try
+				int templateWorkspaceId = await RetrieveWorkspaceIdUsingKeplerAsync(parameters, logger, workspaceTemplateName).ConfigureAwait(false);
+
+				using (IWorkspaceManager workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
 				{
-					int templateWorkspaceId = await RetrieveWorkspaceIdAsync(workspaceManager, logger, workspaceTemplateName).ConfigureAwait(false);
-
 					WorkspaceResponse readResponse = await workspaceManager.ReadAsync(templateWorkspaceId).ConfigureAwait(false);
 
 					var createRequest = new WorkspaceRequest(readResponse)
@@ -360,39 +374,29 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 					return (createResponse.ArtifactID, newWorkspaceName);
 				}
-				catch (Exception ex)
-				{
-					logger.LogError(ex.Message);
-					throw;
-				}
+			}
+			catch (Exception ex)
+			{
+				logger.LogError(ex.Message);
+				throw;
 			}
 		}
 
-		internal static int RetrieveWorkspaceId(
+		private static async Task<int> RetrieveWorkspaceIdUsingKeplerAsync(
 			IntegrationTestParameters parameters,
-			Relativity.Logging.ILog logger,
-			string workspaceName)
-		{
-			if (!CanUseWorkspaceManagerKepler(parameters))
-			{
-				return WorkspaceHelperRsapi.RetrieveWorkspaceId(parameters, logger, workspaceName);
-			}
-
-			using (IWorkspaceManager workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
-			using (Task<int> workspaceId = RetrieveWorkspaceIdAsync(workspaceManager, logger, workspaceName))
-			{
-				return workspaceId.Result;
-			}
-		}
-
-		internal static async Task<int> RetrieveWorkspaceIdAsync(
-			IWorkspaceManager workspaceManager,
 			Relativity.Logging.ILog logger,
 			string workspaceName)
 		{
 			logger.LogInformation("Retrieving the {workspaceName} workspace...", workspaceName);
 			var queryRequest = new QueryRequest { Condition = $"'Name' == '{workspaceName}'" };
-			QueryResultSlim queryResponse = await workspaceManager.QueryEligibleTemplatesAsync(queryRequest, 0, 2).ConfigureAwait(false);
+
+			QueryResultSlim queryResponse;
+			using (IWorkspaceManager workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
+			{
+				queryResponse = await workspaceManager
+									.QueryEligibleTemplatesAsync(queryRequest, 0, 2)
+									.ConfigureAwait(false);
+			}
 
 			switch (queryResponse.Objects.Count)
 			{
