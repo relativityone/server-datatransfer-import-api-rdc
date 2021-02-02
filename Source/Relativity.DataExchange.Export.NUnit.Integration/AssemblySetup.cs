@@ -47,6 +47,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				await CreateViewForExportTests().ConfigureAwait(false);
 			}
 
+			TapiClientModeAvailabilityChecker.InitializeTapiClient(TestParameters);
+
 			var controlNumbers = ImportHelper.ImportDefaultTestData(TestParameters);
 
 			// we are importing images only for the first document

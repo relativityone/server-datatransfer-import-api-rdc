@@ -55,21 +55,23 @@ timestamps
 			}
 			
 			try
-			{  					
-				stage("Import integration tests against ${environmentToTest}")
+			{  	
+				stage("Replacing test variables")
 				{
 					echo "Replacing variables for ${environmentToTest}"
-					replaceTestVariables(params.environmentToTest, "https://${environmentToTest}")
-					
+					replaceTestVariables(params.environmentToTest, "https://${environmentToTest}")	
+				}
+				
+				stage("Import integration tests")
+				{
 					echo "Running Import integration tests for ${environmentToTest}"
 					RunSelectedIntegrationTests(environmentToTest, 3)
 				}
 				
-				stage("Export integration tests against ${environmentToTest}")
+				stage("Export integration tests")
 				{
-					// TODO: REL-514678 enable export tests
-					// echo "Running Export integration tests for ${environmentToTest}"
-					// RunSelectedIntegrationTests(environmentToTest, 2)
+					echo "Running Export integration tests for ${environmentToTest}"
+					RunSelectedIntegrationTests(environmentToTest, 2)
 				}
 			}				
 			finally
