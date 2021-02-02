@@ -34,7 +34,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 		private readonly List<TExecutionContext> importExecutionContexts = new List<TExecutionContext>();
 		private readonly List<AppDomain> appDomains = new List<AppDomain>();
 
-		private ImportTestJobResult testJobResultValue = new ImportTestJobResult();
+		private ParallelImportTestJobResult testJobResultValue = new ParallelImportTestJobResult();
 
 		public ParallelImportExecutionContext()
 		{
@@ -44,7 +44,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 		/// <summary>
 		/// Gets or sets the aggregation of all import api instance reports.
 		/// </summary>
-		public ImportTestJobResult TestJobResult
+		public ParallelImportTestJobResult TestJobResult
 		{
 			get => this.testJobResultValue;
 
@@ -113,12 +113,14 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 			ImportTestJobResult[] testResults = await Task.WhenAll(importTasks).ConfigureAwait(false);
 
 			PerformanceDataCollector.Instance.StopMeasureTime();
+
 			foreach (ImportTestJobResult testResult in testResults)
 			{
 				this.TestJobResult.NumberOfCompletedRows += testResult.NumberOfCompletedRows;
 				this.TestJobResult.JobFatalExceptions.AddRange(testResult.JobFatalExceptions);
 				this.TestJobResult.ErrorRows.AddRange(testResult.ErrorRows);
 				this.TestJobResult.NumberOfJobMessages += testResult.NumberOfJobMessages;
+				TestJobResult.AddSqlProcessRate(testResult.SqlProcessRate);
 			}
 
 			return this.TestJobResult;
@@ -181,7 +183,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests.JobExecutionContext
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "false positive")]
 		private void SetUpImportApi(ISettingsBuilder<TSettings> settingsBuilder)
 		{
-			this.TestJobResult = new ImportTestJobResult();
+			this.TestJobResult = new ParallelImportTestJobResult();
 
 			this.ValidateImportApiInstanceInitialization();
 			IntegrationTestParameters testParameters = IntegrationTestHelper.IntegrationTestParameters;

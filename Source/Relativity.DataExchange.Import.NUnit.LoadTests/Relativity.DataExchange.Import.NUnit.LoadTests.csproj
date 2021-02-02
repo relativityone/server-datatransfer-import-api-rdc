@@ -57,12 +57,16 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutomatedPerformanceTestAttribute.cs" />
+    <Compile Include="ComplexFieldBuilder.cs" />
+    <Compile Include="ImportDocumentPerformanceTests.cs" />
     <Compile Include="ImportDocumentsAndCreateBatchesLoadTests.cs" />
     <Compile Include="ImportDocumentsWithDifferentModesTests.cs" />
     <Compile Include="ImportDocumentsWithMoveLoadTests.cs" />
     <Compile Include="ImportImagesLoadTests.cs" />
     <Compile Include="ImportLoadTestsBase.cs" />
     <Compile Include="JobExecutionContext\AppDomainSetup.cs" />
+    <Compile Include="JobExecutionContext\ParallelImportTestJobResult.cs" />
     <Compile Include="JobExecutionContext\ParallelImportExecutionContext.cs" />
     <Compile Include="LoadTestsAssemblySetup.cs" />
     <Compile Include="ImportDocumentsLoadTests.cs" />

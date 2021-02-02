@@ -404,7 +404,7 @@ Namespace kCura.WinEDDS
 					Case EventType2.End
 						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, System.DateTime.Now, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-						Me.Context.PublishProcessEnded(e.Statistics.FileTransferredBytes, e.Statistics.MetadataTransferredBytes)
+						Me.Context.PublishProcessEnded(e.Statistics.FileTransferredBytes, e.Statistics.MetadataTransferredBytes, e.Statistics.GetSqlProcessRate())
 					Case EventType2.Error
 						_errorCount += 1
 						_perBatchErrorCount += 1

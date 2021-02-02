@@ -59,6 +59,13 @@ Namespace kCura.WinEDDS
 			Return statisticsDict
 		End Function
 
+		Public Overrides Function GetSqlProcessRate() As Double
+			If Me.MassImportDuration.Ticks > 0 Then
+				Return Convert.ToDouble((DocumentsCreated + DocumentsUpdated + DocsErrorsCount) / Me.MassImportDuration.TotalSeconds)
+			End If
+			Return 0
+		End Function
+
 	End Class
 
 End Namespace

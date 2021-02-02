@@ -56,6 +56,8 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 
 		public long JobReportMetadataBytes => this.CompletedJobReport.MetadataBytes;
 
+		public virtual double SqlProcessRate => this.CompletedJobReport.SqlProcessRate;
+
 		public Exception FatalException => this.CompletedJobReport.FatalException;
 
 		/// <summary>

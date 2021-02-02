@@ -561,6 +561,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Sub _processContext_OnOnProcessEnd(ByVal sender As Object, ByVal e As ProcessEndEventArgs) Handles _processContext.ProcessEnded
 			_jobReport.FileBytes = e.NativeFileBytes
 			_jobReport.MetadataBytes = e.MetadataBytes
+			_jobReport.SqlProcessRate = e.SqlProcessRate
 		End Sub
 
 		Private Sub _processContext_RecordProcessedEvent(ByVal sender As Object, ByVal e As RecordNumberEventArgs) Handles _processContext.RecordProcessed

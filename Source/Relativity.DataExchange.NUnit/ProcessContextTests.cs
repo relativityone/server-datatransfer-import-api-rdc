@@ -245,13 +245,13 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		public void ShouldPublishTheProcessEndedEvent()
 		{
-			this.context.PublishProcessEnded(49, 99);
+			this.context.PublishProcessEnded(49, 99, 1.0);
 			Assert.That(this.processEndEvents.Count, Is.EqualTo(1));
-			Assert.That(this.processEndEvents.Any(x => x.MetadataBytes == 99 && x.NativeFileBytes == 49), Is.True);
+			Assert.That(this.processEndEvents.Any(x => x.MetadataBytes == 99 && x.NativeFileBytes == 49 && Math.Abs(x.SqlProcessRate - 1.0) < 0.001), Is.True);
 
 			// Assert that null events are handled.
 			this.context.ProcessEnded -= this.OnProcessEnded;
-			this.context.PublishProcessEnded(49, 99);
+			this.context.PublishProcessEnded(49, 99, 1.0);
 			Assert.That(this.processEndEvents.Count, Is.EqualTo(1));
 		}
 

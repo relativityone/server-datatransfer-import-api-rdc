@@ -453,9 +453,12 @@ namespace Relativity.DataExchange.Process
 		/// <param name="metadataBytes">
 		/// The total number of metadata bytes that were transferred.
 		/// </param>
-		public void PublishProcessEnded(long nativeFileBytes, long metadataBytes)
+		/// <param name="sqlProcessRate">
+		/// Server/SQL Process rate (docs / sec).
+		/// </param>
+		public void PublishProcessEnded(long nativeFileBytes, long metadataBytes, double sqlProcessRate)
 		{
-			ProcessEndEventArgs args = new ProcessEndEventArgs(nativeFileBytes, metadataBytes);
+			ProcessEndEventArgs args = new ProcessEndEventArgs(nativeFileBytes, metadataBytes, sqlProcessRate);
 			this.ProcessEnded?.Invoke(this, args);
 		}
 

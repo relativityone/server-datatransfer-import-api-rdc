@@ -10,8 +10,6 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 	using NUnit.Framework.Interfaces;
 	using NUnit.Framework.Internal.Commands;
 
-	using Relativity.DataExchange.TestFramework.WebApiSqlProfiling.DeadlockReport;
-
 	[AttributeUsage(AttributeTargets.Method, Inherited = false)]
 	public sealed class PerformanceAttribute : PropertyAttribute, IWrapSetUpTearDown
 	{

@@ -36,11 +36,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	[TestType.Performance]
 	public class ImportDocumentsLoadTests : ImportLoadTestsBase<NativeImportExecutionContext, Settings>
 	{
-		private const string SingleChoiceFieldName = "SingleChoice";
-		private const string MultiChoiceFieldName = "MultiChoice";
-		private const string SingleObjectFieldName = "SingleObject";
-		private const string MultiObjectFieldName = "MultiObject";
-
 		[CollectDeadlocks]
 		[Performance]
 		[UseSqlComparer]
@@ -50,9 +45,9 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[TestType.Load]
 		[TestType.Performance]
 		public async Task ShouldImportFoldersParallelAsync(
-			[Values(2, 4, 8, 16)] int parallelIApiClientCount,
-			[Values(100_000)] int numberOfDocumentsPerIApiClient,
-			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
+				[Values(2, 4, 8, 16)] int parallelIApiClientCount,
+				[Values(100_000)] int numberOfDocumentsPerIApiClient,
+				[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
 			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportFoldersParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
@@ -100,23 +95,20 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportChoicesInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
 			var settingsBuilder = NativeImportSettingsBuilder.New().WithDefaultSettings();
 
-			await this.CreateChoiceFieldsAsync().ConfigureAwait(false);
-			var singleChoicesSource = new ChoicesValueSource(
-				numberOfDifferentPaths: 4,
-				maximumPathDepth: 1,
-				numberOfDifferentElements: 4,
-				maximumElementLength: 200);
+			var fieldsToImport = await ComplexFieldBuilder.Create(this.TestParameters)
+									 .WithMediumSingleChoiceField(1)
+									 .WithMediumMultiChoiceField(1)
+									 .Build()
+									 .ConfigureAwait(false);
 
-			var multiChoicesSource = new ChoicesValueSource(
-				numberOfDifferentPaths: 100,
-				maximumPathDepth: 4,
-				numberOfDifferentElements: 250,
-				maximumElementLength: 50);
+			var dataSourceBuilder = ImportDataSourceBuilder.New().AddField(
+				WellKnownFields.ControlNumber,
+				new IdentifierValueSource());
 
-			var dataSourceBuilder = ImportDataSourceBuilder.New()
-				.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource())
-				.AddField(SingleChoiceFieldName, singleChoicesSource)
-				.AddField(MultiChoiceFieldName, multiChoicesSource);
+			foreach ((string fieldName, IFieldValueSource valuesSource) in fieldsToImport)
+			{
+				dataSourceBuilder.AddField(fieldName, valuesSource);
+			}
 
 			this.InitializeImportApiWithUserAndPwd(settingsBuilder, parallelIApiClientCount);
 
@@ -154,24 +146,20 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 				numberOfDifferentElements: 100,
 				maximumElementLength: 50);
 
-			await this.CreateChoiceFieldsAsync().ConfigureAwait(false);
-			var singleChoicesSource = new ChoicesValueSource(
-				numberOfDifferentPaths: 4,
-				maximumPathDepth: 1,
-				numberOfDifferentElements: 4,
-				maximumElementLength: 200);
-
-			var multiChoicesSource = new ChoicesValueSource(
-				numberOfDifferentPaths: 100,
-				maximumPathDepth: 4,
-				numberOfDifferentElements: 250,
-				maximumElementLength: 50);
+			var fieldsToImport = await ComplexFieldBuilder.Create(this.TestParameters)
+									 .WithMediumSingleChoiceField(1)
+									 .WithMediumMultiChoiceField(1)
+									 .Build()
+									 .ConfigureAwait(false);
 
 			var dataSourceBuilder = ImportDataSourceBuilder.New()
 				.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource())
-				.AddField(WellKnownFields.FolderName, foldersSource)
-				.AddField(SingleChoiceFieldName, singleChoicesSource)
-				.AddField(MultiChoiceFieldName, multiChoicesSource);
+				.AddField(WellKnownFields.FolderName, foldersSource);
+
+			foreach ((string fieldName, IFieldValueSource valuesSource) in fieldsToImport)
+			{
+				dataSourceBuilder.AddField(fieldName, valuesSource);
+			}
 
 			this.InitializeImportApiWithUserAndPwd(settingsBuilder, parallelIApiClientCount);
 
@@ -213,50 +201,25 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithSingleAndMultiObjectsInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
 
 			// create single objects fields in workspace
-			var smallSingleObjectsSource = ObjectNameValueSource.CreateForSingleObject(
-				new IdentifierValueSource("SMALL-SINGLE"),
-				numberOfObjects: 100);
-			var mediumSingleObjectsSource = ObjectNameValueSource.CreateForSingleObject(
-				new IdentifierValueSource("MEDIUM-SINGLE"),
-				numberOfObjects: 100);
-			var bigSingleObjectsSource = ObjectNameValueSource.CreateForSingleObject(
-				new IdentifierValueSource("BIG-SINGLE"),
-				numberOfObjects: 100_000);
-			var singleObjectFieldsToCreate = new (int numberOfFields, ObjectNameValueSource valueSource)[]
-												{
-													(5, smallSingleObjectsSource),
-													(2, mediumSingleObjectsSource),
-													(1, bigSingleObjectsSource),
-												};
-			IEnumerable<(string fieldName, ObjectNameValueSource valuesSource)> singleObjectFieldsToImport
-				= await this.CreateSingleObjectsFieldsAsync(singleObjectFieldsToCreate).ConfigureAwait(false);
+			var fieldsToImport = await ComplexFieldBuilder.Create(this.TestParameters)
 
-			// create multi objects fields in workspace
-			var smallMultiObjectsSource = ObjectNameValueSource.CreateForMultiObjects(
-				new IdentifierValueSource("SMALL-MULTI"),
-				numberOfObjects: 100,
-				maxNumberOfMultiValues: 3);
-			var mediumMultiObjectsSource = ObjectNameValueSource.CreateForMultiObjects(
-				new IdentifierValueSource("MEDIUM-MULTI"),
-				numberOfObjects: 5_000,
-				maxNumberOfMultiValues: 3);
-			var bigMultiObjectsSource = ObjectNameValueSource.CreateForMultiObjects(
-				new IdentifierValueSource("BIG-MULTI"),
-				numberOfObjects: 100_000,
-				maxNumberOfMultiValues: 10);
-			var multiObjectFieldsToCreate = new (int numberOfFields, ObjectNameValueSource valueSource)[]
-										{
-											(5, smallMultiObjectsSource),
-											(2, mediumMultiObjectsSource),
-											(1, bigMultiObjectsSource),
-										};
-			IEnumerable<(string fieldName, ObjectNameValueSource valuesSource)> multiObjectFieldsToImport
-				= await this.CreateMultiObjectsFieldsAsync(multiObjectFieldsToCreate).ConfigureAwait(false);
+						 // Single Object fields
+						 .WithSmallSingleObjectField(1)
+						 .WithMediumSingleObjectField(1)
+						 .WithLargeSingleObjectField(1)
+
+						 // Multiple Object fields
+						 .WithSmallMultiObjectsField(1)
+						 .WithMediumMultiObjectsField(1)
+						 .WithLargeMultiObjectsField(1)
+
+						 .Build()
+						 .ConfigureAwait(false);
 
 			var dataSourceBuilder = ImportDataSourceBuilder.New()
 				.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource());
 
-			foreach ((string fieldName, ObjectNameValueSource valuesSource) in singleObjectFieldsToImport.Concat(multiObjectFieldsToImport))
+			foreach ((string fieldName, IFieldValueSource valuesSource) in fieldsToImport)
 			{
 				dataSourceBuilder.AddField(fieldName, valuesSource);
 			}
@@ -301,17 +264,18 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			// ARRANGE
 			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithBigNumberOfMultiObjectsPerDocumentParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, maxNumberOfMultiValues, client, this.TestParameters);
 
-			int secondObjectTypeArtifactId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, MultiObjectFieldName).ConfigureAwait(false);
-			await FieldHelper.CreateMultiObjectFieldAsync(this.TestParameters, MultiObjectFieldName, secondObjectTypeArtifactId, (int)ArtifactType.Document).ConfigureAwait(false);
-
-			var bigMultiObjectsSource = ObjectNameValueSource.CreateForMultiObjects(
-				new IdentifierValueSource("BIG-MULTI"),
-				numberOfObjects: 100_000,
-				maxNumberOfMultiValues: maxNumberOfMultiValues);
+			var fieldsToImport = await ComplexFieldBuilder.Create(this.TestParameters)
+									 .WithLargeMultiObjectsField()
+									 .Build()
+									 .ConfigureAwait(false);
 
 			var dataSourceBuilder = ImportDataSourceBuilder.New()
-				.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource())
-				.AddField(MultiObjectFieldName, bigMultiObjectsSource);
+				.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource());
+
+			foreach ((string fieldName, IFieldValueSource valuesSource) in fieldsToImport)
+			{
+				dataSourceBuilder.AddField(fieldName, valuesSource);
+			}
 
 			var settingsBuilder = NativeImportSettingsBuilder.New().WithDefaultSettings();
 			this.InitializeImportApiWithUserAndPwd(settingsBuilder, parallelIApiClientCount);
@@ -348,12 +312,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			// ARRANGE
 			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportDocumentsWithFolderChoicesAndObjectsInParallelAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, client, this.TestParameters);
 
-			int firstObjectTypeArtifactId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, SingleObjectFieldName).ConfigureAwait(false);
-			int secondObjectTypeArtifactId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, MultiObjectFieldName).ConfigureAwait(false);
-			await FieldHelper.CreateSingleObjectFieldAsync(this.TestParameters, SingleObjectFieldName, objectArtifactTypeId: (int)ArtifactType.Document, associativeObjectArtifactTypeId: firstObjectTypeArtifactId).ConfigureAwait(false);
-			await FieldHelper.CreateMultiObjectFieldAsync(this.TestParameters, MultiObjectFieldName, objectArtifactTypeId: (int)ArtifactType.Document, associativeObjectArtifactTypeId: secondObjectTypeArtifactId).ConfigureAwait(false);
-			await this.CreateChoiceFieldsAsync().ConfigureAwait(false);
-
 			var settingsBuilder = NativeImportSettingsBuilder.New()
 				.WithDefaultSettings()
 				.WithFolderPath(WellKnownFields.FolderName);
@@ -364,34 +322,22 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 				numberOfDifferentElements: 100,
 				maximumElementLength: 50);
 
-			var singleChoicesSource = new ChoicesValueSource(
-				numberOfDifferentPaths: 4,
-				maximumPathDepth: 1,
-				numberOfDifferentElements: 4,
-				maximumElementLength: 200);
-
-			var multiChoicesSource = new ChoicesValueSource(
-				numberOfDifferentPaths: 100,
-				maximumPathDepth: 4,
-				numberOfDifferentElements: 250,
-				maximumElementLength: 50);
-
-			var singleObjectsSource = ObjectNameValueSource.CreateForSingleObject(
-				new IdentifierValueSource("SINGLE"),
-				numberOfObjects: 100);
-
-			var multiObjectsSource = ObjectNameValueSource.CreateForMultiObjects(
-					new IdentifierValueSource("OBJ"),
-					numberOfObjects: 5000,
-					maxNumberOfMultiValues: 5);
+			var fieldsToImport = await ComplexFieldBuilder.Create(this.TestParameters)
+									 .WithMediumSingleChoiceField(1)
+									 .WithMediumMultiChoiceField(1)
+									 .WithSmallSingleObjectField(1)
+									 .WithMediumMultiObjectsField(1)
+									 .Build()
+									 .ConfigureAwait(false);
 
 			var dataSourceBuilder = ImportDataSourceBuilder.New()
 				.AddField(WellKnownFields.ControlNumber, new IdentifierValueSource())
-				.AddField(WellKnownFields.FolderName, foldersSource)
-				.AddField(SingleObjectFieldName, singleObjectsSource)
-				.AddField(MultiObjectFieldName, multiObjectsSource)
-				.AddField(SingleChoiceFieldName, singleChoicesSource)
-				.AddField(MultiChoiceFieldName, multiChoicesSource);
+				.AddField(WellKnownFields.FolderName, foldersSource);
+
+			foreach ((string fieldName, IFieldValueSource valuesSource) in fieldsToImport)
+			{
+				dataSourceBuilder.AddField(fieldName, valuesSource);
+			}
 
 			this.InitializeImportApiWithUserAndPwd(settingsBuilder, parallelIApiClientCount);
 
@@ -406,76 +352,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			Assert.That(results.NumberOfJobMessages, Is.Positive);
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(expectedNumberOfDocuments));
 			ThenTheJobCompletedInCorrectTransferMode(results, client);
-		}
-
-		private Task<IEnumerable<(string fieldName, ObjectNameValueSource valuesSource)>> CreateSingleObjectsFieldsAsync(
-			(int numberOfFields, ObjectNameValueSource valueSource)[] input)
-		{
-			return this.CreateObjectsFieldsAsync("Single", input, CreateFieldAsync);
-
-			Task CreateFieldAsync(string fieldName, int objectTypeArtifactId)
-			{
-				return FieldHelper.CreateSingleObjectFieldAsync(
-					this.TestParameters,
-					fieldName,
-					objectArtifactTypeId: (int)ArtifactType.Document,
-					associativeObjectArtifactTypeId: objectTypeArtifactId);
-			}
-		}
-
-		private Task<IEnumerable<(string fieldName, ObjectNameValueSource valuesSource)>> CreateMultiObjectsFieldsAsync(
-			(int numberOfFields, ObjectNameValueSource valueSource)[] input)
-		{
-			return this.CreateObjectsFieldsAsync("Multi", input, CreateFieldAsync);
-
-			Task CreateFieldAsync(string fieldName, int objectTypeArtifactId)
-			{
-				return FieldHelper.CreateMultiObjectFieldAsync(
-					this.TestParameters,
-					fieldName,
-					objectTypeArtifactId,
-					(int)ArtifactType.Document);
-			}
-		}
-
-		private async Task<IEnumerable<(string fieldName, ObjectNameValueSource valuesSource)>> CreateObjectsFieldsAsync(
-			string fieldNamePrefix,
-			(int numberOfFields, ObjectNameValueSource valueSource)[] input,
-			Func<string, int, Task> createFieldFunctionAsync)
-		{
-			var output = new List<(string fieldName, ObjectNameValueSource valuesSource)>();
-			for (int i = 0; i < input.Length; i++)
-			{
-				(int numberOfFields, ObjectNameValueSource valueSource) = input[i];
-
-				for (int j = 0; j < numberOfFields; j++)
-				{
-					string fieldName = $"{fieldNamePrefix}-{i}-{j}";
-					int objectTypeArtifactId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, fieldName).ConfigureAwait(false);
-					await createFieldFunctionAsync(fieldName, objectTypeArtifactId).ConfigureAwait(false);
-
-					output.Add((fieldName, valueSource));
-				}
-			}
-
-			return output;
-		}
-
-		[SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope", Justification = "Ownership is transfered to Task.WhenAll.")]
-		private Task CreateChoiceFieldsAsync()
-		{
-			Task<int> createSingleChoiceFieldTask = FieldHelper.CreateSingleChoiceFieldAsync(
-				this.TestParameters,
-				SingleChoiceFieldName,
-				(int)ArtifactType.Document,
-				false);
-			Task<int> createMultiChoiceFieldTask = FieldHelper.CreateMultiChoiceFieldAsync(
-				this.TestParameters,
-				MultiChoiceFieldName,
-				(int)ArtifactType.Document,
-				false);
-
-			return Task.WhenAll(createSingleChoiceFieldTask, createMultiChoiceFieldTask);
 		}
 	}
 }

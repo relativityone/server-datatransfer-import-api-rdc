@@ -114,7 +114,14 @@ Namespace kCura.WinEDDS
 			Return ByteSize.FromBytes(value).ToString("0.##")
 		End Function
 
-		
+		''' <summary>
+		''' This method provides correct value only for import job
+		''' </summary>
+		''' <returns></returns>
+		Public Overridable Function GetSqlProcessRate() As Double
+			Return 0
+		End Function
+
 		''' <summary>
 		''' Converts this instance into a dictionary containing limited name/value pairs.
 		''' </summary>

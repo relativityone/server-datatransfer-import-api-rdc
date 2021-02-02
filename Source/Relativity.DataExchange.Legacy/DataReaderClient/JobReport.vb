@@ -102,6 +102,7 @@ Public Class JobReport
 
 	Public Property FileBytes As Long
 	Public Property MetadataBytes As Long
+	Public Property SqlProcessRate As Double
 
 	''' <summary>
 	''' Provides information about an error in a specific row.
