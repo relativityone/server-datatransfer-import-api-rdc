@@ -1,6 +1,6 @@
 ﻿# Relativity Data Exchange API and RDC for .NET
 You can use the data exchange API to build application components that import documents, objects, images, and productions using a flexible number of transfer clients. The Remote Desktop Client (RDC) is a Windows desktop application built on Import API. It should be noted that this repository also includes Export API; however, this is heavily dependent on the RDC and has never been officially supported.
-
+ 
 ## System requirements
 * .NET 4.6.2
 * Visual C++ 2010 x86 Runtime (Aspera transfers)

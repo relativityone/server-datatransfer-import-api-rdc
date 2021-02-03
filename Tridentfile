@@ -378,18 +378,18 @@ timestamps
                     }
 					stage('Create einstein page')
 					{	
-						if(publishSdkAndRdc)
+						if(publishSdkAndRdc && publishToRelease)
 						{
 							def secrets = [ 
 							[ secretType: 'Secret', name: 'Einstein-token', envVariable: 'EinsteinToken' ]
 							]
 							withAzureKeyvault(azureKeyVaultSecrets: secrets, keyVaultURLOverride: 'https://KV-DATATRANSFER-GBU.vault.azure.net') { 
-								powershell ".\\build.ps1 PostReleasePageOnEinstein -EinsteinSecret '${EinsteinToken}' -Branch '${branchName}' -PublishToRelease \$${publishToRelease} "
+								powershell ".\\build.ps1 PostReleasePageOnEinstein -EinsteinSecret '${EinsteinToken}' -Branch '${branchName}'"
 							}
 						}
 						else
 						{
-						    echo "We can't create a release page as this needs a SDK and RDC to be created."
+						    echo "We can't create a release page as this needs a gold build of SDK and RDC to be created on release branch."
 						}
 					}
                 }

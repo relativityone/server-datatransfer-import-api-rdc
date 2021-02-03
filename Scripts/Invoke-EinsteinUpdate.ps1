@@ -22,9 +22,6 @@
   
 .PARAMETER PathToLocalRdcExe
   Filepath to the local RDC installer exe.
-  
-.PARAMETER PublishToRelease
-  Param to switch between develop builds and gold release builds.
 #>
 
 
@@ -54,10 +51,7 @@ param(
 	
 	[Parameter(Mandatory)]
 	[ValidateNotNullOrEmpty()]
-    [string]$PathToLocalRdcExe,
-	
-	[Parameter(Mandatory)]
-    [bool]$PublishToRelease
+    [string]$PathToLocalRdcExe
 )
 Function Get-DependencyList{
 	$results = ""
