@@ -90,9 +90,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ImportTestJobResult result = this.ImportDataWithOverwriteMode(dataSource, overwriteMode);
 
 			// ASSERT
-			Assert.That(result.ErrorRows, Is.Empty);
-			Assert.That(result.NumberOfJobMessages, Is.Positive);
-			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(dataSource[WellKnownFields.RdoIdentifier].Count()));
+			this.ValidateFatalExceptionsNotExist(result);
+			Assert.That(result.ErrorRows, Is.Empty, $"Expected zero error rows, but {result.ErrorRows.Count} were found.");
+			Assert.That(result.NumberOfJobMessages, Is.Positive, $"Expected more than zero job messages, but {result.NumberOfJobMessages} was found.");
+			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(dataSource[WellKnownFields.RdoIdentifier].Count()), $"Expected {dataSource[WellKnownFields.RdoIdentifier].Count()} completed rows, but {result.NumberOfCompletedRows} were found.");
 
 			this.ThenCorrectObjectsWereImported(dataSource);
 
