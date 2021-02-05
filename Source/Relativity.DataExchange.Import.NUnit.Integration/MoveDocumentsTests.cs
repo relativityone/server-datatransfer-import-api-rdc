@@ -331,7 +331,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 														["@sourceFolderArtifactID"] = this.workspaceFolderId.ToString(),
 														["@sourceFolderName"] = this.TestParameters.WorkspaceName,
 														["@destinationFolderArtifactID"] = this.testDestinationFolderId.ToString(),
-														["ArtifactID"] = this.importedDocuments[1].FieldValues[1].Value.ToString(),
+														["ArtifactID"] = this.importedDocuments[0].FieldValues[1].Value.ToString(),
 													},
 												new Dictionary<string, string>
 													{
@@ -339,7 +339,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 														["@sourceFolderArtifactID"] = this.workspaceFolderId.ToString(),
 														["@sourceFolderName"] = this.TestParameters.WorkspaceName,
 														["@destinationFolderArtifactID"] = this.testDestinationFolderId.ToString(),
-														["ArtifactID"] = this.importedDocuments[0].FieldValues[1].Value.ToString(),
+														["ArtifactID"] = this.importedDocuments[1].FieldValues[1].Value.ToString(),
 													},
 											};
 
