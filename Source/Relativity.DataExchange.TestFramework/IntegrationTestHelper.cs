@@ -150,6 +150,8 @@ namespace Relativity.DataExchange.TestFramework
 			{
 				Logger.LogInformation("Skipped deleting the workspace {workspaceId}.", parameters.WorkspaceId);
 			}
+
+			parameters.ResetWorkspaceInformation();
 		}
 
 		public static void SetupLogger(IntegrationTestParameters parameters)
