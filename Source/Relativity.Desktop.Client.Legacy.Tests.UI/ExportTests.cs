@@ -49,10 +49,10 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 		[Feature.DataTransfer.RelativityDesktopClient.Export.FolderAndSubfolders]
 		[IgnoreIfVersionLowerThan(RelativityVersion.MayappleExportPDFs)]
 		[IgnoreIfRegressionEnvironment("Ignored because test set up requires access to SQL to prepare pdfs to export.")]
-		public Task ExportRenderedPdfsAsync()
+		public async Task ExportRenderedPdfsAsync()
 		{
 			// Test requires 'UseSearchablePDF' flag set to True in RDC config file
-			_ = RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int) ArtifactType.Document);
+			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int) ArtifactType.Document).ConfigureAwait(false);
 			ImportHelper.ImportDefaultTestData(TestParameters);
 			SetPdfTypeForDocumentsInWorkspace();
 
@@ -75,7 +75,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 
 			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 21);
 
-			return ResetContextAsync();
+			await ResetContextAsync().ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("e2a115ab-7905-4ec5-a600-61c747c79567")]
