@@ -118,6 +118,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
 		}
 
+		// before executing the test check if audit agents are enabled: Data Grid Audit Migrator, Data Grid Audit Deleter, Data Grid Audit Reporter, Data Grid Audit Manager
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IgnoreIfRegressionEnvironment("Ignored because 'SetupTestData' requires access to SQL to prepare pdfs to export.")]
 		[IdentifiedTest("48d687a6-0206-40f0-850b-681818192760")]
