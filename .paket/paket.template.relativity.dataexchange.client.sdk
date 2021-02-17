@@ -44,7 +44,7 @@ dependencies
 	Relativity.Logging.Interfaces >= 2018.11.8
 	Relativity.Services.DataContracts >= 11.3.11.1
 	Relativity.Services.Interfaces >= 11.3.11.1
-	relativity.transfer.client ~> 7.2.26
+	relativity.transfer.client ~> 7.3.5
 	Relativity.Telemetry.Services.Interface ~> 3000.0
 	Relativity.Telemetry.DataContracts.Shared ~> 3000.0
 frameworkAssemblies
