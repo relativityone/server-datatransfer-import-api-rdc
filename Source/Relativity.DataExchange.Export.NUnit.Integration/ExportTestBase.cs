@@ -56,7 +56,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		private CookieContainer cookieContainer;
 		private NetworkCredential credentials;
 		private CancellationTokenSource cancellationTokenSource;
-		private DateTime testExecutionStartTime;
 
 		protected ExportTestBase()
 		{
@@ -355,7 +354,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected void ExecuteFolderAndSubfoldersAndVerify()
 		{
-			this.testExecutionStartTime = DateTime.Now;
 			this.WhenCreatingTheExportFile();
 			this.WhenExportingTheDocs();
 		}
@@ -465,15 +463,14 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		/// This method might be expensive due to the wait and retry policy in <see cref="AuditHelper"/>.
 		/// </summary>
 		/// <param name="userId">ID of user who performed the export.</param>
-		/// <returns>Task.</returns>
-		protected async Task ThenTheAuditIsCorrectAsync(int userId)
+		protected void ThenTheAuditIsCorrect(int userId)
 		{
-			int nrOfLastAuditsToTake = 1;
-			var auditsDetails = await AuditHelper.GetLastAuditDetailsForActionAsync(this.TestParameters, AuditHelper.AuditAction.Export, this.testExecutionStartTime, nrOfLastAuditsToTake, userId)
-				                    .ConfigureAwait(false);
-			var expectedAuditDetails = ToAuditDetails(this.ExtendedExportFile);
+			var actualAuditDetails = AuditHelper.GetAuditDetails(
+				this.TestParameters,
+				AuditHelper.AuditAction.Export,
+				userId);
 
-			var actualAuditDetails = auditsDetails.First();
+			var expectedAuditDetails = ToAuditDetails(this.ExtendedExportFile);
 
 			foreach (string key in expectedAuditDetails.Keys)
 			{
@@ -500,10 +497,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				{ "Volume Max Size", exportFile.VolumeInfo.VolumeMaxSize.ToString() },
 				{ "Subdirectory Max Files", exportFile.VolumeInfo.SubdirectoryMaxSize.ToString() },
 				{ "Subdirectory Start Number", exportFile.VolumeInfo.SubdirectoryStartNumber.ToString() },
-				{ "Subdirectory Native Prefix", exportFile.VolumeInfo.get_SubdirectoryNativePrefix(false) },
-				{ "Subdirectory Text Prefix", exportFile.VolumeInfo.get_SubdirectoryFullTextPrefix(false) },
-				{ "Subdirectory PDF Prefix", exportFile.VolumeInfo.get_SubdirectoryPdfPrefix(false) },
-				{ "Subdirectory Image Prefix", exportFile.VolumeInfo.get_SubdirectoryImagePrefix(false) },
+				{ "Subdirectory Native Prefix", exportFile.VolumeInfo.get_SubdirectoryNativePrefix(false) ?? string.Empty },
+				{ "Subdirectory Text Prefix", exportFile.VolumeInfo.get_SubdirectoryFullTextPrefix(false) ?? string.Empty },
+				{ "Subdirectory PDF Prefix", exportFile.VolumeInfo.get_SubdirectoryPdfPrefix(false) ?? string.Empty },
+				{ "Subdirectory Image Prefix", exportFile.VolumeInfo.get_SubdirectoryImagePrefix(false) ?? string.Empty },
 			};
 		}
 

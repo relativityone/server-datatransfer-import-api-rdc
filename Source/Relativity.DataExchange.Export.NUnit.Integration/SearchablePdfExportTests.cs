@@ -135,7 +135,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// ASSERT
 			ExportedFilesValidator.ValidateSearchablePdfsCount(this.ExtendedExportFile, TestData.SampleSearchablePdfTestFiles.Count());
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
-			await this.ThenTheAuditIsCorrectAsync(userId).ConfigureAwait(false);
+			this.ThenTheAuditIsCorrect(userId);
 			await UsersHelper.RemoveUserAsync(this.TestParameters, userId).ConfigureAwait(false);
 		}
 

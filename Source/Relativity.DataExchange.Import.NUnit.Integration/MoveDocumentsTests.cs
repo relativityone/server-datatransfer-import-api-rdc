@@ -6,7 +6,6 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
-	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading.Tasks;
@@ -23,7 +22,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Services.LinkManager.Interfaces;
 	using Relativity.Services.Objects.DataContracts;
-	using Relativity.Services.User;
 	using Relativity.Testing.Identification;
 
 	using ArtifactType = Relativity.ArtifactType;
@@ -42,16 +40,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private bool testsSkipped;
 
 		private int testDestinationFolderId;
-		private string testDestinationFolderName;
 
 		private int testSourceFolderId;
-		private string testSourceFolderName;
 
 		private int testDeeperDestinationFolderId;
-		private string testDeeperDestinationFolderName;
 
 		private int workspaceFolderId;
-		private int currentUserId;
 		private IList<RelativityObject> importedDocuments;
 
 		[OneTimeSetUp]
@@ -65,21 +59,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			List<int> folderIds = await FolderHelper.CreateFolders(this.TestParameters, new List<string> { TestDestinationFolder, TestSourceFolder }, this.workspaceFolderId).ConfigureAwait(false);
 
 			this.testDestinationFolderId = folderIds.First();
-			this.testDestinationFolderName = TestParameters.WorkspaceName + " | " + TestDestinationFolder;
-
 			this.testSourceFolderId = folderIds.Skip(1).First();
-			this.testSourceFolderName = TestParameters.WorkspaceName + " | " + TestSourceFolder;
 
 			List<int> deeperFolderIds = await FolderHelper.CreateFolders(this.TestParameters, new List<string> { TestSourceFolder }, this.testDestinationFolderId).ConfigureAwait(false);
 
 			this.testDeeperDestinationFolderId = deeperFolderIds.First();
-			this.testDeeperDestinationFolderName = this.testDestinationFolderName + " | " + TestSourceFolder;
-
-			using (var userManager = ServiceHelper.GetServiceProxy<IUserManager>(this.TestParameters))
-			{
-				User currentUser = await userManager.RetrieveCurrentAsync(this.TestParameters.WorkspaceId).ConfigureAwait(false);
-				currentUserId = currentUser.ArtifactID;
-			}
 		}
 
 		[SetUp]
@@ -128,25 +112,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("9AA8D3B6-4126-4AE5-A843-18A8565DF858")]
-		public async Task ShouldMoveDocumentFromFolderToDifferentFolderWhenOverlayAsync()
+		public void ShouldMoveDocumentFromFolderToDifferentFolderWhenOverlay()
 		{
 			// Arrange
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			settings.OverwriteMode = OverwriteModeEnum.Overlay;
 			settings.DestinationFolderArtifactID = this.testDestinationFolderId;
 			settings.MoveDocumentsInAppendOverlayMode = true;
-			var executionStart = DateTime.Now;
-			var expectedAuditDetails = new List<Dictionary<string, string>>
-											{
-												new Dictionary<string, string>
-													{
-														["@destinationFolderName"] = this.testDestinationFolderName,
-														["@sourceFolderArtifactID"] = this.workspaceFolderId.ToString(),
-														["@sourceFolderName"] = this.TestParameters.WorkspaceName,
-														["@destinationFolderArtifactID"] = this.testDestinationFolderId.ToString(),
-														["ArtifactID"] = this.importedDocuments[0].FieldValues[1].Value.ToString(),
-													},
-											};
 
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
@@ -160,7 +132,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// Assert
 			this.ThenTheImportJobIsSuccessful(results, 1);
-			await this.ThenTheAuditIsCorrectAsync(this.currentUserId, executionStart, expectedAuditDetails, 1, AuditHelper.AuditAction.Move).ConfigureAwait(false);
 
 			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, (int)ArtifactTypeID.Document, fields: new[] { WellKnownFields.ArtifactId, WellKnownFields.ControlNumber });
 			Assert.That(relativityObjects.Count, Is.EqualTo(4));
@@ -170,15 +141,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("1C69567F-A763-4E5D-9AFC-BF15C3126437")]
-		public async Task ShouldNotMoveDocumentFromFolderToDifferentFolderWhenOverlayAndMoveDisabledAsync()
+		public void ShouldNotMoveDocumentFromFolderToDifferentFolderWhenOverlayAndMoveDisabled()
 		{
 			// Arrange
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			settings.OverwriteMode = OverwriteModeEnum.Overlay;
 			settings.DestinationFolderArtifactID = this.testDestinationFolderId;
 			settings.MoveDocumentsInAppendOverlayMode = false;
-			var executionStart = DateTime.Now;
-			var expectedAuditDetails = new List<Dictionary<string, string>>();
 
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
@@ -192,7 +161,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// Assert
 			this.ThenTheImportJobIsSuccessful(results, 1);
-			await this.ThenTheAuditIsCorrectAsync(this.currentUserId, executionStart, expectedAuditDetails, 1, AuditHelper.AuditAction.Move).ConfigureAwait(false);
 
 			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, (int)ArtifactTypeID.Document, fields: new[] { WellKnownFields.ArtifactId, WellKnownFields.ControlNumber });
 			Assert.That(relativityObjects.Count, Is.EqualTo(4));
@@ -204,25 +172,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("992985BD-50CA-4927-BC69-B5036FBF5739")]
-		public async Task ShouldMoveDocumentFromFolderToDifferentFolderWhenAppendOverlayAsync()
+		public void ShouldMoveDocumentFromFolderToDifferentFolderWhenAppendOverlay()
 		{
 			// Arrange
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			settings.DestinationFolderArtifactID = this.testDestinationFolderId;
 			settings.MoveDocumentsInAppendOverlayMode = true;
-			var executionStart = DateTime.Now;
-			var expectedAuditDetails = new List<Dictionary<string, string>>
-											{
-												new Dictionary<string, string>
-													{
-														["@destinationFolderName"] = this.testDestinationFolderName,
-														["@sourceFolderArtifactID"] = this.workspaceFolderId.ToString(),
-														["@sourceFolderName"] = this.TestParameters.WorkspaceName,
-														["@destinationFolderArtifactID"] = this.testDestinationFolderId.ToString(),
-														["ArtifactID"] = this.importedDocuments[0].FieldValues[1].Value.ToString(),
-													},
-											};
 
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
@@ -236,7 +192,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// Assert
 			this.ThenTheImportJobIsSuccessful(results, 1);
-			await this.ThenTheAuditIsCorrectAsync(this.currentUserId, executionStart, expectedAuditDetails, 1, AuditHelper.AuditAction.Move).ConfigureAwait(false);
 
 			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, (int)ArtifactTypeID.Document, fields: new[] { WellKnownFields.ArtifactId, WellKnownFields.ControlNumber });
 			Assert.That(relativityObjects.Count, Is.EqualTo(4));
@@ -246,15 +201,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("89788F06-C081-4D35-B175-71B64B642F32")]
-		public async Task ShouldNotMoveDocumentFromFolderToDifferentFolderWhenAppendOverlayAndMoveDisabledAsync()
+		public void ShouldNotMoveDocumentFromFolderToDifferentFolderWhenAppendOverlayAndMoveDisabled()
 		{
 			// Arrange
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			settings.DestinationFolderArtifactID = this.testDestinationFolderId;
 			settings.MoveDocumentsInAppendOverlayMode = false;
-			var executionStart = DateTime.Now;
-			var expectedAuditDetails = new List<Dictionary<string, string>>();
 
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
@@ -268,7 +221,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// Assert
 			this.ThenTheImportJobIsSuccessful(results, 1);
-			await this.ThenTheAuditIsCorrectAsync(this.currentUserId, executionStart, expectedAuditDetails, 1, AuditHelper.AuditAction.Move).ConfigureAwait(false);
 
 			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, (int)ArtifactTypeID.Document, fields: new[] { WellKnownFields.ArtifactId, WellKnownFields.ControlNumber });
 			Assert.That(relativityObjects.Count, Is.EqualTo(4));
@@ -280,15 +232,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("D12C3757-A5FD-40D2-91E2-C435AB4AC4C2")]
-		public async Task ShouldNotMoveDocumentFromFolderToSameFolderWhenOverlayAsync()
+		public void ShouldNotMoveDocumentFromFolderToSameFolderWhenOverlay()
 		{
 			// Arrange
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			settings.OverwriteMode = OverwriteModeEnum.Overlay;
 			settings.DestinationFolderArtifactID = this.workspaceFolderId;
 			settings.MoveDocumentsInAppendOverlayMode = true;
-			var executionStart = DateTime.Now;
-			var expectedAuditDetails = new List<Dictionary<string, string>>();
 
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
@@ -302,7 +252,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// Assert
 			this.ThenTheImportJobIsSuccessful(results, 1);
-			await this.ThenTheAuditIsCorrectAsync(this.currentUserId, executionStart, expectedAuditDetails, 1, AuditHelper.AuditAction.Move).ConfigureAwait(false);
 
 			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, (int)ArtifactTypeID.Document, fields: new[] { WellKnownFields.ArtifactId, WellKnownFields.ControlNumber });
 			Assert.That(relativityObjects.Count, Is.EqualTo(4));
@@ -314,7 +263,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("992985BD-50CA-4927-BC69-B5036FBF5739")]
-		public async Task ShouldMoveTwoDocumentsFromFolderToFolderAsync()
+		public void ShouldMoveTwoDocumentsFromFolderToFolder()
 		{
 			// Arrange
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
@@ -322,26 +271,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			settings.DestinationFolderArtifactID = this.testDestinationFolderId;
 			settings.MoveDocumentsInAppendOverlayMode = true;
-			var executionStart = DateTime.Now;
-			var expectedAuditDetails = new List<Dictionary<string, string>>
-											{
-												new Dictionary<string, string>
-													{
-														["@destinationFolderName"] = this.testDestinationFolderName,
-														["@sourceFolderArtifactID"] = this.workspaceFolderId.ToString(),
-														["@sourceFolderName"] = this.TestParameters.WorkspaceName,
-														["@destinationFolderArtifactID"] = this.testDestinationFolderId.ToString(),
-														["ArtifactID"] = this.importedDocuments[0].FieldValues[1].Value.ToString(),
-													},
-												new Dictionary<string, string>
-													{
-														["@destinationFolderName"] = this.testDestinationFolderName,
-														["@sourceFolderArtifactID"] = this.workspaceFolderId.ToString(),
-														["@sourceFolderName"] = this.TestParameters.WorkspaceName,
-														["@destinationFolderArtifactID"] = this.testDestinationFolderId.ToString(),
-														["ArtifactID"] = this.importedDocuments[1].FieldValues[1].Value.ToString(),
-													},
-											};
 
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
@@ -361,7 +290,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// Assert
 			this.ThenTheImportJobIsSuccessful(results, 2);
-			await this.ThenTheAuditIsCorrectAsync(this.currentUserId, executionStart, expectedAuditDetails, 2, AuditHelper.AuditAction.Move).ConfigureAwait(false);
 
 			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, (int)ArtifactTypeID.Document, fields: new[] { WellKnownFields.ArtifactId, WellKnownFields.ControlNumber });
 			Assert.That(relativityObjects.Count, Is.EqualTo(4));
@@ -373,7 +301,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("C2B5860B-2082-497A-8A0F-68E7DDFE10F4")]
-		public async Task ShouldMoveTwoDocumentsFromDifferentFoldersToDifferentFoldersAsync()
+		public void ShouldMoveTwoDocumentsFromDifferentFoldersToDifferentFolders()
 		{
 			// Arrange
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
@@ -381,27 +309,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			settings.DestinationFolderArtifactID = this.testDestinationFolderId;
 			settings.MoveDocumentsInAppendOverlayMode = true;
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
-			var executionStart = DateTime.Now;
-			var expectedAuditDetails = new List<Dictionary<string, string>>
-											{
-												new Dictionary<string, string>
-													{
-														["@destinationFolderName"] = this.testDeeperDestinationFolderName,
-														["@sourceFolderArtifactID"] = this.testSourceFolderId.ToString(),
-														["@sourceFolderName"] = this.testSourceFolderName,
-														["@destinationFolderArtifactID"] = this.testDeeperDestinationFolderId.ToString(),
-														["ArtifactID"] = this.importedDocuments[2].FieldValues[1].Value.ToString(),
-													},
-												new Dictionary<string, string>
-													{
-														["@destinationFolderName"] = this.testDestinationFolderName,
-														["@sourceFolderArtifactID"] = this.workspaceFolderId.ToString(),
-														["@sourceFolderName"] = this.TestParameters.WorkspaceName,
-														["@destinationFolderArtifactID"] = this.testDestinationFolderId.ToString(),
-														["ArtifactID"] = this.importedDocuments[0].FieldValues[1].Value.ToString(),
-													},
-											};
-
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 			IEnumerable<string> controlNumberSource = new List<string>
@@ -426,7 +333,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// Assert
 			this.ThenTheImportJobIsSuccessful(results, 2);
-			await this.ThenTheAuditIsCorrectAsync(this.currentUserId, executionStart, expectedAuditDetails, 2, AuditHelper.AuditAction.Move).ConfigureAwait(false);
 
 			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, (int)ArtifactTypeID.Document, fields: new[] { WellKnownFields.ArtifactId, WellKnownFields.ControlNumber });
 			Assert.That(relativityObjects.Count, Is.EqualTo(4));
@@ -438,25 +344,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("3E03098E-54E2-475F-B448-843C3481F8B1")]
-		public async Task ShouldMoveDocumentFromDifferentFolderEvenIfNoDestinationFolderAsync()
+		public void ShouldMoveDocumentFromDifferentFolderEvenIfNoDestinationFolder()
 		{
 			// Arrange
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			settings.OverwriteMode = OverwriteModeEnum.Overlay;
 			settings.MoveDocumentsInAppendOverlayMode = true;
-			var executionStart = DateTime.Now;
-			var expectedAuditDetails = new List<Dictionary<string, string>>
-				                           {
-					                           new Dictionary<string, string>
-						                           {
-							                           ["@destinationFolderName"] = this.TestParameters.WorkspaceName,
-							                           ["@sourceFolderArtifactID"] = this.testSourceFolderId.ToString(),
-							                           ["@sourceFolderName"] = this.testSourceFolderName,
-							                           ["@destinationFolderArtifactID"] = this.workspaceFolderId.ToString(),
-							                           ["ArtifactID"] = this.importedDocuments[2].FieldValues[1].Value.ToString(),
-						                           },
-				                           };
-
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 			IEnumerable<string> controlNumberSource = new List<string>
@@ -475,7 +368,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			// Assert
 			this.ThenTheImportJobIsSuccessful(results, 2);
-			await this.ThenTheAuditIsCorrectAsync(this.currentUserId, executionStart, expectedAuditDetails, 1, AuditHelper.AuditAction.Move).ConfigureAwait(false);
 
 			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, (int)ArtifactTypeID.Document, fields: new[] { WellKnownFields.ArtifactId, WellKnownFields.ControlNumber });
 			Assert.That(relativityObjects.Count, Is.EqualTo(4));

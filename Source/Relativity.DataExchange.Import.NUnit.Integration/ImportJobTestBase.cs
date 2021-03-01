@@ -15,12 +15,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using System.IO;
 	using System.Linq;
 	using System.Net;
-	using System.Runtime.CompilerServices;
 	using System.Text;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
-	using global::NUnit.Framework.Internal;
 
 	using kCura.Relativity.DataReaderClient;
 
@@ -288,27 +286,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				testJobResult.JobFatalExceptions,
 				Has.Count.Zero,
 				$"{testJobResult.JobFatalExceptions.Count} fatal exceptions were thrown during import.");
-		}
-
-		protected async Task ThenTheAuditIsCorrectAsync(int userId, DateTime executionTime, List<Dictionary<string, string>> expectedAuditsDetails, int nrOfLastAuditsToTake, AuditHelper.AuditAction action)
-		{
-			var auditsDetails = await AuditHelper.GetLastAuditDetailsForActionAsync(this.TestParameters, action, executionTime, nrOfLastAuditsToTake, userId)
-				                   .ConfigureAwait(false);
-
-			var actualAuditsDetails = auditsDetails.ToList();
-
-			Assert.AreEqual(expectedAuditsDetails.Count, actualAuditsDetails.Count);
-
-			for (int i = 0; i < actualAuditsDetails.Count; i++)
-			{
-				var expectedAuditDetails = expectedAuditsDetails[i];
-				var actualAuditDetails = actualAuditsDetails[i];
-
-				foreach (string key in expectedAuditDetails.Keys)
-				{
-					Assert.AreEqual(expectedAuditDetails[key], actualAuditDetails[key], $"Audit verification failed for field '{key}'");
-				}
-			}
 		}
 
 		private static void ThenCheckCorrectMessage(
