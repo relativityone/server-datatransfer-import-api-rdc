@@ -87,6 +87,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
+		[Category(TestCategories.Regression)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("bb8a9d7a-78b1-42a8-b25a-776f6214e283")]
 		public void ShouldReplaceBlankValuesWithIdentifier([Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode)

@@ -584,18 +584,17 @@ task IntegrationTestsRegression -Description "Run all integration tests for the 
 	Invoke-IntegrationTests -TestCategoryFilter	"--where=`"TestLevel==L3 and TestType=='Main Flow'`""
 }
 
-#PositiveExportTests are hardcoded temporarily here because executing all tests in regression takes too long
 task IntegrationTestsRegressionExport -Description "Run export integration tests for the regression pipeline" {
-	Invoke-SelectedIntegrationTests -TestCategoryFilter	"--where=`"TestLevel==L3 and TestType=='Main Flow' and class=='Relativity.DataExchange.Export.NUnit.Integration.PositiveExportTests'`"" -IncludeFilter "*Relativity.DataExchange.Export.NUnit.Integration.dll"
+	Invoke-SelectedIntegrationTests -TestCategoryFilter	"--where=`"TestLevel==L3 and TestType=='Main Flow' and cat == Regression`"" -IncludeFilter "*Relativity.DataExchange.Export.NUnit.Integration.dll"
 }
 
-#PositiveImportJobTests are hardcoded temporarily here because executing all tests in regression takes too long
 task IntegrationTestsRegressionImport -Description "Run import integration tests for the regression pipeline" {
-	Invoke-SelectedIntegrationTests -TestCategoryFilter	"--where=`"TestLevel==L3 and TestType=='Main Flow' and class=='Relativity.DataExchange.Import.NUnit.Integration.PositiveImportJobTests'`"" -IncludeFilter "*Relativity.DataExchange.Import.NUnit.Integration.dll"
+	Invoke-SelectedIntegrationTests -TestCategoryFilter	"--where=`"TestLevel==L3 and TestType=='Main Flow' and cat == Regression`"" -IncludeFilter "*Relativity.DataExchange.Import.NUnit.Integration.dll"
+	Invoke-SelectedIntegrationTests -TestCategoryFilter	"--where=`"TestLevel==L3 and TestType=='Main Flow' and cat == Regression`"" -IncludeFilter "*Relativity.DataExchange.Samples.NUnit.dll"
 }
 
 task IntegrationTestsRegressionShared -Description "Run api-shared integration tests for the regression pipeline" {
-	Invoke-SelectedIntegrationTests -TestCategoryFilter	"--where=`"TestLevel==L3 and TestType=='Main Flow'`"" -IncludeFilter "*Relativity.DataExchange.NUnit.Integration.dll"
+	Invoke-SelectedIntegrationTests -TestCategoryFilter	"--where=`"TestLevel==L3 and TestType=='Main Flow' and cat == Regression`"" -IncludeFilter "*Relativity.DataExchange.NUnit.Integration.dll"
 }
 
 task IntegrationTests -Description "Run all integration tests" {
@@ -1196,12 +1195,12 @@ Function Invoke-SelectedIntegrationTests {
         [String] $TestCategoryFilter,
 		[String] $IncludeFilter
     )
-			
+
 	folders\Initialize-Folder $TestReportsDir -Safe
     folders\Initialize-Folder $IntegrationTestsReportDir -Safe
-			
-	$IntegrationTests = Get-ChildItem -Path $SourceDir -Recurse -Include $IncludeFilter -Exclude *Desktop*.dll,*TestFramework*.dll | Where-Object { $_.FullName -Match "\\*NUnit.Integration\\bin" }        
-	[string]$fileName  = ($IntegrationTests.Name).Replace("Relativity.DataExchange.", "").Replace("NUnit.Integration.dll", "").Replace("..", ".")
+
+    $IntegrationTests = Get-ChildItem -Path $SourceDir -Recurse -Include $IncludeFilter -Exclude *Desktop*.dll,*TestFramework*.dll | Where-Object { $_.FullName -Match "\\*NUnit.Integration\\bin" -Or $_.FullName -Match "\\*Samples.NUnit\\bin"}
+    [string]$fileName  = ($IntegrationTests.Name).Replace("Relativity.DataExchange.", "").Replace("NUnit.Integration.dll", "").Replace("NUnit.dll", "").Replace("..", ".")
 
 	[string]$ResultXmlFile = Join-Path $IntegrationTestsReportDir "test-results-$fileName.xml"
 	[string]$OutputTxtFile = Join-Path $IntegrationTestsReportDir "test-output-$fileName.txt"

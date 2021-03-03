@@ -59,5 +59,10 @@ namespace Relativity.DataExchange.TestFramework
 		/// The SqlComparer test category.
 		/// </summary>
 		public const string SqlComparer = "SqlComparer";
+
+		/// <summary>
+		/// Tests to run in regression pipeline.
+		/// </summary>
+		public const string Regression = "Regression";
 	}
 }

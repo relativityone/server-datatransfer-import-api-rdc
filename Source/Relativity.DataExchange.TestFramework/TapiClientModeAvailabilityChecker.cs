@@ -4,7 +4,7 @@
 
 namespace Relativity.DataExchange.TestFramework
 {
-	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 	using NUnit.Framework;
 	using NUnit.Framework.Internal;
@@ -17,6 +17,22 @@ namespace Relativity.DataExchange.TestFramework
 			// default value is TapiClient.None
 			TapiClient client = TestExecutionContext.CurrentContext.CurrentTest.Arguments.OfType<TapiClient>().SingleOrDefault();
 			InitializeTapiClient(client, parameters);
+		}
+
+		public static TapiClient[] GetAvailableTapiClients()
+		{
+			var availableClients = new List<TapiClient> { TapiClient.Web };
+			if (!IntegrationTestHelper.IntegrationTestParameters.SkipDirectModeTests)
+			{
+				availableClients.Add(TapiClient.Direct);
+			}
+
+			if (!IntegrationTestHelper.IntegrationTestParameters.SkipAsperaModeTests)
+			{
+				availableClients.Add(TapiClient.Aspera);
+			}
+
+			return availableClients.ToArray();
 		}
 
 		private static void InitializeTapiClient(TapiClient tapiClient, IntegrationTestParameters parameters)

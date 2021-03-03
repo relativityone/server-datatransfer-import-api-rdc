@@ -36,6 +36,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	[TestExecutionCategory.CI]
 	public class PositiveImageImportJobTests : ImportJobTestBase<ImageImportExecutionContext>
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
+		private static readonly TapiClient[] AvailableTapiClients = TapiClientModeAvailabilityChecker.GetAvailableTapiClients();
+
 		[OneTimeSetUp]
 		public Task OneTimeSetUp()
 		{
@@ -182,6 +185,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ThenTheImportJobCompletedWithErrors(results, ExpectedNumberOfErrors, ExpectedNumberOfImportedImages);
 		}
 
+		[Category(TestCategories.Regression)]
 		[IdentifiedTest("f5b4a1d7-9dfc-4931-ba55-0fb0d56564ad")]
 		[TestType.MainFlow]
 		[Pairwise]
@@ -190,7 +194,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			[Values(true, false)] bool useDefaultFieldNames,
 			[Values(true, false)] bool useDataTableSource,
 			[Values(ImageFormat.Jpeg, ImageFormat.Tiff)] ImageFormat imageFormat,
-			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
+			[ValueSource(nameof(AvailableTapiClients))] TapiClient client)
 		{
 			var imageSettingsBuilder = new ImageSettingsBuilder();
 			if (useDefaultFieldNames || !useDataTableSource)
@@ -242,7 +246,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(testResult.JobReportFileBytes, Is.EqualTo(imageFile.Length));
 			Assert.That(testResult.JobReportMetadataBytes, Is.Positive);
 			ThenTheJobCompletedInCorrectTransferMode(testResult, client);
-		}
+	}
 
 		[TestCaseSource(nameof(GetExtractedTextDataSource))]
 		[TestType.MainFlow]

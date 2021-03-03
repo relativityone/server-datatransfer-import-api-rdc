@@ -52,6 +52,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private const string MultiObjectDocFieldName = "MULTI_OBJECT_DOC_FIELD";
 
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
+		private static readonly TapiClient[] AvailableTapiClients = TapiClientModeAvailabilityChecker.GetAvailableTapiClients();
+
 		private bool testsSkipped = false;
 
 		private int createdObjectArtifactTypeId = 0;
@@ -90,6 +94,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
+		[Category(TestCategories.Regression)]
 		[SuppressMessage("Microsoft.Maintainability", "CA1506", Justification = "It is just integration test")]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IgnoreIfVersionEqualTo(RelativityVersion.MayappleEAU)]
@@ -99,7 +104,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Pairwise]
 		public void ShouldImportTheFiles(
 			[Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType,
-			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client,
+			[ValueSource(nameof(AvailableTapiClients))] TapiClient client,
 			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode,
 			[Values(true, false)] bool disableNativeLocationValidation,
 			[Values(true, false)] bool disableNativeValidation)
@@ -164,6 +169,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
+		[Category(TestCategories.Regression)]
 		[Category(TestCategories.NotInCompatibility)]
 		[IgnoreIfVersionLowerThan(RelativityVersion.Goatsbeard)]
 		[IdentifiedTest("b9b6897f-ea3f-4694-80d2-db0852938789")]
@@ -232,6 +238,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.ValidateFilesWereMoved(DestinationFolderName, new[] { WellKnownFields.FolderName });
 		}
 
+		[Category(TestCategories.Regression)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("700bda86-6e9a-43c1-a69c-2a1972cba4f8")]
 		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
@@ -373,6 +380,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ObjectsValidator.ThenObjectsFieldsAreImported(relativityObjects, fieldsToValidate);
 		}
 
+		[Category(TestCategories.Regression)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("13dc1d17-4a2b-4b48-9015-b61e58bc5168")]
 		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]

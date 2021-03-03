@@ -35,6 +35,7 @@ namespace Relativity.DataExchange.Samples.NUnit
 		public void Setup()
 		{
 			TestParameters = IntegrationTestHelper.Create();
+			TapiClientModeAvailabilityChecker.InitializeTapiClient(TestParameters);
 		}
 
 		/// <summary>

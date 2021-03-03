@@ -47,6 +47,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		/// </remarks>
 		private const int TotalImagesForFirstDocument = 1001;
 
+		[Category(TestCategories.Regression)]
 		[IdentifiedTest("52733679-207e-424f-b3bf-4bbf5feeaa54")]
 		public async Task ShouldImportTheProductionImagesAsync()
 		{
