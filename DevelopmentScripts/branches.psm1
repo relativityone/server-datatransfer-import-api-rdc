@@ -7,7 +7,6 @@ public enum BranchType {
     Trident,
 	PerformancePipeline,
 	ComplexCases,
-	Regression,
 	ReleaseBranches
 }
 '@ -Language CSharp
@@ -37,10 +36,6 @@ Function Get-CurrentBranchType{
              return [BranchType]::HotfixRelease
         }
         return [BranchType]::Release
-    }
-	elseif ($currentBranch.ToString().StartsWith("regression-")) 
-    {
-        return [BranchType]::Regression
     }
     elseif (![string]::IsNullOrEmpty($jiraVersionNumber)) 
     {
