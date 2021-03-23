@@ -160,26 +160,32 @@ timestamps
 						echo "Number of errors: ${numberOfErrors}"
 						currentBuild.result = 'FAILED'
 					}
-					finally
-					{
-						if(globalVmInfo != null) 
-						{
-							tools.deleteHopperInstance(globalVmInfo.Id)
-						}	
-					}
 				}
 			}
 		}
 		finally
 		{
-			stage("Send slack and bitbucket notification")
+			try
 			{
-				def buildResult = prepareSummaryMessage(numberOfErrors, testResultsPassed, testResultsFailed, testResultsSkipped)
-				currentBuild.result = buildResult
+				stage("Send slack and bitbucket notification")
+				{
+					def buildResult = prepareSummaryMessage(numberOfErrors, testResultsPassed, testResultsFailed, testResultsSkipped)
+					currentBuild.result = buildResult
 
-				notifyBitbucket()
+					notifyBitbucket()
 
-				Slack.SendSlackNotification("Newest Relativity from '${relativityInstallerSource}'", "Trident loadtests", env.BRANCH_NAME, params.buildConfig, "load-tests", testResultsFailed, testResultsPassed, testResultsSkipped, summaryMessage)
+					Slack.SendSlackNotification("Newest Relativity from '${relativityInstallerSource}'", "Trident loadtests", env.BRANCH_NAME, params.buildConfig, "load-tests", testResultsFailed, testResultsPassed, testResultsSkipped, summaryMessage)
+				}
+			}
+			finally
+			{
+				stage('Delete the hopper instance') 
+				{
+					if(globalVmInfo != null) 
+					{
+						tools.deleteHopperInstance(globalVmInfo.Id)
+					}
+				}
 			}
 		}
 	}
