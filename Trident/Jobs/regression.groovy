@@ -8,7 +8,6 @@ properties([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '', description: 'Environment to test against templates, example: reg-b.r1.kcura.com,reg-prod-update.r1.kcura.com,regression-a.r1.kcura.com,reg-prod-previous.r1.kcura.com,reg-zero.r1.kcura.com', name: 'environmentToTest'),
-		string(defaultValue: '', description: 'Branch to test, example: develop,release-1.12-ninebark,release-1.13-osier', name: 'branchToTest')
     ])
 ])
 
@@ -50,7 +49,7 @@ timestamps
 			stage('Build binaries')
 			{
 				echo "Building the binaries"
-				output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge -Sign -Branch '${params.branchToTest}'"
+				output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge -Sign -Branch '${env.BRANCH_NAME}'"
 				echo output
 			}
 			
@@ -132,7 +131,7 @@ timestamps
 				}
 				
 				notifyBitbucket()
-				Slack.SendSlackNotification("Relativity on '${params.environmentToTest}'", "Regression tests", '${params.branchToTest}', params.buildType, "regression", testResultsFailed, testResultsPassed, testResultsSkipped, message)
+				Slack.SendSlackNotification("Relativity on '${params.environmentToTest}'", "Regression tests", '${env.BRANCH_NAME}', params.buildType, "regression", testResultsFailed, testResultsPassed, testResultsSkipped, message)
 			}
 		}
 	}
@@ -149,7 +148,7 @@ def runIntegrationTests(String sutTemplate)
 {
     String pathToJsonFile = getPathToTestParametersFile(sutTemplate)
     echo "Running the integration tests"
-    output = powershell ".\\build.ps1 IntegrationTestsRegression -ILMerge -TestTimeoutInMS 900000 -TestReportFolderName '${sutTemplate}' -TestParametersFile '${pathToJsonFile}' -Branch '${params.branchToTest}'"
+    output = powershell ".\\build.ps1 IntegrationTestsRegression -ILMerge -TestTimeoutInMS 900000 -TestReportFolderName '${sutTemplate}' -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
     echo output 								
 }
 
@@ -166,19 +165,19 @@ def RunSelectedIntegrationTests(String sutTemplate, int testMode)
 	{				
 		if(testMode == 1)
 		{
-			output = powershell ".\\build.ps1 IntegrationTestsRegressionShared -ILMerge -TestTimeoutInMS 900000 -TestReportFolderName '${sutTemplate}' -TestParametersFile '${pathToJsonFile}' -Branch '${params.branchToTest}'"
+			output = powershell ".\\build.ps1 IntegrationTestsRegressionShared -ILMerge -TestTimeoutInMS 900000 -TestReportFolderName '${sutTemplate}' -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
 			echo output 
 		}
 		
 		if(testMode == 2)
 		{
-			output = powershell ".\\build.ps1 IntegrationTestsRegressionExport -ILMerge -TestTimeoutInMS 900000 -TestReportFolderName '${sutTemplate}' -TestParametersFile '${pathToJsonFile}' -Branch '${params.branchToTest}'"
+			output = powershell ".\\build.ps1 IntegrationTestsRegressionExport -ILMerge -TestTimeoutInMS 900000 -TestReportFolderName '${sutTemplate}' -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
 			echo output 
 		}
 		
 		if(testMode == 3)
 		{
-			output = powershell ".\\build.ps1 IntegrationTestsRegressionImport -ILMerge -TestTimeoutInMS 900000 -TestReportFolderName '${sutTemplate}' -TestParametersFile '${pathToJsonFile}' -Branch '${params.branchToTest}'"
+			output = powershell ".\\build.ps1 IntegrationTestsRegressionImport -ILMerge -TestTimeoutInMS 900000 -TestReportFolderName '${sutTemplate}' -TestParametersFile '${pathToJsonFile}' -Branch '${env.BRANCH_NAME}'"
 			echo output 
 		}
 	}
@@ -226,5 +225,5 @@ def replaceTestVariables(String sutTemplate, String url)
 def createTestReport(String sutTemplate)
 {
     echo "Generating test report"
-    powershell ".\\build.ps1 TestReports -TestReportFolderName '${sutTemplate}' -Branch '${params.branchToTest}'"
+    powershell ".\\build.ps1 TestReports -TestReportFolderName '${sutTemplate}' -Branch '${env.BRANCH_NAME}'"
 }
