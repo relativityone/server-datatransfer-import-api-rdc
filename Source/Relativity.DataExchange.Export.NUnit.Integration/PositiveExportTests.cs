@@ -25,6 +25,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	[Feature.DataTransfer.RelativityDesktopClient.Export]
 	[Category(TestCategories.Export)]
 	[Category(TestCategories.Integration)]
+	[TestType.MainFlow]
 	public class PositiveExportTests : ExportTestBase
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
@@ -69,13 +70,20 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			new DelimiterDto(':', '/', '\n', '"', '\r'),
 		};
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
+		private static readonly TapiClient[] AvailableTapiClients = TapiClientModeAvailabilityChecker.GetAvailableTapiClients();
+
 		protected override IntegrationTestParameters TestParameters => AssemblySetup.TestParameters;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Usage",
+			"CA1801: Review unused parameters",
+			Justification = "We are using TestExecutionContext.CurrentContext.CurrentTest.Arguments to retrieve value of client parameter.")]
 		[IdentifiedTest("5b20c6f1-1196-41ea-9326-0e875e2cabe9")]
-		[Test]
+		[Category(TestCategories.Regression)]
 		[Pairwise]
 		public async Task ShouldExportAllSampleDocAndImagesAsync(
-			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client,
+			[ValueSource(nameof(AvailableTapiClients))] TapiClient client,
 			[ValueSource(nameof(ExportTypes))] ExportTypeDto exportType,
 			[Values("utf-8", "utf-16")] string textFileEncoding,
 			[Values("utf-8", "utf-16")] string loadFileEncoding,
@@ -86,8 +94,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			[ValueSource(nameof(Delimiters))] DelimiterDto delimiterValue)
 		{
 			// ARRANGE
-			GivenTheTapiForceClientAppSettings(client);
-
 			// TODO REL-369935 enable ExportFile.ExportType.ArtifactSearch and ExportFile.ExportType.Production
 			this.ExtendedExportFile.TypeOfExport = exportType?.ExportType ?? ExportFile.ExportType.ParentSearch;
 

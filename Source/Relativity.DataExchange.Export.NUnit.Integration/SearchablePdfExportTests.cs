@@ -36,6 +36,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Usage",
+			"CA1801: Review unused parameters",
+			Justification = "We are using TestExecutionContext.CurrentContext.CurrentTest.Arguments to retrieve value of client parameter.")]
 		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IgnoreIfRegressionEnvironment("Ignored because 'SetupTestData' requires access to SQL to prepare pdfs to export.")]
@@ -46,7 +50,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			[Values(true, false)] bool copyPdfFromRepository)
 		{
 			// ARRANGE
-			GivenTheTapiForceClientAppSettings(client);
 			SetupDefaultExportFile(this.ExtendedExportFile);
 			this.ExtendedExportFile.ExportPdf = exportPdf;
 			this.ExtendedExportFile.VolumeInfo.CopyPdfFilesFromRepository = copyPdfFromRepository;
@@ -59,15 +62,19 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Usage",
+			"CA1801: Review unused parameters",
+			Justification = "We are using TestExecutionContext.CurrentContext.CurrentTest.Arguments to retrieve value of client parameter.")]
 		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IgnoreIfRegressionEnvironment("Ignored because 'SetupTestData' requires access to SQL to prepare pdfs to export.")]
 		[IdentifiedTest("e5976b64-107b-4d23-bd37-b748526768d9")]
 		public async Task ShouldAddCorrectSubDirectoryPrefixWhenExportSearchablePdfAsync(
-			[Values(null, "test_prefix")] string subDirectoryPrefix)
+			[Values(null, "test_prefix")] string subDirectoryPrefix,
+			[Values(TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
-			GivenTheTapiForceClientAppSettings(TapiClient.Web);
 			SetupDefaultExportFile(this.ExtendedExportFile);
 			this.ExtendedExportFile.VolumeInfo.set_SubdirectoryPdfPrefix(false, subDirectoryPrefix);
 
@@ -80,16 +87,19 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Usage",
+			"CA1801: Review unused parameters",
+			Justification = "We are using TestExecutionContext.CurrentContext.CurrentTest.Arguments to retrieve value of client parameter.")]
 		[Category(TestCategories.Integration)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IgnoreIfRegressionEnvironment("Ignored because 'SetupTestData' requires access to SQL to prepare pdfs to export.")]
 		[IdentifiedTest("baa7ad81-c688-43f3-bb1a-9f953fe5b6d6")]
-		public async Task ShouldDisplayWarningWhenInsufficientSubDirectoryPaddingAsync()
+		public async Task ShouldDisplayWarningWhenInsufficientSubDirectoryPaddingAsync([Values(TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
 			const string InsufficientPaddingWarningMessage =
 				"The selected subdirectory padding of 1 is less than the recommended subdirectory padding 2 for this export";
-			GivenTheTapiForceClientAppSettings(TapiClient.Web);
 			SetupDefaultExportFile(this.ExtendedExportFile);
 			this.ExtendedExportFile.SubdirectoryDigitPadding = 1;
 			this.ExtendedExportFile.VolumeInfo.SubdirectoryStartNumber =

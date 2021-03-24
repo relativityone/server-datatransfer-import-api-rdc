@@ -43,11 +43,11 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		public async Task ShouldImportForSqlComparerAsync(
 			[Values(1, 4, 8, 12)] int parallelIApiClientCount,
 			[Values(200_000)] int numberOfDocumentsPerIApiClient,
-			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode)
+			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode,
+			[Values(TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
 			PerformanceDataCollector.Instance.SetPerformanceTestValues("ShouldImportStuffForSqlComparerAsync", parallelIApiClientCount, numberOfDocumentsPerIApiClient, 0, 0, TapiClient.Web, this.TestParameters);
-			ForceClient(TapiClient.Web);
 
 			if (overwriteMode == OverwriteModeEnum.Overlay)
 			{
@@ -143,7 +143,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 			this.ThenTheImportJobIsSuccessful(results, expectedNumberOfRows);
 			Assert.That(results.NumberOfJobMessages, Is.Positive);
 			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(expectedNumberOfRows));
-			ThenTheJobCompletedInCorrectTransferMode(results, TapiClient.Web);
+			ThenTheJobCompletedInCorrectTransferMode(results, client);
 		}
 
 		[SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope", Justification = "Ownership is transfered to Task.WhenAll.")]

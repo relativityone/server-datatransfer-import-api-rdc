@@ -6,7 +6,7 @@ public enum BranchType {
     FeatureBranch,
     Trident,
 	PerformancePipeline,
-	ComplexCases,
+    ComplexCases,
 	ReleaseBranches
 }
 '@ -Language CSharp

@@ -43,6 +43,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			IntegrationTestHelper.Destroy(testParameters);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Usage",
+			"CA1801: Review unused parameters",
+			Justification = "We are using TestExecutionContext.CurrentContext.CurrentTest.Arguments to retrieve value of client parameter.")]
 		[IdentifiedTest("2EAFF4D8-ED3B-412C-B506-D35574130C04")]
 		[TestCase(TapiClient.Aspera)]
 		[TestCase(TapiClient.Direct)]
@@ -50,8 +54,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		public void ShouldExportAllSampleDocAndImagesFromTwoFileShares(TapiClient client)
 		{
 			// ARRANGE
-			GivenTheTapiForceClientAppSettings(client);
-
 			ExtendedExportFileSetup.SetupDocumentExport(ExtendedExportFile);
 			ExtendedExportFileSetup.SetupImageExport(ExtendedExportFile);
 			ExtendedExportFileSetup.SetupPaddings(ExtendedExportFile);

@@ -29,19 +29,15 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 		[CollectWebApiExecutionPlans]
 		[CollectWebApiSql]
 		[Category(TestCategories.ImportDoc)]
-		[IdentifiedTestCase("b756e4b0-0206-43e1-8508-6b1a65759e1b", 5)]
-		[IdentifiedTestCase("6b6d0cf1-e9ce-4d6a-8e32-02af853efd3b", 1000)]
-		[IdentifiedTestCase("1c9e735b-922d-49f2-8536-94b041917467", 5000)]
-		public void SimpleImportTestCase(int numberOfDocuments)
+		[IdentifiedTestCase("b756e4b0-0206-43e1-8508-6b1a65759e1b", 5, TapiClient.Direct)]
+		[IdentifiedTestCase("6b6d0cf1-e9ce-4d6a-8e32-02af853efd3b", 1000, TapiClient.Direct)]
+		[IdentifiedTestCase("1c9e735b-922d-49f2-8536-94b041917467", 5000, TapiClient.Direct)]
+		public void SimpleImportTestCase(int numberOfDocuments, TapiClient client)
 		{
 			// ARRANGE
-			const TapiClient Client = TapiClient.Direct;
 			const bool DisableNativeLocationValidation = false;
 			const bool DisableNativeValidation = false;
 
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, Client);
-
-			ForceClient(Client);
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = DisableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = DisableNativeValidation;
 
@@ -54,24 +50,20 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(result, numberOfDocuments);
-			ThenTheJobCompletedInCorrectTransferMode(result, Client);
+			ThenTheJobCompletedInCorrectTransferMode(result, client);
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "2*numberOfDocuments", Justification = "It won't overflow for values used in test")]
 		[CollectWebApiExecutionPlans]
 		[CollectWebApiSql]
 		[Category(TestCategories.ImportDoc)]
-		[IdentifiedTestCase("1c9e735b-922d-49f2-8536-94b041917467", 5000)]
-		public void FoldersAndChoicesTestCase(int numberOfDocuments)
+		[IdentifiedTestCase("1c9e735b-922d-49f2-8536-94b041917467", 5000, TapiClient.Direct)]
+		public void FoldersAndChoicesTestCase(int numberOfDocuments, TapiClient client)
 		{
 			// ARRANGE
-			const TapiClient Client = TapiClient.Direct;
 			const bool DisableNativeLocationValidation = false;
 			const bool DisableNativeValidation = false;
 
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, Client);
-
-			ForceClient(Client);
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = DisableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = DisableNativeValidation;
 
@@ -116,7 +108,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.DevTests
 
 			// ASSERT
 			this.ThenTheImportJobIsSuccessful(result, numberOfDocuments);
-			ThenTheJobCompletedInCorrectTransferMode(result, Client);
+			ThenTheJobCompletedInCorrectTransferMode(result, client);
 		}
 	}
 }

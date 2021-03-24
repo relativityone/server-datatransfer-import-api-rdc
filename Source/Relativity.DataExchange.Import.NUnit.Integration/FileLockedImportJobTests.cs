@@ -39,7 +39,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public void ShouldFailWhenTheFileIsLocked(TapiClient client, bool disableNativeLocationValidation, bool disableNativeValidation)
 		{
 			// ARRANGE
-			ForceClient(client);
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = disableNativeLocationValidation;
 			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = disableNativeValidation;
 

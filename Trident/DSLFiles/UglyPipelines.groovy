@@ -159,7 +159,7 @@ multibranchPipelineJob('Import-API/regression-pipeline') {
 		// IMPORTANT!!! Set up your branch includes/excludes filter here. Jobs will not be created for branches that aren't included
 		// IMPORTANT!!!
 		traits << 'jenkins.scm.impl.trait.WildcardSCMHeadFilterTrait' {
-			includes('regression-* develop release-*') // branches that you want to include in your job
+			includes('develop release-*') // branches that you want to include in your job
 			excludes('') // branches you want to exclude from your job
 		}
 		// you shouldn't need to modify anything under here unless you have some extraordinary use case

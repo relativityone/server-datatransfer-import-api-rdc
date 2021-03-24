@@ -35,6 +35,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.MainFlow]
 	public class PositiveImportJobTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const string SingleChoiceFieldName = "SINGLE_CHOICE_FIELD";
@@ -50,6 +51,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private const string MultiObjectDocFieldName = "MULTI_OBJECT_DOC_FIELD";
 
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
+		private static readonly TapiClient[] AvailableTapiClients = TapiClientModeAvailabilityChecker.GetAvailableTapiClients();
+
 		private bool testsSkipped = false;
 
 		private int createdObjectArtifactTypeId = 0;
@@ -93,6 +98,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
+		[Category(TestCategories.Regression)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IgnoreIfVersionEqualTo(RelativityVersion.MayappleEAU)]
 		[IdentifiedTest("f808845d-c8c9-454b-9d84-51d84be70bd1")]
@@ -100,7 +106,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Pairwise]
 		public void ShouldImportTheFiles(
 			[Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType,
-			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client,
+			[ValueSource(nameof(AvailableTapiClients))] TapiClient client,
 			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode,
 			[Values(true, false)] bool disableNativeLocationValidation,
 			[Values(true, false)] bool disableNativeValidation)
@@ -169,14 +175,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.NotInCompatibility)]
+		[Category(TestCategories.Regression)]
 		[IgnoreIfVersionLowerThan(RelativityVersion.Goatsbeard)]
 		[IdentifiedTest("b9b6897f-ea3f-4694-80d2-db0852938789")]
 		public void ShouldImportFolders()
 		{
 			// ARRANGE
-			const TapiClient Client = TapiClient.Direct;
-			ForceClient(Client);
-			TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(AssemblySetup.TestParameters, Client);
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 
 			settings.FolderPathSourceFieldName = WellKnownFields.FolderName;
@@ -204,8 +208,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				NumberOfDocumentsToImport,
 				(int)ArtifactType.Document,
 				new[] { WellKnownFields.ControlNumber, WellKnownFields.FolderName });
-
-			ThenTheJobCompletedInCorrectTransferMode(results, Client);
 		}
 
 		[Category(TestCategories.ImportDoc)]
@@ -251,6 +253,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.ImportObject)]
 		[Category(TestCategories.Integration)]
+		[Category(TestCategories.Regression)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("700bda86-6e9a-43c1-a69c-2a1972cba4f8")]
 		public async Task ShouldImportDocumentWithChoices(
@@ -395,6 +398,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
+		[Category(TestCategories.Regression)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("13dc1d17-4a2b-4b48-9015-b61e58bc5168")]
 		public async Task ShouldImportDocumentWithObjects(

@@ -238,7 +238,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 				| SecurityProtocolType.Tls12;
 			this.AssignTestSettings();
 
-			TapiClientModeAvailabilityChecker.SkipTestIfTestParameterTransferModeNotAvailable(this.TestParameters);
+			TapiClientModeAvailabilityChecker.InitializeTapiClient(this.TestParameters);
 
 			Assert.That(
 				this.TestParameters.WorkspaceId,

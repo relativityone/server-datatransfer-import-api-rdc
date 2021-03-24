@@ -108,13 +108,16 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Usage",
+			"CA1801: Review unused parameters",
+			Justification = "We are using TestExecutionContext.CurrentContext.CurrentTest.Arguments to retrieve value of client parameter.")]
 		[IdentifiedTest("14A8EB3C-5662-428C-B1E6-FA95E8C79259")]
 		[TestCase(TapiClient.None)]
 		[TestCase(TapiClient.Aspera)]
 		public async Task ShouldExportWhenTheSettingsForFileShareIsNullAsync(TapiClient tapiClient)
 		{
 			// ARRANGE
-			GivenTheTapiForceClientAppSettings(tapiClient);
 			this.GivenTheMockedSettingsForFileShareIsNull();
 
 			// ACT

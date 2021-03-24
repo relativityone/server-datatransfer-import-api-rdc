@@ -5,6 +5,7 @@
 namespace Relativity.DataExchange.TestFramework
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 	using NUnit.Framework;
 	using NUnit.Framework.Internal;
@@ -12,13 +13,11 @@ namespace Relativity.DataExchange.TestFramework
 
 	public static class TapiClientModeAvailabilityChecker
 	{
-		public static void SkipTestIfTestParameterTransferModeNotAvailable(IntegrationTestParameters parameters)
+		public static void InitializeTapiClient(IntegrationTestParameters parameters)
 		{
-			foreach (var testArgument in TestExecutionContext.CurrentContext.CurrentTest.Arguments.OfType<TapiClient>())
-			{
-				TapiClientModeAvailabilityChecker.SkipTestIfModeNotAvailable(parameters, testArgument);
-				return;
-			}
+			// default value is TapiClient.None
+			TapiClient client = TestExecutionContext.CurrentContext.CurrentTest.Arguments.OfType<TapiClient>().SingleOrDefault();
+			InitializeTapiClient(client, parameters);
 		}
 
 		public static void SkipTestIfModeNotAvailable(IntegrationTestParameters parameters, TapiClient client)
@@ -33,6 +32,43 @@ namespace Relativity.DataExchange.TestFramework
 			{
 				Assert.Ignore(TestStrings.SkipTestMessage, $"{client}");
 			}
+		}
+
+		public static TapiClient[] GetAvailableTapiClients()
+		{
+			var availableClients = new List<TapiClient> { TapiClient.Web };
+			if (!IntegrationTestHelper.IntegrationTestParameters.SkipDirectModeTests)
+			{
+				availableClients.Add(TapiClient.Direct);
+			}
+
+			if (!IntegrationTestHelper.IntegrationTestParameters.SkipAsperaModeTests)
+			{
+				availableClients.Add(TapiClient.Aspera);
+			}
+
+			return availableClients.ToArray();
+		}
+
+		private static void InitializeTapiClient(TapiClient tapiClient, IntegrationTestParameters parameters)
+		{
+			SkipTestIfModeNotAvailable(parameters, tapiClient);
+
+			if (tapiClient == TapiClient.None && parameters.SkipAsperaModeTests && parameters.SkipDirectModeTests)
+			{
+				ForceClient(TapiClient.Web);
+			}
+			else
+			{
+				ForceClient(tapiClient);
+			}
+		}
+
+		private static void ForceClient(TapiClient tapiClient)
+		{
+			AppSettings.Instance.TapiForceAsperaClient = tapiClient == TapiClient.Aspera;
+			AppSettings.Instance.TapiForceFileShareClient = tapiClient == TapiClient.Direct;
+			AppSettings.Instance.TapiForceHttpClient = tapiClient == TapiClient.Web;
 		}
 	}
 }

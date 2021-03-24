@@ -60,7 +60,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[SetUp]
 		public async Task SetupAsync()
 		{
-			TapiClientModeAvailabilityChecker.SkipTestIfTestParameterTransferModeNotAvailable(this.TestParameters);
+			TapiClientModeAvailabilityChecker.InitializeTapiClient(this.TestParameters);
 
 			await this.OnSetUpAsync().ConfigureAwait(false);
 			kCura.WinEDDS.Config.ConfigSettings["BadPathErrorsRetry"] = false;

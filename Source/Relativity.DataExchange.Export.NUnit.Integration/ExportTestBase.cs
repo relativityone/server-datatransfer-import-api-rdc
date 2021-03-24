@@ -84,7 +84,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[SetUp]
 		public void Setup()
 		{
-			TapiClientModeAvailabilityChecker.SkipTestIfTestParameterTransferModeNotAvailable(this.TestParameters);
+			TapiClientModeAvailabilityChecker.InitializeTapiClient(this.TestParameters);
 			this.Logger = new TestNullLogger();
 
 			// This registers all components.

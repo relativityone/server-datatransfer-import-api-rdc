@@ -29,6 +29,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.MainFlow]
 	public class RelationalFieldsTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
@@ -87,6 +88,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
+		[Category(TestCategories.Regression)]
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("bb8a9d7a-78b1-42a8-b25a-776f6214e283")]
 		public void ShouldReplaceBlankValuesWithIdentifier([Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode)

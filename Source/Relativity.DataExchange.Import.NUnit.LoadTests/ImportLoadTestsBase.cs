@@ -27,7 +27,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[SetUp]
 		public void Setup()
 		{
-			TapiClientModeAvailabilityChecker.SkipTestIfTestParameterTransferModeNotAvailable(this.TestParameters);
 		}
 
 		[TearDown]

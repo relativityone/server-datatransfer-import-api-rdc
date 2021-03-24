@@ -35,6 +35,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	[Feature.DataTransfer.ImportApi.Operations.ImportImages]
 	public class PositiveImageImportJobTests : ImportJobTestBase<ImageImportExecutionContext>
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
+		private static readonly TapiClient[] AvailableTapiClients = TapiClientModeAvailabilityChecker.GetAvailableTapiClients();
+
 		[OneTimeSetUp]
 		public Task OneTimeSetUp()
 		{
@@ -185,17 +188,17 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[Category(TestCategories.ImportImage)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
+		[Category(TestCategories.Regression)]
 		[IdentifiedTest("f5b4a1d7-9dfc-4931-ba55-0fb0d56564ad")]
+		[TestType.MainFlow]
 		[Pairwise]
 		public void ShouldImportTheImage(
 			[Values(true, false)] bool useFileNames,
 			[Values(true, false)] bool useDefaultFieldNames,
 			[Values(true, false)] bool useDataTableSource,
 			[Values(ImageFormat.Jpeg, ImageFormat.Tiff)] ImageFormat imageFormat,
-			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
+			[ValueSource(nameof(AvailableTapiClients))] TapiClient client)
 		{
-			ForceClient(client);
-
 			var imageSettingsBuilder = new ImageSettingsBuilder();
 			if (useDefaultFieldNames || !useDataTableSource)
 			{
