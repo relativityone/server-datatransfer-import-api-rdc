@@ -22,9 +22,9 @@
         <dependency id="Newtonsoft.Json" version="6.0.8" />
         <dependency id="Polly" version="5.7.0" />
         <dependency id="Relativity.ObjectManager" version="12.0.78.6" />
-        <dependency id="Relativity.Logging" version="2019.5.1" />
+        <dependency id="Relativity.Logging" version="3000.0.1" />
         <dependency id="Relativity.OAuth2.Client" version="1.5.2" />
-        <dependency id="Relativity.OutsideIn" version="2020.6.0" />
+        <dependency id="Relativity.OutsideIn" version="2020.8.0" />
         <dependency id="Relativity.Telemetry.Client" version="9.4.164" />
         <dependency id="Relativity.Telemetry.Services.Interface" version="3000.0.1" />
         <dependency id="Relativity.Transfer.Client" version="[7.3.5, 7.6.0)" />

@@ -11,6 +11,7 @@ namespace Relativity.DataExchange.Logger
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -18,6 +19,7 @@ namespace Relativity.DataExchange.Logger
 
 	using Relativity.Logging;
 	using Relativity.Logging.Configuration;
+	using Relativity.Logging.Configuration.Local;
 	using Relativity.Logging.Configuration.Serilog;
 	using Relativity.Logging.Factory;
 
@@ -51,6 +53,7 @@ namespace Relativity.DataExchange.Logger
 		}
 
 		/// <inheritdoc/>
+		[SuppressMessage("Microsoft.Design", "CA1031:Do not catch general exception types", Justification = "After Relativity.Logging update we have to update this code but we don't want to introduce any change in behavior or possible exceptions.")]
 		public ILog CreateSecureLogger()
 		{
 			LoggerOptions options = CreateLoggerOptions(this.credential);
@@ -59,19 +62,24 @@ namespace Relativity.DataExchange.Logger
 			{
 				secureLogger = LogFactory.GetLogger(options);
 
-				var configurationReaderFactory = new ConfigurationReaderFactory();
-				LogConfiguration relativityLogConfiguration =
-					configurationReaderFactory.GetReader(options).ReadConfiguation();
-
-				if (HashingRequired(relativityLogConfiguration))
+				try
 				{
-					LoggingLevel minimumLoggingLevel = MinimumLoggingLevel(relativityLogConfiguration);
-					LogConfiguration localLogConfiguration = CreateLocalLogConfiguration(minimumLoggingLevel);
-					ILog localLogger = LogFactory.GetLogger(options, localLogConfiguration);
+					var reader = new FileConfigurationReader(options.ConfigurationFileLocation);
 
-					secureLogger = new AggregatingLoggerDecorator(
-						new HashingLoggerDecorator(secureLogger),
-						localLogger);
+					if (HashingRequired(reader))
+					{
+						LoggingLevel minimumLoggingLevel = MinimumLoggingLevel(reader);
+						LogConfiguration localLogConfiguration = CreateLocalLogConfiguration(minimumLoggingLevel);
+						ILog localLogger = LogFactory.GetLogger(options, localLogConfiguration);
+
+						secureLogger = new AggregatingLoggerDecorator(
+							new HashingLoggerDecorator(secureLogger),
+							localLogger);
+					}
+				}
+				catch (Exception ex)
+				{
+					secureLogger.LogError(ex, "Unable to get FileLogConfiguration {0}", options.ConfigurationFileLocation);
 				}
 			}
 			else
@@ -82,14 +90,14 @@ namespace Relativity.DataExchange.Logger
 			return secureLogger;
 		}
 
-		private static LoggingLevel MinimumLoggingLevel(LogConfiguration configuration)
+		private static LoggingLevel MinimumLoggingLevel(IConfigurationReader reader)
 		{
-			return configuration.Rules.Select(rule => rule.LoggingLevel).Min();
+			return reader.GetRules().Select(rule => rule.LoggingLevel).Min();
 		}
 
-		private static bool HashingRequired(LogConfiguration configuration)
+		private static bool HashingRequired(IConfigurationReader reader)
 		{
-			return configuration.Sinks.Any(sink => !(sink is FileSinkConfig));
+			return reader.GetSinks().Any(sink => !(sink is FileSinkConfig));
 		}
 
 		private static LogConfiguration CreateLocalLogConfiguration(LoggingLevel minimumLoggingLevel)
