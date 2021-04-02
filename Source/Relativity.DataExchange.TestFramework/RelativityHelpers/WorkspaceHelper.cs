@@ -31,7 +31,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	/// </summary>
 	public static class WorkspaceHelper
 	{
-		private static readonly RelativityVersion WorkspaceManagerReleaseVersion = RelativityVersion.Lanceleaf;
+		private static readonly RelativityVersion WorkspaceManagerReleaseVersion = RelativityVersion.Mayapple;
 
 		public static (int workspaceId, string workspaceName) CreateTestWorkspace(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
 		{

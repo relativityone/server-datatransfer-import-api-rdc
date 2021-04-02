@@ -32,8 +32,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	/// </summary>
 	public static class FieldHelper
 	{
-		private static readonly RelativityVersion WorkspaceManagerReleaseVersion = RelativityVersion.Foxglove;
-
 		public static Task<int> CreateSingleObjectFieldAsync(IntegrationTestParameters testParameters, string fieldName, int objectArtifactTypeId, int associativeObjectArtifactTypeId)
 		{
 			if (testParameters == null)
@@ -49,7 +47,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		// </summary>
 		public static Task<int> CreateSingleObjectFieldAsync(IntegrationTestParameters testParameters, string fieldName, int objectArtifactTypeId, int associativeObjectArtifactTypeId, int workspaceId)
 		{
-			if (CanUseWorkspaceManagerKepler(testParameters))
+			if (!RelativityVersionChecker.VersionIsLowerThan(testParameters, RelativityVersion.Indigo))
 			{
 				var request = new SingleObjectFieldRequest
 				{
@@ -79,7 +77,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				FieldTypeID = kCura.Relativity.Client.FieldType.SingleObject,
 				AllowGroupBy = false,
 				AllowPivot = false,
-				AllowSortTally = false,
+				AllowSortTally = true,
 				IgnoreWarnings = true,
 				IsRequired = false,
 				Linked = false,
@@ -87,6 +85,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				Width = "12",
 				Wrapping = false,
 			};
+
+			if (objectArtifactTypeId == WellKnownArtifactTypes.DocumentArtifactTypeId)
+			{
+				field.AvailableInFieldTree = true;
+			}
 
 			return Task.FromResult(FieldHelper.CreateField(testParameters, objectArtifactTypeId, field, workspaceId));
 		}
@@ -107,7 +110,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		public static Task<int> CreateMultiObjectFieldAsync(IntegrationTestParameters testParameters, string fieldName, int objectArtifactTypeId, int associativeObjectArtifactTypeId, int workspaceId)
 		{
-			if (CanUseWorkspaceManagerKepler(testParameters))
+			if (!RelativityVersionChecker.VersionIsLowerThan(testParameters, RelativityVersion.Indigo))
 			{
 				var request = new MultipleObjectFieldRequest
 				{
@@ -137,6 +140,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				IsRequired = false,
 				Width = "12",
 			};
+
+			if (objectArtifactTypeId == WellKnownArtifactTypes.DocumentArtifactTypeId)
+			{
+				field.AvailableInFieldTree = true;
+			}
 
 			return Task.FromResult(FieldHelper.CreateField(testParameters, objectArtifactTypeId, field, workspaceId));
 		}
@@ -197,7 +205,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		public static Task<int> CreateDateFieldAsync(IntegrationTestParameters testParameters, int objectArtifactTypeId, string fieldName)
 		{
-			if (CanUseWorkspaceManagerKepler(testParameters))
+			if (!RelativityVersionChecker.VersionIsLowerThan(testParameters, RelativityVersion.Foxglove))
 			{
 				var request = new DateFieldRequest()
 				{
@@ -237,7 +245,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		public static Task<int> CreateDecimalFieldAsync(IntegrationTestParameters testParameters, int objectArtifactTypeId, string fieldName)
 		{
-			if (CanUseWorkspaceManagerKepler(testParameters))
+			if (!RelativityVersionChecker.VersionIsLowerThan(testParameters, RelativityVersion.Foxglove))
 			{
 				var request = new DecimalFieldRequest()
 				{
@@ -279,7 +287,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 		public static Task<int> CreateFixedLengthTextFieldAsync(IntegrationTestParameters testParameters, int objectArtifactTypeId, string fieldName, bool isOpenToAssociations, int length)
 		{
-			if (CanUseWorkspaceManagerKepler(testParameters))
+			if (!RelativityVersionChecker.VersionIsLowerThan(testParameters, RelativityVersion.Goatsbeard))
 			{
 				var request = new FixedLengthFieldRequest()
 				{
@@ -318,6 +326,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				Width = string.Empty,
 				Wrapping = false,
 			};
+
+			if (objectArtifactTypeId == WellKnownArtifactTypes.DocumentArtifactTypeId)
+			{
+				field.IsRelational = false;
+			}
 
 			return Task.FromResult(FieldHelper.CreateField(testParameters, objectArtifactTypeId, field));
 		}
@@ -530,9 +543,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			await UpdateFieldAsync(parameters, WellKnownFields.ControlNumberId, WellKnownFieldRequests.IdentifierFieldRequest).ConfigureAwait(false);
 			await CreateOrUpdateFieldsAsync(parameters, WellKnownFieldRequests.NonSystemFieldRequests).ConfigureAwait(false);
 		}
-
-		private static bool CanUseWorkspaceManagerKepler(IntegrationTestParameters parameters) =>
-			!RelativityVersionChecker.VersionIsLowerThan(parameters, WorkspaceManagerReleaseVersion);
 
 		private static Task<int> CreateFieldAsync(IntegrationTestParameters parameters, BaseFieldRequest fieldRequest, int workspaceId)
 		{
