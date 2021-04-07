@@ -8,6 +8,7 @@ properties([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '', description: 'Environment to test against templates, example: reg-b.r1.kcura.com,reg-prod-update.r1.kcura.com,regression-a.r1.kcura.com,reg-prod-previous.r1.kcura.com,reg-zero.r1.kcura.com', name: 'environmentToTest'),
+        string(defaultValue: 'RelativityOne Quick Start Template', description: 'Workspace template, example: RelativityOne Quick Start Template, zTemplate DLA Collation Primary [DO NOT DELETE]', name: 'workspaceTemplate')
     ])
 ])
 
@@ -58,7 +59,7 @@ timestamps
 				stage("Replacing test variables")
 				{
 					echo "Replacing variables for ${environmentToTest}"
-					replaceTestVariables(params.environmentToTest, "https://${environmentToTest}")	
+					replaceTestVariables(params.environmentToTest, "https://${environmentToTest}", params.workspaceTemplate)
 				}
 				
 				stage("Import integration tests")
@@ -209,13 +210,13 @@ def GetTestResults(String sutTemplate)
 	
 }
 
-def replaceTestVariables(String sutTemplate, String url)
+def replaceTestVariables(String sutTemplate, String url, String workspaceTemplate)
 {
     String pathToJsonFile = getPathToTestParametersFile(sutTemplate)
     powershell ".\\build.ps1 CreateTemplateTestParametersFileForRegressionTests -TestParametersFile '${pathToJsonFile}'"
 	
 	echo "replacing test variables in ${sutTemplate}"
-    output = powershell ".\\build.ps1 ReplaceTestVariablesRegression -TestTarget '${url}' -TestParametersFile '${pathToJsonFile}'"
+    output = powershell ".\\build.ps1 ReplaceTestVariablesRegression -TestTarget '${url}' -WorkspaceTemplate '${workspaceTemplate}' -TestParametersFile '${pathToJsonFile}'"
     echo output
 	
 	output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${url}' -TestParametersFile '${pathToJsonFile}'"
