@@ -69,6 +69,7 @@ properties {
 	$BuildNumber = $Null
 	$Verbosity = $Null
 	$TestTarget = $Null
+	$WorkspaceTemplate = $Null
 	$TestTimeoutInMS = $Null
 	$TestParametersFile = $Null
 	$TestEnvironment = $Null
@@ -953,18 +954,25 @@ task ReplaceTestVariables -Description "Replace test variables in file" {
 }
 
 task ReplaceTestVariablesRegression -Description "Replace test variables in file for testing against a regression pipeline" {
-    $pathToFile = ".\Source\Relativity.DataExchange.TestFramework\Resources\test-parameters-integration-test-template.json"
+    $pathToFile = ".\Source\Relativity.DataExchange.TestFramework\Resources\test-parameters-regression-test-template.json"
     if ($TestParametersFile) {
         $pathToFile = $TestParametersFile
     }
-        $replaceTarget = [Paths.UriScheme]::AddHttpsIfMissing($TestTarget)
-        $servicesTarget = $replaceTarget -replace '.r1' , '-services.r1'
-    
-        ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_services_target_to_test>', $servicesTarget) | Set-Content -Path $pathToFile
-        ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_relativity_user_name>','malgorzata.kwiatkowska@relativity.com') | Set-Content -Path $pathToFile
-    
-        Write-Host (Get-Content -path $pathToFile -Raw)
+    $replaceTarget = [Paths.UriScheme]::AddHttpsIfMissing($TestTarget)
+    $servicesTarget = $replaceTarget -replace '.r1' , '-services.r1'
+
+    $performAdditionalWorkspaceSetup = 'False'
+    if ($WorkspaceTemplate -eq 'zTemplate DLA Collation Primary [DO NOT DELETE]') {
+        $performAdditionalWorkspaceSetup = 'True'
     }
+
+    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_services_target_to_test>', $servicesTarget) | Set-Content -Path $pathToFile
+    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_workspace_template>', $WorkspaceTemplate) | Set-Content -Path $pathToFile
+    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_additional_workspace_setup>', $performAdditionalWorkspaceSetup) | Set-Content -Path $pathToFile
+    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_relativity_user_name>','malgorzata.kwiatkowska@relativity.com') | Set-Content -Path $pathToFile
+
+    Write-Host (Get-Content -path $pathToFile -Raw)
+}
 
 task PostReleasePageOnEinstein -Description "Post the releae page on Einstein"{
     $localSdkVersion = versioning\Get-ReleaseVersion "$Branch"
@@ -1039,7 +1047,7 @@ task CreateTemplateTestParametersFileForRegressionTests -Description "Create tem
     if (-Not $TestParametersFile) {
         Throw "You need to specify path to new test parameters file (including file name and extension)"
     }
-    $pathToTemplateFile = ".\Scripts\test-parameters-integration-test-template.json"
+    $pathToTemplateFile = ".\Scripts\test-parameters-regression-test-template.json"
     Copy-Item $pathToTemplateFile $TestParametersFile
 
 }

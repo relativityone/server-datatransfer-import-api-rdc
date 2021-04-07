@@ -178,8 +178,10 @@ param(
     [String]$BuildPlatform = "Any CPU",
     [Parameter()]
     [string]$BuildUrl = "localhost",
-	[Parameter()]
+    [Parameter()]
     [string]$TestTarget,
+    [Parameter()]
+    [string]$WorkspaceTemplate,
     [int]$TestTimeoutInMS = 300000,
     [Parameter()]
     [String]$TestParametersFile,
@@ -284,7 +286,8 @@ $Params = @{
     }
     properties = @{
         Target = $Target
-		TestTarget = $TestTarget
+        TestTarget = $TestTarget
+        WorkspaceTemplate = $WorkspaceTemplate
         Configuration = $Configuration
         Version = $Version
         Branch = $Branch
@@ -293,7 +296,7 @@ $Params = @{
         SkipPublishRdcPackage = $SkipPublishRdcPackage
         BuildPlatform = $BuildPlatform
         BuildUrl = $BuildUrl
-		EinsteinSecret = $EinsteinSecret
+        EinsteinSecret = $EinsteinSecret
         Verbosity = $Verbosity
         TestTimeoutInMS = $TestTimeoutInMS
         TestParametersFile = $TestParametersFile
