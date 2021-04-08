@@ -214,7 +214,7 @@ namespace Relativity.Desktop.Client.Legacy.Tests.UI
 			if (RdcWindowsManager.TryGetRdcConfirmationDialog(out DialogWindow confirmationDialog))
 			{
 				confirmationDialog.CaptureWindowScreenshot();
-				confirmationDialog.ClickButton("Cancel");
+				confirmationDialog.ClickButton("OK");
 				progressWindow.SwitchToWindow();
 			}
 
