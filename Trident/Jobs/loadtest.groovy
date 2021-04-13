@@ -159,6 +159,7 @@ timestamps
 						numberOfErrors++
 						echo "Number of errors: ${numberOfErrors}"
 						currentBuild.result = 'FAILED'
+						tools.transferHopper(globalVmInfo)
 					}
 				}
 			}
@@ -175,16 +176,6 @@ timestamps
 					notifyBitbucket()
 
 					Slack.SendSlackNotification("Newest Relativity from '${relativityInstallerSource}'", "Trident loadtests", env.BRANCH_NAME, params.buildConfig, "load-tests", testResultsFailed, testResultsPassed, testResultsSkipped, summaryMessage)
-				}
-			}
-			finally
-			{
-				stage('Delete the hopper instance') 
-				{
-					if(globalVmInfo != null) 
-					{
-						tools.deleteHopperInstance(globalVmInfo.Id)
-					}
 				}
 			}
 		}
