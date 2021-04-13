@@ -445,31 +445,14 @@ timestamps
                 {
                     tools.sendEmailAboutFailureToAuthor(branchName) 
                 }
+                tools.transferHopper(vmInfo)
             }
             finally
             {
-                try
+                stage('Send slack and bitbucket notification')
                 {
-					stage('Delete the hopper instance') 
-					{
-						if(vmInfo != null) 
-						{
-							tools.deleteHopperInstance(vmInfo.Id)
-						}
-					}    
-                }
-                catch (err)
-                {
-                    // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
-                    echo err.toString()
-                }
-                finally
-                {
-                    stage('Send slack and bitbucket notification')
-                    {
-                        notifyBitbucket()
-                        Slack.SendSlackNotification("Relativity from image '${config.sutTemplate}'", buildVersion, env.BRANCH_NAME, params.buildType, "build", testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
-                    }
+                    notifyBitbucket()
+                    Slack.SendSlackNotification("Relativity from image '${config.sutTemplate}'", buildVersion, env.BRANCH_NAME, params.buildType, "build", testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
                 }
             }
         }
