@@ -51,7 +51,7 @@ Public MustInherit Class MonitoredProcessBase
 		Try
 			Initialize()
 		Catch ex As Exception
-			OnInitializationError()
+			OnInitializationError(ex)
 			throw
 		End Try
 		Try
@@ -160,11 +160,17 @@ Public MustInherit Class MonitoredProcessBase
 		SendMetricJobProgress(Statistics, checkThrottling := False)
 	End Sub
 
-	Private Sub OnInitializationError()
-		' send only a basic version of metric since objects may not be initialized correctly
-		Dim metric As MetricJobEndReport = New MetricJobEndReport() With { .JobStatus = TelemetryConstants.JobStatus.Failed }
-		SetBaseMetrics(metric)
-		MetricService.Log(metric)
+	Private Sub OnInitializationError(exception As Exception)
+		Logger.LogError(exception, "Error occurred during initialization")
+
+		Try
+			' send only a basic version of metric since objects may not be initialized correctly
+			Dim metric As MetricJobEndReport = New MetricJobEndReport() With { .JobStatus = TelemetryConstants.JobStatus.Failed }
+			SetBaseMetrics(metric)
+			MetricService.Log(metric)
+		Catch ex As Exception
+			Logger.LogError(ex, "Error occurred while sending metric for failed job.")
+		End Try
 	End Sub
 
 	Protected Overridable Sub SetBaseMetrics(metric As MetricJobBase)
