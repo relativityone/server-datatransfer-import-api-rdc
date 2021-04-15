@@ -6,7 +6,6 @@ newtonsoft.json
 nunit
 relativity.kepler.client
 relativity.logging
-relativity.logging.interfaces
 relativity.services.datacontracts
 relativity.services.interfaces
 relativity.transfer.client

@@ -1,6 +1,6 @@
 castle.core
 castle.windsor
-kcura.outsidein.fi.win32
+Relativity.OutsideIn
 kCura.relativity.client
 moq
 nbuilder
@@ -8,7 +8,6 @@ newtonsoft.json
 nunit
 relativity.kepler.client
 relativity.logging
-relativity.logging.interfaces
 relativity.services.datacontracts
 relativity.services.interfaces
 relativity.testing.identification

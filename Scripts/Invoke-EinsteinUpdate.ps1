@@ -57,22 +57,10 @@ Function Get-DependencyList{
 	$results = ""
 	#fetch versions in dataexchange.client.sdk
 	$seenLineWithDependencies = $False
-
-	foreach($line in Get-Content '.\.paket\paket.template.relativity.dataexchange.client.sdk') {
-
-		if($line -like "*framework: *")
-		{
-			$seenLineWithDependencies = $True
-			continue
-		}
-		if(($line -like "*frameworkAssemblies*")){
-		   break
-		}
-		if(-not $seenLineWithDependencies)
-		{
-			continue
-		}
-		$toAdd = ($line + " <br />")
+	[xml] $nuspec = Get-Content '.\.paket\Relativity.DataExchange.Client.SDK.nuspec'
+	$dependencies = $nuspec.package.metadata.dependencies.group.dependency
+	foreach($dependency in $dependencies) {
+		$toAdd = ($dependency.id + ": " + $dependency.version + " <br />")
 		$results = $results + $toAdd
 	}
 	return $results
