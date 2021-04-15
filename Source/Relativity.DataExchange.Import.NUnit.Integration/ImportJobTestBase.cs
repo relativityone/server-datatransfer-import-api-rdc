@@ -281,11 +281,18 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(
 				testJobResult.FatalException,
 				Is.Null,
-				$"Import was aborted due to the fatal exception: {testJobResult.FatalException?.Message}.");
+				$"Import was aborted due to the fatal exception: {testJobResult.FatalException}.");
+
+			StringBuilder allExceptions = new StringBuilder();
+			foreach (Exception ex in testJobResult.JobFatalExceptions)
+			{
+				allExceptions.AppendLine(ex?.ToString());
+			}
+
 			Assert.That(
 				testJobResult.JobFatalExceptions,
 				Has.Count.Zero,
-				$"{testJobResult.JobFatalExceptions.Count} fatal exceptions were thrown during import.");
+				$"{testJobResult.JobFatalExceptions.Count} fatal exceptions were thrown during import : {allExceptions}");
 		}
 
 		private static void ThenCheckCorrectMessage(
