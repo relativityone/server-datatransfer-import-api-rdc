@@ -371,10 +371,10 @@ task BuildSQLDataComparer -Description "Builds the source code for SQLDataCompar
     }
 }
 
-task CheckSdkDependencies -Description "Checks if the references in ..\.paket\paket.template.relativity.dataexchange.client.sdk can be found in ..\paket.dependencies"{
+task CheckSdkDependencies -Description "Checks if the references in ..\.paket\Relativity.DataExchange.Client.SDK.nuspec can be found in ..\paket.dependencies"{
     exec { 
         & "$ScriptsDir\Check-Sdk-Template.ps1" -SolutionDir $Root
-    } -errorMessage "References in ..\.paket\paket.template.relativity.dataexchange.client.sdk are not equal to ..\paket.dependencies."
+    } -errorMessage "References in ..\.paket\Relativity.DataExchange.Client.SDK.nuspec are not equal to ..\paket.dependencies."
 }
 
 task CheckFolderAccess -Description "Checks if we can write to the destination path"{

@@ -29,7 +29,7 @@ nuget Microsoft.SqlServer.ConnectionInfo = 150.18097.0-xplat
 nuget Microsoft.SqlServer.SqlManagementObjects = 160.2004021.0
 
 # Polly is explicitly listed to avoid conflicts between TAPI and Relativity.
-nuget polly = 5.7
+nuget polly = 5.7.0
 nuget psake = 4.7.4
 nuget Relativity.AutomatedWorkflows.Services.Interfaces ~> 0.1.1-pre-4 pre 
 nuget reportgenerator = 4.1.2
@@ -50,17 +50,16 @@ nuget System.Reactive = 4.0.0
 nuget EWSoftware.SHFB = 2019.8.24
 
 # The Relativity packages below are required by the SDK projects.
-nuget kcura.outsidein.fi.win32 = 2020.8.0
+nuget Relativity.OutsideIn = 2020.8.0
 nuget relativity.logging.interfaces = 3000.0.1
+nuget Relativity.ObjectManager = 12.1.171.20
 nuget relativity.kepler.client = 2.9.2
 nuget relativity.oauth2client = 1.5.2
 nuget relativity.oauth2client.implicit = 1.5.2
 nuget relativity.oauth2client.interfaces = 1.5.2
-nuget relativity.telemetry.datacontracts.shared ~> 3000.0
-nuget relativity.telemetry.services.interface ~> 3000.0
+nuget relativity.telemetry.datacontracts.shared ~> 3000.0.1
+nuget relativity.telemetry.services.interface ~> 3000.0.1
 nuget relativity.transfer.client ~> 7.3.5
-nuget relativity.services.datacontracts = 11.3.11.1
-nuget relativity.services.interfaces = 11.3.11.1
 nuget relativity.services.interfaces.private = 11.3.11.1
 
 # The Relativity packages below are required ONLY for test projects!

@@ -69,7 +69,7 @@ The implementation details are as follows:
 * .\Scripts\Invoke-ILMerge.ps1
   * Performs all ILMERGE functionality
   * The final assembly is stored in the .\Artifacts\binaries\sdk sub-folder
-* .\.paket\paket.template.relativity.dataexchange.client.sdk
+* .\.paket\Relativity.DataExchange.Client.SDK.nuspec
   * Represents the new SDK package template
   * References the ILMERGE'd assembly file
 * Relativity.DataExchange.Export.csproj

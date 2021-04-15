@@ -21,11 +21,9 @@
       <group targetFramework=".NETFramework4.6.2">
         <dependency id="Newtonsoft.Json" version="6.0.8" />
         <dependency id="Polly" version="5.7.0" />
-        <dependency id="Relativity.ObjectManager" version="12.0.78.6" />
         <dependency id="Relativity.Logging" version="3000.0.1" />
-        <dependency id="Relativity.OAuth2.Client" version="1.5.2" />
+        <dependency id="Relativity.ObjectManager" version="12.1.171.20" />
         <dependency id="Relativity.OutsideIn" version="2020.8.0" />
-        <dependency id="Relativity.Telemetry.Client" version="9.4.164" />
         <dependency id="Relativity.Telemetry.Services.Interface" version="3000.0.1" />
         <dependency id="Relativity.Transfer.Client" version="[7.3.5, 7.6.0)" />
       </group>
@@ -36,13 +34,12 @@
     </frameworkAssemblies>
   </metadata>
   <files>
-	<file src=".\license.txt" />
-	<file src=".\relativity-nuget-logo.png" />
-	<file src="..\Artifacts\binaries\sdk\Relativity.DataExchange.Client.SDK.dll" target=".\lib\net462" />
-	<file src="..\Artifacts\binaries\sdk\Relativity.DataExchange.Client.SDK.xml" target=".\lib\net462" />
-	<file src="..\Artifacts\binaries\Relativity.DataExchange.Import\FreeImageNET.dll" target=".\lib\net462" />
-	<file src="..\Artifacts\binaries\Relativity.DataExchange.Export\itextsharp.dll" target=".\lib\net462" />
-	<file src="..\Artifacts\binaries\Relativity.DataExchange.Import\FreeImage.dll" target=".\lib\native" />
-	<file src=".\Relativity.DataExchange.Client.SDK.targets" target=".\build" />
+    <file src=".\license.txt" />
+    <file src=".\relativity-nuget-logo.png" />
+    <file src="..\Artifacts\binaries\sdk\Relativity.DataExchange.Client.SDK.dll" target=".\lib\net462" />
+    <file src="..\Artifacts\binaries\sdk\Relativity.DataExchange.Client.SDK.xml" target=".\lib\net462" />
+    <file src="..\Artifacts\binaries\Relativity.DataExchange.Import\FreeImageNET.dll" target=".\lib\net462" />
+    <file src="..\Artifacts\binaries\Relativity.DataExchange.Import\FreeImage.dll" target=".\lib\native" />
+    <file src=".\Relativity.DataExchange.Client.SDK.targets" target=".\build" />
   </files>
 </package>

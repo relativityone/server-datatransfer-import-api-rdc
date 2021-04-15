@@ -1,6 +1,6 @@
 <#
  .Synopsis
- Checks if the references in \.paket\paket.template.relativity.dataexchange.client.sdk can be found in \paket.dependencies.
+ Checks if the references in \.paket\Relativity.DataExchange.Client.SDK.nuspec can be found in \paket.dependencies.
 
  .Parameter SolutionDir
  The directory of the solution.
@@ -14,29 +14,18 @@ Param(
 $dict = New-Object 'system.collections.generic.dictionary[string,string]'
 
 #fetch versions in dataexchange.client.sdk
-$seenLineWithDependencies = $False
-
-foreach($line in Get-Content ($SolutionDir + '\.paket\paket.template.relativity.dataexchange.client.sdk')) {
-
-    if($line -like "*framework: *")
-    {
-        $seenLineWithDependencies = $True
-        continue
+[xml] $nuspec = Get-Content '.\.paket\Relativity.DataExchange.Client.SDK.nuspec'
+$dependencies = $nuspec.package.metadata.dependencies.group.dependency
+foreach($dependency in $dependencies) {
+    $toAdd = ($dependency.id + ": " + $dependency.version + " <br />")
+    $version = $dependency.version
+    Write-Host $dependency.id $version
+    $versionRangeMatch = Select-String '^\[(.*),.*\)$' -inputobject $version
+    if($versionRangeMatch) {
+        Write-Host "Found version range for:" $dependency.id "validating version:" $version
+        $version = $versionRangeMatch.Matches.Groups[1].value
     }
-    if(($line -like "*frameworkAssemblies*")){
-       break
-    }
-    if(-not $seenLineWithDependencies)
-    {
-        continue
-    }
-    Write-Host $line
-    $lineElements = $line.split(($Null) -as [string],[System.StringSplitOptions]::RemoveEmptyEntries)
-    
-    Write-Host $lineElements[0]
-    Write-Host $lineElements[2]
-
-    $dict.Add($lineElements[0],$lineElements[2])
+    $dict.Add($dependency.id, $version)
 }
 
 #Look at paket.dependencies and find all references that where in dataexchange.client.sdk

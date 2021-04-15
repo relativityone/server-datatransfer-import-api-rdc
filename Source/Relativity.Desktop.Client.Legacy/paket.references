@@ -1,8 +1,7 @@
-kcura.outsidein.fi.win32
+Relativity.OutsideIn
 newtonsoft.json
 relativity.kepler.client
 relativity.logging
-relativity.logging.interfaces
 relativity.oauth2client
 relativity.oauth2client.implicit
 relativity.oauth2client.interfaces
