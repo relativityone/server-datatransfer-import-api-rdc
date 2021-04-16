@@ -178,6 +178,10 @@ timestamps
 					Slack.SendSlackNotification("Newest Relativity from '${relativityInstallerSource}'", "Trident loadtests", env.BRANCH_NAME, params.buildConfig, "load-tests", testResultsFailed, testResultsPassed, testResultsSkipped, summaryMessage)
 				}
 			}
+            catch(err)
+            {
+                echo err.toString()
+            }
 		}
 	}
 }
