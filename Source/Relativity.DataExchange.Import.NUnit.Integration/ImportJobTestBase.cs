@@ -297,21 +297,23 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		protected async Task ThenTheAuditIsCorrectAsync(int userId, DateTime executionTime, List<Dictionary<string, string>> expectedAuditsDetails, int nrOfLastAuditsToTake, AuditHelper.AuditAction action)
 		{
+			const string AuditIdentifierColumnName = "ArtifactID";
 			var auditsDetails = await AuditHelper.GetLastAuditDetailsForActionAsync(this.TestParameters, action, executionTime, nrOfLastAuditsToTake, userId)
-				                   .ConfigureAwait(false);
-
+									.ConfigureAwait(false);
 			var actualAuditsDetails = auditsDetails.ToList();
 
-			Assert.AreEqual(expectedAuditsDetails.Count, actualAuditsDetails.Count);
+			Assert.AreEqual(expectedAuditsDetails.Count, actualAuditsDetails.Count, "Actual number of audit records is different than expected");
 
-			for (int i = 0; i < actualAuditsDetails.Count; i++)
+			foreach (Dictionary<string, string> expectedAuditsDetail in expectedAuditsDetails)
 			{
-				var expectedAuditDetails = expectedAuditsDetails[i];
-				var actualAuditDetails = actualAuditsDetails[i];
+				string expectedAuditRecordIdentifier = expectedAuditsDetail[AuditIdentifierColumnName];
 
-				foreach (string key in expectedAuditDetails.Keys)
+				Dictionary<string, string> actualAuditDetail = actualAuditsDetails.FirstOrDefault(x => x[AuditIdentifierColumnName] == expectedAuditRecordIdentifier);
+				Assert.NotNull(actualAuditDetail, $"Have not found audit record with expected identifier: '{expectedAuditRecordIdentifier}'");
+
+				foreach (string key in expectedAuditsDetail.Keys)
 				{
-					Assert.AreEqual(expectedAuditDetails[key], actualAuditDetails[key], $"Audit verification failed for field '{key}'");
+					Assert.AreEqual(expectedAuditsDetail[key], actualAuditDetail[key], $"Audit verification failed for field '{key}', audit record identifier: '{expectedAuditRecordIdentifier}'");
 				}
 			}
 		}
