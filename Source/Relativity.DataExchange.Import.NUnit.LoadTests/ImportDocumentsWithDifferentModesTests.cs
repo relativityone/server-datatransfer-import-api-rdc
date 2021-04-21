@@ -26,6 +26,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
+	[Ignore("REL-514167")]
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	[TestType.Load]
@@ -34,8 +35,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	{
 		private const string SingleChoiceFieldName = "SingleChoice_SqlComparer";
 		private const string MultiChoiceFieldName = "MultiChoice_SqlComparer";
-		private const string SingleObjectFieldName = "SingleObject_SqlComparer";
-		private const string MultiObjectFieldName = "MultiObject_SqlComparer";
 
 		[CollectDeadlocks]
 		[Performance]
