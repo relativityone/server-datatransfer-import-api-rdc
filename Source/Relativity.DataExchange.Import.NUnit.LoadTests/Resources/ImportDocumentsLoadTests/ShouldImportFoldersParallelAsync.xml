@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <compareConfig>
 	<tables>
-		<table name="EDDSDBO.Document" rowId="ControlNumber">
+		<table name="EDDSDBO.Document" rowId="ControlNumber" mapId="ArtifactID">
 			<ignored>
 				<ignore name="ArtifactID"/>
 				<ignore name="ParentArtifactID_D"/>
 				<ignore name="OriginatingImagingDocumentError"/>
 			</ignored>
 		</table>
-		<table name="EDDSDBO.Artifact" rowId="TextIdentifier">
+		<table name="EDDSDBO.Artifact" rowId="TextIdentifier" mapId="ArtifactID">
 			<ignored>
 				<ignore name="ArtifactID"/>
 				<ignore name="ParentArtifactID"/>

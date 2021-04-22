@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <compareConfig>
 	<tables>
-		<table name="EDDSDBO.Document" rowId="ControlNumber">
+		<table name="EDDSDBO.Document" rowId="ControlNumber" mapId="ArtifactID">
 			<ignored>
 				<ignore name="ArtifactID"/>
 				<ignore name="ParentArtifactID_D"/>
@@ -12,7 +12,7 @@
 				<mapping name="SingleChoice" type="SingleChoice" targetTable="EDDSDBO.Code"/>
 			</mappings>
 		</table>
-		<table name="EDDSDBO.Artifact" rowId="TextIdentifier">
+		<table name="EDDSDBO.Artifact" rowId="TextIdentifier" mapId="ArtifactID">
 			<ignored>
 				<ignore name="ArtifactID"/>
 				<ignore name="ParentArtifactID"/>
@@ -32,7 +32,7 @@
 				<mapping name="AncestorArtifactID" type="Artifact" targetTable="EDDSDBO.ArtifactAncestry"/>
 			</mappings>
 		</table>
-		<table name="EDDSDBO.Code" rowId="Name">
+		<table name="EDDSDBO.Code" rowId="Name" mapId="ArtifactID">
 			<ignored>
 			<ignore name="ArtifactID"/>
 			<ignore name="CodeTypeID"/>

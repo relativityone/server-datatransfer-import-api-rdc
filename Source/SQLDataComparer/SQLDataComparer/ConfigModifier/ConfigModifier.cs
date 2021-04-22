@@ -39,14 +39,14 @@ namespace SQLDataComparer.ConfigModifier
 		{
 			var fileTables = _tableNames.FindAll(CheckIfFileTable);
 
-			AddToConfig(fileTables, ref compareConfig, GetTableConfigForMultiObject);
+			AddToConfig(fileTables, ref compareConfig, GetTableConfigForFiles);
 		}
 
 		private void PopulateWithMultiObjectTables(ref CompareConfig compareConfig)
 		{
 			var multiObjectTables = _tableNames.FindAll(CheckIfMultiObjectTable);
 
-			AddToConfig(multiObjectTables, ref compareConfig, GetTableConfigForFiles);
+			AddToConfig(multiObjectTables, ref compareConfig, GetTableConfigForMultiObject);
 		}
 
 		private static void AddToConfig(List<string> tableNames, ref CompareConfig compareConfig, Func<string, TableConfig> getTable)

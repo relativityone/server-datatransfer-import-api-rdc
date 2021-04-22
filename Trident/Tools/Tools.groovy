@@ -97,6 +97,8 @@ def createHopperInstance(String sutTemplate, String relativityBranch)
 	String vmName = "$productName-${UUID.randomUUID().toString()}"
         
 	buildOwner = utils.getBuildOwner()
+    
+    echo "Build owner: ${buildOwner}."
 
 	String vmDescription = "$productName - ${env.BRANCH_NAME} - ${currentBuild.displayName}"
 	vmInfo = utils.createHopper("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", sutTemplate, vmName, vmDescription, buildOwner, productName)
@@ -165,5 +167,18 @@ def transferHopper(Map vmInfo)
 	{
 		echo err.toString()
 	}
+}
+
+def renewHopperInstanceLease(Map vmInfo)
+{
+    try
+    {
+        echo "Renewing Hopper Instance lease."
+        utils.renewInstanceLease("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", vmInfo.Id)
+    }
+ 	catch (err)
+	{
+		echo err.toString()
+	}   
 }
 return this;

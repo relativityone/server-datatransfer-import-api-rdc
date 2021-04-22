@@ -69,6 +69,7 @@ timestamps
 					{
 						echo "Getting hopper for ${hopperTemplate}"
 						globalVmInfo = tools.createHopperInstance(hopperTemplate, relativityInstallerSource)
+                        tools.renewHopperInstanceLease(globalVmInfo)
 						
 						try
 						{   
