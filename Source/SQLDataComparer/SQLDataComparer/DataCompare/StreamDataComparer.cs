@@ -238,7 +238,7 @@ namespace SQLDataComparer.DataCompare
 			string leftRowId = leftSubTable.Rows[0][leftSubTable.RowId];
 			string rightRowId = rightSubTable.Rows[0][leftSubTable.RowId];
 
-			int rowIdComparisonResult = string.Compare(leftRowId, rightRowId, StringComparison.CurrentCultureIgnoreCase);
+			int rowIdComparisonResult = string.Compare(leftRowId.TrimEnd(), rightRowId.TrimEnd(), StringComparison.CurrentCultureIgnoreCase);
 
 			if (leftSubTable.MappedStrings.ContainsKey(leftSubTable.RowId) 
 			    && rowIdComparisonResult != 0 

@@ -385,7 +385,7 @@ namespace SQLDataComparer.DataLoad
 			queryBuilder.Append($" JOIN {tableConfig.Name} AS sub");
 			queryBuilder.Append($" ON mapped.{mappingConfig.Name}");
 			queryBuilder.Append($" = sub.{tableConfig.MapId}");
-			queryBuilder.Append($" ORDER BY main.{tableConfig.RowId}");
+			queryBuilder.Append($" ORDER BY main.{tableConfig.RowId}, sub.{tableConfig.RowId}");
 
 			return queryBuilder.ToString();
 		}
