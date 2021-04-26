@@ -8,8 +8,8 @@
 				<ignore name="OriginatingImagingDocumentError"/>
 			</ignored>
 			<mappings>
-				<mapping name="MultiChoice" type="MultiChoice" targetTable="EDDSDBO.Code"/>
-				<mapping name="SingleChoice" type="SingleChoice" targetTable="EDDSDBO.Code"/>
+				<mapping name="Multi-Choice-0-0" type="MultiChoice" targetTable="EDDSDBO.Code"/>
+				<mapping name="Single-Choice-0-0" type="SingleChoice" targetTable="EDDSDBO.Code"/>
 			</mappings>
 		</table>
 		<table name="EDDSDBO.Artifact" rowId="TextIdentifier" mapId="ArtifactID">

@@ -294,7 +294,15 @@ namespace SQLDataComparer.DataLoad
 				var command = new SqlCommand(query, connection);
 				_log.LogQuery(command.CommandText, command.Parameters);
 
-				codeTypeID = command.ExecuteScalar().ToString();
+				try
+				{
+					codeTypeID = command.ExecuteScalar().ToString();
+				}
+				catch (Exception ex)
+				{
+					_log.LogError($"Cannot retrieve Code Type ID for '{mapping.Name}', exception: '{ex}'");
+					throw;
+				}
 			}
 
 			StringBuilder queryBuilder = new StringBuilder();
