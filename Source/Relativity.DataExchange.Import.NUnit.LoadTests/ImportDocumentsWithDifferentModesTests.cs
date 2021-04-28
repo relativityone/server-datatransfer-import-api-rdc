@@ -26,7 +26,6 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
-	[Ignore("REL-514167")]
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	[TestType.Load]
@@ -43,7 +42,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[IdentifiedTest("8ddb535f-6a0f-4b2b-b89e-2d16be3f4770")]
 		public async Task ShouldImportForSqlComparerAsync(
 			[Values(1, 4, 8, 12)] int parallelIApiClientCount,
-			[Values(200_000)] int numberOfDocumentsPerIApiClient,
+			[Values(2_000)] int numberOfDocumentsPerIApiClient,
 			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode,
 			[Values(TapiClient.Web)] TapiClient client)
 		{
