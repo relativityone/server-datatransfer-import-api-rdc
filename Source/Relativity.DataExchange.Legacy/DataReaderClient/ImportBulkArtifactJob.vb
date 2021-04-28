@@ -105,64 +105,63 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Sub Execute() Implements IImportBulkArtifactJob.Execute
 			_jobReport = New JobReport()
 			_jobReport.StartTime = DateTime.Now()
+			Try
+				' authenticate here
+				If _credentials Is Nothing Then
+					ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
+					Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword, _runningContext)
+					_credentials = creds.Credentials
+					_webApiCredential.Credential = creds.Credentials
+					_cookieMonster = creds.CookieMonster
+				End If
 
-			' authenticate here
-			If _credentials Is Nothing Then
-				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
-				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword, _runningContext)
-				_credentials = creds.Credentials
-				_webApiCredential.Credential = creds.Credentials
-				_cookieMonster = creds.CookieMonster
-			End If
+				If IsSettingsValid() Then
 
-			If IsSettingsValid() Then
+					RaiseEvent OnMessage(New Status("Getting source data from database"))
+					Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_webApiCredential.Credential))
+					_runningContext.ApplicationName = Settings.ApplicationName
+					Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(metricService, _runningContext) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
+						_processContext = process.Context
 
-				RaiseEvent OnMessage(New Status("Getting source data from database"))
-				Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_webApiCredential.Credential))
-				_runningContext.ApplicationName = Settings.ApplicationName
-				Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(metricService, _runningContext) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
-					_processContext = process.Context
+						If Settings.DisableNativeValidation.HasValue Then process.DisableNativeValidation = Settings.DisableNativeValidation.Value
+						If Settings.DisableNativeLocationValidation.HasValue Then process.DisableNativeLocationValidation = Settings.DisableNativeLocationValidation.Value
+						process.MaximumErrorCount = Settings.MaximumErrorCount
+						process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
+						process.AuditLevel = Settings.AuditLevel
+						process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
+						process.LoadImportedFullTextFromServer = Settings.LoadImportedFullTextFromServer
+						process.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation
+						process.OIFileIdColumnName = Settings.OIFileIdColumnName
+						If (Not String.IsNullOrEmpty(Settings.BulkLoadFileFieldDelimiter)) Then
+							process.BulkLoadFileFieldDelimiter = Settings.BulkLoadFileFieldDelimiter
+						Else
+							process.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
+						End If
+						process.OIFileIdMapped = Settings.OIFileIdMapped
+						process.OIFileTypeColumnName = Settings.OIFileTypeColumnName
+						process.SupportedByViewerColumn = Settings.SupportedByViewerColumn
+						process.FileSizeMapped = Settings.FileSizeMapped
+						process.FileSizeColumn = Settings.FileSizeColumn
+						process.FileNameColumn = Settings.FileNameColumn
+						process.TimeKeeperManager = Settings.TimeKeeperManager
 
-					If Settings.DisableNativeValidation.HasValue Then process.DisableNativeValidation = Settings.DisableNativeValidation.Value
-					If Settings.DisableNativeLocationValidation.HasValue Then process.DisableNativeLocationValidation = Settings.DisableNativeLocationValidation.Value
-					process.MaximumErrorCount = Settings.MaximumErrorCount
-					process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
-					process.AuditLevel = Settings.AuditLevel
-					process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
-					process.LoadImportedFullTextFromServer = Settings.LoadImportedFullTextFromServer
-					process.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation
-					process.OIFileIdColumnName = Settings.OIFileIdColumnName
-					If (Not String.IsNullOrEmpty(Settings.BulkLoadFileFieldDelimiter)) Then
-						process.BulkLoadFileFieldDelimiter = Settings.BulkLoadFileFieldDelimiter
-					Else
-						process.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
-					End If
-					process.OIFileIdMapped = Settings.OIFileIdMapped
-					process.OIFileTypeColumnName = Settings.OIFileTypeColumnName
-					process.SupportedByViewerColumn = Settings.SupportedByViewerColumn
-					process.FileSizeMapped = Settings.FileSizeMapped
-					process.FileSizeColumn = Settings.FileSizeColumn
-					process.FileNameColumn = Settings.FileNameColumn
-					process.TimeKeeperManager = Settings.TimeKeeperManager
+						RaiseEvent OnMessage(New Status("Updating settings"))
+						process.LoadFile = CreateLoadFile(Settings)
+						process.CaseInfo = process.LoadFile.CaseInfo
 
-					RaiseEvent OnMessage(New Status("Updating settings"))
-					process.LoadFile = CreateLoadFile(Settings)
-                    process.CaseInfo = process.LoadFile.CaseInfo
-
-					RaiseEvent OnMessage(New Status("Executing"))
-					Try
+						RaiseEvent OnMessage(New Status("Executing"))
 						process.Start()
-					Catch ex As Exception
-						RaiseEvent OnMessage(New Status(String.Format("Exception: {0}", ex.ToString)))
-						_jobReport.FatalException = ex
-						RaiseFatalException()
-					End Try
-				End Using
-			Else
-				RaiseEvent OnMessage(New Status("There was an error in your settings.  Import aborted."))
-				' exception was set in the IsSettingsValid function
+					End Using
+				Else
+					RaiseEvent OnMessage(New Status("There was an error in your settings.  Import aborted."))
+					' exception was set in the IsSettingsValid function
+					RaiseFatalException()
+				End If
+			Catch ex As Exception
+				RaiseEvent OnMessage(New Status(String.Format("Exception: {0}", ex.ToString)))
+				_jobReport.FatalException = ex
 				RaiseFatalException()
-			End If
+			End Try
 		End Sub
 
 		'The 'OnComplete' and 'OnFatalException' events are alternatives to OnMessage, OnError, and
@@ -353,7 +352,9 @@ Namespace kCura.Relativity.DataReaderClient
 			If Not idField Is Nothing Then
 				For i As Integer = 0 To _nativeDataReader.SourceData.FieldCount - 1
 					If _nativeDataReader.SourceData.GetName(i) = idField.FieldName AndAlso idField.FieldID <> IdentityFieldId Then
-						Throw New ImportSettingsException("The field marked [identifier] cannot be part of a field map when it's not the Overlay Identifier field")
+						_jobReport.FatalException = New ImportSettingsException("The field marked [identifier] cannot be part of a field map when it's not the Overlay Identifier field")
+						RaiseEvent OnMessage(New Status("There was an error in your settings.  Import aborted."))
+						RaiseFatalException()
 					End If
 				Next
 			End If

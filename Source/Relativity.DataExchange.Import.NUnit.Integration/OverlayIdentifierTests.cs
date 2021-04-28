@@ -101,8 +101,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				new DocumentWithKeyFieldDto("24", "D"),
 			};
 
-			// ARRANGE && ACT && ASSERT
-			Assert.Throws<ImportSettingsException>(() => ArrangeAndActOverlayIndetifierTest(ArtifactType.Document, overwriteMode, initialData, importData));
+			// ARRANGE && ACT
+			var results = ArrangeAndActOverlayIndetifierTest(ArtifactType.Document, overwriteMode, initialData, importData);
+
+			// ASSERT
+			var jobException = results.JobFatalExceptions.FirstOrDefault();
+			Assert.That(jobException, Is.Not.Null);
+			Assert.That(jobException, Is.TypeOf<ImportSettingsException>());
+			Assert.That(jobException.Message, Contains.Substring("The field marked [identifier] cannot be part of a field map when it's not the Overlay Identifier field must be set"));
 		}
 
 		[TestCaseSource(typeof(OverlayIdentifierTestCases), nameof(OverlayIdentifierTestCases.ShouldOverlayIdentifierTestCaseData))]

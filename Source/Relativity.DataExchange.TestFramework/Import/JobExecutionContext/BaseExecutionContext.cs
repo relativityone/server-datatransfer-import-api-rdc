@@ -198,6 +198,7 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 		{
 			lock (this.testJobResultLock)
 			{
+				this.TestJobResult.CompletedJobReport = jobReport;
 				this.TestJobResult.JobFatalExceptions.Add(jobReport.FatalException);
 			}
 
