@@ -20,6 +20,7 @@ testResultsPassed = 0
 testResultsFailed = 0
 testResultsSkipped = 0
 sqlComparerTestsResultFailed = 0
+numberOfLeaseRenewals = 3
 
 def globalVmInfo = null
 numberOfErrors = 0	
@@ -69,7 +70,7 @@ timestamps
 					{
 						echo "Getting hopper for ${hopperTemplate}"
 						globalVmInfo = tools.createHopperInstance(hopperTemplate, relativityInstallerSource)
-                        tools.renewHopperInstanceLease(globalVmInfo)
+                        tools.renewHopperInstanceLease(globalVmInfo, numberOfLeaseRenewals)
 						
 						try
 						{   

@@ -18,6 +18,7 @@ testResultsPassed = 0
 testResultsFailed = 0
 testResultsSkipped = 0
 testResultsFailedForsutTemplate = 0
+numberOfLeaseRenewals = 1
 
 String[] templates = params.temlatesStr.tokenize(',')
 
@@ -69,6 +70,7 @@ timestamps
 						{
 							echo "Getting hopper for ${sutTemplate}"
 							globalVmInfo = tools.createHopperInstance(sutTemplate, null)
+                            tools.renewHopperInstanceLease(globalVmInfo, numberOfLeaseRenewals)
 							
 							echo "Replacing variables for ${sutTemplate}"
 							replaceTestVariables(sutTemplate, globalVmInfo.Url)
@@ -109,6 +111,7 @@ timestamps
 						echo "Number of errors: ${numberOfErrors}"
 						currentBuild.result = 'FAILED'
 						inCompatibleEnvironments = inCompatibleEnvironments + sutTemplate + " "
+                        tools.transferHopper(globalVmInfo)
 					}
 					finally
 					{

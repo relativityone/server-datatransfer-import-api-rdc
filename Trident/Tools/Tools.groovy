@@ -103,12 +103,7 @@ def createHopperInstance(String sutTemplate, String relativityBranch)
 	String vmDescription = "$productName - ${env.BRANCH_NAME} - ${currentBuild.displayName}"
 	vmInfo = utils.createHopper("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", sutTemplate, vmName, vmDescription, buildOwner, productName)
 	utils.createHopperTestSettings(vmInfo)
-	// The hopper we created self destructs in a certain time period. This increases that timer by a bit. 
-	// Therefore we call this function twice to make sure the hopper outlasts testing.
-	utils.renewInstanceLease("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", vmInfo.Id)
-	utils.renewInstanceLease("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", vmInfo.Id)
 
-	
 	if(relativityBranch != null && !relativityBranch.isEmpty()) 
 	{
 		try{
@@ -169,12 +164,16 @@ def transferHopper(Map vmInfo)
 	}
 }
 
-def renewHopperInstanceLease(Map vmInfo)
+def renewHopperInstanceLease(Map vmInfo, int numberOfTimes)
 {
     try
     {
-        echo "Renewing Hopper Instance lease."
-        utils.renewInstanceLease("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", vmInfo.Id)
+        echo "Renewing Hopper Instance lease ${numberOfTimes} times."
+        
+        for(i = 0; i < numberOfTimes; i++)
+        {
+            utils.renewInstanceLease("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", vmInfo.Id)
+        }
     }
  	catch (err)
 	{

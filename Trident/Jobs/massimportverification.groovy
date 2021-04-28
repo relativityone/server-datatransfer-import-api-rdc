@@ -20,6 +20,7 @@ testResultsPassed = 0
 testResultsFailed = 0
 testResultsSkipped = 0
 sqlComparerTestsResultFailed = 0
+numberOfLeaseRenewals = 1
 
 def globalVmInfo = null
 numberOfErrors = 0	
@@ -68,6 +69,7 @@ timestamps
 					{
 						echo "Getting hopper for ${hopperTemplate}"
 						globalVmInfo = tools.createHopperInstance(hopperTemplate, relativityInstallerSource)
+                        tools.renewHopperInstanceLease(globalVmInfo, numberOfLeaseRenewals)
 						
 						try
 						{
@@ -176,6 +178,7 @@ timestamps
 						numberOfErrors++
 						echo "Number of errors: ${numberOfErrors}"
 						currentBuild.result = 'FAILED'
+                        tools.transferHopper(globalVmInfo)
 					}
 					finally
 					{

@@ -19,6 +19,7 @@ testResultsPassed = 0
 testResultsFailed = 0
 testResultsSkipped = 0
 testResultsFailedForsutTemplate = 0
+numberOfLeaseRenewals = 1
 
 def globalVmInfo = null
 numberOfErrors = 0
@@ -76,6 +77,7 @@ timestamps
 						{
 							echo "Getting hopper for ${sutTemplate}"
 							globalVmInfo = tools.createHopperInstance(hopperTemplate, sutTemplate)
+                            tools.renewHopperInstanceLease(globalVmInfo, numberOfLeaseRenewals)
 						}
 						
 						stage("Run tests against Relativity ${sutTemplate}")
@@ -132,6 +134,7 @@ timestamps
 						echo "Number of errors: ${numberOfErrors}"
 						currentBuild.result = 'FAILED'
 						inCompatibleEnvironments = inCompatibleEnvironments + sutTemplate + " "
+                        tools.transferHopper(globalVmInfo)
 					}
 					finally
 					{
