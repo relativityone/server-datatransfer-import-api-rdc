@@ -59,6 +59,20 @@ timestamps
 				echo output
 			}
 
+			try
+			{
+				stage('Validate RDC installer')
+				{
+					powershell ".\\build.ps1 CheckRdcDependencies"
+				}
+			}
+			catch(err)
+			{
+				echo err.toString()
+				echo "RDC installer is not valid."
+				currentBuild.result = 'FAILED'
+			}
+
 			for(sutTemplate in templates)
 			{
 				timeout(time: 3, unit: 'HOURS')
