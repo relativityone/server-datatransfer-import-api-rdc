@@ -26,6 +26,7 @@
 			' This bucket name starts with "RDC" because that's registered prefix for our metrics. Authentication metrics are only send from ImportAPI class.
 			Public Const AUTHENTICATION As String = "RDC.IAPI.Authentication"
 			Public Const SQL_THROUGHPUT As String = "RDC.Performance.SqlBulkImportThroughput"
+			Public Const COMPLETED_FILES As String = "RDC.Usage.CompletedFiles"
 		End Class
 
 		''' <summary>
@@ -65,6 +66,10 @@
 			Public Const JOB_START_TIMESTAMP As String = "JobStartTimeStamp"
 			Public Const JOB_END_TIMESTAMP As String = "JobEndTimeStamp"
 			Public Const JOB_RUN_ID As String = "JobRunId"
+			Public Const EXPORTED_NATIVE_COUNT As String = "ExportedNativeCount"
+			Public Const EXPORTED_PDF_COUNT As String = "ExportedPdfCount"
+			Public Const EXPORTED_IMAGE_COUNT As String = "ExportedImageCount"
+			Public Const EXPORTED_LONG_TEXT_COUNT As String = "ExportedLongTextCount"
 		End Class
 
 		''' <summary>

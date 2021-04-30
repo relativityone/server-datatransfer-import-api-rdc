@@ -68,51 +68,92 @@ namespace Relativity.DataExchange.Export.NUnit
 			LongText textD = ModelFactory.GetLongText(nativeD.Artifact.ArtifactID, this._longTextRepository);
 
 			int actualDocumentExportedCount = 0;
+			int actualNativeExported = 0, actualImageExported = 0, actualLongTextExported = 0;
 			string actualLine = string.Empty;
 			this._status.Setup(x => x.UpdateDocumentExportedCount(It.IsAny<int>())).Callback((int docs) => actualDocumentExportedCount = docs);
 			this._status.Setup(x => x.WriteStatusLine(It.IsAny<EventType2>(), It.IsAny<string>(), It.IsAny<bool>()))
 				.Callback((EventType2 eventType, string line, bool isEssential) => actualLine = line);
+			this._status.Setup(x => x.UpdateFilesExportedCount(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
+				.Callback((int native, int pdf, int image, int longText) =>
+						{
+							actualNativeExported = native;
+							actualImageExported = image;
+							actualLongTextExported = longText;
+						});
 
 			// ACT
 			this._instance.MarkFileAsCompleted(imageB1.ExportRequest.DestinationLocation, imageB1.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(0));
+			Assert.That(actualNativeExported, Is.EqualTo(0));
+			Assert.That(actualImageExported, Is.EqualTo(1));
+			Assert.That(actualLongTextExported, Is.EqualTo(0));
 			Assert.That(actualLine, Does.Contain(string.Empty));
 
 			// 1 downloaded (A)
 			this._instance.MarkFileAsCompleted(nativeA.ExportRequest.DestinationLocation, nativeA.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
+			Assert.That(actualNativeExported, Is.EqualTo(1));
+			Assert.That(actualImageExported, Is.EqualTo(1));
+			Assert.That(actualLongTextExported, Is.EqualTo(0));
 
 			this._instance.MarkFileAsCompleted(nativeC.ExportRequest.DestinationLocation, nativeC.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
+			Assert.That(actualNativeExported, Is.EqualTo(2));
+			Assert.That(actualImageExported, Is.EqualTo(1));
+			Assert.That(actualLongTextExported, Is.EqualTo(0));
 
 			// 2 downloaded (A, C)
 			this._instance.MarkLongTextAsCompleted(textC.ExportRequest.DestinationLocation, textC.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
+			Assert.That(actualNativeExported, Is.EqualTo(2));
+			Assert.That(actualImageExported, Is.EqualTo(1));
+			Assert.That(actualLongTextExported, Is.EqualTo(1));
 
 			this._instance.MarkFileAsCompleted(nativeB.ExportRequest.DestinationLocation, nativeB.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
+			Assert.That(actualNativeExported, Is.EqualTo(3));
+			Assert.That(actualImageExported, Is.EqualTo(1));
+			Assert.That(actualLongTextExported, Is.EqualTo(1));
 
 			// 3 downloaded (A, C, B)
 			this._instance.MarkFileAsCompleted(imageB2.ExportRequest.DestinationLocation, imageB2.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+			Assert.That(actualNativeExported, Is.EqualTo(3));
+			Assert.That(actualImageExported, Is.EqualTo(2));
+			Assert.That(actualLongTextExported, Is.EqualTo(1));
 
 			this._instance.MarkLongTextAsCompleted(textD.ExportRequest.DestinationLocation, textD.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+			Assert.That(actualNativeExported, Is.EqualTo(3));
+			Assert.That(actualImageExported, Is.EqualTo(2));
+			Assert.That(actualLongTextExported, Is.EqualTo(2));
 
 			this._instance.MarkFileAsCompleted(imageD.ExportRequest.DestinationLocation, imageD.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+			Assert.That(actualNativeExported, Is.EqualTo(3));
+			Assert.That(actualImageExported, Is.EqualTo(3));
+			Assert.That(actualLongTextExported, Is.EqualTo(2));
 
 			// 4 download (A, C, B, D)
 			this._instance.MarkFileAsCompleted(nativeD.ExportRequest.DestinationLocation, nativeD.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
+			Assert.That(actualNativeExported, Is.EqualTo(4));
+			Assert.That(actualImageExported, Is.EqualTo(3));
+			Assert.That(actualLongTextExported, Is.EqualTo(2));
 
 			// None downloaded - just an error.
 			this._instance.MarkArtifactAsError(999, "error message");
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(5));
+			Assert.That(actualNativeExported, Is.EqualTo(4));
+			Assert.That(actualImageExported, Is.EqualTo(3));
+			Assert.That(actualLongTextExported, Is.EqualTo(2));
 
 			// Handle duplicates
 			this._instance.MarkArtifactAsError(999, "error message");
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(5));
+			Assert.That(actualNativeExported, Is.EqualTo(4));
+			Assert.That(actualImageExported, Is.EqualTo(3));
+			Assert.That(actualLongTextExported, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -143,56 +184,117 @@ namespace Relativity.DataExchange.Export.NUnit
 			FileRequest<ObjectExportInfo> pdfE = ModelFactory.GetPdf(this._pdfRepository, nativeE.Artifact.ArtifactID);
 
 			int actualDocumentExportedCount = 0;
+			int actualNativeExported = 0, actualPdfExported = 0, actualImageExported = 0, actualLongTextExported = 0;
 			string actualLine = string.Empty;
 			this._status.Setup(x => x.UpdateDocumentExportedCount(It.IsAny<int>())).Callback((int docs) => actualDocumentExportedCount = docs);
 			this._status.Setup(x => x.WriteStatusLine(It.IsAny<EventType2>(), It.IsAny<string>(), It.IsAny<bool>()))
 				.Callback((EventType2 eventType, string line, bool isEssential) => actualLine = line);
+			this._status.Setup(x => x.UpdateFilesExportedCount(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
+				.Callback((int native, int pdf, int image, int longText) =>
+						{
+							actualNativeExported = native;
+							actualPdfExported = pdf;
+							actualImageExported = image;
+							actualLongTextExported = longText;
+						});
 
 			// ACT
 			this._instance.MarkFileAsCompleted(pdfB.ExportRequest.DestinationLocation, pdfB.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(0));
+			Assert.That(actualNativeExported, Is.EqualTo(0));
+			Assert.That(actualPdfExported, Is.EqualTo(1));
+			Assert.That(actualImageExported, Is.EqualTo(0));
+			Assert.That(actualLongTextExported, Is.EqualTo(0));
 			Assert.That(actualLine, Does.Contain(string.Empty));
 
 			// Download A
 			this._instance.MarkFileAsCompleted(nativeA.ExportRequest.DestinationLocation, nativeA.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
+			Assert.That(actualNativeExported, Is.EqualTo(1));
+			Assert.That(actualPdfExported, Is.EqualTo(1));
+			Assert.That(actualImageExported, Is.EqualTo(0));
+			Assert.That(actualLongTextExported, Is.EqualTo(0));
 
 			// Download B
 			this._instance.MarkFileAsCompleted(nativeB.ExportRequest.DestinationLocation, nativeB.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
+			Assert.That(actualNativeExported, Is.EqualTo(2));
+			Assert.That(actualPdfExported, Is.EqualTo(1));
+			Assert.That(actualImageExported, Is.EqualTo(0));
+			Assert.That(actualLongTextExported, Is.EqualTo(0));
 
 			// Download C
 			this._instance.MarkFileAsCompleted(nativeC.ExportRequest.DestinationLocation, nativeC.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
+			Assert.That(actualNativeExported, Is.EqualTo(3));
+			Assert.That(actualPdfExported, Is.EqualTo(1));
+			Assert.That(actualImageExported, Is.EqualTo(0));
+			Assert.That(actualLongTextExported, Is.EqualTo(0));
 
 			this._instance.MarkFileAsCompleted(pdfC.ExportRequest.DestinationLocation, pdfC.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
+			Assert.That(actualNativeExported, Is.EqualTo(3));
+			Assert.That(actualPdfExported, Is.EqualTo(2));
+			Assert.That(actualImageExported, Is.EqualTo(0));
+			Assert.That(actualLongTextExported, Is.EqualTo(0));
 
 			this._instance.MarkLongTextAsCompleted(textC.ExportRequest.DestinationLocation, textC.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+			Assert.That(actualNativeExported, Is.EqualTo(3));
+			Assert.That(actualPdfExported, Is.EqualTo(2));
+			Assert.That(actualImageExported, Is.EqualTo(0));
+			Assert.That(actualLongTextExported, Is.EqualTo(1));
 
 			// Download D
 			this._instance.MarkFileAsCompleted(pdfD.ExportRequest.DestinationLocation, pdfD.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+			Assert.That(actualNativeExported, Is.EqualTo(3));
+			Assert.That(actualPdfExported, Is.EqualTo(3));
+			Assert.That(actualImageExported, Is.EqualTo(0));
+			Assert.That(actualLongTextExported, Is.EqualTo(1));
 
 			this._instance.MarkFileAsCompleted(nativeD.ExportRequest.DestinationLocation, nativeD.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+			Assert.That(actualNativeExported, Is.EqualTo(4));
+			Assert.That(actualPdfExported, Is.EqualTo(3));
+			Assert.That(actualImageExported, Is.EqualTo(0));
+			Assert.That(actualLongTextExported, Is.EqualTo(1));
 
 			this._instance.MarkFileAsCompleted(imageD.ExportRequest.DestinationLocation, imageD.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
+			Assert.That(actualNativeExported, Is.EqualTo(4));
+			Assert.That(actualPdfExported, Is.EqualTo(3));
+			Assert.That(actualImageExported, Is.EqualTo(1));
+			Assert.That(actualLongTextExported, Is.EqualTo(1));
 
 			// Download E
 			this._instance.MarkLongTextAsCompleted(textE.ExportRequest.DestinationLocation, textE.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
+			Assert.That(actualNativeExported, Is.EqualTo(4));
+			Assert.That(actualPdfExported, Is.EqualTo(3));
+			Assert.That(actualImageExported, Is.EqualTo(1));
+			Assert.That(actualLongTextExported, Is.EqualTo(2));
 
 			this._instance.MarkFileAsCompleted(nativeE.ExportRequest.DestinationLocation, nativeE.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
+			Assert.That(actualNativeExported, Is.EqualTo(5));
+			Assert.That(actualPdfExported, Is.EqualTo(3));
+			Assert.That(actualImageExported, Is.EqualTo(1));
+			Assert.That(actualLongTextExported, Is.EqualTo(2));
 
 			this._instance.MarkFileAsCompleted(imageE.ExportRequest.DestinationLocation, imageE.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
+			Assert.That(actualNativeExported, Is.EqualTo(5));
+			Assert.That(actualPdfExported, Is.EqualTo(3));
+			Assert.That(actualImageExported, Is.EqualTo(2));
+			Assert.That(actualLongTextExported, Is.EqualTo(2));
 
 			this._instance.MarkFileAsCompleted(pdfE.ExportRequest.DestinationLocation, pdfE.ExportRequest.Order, true);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(5));
+			Assert.That(actualNativeExported, Is.EqualTo(5));
+			Assert.That(actualPdfExported, Is.EqualTo(4));
+			Assert.That(actualImageExported, Is.EqualTo(2));
+			Assert.That(actualLongTextExported, Is.EqualTo(2));
 		}
 
 		[Test]

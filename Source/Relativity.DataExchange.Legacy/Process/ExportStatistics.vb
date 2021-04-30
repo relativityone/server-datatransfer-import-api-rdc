@@ -3,6 +3,26 @@ Namespace kCura.WinEDDS
 		Inherits Statistics
 
 		''' <summary>
+		''' Number of successfully exported native files.
+		''' </summary>
+		Public ExportedNativeCount As Int32
+
+		''' <summary>
+		''' Number of successfully exported searchable PDF files.
+		''' </summary>
+		Public ExportedPdfCount As Int32
+
+		''' <summary>
+		''' Number of successfully exported images.
+		''' </summary>
+		Public ExportedImageCount As Int32
+
+		''' <summary>
+		''' Number of successfully exported long text files.
+		''' </summary>
+		Public ExportedLongTextCount As Int32
+
+		''' <summary>
 		''' Converts this instance into a dictionary containing limited name/value pairs.
 		''' </summary>
 		''' <remarks>

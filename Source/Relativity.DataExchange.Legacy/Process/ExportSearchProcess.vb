@@ -123,6 +123,15 @@ Namespace kCura.WinEDDS
 			Return Not _hasFatalErrorOccured
 		End Function
 
+		Protected Overrides Function BuildEndMetric(jobStatus As TelemetryConstants.JobStatus) As MetricJobEndReport
+			Dim metric As MetricJobEndReport = MyBase.BuildEndMetric(jobStatus)
+			metric.ExportedNativeCount = _searchExporter.Statistics.ExportedNativeCount
+			metric.ExportedPdfCount = _searchExporter.Statistics.ExportedPdfCount
+			metric.ExportedImageCount = _searchExporter.Statistics.ExportedImageCount
+			metric.ExportedLongTextCount = _searchExporter.Statistics.ExportedLongTextCount
+			Return metric
+		End Function
+
 		Private Sub _searchExporter_FileTransferModeChangeEvent(ByVal sender As Object, ByVal args As Global.Relativity.DataExchange.Transfer.TapiMultiClientEventArgs) Handles _searchExporter.FileTransferMultiClientModeChangeEvent
 			If _uploadModeText Is Nothing Then
 				_uploadModeText = TapiModeHelper.BuildDocText()

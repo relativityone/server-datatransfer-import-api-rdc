@@ -10,6 +10,7 @@ Namespace kCura.WinEDDS
 		Sub WriteWarningWithoutDocCount(ByVal line As String)
 		Sub WriteUpdate(ByVal line As String, Optional ByVal isEssential As Boolean = True)
 		Sub UpdateDocumentExportedCount(count As Int32)
+		Sub UpdateFilesExportedCount(nativeCount As Int32, pdfCount As Int32, imageCount As Int32, longTextCount As Int32)
 	End Interface
 
 End Namespace

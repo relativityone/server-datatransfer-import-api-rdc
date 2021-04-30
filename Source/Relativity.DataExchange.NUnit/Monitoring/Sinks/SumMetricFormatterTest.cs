@@ -44,7 +44,7 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[TestCase(TelemetryConstants.TransferDirection.Import, 7)]
-		[TestCase(TelemetryConstants.TransferDirection.Export, 6)]
+		[TestCase(TelemetryConstants.TransferDirection.Export, 10)]
 		public void ShouldFormatMetricJobEndReport(TelemetryConstants.TransferDirection transferDirection, int numberOfGeneratedMetrics)
 		{
 			// Arrange

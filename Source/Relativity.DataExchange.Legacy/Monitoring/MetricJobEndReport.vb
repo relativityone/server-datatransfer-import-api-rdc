@@ -201,5 +201,57 @@ Namespace Monitoring
 				CustomData.Item(TelemetryConstants.KeyName.JOB_RUN_ID) = Value
 			End Set
 		End Property
+
+		''' <summary>
+		''' Gets or sets total number of exported native files.
+		''' </summary>
+		''' <returns>The total number of exported native files.</returns>
+		Public Property ExportedNativeCount As Long
+			Get
+				Return GetValueOrDefault (Of Long)(TelemetryConstants.KeyName.EXPORTED_NATIVE_COUNT)
+			End Get
+			Set
+				CustomData.Item(TelemetryConstants.KeyName.EXPORTED_NATIVE_COUNT) = Value
+			End Set
+		End Property
+
+		''' <summary>
+		''' Gets or sets total number of exported PDF files.
+		''' </summary>
+		''' <returns>The total number of exported PDF files.</returns>
+		Public Property ExportedPdfCount As Long
+			Get
+				Return GetValueOrDefault (Of Long)(TelemetryConstants.KeyName.EXPORTED_PDF_COUNT)
+			End Get
+			Set
+				CustomData.Item(TelemetryConstants.KeyName.EXPORTED_PDF_COUNT) = Value
+			End Set
+		End Property
+
+		''' <summary>
+		''' Gets or sets total number of exported image files.
+		''' </summary>
+		''' <returns>The total number of exported image files.</returns>
+		Public Property ExportedImageCount As Long
+			Get
+				Return GetValueOrDefault (Of Long)(TelemetryConstants.KeyName.EXPORTED_IMAGE_COUNT)
+			End Get
+			Set
+				CustomData.Item(TelemetryConstants.KeyName.EXPORTED_IMAGE_COUNT) = Value
+			End Set
+		End Property
+
+		''' <summary>
+		''' Gets or sets total number of exported long text files.
+		''' </summary>
+		''' <returns>The total number of exported long text files.</returns>
+		Public Property ExportedLongTextCount As Long
+			Get
+				Return GetValueOrDefault (Of Long)(TelemetryConstants.KeyName.EXPORTED_LONG_TEXT_COUNT)
+			End Get
+			Set
+				CustomData.Item(TelemetryConstants.KeyName.EXPORTED_LONG_TEXT_COUNT) = Value
+			End Set
+		End Property
 	End Class
 End NameSpace

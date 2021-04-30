@@ -23,6 +23,8 @@
 		private readonly ILog _logger;
 		private readonly object _syncObject = new object();
 
+		private int exportedNativeCount, exportedPdfCount, exportedImageCount, exportedLongTextCount;
+
 		public DownloadProgressManager(
 			FileRequestRepository nativeRepository,
 			ImageRepository imageRepository,
@@ -92,10 +94,18 @@
 				if (natives.Count > 0)
 				{
 					this.MarkAsCompleted(natives, transferResult);
+					if (transferResult)
+					{
+						this._status.UpdateFilesExportedCount(++this.exportedNativeCount, this.exportedPdfCount, this.exportedImageCount, this.exportedLongTextCount);
+					}
 				}
 				else if (pdfs.Count > 0)
 				{
 					this.MarkAsCompleted(pdfs, transferResult);
+					if (transferResult)
+					{
+						this._status.UpdateFilesExportedCount(this.exportedNativeCount, ++this.exportedPdfCount, this.exportedImageCount, this.exportedLongTextCount);
+					}
 				}
 				else
 				{
@@ -107,6 +117,10 @@
 						{
 							imageRequest.TransferCompleted = true;
 							this.UpdateProcessedCountAndNotify(imageRequest.Artifact.ArtifactID, transferResult);
+							if (transferResult)
+							{
+								this._status.UpdateFilesExportedCount(this.exportedNativeCount, this.exportedPdfCount, ++this.exportedImageCount, this.exportedLongTextCount);
+							}
 						}
 					}
 					else
@@ -139,6 +153,10 @@
 				{
 					longText.TransferCompleted = true;
 					this.UpdateProcessedCountAndNotify(longText.ArtifactId, transferResult);
+					if (transferResult)
+					{
+						this._status.UpdateFilesExportedCount(this.exportedNativeCount, this.exportedPdfCount, this.exportedImageCount, ++this.exportedLongTextCount);
+					}
 				}
 				else
 				{

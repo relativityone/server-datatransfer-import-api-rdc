@@ -1321,6 +1321,13 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(EventType2.Warning, line, True, False)
 		End Sub
 
+		Friend Sub UpdateFilesExportedCount(nativeCount As Int32, pdfCount As Int32, imageCount As Int32, longTextCount As Int32) Implements IStatus.UpdateFilesExportedCount
+			Statistics.ExportedNativeCount = nativeCount
+			Statistics.ExportedPdfCount = pdfCount
+			Statistics.ExportedImageCount = imageCount
+			Statistics.ExportedLongTextCount = longTextCount
+		End Sub
+
 		Friend Sub WriteWarning(ByVal line As String) Implements IStatus.WriteWarning
 			Interlocked.Increment(_warningCount)
 			WriteStatusLine(EventType2.Warning, line, True)
