@@ -41,7 +41,7 @@
         <ExitCode Value="3010" Behavior="forceReboot"/>
         <ExitCode Behavior="error"/>
         <RemotePayload Description="Microsoft Visual C++ 2010  x86 Redistributable Setup"
-                       Hash="372D9C1670343D3FB252209BA210D4DC4D67D358"
+                       Hash="3EC8285AFF7802715623F49E971A1F996B2850A6"
                        ProductName="Microsoft Visual C++ 2010  x86 Redistributable"
                        Size="5073240"
                        Version="10.0.30319.1" />
@@ -71,7 +71,7 @@
         <ExitCode Value="3010" Behavior="forceReboot"/>
         <ExitCode Behavior="error"/>
         <RemotePayload Description="Microsoft Visual C++ 2010  x64 Redistributable Setup"
-                       Hash="B330B760A8F16D5A31C2DC815627F5EB40861008"
+                       Hash="46D9EF194C59AC2D514B9621F1F27329BFBB8E1A"
                        ProductName="Microsoft Visual C++ 2010  x64 Redistributable"
                        Size="5718872"
                        Version="10.0.30319.1" />

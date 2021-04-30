@@ -377,6 +377,12 @@ task CheckSdkDependencies -Description "Checks if the references in ..\.paket\Re
     } -errorMessage "References in ..\.paket\Relativity.DataExchange.Client.SDK.nuspec are not equal to ..\paket.dependencies."
 }
 
+task CheckRdcDependencies -Description "Checks is RDC prerequisites (C++ redistributables) are valid"{
+    exec { 
+        & "$ScriptsDir\Check-Rdc-Dependencies.ps1"
+    } -errorMessage "RDC prerequisites are not valid"
+}
+
 task CheckFolderAccess -Description "Checks if we can write to the destination path"{
     $testpath = Join-Path -Path $BuildPackagesDir -ChildPath "empty.txt"
 	Try { 
