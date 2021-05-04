@@ -81,6 +81,11 @@ Skips building the solution, run Sql Comparer Tool for previous prepared compare
 .\build.ps1 GetRelativityBranchesForTests -ReleasedVersionName "lanceleaf"
 Get names of folders with Relativity installers in location '\\bld-pkgs\Packages\Relativity\' for release branches in specified version.
 
+.EXAMPLE
+.\build.ps1 CheckRdcDependencies
+Checks is RDC prerequisites (C++ redistributables) are valid.
+
+
 .PARAMETER Target
 The target to build (e.g. Build, Rebuild).
 
