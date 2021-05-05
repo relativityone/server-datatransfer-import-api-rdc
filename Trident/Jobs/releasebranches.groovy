@@ -264,17 +264,8 @@ def GetHopperTemplate(String branchName)
 	// This section should be updated when new release appears
 	// Hopper images should be reviewed and updated to latest available
 	switch(versionName) {
-		case "juniper":
-			hopperImage = "aio-juniper-2"
-			break
-		case "lanceleaf":
-			hopperImage = "aio-lanceleaf-0"
-			break
-		case "mayapple":
-			hopperImage = "aio-mayapple-0"
-			break
-		case "ninebark":
-			hopperImage = "aio-ninebark-ea"
+		case "prairiesmoke":
+			hopperImage = "aio-osier-0"
 			break
 		default:
 			echo "Define the hopper image which should be used in tests on branch '${branchName}'"

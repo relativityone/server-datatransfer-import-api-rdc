@@ -19,7 +19,7 @@ properties {
 	$ScriptsDir = Join-Path $Root "Scripts"
 	$BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
 	$BuildPackagesDirGold = "\\bld-pkgs\Release\Import-Api-RDC\"
-	$SqlPassword = "P@ssw0rd@1"
+	$script:SqlPassword = ""
 #----------- testreports ------------	
 	$TestReportsDir = Join-Path $Root "TestReports" | Join-Path -ChildPath $TestReportFolderName
 
@@ -622,7 +622,7 @@ task UIAutomationTests -Description "Runs all UI tests" {
     } -errorMessage "There was an error running the UI tests."
 }
 
-task LoadTests -Description "Run all load tests for the loadtest pipeline" {
+task LoadTests -Depends ReadSqlPassword -Description "Run all load tests for the loadtest pipeline" {
 	
 	[bool]$massImportToggleOn = $false
 	if($MassImportImprovementsToggle){
@@ -630,8 +630,8 @@ task LoadTests -Description "Run all load tests for the loadtest pipeline" {
 	}
 	
 	Write-Host "Set MassImportImprovementsToggle value to $massImportToggleOn"
-	InsertMassImportToggleRecord
-	SetMassImportToggleValue -IsEnabled $massImportToggleOn
+	InsertMassImportToggleRecord -SQLPassword $script:SqlPassword
+	SetMassImportToggleValue -IsEnabled $massImportToggleOn -SQLPassword $script:SqlPassword
 	
 	Write-Host "Execute LoadTests"
 	Invoke-LoadTests -TestCategoryFilter "--where=`"TestType ==Load and cat!=SqlComparer`"" -MassImportImprovementsToggle $MassImportImprovementsToggle
@@ -649,7 +649,7 @@ task IntegrationTestsForSqlComparer -Description "Run integration tests for both
 	Invoke-SqlComparer-Tests -TestCategoryFilter "--where=`"TestExecutionCategory == CI and cat==SqlComparer`"" -TestReportDirectory $IntegrationTestsReportDir
 }
 
-task IntegrationTestsForMassImportImprovementsToggle -Description "Set MassImportImprovementsToggle value and run all integration tests" {
+task IntegrationTestsForMassImportImprovementsToggle -Depends ReadSqlPassword -Description "Set MassImportImprovementsToggle value and run all integration tests" {
 	
 	[bool]$massImportToggleOn = $false
 	if($MassImportImprovementsToggle){
@@ -667,8 +667,8 @@ task IntegrationTestsForMassImportImprovementsToggle -Description "Set MassImpor
 	}
 	
 	Write-Host "Set MassImportImprovementsToggle value to $massImportToggleOn"
-	InsertMassImportToggleRecord
-	SetMassImportToggleValue -IsEnabled $massImportToggleOn
+	InsertMassImportToggleRecord -SQLPassword $script:SqlPassword
+	SetMassImportToggleValue -IsEnabled $massImportToggleOn -SQLPassword $script:SqlPassword
 	
 	Write-Host "Execute Integration tests"
 	Invoke-MassImportVerification-Tests -TestCategoryFilter "--where=`"TestExecutionCategory == CI`"" -TestReportDirectory $IntegrationTestsReportDir -MassImportImprovementsToggle $massImportToggleOn -EnableDataGrid $dataGridShouldBeEnabled -TestOnWorkspaceWithNonDefaultCollation $workspaceWithNonDefaultCollation
@@ -797,7 +797,7 @@ task TestReports -Description "Create the test reports" {
     } -errorMessage "There was an error creating the test reports."
 }
 
-task TestVMSetup -Description "Setup the test parameters for TestVM" {
+task TestVMSetup -Depends ReadSqlPassword -Description "Setup the test parameters for TestVM" {
     try {
         $testVM = $null
         if ($TestVMName) {
@@ -857,7 +857,7 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
 		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLCOMPAREROUTPUTPATH", $SqlComparerOutputPath.Replace("\", "\\"), "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLINSTANCENAME", "$hostname\\EDDSINSTANCE001", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINUSERNAME", "sa", "Process")
-        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINPASSWORD", $SqlPassword, "Process")
+        [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SQLADMINPASSWORD", $script:SqlPassword, "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_TESTONWORKSPACEWITHNONDEFAULTCOLLATION", $workspaceWithNonDefaultCollation, "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_WORKSPACETEMPLATE", "Relativity Starter Template", "Process")
 		[Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_ENABLEDATAGRID", $dataGridShouldBeEnabled , "Process")
@@ -900,7 +900,7 @@ task LoadTestResults -Description "Retrieve the load test results from the Xml f
     testing\Write-TestResultsOutput $LoadTestsReportDir
 }
 
-task ReplaceTestVariables -Description "Replace test variables in file" {
+task ReplaceTestVariables -Depends ReadSqlPassword -Description "Replace test variables in file" {
 	$pathToFile = ".\Source\Relativity.DataExchange.TestFramework\Resources\test-parameters-hopper.json"
 	if ($TestParametersFile) {
 		$pathToFile = $TestParametersFile
@@ -932,11 +932,9 @@ task ReplaceTestVariables -Description "Replace test variables in file" {
 	if($TestOnWorkspaceWithNonDefaultCollation){
 		$workspaceWithNonDefaultCollation = 'true'
 		$useSqlSAUser = $true
-	}
+	}	
 	
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_instance_name>',$sqlserveraddress) | Set-Content -Path $pathToFile
-    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_user_name>','eddsdbo') | Set-Content -Path $pathToFile
-    ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_password>', $SqlPassword) | Set-Content -Path $pathToFile
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_relativity_password>','Test1234!') | Set-Content -Path $pathToFile
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_relativity_user_name>','relativity.admin@kcura.com') | Set-Content -Path $pathToFile
     ((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_target_to_test>', $replaceTarget) | Set-Content -Path $pathToFile
@@ -944,7 +942,12 @@ task ReplaceTestVariables -Description "Replace test variables in file" {
 	
 	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sqlcaptureprofiling>', $sqlProfilingShouldBeEnabled) | Set-Content -Path $pathToFile
 	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sqlprofilingreportsoutputpath>', $SqlProfilingOutputPath.Replace("\", "\\")) | Set-Content -Path $pathToFile
-	if($useSqlSAUser) {((Get-Content -path $pathToFile -Raw) -replace 'eddsdbo','sa') | Set-Content -Path $pathToFile }
+	if($useSqlSAUser) {
+		((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_user_name>','sa') | Set-Content -Path $pathToFile
+	} else {
+		((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_user_name>','eddsdbo') | Set-Content -Path $pathToFile
+	}
+	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_password>', $script:SqlPassword) | Set-Content -Path $pathToFile
 	
 	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_enable_sql_comparer>', $sqlDataComparerShouldBeEnabled) | Set-Content -Path $pathToFile
 	((Get-Content -path $pathToFile -Raw) -replace '<replaced_in_build_sql_comparer_output_path>', $SqlComparerOutputPath.Replace("\", "\\")) | Set-Content -Path $pathToFile
@@ -1060,7 +1063,7 @@ task UpdatePackages -Depends CheckSdkDependencies -Description "Updates the pack
 	exec { & $Root\buildtools\DisableAnalyzersForDebug.ps1 } -errorMessage "There was a problem with disabling the analyzers in debug mode."
 }
 
-task RunSqlComparerTool -Description "Run SQL Comparer Tool for previous prepared input" {
+task RunSqlComparerTool -Depends ReadSqlPassword -Description "Run SQL Comparer Tool for previous prepared input" {
 
 	exec {
 		$sqlserveraddress = [Paths.UriScheme]::GetHost($TestTarget)
@@ -1071,7 +1074,7 @@ task RunSqlComparerTool -Description "Run SQL Comparer Tool for previous prepare
 		& $SqlComparerRunner @(
 						($sqlserveraddress), 
 						("sa"),
-						($SqlPassword),
+						($script:SqlPassword),
 						($sqlComparerInputLeft),
 						($sqlComparerInputRight)) | Out-File $sqlComparerResultFile
 						
@@ -1183,6 +1186,23 @@ task GetRelativityBranchesForTests -Description "Get names of release branches f
 	
 	# So Jenkins can get the results
 	Write-Output "relativityBranchesForTests=$branchesForTests"
+}
+
+task ReadSqlPassword -Description "Reads SqlPassword from FunctionalSettings.runsettings file" {
+    Write-Host "Reading SqlPassword from 'FunctionalTest.runsettings' file"
+    [string] $password = "P@ssw0rd@1"
+    Try
+    {
+	    [xml] $hopperSettings = Get-Content -path 'FunctionalTest.runsettings'
+	    $password = $hopperSettings.selectNodes("//Parameter[@name='SqlPassword']").value
+    }
+    Catch
+    {
+        $errorMessage = $_.Exception.Message
+        Write-Warning "Failed to read SqlPassword from 'FunctionalTest.runsettings' file, using default value. Error: $errorMessag"
+    }
+
+    $script:SqlPassword = $password
 }
 
 Function Invoke-IntegrationTests {
@@ -1298,26 +1318,30 @@ Function Invoke-SqlComparer-Tests {
 }
 
 Function InsertMassImportToggleRecord{
-	
+	param(
+        [string]$SQLPassword
+	)
+
 	[string]$sqlCommand = "INSERT INTO [EDDS].[eddsdbo].[Toggle]([Name], [IsEnabled])
 								Select 'Relativity.Core.Toggle.MassImportImprovementsToggle', 'False'
 							WHERE
 							NOT EXISTS (SELECT * FROM [EDDS].[eddsdbo].[Toggle]
 									  WHERE [Name] = 'Relativity.Core.Toggle.MassImportImprovementsToggle')"
     
-	ExecuteSqlCommand -SQLCommand $sqlCommand -SQLUserName 'sa' -SQLPassword $SqlPassword -SQLDatabaseName "EDDS"
+	ExecuteSqlCommand -SQLCommand $sqlCommand -SQLUserName 'sa' -SQLPassword $SQLPassword -SQLDatabaseName "EDDS"
 }
 
 Function SetMassImportToggleValue{
 	param(
-		[boolean]$IsEnabled
+		[boolean]$IsEnabled,
+        [string]$SQLPassword
 	)
 	
 	[string]$sQLCOmmand = "Update [EDDS].[eddsdbo].[Toggle]
 							set [EDDS].[eddsdbo].[Toggle].[IsEnabled]= '$IsEnabled'
 							where [EDDS].[eddsdbo].[Toggle].[Name] = 'Relativity.Core.Toggle.MassImportImprovementsToggle'"
 	
-	ExecuteSqlCommand -SQLCommand $sqlCommand -SQLUserName 'sa' -SQLPassword $SqlPassword -SQLDatabaseName "EDDS"
+	ExecuteSqlCommand -SQLCommand $sqlCommand -SQLUserName 'sa' -SQLPassword $SQLPassword -SQLDatabaseName "EDDS"
 }
 
 Function ExecuteSqlCommand{

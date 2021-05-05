@@ -308,3 +308,5 @@ errors.xml
 TestInput/
 TestOutput/
 /Source/Output-Build.txt
+FunctionalTestSettings
+FunctionalTest.runsettings
