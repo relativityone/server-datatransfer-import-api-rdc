@@ -753,7 +753,7 @@ task PostReleasePageOnEinstein -Description "Post the releae page on Einstein"{
 	$localRdcVersion = versioning\Get-RdcVersion -rdcVersionWixFile $rdcVersionWixFile -branch $Branch
 	$localPathToRdcExe = "$InstallersArtifactsDir\Relativity.Desktop.Client.Setup.exe"
     exec { 
-        & $ScriptsDir\Invoke-EinsteinUpdate.ps1 -Secret $EinsteinSecret -SdkVersion $localSdkVersion -RdcVersion "$localRdcVersion" -branch "$Branch" -BuildPackagesDir "$BuildPackagesDir" -BuildPackagesDirGold "$BuildPackagesDirGold" -PathToLocalRdcExe "$localPathToRdcExe" -publishToRelease $PublishToRelease
+        & $ScriptsDir\Invoke-EinsteinUpdate.ps1 -Secret $EinsteinSecret -SdkVersion $localSdkVersion -RdcVersion "$localRdcVersion" -branch "$Branch" -BuildPackagesDir "$BuildPackagesDir" -BuildPackagesDirGold "$BuildPackagesDirGold" -PathToLocalRdcExe "$localPathToRdcExe"
     } -errorMessage "Failed to publish the release page on einstein."
 
 }

@@ -8,7 +8,7 @@ properties([
         choice(defaultValue: 'DEV',choices: ["DEV", "GOLD - RDC AND SDK", "GOLD - RDC ONLY", "GOLD - SDK ONLY"], description: "Choose your build type, only gold can produce production packages.", name: 'buildType'),
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-        string(defaultValue: 'release-11.1-juniper', description: 'Relativity branch to test against, leave null for latest hopper image', name: 'relativityBranch'),
+        string(defaultValue: 'release-11.1-juniper-server-p1', description: 'Relativity branch to test against, leave null for latest hopper image', name: 'relativityBranch'),
         booleanParam(defaultValue: true, description: "Enable or disable running unit tests", name: 'runUnitTests'),
         booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests'),
         booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport'),
@@ -40,7 +40,7 @@ def publishSdkAndRdc = (publishSdk && publishRdc)
 build = params.build
 
 def config = [
-	sutTemplate: "aio-juniper-2",
+	sutTemplate: "aio-ea-server-2021-juniper-3-ea",
 	hopperApiUrl: "https://api.hopper.relativity.com/",
 	hopperApiUsername: "homeimprovement@relativity.com"
 ]
@@ -384,18 +384,18 @@ timestamps
                     }
 					stage('Create einstein page')
 					{	
-						if(publishSdkAndRdc)
+                        if(publishSdkAndRdc && publishToRelease)
 						{
 							def secrets = [ 
 							[ secretType: 'Secret', name: 'Einstein-token', envVariable: 'EinsteinToken' ]
 							]
 							withAzureKeyvault(azureKeyVaultSecrets: secrets, keyVaultURLOverride: 'https://KV-DATATRANSFER-GBU.vault.azure.net') { 
-								powershell ".\\build.ps1 PostReleasePageOnEinstein -EinsteinSecret '${EinsteinToken}' -Branch '${branchName}' -PublishToRelease \$${publishToRelease} "
+								powershell ".\\build.ps1 PostReleasePageOnEinstein -EinsteinSecret '${EinsteinToken}' -Branch '${branchName}'"
 							}
 						}
 						else
 						{
-						    echo "We can't create a release page as this needs a SDK and RDC to be created."
+						    echo "We can't create a release page as this needs a gold build of SDK and RDC to be created on release branch."
 						}
 					}
                 }

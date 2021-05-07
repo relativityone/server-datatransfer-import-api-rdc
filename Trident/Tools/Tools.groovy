@@ -113,6 +113,7 @@ def createHopperInstance(String sutTemplate, String relativityBranch)
 		catch(ex)
 		{
 			echo ex.toString()
+            throw ex
 		}
 	}
 	
