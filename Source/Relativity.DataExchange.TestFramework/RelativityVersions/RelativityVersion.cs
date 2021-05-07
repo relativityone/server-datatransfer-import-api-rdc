@@ -98,5 +98,10 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 		/// Relativity 12.1.
 		/// </summary>
 		Osier,
+
+		/// <summary>
+		/// Relativity 12.2.
+		/// </summary>
+		PrairieSmoke,
 	}
 }

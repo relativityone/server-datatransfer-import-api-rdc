@@ -9,7 +9,7 @@ properties([
 	parameters([
 		choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
 		choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-		string(defaultValue: 'aio-foxglove-3,aio-goatsbeard-3,aio-indigo-2,aio-juniper-2,aio-lanceleaf-1,aio-mayapple-1,aio-ninebark-2,aio-osier-eau', description: 'Comma separated list of SUT templates', name: 'temlatesStr')
+		string(defaultValue: 'aio-foxglove-3,aio-goatsbeard-3,aio-indigo-2,aio-juniper-2,aio-lanceleaf-1,aio-mayapple-1,aio-ninebark-2,aio-osier-0', description: 'Comma separated list of SUT templates', name: 'temlatesStr')
 	]),
 	pipelineTriggers([cron(cronString)])
 ])
@@ -58,6 +58,20 @@ timestamps
 				echo "Building the binaries"
 				output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge -Sign -Branch '${env.BRANCH_NAME}'"
 				echo output
+			}
+
+			try
+			{
+				stage('Validate RDC installer')
+				{
+					powershell ".\\build.ps1 CheckRdcDependencies"
+				}
+			}
+			catch(err)
+			{
+				echo err.toString()
+				echo "RDC installer is not valid."
+				currentBuild.result = 'FAILED'
 			}
 
 			for(sutTemplate in templates)

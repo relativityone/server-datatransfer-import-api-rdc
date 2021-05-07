@@ -9,23 +9,50 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
+	using System.Linq;
 	using System.Threading.Tasks;
 
 	using Newtonsoft.Json.Linq;
 
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
+	using Relativity.Services.Interfaces.Group;
+	using Relativity.Services.Interfaces.Shared.Models;
+	using Relativity.Services.Interfaces.UserInfo.Models;
 	using Relativity.Services.Security;
 	using Relativity.Services.Security.Models;
-	using Relativity.Services.User;
-
-	using User = Relativity.Services.User.User;
 
 	/// <summary>
 	/// Defines static helper methods to manage users in tests.
 	/// </summary>
 	public static class UsersHelper
 	{
-		public static async Task<int> CreateNewUserAsync(
+		public static Task<int> CreateNewUserAsync(
+			IntegrationTestParameters parameters,
+			string username,
+			string password,
+			IEnumerable<int> groupArtifactIds)
+		{
+			return RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.PrairieSmoke)
+					   ? CreateNewUserUsingHttpClientAsync(parameters, username, password, groupArtifactIds)
+					   : CreateNewUserUsingKeplerAsync(parameters, username, password, groupArtifactIds);
+		}
+
+		public static Task RemoveUserAsync(IntegrationTestParameters parameters, int userId)
+		{
+			return RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.Lanceleaf)
+					   ? RemoveUserUsingHttpClientAsync(parameters, userId)
+					   : RemoveUserUsingKeplerAsync(parameters, userId);
+		}
+
+		public static async Task<string> GetUserInfo(IntegrationTestParameters parameters, int userId)
+		{
+			string url =
+				$"{parameters.RelativityRestUrl.AbsoluteUri}/Relativity.REST/Relativity/User/{userId}";
+
+			return await HttpClientHelper.GetAsync(parameters, new Uri(url)).ConfigureAwait(false);
+		}
+
+		private static async Task<int> CreateNewUserUsingHttpClientAsync(
 			IntegrationTestParameters parameters,
 			string username,
 			string password,
@@ -63,27 +90,62 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return (int)resultObject["Results"][0]["ArtifactID"];
 		}
 
-		public static async Task RemoveUserAsync(IntegrationTestParameters parameters, int userId)
+		private static async Task<int> CreateNewUserUsingKeplerAsync(
+			IntegrationTestParameters parameters,
+			string emailAddress,
+			string password,
+			IEnumerable<int> groupArtifactIds)
 		{
-			if (RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.Lanceleaf))
+			int userArtifactId;
+			using (var userManager = ServiceHelper.GetServiceProxy<Services.Interfaces.UserInfo.IUserInfoManager>(parameters))
 			{
-				await RemoveUserAsyncUsingHttpClient(parameters, userId).ConfigureAwait(false);
+				const int AdminUserId = 9;
+				UserResponse adminUserDetails = await userManager.ReadAsync(AdminUserId).ConfigureAwait(false);
+
+				var userRequest = new UserRequest(adminUserDetails)
+				{
+					FirstName = "Test User 001",
+					LastName = "REST",
+					EmailAddress = emailAddress,
+				};
+				var response = await userManager.CreateAsync(userRequest).ConfigureAwait(false);
+				userArtifactId = response.ArtifactID;
 			}
-			else
+
+			var userIdentifier = new ObjectIdentifier { ArtifactID = userArtifactId };
+			using (var groupManager = ServiceHelper.GetServiceProxy<IGroupManager>(parameters))
 			{
-				await RemoveUserAsyncUsingKepler(parameters, userId).ConfigureAwait(false);
+				const int EveryoneGroupId = 1015005;
+				foreach (int groupArtifactId in groupArtifactIds.Where(x => x != EveryoneGroupId))
+				{
+					await groupManager.AddMembersAsync(groupArtifactId, userIdentifier).ConfigureAwait(false);
+				}
 			}
+
+			bool adminsCanSetPasswordsInstanceSettingWasChanged = await ChangeAdminsCanSetPasswordsInstanceSettingAsync(parameters, true).ConfigureAwait(false);
+			using (var loginManager = ServiceHelper.GetServiceProxy<ILoginProfileManager>(parameters))
+			{
+				var loginProfile = await loginManager.GetLoginProfileAsync(userArtifactId).ConfigureAwait(false);
+				loginProfile.Password = new PasswordMethod()
+				{
+					Email = emailAddress,
+					IsEnabled = true,
+					MustResetPasswordOnNextLogin = false,
+					PasswordExpirationInDays = 7,
+				};
+				await loginManager.SaveLoginProfileAsync(loginProfile).ConfigureAwait(false);
+				await loginManager.SetPasswordAsync(userArtifactId, password).ConfigureAwait(false);
+			}
+
+			if (adminsCanSetPasswordsInstanceSettingWasChanged)
+			{
+				await ChangeAdminsCanSetPasswordsInstanceSettingAsync(parameters, false).ConfigureAwait(false);
+			}
+
+			return userArtifactId;
 		}
 
-		public static async Task<string> GetUserInfo(IntegrationTestParameters parameters, int userId)
-		{
-			string url =
-				$"{parameters.RelativityRestUrl.AbsoluteUri}/Relativity.REST/Relativity/User/{userId}";
-
-			return await HttpClientHelper.GetAsync(parameters, new Uri(url)).ConfigureAwait(false);
-		}
-
-		private static async Task RemoveUserAsyncUsingKepler(IntegrationTestParameters parameters, int userId)
+		private static async Task RemoveUserUsingKeplerAsync(IntegrationTestParameters parameters, int userId)
 		{
 			using (var userManager =
 				ServiceHelper.GetServiceProxy<Services.Interfaces.UserInfo.IUserInfoManager>(parameters))
@@ -92,7 +154,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		private static async Task RemoveUserAsyncUsingHttpClient(IntegrationTestParameters parameters, int userId)
+		private static async Task RemoveUserUsingHttpClientAsync(IntegrationTestParameters parameters, int userId)
 		{
 			string url =
 				$"{parameters.RelativityRestUrl.AbsoluteUri}/Relativity.REST/Relativity/User/{userId}";
