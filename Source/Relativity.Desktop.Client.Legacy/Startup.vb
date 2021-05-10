@@ -70,6 +70,7 @@ Namespace Relativity.Desktop.Client
 
 		Private Async Function RunInConsoleMode() As Task
 			Try
+				System.Net.ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
 				_application = Global.Relativity.Desktop.Client.Application.Instance
 				Dim _import As ImportManager = New ImportManager(RelativityLogger.Instance)
 
