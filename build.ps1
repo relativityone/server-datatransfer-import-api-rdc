@@ -57,6 +57,11 @@ Skips building the solution and executes all UI tests.
 .\build.ps1 CodeCoverageReport -TestEnvironment "Hopper"
 Skips building the solution, setup the integration test parameters using the Hopper test environment, executes a code coverage report, and creates the code coverage report within the ".\Reports" sub-folder.
 
+.EXAMPLE
+.\build.ps1 CheckRdcDependencies
+Checks is RDC prerequisites (C++ redistributables) are valid.
+
+
 .PARAMETER Target
 The target to build (e.g. Build, Rebuild).
 
