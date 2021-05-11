@@ -32,7 +32,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			string password,
 			IEnumerable<int> groupArtifactIds)
 		{
-			return RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.PrairieSmoke)
+			return RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.Osier)
 					   ? CreateNewUserUsingHttpClientAsync(parameters, username, password, groupArtifactIds)
 					   : CreateNewUserUsingKeplerAsync(parameters, username, password, groupArtifactIds);
 		}
