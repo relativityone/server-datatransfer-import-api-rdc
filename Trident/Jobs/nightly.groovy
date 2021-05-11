@@ -18,7 +18,7 @@ testResultsPassed = 0
 testResultsFailed = 0
 testResultsSkipped = 0
 testResultsFailedForsutTemplate = 0
-numberOfLeaseRenewals = 1
+numberOfLeaseRenewals = 2
 
 String[] templates = params.temlatesStr.tokenize(',')
 
