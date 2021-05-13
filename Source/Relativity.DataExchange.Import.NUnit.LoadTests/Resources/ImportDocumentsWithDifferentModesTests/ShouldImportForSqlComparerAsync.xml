@@ -48,7 +48,7 @@
 		<table name="EDDSDBO.Multi11" rowId="Name" mapId="ArtifactID" />
 		<table name="EDDSDBO.[File]" rowId="Filename" mapId="FileID">
 			<ignored>
-				<ignore name="Guid"/>6
+				<ignore name="Guid"/>
 				<ignore name="Location"/>
 				<ignore name="FileID"/>
 			</ignored>
