@@ -264,7 +264,7 @@ namespace SQLDataComparer.DataLoad
 			queryBuilder.Append($"SELECT {mappingConfig.TargetColumn}");
 			queryBuilder.Append(" FROM EDDSDBO.Field");
 			queryBuilder.Append($" WHERE DisplayName = '{mappingConfig.Name}'");
-			queryBuilder.Append(" AND FieldArtifactTypeID = 10");
+			queryBuilder.Append(" AND AssociativeArtifactTypeID = 10");
 
 			return queryBuilder.ToString();
 		}
@@ -276,7 +276,7 @@ namespace SQLDataComparer.DataLoad
 			queryBuilder.Append($"SELECT {mappingConfig.TargetColumn}");
 			queryBuilder.Append(" FROM EDDSDBO.Field");
 			queryBuilder.Append($" WHERE DisplayName = '{mappingConfig.Name}'");
-			queryBuilder.Append(" AND AssociativeArtifactTypeID = 10");
+			queryBuilder.Append(" AND FieldArtifactTypeID = 10");
 
 			return queryBuilder.ToString();
 		}

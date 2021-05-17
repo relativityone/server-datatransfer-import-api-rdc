@@ -32,7 +32,8 @@ namespace SQLDataComparer.ConfigModifier
 			}
 
 			PopulateWithFileTables(ref compareConfig);
-			PopulateWithMultiObjectTables(ref compareConfig);
+			// Those tables are tested using mapping and multi objects
+			//PopulateWithMultiObjectTables(ref compareConfig);
 		}
 
 		private void PopulateWithFileTables(ref CompareConfig compareConfig)

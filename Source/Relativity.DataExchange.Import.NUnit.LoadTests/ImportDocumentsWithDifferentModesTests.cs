@@ -205,7 +205,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 
 				for (int j = 0; j < numberOfFields; j++)
 				{
-					string fieldName = $"{fieldNamePrefix}-{i}-{j}";
+					string fieldName = $"{fieldNamePrefix}_{i}_{j}";
 					int objectTypeArtifactId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, fieldName).ConfigureAwait(false);
 					await createFieldFunctionAsync(fieldName, objectTypeArtifactId).ConfigureAwait(false);
 

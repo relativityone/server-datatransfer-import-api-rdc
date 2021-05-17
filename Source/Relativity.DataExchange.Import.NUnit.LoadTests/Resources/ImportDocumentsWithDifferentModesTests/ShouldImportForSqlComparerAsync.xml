@@ -6,24 +6,31 @@
 				<ignore name="ArtifactID"/>
 				<ignore name="ParentArtifactID_D"/>
 				<ignore name="OriginatingImagingDocumentError"/>
+				<ignore name="Single_0_0"/>
+				<ignore name="Single_0_1"/>
+				<ignore name="Single_0_2"/>
+				<ignore name="Single_0_3"/>
+				<ignore name="Single_0_4"/>
+				<ignore name="Single_1_0"/>
+				<ignore name="Single_1_1"/>
 			</ignored>
 			<mappings>
 				<mapping name="MultiChoice_SqlComparer" type="MultiChoice" targetTable="EDDSDBO.Code"/>
 				<mapping name="SingleChoice_SqlComparer" type="SingleChoice" targetTable="EDDSDBO.Code"/>
-				<mapping name="Single00" type="SingleObject" targetTable="EDDSDBO.Single00"/>
-				<mapping name="Single01" type="SingleObject" targetTable="EDDSDBO.Single01"/>
-				<mapping name="Single02" type="SingleObject" targetTable="EDDSDBO.Single02"/>
-				<mapping name="Single03" type="SingleObject" targetTable="EDDSDBO.Single03"/>
-				<mapping name="Single04" type="SingleObject" targetTable="EDDSDBO.Single04"/>
-				<mapping name="Single10" type="SingleObject" targetTable="EDDSDBO.Single10"/>
-				<mapping name="Single11" type="SingleObject" targetTable="EDDSDBO.Single11"/>
-				<mapping name="Multi00" type="MultiObject" targetTable="EDDSDBO.Multi00"/>
-				<mapping name="Multi01" type="MultiObject" targetTable="EDDSDBO.Multi01"/>
-				<mapping name="Multi02" type="MultiObject" targetTable="EDDSDBO.Multi02"/>
-				<mapping name="Multi03" type="MultiObject" targetTable="EDDSDBO.Multi03"/>
-				<mapping name="Multi04" type="MultiObject" targetTable="EDDSDBO.Multi04"/>
-				<mapping name="Multi10" type="MultiObject" targetTable="EDDSDBO.Multi10"/>
-				<mapping name="Multi11" type="MultiObject" targetTable="EDDSDBO.Multi11"/>
+				<mapping name="Single_0_0" type="SingleObject" targetTable="EDDSDBO.Single_0_0"/>
+				<mapping name="Single_0_1" type="SingleObject" targetTable="EDDSDBO.Single_0_1"/>
+				<mapping name="Single_0_2" type="SingleObject" targetTable="EDDSDBO.Single_0_2"/>
+				<mapping name="Single_0_3" type="SingleObject" targetTable="EDDSDBO.Single_0_3"/>
+				<mapping name="Single_0_4" type="SingleObject" targetTable="EDDSDBO.Single_0_4"/>
+				<mapping name="Single_1_0" type="SingleObject" targetTable="EDDSDBO.Single_1_0"/>
+				<mapping name="Single_1_1" type="SingleObject" targetTable="EDDSDBO.Single_1_1"/>
+				<mapping name="Multi_0_0" type="MultiObject" targetTable="EDDSDBO.Multi_0_0"/>
+				<mapping name="Multi_0_1" type="MultiObject" targetTable="EDDSDBO.Multi_0_1"/>
+				<mapping name="Multi_0_2" type="MultiObject" targetTable="EDDSDBO.Multi_0_2"/>
+				<mapping name="Multi_0_3" type="MultiObject" targetTable="EDDSDBO.Multi_0_3"/>
+				<mapping name="Multi_0_4" type="MultiObject" targetTable="EDDSDBO.Multi_0_4"/>
+				<mapping name="Multi_1_0" type="MultiObject" targetTable="EDDSDBO.Multi_1_0"/>
+				<mapping name="Multi_1_1" type="MultiObject" targetTable="EDDSDBO.Multi_1_1"/>
 			</mappings>
 		</table>
 		<table name="EDDSDBO.Code" rowId="Name" mapId="ArtifactID">
@@ -32,20 +39,20 @@
 				<ignore name="CodeTypeID"/>
 			</ignored>
 		</table>
-		<table name="EDDSDBO.Single00" rowId="Name" mapId="ArtifactID" />
-		<table name="EDDSDBO.Single01" rowId="Name" mapId="ArtifactID" />
-		<table name="EDDSDBO.Single02" rowId="Name" mapId="ArtifactID" />
-		<table name="EDDSDBO.Single03" rowId="Name" mapId="ArtifactID" />
-		<table name="EDDSDBO.Single04" rowId="Name" mapId="ArtifactID" />
-		<table name="EDDSDBO.Single10" rowId="Name" mapId="ArtifactID" />
-		<table name="EDDSDBO.Single11" rowId="Name" mapId="ArtifactID" />
-		<table name="EDDSDBO.Multi00" rowId="Name" mapId="ArtifactID" />
-		<table name="EDDSDBO.Multi01" rowId="Name" mapId="ArtifactID" />
-		<table name="EDDSDBO.Multi02" rowId="Name" mapId="ArtifactID" />
-		<table name="EDDSDBO.Multi03" rowId="Name" mapId="ArtifactID" />
-		<table name="EDDSDBO.Multi04" rowId="Name" mapId="ArtifactID" />
-		<table name="EDDSDBO.Multi10" rowId="Name" mapId="ArtifactID" />
-		<table name="EDDSDBO.Multi11" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Single_0_0" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Single_0_1" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Single_0_2" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Single_0_3" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Single_0_4" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Single_1_0" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Single_1_1" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Multi_0_0" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Multi_0_1" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Multi_0_2" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Multi_0_3" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Multi_0_4" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Multi_1_0" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Multi_1_1" rowId="Name" mapId="ArtifactID" />
 		<table name="EDDSDBO.[File]" rowId="Filename" mapId="FileID">
 			<ignored>
 				<ignore name="Guid"/>

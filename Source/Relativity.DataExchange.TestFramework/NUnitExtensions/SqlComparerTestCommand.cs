@@ -103,8 +103,11 @@ namespace Relativity.DataExchange.TestFramework.NUnitExtensions
 				SqlComparerExecutor.RunSqlComparer(leftInputFilePath, rightInputFilePath, resultFile);
 				SqlComparerExecutor.StoreSqlComparerDataForCurrentTest(leftInputFilePath, rightInputFilePath, resultFile, this._testWorkspaceToAdd.ComparerConfigFilePath);
 
-				IntegrationTestHelper.DeleteTestWorkspace(IntegrationTestHelper.IntegrationTestParameters, this.leftInputWorkspaceId);
-				IntegrationTestHelper.DeleteTestWorkspace(IntegrationTestHelper.IntegrationTestParameters, this.rightInputWorkspaceId);
+				if (IntegrationTestHelper.IntegrationTestParameters.DeleteWorkspaceAfterTest)
+				{
+					IntegrationTestHelper.DeleteTestWorkspace(IntegrationTestHelper.IntegrationTestParameters, this.leftInputWorkspaceId);
+					IntegrationTestHelper.DeleteTestWorkspace(IntegrationTestHelper.IntegrationTestParameters, this.rightInputWorkspaceId);
+				}
 
 				testIteration = 0;
 			}
