@@ -43,6 +43,7 @@ namespace Relativity.DataExchange.Transfer
 			this.MaxInactivitySeconds = AppSettingsConstants.TapiMaxInactivitySecondsDefaultValue;
 			this.MaxJobParallelism = AppSettingsConstants.TapiMaxJobParallelismDefaultValue;
 			this.MaxJobRetryAttempts = 3;
+			this.HttpErrorNumberOfRetries = AppSettingsConstants.HttpErrorNumberOfRetriesDefaultValue;
 			this.MinDataRateMbps = 0;
 			this.PermissionErrorsRetry = AppSettingsConstants.PermissionErrorsRetryDefaultValue;
 			this.PreserveFileTimestamps = AppSettingsConstants.TapiPreserveFileTimestampsDefaultValue;
@@ -92,6 +93,7 @@ namespace Relativity.DataExchange.Transfer
 			this.MaxInactivitySeconds = copy.MaxInactivitySeconds;
 			this.MaxJobParallelism = copy.MaxJobParallelism;
 			this.MaxJobRetryAttempts = copy.MaxJobRetryAttempts;
+			this.HttpErrorNumberOfRetries = copy.HttpErrorNumberOfRetries;
 			this.MinDataRateMbps = copy.MinDataRateMbps;
 			this.PermissionErrorsRetry = copy.PermissionErrorsRetry;
 			this.PreserveFileTimestamps = copy.PreserveFileTimestamps;
@@ -327,6 +329,18 @@ namespace Relativity.DataExchange.Transfer
 		/// The max job retry count.
 		/// </value>
 		public int MaxJobRetryAttempts
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the max number of http retries.
+		/// </summary>
+		/// <value>
+		/// The max job retry count.
+		/// </value>
+		public int HttpErrorNumberOfRetries
 		{
 			get;
 			set;

@@ -557,6 +557,8 @@ namespace Relativity.DataExchange.Transfer
 						this.Logger.LogInformation("Using the default transfer client strategy.");
 					}
 
+					this.Logger.LogInformation("TAPI client configuration {Configuration}", configuration);
+
 					var transferHost = this.CreateTransferHost();
 					this.transferClient = transferHost
 						.CreateClientAsync(configuration, clientStrategy, this.cancellationToken)
@@ -710,6 +712,7 @@ namespace Relativity.DataExchange.Transfer
 
 			// Intentionally limiting resiliency here; otherwise, status messages don't make it to IAPI.
 			const int MaxHttpRetryAttempts = 1;
+			this.parameters.HttpErrorNumberOfRetries = MaxHttpRetryAttempts;
 			var configuration = new ClientConfiguration
 			{
 				BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
@@ -722,7 +725,7 @@ namespace Relativity.DataExchange.Transfer
 				HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
 				MaxJobParallelism = this.parameters.MaxJobParallelism,
 				MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
-				MaxHttpRetryAttempts = MaxHttpRetryAttempts,
+				MaxHttpRetryAttempts = this.parameters.HttpErrorNumberOfRetries,
 				MinDataRateMbps = this.parameters.MinDataRateMbps,
 				PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
 
@@ -956,6 +959,7 @@ namespace Relativity.DataExchange.Transfer
 		/// </param>
 		private void CreateTransferClient(ClientConfiguration configuration)
 		{
+			this.Logger.LogInformation("TAPI client configuration {Configuration}", configuration);
 			var transferHost = this.CreateTransferHost();
 			transferHost.Clear();
 			this.transferClient = transferHost.CreateClient(configuration);
@@ -1057,8 +1061,14 @@ namespace Relativity.DataExchange.Transfer
 		/// </summary>
 		private void CreateHttpClient()
 		{
-			this.CreateTransferClient(
-				new Relativity.Transfer.Http.HttpClientConfiguration { CookieContainer = this.parameters.WebCookieContainer });
+			this.CreateTransferClient(new Relativity.Transfer.Http.HttpClientConfiguration
+				{
+					CookieContainer = this.parameters.WebCookieContainer,
+					FileNotFoundErrorsDisabled = true,
+					MaxJobParallelism = this.parameters.MaxJobParallelism,
+					MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
+					MaxHttpRetryAttempts = this.parameters.HttpErrorNumberOfRetries,
+				});
 		}
 
 		/// <summary>
@@ -1757,25 +1767,40 @@ namespace Relativity.DataExchange.Transfer
 							transferResult.Status,
 							transferResult.Elapsed,
 							transferResult.TransferRateMbps);
-						switch (transferResult.Status)
+
+						// REL-548265
+						// Currently TAPI TransferJob.CompleteAsync works like this
+						// exporting batch of 100 files, 1 file is missing -> status is Success, 1 Issue
+						// exporting batch of 100 files, 99 files are missing -> status is Success, 99 Issues
+						// exporting batch of 100 files, 100 files are missing -> status is Failed, 100 Issues
+						// Additional check was added to make the third case behave like the other two
+						// There may be more issues than those because of missing files and folders - in that case we still want to stop the export
+						// TapiFileNotFoundErrorsDisabled is currently hardcoded to true
+						// if it were ever false, tapi will use it's internal retrying logic fixed to three attempts where one attempts is one batch size
+						// Failures from those attempts are just IssueAttributes.File | IssueAttributes.Warning so this case will be treated as Fatal
+						// which is probably good and it means we won't accidentally cover any more cases than we wanted.
+						IssueAttributes missingFilesFlag =
+							IssueAttributes.FileNotFound | IssueAttributes.Io | IssueAttributes.Warning;
+
+						if (transferResult.Status == TransferStatus.Fatal
+						    || (transferResult.Status == TransferStatus.Failed
+						        && (transferResult.Issues.Count == 0 || transferResult.Issues.Any(x => !x.Attributes.HasFlag(missingFilesFlag)))))
 						{
-							case TransferStatus.Failed:
-							case TransferStatus.Fatal:
-								this.LogTransferTotals("NotSuccessful", true);
-								string errorMessage = GetTransferErrorMessage(transferResult);
-								this.PublishStatusMessage(errorMessage, TapiConstants.NoLineNumber);
+							this.LogTransferTotals("NotSuccessful", true);
+							string errorMessage = GetTransferErrorMessage(transferResult);
+							this.PublishStatusMessage(errorMessage, TapiConstants.NoLineNumber);
 
-								// Force web mode when job-based fatal errors or file-based errors occur.
-								if (handledException == null)
-								{
-									throw new TransferException(errorMessage);
-								}
+							// Force web mode when job-based fatal errors or file-based errors occur.
+							if (handledException == null)
+							{
+								throw new TransferException(errorMessage);
+							}
 
-								// Gracefully terminate.
-								this.PublishFatalError(errorMessage, TapiConstants.NoLineNumber);
-								break;
+							// Gracefully terminate.
+							this.PublishFatalError(errorMessage, TapiConstants.NoLineNumber);
 						}
 					});
+
 				return this.jobTotals.DeepCopy();
 			}
 			catch (OperationCanceledException)
