@@ -27,7 +27,7 @@ Slack = null
 
 timestamps
 {
-	node('role-build-agent||buildAgent')
+	node('jobWithSutNode')
 	{
 		try{
 		
