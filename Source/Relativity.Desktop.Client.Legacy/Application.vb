@@ -332,6 +332,10 @@ Namespace Relativity.Desktop.Client
 				MsgBox("The key field [" & fieldName & "] is unmapped.  Please map it to continue", MsgBoxStyle.Critical, "Relativity Desktop Client")
 				Return isIdentifierMapped
 			End If
+			If loadFile.OverwriteDestination = ImportOverwriteType.AppendOverlay.ToString() AndAlso Not IdentifierFieldIsMapped(loadFile.FieldMap) Then
+				MsgBox("The field marked [identifier] is unmapped.  Please map it to continue", MsgBoxStyle.Critical, "Relativity Desktop Client")
+				Return False
+			End If
 			If Not forPreview AndAlso Not New kCura.WinEDDS.Service.FieldQuery(Await GetCredentialsAsync(), _CookieContainer).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, loadFile.IdentityFieldId) Then
 				Return MsgBox("There is no SQL index on the selected Overlay Identifier field.  " & vbNewLine & "Performing a load on an un-indexed SQL field will be drastically slower, " & vbNewLine & "and may negatively impact Relativity performance for all users." & vbNewLine & "Contact your SQL Administrator to have an index applied to the selected Overlay Identifier field.", MsgBoxStyle.OkCancel, "Relativity Desktop Client") = MsgBoxResult.Ok
 			Else
@@ -348,6 +352,17 @@ Namespace Relativity.Desktop.Client
 				End If
 			Next
 			Return (idField IsNot Nothing) AndAlso idField.FieldID <> keyFieldID
+		End Function
+
+		Private Function IdentifierFieldIsMapped(ByVal fieldMap As kCura.WinEDDS.LoadFileFieldMap) As Boolean
+			Dim idField As DocumentField = Nothing
+			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In fieldMap
+				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 AndAlso item.DocumentField.FieldCategory = FieldCategory.Identifier Then
+					idField = item.DocumentField
+					Exit For
+				End If
+			Next
+			Return idField IsNot Nothing
 		End Function
 
 		Friend Async Function ReadyToLoad(ByVal imageArgs As kCura.WinEDDS.ImageLoadFile, ByVal forPreview As Boolean) As Task(Of Boolean)
