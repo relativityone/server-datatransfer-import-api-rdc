@@ -42,7 +42,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[TestType.Performance]
 		public async Task ShouldImportFoldersParallelAsync(
 				[Values(2, 4, 6)] int parallelIApiClientCount,
-				[Values(50_000)] int numberOfDocumentsPerIApiClient,
+				[Values(20_000)] int numberOfDocumentsPerIApiClient,
 				[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
@@ -84,7 +84,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[IdentifiedTest("bbbc5de9-f6a4-4a4c-97a7-6f1f88d96c93")]
 		public async Task ShouldImportChoicesInParallelAsync(
 			[Values(2, 4, 6)] int parallelIApiClientCount,
-			[Values(50_000)] int numberOfDocumentsPerIApiClient,
+			[Values(20_000)] int numberOfDocumentsPerIApiClient,
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE
@@ -126,7 +126,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 		[IdentifiedTest("9f2f532e-7a16-4199-87ec-1308dbff27a7")]
 		public async Task ShouldImportChoicesAndFoldersInParallelAsync(
 			[Values(2, 4, 6)] int parallelIApiClientCount,
-			[Values(50_000)] int numberOfDocumentsPerIApiClient,
+			[Values(20_000)] int numberOfDocumentsPerIApiClient,
 			[Values(TapiClient.Aspera, TapiClient.Direct, TapiClient.Web)] TapiClient client)
 		{
 			// ARRANGE

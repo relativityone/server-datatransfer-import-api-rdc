@@ -26,6 +26,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
+	[Ignore("REL-514167")]
 	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	[TestType.Load]
