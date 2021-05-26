@@ -19,6 +19,7 @@ namespace Relativity.DataExchange.Logger
 		public ILog CreateSecureLogger()
 		{
 			ILog currentLogger = Log.Logger;
+
 			if (!AppSettings.Instance.LogHashingEnabled)
 			{
 				return currentLogger;
