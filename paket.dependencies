@@ -1,6 +1,8 @@
 framework: net462
 source https://relativity.jfrog.io/relativity/api/nuget/v3/nuget-anthology
 
+# The ".\build.ps1 UpdatePackages" command needs to be executed when changes are made in this file.
+
 # Note: do NOT change the Castle version due to SOI with RIP and potentially other consumers.
 nuget castle.core = 3.3.3
 nuget castle.windsor = 3.3.0
