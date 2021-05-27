@@ -116,6 +116,22 @@ namespace Relativity.DataExchange.NUnit
 			this.OnTapiBridgeCreated();
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Reliability",
+			"CA2000:Dispose objects before losing scope",
+			Justification = "The test teardown disposes the test object.")]
+		protected override void CreateTapiBridge(WellKnownTransferClient client, TapiBridgeParameters2 parameters)
+		{
+			UploadTapiBridgeParameters2 uploadParameters = new UploadTapiBridgeParameters2(parameters);
+			this.TapiBridgeInstance = new UploadTapiBridge2(
+				this.MockTapiObjectService.Object,
+				uploadParameters,
+				this.TestTransferContext,
+				this.MockLogger.Object,
+				this.CancellationTokenSource.Token);
+			this.OnTapiBridgeCreated();
+		}
+
 		private UploadTapiBridgeParameters2 CreateUploadTapiBridgeParameters(WellKnownTransferClient client)
 		{
 			UploadTapiBridgeParameters2 parameters = new UploadTapiBridgeParameters2

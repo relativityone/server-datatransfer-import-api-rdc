@@ -29,14 +29,14 @@
 			_appSettings = appSettings.ThrowIfNull(nameof(appSettings));
 		}
 
-		public TapiBridgeParameters2 CreateTapiBridgeParametersFromConfiguration()
+		public DownloadTapiBridgeParameters2 CreateTapiBridgeParametersFromConfiguration()
 		{
 			if (_exportSettings.CaseInfo == null)
 			{
 				throw new InvalidOperationException(ExportStrings.ExportSettingsNullWorkspaceExceptionMessage);
 			}
 
-			TapiBridgeParameters2 parameters = new TapiBridgeParameters2
+			DownloadTapiBridgeParameters2 parameters = new DownloadTapiBridgeParameters2
 			{
 				Application = _appSettings.ApplicationName,
 				AsperaBcpRootFolder = _appSettings.TapiAsperaBcpRootFolder,
@@ -56,7 +56,9 @@
 				MaxJobParallelism = _appSettings.TapiMaxJobParallelism,
 				MaxJobRetryAttempts = _exportConfig.ExportIOErrorNumberOfRetries,
 				MinDataRateMbps = _appSettings.TapiMinDataRateMbps,
-				PermissionErrorsRetry = _appSettings.PermissionErrorsRetry,
+				PermissionErrorsRetry = _appSettings.ExportPermissionErrorsRetry,
+				FileNotFoundErrorsDisabled = _appSettings.TapiExportFileNotFoundErrorsDisabled,
+				FileNotFoundErrorsRetry = _appSettings.TapiExportFileNotFoundErrorsRetry,
 				PreserveFileTimestamps = _appSettings.TapiPreserveFileTimestamps,
 				SubmitApmMetrics = _appSettings.TapiSubmitApmMetrics,
 				TargetPath = string.Empty,

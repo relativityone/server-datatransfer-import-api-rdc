@@ -35,7 +35,7 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 
 		public ITapiBridge Create()
 		{
-			TapiBridgeParameters2 parameters = _tapiBridgeParametersFactory.CreateTapiBridgeParametersFromConfiguration();
+			DownloadTapiBridgeParameters2 parameters = _tapiBridgeParametersFactory.CreateTapiBridgeParametersFromConfiguration();
 			parameters.ForceAsperaClient = false;
 			parameters.ForceClientCandidates = string.Empty;
 			parameters.ForceFileShareClient = false;

@@ -551,6 +551,479 @@ namespace Relativity.DataExchange.NUnit
 
 		[Test]
 		[Category(TestCategories.TransferApi)]
+		public void ShouldWaitForJobTransfersWhenTheFirstJobIsFailedWithNoIssues()
+		{
+			// The job is fatal on the first attempt and successful on the second.
+			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
+				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Failed } as ITransferResult))
+				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
+			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+			this.TapiBridgeInstance.AddPath(TestTransferPath);
+			this.TestTransferContext.PublishTransferPathProgress(
+				new TransferRequest(),
+				new TransferPathResult
+					{
+						Completed = true,
+						Path = TestTransferPath,
+						Status = TransferPathStatus.Successful
+					});
+
+			const bool KeepJobAlive = false;
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
+				TestWaitMessage,
+				TestSuccessMessage,
+				TestErrorMessage,
+				KeepJobAlive);
+
+			// Retrying the job forces a switch to web mode.
+			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
+			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Web));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			this.MockTransferJob.Verify(x => x.Dispose(), Times.Exactly(2));
+		}
+
+		// https://jira.kcura.com/browse/REL-548265
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldTreatCompleteFailedWithJustWarningsAsSuccess()
+		{
+			// The job is fatal on the first attempt and successful on the second.
+			IssueAttributes attr1 = IssueAttributes.File | IssueAttributes.FileNotFound | IssueAttributes.Io | IssueAttributes.Warning;
+			IssueAttributes attr2 = IssueAttributes.Job | IssueAttributes.FileNotFound | IssueAttributes.Io | IssueAttributes.Warning;
+
+			TransferResult result = new TransferResult() { Status = TransferStatus.Failed };
+			result.RegisterIssue("attr1", attr1);
+			result.RegisterIssue("attr2", attr2);
+
+			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
+				.Returns(Task.FromResult((ITransferResult)result));
+			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+			this.TapiBridgeInstance.AddPath(TestTransferPath);
+			this.TestTransferContext.PublishTransferPathProgress(
+				new TransferRequest(),
+				new TransferPathResult
+					{
+						Completed = true,
+						Path = TestTransferPath,
+						Status = TransferPathStatus.Successful
+					});
+
+			const bool KeepJobAlive = false;
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
+				TestWaitMessage,
+				TestSuccessMessage,
+				TestErrorMessage,
+				KeepJobAlive);
+
+			// Retrying the job forces a switch to web mode.
+			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Direct));
+			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Direct));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			this.MockTransferJob.Verify(x => x.Dispose(), Times.Exactly(1));
+		}
+
+		// https://jira.kcura.com/browse/REL-548265
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldTreatCompleteFailedWithErrorsAsFailed()
+		{
+			// The job is fatal on the first attempt and successful on the second.
+			IssueAttributes attr1 = IssueAttributes.File | IssueAttributes.FileNotFound | IssueAttributes.Io | IssueAttributes.Warning;
+			IssueAttributes attr2 = IssueAttributes.Job | IssueAttributes.FileNotFound | IssueAttributes.Io | IssueAttributes.Warning;
+			IssueAttributes attr3 = IssueAttributes.File | IssueAttributes.FileNotFound | IssueAttributes.Io | IssueAttributes.Error;
+
+			TransferResult result = new TransferResult() { Status = TransferStatus.Failed };
+			result.RegisterIssue("attr1", attr1);
+			result.RegisterIssue("attr2", attr2);
+			result.RegisterIssue("attr3", attr3);
+
+			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
+				.Returns(Task.FromResult((ITransferResult)result))
+				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
+			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+			this.TapiBridgeInstance.AddPath(TestTransferPath);
+			this.TestTransferContext.PublishTransferPathProgress(
+				new TransferRequest(),
+				new TransferPathResult
+				{
+					Completed = true,
+					Path = TestTransferPath,
+					Status = TransferPathStatus.Successful
+				});
+
+			const bool KeepJobAlive = false;
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
+				TestWaitMessage,
+				TestSuccessMessage,
+				TestErrorMessage,
+				KeepJobAlive);
+
+			// Retrying the job forces a switch to web mode.
+			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
+			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Web));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			this.MockTransferJob.Verify(x => x.Dispose(), Times.Exactly(2));
+		}
+
+		// https://jira.kcura.com/browse/REL-548265
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldTreatCompleteFailedWithWarningsWithoutIoAsFailed()
+		{
+			// The job is fatal on the first attempt and successful on the second.
+			IssueAttributes attr1 = IssueAttributes.File | IssueAttributes.FileNotFound | IssueAttributes.Io
+			                        | IssueAttributes.Warning;
+			IssueAttributes attr2 = IssueAttributes.Job | IssueAttributes.FileNotFound | IssueAttributes.Io
+			                        | IssueAttributes.Warning;
+			IssueAttributes attr3 = IssueAttributes.File | IssueAttributes.FileNotFound | IssueAttributes.Warning;
+
+			TransferResult result = new TransferResult() { Status = TransferStatus.Failed };
+			result.RegisterIssue("attr1", attr1);
+			result.RegisterIssue("attr2", attr2);
+			result.RegisterIssue("attr3", attr3);
+
+			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
+				.Returns(Task.FromResult((ITransferResult)result)).Returns(
+					Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
+			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+			this.TapiBridgeInstance.AddPath(TestTransferPath);
+			this.TestTransferContext.PublishTransferPathProgress(
+				new TransferRequest(),
+				new TransferPathResult
+					{
+						Completed = true, Path = TestTransferPath, Status = TransferPathStatus.Successful
+					});
+
+			const bool KeepJobAlive = false;
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
+				TestWaitMessage,
+				TestSuccessMessage,
+				TestErrorMessage,
+				KeepJobAlive);
+
+			// Retrying the job forces a switch to web mode.
+			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
+			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Web));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			this.MockTransferJob.Verify(x => x.Dispose(), Times.Exactly(2));
+		}
+
+		// https://jira.kcura.com/browse/REL-548265
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldTreatCompleteFailedWithWarningsWithoutFileNotFoundAsFailed()
+		{
+			// The job is fatal on the first attempt and successful on the second.
+			IssueAttributes attr1 = IssueAttributes.File | IssueAttributes.FileNotFound | IssueAttributes.Io | IssueAttributes.Warning;
+			IssueAttributes attr2 = IssueAttributes.Job | IssueAttributes.FileNotFound | IssueAttributes.Io | IssueAttributes.Warning;
+			IssueAttributes attr3 = IssueAttributes.File | IssueAttributes.Io | IssueAttributes.Warning;
+
+			TransferResult result = new TransferResult() { Status = TransferStatus.Failed };
+			result.RegisterIssue("attr1", attr1);
+			result.RegisterIssue("attr2", attr2);
+			result.RegisterIssue("attr3", attr3);
+
+			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
+				.Returns(Task.FromResult((ITransferResult)result))
+				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
+			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+			this.TapiBridgeInstance.AddPath(TestTransferPath);
+			this.TestTransferContext.PublishTransferPathProgress(
+				new TransferRequest(),
+				new TransferPathResult
+				{
+					Completed = true,
+					Path = TestTransferPath,
+					Status = TransferPathStatus.Successful
+				});
+
+			const bool KeepJobAlive = false;
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
+				TestWaitMessage,
+				TestSuccessMessage,
+				TestErrorMessage,
+				KeepJobAlive);
+
+			// Retrying the job forces a switch to web mode.
+			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
+			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Web));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			this.MockTransferJob.Verify(x => x.Dispose(), Times.Exactly(2));
+		}
+
+		// https://jira.kcura.com/browse/REL-548265
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldPreserveConfigurationWhenFallbackToWeb()
+		{
+			var badPathErrorsRetry = true;
+			var asperaBcpRootFolder = string.Empty;
+			var permissionErrorsRetry = true;
+			var fileNotFoundErrorsDisabled = true;
+			var fileNotFoundErrorsRetry = true;
+			var maxJobParallelism = 2;
+			var maxJobRetryAttempts = 3;
+			var preserveFileTimestamps = false;
+
+			TapiBridgeParameters2 parameters = this.CreateTapiBridgeParameters(WellKnownTransferClient.FileShare);
+			parameters.BadPathErrorsRetry = badPathErrorsRetry;
+			parameters.AsperaBcpRootFolder = asperaBcpRootFolder;
+			parameters.PermissionErrorsRetry = permissionErrorsRetry;
+			parameters.FileNotFoundErrorsDisabled = fileNotFoundErrorsDisabled;
+			parameters.FileNotFoundErrorsRetry = fileNotFoundErrorsRetry;
+			parameters.MaxJobParallelism = maxJobParallelism;
+			parameters.MaxJobRetryAttempts = maxJobRetryAttempts;
+			parameters.PreserveFileTimestamps = preserveFileTimestamps;
+
+			// The job is fatal on the first attempt and successful on the second.
+			this.MockRelativityTransferHost.Setup(x => x.CreateClient(It.IsAny<ClientConfiguration>()))
+				.Callback<ClientConfiguration>(
+				cfg =>
+					{
+						badPathErrorsRetry = cfg.BadPathErrorsRetry;
+						asperaBcpRootFolder = cfg.BcpRootFolder;
+						permissionErrorsRetry = cfg.PermissionErrorsRetry;
+						fileNotFoundErrorsDisabled = cfg.FileNotFoundErrorsDisabled;
+						fileNotFoundErrorsRetry = cfg.FileNotFoundErrorsRetry;
+						maxJobParallelism = cfg.MaxJobParallelism;
+						maxJobRetryAttempts = cfg.MaxJobRetryAttempts;
+						preserveFileTimestamps = cfg.PreserveDates;
+					})
+				.Returns<ClientConfiguration>(
+					configuration =>
+						{
+							// Take into account tests that switch to web mode.
+							this.MockTransferClient.Setup(x => x.Id).Returns(configuration.ClientId);
+							this.MockTransferClient.Setup(x => x.Client).Returns(configuration.Client);
+							return this.MockTransferClient.Object;
+						});
+
+			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
+				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Failed } as ITransferResult))
+				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
+			this.CreateTapiBridge(WellKnownTransferClient.FileShare, parameters);
+			this.TapiBridgeInstance.AddPath(TestTransferPath);
+			this.TestTransferContext.PublishTransferPathProgress(
+				new TransferRequest(),
+				new TransferPathResult
+					{
+						Completed = true,
+						Path = TestTransferPath,
+						Status = TransferPathStatus.Successful
+					});
+
+			const bool KeepJobAlive = false;
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
+				TestWaitMessage,
+				TestSuccessMessage,
+				TestErrorMessage,
+				KeepJobAlive);
+
+			// Retrying the job forces a switch to web mode.
+			Assert.That(this.TapiBridgeInstance.Parameters.BadPathErrorsRetry, Is.EqualTo(badPathErrorsRetry));
+			Assert.That(this.TapiBridgeInstance.Parameters.AsperaBcpRootFolder, Is.EqualTo(asperaBcpRootFolder));
+			Assert.That(this.TapiBridgeInstance.Parameters.FileNotFoundErrorsDisabled, Is.EqualTo(fileNotFoundErrorsDisabled));
+			Assert.That(this.TapiBridgeInstance.Parameters.FileNotFoundErrorsRetry, Is.EqualTo(fileNotFoundErrorsRetry));
+			Assert.That(this.TapiBridgeInstance.Parameters.MaxJobParallelism, Is.EqualTo(maxJobParallelism));
+			Assert.That(this.TapiBridgeInstance.Parameters.PermissionErrorsRetry, Is.EqualTo(permissionErrorsRetry));
+			Assert.That(this.TapiBridgeInstance.Parameters.PreserveFileTimestamps, Is.EqualTo(preserveFileTimestamps));
+		}
+
+		// https://jira.kcura.com/browse/REL-548265
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldSetLogDirectoryWhenFallbackToWeb()
+		{
+			var logConfigFile = "tmp";
+
+			TapiBridgeParameters2 parameters = this.CreateTapiBridgeParameters(WellKnownTransferClient.FileShare);
+			parameters.TransferLogDirectory = logConfigFile;
+
+			// The job is fatal on the first attempt and successful on the second.
+			this.MockRelativityTransferHost.Setup(x => x.CreateClient(It.IsAny<ClientConfiguration>()))
+				.Callback<ClientConfiguration>(
+				cfg =>
+				{
+					logConfigFile = cfg.TransferLogDirectory;
+				})
+				.Returns<ClientConfiguration>(
+					configuration =>
+					{
+						// Take into account tests that switch to web mode.
+						this.MockTransferClient.Setup(x => x.Id).Returns(configuration.ClientId);
+						this.MockTransferClient.Setup(x => x.Client).Returns(configuration.Client);
+						return this.MockTransferClient.Object;
+					});
+
+			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
+				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Failed } as ITransferResult))
+				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
+			this.CreateTapiBridge(WellKnownTransferClient.FileShare, parameters);
+			this.TapiBridgeInstance.AddPath(TestTransferPath);
+			this.TestTransferContext.PublishTransferPathProgress(
+				new TransferRequest(),
+				new TransferPathResult
+				{
+					Completed = true,
+					Path = TestTransferPath,
+					Status = TransferPathStatus.Successful
+				});
+
+			const bool KeepJobAlive = false;
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
+				TestWaitMessage,
+				TestSuccessMessage,
+				TestErrorMessage,
+				KeepJobAlive);
+
+			// Retrying the job forces a switch to web mode.
+			Assert.That(this.TapiBridgeInstance.Parameters.TransferLogDirectory, Is.EqualTo(logConfigFile));
+		}
+
+		// https://jira.kcura.com/browse/REL-548265
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldSetSavingMemoryWhenFallbackToWeb()
+		{
+			var savingMemory = false;
+
+			TapiBridgeParameters2 parameters = this.CreateTapiBridgeParameters(WellKnownTransferClient.FileShare);
+
+			// The job is fatal on the first attempt and successful on the second.
+			this.MockRelativityTransferHost.Setup(x => x.CreateClient(It.IsAny<ClientConfiguration>()))
+				.Callback<ClientConfiguration>(
+				cfg =>
+				{
+					savingMemory = cfg.SavingMemoryMode;
+				})
+				.Returns<ClientConfiguration>(
+					configuration =>
+					{
+						// Take into account tests that switch to web mode.
+						this.MockTransferClient.Setup(x => x.Id).Returns(configuration.ClientId);
+						this.MockTransferClient.Setup(x => x.Client).Returns(configuration.Client);
+						return this.MockTransferClient.Object;
+					});
+
+			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
+				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Failed } as ITransferResult))
+				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
+			this.CreateTapiBridge(WellKnownTransferClient.FileShare, parameters);
+			this.TapiBridgeInstance.AddPath(TestTransferPath);
+			this.TestTransferContext.PublishTransferPathProgress(
+				new TransferRequest(),
+				new TransferPathResult
+				{
+					Completed = true,
+					Path = TestTransferPath,
+					Status = TransferPathStatus.Successful
+				});
+
+			const bool KeepJobAlive = false;
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
+				TestWaitMessage,
+				TestSuccessMessage,
+				TestErrorMessage,
+				KeepJobAlive);
+
+			// Retrying the job forces a switch to web mode.
+			Assert.That(savingMemory, Is.EqualTo(true));
+		}
+
+		// https://jira.kcura.com/browse/REL-548265
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldSetHttpErrorNumberOfRetriesTo1WhenFallbackToWeb()
+		{
+			TapiBridgeParameters2 parameters = this.CreateTapiBridgeParameters(WellKnownTransferClient.FileShare);
+			parameters.HttpErrorNumberOfRetries = 4;
+
+			// The job is fatal on the first attempt and successful on the second.
+			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
+				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Failed } as ITransferResult))
+				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
+			this.CreateTapiBridge(WellKnownTransferClient.FileShare, parameters);
+			this.TapiBridgeInstance.AddPath(TestTransferPath);
+			this.TestTransferContext.PublishTransferPathProgress(
+				new TransferRequest(),
+				new TransferPathResult
+				{
+					Completed = true,
+					Path = TestTransferPath,
+					Status = TransferPathStatus.Successful
+				});
+
+			const bool KeepJobAlive = false;
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
+				TestWaitMessage,
+				TestSuccessMessage,
+				TestErrorMessage,
+				KeepJobAlive);
+
+			// Retrying the job forces a switch to web mode.
+			Assert.That(this.TapiBridgeInstance.Parameters.HttpErrorNumberOfRetries, Is.EqualTo(1));
+		}
+
+		// https://jira.kcura.com/browse/REL-548265
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldSetWebCookieContainerConfigurationWhenFallbackToWeb()
+		{
+			TapiBridgeParameters2 parameters = this.CreateTapiBridgeParameters(WellKnownTransferClient.FileShare);
+
+			// The job is fatal on the first attempt and successful on the second.
+			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
+				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Failed } as ITransferResult))
+				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
+			this.CreateTapiBridge(WellKnownTransferClient.FileShare, parameters);
+			this.TapiBridgeInstance.AddPath(TestTransferPath);
+			this.TestTransferContext.PublishTransferPathProgress(
+				new TransferRequest(),
+				new TransferPathResult
+				{
+					Completed = true,
+					Path = TestTransferPath,
+					Status = TransferPathStatus.Successful
+				});
+
+			const bool KeepJobAlive = false;
+			TapiTotals totals = this.TapiBridgeInstance.WaitForTransfers(
+				TestWaitMessage,
+				TestSuccessMessage,
+				TestErrorMessage,
+				KeepJobAlive);
+
+			// Retrying the job forces a switch to web mode.
+			Assert.That(this.TapiBridgeInstance.Parameters.WebCookieContainer, Is.Not.EqualTo(null));
+		}
+
+		[Test]
+		[Category(TestCategories.TransferApi)]
 		public void ShouldWaitForJobTransfersWhenTheMaxInactivityIsExceeded()
 		{
 			// This will force a fallback to the job.
@@ -804,6 +1277,8 @@ namespace Relativity.DataExchange.NUnit
 
 		protected abstract void CreateTapiBridge(WellKnownTransferClient client);
 
+		protected abstract void CreateTapiBridge(WellKnownTransferClient client, TapiBridgeParameters2 parameters);
+
 		protected virtual void OnTapiBridgeCreated()
 		{
 			this.TapiBridgeInstance.TapiClientChanged += (sender, args) => { this.ChangedTapiClient = args.Client; };
@@ -843,6 +1318,23 @@ namespace Relativity.DataExchange.NUnit
 				ForceFileShareClient = false,
 				MaxInactivitySeconds = this.TestMaxInactivitySeconds,
 			};
+
+			this.ConfigureTapiBridgeParameters(parameters, client);
+			return parameters;
+		}
+
+		protected DownloadTapiBridgeParameters2 CreateDownloadTapiBridgeParameters(WellKnownTransferClient client)
+		{
+			DownloadTapiBridgeParameters2 parameters = new DownloadTapiBridgeParameters2
+			{
+					Credentials = new NetworkCredential(),
+					WebServiceUrl = "https://relativity.one.com",
+					WorkspaceId = this.TestWorkspaceId,
+					ForceAsperaClient = false,
+					ForceHttpClient = false,
+					ForceFileShareClient = false,
+					MaxInactivitySeconds = this.TestMaxInactivitySeconds,
+				};
 
 			this.ConfigureTapiBridgeParameters(parameters, client);
 			return parameters;

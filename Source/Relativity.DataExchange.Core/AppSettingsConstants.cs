@@ -122,6 +122,8 @@ namespace Relativity.DataExchange
 		public const string OAuth2ImplicitCredentialRedirectUrlDefaultValue = "rdc://relativityimplicit/";
 		public const string PermissionErrorsRetryKey = "PermissionErrorsRetry";
 		public const bool PermissionErrorsRetryDefaultValue = false;
+		public const string ExportPermissionErrorsRetryKey = "ExportPermissionErrorsRetry";
+		public const bool ExportPermissionErrorsRetryDefaultValue = false;
 		public const string PreviewThresholdKey = "PreviewThreshold";
 		public const int PreviewThresholdDefaultValue = 1000;
 		public const string ProcessFormRefreshRateKey = "ProcessFormRefreshRate";
@@ -141,8 +143,12 @@ namespace Relativity.DataExchange
 		public const bool TapiBadPathErrorsRetryDefaultValue = false;
 		public const string TapiFileNotFoundErrorsDisabledKey = "TapiFileNotFoundErrorsDisabled";
 		public const bool TapiFileNotFoundErrorsDisabledDefaultValue = false;
+		public const string TapiExportFileNotFoundErrorsDisabledKey = "TapiExportFileNotFoundErrorsDisabled";
+		public const bool TapiExportFileNotFoundErrorsDisabledDefaultValue = true;
 		public const string TapiFileNotFoundErrorsRetryKey = "TapiFileNotFoundErrorsRetry";
 		public const bool TapiFileNotFoundErrorsRetryDefaultValue = true;
+		public const string TapiExportFileNotFoundErrorsRetryKey = "TapiExportFileNotFoundErrorsRetry";
+		public const bool TapiExportFileNotFoundErrorsRetryDefaultValue = false;
 		public const string TapiForceAsperaClientKey = "TapiForceAsperaClient";
 		public const bool TapiForceAsperaClientDefaultValue = false;
 		public const string TapiForceBcpHttpClientKey = "TapiForceBcpHttpClient";

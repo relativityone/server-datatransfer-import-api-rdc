@@ -650,6 +650,20 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheExportPermissionErrorsRetrySetting()
+		{
+			// Note: This value does not enable or disable the RetryOptions.Permissions value.
+			Assert.That(this.settings.ExportPermissionErrorsRetry, Is.EqualTo(DataExchange.AppSettingsConstants.ExportPermissionErrorsRetryDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.ExportPermissionErrorsRetry = expectedValue;
+			Assert.That(this.settings.ExportPermissionErrorsRetry, Is.EqualTo(expectedValue));
+			Assert.That(this.settings.RetryOptions.HasFlag(RetryOptions.Permissions), Is.EqualTo(false));
+			this.settings.ExportPermissionErrorsRetry = !expectedValue;
+			Assert.That(this.settings.ExportPermissionErrorsRetry, Is.EqualTo(!expectedValue));
+			Assert.That(this.settings.RetryOptions.HasFlag(RetryOptions.Permissions), Is.EqualTo(false));
+		}
+
+		[Test]
 		public void ShouldGetAndSetThePreviewThresholdSetting()
 		{
 			Assert.That(
@@ -741,6 +755,19 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheTapiExportFileNotFoundErrorsDisabledSetting()
+		{
+			Assert.That(
+				this.settings.TapiExportFileNotFoundErrorsDisabled,
+				Is.EqualTo(DataExchange.AppSettingsConstants.TapiExportFileNotFoundErrorsDisabledDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.TapiExportFileNotFoundErrorsDisabled = expectedValue;
+			Assert.That(this.settings.TapiExportFileNotFoundErrorsDisabled, Is.EqualTo(expectedValue));
+			this.settings.TapiExportFileNotFoundErrorsDisabled = !expectedValue;
+			Assert.That(this.settings.TapiExportFileNotFoundErrorsDisabled, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheTapiFileNotFoundErrorsRetrySetting()
 		{
 			Assert.That(
@@ -751,6 +778,19 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.settings.TapiFileNotFoundErrorsRetry, Is.EqualTo(expectedValue));
 			this.settings.TapiFileNotFoundErrorsRetry = !expectedValue;
 			Assert.That(this.settings.TapiFileNotFoundErrorsRetry, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheTapiExportFileNotFoundErrorsRetrySetting()
+		{
+			Assert.That(
+				this.settings.TapiExportFileNotFoundErrorsRetry,
+				Is.EqualTo(DataExchange.AppSettingsConstants.TapiExportFileNotFoundErrorsRetryDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.TapiExportFileNotFoundErrorsRetry = expectedValue;
+			Assert.That(this.settings.TapiExportFileNotFoundErrorsRetry, Is.EqualTo(expectedValue));
+			this.settings.TapiExportFileNotFoundErrorsRetry = !expectedValue;
+			Assert.That(this.settings.TapiExportFileNotFoundErrorsRetry, Is.EqualTo(!expectedValue));
 		}
 
 		[Test]
@@ -1142,6 +1182,7 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.MaxReloginTries, Is.EqualTo(42));
 				Assert.That(this.settings.MinBatchSize, Is.EqualTo(29));
 				Assert.That(this.settings.PermissionErrorsRetry, Is.False);
+				Assert.That(this.settings.ExportPermissionErrorsRetry, Is.False);
 				Assert.That(this.settings.PreviewThreshold, Is.EqualTo(49));
 				Assert.That(this.settings.SuppressServerCertificateValidation, Is.True);
 				Assert.That(this.settings.TapiAsperaBcpRootFolder, Is.EqualTo("Root"));
@@ -1167,8 +1208,10 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.LogAllEvents, Is.True);
 
 				// The Relativity.DataExchange section asserts go here.
-				Assert.That(this.settings.TapiFileNotFoundErrorsRetry, Is.True);
-				Assert.That(this.settings.TapiFileNotFoundErrorsRetry, Is.True);
+				Assert.That(this.settings.TapiFileNotFoundErrorsRetry, Is.False);
+				Assert.That(this.settings.TapiExportFileNotFoundErrorsRetry, Is.True);
+				Assert.That(this.settings.TapiFileNotFoundErrorsDisabled, Is.True);
+				Assert.That(this.settings.TapiExportFileNotFoundErrorsDisabled, Is.False);
 				Assert.That(this.settings.TapiMaxInactivitySeconds, Is.EqualTo(99));
 				Assert.That(this.settings.FileTypeIdentifyTimeoutSeconds, Is.EqualTo(456));
 				Assert.That(this.settings.OAuth2ImplicitCredentialRedirectUrl, Is.EqualTo("http://relativity"));
@@ -1212,6 +1255,7 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.MaximumReloginTriesKey], Is.EqualTo(42));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.MinBatchSizeKey], Is.EqualTo(29));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.PermissionErrorsRetryKey], Is.False);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.ExportPermissionErrorsRetryKey], Is.False);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.PreviewThresholdKey], Is.EqualTo(49));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.SuppressServerCertificateValidationKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiAsperaBcpRootFolderKey], Is.EqualTo("Root"));
@@ -1244,7 +1288,9 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.HttpExtractedTextTimeoutSecondsKey], Is.EqualTo(96));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.OAuth2ImplicitCredentialRedirectUrlKey], Is.EqualTo("http://relativity"));
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsDisabledKey], Is.True);
-				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsRetryKey], Is.True);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiExportFileNotFoundErrorsDisabledKey], Is.False);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsRetryKey], Is.False);
+				Assert.That(dictionary[DataExchange.AppSettingsConstants.TapiExportFileNotFoundErrorsRetryKey], Is.True);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TelemetrySubmitApmMetricsKey], Is.False);
 				Assert.That(dictionary[DataExchange.AppSettingsConstants.TelemetrySubmitSumMetricsKey], Is.False);
 			}
@@ -1311,6 +1357,8 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.MinBatchSize, Is.EqualTo(15));
 				dictionary[DataExchange.AppSettingsConstants.PermissionErrorsRetryKey] = true;
 				Assert.That(this.settings.PermissionErrorsRetry, Is.True);
+				dictionary[DataExchange.AppSettingsConstants.ExportPermissionErrorsRetryKey] = true;
+				Assert.That(this.settings.ExportPermissionErrorsRetry, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.PreviewThresholdKey] = 16;
 				Assert.That(this.settings.PreviewThreshold, Is.EqualTo(16));
 				dictionary[DataExchange.AppSettingsConstants.SuppressServerCertificateValidationKey] = true;
@@ -1365,10 +1413,14 @@ namespace Relativity.DataExchange.NUnit
 				Assert.That(this.settings.LogAllEvents, Is.True);
 
 				// The new Relativity.DataExchange section asserts go here.
-				dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsDisabledKey] = true;
-				Assert.That(this.settings.TapiFileNotFoundErrorsDisabled, Is.True);
+				dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsDisabledKey] = false;
+				Assert.That(this.settings.TapiFileNotFoundErrorsDisabled, Is.False);
+				dictionary[DataExchange.AppSettingsConstants.TapiExportFileNotFoundErrorsDisabledKey] = true;
+				Assert.That(this.settings.TapiExportFileNotFoundErrorsDisabled, Is.True);
 				dictionary[DataExchange.AppSettingsConstants.TapiFileNotFoundErrorsRetryKey] = true;
 				Assert.That(this.settings.TapiFileNotFoundErrorsRetry, Is.True);
+				dictionary[DataExchange.AppSettingsConstants.TapiExportFileNotFoundErrorsRetryKey] = false;
+				Assert.That(this.settings.TapiExportFileNotFoundErrorsRetry, Is.False);
 				dictionary[DataExchange.AppSettingsConstants.TapiMaxInactivitySecondsKey] = 999;
 				Assert.That(this.settings.TapiMaxInactivitySeconds, Is.EqualTo(999));
 				dictionary[DataExchange.AppSettingsConstants.EnforceVersionCompatibilityCheckKey] = true;

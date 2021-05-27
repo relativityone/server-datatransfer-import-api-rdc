@@ -53,7 +53,7 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2
 					nameof(settings));
 			}
 
-			_parameters = new TapiBridgeParameters2
+			_parameters = new DownloadTapiBridgeParameters2
 				              {
 					              Credentials = exportSettings.Credential,
 					              WebCookieContainer = exportSettings.CookieContainer,

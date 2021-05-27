@@ -414,7 +414,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 
 		protected DownloadTapiBridge2 CreateDownloadTapiBridge(string targetPath)
 		{
-			var parameters = new TapiBridgeParameters2();
+			var parameters = new DownloadTapiBridgeParameters2();
 			this.InitializeTapiBridgeParameters(parameters);
 			parameters.TargetPath = targetPath;
 

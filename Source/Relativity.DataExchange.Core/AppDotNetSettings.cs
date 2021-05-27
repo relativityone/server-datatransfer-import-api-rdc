@@ -768,6 +768,17 @@ namespace Relativity.DataExchange
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
+			AppSettingsConstants.ExportPermissionErrorsRetryKey,
+			AppSettingsConstants.ExportPermissionErrorsRetryDefaultValue)]
+		bool IAppSettings.ExportPermissionErrorsRetry
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.PreviewThresholdKey,
 			AppSettingsConstants.PreviewThresholdDefaultValue)]
 		int IAppSettings.PreviewThreshold
@@ -802,6 +813,8 @@ namespace Relativity.DataExchange
 			get
 			{
 				// Always use other settings to drive these enum switches.
+				// Only use in export sets RetryOptions = None anyway
+				// ExportPermissionErrorsRetry is not needed here
 				RetryOptions value = AppSettingsConstants.RetryOptionsDefaultValue;
 				if (((IAppSettings)this).PermissionErrorsRetry)
 				{
@@ -890,9 +903,31 @@ namespace Relativity.DataExchange
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.TapiExportFileNotFoundErrorsDisabledKey,
+			AppSettingsConstants.TapiExportFileNotFoundErrorsDisabledDefaultValue)]
+		bool IAppSettings.TapiExportFileNotFoundErrorsDisabled
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
 			AppSettingsConstants.TapiFileNotFoundErrorsRetryKey,
 			AppSettingsConstants.TapiFileNotFoundErrorsRetryDefaultValue)]
 		bool IAppSettings.TapiFileNotFoundErrorsRetry
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.TapiExportFileNotFoundErrorsRetryKey,
+			AppSettingsConstants.TapiExportFileNotFoundErrorsRetryDefaultValue)]
+		bool IAppSettings.TapiExportFileNotFoundErrorsRetry
 		{
 			get;
 			set;

@@ -590,12 +590,24 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether permission specific errors are retried. This is <see langword="false" /> by default.
+		/// Gets or sets a value indicating whether permission specific errors are retried in import. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to retry permissions specific errors; otherwise, <see langword="false" />.
 		/// </value>
 		bool PermissionErrorsRetry
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether permission specific errors are retried in export. This is <see langword="false" /> by default.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to retry permissions specific errors; otherwise, <see langword="false" />.
+		/// </value>
+		bool ExportPermissionErrorsRetry
 		{
 			get;
 			set;
@@ -709,7 +721,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether Transfer API should disable treating missing files as errors. This is <see langword="false" /> by default and always <see langword="true" /> for exports.
+		/// Gets or sets a value indicating whether Transfer API should disable treating missing files as errors in import. This is <see langword="false" /> by default and always <see langword="true" /> for exports.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to disable treating missing files as errors; otherwise, <see langword="false" />.
@@ -721,12 +733,36 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether Transfer API should retry missing files. This is <see langword="true" /> by default and always <see langword="false" /> for exports.
+		/// Gets or sets a value indicating whether Transfer API should disable treating missing files as errors in export. This is <see langword="false" /> by default and always <see langword="true" /> for exports.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to disable treating missing files as errors; otherwise, <see langword="false" />.
+		/// </value>
+		bool TapiExportFileNotFoundErrorsDisabled
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether Transfer API should retry missing files in import. This is <see langword="true" /> by default and always <see langword="false" /> for exports.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to retry missing files; otherwise, <see langword="false" />.
 		/// </value>
 		bool TapiFileNotFoundErrorsRetry
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether Transfer API should retry missing files in export. This is <see langword="true" /> by default and always <see langword="false" /> for exports.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to retry missing files; otherwise, <see langword="false" />.
+		/// </value>
+		bool TapiExportFileNotFoundErrorsRetry
 		{
 			get;
 			set;

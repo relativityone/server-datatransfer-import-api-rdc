@@ -309,6 +309,8 @@ Namespace kCura.WinEDDS
 			nativeParameters.PermissionErrorsRetry = AppSettings.Instance.PermissionErrorsRetry
 			nativeParameters.PreserveFileTimestamps = AppSettings.Instance.TapiPreserveFileTimestamps
 			nativeParameters.BadPathErrorsRetry = AppSettings.Instance.TapiBadPathErrorsRetry
+			nativeParameters.FileNotFoundErrorsDisabled = AppSettings.Instance.TapiFileNotFoundErrorsDisabled
+			nativeParameters.FileNotFoundErrorsRetry = AppSettings.Instance.TapiFileNotFoundErrorsRetry
 
 			' Copying the parameters and tweaking just a few BCP specific parameters.
 			Dim bcpParameters As UploadTapiBridgeParameters2 = nativeParameters.ShallowCopy()

@@ -30,7 +30,7 @@
 
 		public ITapiBridge Create()
 		{
-			TapiBridgeParameters2 parameters = _tapiBridgeParametersFactory.CreateTapiBridgeParametersFromConfiguration();
+			DownloadTapiBridgeParameters2 parameters = _tapiBridgeParametersFactory.CreateTapiBridgeParametersFromConfiguration();
 			if (_fileshareSettings == null)
 			{
 				_tapiObjectService.ApplyUnmappedFileRepositoryParameters(parameters);

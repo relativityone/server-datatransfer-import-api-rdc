@@ -130,6 +130,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property ExportPermissionErrorsRetry() As Boolean
+			Get
+				Return AppSettings.Instance.ExportPermissionErrorsRetry
+			End Get
+		End Property
+
 		Public Shared ReadOnly Property BadPathErrorsRetry() As Boolean
 			Get
 				Return AppSettings.Instance.TapiBadPathErrorsRetry

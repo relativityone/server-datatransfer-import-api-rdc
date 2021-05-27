@@ -59,7 +59,7 @@ namespace Relativity.DataExchange.Transfer
 		/// <returns>
 		/// The <see cref="DownloadTapiBridge2"/> instance.
 		/// </returns>
-		public static DownloadTapiBridge2 CreateDownloadBridge(TapiBridgeParameters2 parameters, ILog logger, CancellationToken token)
+		public static DownloadTapiBridge2 CreateDownloadBridge(DownloadTapiBridgeParameters2 parameters, ILog logger, CancellationToken token)
 		{
 			return new DownloadTapiBridge2(parameters, logger, token);
 		}

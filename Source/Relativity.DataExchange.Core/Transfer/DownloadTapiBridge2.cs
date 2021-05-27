@@ -22,7 +22,7 @@ namespace Relativity.DataExchange.Transfer
 	/// </summary>
 	public sealed class DownloadTapiBridge2 : TapiBridgeBase2
 	{
-		private readonly TapiBridgeParameters2 parameters;
+		private readonly DownloadTapiBridgeParameters2 parameters;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DownloadTapiBridge2"/> class.
@@ -36,7 +36,7 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="token">
 		/// The cancellation token.
 		/// </param>
-		public DownloadTapiBridge2(TapiBridgeParameters2 parameters, ILog logger, CancellationToken token)
+		public DownloadTapiBridge2(DownloadTapiBridgeParameters2 parameters, ILog logger, CancellationToken token)
 			: this(new TapiObjectService(), parameters, logger, token)
 		{
 		}
@@ -58,7 +58,7 @@ namespace Relativity.DataExchange.Transfer
 		/// </param>
 		public DownloadTapiBridge2(
 			ITapiObjectService factory,
-			TapiBridgeParameters2 parameters,
+			DownloadTapiBridgeParameters2 parameters,
 			ILog logger,
 			CancellationToken token)
 			: this(factory, parameters, null, logger, token)
@@ -85,7 +85,7 @@ namespace Relativity.DataExchange.Transfer
 		/// </param>
 		public DownloadTapiBridge2(
 			ITapiObjectService factory,
-			TapiBridgeParameters2 parameters,
+			DownloadTapiBridgeParameters2 parameters,
 			TransferContext context,
 			ILog logger,
 			CancellationToken token)
@@ -148,16 +148,6 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			request.SourcePathResolver = resolver;
-		}
-
-		/// <inheritdoc />
-		protected override ClientConfiguration CreateClientConfiguration()
-		{
-			var clientConfiguration = base.CreateClientConfiguration();
-			clientConfiguration.FileNotFoundErrorsDisabled = true;
-			clientConfiguration.FileNotFoundErrorsRetry = false;
-			clientConfiguration.PermissionErrorsRetry = false;
-			return clientConfiguration;
 		}
 	}
 }
