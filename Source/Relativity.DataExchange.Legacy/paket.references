@@ -8,3 +8,4 @@ relativity.services.interfaces
 relativity.telemetry.datacontracts.shared
 relativity.telemetry.services.interface
 relativity.transfer.client
+relativity.outsidein

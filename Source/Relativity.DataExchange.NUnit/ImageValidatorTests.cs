@@ -2,9 +2,6 @@
 // <copyright file="ImageValidatorTests.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
-// <summary>
-//   Represents <see cref="ImageValidator"/> tests.
-// </summary>
 // -----------------------------------------------------------------------------------------------------
 
 namespace Relativity.DataExchange.NUnit
@@ -14,13 +11,13 @@ namespace Relativity.DataExchange.NUnit
 
 	using global::NUnit.Framework;
 
+	using kCura.WinEDDS;
+
+	using Moq;
+
 	using Relativity.DataExchange;
-	using Relativity.DataExchange.Media;
 	using Relativity.DataExchange.TestFramework;
 
-	/// <summary>
-	/// Represents <see cref="ImageValidator"/> tests.
-	/// </summary>
 	[TestFixture]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
@@ -28,14 +25,17 @@ namespace Relativity.DataExchange.NUnit
 		Justification = "The test class handles the disposal.")]
 	public class ImageValidatorTests
 	{
+		private readonly ITiffValidator tiffValidator = new TiffValidator();
+		private readonly IFileInspector fileInspector = new FileInspector();
+
 		private TempDirectory2 tempDirectory;
-		private ImageValidator validator;
+		private ImageValidator imageValidator;
 
 		[SetUp]
 		public void Setup()
 		{
 			this.tempDirectory = new TempDirectory2();
-			this.validator = new ImageValidator(new ByteArrayConverter());
+			this.imageValidator = new ImageValidator();
 		}
 
 		[TearDown]
@@ -53,7 +53,9 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldValidateAndIdentifyTheJpegImage(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Jpeg", fileName);
-			this.validator.Validate(file);
+			var result = this.imageValidator.IsImageValid(file, this.tiffValidator, this.fileInspector);
+			Assert.That(result.IsValid, Is.EqualTo(true));
+			Assert.That(result.Message, Is.EqualTo($"The JPEG image file {file} is valid"));
 		}
 
 		[Test]
@@ -70,7 +72,9 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldValidateAndIdentifyTheTiffImage(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Tiff", fileName);
-			this.validator.Validate(file);
+			var result = this.imageValidator.IsImageValid(file, this.tiffValidator, this.fileInspector);
+			Assert.That(result.IsValid, Is.EqualTo(true));
+			Assert.That(result.Message, Is.EqualTo($"The TIFF image file {file} is valid"));
 		}
 
 		[Test]
@@ -79,25 +83,27 @@ namespace Relativity.DataExchange.NUnit
 		[TestCase("G32D.TIF")]
 		[TestCase("G32DS.TIF")]
 		[Category(TestCategories.Framework)]
-		public void ShouldThrowWhenTheTiffEncodingIsNotSupported(string fileName)
+		public void ShouldValidateWhenTheTiffEncodingIsNotSupported(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Tiff", fileName);
-			ImageFileValidationException exception = Assert.Throws<ImageFileValidationException>(() => this.validator.Validate(file));
-			Assert.That(exception.Message, Contains.Substring("is encoded"));
+			var result = this.imageValidator.IsImageValid(file, this.tiffValidator, this.fileInspector);
+			Assert.That(result.IsValid, Is.EqualTo(false));
+			Assert.That(result.Message, Is.EqualTo($"The TIFF image file {file} is not encoded in CCITT T.6"));
 		}
 
 		[Test]
-		[TestCase("GMARBLES.TIF")]
-		[TestCase("MARBIBM.TIF")]
-		[TestCase("MARBLES.TIF")]
-		[TestCase("XING_T24.TIF")]
-		[TestCase("FLAG_T24.TIF")]
+		[TestCase("GMARBLES.TIF", 8)]
+		[TestCase("MARBIBM.TIF", 24)]
+		[TestCase("MARBLES.TIF", 24)]
+		[TestCase("XING_T24.TIF", 24)]
+		[TestCase("FLAG_T24.TIF", 24)]
 		[Category(TestCategories.Framework)]
-		public void ShouldThrowWhenTheTiffHeaderBitCountIsGreaterThanOne(string fileName)
+		public void ShouldValidateWhenTheTiffHeaderBitCountIsGreaterThanOne(string fileName, int bits)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Tiff", fileName);
-			ImageFileValidationException exception = Assert.Throws<ImageFileValidationException>(() => this.validator.Validate(file));
-			Assert.That(exception.Message, Contains.Substring("bits"));
+			var result = this.imageValidator.IsImageValid(file, this.tiffValidator, this.fileInspector);
+			Assert.That(result.IsValid, Is.EqualTo(false));
+			Assert.That(result.Message, Is.EqualTo($"The TIFF image file {file} is {bits} bits. Only 1-bit TIFFs supported"));
 		}
 
 		[Test]
@@ -106,36 +112,68 @@ namespace Relativity.DataExchange.NUnit
 		[TestCase("w3c_home_256.png")]
 		[TestCase("w3c_home_gray.png")]
 		[Category(TestCategories.Framework)]
-		public void ShouldThrowWhenThePngImageFormatIsNotSupported(string fileName)
+		public void ShouldValidateWhenThePngImageFormatIsNotSupported(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Png", fileName);
-			ImageFileValidationException exception = Assert.Throws<ImageFileValidationException>(() => this.validator.Validate(file));
-			Assert.That(exception.Message, Contains.Substring("isn't a valid TIFF or JPEG"));
+			var result = this.imageValidator.IsImageValid(file, this.tiffValidator, this.fileInspector);
+			Assert.That(result.IsValid, Is.EqualTo(false));
+			Assert.That(result.Message, Is.EqualTo($"File {file} must be TIFF or JPEG"));
 		}
 
 		[Test]
-		[TestCase(null)]
-		[TestCase("")]
 		[Category(TestCategories.Framework)]
-		public void ShouldThrowWhenTheFileIsNullOrEmpty(string file)
+		public void ShouldValidateAndIdentifyWhenFilePathIsNull()
 		{
-			Assert.Throws<System.ArgumentException>(() => this.validator.Validate(file));
+			var result = this.imageValidator.IsImageValid(null, this.tiffValidator, this.fileInspector);
+			Assert.That(result.IsValid, Is.EqualTo(false));
+			Assert.That(result.Message, Is.EqualTo("Value cannot be null.\r\nParameter name: filePath"));
 		}
 
 		[Test]
 		[Category(TestCategories.Framework)]
-		public void ShouldThrowWhenTheImageFileDoesNotExist()
+		public void ShouldValidateAndIdentifyWhenFilePathIsEmpty()
+		{
+			var result = this.imageValidator.IsImageValid(string.Empty, this.tiffValidator, this.fileInspector);
+			Assert.That(result.IsValid, Is.EqualTo(false));
+			Assert.That(result.Message, Is.EqualTo("filePath argument is empty"));
+		}
+
+		[Test]
+		[Category(TestCategories.Framework)]
+		public void ShouldValidateAndIdentifyWhenTiffValidatorIsNull()
+		{
+			var result = this.imageValidator.IsImageValid("test", null, this.fileInspector);
+			Assert.That(result.IsValid, Is.EqualTo(false));
+			Assert.That(result.Message, Is.EqualTo("Value cannot be null.\r\nParameter name: tiffValidator"));
+		}
+
+		[Test]
+		[Category(TestCategories.Framework)]
+		public void ShouldValidateWhenFileInspectorIsNull()
+		{
+			var result = this.imageValidator.IsImageValid("test", this.tiffValidator, null);
+			Assert.That(result.IsValid, Is.EqualTo(false));
+			Assert.That(result.Message, Is.EqualTo("Value cannot be null.\r\nParameter name: fileInspector"));
+		}
+
+		[Test]
+		[Category(TestCategories.Framework)]
+		public void ShouldValidateWhenTheImageFileDoesNotExist()
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Png", $"{Guid.NewGuid()}.png");
-			Assert.Throws<FileNotFoundException>(() => this.validator.Validate(file));
+			var result = this.imageValidator.IsImageValid(file, this.tiffValidator, this.fileInspector);
+			Assert.That(result.IsValid, Is.EqualTo(false));
+			Assert.That(result.Message, Is.EqualTo($"File {file} doesn't exist"));
 		}
 
 		[Test]
 		[Category(TestCategories.Framework)]
-		public void ShouldThrowWhenTheImageFileIsEmptyFile()
+		public void ShouldValidateAndIdentifyTheEmptyFile()
 		{
 			string file = RandomHelper.NextBinaryFile(0, 0, this.tempDirectory.Directory);
-			Assert.Throws<ImageFileValidationException>(() => this.validator.Validate(file));
+			var result = this.imageValidator.IsImageValid(file, this.tiffValidator, this.fileInspector);
+			Assert.That(result.IsValid, Is.EqualTo(false));
+			Assert.That(result.Message, Is.EqualTo($"File {file} is empty"));
 		}
 	}
 }

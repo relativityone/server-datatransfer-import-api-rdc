@@ -74,6 +74,10 @@ Namespace kCura.WinEDDS
 		Private _prePushErrors As New List(Of Tuple(Of ImageRecord, String))
 		Private _cancelledByUser As Boolean = False
 
+		Private Property _imageValidator As IImageValidator = New ImageValidator()
+		Private Property _tiffValidator As ITiffValidator = New TiffValidator()
+		Private Property _fileInspector As IFileInspector = New FileInspector()
+
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String
@@ -837,11 +841,13 @@ Namespace kCura.WinEDDS
 			End If
 
 			Dim retval As ImportStatus = ImportStatus.Pending
-			Dim imageValidator As IImageValidator = New ImageValidator(New ByteArrayConverter)
 
 			Try
 				If Not Me.DisableImageTypeValidation Then
-					imageValidator.Validate(imageFilePath)
+					Dim result As ImageValidationResult = _imageValidator.IsImageValid(imageFilePath, _tiffValidator, _fileInspector)
+					If(Not result.IsValid)
+						Throw New ImageFileValidationException(result.Message)
+					End If
 				End If
 
 				Me.RaiseStatusEvent(EventType2.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64))
