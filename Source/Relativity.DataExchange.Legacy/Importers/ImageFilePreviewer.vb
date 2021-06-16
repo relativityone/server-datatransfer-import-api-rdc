@@ -8,12 +8,14 @@ Imports Relativity.DataExchange.Process
 Namespace kCura.WinEDDS
 	Public Class ImageFilePreviewer
 		Inherits DelimitedFileImporter2
-		
-		Private ReadOnly _imageValidator As IImageValidator
+
 		Private _fileLineCount As Int32
 		Private _continue As Boolean
 		Private WithEvents _processContext As ProcessContext
 		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
+		Private Property _imageValidator As IImageValidator = New ImageValidator()
+		Private Property _tiffValidator As ITiffValidator = New TiffValidator()
+		Private Property _fileInspector As IFileInspector = New FileInspector()
 
 		Private Enum Columns
 			DocumentArtifactID = 0
@@ -29,11 +31,10 @@ Namespace kCura.WinEDDS
 
 		Public Event StatusMessage(ByVal args As StatusEventArgs)
 
-		Public Sub New(ByVal context As ProcessContext, ByVal doRetryLogic As Boolean, imageValidator As IImageValidator)
+		Public Sub New(ByVal context As ProcessContext, ByVal doRetryLogic As Boolean)
 			MyBase.New(","c, doRetryLogic)
 			
 			_processContext = context
-			_imageValidator = imageValidator
 			_continue = True
 		End Sub
 
@@ -136,7 +137,10 @@ Namespace kCura.WinEDDS
 
 		Private Function ValidateImage(path As String) As Boolean
 			Try
-				_imageValidator.Validate(path)
+				Dim result As ImageValidationResult = _imageValidator.IsImageValid(path, _tiffValidator, _fileInspector)
+				If(Not result.IsValid)
+					Throw New ImageFileValidationException(result.Message)
+				End If
 				Return True
 			Catch ex As Exception
 				RaiseStatusEvent(EventType2.Error, ex.Message)
