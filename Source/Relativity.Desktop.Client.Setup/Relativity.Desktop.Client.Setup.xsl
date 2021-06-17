@@ -17,10 +17,6 @@
   <xsl:template match="wix:Component[key('rdc-search', @Id)]" />
   <xsl:template match="wix:ComponentRef[key('rdc-search', @Id)]" />
 
-  <xsl:key name="freeimage-dll-search" match="wix:Component[contains(wix:File/@Source, 'FreeImage.dll')]" use="@Id" />
-  <xsl:template match="wix:Component[key('freeimage-dll-search', @Id)]" />
-  <xsl:template match="wix:ComponentRef[key('freeimage-dll-search', @Id)]" />
-
   <xsl:key name="itextsharp-dll-search" match="wix:Component[contains(wix:File/@Source, 'itextsharp.dll')]" use="@Id" />
   <xsl:template match="wix:Component[key('itextsharp-dll-search', @Id)]" />
   <xsl:template match="wix:ComponentRef[key('itextsharp-dll-search', @Id)]" />
