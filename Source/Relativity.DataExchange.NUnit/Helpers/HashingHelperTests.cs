@@ -4,7 +4,8 @@
 namespace Relativity.DataExchange.NUnit.Helpers
 {
 	using System;
-
+	using System.Linq;
+	using System.Threading.Tasks;
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Helpers;
@@ -26,9 +27,32 @@ namespace Relativity.DataExchange.NUnit.Helpers
 		{
 			// ACT && ASSERT
 			ArgumentNullException exception = Assert.Throws<ArgumentNullException>(() => HashingHelper.CalculateSHA256Hash(null));
+		}
 
-			// Assert
-			Console.WriteLine(exception.Message);
+		[Test]
+		public void ShouldCalculateSHA256HashParallel()
+		{
+			// ARRANGE
+			int threadsCount = 10;
+			int hashesCount = 10000;
+			string value = "C:/photo.jpg";
+			string excpected = "7de5e48a5b2acd7424a1042a97d59994bf9561ccd54b1c5a6c4db89d564f3539";
+
+			// ACT && ASSERT
+			var tasks = Enumerable
+				.Range(1, threadsCount)
+				.Select(i => Task.Run(
+					() =>
+						{
+							for (int j = 0; j < hashesCount; j++)
+							{
+								var result = HashingHelper.CalculateSHA256Hash(value);
+								Assert.AreEqual(excpected, result);
+							}
+						}))
+				.ToArray();
+
+			Task.WaitAll(tasks);
 		}
 	}
 }

@@ -28,13 +28,39 @@ namespace Relativity.DataExchange.NUnit.Logger
 		public void SetUp()
 		{
 			this.loggerMock = new Mock<ILog>();
-			this.decoratedLogger = new HashingLoggerDecorator(this.loggerMock.Object);
 		}
 
 		[Test]
 		[TestCaseSource(typeof(HashingLoggerDecoratorTestCases), nameof(HashingLoggerDecoratorTestCases.ShouldHashSensitiveDataTestCaseData))]
-		public void ShouldHashSensitiveData(string message, object[] sourcePropertyValues, object[] expectedPropertyValues, bool lastPropertyValueRemoved)
+		public void ShouldHashSensitiveDataAboveLoggingLevel(string message, object[] sourcePropertyValues, object[] expectedPropertyValues, bool lastPropertyValueRemoved)
 		{
+			// ARRANGE
+			this.decoratedLogger = new HashingLoggerDecorator(this.loggerMock.Object, LoggingLevel.Information);
+
+			// ACT
+			this.decoratedLogger.LogVerbose(message, sourcePropertyValues);
+			this.decoratedLogger.LogDebug(message, sourcePropertyValues);
+			this.decoratedLogger.LogInformation(message, sourcePropertyValues);
+			this.decoratedLogger.LogWarning(message, sourcePropertyValues);
+			this.decoratedLogger.LogError(message, sourcePropertyValues);
+			this.decoratedLogger.LogFatal(message, sourcePropertyValues);
+
+			// ASSERT
+			this.loggerMock.Verify(logger => logger.LogVerbose(message, It.Is<object[]>(loggerPropertyValues => loggerPropertyValues == null)));
+			this.loggerMock.Verify(logger => logger.LogDebug(message, It.Is<object[]>(loggerPropertyValues => loggerPropertyValues == null)));
+			this.loggerMock.Verify(logger => logger.LogInformation(message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
+			this.loggerMock.Verify(logger => logger.LogWarning(message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
+			this.loggerMock.Verify(logger => logger.LogError(message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
+			this.loggerMock.Verify(logger => logger.LogFatal(message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
+		}
+
+		[Test]
+		[TestCaseSource(typeof(HashingLoggerDecoratorTestCases), nameof(HashingLoggerDecoratorTestCases.ShouldHashSensitiveDataTestCaseData))]
+		public void ShouldHashSensitiveDataWhenLoggingLevelIsUnknown(string message, object[] sourcePropertyValues, object[] expectedPropertyValues, bool lastPropertyValueRemoved)
+		{
+			// ARRANGE
+			this.decoratedLogger = new HashingLoggerDecorator(this.loggerMock.Object);
+
 			// ACT
 			this.decoratedLogger.LogVerbose(message, sourcePropertyValues);
 			this.decoratedLogger.LogDebug(message, sourcePropertyValues);
@@ -56,6 +82,9 @@ namespace Relativity.DataExchange.NUnit.Logger
 		[TestCaseSource(typeof(HashingLoggerDecoratorTestCases), nameof(HashingLoggerDecoratorTestCases.ShouldHashSensitiveDataTestCaseData))]
 		public void ShouldHashSensitiveDataWithException(string message, object[] sourcePropertyValues, object[] expectedPropertyValues, bool lastPropertyValueRemoved)
 		{
+			// ARRANGE
+			this.decoratedLogger = new HashingLoggerDecorator(this.loggerMock.Object, LoggingLevel.Information);
+
 			// ACT
 			this.decoratedLogger.LogVerbose(new Exception(), message, sourcePropertyValues);
 			this.decoratedLogger.LogDebug(new Exception(), message, sourcePropertyValues);
@@ -65,8 +94,8 @@ namespace Relativity.DataExchange.NUnit.Logger
 			this.decoratedLogger.LogFatal(new Exception(), message, sourcePropertyValues);
 
 			// ASSERT
-			this.loggerMock.Verify(logger => logger.LogVerbose(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
-			this.loggerMock.Verify(logger => logger.LogDebug(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
+			this.loggerMock.Verify(logger => logger.LogVerbose(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => loggerPropertyValues == null)));
+			this.loggerMock.Verify(logger => logger.LogDebug(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => loggerPropertyValues == null)));
 			this.loggerMock.Verify(logger => logger.LogInformation(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
 			this.loggerMock.Verify(logger => logger.LogWarning(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
 			this.loggerMock.Verify(logger => logger.LogError(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
@@ -77,6 +106,9 @@ namespace Relativity.DataExchange.NUnit.Logger
 		[TestCaseSource(typeof(HashingLoggerDecoratorTestCases), nameof(HashingLoggerDecoratorTestCases.ShouldHashSensitiveDataLogIndexErrorTestCaseData))]
 		public void ShouldHashSensitiveDataLogIndexError(string message, object[] sourcePropertyValues, object[] expectedPropertyValues, bool lastPropertyValueRemoved)
 		{
+			// ARRANGE
+			this.decoratedLogger = new HashingLoggerDecorator(this.loggerMock.Object, LoggingLevel.Information);
+
 			// ACT
 			this.decoratedLogger.LogVerbose(new Exception(), message, sourcePropertyValues);
 			this.decoratedLogger.LogDebug(new Exception(), message, sourcePropertyValues);
@@ -86,20 +118,22 @@ namespace Relativity.DataExchange.NUnit.Logger
 			this.decoratedLogger.LogFatal(new Exception(), message, sourcePropertyValues);
 
 			// ASSERT
-			this.loggerMock.Verify(logger => logger.LogVerbose(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
-			this.loggerMock.Verify(logger => logger.LogDebug(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
+			this.loggerMock.Verify(logger => logger.LogVerbose(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => loggerPropertyValues == null)));
+			this.loggerMock.Verify(logger => logger.LogDebug(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => loggerPropertyValues == null)));
 			this.loggerMock.Verify(logger => logger.LogInformation(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
 			this.loggerMock.Verify(logger => logger.LogWarning(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
 			this.loggerMock.Verify(logger => logger.LogError(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
 			this.loggerMock.Verify(logger => logger.LogFatal(It.IsAny<Exception>(), message, It.Is<object[]>(loggerPropertyValues => this.VerifyLoggerPropertyValuesAreChangedProperly(sourcePropertyValues, loggerPropertyValues, expectedPropertyValues, lastPropertyValueRemoved))));
 
-			this.loggerMock.Verify(logger => logger.LogError(It.IsAny<string>(), null), Times.Exactly(6));
+			this.loggerMock.Verify(logger => logger.LogError(It.IsAny<string>(), It.Is<object[]>(loggerPropertyValues => loggerPropertyValues == null)), Times.Exactly(4));
 		}
 
 		[Test]
 		public void ShouldForContextReturnNewHashingLoggerDecorator()
 		{
 			// ARRANGE
+			this.decoratedLogger = new HashingLoggerDecorator(this.loggerMock.Object, LoggingLevel.Information);
+
 			object propertyValue = "propertyValue".Secure();
 			Type type = this.GetType();
 			string propertyName = "propertyName";

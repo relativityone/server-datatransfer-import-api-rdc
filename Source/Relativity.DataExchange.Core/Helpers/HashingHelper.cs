@@ -11,8 +11,6 @@ namespace Relativity.DataExchange.Helpers
 	/// </summary>
 	public static class HashingHelper
 	{
-		private static readonly SHA256 Crypt = SHA256.Create();
-
 		/// <summary>
 		/// Calculate SHA256 hash of given value.
 		/// </summary>
@@ -23,10 +21,13 @@ namespace Relativity.DataExchange.Helpers
 			value.ThrowIfNull(nameof(value));
 
 			var hash = new System.Text.StringBuilder();
-			byte[] crypto = Crypt.ComputeHash(Encoding.UTF8.GetBytes(value));
-			foreach (byte theByte in crypto)
+			using (SHA256 crypt = SHA256.Create())
 			{
-				hash.Append(theByte.ToString("x2"));
+				byte[] crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(value));
+				foreach (byte theByte in crypto)
+				{
+					hash.Append(theByte.ToString("x2"));
+				}
 			}
 
 			return hash.ToString();
