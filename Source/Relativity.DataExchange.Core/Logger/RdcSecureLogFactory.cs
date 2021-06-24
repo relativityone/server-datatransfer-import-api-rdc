@@ -73,7 +73,7 @@ namespace Relativity.DataExchange.Logger
 						ILog localLogger = LogFactory.GetLogger(options, localLogConfiguration);
 
 						secureLogger = new AggregatingLoggerDecorator(
-							new HashingLoggerDecorator(secureLogger),
+							new HashingLoggerDecorator(secureLogger, minimumLoggingLevel),
 							localLogger);
 					}
 				}
