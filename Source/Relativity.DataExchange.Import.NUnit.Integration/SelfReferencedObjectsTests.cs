@@ -21,6 +21,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
+	using Relativity.Services.Objects.DataContracts;
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
@@ -31,6 +32,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private const string SingleObjectFieldName = "SingleSelfObject";
 		private const string MultiObjectFieldName = "MultiSelfObject";
 		private const char Delimiter = SettingsConstants.DefaultMultiValueDelimiter;
+		private const string OverlayIdentifierField = "OverlayIdentifierField";
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
 		private static readonly Dictionary<string, IEnumerable<string>>[] DataSource =
@@ -57,6 +59,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		private int objectArtifactTypeId;
 
+		private int overlayField;
+
 		[OneTimeSetUp]
 		public async Task OneTimeSetupAsync()
 		{
@@ -66,6 +70,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				.ConfigureAwait(false);
 			await FieldHelper.CreateMultiObjectFieldAsync(this.TestParameters, MultiObjectFieldName, objectArtifactTypeId: this.objectArtifactTypeId, associativeObjectArtifactTypeId: this.objectArtifactTypeId)
 				.ConfigureAwait(false);
+
+			overlayField = await FieldHelper.CreateFixedLengthTextFieldAsync(
+								   this.TestParameters,
+								   this.objectArtifactTypeId,
+								   OverlayIdentifierField,
+								   false,
+								   255).ConfigureAwait(false);
 		}
 
 		[TearDown]
@@ -104,19 +115,64 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 		}
 
+		[IdentifiedTest("03F19CF6-6C44-4DA4-BFCB-A193A90D35E6")]
+		[IgnoreIfVersionLowerThan(RelativityVersion.PrairieSmoke)]
+		public void ShouldProperlyOverlayObjectsWithNonDefaultOverlayIdentifier()
+		{
+			// ARRANGE
+			var data = new Dictionary<string, IEnumerable<string>>
+						   {
+							   { WellKnownFields.RdoIdentifier, new List<string> { "RDO1", "RDO2", "RDO3" } },
+							   { SingleObjectFieldName, new List<string> { "Obj1", "Obj2", "Obj4" } },
+							   { OverlayIdentifierField, new List<string> { "OverlayField1", "OverlayField2", "OverlayField3" } },
+						   };
+
+			var overlayData = new Dictionary<string, IEnumerable<string>>
+						   {
+							   { SingleObjectFieldName, new List<string> { "OverlaidObj1", "OverlaidObj2", "OverlaidObj3" } },
+							   { OverlayIdentifierField, new List<string> { "OverlayField1", "OverlayField2", "OverlayField3" } },
+						   };
+
+			var expectedIdentifierToSingleSelfObjectMapping = new Dictionary<string, string>
+			{
+				["RDO1"] = "OverlaidObj1",
+				["RDO2"] = "OverlaidObj2",
+				["RDO3"] = "OverlaidObj3",
+			};
+
+			this.ImportDataWithOverwriteMode(data, OverwriteModeEnum.Append);
+
+			// ACT
+			ImportTestJobResult result = this.ImportDataWithOverwriteMode(overlayData, OverwriteModeEnum.Overlay, overlayField);
+
+			// ASSERT
+			this.ValidateFatalExceptionsNotExist(result);
+			Assert.That(result.ErrorRows, Is.Empty, $"Expected zero error rows, but {result.ErrorRows.Count} were found.");
+			Assert.That(result.NumberOfJobMessages, Is.Positive, $"Expected more than zero job messages, but {result.NumberOfJobMessages} was found.");
+			Assert.That(result.NumberOfCompletedRows, Is.EqualTo(data[OverlayIdentifierField].Count()), $"Expected {data[OverlayIdentifierField].Count()} completed rows, but {result.NumberOfCompletedRows} were found.");
+
+			this.ThenOverlaidObjectsWereLinkedCorrectly(expectedIdentifierToSingleSelfObjectMapping);
+		}
+
 		private static Dictionary<string, IEnumerable<string>> GetDataSourceWithoutIdentifierField(
 			Dictionary<string, IEnumerable<string>> dataSource)
 		{
 			return dataSource.Where(pair => pair.Key != WellKnownFields.RdoIdentifier).ToDictionary(pair => pair.Key, pair => pair.Value);
 		}
 
-		private ImportTestJobResult ImportDataWithOverwriteMode(Dictionary<string, IEnumerable<string>> dataToImport, OverwriteModeEnum overwriteMode)
+		private ImportTestJobResult ImportDataWithOverwriteMode(Dictionary<string, IEnumerable<string>> dataToImport, OverwriteModeEnum overwriteMode, int? overlayIdentifierArtifactId = null)
 		{
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings(
 				this.objectArtifactTypeId,
 				WellKnownFields.RdoIdentifier);
 			settings.OverwriteMode = overwriteMode;
 			settings.MultiValueDelimiter = Delimiter;
+
+			if (overlayIdentifierArtifactId.HasValue)
+			{
+				settings.IdentityFieldId = overlayIdentifierArtifactId.Value;
+			}
+
 			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 			ImportDataSourceBuilder dataSourceBuilder = ImportDataSourceBuilder.New();
@@ -126,6 +182,29 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			}
 
 			return this.JobExecutionContext.Execute(dataSourceBuilder.Build());
+		}
+
+		private void ThenOverlaidObjectsWereLinkedCorrectly(Dictionary<string, string> expectedIdentifierToSingleSelfObjectMapping)
+		{
+			const string Name = "Name";
+			const string ArtifactID = "ArtifactID";
+			var fields = new List<string>() { ArtifactID, Name, SingleObjectFieldName, OverlayIdentifierField };
+
+			IList<RelativityObject> allObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, this.objectArtifactTypeId, fields);
+
+			// Parse data to a dictionary
+			List<Dictionary<string, object>> allObjectsList =
+				allObjects.Select(x => x.FieldValues.ToDictionary(f => f.Field.Name, f => f.Value)).ToList();
+
+			IEnumerable<string> importedObjectsIdentifiers = expectedIdentifierToSingleSelfObjectMapping.Keys;
+
+			var actualIdentifierToSingleSelfObjectMapping = allObjectsList
+				.Where(x => importedObjectsIdentifiers.Contains((string)x[Name]))
+				.ToDictionary(
+					x => (string)x[Name],
+					y => ((RelativityObjectValue)y[SingleObjectFieldName]).Name);
+
+			Assert.That(actualIdentifierToSingleSelfObjectMapping, Is.EquivalentTo(expectedIdentifierToSingleSelfObjectMapping), "Linked objects were not updated properly.");
 		}
 
 		private void ThenCorrectObjectsWereImported(Dictionary<string, IEnumerable<string>> dataSource)

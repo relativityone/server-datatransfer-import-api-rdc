@@ -335,7 +335,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return Task.FromResult(FieldHelper.CreateField(testParameters, objectArtifactTypeId, field));
 		}
 
-		public static Task CreateLongTextFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId, bool isOpenToAssociations)
+		public static Task<int> CreateLongTextFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId, bool isOpenToAssociations)
 		{
 			var request = new LongTextFieldRequest
 			{
