@@ -19,7 +19,6 @@ namespace Relativity.DataExchange.Logger
 
 	using Relativity.Logging;
 	using Relativity.Logging.Configuration;
-	using Relativity.Logging.Configuration.Local;
 	using Relativity.Logging.Configuration.Serilog;
 	using Relativity.Logging.Factory;
 
@@ -62,24 +61,19 @@ namespace Relativity.DataExchange.Logger
 			{
 				secureLogger = LogFactory.GetLogger(options);
 
-				try
-				{
-					var reader = new FileConfigurationReader(options.ConfigurationFileLocation);
+				var configurationReaderFactory = new ConfigurationReaderFactory();
+				LogConfiguration relativityLogConfiguration =
+					configurationReaderFactory.GetReader(options).ReadConfiguation();
 
-					if (HashingRequired(reader))
-					{
-						LoggingLevel minimumLoggingLevel = MinimumLoggingLevel(reader);
-						LogConfiguration localLogConfiguration = CreateLocalLogConfiguration(minimumLoggingLevel);
-						ILog localLogger = LogFactory.GetLogger(options, localLogConfiguration);
-
-						secureLogger = new AggregatingLoggerDecorator(
-							new HashingLoggerDecorator(secureLogger, minimumLoggingLevel),
-							localLogger);
-					}
-				}
-				catch (Exception ex)
+				if (HashingRequired(relativityLogConfiguration))
 				{
-					secureLogger.LogError(ex, "Unable to get FileLogConfiguration {0}", options.ConfigurationFileLocation);
+					LoggingLevel minimumLoggingLevel = MinimumLoggingLevel(relativityLogConfiguration);
+					LogConfiguration localLogConfiguration = CreateLocalLogConfiguration(minimumLoggingLevel);
+					ILog localLogger = LogFactory.GetLogger(options, localLogConfiguration);
+
+					secureLogger = new AggregatingLoggerDecorator(
+						new HashingLoggerDecorator(secureLogger, minimumLoggingLevel),
+						localLogger);
 				}
 			}
 			else
@@ -90,14 +84,14 @@ namespace Relativity.DataExchange.Logger
 			return secureLogger;
 		}
 
-		private static LoggingLevel MinimumLoggingLevel(IConfigurationReader reader)
+		private static LoggingLevel MinimumLoggingLevel(LogConfiguration configuration)
 		{
-			return reader.GetRules().Select(rule => rule.LoggingLevel).Min();
+			return configuration.Rules.Select(rule => rule.LoggingLevel).Min();
 		}
 
-		private static bool HashingRequired(IConfigurationReader reader)
+		private static bool HashingRequired(LogConfiguration configuration)
 		{
-			return reader.GetSinks().Any(sink => !(sink is FileSinkConfig));
+			return configuration.Sinks.Any(sink => !(sink is FileSinkConfig));
 		}
 
 		private static LogConfiguration CreateLocalLogConfiguration(LoggingLevel minimumLoggingLevel)
