@@ -38,5 +38,10 @@ namespace Relativity.DataExchange
 		/// Gets or sets name of application executing job. This property is more customizable alternative to <see cref="ExecutionSource"/>.
 		/// </summary>
 		string ApplicationName { get; set; }
+
+		/// <summary>
+		/// Gets or sets name of the assembly that uses ImportAPI.
+		/// </summary>
+		string CallingAssembly { get; set; }
 	}
 }

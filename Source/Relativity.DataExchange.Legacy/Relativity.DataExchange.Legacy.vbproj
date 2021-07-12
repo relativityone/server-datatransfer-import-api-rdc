@@ -206,6 +206,7 @@
     <Compile Include="Helpers\FileSizeHelper.vb" />
     <Compile Include="ImportExtension\ImageImport\ImageDataReader.vb" />
     <Compile Include="Monitoring\BatchInformation.vb" />
+    <Compile Include="Helpers\ClientInformationHelper.vb" />
     <Compile Include="Monitoring\MetricAuthenticationType.vb" />
     <Compile Include="Monitoring\MetricJobBase.vb" />
     <Compile Include="Monitoring\MetricJobBatch.vb" />

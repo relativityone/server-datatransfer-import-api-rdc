@@ -1,4 +1,5 @@
 ﻿Imports System.Threading
+Imports Helpers
 Imports kCura.WinEDDS
 Imports Monitoring
 Imports Monitoring.Sinks
@@ -190,9 +191,8 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Overridable Function BuildStartMetric() As MetricJobStarted
 		' To be overriden in import or export to add Metrics from ImportStatistics or ExportStatistics
 		Dim metric As MetricJobStarted = New MetricJobStarted()
-
 		SetBaseMetrics(metric)
-
+		SetClientInformation(metric)
 		Return metric
 	End Function
 
@@ -252,6 +252,23 @@ Public MustInherit Class MonitoredProcessBase
 
 		Return metric
 	End Function
+
+	Private Sub SetClientInformation(metric As MetricJobStarted)
+		Try
+			Dim clientInfo As ClientInformationHelper = new ClientInformationHelper()
+			metric.TotalPhysicalMemory = clientInfo.TotalPhysicalMemory
+			metric.AvailablePhysicalMemory = clientInfo.AvailablePhysicalMemory
+			metric.OperatingSystemName = clientInfo.OperatingSystemName
+			metric.OperatingSystemVersion = clientInfo.OperatingSystemVersion
+			metric.Is64BitOperatingSystem = clientInfo.Is64BitOperatingSystem
+			metric.Is64BitProcess = clientInfo.Is64BitProcess
+			metric.CpuCount = clientInfo.CpuCount
+			metric.CallingAssembly = Me.RunningContext.CallingAssembly
+		Catch ex As Exception
+			Me.Logger.LogError("Exception occurred when trying to add client information metrics", ex)
+		End Try
+		
+	End Sub
 
 	''' <summary>
 	''' Provides application name for telemetry purpose

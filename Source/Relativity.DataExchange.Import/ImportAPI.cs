@@ -57,7 +57,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </summary>
 		private IAuthenticationTokenProvider _authenticationTokenProvider = new NullAuthTokenProvider();
 
-		private readonly IRunningContext _runningContext = new RunningContext();
+		protected readonly IRunningContext _runningContext = new RunningContext();
 
 		/// <summary>
 		/// logger
@@ -316,6 +316,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
+			this._runningContext.CallingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName().Name;
 			this._runningContext.ExecutionSource = (ExecutionSource)this.ExecutionSource;
 			return new ImageImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, this._runningContext);
 		}
@@ -335,6 +336,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </returns>
 		public ImageImportBulkArtifactJob NewProductionImportJob(int productionArtifactID)
 		{
+			this._runningContext.CallingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName().Name;
 			ImageImportBulkArtifactJob imgJob = this.NewImageImportJob();
 			imgJob.Settings.ForProduction = true;
 			imgJob.Settings.ProductionArtifactID = productionArtifactID;
@@ -352,6 +354,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public ImportBulkArtifactJob NewNativeDocumentImportJob()
 		{
+			this._runningContext.CallingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName().Name;
 			return NewObjectImportJob(10);
 		}
 
@@ -366,6 +369,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </returns>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId)
 		{
+			this._runningContext.CallingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName().Name;
 			this._runningContext.ExecutionSource = (ExecutionSource)this.ExecutionSource;
 			var returnJob = new ImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, this._runningContext);
 			returnJob.Settings.ArtifactTypeId = artifactTypeId;

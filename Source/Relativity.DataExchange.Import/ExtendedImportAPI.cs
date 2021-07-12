@@ -42,6 +42,8 @@ namespace kCura.Relativity.ImportAPI {
 		}
 
 		public ImportBulkArtifactJob NewNativeDocumentImportJob(string token) {
+			this._runningContext.CallingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName().Name;
+
 			var returnJob = NewNativeDocumentImportJob();
 
 			returnJob.Settings.OnBehalfOfUserToken = token;
@@ -51,6 +53,8 @@ namespace kCura.Relativity.ImportAPI {
 
 		public ImportBulkArtifactJob NewArtifactImportJob(string token, int artifactTypeID)
 		{
+			this._runningContext.CallingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName().Name;
+
 			var returnJob = NewObjectImportJob(artifactTypeID);
 
 			returnJob.Settings.OnBehalfOfUserToken = token;

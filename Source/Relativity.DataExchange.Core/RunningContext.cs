@@ -7,12 +7,13 @@
 namespace Relativity.DataExchange
 {
 	using System;
-
 	using Relativity.DataExchange.Service;
 
 	/// <inheritdoc />
 	public class RunningContext : IRunningContext
 	{
+		private string callingAssembly = string.Empty;
+
 		/// <inheritdoc />
 		public Version ImportApiSdkVersion => typeof(IAppSettings).Assembly.GetName().Version;
 
@@ -27,5 +28,19 @@ namespace Relativity.DataExchange
 
 		/// <inheritdoc />
 		public string ApplicationName { get; set; } = string.Empty;
+
+		/// <inheritdoc />
+		public string CallingAssembly
+		{
+			get => this.callingAssembly;
+
+			set
+			{
+				if (value != System.Reflection.Assembly.GetExecutingAssembly().GetName().Name)
+				{
+					this.callingAssembly = value;
+				}
+			}
+		}
 	}
 }
