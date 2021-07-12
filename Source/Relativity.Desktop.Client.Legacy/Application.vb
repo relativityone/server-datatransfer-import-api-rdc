@@ -191,7 +191,7 @@ Namespace Relativity.Desktop.Client
 
 		Public Property UserHasExportPermission() As Boolean
 
-		Public ReadOnly Property RunningContext As IRunningContext = New RunningContext() With { .ExecutionSource = ExecutionSource.Rdc}
+		Public ReadOnly Property RunningContext As IRunningContext = New RunningContext() With { .ExecutionSource = ExecutionSource.Rdc, .CallingAssembly = Reflection.Assembly.GetCallingAssembly().GetName().Name }
 
 #End Region
 

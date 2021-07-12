@@ -65,6 +65,14 @@
 			Public Const JOB_START_TIMESTAMP As String = "JobStartTimeStamp"
 			Public Const JOB_END_TIMESTAMP As String = "JobEndTimeStamp"
 			Public Const JOB_RUN_ID As String = "JobRunId"
+			Public Const TOTAL_PHYSICAL_MEMORY As String = "TotalPhysicalMemory"
+			Public Const AVAILABLE_PHYSICAL_MEMORY As String = "AvailablePhysicalMemory"
+			Public Const OPERATING_SYSTEM_NAME As String = "OperatingSystemName"
+			Public Const OPERATING_SYSTEM_VERSION As String = "OperatingSystemVersion"
+			Public Const IS_64_BIT_OS As String = "Is64BitOperatingSystem"
+			Public Const IS_64_BIT_PROCESS As String = "Is64BitProcess"
+			Public Const CPU_COUNT As String = "CpuCount"
+			Public Const CALLING_ASSEMBLY As String = "CallingAssembly"
 		End Class
 
 		''' <summary>
