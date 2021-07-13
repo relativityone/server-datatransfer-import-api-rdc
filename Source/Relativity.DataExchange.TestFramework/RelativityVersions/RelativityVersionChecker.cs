@@ -33,6 +33,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 			[RelativityVersion.NinebarkToggleOff] = new Version(12, 0, 126, 1),
 			[RelativityVersion.Osier] = new Version(12, 1),
 			[RelativityVersion.PrairieSmoke] = new Version(12, 2),
+
+			// this is release candidate for PS0, actual release will have higher version; we can update it when PS0 is released
+			[RelativityVersion.PrairieSmoke0] = new Version(12, 2, 158),
 		};
 
 		private static Version cachedRelativityVersion;
