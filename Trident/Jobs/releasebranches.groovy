@@ -132,6 +132,7 @@ timestamps
 						echo "Number of errors: ${numberOfErrors}"
 						currentBuild.result = 'FAILED'
 						inCompatibleEnvironments = inCompatibleEnvironments + sutTemplate + " "
+                        tools.transferHopper(globalVmInfo)
 					}
 					finally
 					{
