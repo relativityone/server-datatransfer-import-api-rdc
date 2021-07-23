@@ -138,4 +138,17 @@ def deleteHopperInstance(Integer vmId)
 	}
 }
 
+def transferHopper(Map vmInfo)
+{
+	try
+	{
+		echo "Transferring Hopper instance to ${utils.getBuildOwner()}."
+		utils.transferHopper("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", vmInfo.Id, utils.getBuildOwner())
+		utils.renewInstanceLease("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", vmInfo.Id)
+	}
+	catch (err)
+	{
+		echo err.toString()
+	}
+}
 return this;

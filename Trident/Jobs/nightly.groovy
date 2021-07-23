@@ -120,10 +120,11 @@ timestamps
 							echo "Number of errors: ${numberOfErrors}"
 							currentBuild.result = 'FAILED'
 							inCompatibleEnvironments = inCompatibleEnvironments + sutTemplate + " "
+                            tools.transferHopper(globalVmInfo)
 						}
 						finally
 						{
-							if(globalVmInfo != null) 
+							if(globalVmInfo != null && numberOfErrors == 0)
 							{
 								tools.deleteHopperInstance(globalVmInfo.Id)
 							}	
