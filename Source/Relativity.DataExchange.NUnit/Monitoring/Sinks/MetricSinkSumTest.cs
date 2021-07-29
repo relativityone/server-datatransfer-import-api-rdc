@@ -15,7 +15,9 @@ namespace Relativity.DataExchange.NUnit
 	using Monitoring.Sinks;
 
 	using Moq;
-	using Relativity.Services.ServiceProxy;
+
+	using Relativity.DataExchange.NUnit.Mocks;
+	using Relativity.DataExchange.Service;
 	using Relativity.Telemetry.DataContracts.Shared;
 	using Relativity.Telemetry.Services.Metrics;
 
@@ -23,7 +25,7 @@ namespace Relativity.DataExchange.NUnit
 	public class MetricSinkSumTest
 	{
 		private MetricSinkSum sumSink;
-		private Mock<IServiceFactory> mockServiceFactory;
+		private Mock<IServiceProxyFactory> mockServiceFactory;
 		private List<MetricRef> loggedMetrics;
 		private bool createdProxy;
 
@@ -39,8 +41,8 @@ namespace Relativity.DataExchange.NUnit
 					foo => foo.LogMetricsAsync(It.IsAny<List<MetricRef>>())).Callback(
 					(List<MetricRef> sumMetrics) => this.loggedMetrics.AddRange(sumMetrics)).Returns(Task.CompletedTask);
 
-			this.mockServiceFactory = new Mock<IServiceFactory>();
-			this.mockServiceFactory.Setup(foo => foo.CreateProxy<IMetricsManager>()).Returns(mockMetricsManager.Object).Callback(() => this.createdProxy = true);
+			this.mockServiceFactory = new Mock<IServiceProxyFactory>();
+			this.mockServiceFactory.Setup(foo => foo.CreateProxyInstance<IMetricsManager>()).Returns(mockMetricsManager.Object).Callback(() => this.createdProxy = true);
 		}
 
 		[Test]
@@ -50,7 +52,7 @@ namespace Relativity.DataExchange.NUnit
 			var mockSumMetricFormatter = new Mock<ISumMetricFormatter>();
 			mockSumMetricFormatter.Setup(foo => foo.GenerateSumMetrics(It.IsAny<MetricBase>()))
 				.Returns(new List<MetricRef>() { new MetricRef(), new MetricRef(), new MetricRef() });
-			this.sumSink = new MetricSinkSum(this.mockServiceFactory.Object, mockSumMetricFormatter.Object, true);
+			this.sumSink = new MetricSinkSum(new KeplerProxyMock(this.mockServiceFactory.Object), mockSumMetricFormatter.Object, true);
 
 			// Act
 			this.sumSink.Log(new MetricJobStarted());
@@ -67,7 +69,7 @@ namespace Relativity.DataExchange.NUnit
 			var mockSumMetricFormatter = new Mock<ISumMetricFormatter>();
 			mockSumMetricFormatter.Setup(foo => foo.GenerateSumMetrics(It.IsAny<MetricBase>()))
 				.Returns((List<MetricRef>)null);
-			this.sumSink = new MetricSinkSum(this.mockServiceFactory.Object, mockSumMetricFormatter.Object, true);
+			this.sumSink = new MetricSinkSum(new KeplerProxyMock(this.mockServiceFactory.Object), mockSumMetricFormatter.Object, true);
 
 			// Act
 			this.sumSink.Log(new MetricJobStarted());
@@ -83,7 +85,7 @@ namespace Relativity.DataExchange.NUnit
 			var mockSumMetricFormatter = new Mock<ISumMetricFormatter>();
 			mockSumMetricFormatter.Setup(foo => foo.GenerateSumMetrics(It.IsAny<MetricBase>()))
 				.Returns(new List<MetricRef>());
-			this.sumSink = new MetricSinkSum(this.mockServiceFactory.Object, mockSumMetricFormatter.Object, true);
+			this.sumSink = new MetricSinkSum(new KeplerProxyMock(this.mockServiceFactory.Object), mockSumMetricFormatter.Object, true);
 
 			// Act
 			this.sumSink.Log(new MetricJobStarted());

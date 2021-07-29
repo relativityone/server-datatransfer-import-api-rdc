@@ -8,12 +8,14 @@ Imports System.Net
 Imports System.Threading
 
 Imports kCura.WinEDDS.Helpers
+Imports kCura.WinEDDS.Service.Kepler
 Imports Monitoring
 Imports Polly
 
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
 Imports Relativity.Logging
 Imports Relativity.Transfer
@@ -44,13 +46,14 @@ Namespace kCura.WinEDDS
 		Protected ReadOnly _logger As ILog
 		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 		Private _waitAndRetryPolicy As IWaitAndRetryPolicy
+		Protected CorrelationIdFunc As Func(Of String)
 #End Region
 
 		Public Event UploadModeChangeEvent(ByVal statusBarText As String)
 		Friend Event BatchCompleted(ByVal batchInformation As BatchInformation)
 
 #Region "Constructor"
-		Public Sub New(ByVal reporter As IIoReporter, ByVal logger As ILog, cancellationTokenSource As CancellationTokenSource)
+		Public Sub New(ByVal reporter As IIoReporter, ByVal logger As ILog, cancellationTokenSource As CancellationTokenSource, correlationIdFunc As Func(Of String))
 
 			' TODO: Refactor all core constructors to use a single config object
 			' TODO: once IAPI/RDC is moved into the new repo.
@@ -70,6 +73,7 @@ Namespace kCura.WinEDDS
 			_logger = logger
 			_cancellationTokenSource = cancellationTokenSource
 			_ioReporter = reporter
+			Me.CorrelationIdFunc = correlationIdFunc
 		End Sub
 
 #End Region
@@ -143,9 +147,9 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property TapiClient As TapiClient
 			Get
-				If Not FileTapiClient = TapiClient.None
+				If Not FileTapiClient = TapiClient.None Then
 					Return FileTapiClient
-				ElseIf Not BulkLoadTapiClient = TapiClient.None
+				ElseIf Not BulkLoadTapiClient = TapiClient.None Then
 					Return BulkLoadTapiClient
 				End If
 				Return TapiClient.None
@@ -212,8 +216,13 @@ Namespace kCura.WinEDDS
 			If TypeOf ex Is Service.BulkImportManager.BulkImportSqlTimeoutException Then
 				Return True
 			End If
-			Dim webException As System.Net.WebException = TryCast(ex, System.Net.WebException) 
-			return Not webException Is Nothing AndAlso webException.Status = WebExceptionStatus.Timeout
+			If TypeOf ex Is Exception Then
+				If ex.InnerException IsNot Nothing And TypeOf ex.InnerException Is OperationCanceledException Then
+					Return True
+				End If
+			End If
+			Dim webException As System.Net.WebException = TryCast(ex, System.Net.WebException)
+			Return Not webException Is Nothing AndAlso webException.Status = WebExceptionStatus.Timeout
 		End Function
 
 		Protected Shared Function IsBulkImportSqlException(ByVal ex As Exception) As Boolean
@@ -245,7 +254,7 @@ Namespace kCura.WinEDDS
 		''' The <see cref="IWaitAndRetryPolicy"/> instance.
 		''' </returns>
 		Protected Function CreateWaitAndRetryPolicy() As IWaitAndRetryPolicy
-			If _waitAndRetryPolicy Is Nothing
+			If _waitAndRetryPolicy Is Nothing Then
 				_waitAndRetryPolicy = New WaitAndRetryPolicy(AppSettings.Instance)
 			End If
 			Return _waitAndRetryPolicy
@@ -280,7 +289,7 @@ Namespace kCura.WinEDDS
 		''' The fil path.
 		''' </returns>
 		Protected Function GetExistingFilePath(path As String, retry As Boolean) As String
-			If Not retry
+			If Not retry Then
 				Return _filePathHelper.GetExistingFilePath(path)
 			Else
 				' REL-272765: Added I/O resiliency and support document level errors.
@@ -296,7 +305,7 @@ Namespace kCura.WinEDDS
 					Sub(exception, span)
 						Me.PublishIoRetryMessage(exception, span, currentRetryAttempt, maxRetryAttempts)
 					End Sub,
-					Function(token) As String					
+					Function(token) As String
 						Return _filePathHelper.GetExistingFilePath(path)
 					End Function,
 					Me.CancellationToken)
@@ -369,8 +378,8 @@ Namespace kCura.WinEDDS
 			_ioReporter.PublishWarningMessage(args)
 		End Sub
 
-		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters2, ByVal bulkLoadParameters As UploadTapiBridgeParameters2, authTokenProvider As IAuthenticationTokenProvider)
-			_fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, authTokenProvider, Me.CancellationToken)
+		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters2, ByVal bulkLoadParameters As UploadTapiBridgeParameters2, authTokenProvider As IAuthenticationTokenProvider, managerServiceFactory As IRelativityManagerServiceFactory)
+			_fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, authTokenProvider, Me.CancellationToken, CorrelationIdFunc, New WebApiVsKeplerFactory(Logger), managerServiceFactory)
 			AddHandler _fileTapiBridge.TapiClientChanged, AddressOf FileOnTapiClientChanged
 			AddHandler _fileTapiBridge.TapiFatalError, AddressOf OnTapiFatalError
 			AddHandler _fileTapiBridge.TapiProgress, AddressOf FileOnTapiProgress
@@ -379,7 +388,7 @@ Namespace kCura.WinEDDS
 			AddHandler _fileTapiBridge.TapiErrorMessage, AddressOf OnTapiErrorMessage
 			AddHandler _fileTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
 
-			_bulkLoadTapiBridge = TapiBridgeFactory.CreateUploadBridge(bulkLoadParameters, Me.Logger, authTokenProvider, Me.CancellationToken)
+			_bulkLoadTapiBridge = TapiBridgeFactory.CreateUploadBridge(bulkLoadParameters, Me.Logger, authTokenProvider, Me.CancellationToken, CorrelationIdFunc, New WebApiVsKeplerFactory(Logger), managerServiceFactory)
 			_bulkLoadTapiBridge.TargetPath = bulkLoadParameters.FileShare
 			AddHandler _bulkLoadTapiBridge.TapiClientChanged, AddressOf BulkLoadOnTapiClientChanged
 			AddHandler _bulkLoadTapiBridge.TapiStatistics, AddressOf BulkLoadOnTapiStatistics
@@ -485,7 +494,7 @@ Namespace kCura.WinEDDS
 
 		Protected Sub StopImport(Optional userCancelRequest As Boolean = False)
 			Try
-				if userCancelRequest Then
+				If userCancelRequest Then
 					_logger.LogInformation("Import process has been canceled on user request")
 				End If
 				ShouldImport = False

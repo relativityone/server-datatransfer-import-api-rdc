@@ -113,6 +113,10 @@ namespace Relativity.DataExchange.NUnit.Integration
 				this.TestParameters.WorkspaceId,
 				Is.Positive,
 				() => "The test workspace must be created or specified in order to run this integration test.");
+
+			// We need to re-login to ensure that client is authenticated in the WebAPI/Distributed.
+			this.ReLogOn();
+
 			this.OnSetup();
 		}
 
@@ -139,7 +143,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		/// <summary>
 		/// Re-logging in Relativity WebAPI and Relativity.Distributed.
 		/// </summary>
-		protected void ReLogOn()
+		private void ReLogOn()
 		{
 			using (var userManager = new UserManager(this.RelativityInstance.Credentials, this.RelativityInstance.CookieContainer))
 			{

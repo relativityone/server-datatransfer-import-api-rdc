@@ -1,6 +1,7 @@
 Imports kCura.Vendor.Castle.Core.Internal
 Imports FileNaming.CustomFileNaming
 Imports kCura.WinEDDS
+Imports kCura.WinEDDS.Service
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Service
@@ -1328,7 +1329,7 @@ End Sub
 
 	Public Async Function GetObjectTypeName() As Task(Of String)
 		If _objectTypeName = "" Then
-			For Each row As System.Data.DataRow In New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer).RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
+			For Each row As System.Data.DataRow In ManagerFactory.CreateObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer, AddressOf _application.GetCorrelationId).RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
 				If CType(row("DescriptorArtifactTypeID"), Int32) = Me.ExportFile.ArtifactTypeID Then
 					_objectTypeName = row("Name").ToString
 				End If

@@ -7,14 +7,20 @@
 namespace Relativity.DataExchange.Import.NUnit
 {
 	using System;
+	using System.Net;
 
 	using global::NUnit.Framework;
 
 	using kCura.EDDS.WebAPI.BulkImportManagerBase;
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Api;
+	using kCura.WinEDDS.Service;
 
 	using Moq;
+
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Service.WebApiVsKeplerSwitch;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents <see cref="BulkImageFileImporter"/> tests.
@@ -70,9 +76,19 @@ namespace Relativity.DataExchange.Import.NUnit
 
 		protected override void OnSetup()
 		{
+			var webApiVsKeplerMock = new Mock<IWebApiVsKepler>();
+			webApiVsKeplerMock.Setup(x => x.UseKepler()).Returns(true);
+			ManagerFactory._webApiVsKepler = webApiVsKeplerMock.Object;
+			ManagerFactory._currentUrl = AppSettings.Instance.WebApiServiceUrl;
+
 			this.args = new ImageLoadFile();
 			this.args.CaseInfo = new Relativity.DataExchange.Service.CaseInfo();
 			this.args.CaseInfo.RootArtifactID = -1;
+			this.args.Credential = new NetworkCredential();
+			ManagerFactory._currentCredentials = this.args.Credential;
+			ManagerFactory._connectionInfo = new KeplerServiceConnectionInfo(
+				new Uri(AppSettings.Instance.WebApiServiceUrl),
+				this.args.Credential);
 			this.mockImageReader = new Mock<IImageReader>();
 			this.importer = new MockBulkImageFileImporter(
 				this.args,

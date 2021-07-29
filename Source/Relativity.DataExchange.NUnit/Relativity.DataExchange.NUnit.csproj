@@ -58,12 +58,14 @@
       <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Logger\LogConfig.xml">
@@ -153,6 +155,9 @@
     <Compile Include="Logger\RelativityLoggerTests.cs" />
     <Compile Include="Logger\RdcSecureLogFactoryTests.cs" />
     <Compile Include="Logger\SecurePropertyValueTests.cs" />
+    <Compile Include="Mapping\KeplerExceptionDetailTests.cs" />
+    <Compile Include="Mapping\KeplerExceptionMapperTests.cs" />
+    <Compile Include="Mocks\KeplerProxyMock.cs" />
     <Compile Include="ObjectManagerExceptionTestData.cs" />
     <Compile Include="ObjectManagerExceptionHelperTests.cs" />
     <Compile Include="LongTextStreamServiceTests.cs" />
@@ -164,9 +169,15 @@
     <Compile Include="Monitoring\Sinks\SumMetricFormatterTest.cs" />
     <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
     <Compile Include="ErrorMessageFormatterTests.cs" />
+    <Compile Include="Mapping\KeplerTypeMapperTests.cs" />
+    <Compile Include="Service\KeplerProxyTests.cs" />
+    <Compile Include="Service\ManagerFactoryTests.cs" />
     <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeAuthenticationDecoratorTests.cs" />
     <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeRetriesDecoratorTests.cs" />
+    <Compile Include="Service\RelativityManagerServiceFactoryTests.cs" />
+    <Compile Include="Service\ServiceAvailabilityCheckerTests.cs" />
     <Compile Include="Service\TriggerManagerTests.cs" />
+    <Compile Include="Service\WebApiVsKeplerTests.cs" />
     <Compile Include="StatisticsTest.cs" />
     <Compile Include="UrlHelperTests.cs" />
     <Compile Include="SerializationTests.cs" />
@@ -177,6 +188,7 @@
     <Compile Include="TapiModeHelperTests.cs" />
     <Compile Include="TapiObjectServiceTests.cs" />
     <Compile Include="TapiTotalsTests.cs" />
+    <Compile Include="Utils\RandomObjectGenerator.cs" />
     <Compile Include="ViewFieldInfoTests.cs" />
     <Compile Include="CaseInfoTests.cs" />
     <Compile Include="ProcessEventWriterTests.cs" />
@@ -372,6 +384,34 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="System.Data.DataSetExtensions">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="AutoBogus">
+          <HintPath>..\..\packages\AutoBogus\lib\net452\AutoBogus.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Microsoft.CSharp">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Bogus">
+          <HintPath>..\..\packages\Bogus\lib\net40\Bogus.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Castle.Core">
           <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
           <Private>True</Private>
@@ -391,11 +431,19 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Microsoft.CSharp">
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="CsvHelper">
           <HintPath>..\..\packages\CsvHelper\lib\net45\CsvHelper.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="FluentAssertions">
+          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -460,6 +508,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
+          <HintPath>..\..\packages\Relativity.DataTransfer.Legacy.SDK\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Kepler">
           <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
           <Private>True</Private>
@@ -473,6 +532,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Services.ServiceProxy">
           <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client.SDK\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -531,9 +601,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="System.Data.DataSetExtensions">
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="System.ServiceModel">
           <Paket>True</Paket>
         </Reference>

@@ -1,6 +1,8 @@
 framework: net462
 source https://relativity.jfrog.io/relativity/api/nuget/v3/nuget-anthology
 
+nuget AutoMapper = 10.1.1
+
 # Note: do NOT change the Castle version due to SOI with RIP and potentially other consumers.
 nuget castle.core = 3.3.3
 nuget castle.windsor = 3.3.0
@@ -15,6 +17,9 @@ nuget jetbrains.dotcover.commandlinetools = 2019.1.0-eap06
 nuget microsoft.build.logging.structuredlogger = 1.0.89
 nuget moq = 4.5.30
 nuget nbuilder = 6.0.0
+nuget AutoBogus = 2.13.0
+nuget Bogus = 31.0.3
+nuget FluentAssertions = 5.10.3
 
 # Be even more careful with this library. This resolves a package conflict with the Azure Data Movement library.
 nuget newtonsoft.json == 6.0.8
@@ -59,8 +64,9 @@ nuget relativity.oauth2client.implicit = 1.5.2
 nuget relativity.oauth2client.interfaces = 1.5.2
 nuget relativity.telemetry.datacontracts.shared ~> 3000.0.1
 nuget relativity.telemetry.services.interface ~> 3000.0.1
-nuget relativity.transfer.client ~> 7.3.12
+nuget relativity.transfer.client ~> 8.0.0-pre.58
 nuget relativity.services.interfaces.private = 11.3.11.1
+nuget Relativity.DataTransfer.Legacy.SDK = 0.1.23
 
 # The Relativity packages below are required ONLY for test projects!
 nuget kcura.relativity.client = 11.2.8.6-DEV

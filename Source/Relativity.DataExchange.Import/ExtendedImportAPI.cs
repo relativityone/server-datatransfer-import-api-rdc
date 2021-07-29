@@ -30,7 +30,7 @@ namespace kCura.Relativity.ImportAPI {
 		public void CleanUpAfterJobWithSpoofing(string onBehalfOfUserToken) {
 			if (!String.IsNullOrWhiteSpace(onBehalfOfUserToken))
 			{
-				using (var am = new AuditManager(_credentials, _cookieMonster))
+				using (var am = ManagerFactory.CreateAuditManager(_credentials, _cookieMonster, GetCorrelationId))
 				{
 					try
 					{

@@ -4,14 +4,18 @@
 ' </copyright>
 ' -----------------------------------------------------------------------------------------------------
 
+Imports System.Net
 Imports System.Threading
 
 Imports kCura.WinEDDS
+Imports kCura.WinEDDS.Service
 Imports Moq
 
 Imports NUnit.Framework
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
+Imports Relativity.DataExchange.Service
+Imports Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 Imports Relativity.DataExchange.TestFramework
 
 Imports Relativity.Logging
@@ -26,14 +30,15 @@ Namespace Relativity.DataExchange.Import.NUnit
 		Dim _context As ProcessContext
 		Dim _keyPathExistsAlready As Boolean
 		Dim _keyValExistsAlready As Boolean
-        Dim _ioReporter As IIoReporter
-        Dim _logger As ILog
+		Dim _ioReporter As IIoReporter
+		Dim _logger As ILog
 		Dim tokenSource As CancellationTokenSource
 
 		<SetUp>
 		Public Sub SetUp()
 			kCura.WinEDDS.Config.ProgrammaticServiceURL = "https://r1.kcura.com/RelativityWebAPI/"
 			_args = New ImageLoadFile()
+			_args.Credential = New NetworkCredential()
 			_args.CaseInfo = New Relativity.DataExchange.Service.CaseInfo()
 			_args.CaseInfo.RootArtifactID = 1
 			_guid = New Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1")
@@ -42,11 +47,11 @@ Namespace Relativity.DataExchange.Import.NUnit
 			Dim mockAppSettings = New Mock(Of IAppSettings)()
 			Dim mockLogger = New Mock(Of ILog)()
 			_context = New ProcessContext(mockProcessEventWriter.Object, mockProcessErrorWriter.Object, mockAppSettings.Object, mockLogger.Object)
-			
-		    _logger = New TestNullLogger()
+
+			_logger = New TestNullLogger()
 			tokenSource = New CancellationTokenSource()
-            Dim ioReporterContext As New IoReporterContext()
-		    _ioReporter = New IoReporter(ioReporterContext, _logger, tokenSource.Token)
+			Dim ioReporterContext As New IoReporterContext()
+			_ioReporter = New IoReporter(ioReporterContext, _logger, tokenSource.Token)
 			_keyPathExistsAlready = RegKeyHelper.SubKeyPathExists(RegKeyHelper.RelativityKeyPath)
 			_keyValExistsAlready = False
 			If _keyPathExistsAlready = True Then
@@ -253,6 +258,15 @@ Namespace Relativity.DataExchange.Import.NUnit
 			'Fixing Up line endings
 			originalBatchSizeWith100Images = originalBatchSizeWith100Images.Replace(Chr(10), vbCrLf)
 			expectedReducedFileWith80Rows = expectedReducedFileWith80Rows.Replace(Chr(10), vbCrLf)
+
+			Dim webApiVsKeplerMock = New Mock(Of IWebApiVsKepler)
+			webApiVsKeplerMock.Setup(Function(c) c.UseKepler()).Returns(True)
+			ManagerFactory._webApiVsKepler = webApiVsKeplerMock.Object
+			ManagerFactory._currentUrl = AppSettings.Instance.WebApiServiceUrl
+
+			ManagerFactory._currentCredentials = _args.Credential
+			ManagerFactory._connectionInfo = New KeplerServiceConnectionInfo(
+				New Uri(AppSettings.Instance.WebApiServiceUrl), _args.Credential)
 
 			Dim bulkImporter As MockForLoweBatchSizeBulkImageFileImporter = New MockForLoweBatchSizeBulkImageFileImporter(78, originalBatchSizeWith100Images, _args, _context, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.MockLowerBatchSizeAndRetry(100)

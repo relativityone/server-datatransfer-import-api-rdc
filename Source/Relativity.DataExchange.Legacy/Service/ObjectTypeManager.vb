@@ -3,6 +3,7 @@ Imports Relativity.DataExchange
 Namespace kCura.WinEDDS.Service
 	Public Class ObjectTypeManager
 		Inherits kCura.EDDS.WebAPI.ObjectTypeManagerBase.ObjectTypeManager
+		Implements Replacement.IObjectTypeManager
 
 #Region " Constructor and Initialization "
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
@@ -25,8 +26,12 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Shadow Implementations "
 
-		Public Shadows Function RetrieveAllUploadable(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveAllUploadable(ByVal caseContextArtifactID As Int32) As System.Data.DataSet Implements Replacement.IObjectTypeManager.RetrieveAllUploadable
 			Return RetryOnReLoginException(Function() MyBase.RetrieveAllUploadable(caseContextArtifactID))
+		End Function
+
+		Public Shadows Function RetrieveParentArtifactTypeID(ByVal caseContextArtifactID As Integer, ByVal artifactTypeID As Integer) As System.Data.DataSet Implements Replacement.IObjectTypeManager.RetrieveParentArtifactTypeID
+			Return RetryOnReLoginException(Function() MyBase.RetrieveParentArtifactTypeID(caseContextArtifactID, artifactTypeID))
 		End Function
 
 #End Region

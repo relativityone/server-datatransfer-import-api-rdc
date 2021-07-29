@@ -18,6 +18,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	using global::System.Collections.Generic;
 
 	using Relativity.DataExchange;
+	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
@@ -43,6 +44,8 @@ namespace Relativity.DataExchange.NUnit.Integration
 		/// </summary>
 		private static readonly object SyncRoot = new object();
 
+		private readonly bool useLegacyWebApi;
+
 		/// <summary>
 		/// The file count.
 		/// </summary>
@@ -62,6 +65,11 @@ namespace Relativity.DataExchange.NUnit.Integration
 		/// The total number of fatal errors.
 		/// </summary>
 		private int fatalErrors;
+
+		protected TapiBridgeTestBase(bool useLegacyWebApi)
+		{
+			this.useLegacyWebApi = useLegacyWebApi;
+		}
 
 		/// <summary>
 		/// Gets list of paths to files successfully transferred by <see cref="TapiBridge"/>.
@@ -409,7 +417,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 			parameters.TargetPath = targetPath;
 
 			this.SetupTapiBridgeParameters(parameters);
-			return new UploadTapiBridge2(parameters, this.Logger, new NullAuthTokenProvider(), CancellationToken.None);
+			return new UploadTapiBridge2(parameters, this.Logger, new NullAuthTokenProvider(), CancellationToken.None, this.useLegacyWebApi, new RelativityManagerServiceFactory());
 		}
 
 		protected DownloadTapiBridge2 CreateDownloadTapiBridge(string targetPath)
@@ -419,7 +427,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 			parameters.TargetPath = targetPath;
 
 			this.SetupTapiBridgeParameters(parameters);
-			return new DownloadTapiBridge2(parameters, this.Logger, CancellationToken.None);
+			return new DownloadTapiBridge2(parameters, this.Logger, CancellationToken.None, this.useLegacyWebApi, new RelativityManagerServiceFactory());
 		}
 
 		/// <summary>
@@ -474,7 +482,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 
 		protected void SetupTapiBridgeParameters(TapiBridgeParameters2 parameters)
 		{
-			ITapiObjectService objectService = new TapiObjectService();
+			ITapiObjectService objectService = new TapiObjectService(new RelativityManagerServiceFactory(), this.useLegacyWebApi);
 			objectService.SetTapiClient(parameters, this.TapiClient);
 		}
 

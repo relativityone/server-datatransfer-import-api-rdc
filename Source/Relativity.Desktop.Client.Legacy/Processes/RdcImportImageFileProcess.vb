@@ -8,8 +8,8 @@ Namespace Processes
     Public Class RdcImportImageFileProcess
         Inherits kCura.WinEDDS.ImportImageFileProcess
 
-        Public Sub New(metricService As IMetricService, runningContext As IRunningContext, logger As Global.Relativity.Logging.ILog)
-            MyBase.New(metricService, runningContext, logger)
+        Public Sub New(metricService As IMetricService, runningContext As IRunningContext, logger As Global.Relativity.Logging.ILog, correlationIdFunc As Func(Of String))
+            MyBase.New(metricService, runningContext, logger, correlationIdFunc)
         End Sub
 
         Protected Overrides Sub OnSuccess()
@@ -23,7 +23,7 @@ Namespace Processes
         End Sub
 
         Private Sub SendAutomatedWorkflowTrigger(hasErrors As Boolean)
-            Dim triggerManager As TriggerManager = New TriggerManager(Logger, ServiceFactoryFactory.Create(ImageLoadFile.Credential))
+            Dim triggerManager As TriggerManager = New TriggerManager(Logger, KeplerProxyFactory.CreateKeplerProxy(ImageLoadFile.Credential))
             triggerManager.AttemptSendingTriggerAsync(ImageLoadFile.CaseInfo.ArtifactID, hasErrors, Me.RunningContext.RelativityVersion).GetAwaiter().GetResult()
         End Sub
 

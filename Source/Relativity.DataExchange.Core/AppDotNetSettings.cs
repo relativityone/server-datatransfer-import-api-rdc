@@ -1288,6 +1288,17 @@ namespace Relativity.DataExchange
 			set;
 		}
 
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.UseKeplerKey,
+			null)]
+		bool? IAppSettings.UseKepler
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Validates that the URI is valid and returns a properly formatted URI string.
 		/// </summary>

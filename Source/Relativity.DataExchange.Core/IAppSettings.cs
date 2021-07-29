@@ -1070,6 +1070,18 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the Kepler service should be used instead of WebApi service.
+		/// </summary>
+		/// <value>
+		/// Kepler service enabled.
+		/// </value>
+		bool? UseKepler
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Performs a deep copy of this instance.
 		/// </summary>
 		/// <returns>

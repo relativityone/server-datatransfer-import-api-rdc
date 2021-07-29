@@ -22,6 +22,8 @@ namespace Relativity.DataExchange.Transfer
 
 	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Resources;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Service.WebApiVsKeplerSwitch;
 	using Relativity.Logging;
 	using Relativity.Transfer;
 	using Relativity.Transfer.Aspera;
@@ -76,6 +78,8 @@ namespace Relativity.DataExchange.Transfer
 		/// The batch totals.
 		/// </summary>
 		private readonly TapiTotals batchTotals = new TapiTotals();
+
+		private readonly bool useLegacyWebApi;
 
 		/// <summary>
 		/// The job unique identifier associated with the current job.
@@ -145,39 +149,14 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="direction">
 		/// The transfer direction.
 		/// </param>
-		/// <param name="logger">
-		/// The Relativity logger instance.
-		/// </param>
-		/// <param name="token">
-		/// The cancellation token.
-		/// </param>
-		internal TapiBridgeBase2(
-			ITapiObjectService service,
-			TapiBridgeParameters2 parameters,
-			TransferDirection direction,
-			ILog logger,
-			CancellationToken token)
-			: this(service, parameters, direction, CreateDefaultTransferContext(parameters), logger, token)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="TapiBridgeBase2"/> class.
-		/// </summary>
-		/// <param name="service">
-		/// The Transfer API object service.
-		/// </param>
-		/// <param name="parameters">
-		/// The native file transfer parameters.
-		/// </param>
-		/// <param name="direction">
-		/// The transfer direction.
-		/// </param>
 		/// <param name="context">
 		/// The transfer context.
 		/// </param>
 		/// <param name="logger">
 		/// The Relativity logger instance.
+		/// </param>
+		/// <param name="useLegacyWebApi">
+		/// If true use WebApi, otherwise use Kepler.
 		/// </param>
 		/// <param name="token">
 		/// The cancellation token.
@@ -188,6 +167,7 @@ namespace Relativity.DataExchange.Transfer
 			TransferDirection direction,
 			TransferContext context,
 			ILog logger,
+			bool useLegacyWebApi,
 			CancellationToken token)
 		{
 			if (service == null)
@@ -233,6 +213,7 @@ namespace Relativity.DataExchange.Transfer
 			this.transferContext = context;
 			this.SetupTransferListeners();
 			this.UpdateAllTransferListenersClientName();
+			this.useLegacyWebApi = useLegacyWebApi;
 		}
 
 		/// <inheritdoc />
@@ -733,6 +714,7 @@ namespace Relativity.DataExchange.Transfer
 				TransferLogDirectory = this.parameters.TransferLogDirectory,
 				ValidateSourcePaths = ValidateSourcePaths,
 				SavingMemoryMode = true,
+				UseLegacyWebApi = this.useLegacyWebApi,
 			};
 
 			if (this.parameters.AsperaDatagramSize != AppSettingsConstants.TapiAsperaDatagramSizeDefaultValue)
@@ -1071,6 +1053,7 @@ namespace Relativity.DataExchange.Transfer
 				PreserveDates = this.parameters.PreserveFileTimestamps,
 				PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
 				SavingMemoryMode = true,
+				UseLegacyWebApi = this.useLegacyWebApi,
 			});
 		}
 

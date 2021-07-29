@@ -7,13 +7,13 @@ Namespace kCura.WinEDDS
 		Private _loadFile As ImageLoadFile
 		Private _docFields As DocumentFieldCollection
 
-		Public Sub New(ByVal login As String, ByVal password As String, ByVal caseArtifactID As Int32)
-			MyBase.New(login, password)
+		Public Sub New(ByVal login As String, ByVal password As String, ByVal caseArtifactID As Int32, correlationIdFunc As Func(Of String))
+			MyBase.New(login, password, correlationIdFunc)
 			Me.InitLoadFile(caseArtifactID)
 		End Sub
 
-		Public Sub New(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32)
-			MyBase.New(credential)
+		Public Sub New(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32, correlationIdFunc As Func(Of String))
+			MyBase.New(credential, correlationIdFunc)
 			Me.InitLoadFile(caseArtifactID)
 		End Sub
 
@@ -45,7 +45,7 @@ Namespace kCura.WinEDDS
 				_loadFile.CaseInfo = Me.CaseManager.Read(value)
 				_loadFile.CaseDefaultPath = _loadFile.CaseInfo.DocumentPath
 				_loadFile.DestinationFolderID = _loadFile.CaseInfo.RootFolderID
-				_docFields = Me.FieldManager.Query.RetrieveAllAsDocumentFieldCollection(value, ArtifactType.Document)
+				_docFields = Me.FieldQuery.RetrieveAllAsDocumentFieldCollection(value, ArtifactType.Document)
 			End Set
 		End Property
 

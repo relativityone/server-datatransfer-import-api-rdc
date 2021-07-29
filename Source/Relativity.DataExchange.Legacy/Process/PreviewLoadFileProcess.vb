@@ -18,15 +18,17 @@ Namespace kCura.WinEDDS
 		Private WithEvents _valueThrower As ValueThrower
 		Public ReturnValueCollection As Hashtable
 		Public ReturnValueKey As Guid
+		Private ReadOnly _correlationIdFunc As Func(Of String)
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
-		Public Sub New(ByVal formType As Int32)
-			Me.New(formType, RelativityLogger.Instance)
+		Public Sub New(ByVal formType As Int32, correlationIdFunc As Func(Of String))
+			Me.New(formType, RelativityLogger.Instance, correlationIdFunc)
 		End Sub
 
-		Public Sub New(ByVal formType As Int32, logger As Global.Relativity.Logging.ILog)
+		Public Sub New(ByVal formType As Int32, logger As Global.Relativity.Logging.ILog, correlationIdFunc As Func(Of String))
 			MyBase.New(logger)
 			_formType = formType
+			_correlationIdFunc = correlationIdFunc
 		End Sub
 
 		Public Property TimeZoneOffset() As Int32
@@ -60,13 +62,14 @@ Namespace kCura.WinEDDS
 			_IoReporterContext = New IoReporterContext(Me.FileSystem, Me.AppSettings, New WaitAndRetryPolicy(Me.AppSettings))
 			Dim reporter As IIoReporter = Me.CreateIoReporter(_IoReporterContext)
 			_loadFilePreviewer = New kCura.WinEDDS.LoadFilePreviewer(
-				LoadFile, _
-				reporter, _
-				logger, _
-				_timeZoneOffset, _
-				_errorsOnly, _
+				LoadFile,
+				reporter,
+				Logger,
+				_timeZoneOffset,
+				_errorsOnly,
 				True,
-				Me.CancellationTokenSource, _
+				Me.CancellationTokenSource,
+				Me._correlationIdFunc,
 				Me.Context)
 			_valueThrower.ThrowValue(New Object() {_loadFilePreviewer.ReadFile(LoadFile.FilePath, _formType), _errorsOnly})
 			Me.Context.PublishProcessCompleted(True)

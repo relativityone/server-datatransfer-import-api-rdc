@@ -1,4 +1,5 @@
 ﻿Imports System.Net
+Imports kCura.WinEDDS.Service
 
 Namespace kCura.WinEDDS
 
@@ -9,12 +10,14 @@ Namespace kCura.WinEDDS
 		Private _fieldsNonFile As DocumentFieldCollection
 
 		Private ReadOnly _cookieContainer As CookieContainer
-		Private ReadOnly _credential As ICredentials
-		
+		Private ReadOnly _credential As NetworkCredential
+		Private ReadOnly _correlationIdFunc As Func(Of String)
 
-		Public Sub New (credential As ICredentials, cookieContainer As CookieContainer)
+
+		Public Sub New(credential As NetworkCredential, cookieContainer As CookieContainer, correlationIdFunc As Func(Of String))
 			_cookieContainer = cookieContainer
 			_credential = credential
+			_correlationIdFunc = correlationIdFunc
 		End Sub
 
 
@@ -27,7 +30,7 @@ Namespace kCura.WinEDDS
 												Optional ByVal refresh As Boolean = False) As DocumentFieldCollection Implements IFieldProviderCache.CurrentFields
 			Get
 				If _fields Is Nothing OrElse refresh Then
-					_fields = GetFields(artifactTypeId, workspaceId, Function(field) true)
+					_fields = GetFields(artifactTypeId, workspaceId, Function(field) True)
 				End If
 				Return _fields
 			End Get
@@ -47,9 +50,9 @@ Namespace kCura.WinEDDS
 
 			Dim retFields As New DocumentFieldCollection
 
-			Dim fieldManager As New Service.FieldQuery(_credential, _cookieContainer)
+			Dim fieldManager As Service.Replacement.IFieldQuery = ManagerFactory.CreateFieldQuery(_credential, _cookieContainer, _correlationIdFunc)
 			Dim fields() As EDDS.WebAPI.DocumentManagerBase.Field
-			fields = fieldManager.RetrieveAllAsArray(workspaceId, artifactTypeID)
+			fields = fieldManager.RetrieveAllAsArray(workspaceId, artifactTypeId)
 			Dim i As Int32
 			For i = 0 To fields.Length - 1
 				With fields(i)

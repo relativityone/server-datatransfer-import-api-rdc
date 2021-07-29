@@ -13,25 +13,27 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _reader As IDataReader
 		Private _imageSettings As ImageSettings
 
-		Public Sub New(ByVal folderId As Int32, _
-		               ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, _
-		               ByVal context As ProcessContext, _
-		               ByVal ioReporterInstance As IIoReporter, 
-		               ByVal logger As ILog, _
-		               ByVal processID As System.Guid, _
-		               ByVal tokenSource As CancellationTokenSource,
-		               ByVal reader As IDataReader,
-		               ByVal imageSettings As ImageSettings, _
-		               Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
-			MyBase.New(folderId, _
-			           imageLoadFile, _
-			           context, _
-			           ioReporterInstance, _
-			           logger, _
-			           processID, _
-			           False, _
-			           tokenSource, _
-			           executionSource)
+		Public Sub New(ByVal folderId As Int32,
+					   ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile,
+					   ByVal context As ProcessContext,
+					   ByVal ioReporterInstance As IIoReporter,
+					   ByVal logger As ILog,
+					   ByVal processID As System.Guid,
+					   ByVal tokenSource As CancellationTokenSource,
+					   ByVal reader As IDataReader,
+					   ByVal imageSettings As ImageSettings,
+					   ByVal correlationIdFunc As Func(Of String),
+					   Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
+			MyBase.New(folderId,
+					   imageLoadFile,
+					   context,
+					   ioReporterInstance,
+					   logger,
+					   processID,
+					   False,
+					   tokenSource,
+					   correlationIdFunc,
+					   executionSource)
 			_reader = reader
 			_imageSettings = imageSettings
 		End Sub

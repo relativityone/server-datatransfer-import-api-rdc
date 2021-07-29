@@ -7,7 +7,7 @@ namespace Relativity.DataExchange.Service
 	/// <summary>
 	/// This type provides a method for re-logging in Relativity WebAPI and Relativity.Distributed.
 	/// </summary>
-	internal interface IReLoginService
+	public interface IReLoginService
 	{
 		/// <summary>
 		/// Re-logging in Relativity WebAPI and Relativity.Distributed.

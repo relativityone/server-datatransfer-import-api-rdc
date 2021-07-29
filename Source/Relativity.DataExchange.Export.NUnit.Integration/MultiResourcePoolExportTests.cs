@@ -71,6 +71,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// ASSERT
 			this.ThenTheExportJobIsSuccessful(expectedDocumentsCountInBothShares);
 			ThenTheFilesAreExported(expectedExportedFilesCount);
+
+			this.ThenTheCorrelationIdWasRetrieved();
 		}
 
 		private void ImportDocumentsAndImages()

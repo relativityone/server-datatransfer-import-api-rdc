@@ -13,7 +13,7 @@ namespace Relativity.DataExchange.Service
 	using System.Net;
 	using System.Net.Http;
 
-	using Relativity.Services.ServiceProxy;
+	using Relativity.Services.Pipeline;
 
 	/// <summary>
 	/// Represents a class object to create Kepler-based web service proxy instances.
@@ -21,7 +21,7 @@ namespace Relativity.DataExchange.Service
 	internal class KeplerServiceProxyFactory : IServiceProxyFactory
 	{
 		private readonly IServiceConnectionInfo serviceConnectionInfo;
-		private readonly Lazy<ServiceFactory> serviceFactory;
+		private Lazy<KeplerServiceFactory> serviceFactory;
 		private HttpClientHandler httpClientHandler;
 		private bool disposed;
 
@@ -34,7 +34,7 @@ namespace Relativity.DataExchange.Service
 		public KeplerServiceProxyFactory(IServiceConnectionInfo connectionInfo)
 		{
 			this.serviceConnectionInfo = connectionInfo.ThrowIfNull(nameof(connectionInfo));
-			this.serviceFactory = new Lazy<ServiceFactory>(this.CreateServiceFactory);
+			this.serviceFactory = new Lazy<KeplerServiceFactory>(this.CreateServiceFactory);
 		}
 
 		/// <inheritdoc />
@@ -48,18 +48,30 @@ namespace Relativity.DataExchange.Service
 			where TProxy : class, IDisposable
 		{
 			ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
-			return this.serviceFactory.Value.CreateProxy<TProxy>();
+
+			if (this.serviceConnectionInfo.RefreshCredentials())
+			{
+				this.serviceFactory = new Lazy<KeplerServiceFactory>(this.CreateServiceFactory);
+			}
+
+			return this.serviceFactory.Value.GetClient<TProxy>();
 		}
 
-		private ServiceFactory CreateServiceFactory()
+		/// <inheritdoc/>
+		public void UpdateCredentials(NetworkCredential credential)
 		{
-			// The Relativity.Services URL should require a separate configurable base URL but RSAPI isn't used.
-			this.httpClientHandler = new HttpClientHandler();
-			ServiceFactorySettings factorySettings = new ServiceFactorySettings(
+			this.serviceConnectionInfo.UpdateCredentials(credential);
+			this.serviceFactory = new Lazy<KeplerServiceFactory>(this.CreateServiceFactory);
+		}
+
+		private KeplerServiceFactory CreateServiceFactory()
+		{
+			var keplerSettings = new KeplerServiceFactorySettings(
 				new Uri(this.serviceConnectionInfo.WebServiceBaseUrl, "/Relativity.Rest/api"),
-				this.serviceConnectionInfo.Credentials,
+				this.serviceConnectionInfo.Credentials.GetAuthenticationHeaderValue(),
+				WireProtocolVersion.V2,
 				this.httpClientHandler);
-			return new ServiceFactory(factorySettings);
+			return new KeplerServiceFactory(keplerSettings);
 		}
 
 		private void Dispose(bool disposing)

@@ -1,4 +1,4 @@
-﻿Imports Relativity.Services.ServiceProxy
+﻿Imports Relativity.DataExchange.Service
 Imports Relativity.Telemetry.Services.Interface
 Imports Relativity.Telemetry.Services.Metrics
 
@@ -6,19 +6,21 @@ Namespace Monitoring.Sinks
     Public Class MetricSinkApm
         Implements IMetricSink
 
-        Private ReadOnly _serviceFactory As IServiceFactory
+        Private ReadOnly _keplerProxy As IKeplerProxy
 
-        Public Sub New (serviceFactory As IServiceFactory, isEnabled As Boolean)
-            _serviceFactory = serviceFactory
+        Public Sub New (keplerProxy As IKeplerProxy, isEnabled As Boolean)
+	        _keplerProxy = keplerProxy
             Me.IsEnabled = isEnabled
         End Sub
 
         ''' <inheritdoc/>
         Sub Log(metric As MetricBase) Implements IMetricSink.Log
-            Using proxy As IAPMManager = _serviceFactory.CreateProxy(Of IAPMManager)()
-                Dim apmMetric As APMMetric = New APMMetric() With{.Name = metric.BucketName, .CustomData = metric.CustomData}
-                proxy.LogCountAsync(apmMetric, 0).ConfigureAwait(False).GetAwaiter().GetResult()
-            End Using
+	        _keplerProxy.ExecuteAsync(Async Function(serviceFactory As IServiceProxyFactory)
+		        Using proxy As IAPMManager = serviceFactory.CreateProxyInstance(Of IAPMManager)()
+			        Dim apmMetric As APMMetric = New APMMetric() With{.Name = metric.BucketName, .CustomData = metric.CustomData}
+			        Await proxy.LogCountAsync(apmMetric, 0).ConfigureAwait(False)
+		        End Using
+	        End Function).GetAwaiter().GetResult()
         End Sub
 
         Public Property IsEnabled As Boolean Implements IMetricSink.IsEnabled

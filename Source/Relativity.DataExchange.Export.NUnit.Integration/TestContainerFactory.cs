@@ -9,6 +9,9 @@
 
 namespace Relativity.DataExchange.Export.NUnit.Integration
 {
+	using System;
+
+	using Castle.MicroKernel.Registration;
 	using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 	using Castle.Windsor;
 
@@ -26,6 +29,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	/// <seealso cref="kCura.WinEDDS.Container.IContainerFactory" />
 	public class TestContainerFactory : IContainerFactory
 	{
+		private readonly Func<string> correlationIdFunc;
+
 		private readonly IWindsorContainer container;
 		private readonly ILog logger;
 
@@ -33,26 +38,31 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		/// Initializes a new instance of the <see cref="TestContainerFactory"/> class.
 		/// </summary>
 		/// <param name="container">
-		/// The Castle Windsor container.
+		///     The Castle Windsor container.
 		/// </param>
 		/// <param name="logger">
-		/// The logger instance.
+		///     The logger instance.
 		/// </param>
-		public TestContainerFactory(IWindsorContainer container, ILog logger)
+		/// <param name="correlationIdFunc">
+		///     Function to obtain correlationID.
+		/// </param>
+		public TestContainerFactory(IWindsorContainer container, ILog logger, Func<string> correlationIdFunc)
 		{
 			this.container = container.ThrowIfNull(nameof(container));
 			this.logger = logger.ThrowIfNull(nameof(logger));
+			this.correlationIdFunc = correlationIdFunc.ThrowIfNull(nameof(correlationIdFunc));
 		}
 
 		public virtual IWindsorContainer Create(
 			Exporter exporter,
 			string[] columnNamesInOrder,
-			ILoadFileHeaderFormatterFactory loadFileHeaderFormatterFactory)
+			ILoadFileHeaderFormatterFactory loadFileHeaderFormatterFactory,
+			Func<string> getCorrelationIdFunc)
 		{
 			// Note: bypass the "real" ContainerFactory class to install directly into the test container.
 			this.container.Kernel.Resolver.AddSubResolver(new CollectionResolver(this.container.Kernel, true));
 			this.container.Install(
-				new ExportInstaller(exporter, columnNamesInOrder, loadFileHeaderFormatterFactory, this.logger));
+				new ExportInstaller(exporter, columnNamesInOrder, loadFileHeaderFormatterFactory, this.logger, this.correlationIdFunc));
 
 			return this.container;
 		}

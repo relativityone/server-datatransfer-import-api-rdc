@@ -4,6 +4,7 @@ Namespace kCura.WinEDDS.Service
 	Public Class FolderManager
 		Inherits kCura.EDDS.WebAPI.FolderManagerBase.FolderManager
 		Implements IHierarchicArtifactManager
+		Implements Replacement.IFolderManager
 
 		Private _folderCreationCount As Int32 = 0
 
@@ -33,15 +34,15 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.RetrieveAllByCaseID(caseContextArtifactID))
 		End Function
 
-		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal folderArtifactID As Int32) As kCura.EDDS.WebAPI.FolderManagerBase.Folder
+		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal folderArtifactID As Int32) As kCura.EDDS.WebAPI.FolderManagerBase.Folder Implements Replacement.IFolderManager.Read
 			Return RetryOnReLoginException(Function() MyBase.Read(caseContextArtifactID, folderArtifactID))
 		End Function
 
-		Public Shadows Function ReadID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal name As String) As Integer Implements IHierarchicArtifactManager.Read
+		Public Shadows Function ReadID(ByVal caseContextArtifactID As Integer, ByVal parentArtifactID As Integer, ByVal name As String) As Integer Implements IHierarchicArtifactManager.Read, Replacement.IFolderManager.ReadID
 			Return RetryOnReLoginException(Function() MyBase.ReadID(caseContextArtifactID, parentArtifactID, name))
 		End Function
 
-		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal name As String) As Int32 Implements IHierarchicArtifactManager.Create
+		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal name As String) As Int32 Implements IHierarchicArtifactManager.Create, Replacement.IFolderManager.Create
 			Return RetryOnReLoginException(
 				Function()
 					Dim retval As Int32 = MyBase.Create(caseContextArtifactID, parentArtifactID, GetExportFriendlyFolderName(name))
@@ -50,25 +51,25 @@ Namespace kCura.WinEDDS.Service
 				End Function)
 		End Function
 
-		Public Shadows Function Exists(ByVal caseContextArtifactID As Int32, ByVal rootFolderID As Int32) As Boolean
+		Public Shadows Function Exists(ByVal caseContextArtifactID As Int32, ByVal rootFolderID As Int32) As Boolean Implements Replacement.IFolderManager.Exists
 			Return RetryOnReLoginException(Function() MyBase.Exists(caseContextArtifactID, rootFolderID))
 		End Function
 
-		Public Shadows Function RetrieveIntitialChunk(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveIntitialChunk(ByVal caseContextArtifactID As Int32) As System.Data.DataSet Implements Replacement.IFolderManager.RetrieveIntitialChunk
 			Return RetryOnReLoginException(Function() MyBase.RetrieveIntitialChunk(caseContextArtifactID))
 		End Function
 
-		Public Shadows Function RetrieveNextChunk(ByVal caseContextArtifactID As Int32, ByVal lastFolderID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveNextChunk(ByVal caseContextArtifactID As Int32, ByVal lastFolderID As Int32) As System.Data.DataSet Implements Replacement.IFolderManager.RetrieveNextChunk
 			Return RetryOnReLoginException(Function() MyBase.RetrieveNextChunk(caseContextArtifactID, lastFolderID))
 		End Function
 
 #End Region
 
-		Public Function RetrieveArtifacts(ByVal caseContextArtifactID As Integer, ByVal rootArtifactID As Integer) As System.Data.DataSet Implements IHierarchicArtifactManager.RetrieveArtifacts
+		Public Function RetrieveArtifacts(ByVal caseContextArtifactID As Integer, ByVal rootArtifactID As Integer) As System.Data.DataSet Implements IHierarchicArtifactManager.RetrieveArtifacts, Replacement.IFolderManager.RetrieveArtifacts
 			Return Me.RetrieveFolderAndDescendants(caseContextArtifactID, rootArtifactID)
 		End Function
 
-		Public ReadOnly Property CreationCount() As Integer
+		Public ReadOnly Property CreationCount() As Integer Implements Replacement.IFolderManager.CreationCount
 			Get
 				Return _folderCreationCount
 			End Get

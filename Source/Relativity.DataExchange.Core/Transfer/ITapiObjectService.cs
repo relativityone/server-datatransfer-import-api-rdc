@@ -63,20 +63,6 @@ namespace Relativity.DataExchange.Transfer
 		Relativity.Transfer.IRelativityTransferHost CreateRelativityTransferHost(Relativity.Transfer.RelativityConnectionInfo connectionInfo, ILog logger);
 
 		/// <summary>
-		/// Gets the client display name associated with the specified transfer client identifier.
-		/// </summary>
-		/// <param name="clientId">
-		/// The transfer client identifier.
-		/// </param>
-		/// <returns>
-		/// The client display name.
-		/// </returns>
-		/// <exception cref="System.ArgumentException">
-		/// Thrown when the client doesn't exist.
-		/// </exception>
-		string GetClientDisplayName(Guid clientId);
-
-		/// <summary>
 		/// Gets the client identifier.
 		/// </summary>
 		/// <param name="parameters">

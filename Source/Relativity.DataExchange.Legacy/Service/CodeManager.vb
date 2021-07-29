@@ -7,6 +7,7 @@ Imports Relativity.DataExchange.Service
 Namespace kCura.WinEDDS.Service
 	Public Class CodeManager
 		Inherits kCura.EDDS.WebAPI.CodeManagerBase.CodeManager
+		Implements Replacement.ICodeManager
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
@@ -24,7 +25,7 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-		Public Function CreateNewCodeDTOProxy(ByVal codeTypeID As Int32, ByVal name As String, ByVal order As Int32, ByVal caseSystemID As Int32) As kCura.EDDS.WebAPI.CodeManagerBase.Code
+		Public Function CreateNewCodeDTOProxy(ByVal codeTypeID As Int32, ByVal name As String, ByVal order As Int32, ByVal caseSystemID As Int32) As kCura.EDDS.WebAPI.CodeManagerBase.Code Implements Replacement.ICodeManager.CreateNewCodeDTOProxy
 			Dim code As New kCura.EDDS.WebAPI.CodeManagerBase.Code
 			code.CodeType = codeTypeID
 			code.IsActive = True
@@ -39,11 +40,11 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Shadow Functions "
-		Public Shadows Function RetrieveCodesAndTypesForCase(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveCodesAndTypesForCase(ByVal caseContextArtifactID As Int32) As System.Data.DataSet Implements Replacement.ICodeManager.RetrieveCodesAndTypesForCase
 			Return RetryOnReLoginException(Function() MyBase.RetrieveCodesAndTypesForCase(caseContextArtifactID))
 		End Function
 
-		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal code As kCura.EDDS.WebAPI.CodeManagerBase.Code) As Object
+		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal code As kCura.EDDS.WebAPI.CodeManagerBase.Code) As Object Implements Replacement.ICodeManager.Create
 			Dim tries As Int32 = 0
 			Dim encode As Boolean = True
 			Dim name As String = code.Name
@@ -74,7 +75,7 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function ReadID(ByVal caseContextArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal codeTypeID As Int32, ByVal name As String) As Int32
+		Public Shadows Function ReadID(ByVal caseContextArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal codeTypeID As Int32, ByVal name As String) As Int32 Implements Replacement.ICodeManager.ReadID
 			Dim tries As Int32 = 0
 			Dim encode As Boolean = True
 			While tries < AppSettings.Instance.MaxReloginTries
@@ -109,7 +110,11 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.GetLastChunk(caseContextArtifactID, codeTypeID, lastCodeID))
 		End Function
 
-		Public Function RetrieveAllCodesOfType(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32) As ChoiceInfo()
+		Public Shadows Function GetAllForHierarchical(ByVal caseContextArtifactID As Integer, ByVal codeTypeID As Integer) As System.Data.DataSet Implements Replacement.ICodeManager.GetAllForHierarchical
+			Return  RetryOnReLoginException(Function() MyBase.GetAllForHierarchical(caseContextArtifactID, codeTypeID))
+		End Function
+
+		Public Function RetrieveAllCodesOfType(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32) As ChoiceInfo() Implements Replacement.ICodeManager.RetrieveAllCodesOfType
 			Dim dt As System.Data.DataTable
 			Dim retval As New System.Collections.ArrayList
 			Dim lastcodeId As Int32 = -1
@@ -127,7 +132,7 @@ Namespace kCura.WinEDDS.Service
 			Return DirectCast(retval.ToArray(GetType(ChoiceInfo)), ChoiceInfo())
 		End Function
 
-		Public Shadows Function RetrieveCodeByNameAndTypeID(ByVal caseContextArtifactID As Int32, ByVal codeType As Api.ArtifactField, ByVal name As String) As ChoiceInfo
+		Public Shadows Function RetrieveCodeByNameAndTypeID(ByVal caseContextArtifactID As Int32, ByVal codeType As Api.ArtifactField, ByVal name As String) As ChoiceInfo Implements Replacement.ICodeManager.RetrieveCodeByNameAndTypeID
 			Dim tries As Int32 = 0
 			Dim encode As Boolean = True
 			
@@ -170,7 +175,7 @@ Namespace kCura.WinEDDS.Service
 			End If
 		End Sub
 
-		Public Shadows Function GetChoiceLimitForUI() As Int32
+		Public Shadows Function GetChoiceLimitForUI() As Int32 Implements Replacement.ICodeManager.GetChoiceLimitForUI
 			Return RetryOnReLoginException(Function() MyBase.GetChoiceLimitForUI())
 		End Function
 

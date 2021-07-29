@@ -62,6 +62,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// ASSERT
 			ExportedFilesValidator.ValidateSearchablePdfsCount(this.ExtendedExportFile, TestData.SampleSearchablePdfTestFiles.Count());
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
+
+			this.ThenTheCorrelationIdWasRetrieved();
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -86,6 +88,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			ExportedFilesValidator.ValidateSearchablePdfsCount(this.ExtendedExportFile, TestData.SampleSearchablePdfTestFiles.Count());
 			ExportedFilesValidator.ValidateSearchablePdfSubDirectoryPrefix(this.ExtendedExportFile);
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
+
+			this.ThenTheCorrelationIdWasRetrieved();
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -116,6 +120,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			ExportedFilesValidator.ValidateSearchablePdfSubDirectoryPrefix(this.ExtendedExportFile);
 			ThenTheStatusMessageWasAdded(InsufficientPaddingWarningMessage);
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
+
+			this.ThenTheCorrelationIdWasRetrieved();
 		}
 
 		// before executing the test check if audit agents are enabled: Data Grid Audit Migrator, Data Grid Audit Deleter, Data Grid Audit Reporter, Data Grid Audit Manager
@@ -137,6 +143,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			await ExportedFilesValidator.ValidateSearchablePdfFilesAsync(this.ExtendedExportFile).ConfigureAwait(false);
 			this.ThenTheAuditIsCorrect(userId);
 			await UsersHelper.RemoveUserAsync(this.TestParameters, userId).ConfigureAwait(false);
+
+			this.ThenTheCorrelationIdWasRetrieved();
 		}
 
 		private static void SetupDefaultExportFile(ExportFile exportFile)

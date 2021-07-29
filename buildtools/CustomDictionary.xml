@@ -10,6 +10,8 @@
       <Word>TapiBridge</Word>
       <Word>Serilog</Word>
       <Word>datagrid</Word>
+      <Word>uploadable</Word>
+      <Word>workspaces</Word>
     </Recognized>    
   </Words>
 </Dictionary>

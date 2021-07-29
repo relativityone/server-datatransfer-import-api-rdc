@@ -1,6 +1,7 @@
 ﻿Imports System.Threading
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Credentials
+Imports kCura.WinEDDS.Service
 Imports Relativity.DataExchange
 
 Public Class WindowsCredentialsLogin 
@@ -26,10 +27,10 @@ Public Class WindowsCredentialsLogin
 		' but it always fails and fall back on implicit flow. Please see comment in Application.AttemptWindowsAuthentication
 		' which was added in commit ba46946f (01 May 2019)
 		Dim windowsAuthCredentials As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
-		Using windowsAuthRelativityManager As New kCura.WinEDDS.Service.RelativityManager(windowsAuthCredentials, cookieContainer, webServiceUrl)
+		Using windowsAuthRelativityManager As kCura.WinEDDS.Service.Replacement.IRelativityManager = ManagerFactory.CreateRelativityManager(windowsAuthCredentials, cookieContainer, AddressOf Global.Relativity.Desktop.Client.Application.Instance.GetCorrelationId)
 			Dim provider As IntegratedAuthenticationOAuthCredentialsProvider = New IntegratedAuthenticationOAuthCredentialsProvider(windowsAuthRelativityManager)
 			Dim credentials As System.Net.NetworkCredential = provider.LoginWindowsAuth()
-			LoginHelper.ValidateVersionCompatibility(credentials, cookieContainer, webServiceUrl, token, runningContext, logger)
+			LoginHelper.ValidateVersionCompatibility(credentials, cookieContainer, webServiceUrl, token, runningContext, logger, AddressOf Global.Relativity.Desktop.Client.Application.Instance.GetCorrelationId)
 			Return credentials
 		End Using
 	End Function

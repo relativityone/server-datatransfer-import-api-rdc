@@ -1,10 +1,10 @@
-Imports kCura.WinEDDS.Service.Export
 Imports Relativity.DataExchange
 
 Namespace kCura.WinEDDS.Service
 	Public Class SearchManager
 		Inherits kCura.EDDS.WebAPI.SearchManagerBase.SearchManager
-		Implements ISearchManager
+		Implements Export.ISearchManager
+		Implements Replacement.ISearchManager
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
@@ -23,27 +23,27 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Shadow Functions "
-		Public Shadows Function RetrieveNativesForProduction(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32, ByVal documentArtifactIDs As String) As System.Data.DataSet Implements ISearchManager.RetrieveNativesForProduction
+		Public Shadows Function RetrieveNativesForProduction(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32, ByVal documentArtifactIDs As String) As System.Data.DataSet Implements Export.ISearchManager.RetrieveNativesForProduction, Replacement.ISearchManager.RetrieveNativesForProduction
 			Return RetryOnReLoginException(Function() MyBase.RetrieveNativesForProduction(caseContextArtifactID, productionArtifactID, documentArtifactIDs))
 		End Function
 
-		Public Shadows Function RetrieveNativesForSearch(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As String) As System.Data.DataSet Implements ISearchManager.RetrieveNativesForSearch
+		Public Shadows Function RetrieveNativesForSearch(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As String) As System.Data.DataSet Implements Export.ISearchManager.RetrieveNativesForSearch, Replacement.ISearchManager.RetrieveNativesForSearch
 			Return RetryOnReLoginException(Function() MyBase.RetrieveNativesForSearch(caseContextArtifactID, documentArtifactIDs))
 		End Function
 
-		Public Shadows Function RetrievePdfForSearch(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As String) As System.Data.DataSet Implements ISearchManager.RetrievePdfForSearch
+		Public Shadows Function RetrievePdfForSearch(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As String) As System.Data.DataSet Implements Export.ISearchManager.RetrievePdfForSearch, Replacement.ISearchManager.RetrievePdfForSearch
 			Return RetryOnReLoginException(Function() MyBase.RetrievePdfForSearch(caseContextArtifactID, documentArtifactIDs))
 		End Function
 
-		Public Shadows Function RetrieveFilesForDynamicObjects(ByVal caseContextArtifactID As Int32, ByVal fileFieldArtifactID As Int32, ByVal objectIds As Int32()) As System.Data.DataSet Implements ISearchManager.RetrieveFilesForDynamicObjects
+		Public Shadows Function RetrieveFilesForDynamicObjects(ByVal caseContextArtifactID As Int32, ByVal fileFieldArtifactID As Int32, ByVal objectIds As Int32()) As System.Data.DataSet Implements Export.ISearchManager.RetrieveFilesForDynamicObjects, Replacement.ISearchManager.RetrieveFilesForDynamicObjects
 			Return RetryOnReLoginException(Function() MyBase.RetrieveFilesForDynamicObjects(caseContextArtifactID, fileFieldArtifactID, objectIds))
 		End Function
 
-		Public Function RetrieveImagesForDocuments(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As Int32()) As System.Data.DataSet Implements ISearchManager.RetrieveImagesForDocuments
+		Public Function RetrieveImagesForDocuments(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As Int32()) As System.Data.DataSet Implements Export.ISearchManager.RetrieveImagesForDocuments, Replacement.ISearchManager.RetrieveImagesForSearch
 			Return RetryOnReLoginException(Function() RetrieveImagesForSearch(caseContextArtifactID, documentArtifactIDs))
 		End Function
 
-		Public Function RetrieveImagesForProductionDocuments(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As Int32(), ByVal productionArtifactID As Int32) As System.Data.DataSet Implements ISearchManager.RetrieveImagesForProductionDocuments
+		Public Function RetrieveImagesForProductionDocuments(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As Int32(), ByVal productionArtifactID As Int32) As System.Data.DataSet Implements Export.ISearchManager.RetrieveImagesForProductionDocuments, Replacement.ISearchManager.RetrieveImagesForProductionDocuments
 			Return RetryOnReLoginException(Function() Me.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet(caseContextArtifactID, productionArtifactID, documentArtifactIDs))
 		End Function
 
@@ -51,15 +51,15 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.RetrieveImagesForSearch(caseContextArtifactID, documentArtifactIDs))
 		End Function
 
-		Public Shadows Function RetrieveProducedImagesForDocument(caseContextArtifactID As Integer, documentArtifactID As Integer) As DataSet Implements ISearchManager.RetrieveProducedImagesForDocument
+		Public Shadows Function RetrieveProducedImagesForDocument(caseContextArtifactID As Integer, documentArtifactID As Integer) As DataSet Implements Export.ISearchManager.RetrieveProducedImagesForDocument, Replacement.ISearchManager.RetrieveProducedImagesForDocument
 			Return RetryOnReLoginException(Function() MyBase.RetrieveProducedImagesForDocument(caseContextArtifactID, documentArtifactID))
 		End Function
 
-		Public Shadows Function RetrieveImagesByProductionIDsAndDocumentIDsForExport(ByVal caseContextArtifactID As Int32, ByVal productionArtifactIDs As Int32(), ByVal documentArtifactIDs As Int32()) As System.Data.DataSet Implements ISearchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport
+		Public Shadows Function RetrieveImagesByProductionIDsAndDocumentIDsForExport(ByVal caseContextArtifactID As Int32, ByVal productionArtifactIDs As Int32(), ByVal documentArtifactIDs As Int32()) As System.Data.DataSet Implements Export.ISearchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport, Replacement.ISearchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport
 			Return RetryOnReLoginException(Function() MyBase.RetrieveImagesByProductionIDsAndDocumentIDsForExport(caseContextArtifactID, productionArtifactIDs, documentArtifactIDs))
 		End Function
 
-		Public Shadows Function RetrieveViewsByContextArtifactID(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal isSearch As Boolean) As System.Data.DataSet Implements  ISearchManager.RetrieveViewsByContextArtifactID
+		Public Shadows Function RetrieveViewsByContextArtifactID(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal isSearch As Boolean) As System.Data.DataSet Implements  Export.ISearchManager.RetrieveViewsByContextArtifactID, Replacement.ISearchManager.RetrieveViewsByContextArtifactID
 			Return RetryOnReLoginException(Function() MyBase.RetrieveViewsByContextArtifactID(caseContextArtifactID, artifactTypeID, isSearch))
 		End Function
 
@@ -71,7 +71,7 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.RetrieveSearchFieldsForProduction(caseContextArtifactID, productionArtifactID))
 		End Function
 
-		Public Shadows Function RetrieveDefaultViewFieldsForIdList(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal artifactIdList As Int32(), ByVal isProductionList As Boolean) As System.Collections.Specialized.HybridDictionary
+		Public Shadows Function RetrieveDefaultViewFieldsForIdList(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal artifactIdList As Int32(), ByVal isProductionList As Boolean) As System.Collections.Specialized.HybridDictionary Implements Replacement.ISearchManager.RetrieveDefaultViewFieldsForIdList
 			Return RetryOnReLoginException(
 				Function()
 					Dim dt As System.Data.DataTable = MyBase.RetrieveDefaultViewFieldsForIdList(caseContextArtifactID, artifactTypeID, artifactIdList, isProductionList).Tables(0)
@@ -86,7 +86,7 @@ Namespace kCura.WinEDDS.Service
 				End Function)
 		End Function
 
-		Public Shadows Function RetrieveAllExportableViewFields(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As WinEDDS.ViewFieldInfo() Implements ISearchManager.RetrieveAllExportableViewFields
+		Public Shadows Function RetrieveAllExportableViewFields(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As WinEDDS.ViewFieldInfo() Implements Export.ISearchManager.RetrieveAllExportableViewFields, Replacement.ISearchManager.RetrieveAllExportableViewFields
 			Return RetryOnReLoginException(
 				Function()
 					Dim dt As System.Data.DataTable = MyBase.RetrieveAllExportableViewFields(caseContextArtifactID, artifactTypeID).Tables(0)
@@ -98,7 +98,7 @@ Namespace kCura.WinEDDS.Service
 				End Function)
 		End Function
 
-		Public Shadows Function RetrieveDefaultViewFieldIds(ByVal caseContextArtifactID As Int32, ByVal viewArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal isProduction As Boolean) As Int32() Implements ISearchManager.RetrieveDefaultViewFieldIds
+		Public Shadows Function RetrieveDefaultViewFieldIds(ByVal caseContextArtifactID As Int32, ByVal viewArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal isProduction As Boolean) As Int32() Implements Export.ISearchManager.RetrieveDefaultViewFieldIds, Replacement.ISearchManager.RetrieveDefaultViewFieldIds
 			Return RetryOnReLoginException(
 				Function()
 					Dim retval As New System.Collections.Generic.List(Of Int32)
@@ -109,7 +109,7 @@ Namespace kCura.WinEDDS.Service
 				End Function)
 		End Function
 
-		Public Shadows Function IsAssociatedSearchProviderAccessible(ByVal caseContextArtifactID As Int32, ByVal searchArtifactID As Int32) As Boolean()
+		Public Shadows Function IsAssociatedSearchProviderAccessible(ByVal caseContextArtifactID As Int32, ByVal searchArtifactID As Int32) As Boolean() Implements Replacement.ISearchManager.IsAssociatedSearchProviderAccessible
 			Return RetryOnReLoginException(Function() MyBase.IsAssociatedSearchProviderAccessible(caseContextArtifactID, searchArtifactID))
 		End Function
 

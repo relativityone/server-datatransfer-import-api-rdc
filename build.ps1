@@ -85,6 +85,10 @@ Get names of folders with Relativity installers in location '\\bld-pkgs\Packages
 .\build.ps1 CheckRdcDependencies
 Checks is RDC prerequisites (C++ redistributables) are valid.
 
+.EXAMPLE
+.\build.ps1 InstallDataTransferLegacyRap -TestTarget https://p-dv-vm-yourtestvm
+Downloads latest version of the DataTransfer.Legacy app and installs it in the application library.
+
 .PARAMETER Target
 The target to build (e.g. Build, Rebuild).
 

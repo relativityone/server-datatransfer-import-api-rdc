@@ -1,4 +1,5 @@
 Imports System.Threading.Tasks
+Imports kCura.WinEDDS.Service
 Imports Relativity.DataExchange.Service
 
 Namespace Relativity.Desktop.Client
@@ -516,7 +517,7 @@ Namespace Relativity.Desktop.Client
 				Me.Cursor = Cursors.Default
 				Exit Sub
 			End If
-			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(Await _application.GetCredentialsAsync(), _application.CookieContainer).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
+			Dim dt As System.Data.DataTable = ManagerFactory.CreateFieldQuery(Await _application.GetCredentialsAsync(), _application.CookieContainer, AddressOf _application.GetCorrelationId).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
 			For Each identifierRow As System.Data.DataRow In dt.Rows
 				If CType(identifierRow("FieldCategoryID"), FieldCategory) = FieldCategory.Identifier Then
 					_identifierFieldArtifactID = CType(identifierRow("ArtifactID"), Int32)

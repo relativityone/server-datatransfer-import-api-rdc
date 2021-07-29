@@ -1,10 +1,10 @@
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Service
-
 Namespace kCura.WinEDDS.Service
 	Public Class ProductionManager
 		Inherits kCura.EDDS.WebAPI.ProductionManagerBase.ProductionManager
 		Implements Export.IProductionManager
+		Implements Replacement.IProductionManager
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			Me.New(credentials, cookieContainer, AppSettings.Instance.WebApiServiceUrl)
@@ -28,21 +28,21 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Shadow Functions "
 
-		Public Shadows Function RetrieveBatesByProductionAndDocument(caseContextArtifactID As Int32, productionIds As Int32(), documentIds As Int32()) As Object()() Implements Export.IProductionManager.RetrieveBatesByProductionAndDocument
+		Public Shadows Function RetrieveBatesByProductionAndDocument(caseContextArtifactID As Int32, productionIds As Int32(), documentIds As Int32()) As Object()() Implements Export.IProductionManager.RetrieveBatesByProductionAndDocument, Replacement.IProductionManager.RetrieveBatesByProductionAndDocument
 			Dim retval As Object()() = RetryOnReLoginException(Function() MyBase.RetrieveBatesByProductionAndDocument(caseContextArtifactID, productionIds, documentIds))
 			ProductionDocumentBatesHelper.CleanupSerialization(retval)
 			Return retval
 		End Function
 
-		Public Shadows Function RetrieveProducedByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet Implements Export.IProductionManager.RetrieveProducedByContextArtifactID
+		Public Shadows Function RetrieveProducedByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet Implements Export.IProductionManager.RetrieveProducedByContextArtifactID, Replacement.IProductionManager.RetrieveProducedByContextArtifactID
 			Return RetryOnReLoginException(Function() MyBase.RetrieveProducedByContextArtifactID(caseContextArtifactID))
 		End Function
 
-		Public Shadows Function RetrieveImportEligibleByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet Implements Export.IProductionManager.RetrieveImportEligibleByContextArtifactID
+		Public Shadows Function RetrieveImportEligibleByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet Implements Export.IProductionManager.RetrieveImportEligibleByContextArtifactID, Replacement.IProductionManager.RetrieveImportEligibleByContextArtifactID
 			Return RetryOnReLoginException(Function() MyBase.RetrieveImportEligibleByContextArtifactID(caseContextArtifactID))
 		End Function
 
-		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32) As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo Implements Export.IProductionManager.Read
+		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32) As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo Implements Export.IProductionManager.Read, Replacement.IProductionManager.Read
 			Return RetryOnReLoginException(Function() MyBase.Read(caseContextArtifactID, productionArtifactID))
 		End Function
 
@@ -50,11 +50,11 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.RetrieveProducedByContextArtifactID(contextArtifactID))
 		End Function
 
-		Public Shadows Sub DoPostImportProcessing(ByVal contextArtifactID As Int32, ByVal productionArtifactID As Int32)
+		Public Shadows Sub DoPostImportProcessing(ByVal contextArtifactID As Int32, ByVal productionArtifactID As Int32) Implements Replacement.IProductionManager.DoPostImportProcessing
 			RetryOnReLoginException(Sub() MyBase.DoPostImportProcessing(contextArtifactID, productionArtifactID))
 		End Sub
 
-		Public Shadows Sub DoPreImportProcessing(ByVal contextArtifactID As Int32, ByVal productionArtifactID As Int32)
+		Public Shadows Sub DoPreImportProcessing(ByVal contextArtifactID As Int32, ByVal productionArtifactID As Int32) Implements Replacement.IProductionManager.DoPreImportProcessing
 			RetryOnReLoginException(Sub() MyBase.DoPreImportProcessing(contextArtifactID, productionArtifactID))
 		End Sub
 

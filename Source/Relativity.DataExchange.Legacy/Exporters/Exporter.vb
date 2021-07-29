@@ -65,6 +65,7 @@ Namespace kCura.WinEDDS
 		Private _syncLock As Object = New Object
 		Private _originalFileNameProvider As OriginalFileNameProvider
 		Private _cancelledByUser As Boolean
+		Private _correlationIdFunc As Func(Of String)
 
 #End Region
 
@@ -163,35 +164,38 @@ Namespace kCura.WinEDDS
 #Region "Constructors"
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
-		Public Sub New(exportFile As kCura.WinEDDS.ExportFile, 
-		               context As ProcessContext,
-		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
-			Me.New(exportFile, context, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig, RelativityLogger.Instance, CancellationToken.None)
+		Public Sub New(exportFile As kCura.WinEDDS.ExportFile,
+					   context As ProcessContext,
+					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
+					   correlationIdFunc As Func(Of String))
+			Me.New(exportFile, context, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig, RelativityLogger.Instance, CancellationToken.None, correlationIdFunc)
 		End Sub
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
 		Public Sub New(exportFile As kCura.WinEDDS.ExportFile,
-		               context As ProcessContext,
-		               serviceFactory As Service.Export.IServiceFactory,
-		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
-		               exportConfig As IExportConfig)
-			Me.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, RelativityLogger.Instance, CancellationToken.None)
+					   context As ProcessContext,
+					   serviceFactory As Service.Export.IServiceFactory,
+					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
+					   exportConfig As IExportConfig,
+					   correlationIdFunc As Func(Of String))
+			Me.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, RelativityLogger.Instance, CancellationToken.None, correlationIdFunc)
 		End Sub
 
 		Public Sub New(exportFile As kCura.WinEDDS.ExportFile,
-		               context As ProcessContext,
-		               serviceFactory As Service.Export.IServiceFactory,
-		               loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
-		               exportConfig As IExportConfig,
-		               logger As ILog,
-		               cancellationToken As CancellationToken)
-			_searchManager = serviceFactory.CreateSearchManager()
-			_productionManager = serviceFactory.CreateProductionManager()
-			_auditManager = serviceFactory.CreateAuditManager()
-			_fieldManager = serviceFactory.CreateFieldManager()
-			ExportManager = serviceFactory.CreateExportManager()
+					   context As ProcessContext,
+					   serviceFactory As Service.Export.IServiceFactory,
+					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
+					   exportConfig As IExportConfig,
+					   logger As ILog,
+					   cancellationToken As CancellationToken,
+					   correlationIdFunc As Func(Of String))
+			_searchManager = serviceFactory.CreateSearchManager(correlationIdFunc)
+			_productionManager = serviceFactory.CreateProductionManager(correlationIdFunc)
+			_auditManager = serviceFactory.CreateAuditManager(correlationIdFunc)
+			_fieldManager = serviceFactory.CreateFieldManager(correlationIdFunc)
+			ExportManager = serviceFactory.CreateExportManager(correlationIdFunc)
 
-			_fieldProviderCache = New FieldProviderCache(exportFile.Credential, exportFile.CookieContainer)
+			_fieldProviderCache = New FieldProviderCache(exportFile.Credential, exportFile.CookieContainer, correlationIdFunc)
 			_cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken)
 			_processContext = context
 			DocumentsExported = 0
@@ -200,8 +204,9 @@ Namespace kCura.WinEDDS
 			Settings.FolderPath = Me.Settings.FolderPath + "\"
 			ExportNativesToFileNamedFrom = exportFile.ExportNativesToFileNamedFrom
 			_loadFileFormatterFactory = loadFileFormatterFactory
-			_logger = If(logger, new NullLogger())
+			_logger = If(logger, New NullLogger())
 			_exportConfig = exportConfig
+			_correlationIdFunc = correlationIdFunc
 		End Sub
 
 #End Region
@@ -423,7 +428,7 @@ Namespace kCura.WinEDDS
 
 			Statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1))
 
-			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, _loadFileFormatterFactory)
+			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, _loadFileFormatterFactory, _correlationIdFunc)
 				Dim batch As IBatch = Nothing
 				Dim objectExportableSize As IObjectExportableSize = Nothing
 

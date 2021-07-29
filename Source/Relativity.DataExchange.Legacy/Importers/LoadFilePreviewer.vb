@@ -24,21 +24,23 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(args As LoadFile, _
-		               reporter As IIoReporter, _
-		               logger As ILog, _
-		               timeZoneOffset As Int32, _
-		               errorsOnly As Boolean, _
-		               doRetryLogic As Boolean, _
-		               tokenSource As CancellationTokenSource,
-		               Optional ByVal context As ProcessContext = Nothing)
-			MyBase.New(args, _
-			           reporter, _
-			           logger, _
-			           timeZoneOffset, _
-			           doRetryLogic, _
-			           True, _
-			           tokenSource)
+		Public Sub New(args As LoadFile,
+					   reporter As IIoReporter,
+					   logger As ILog,
+					   timeZoneOffset As Int32,
+					   errorsOnly As Boolean,
+					   doRetryLogic As Boolean,
+					   tokenSource As CancellationTokenSource,
+					   correlationIdFunc As Func(Of String),
+					   Optional ByVal context As ProcessContext = Nothing)
+			MyBase.New(args,
+					   reporter,
+					   logger,
+					   timeZoneOffset,
+					   doRetryLogic,
+					   True,
+					   tokenSource,
+					   correlationIdFunc)
 			_selectedCaseArtifactID = args.CaseInfo.ArtifactID
 			_errorsOnly = errorsOnly
 			_processContext = context
@@ -348,9 +350,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
-			Return New LoadFileReader(_settings, True)
+			Return New LoadFileReader(_settings, True, AddressOf GetCorrelationId)
 		End Function
-
-    End Class
+	End Class
 End Namespace
 

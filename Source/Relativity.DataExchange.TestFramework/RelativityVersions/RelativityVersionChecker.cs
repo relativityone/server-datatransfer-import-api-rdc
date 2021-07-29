@@ -99,7 +99,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 			{
 				IRunningContext runningContext = new RunningContext();
 				ImportCredentialManager.WebServiceURL = testParameters.RelativityWebApiUrl.AbsoluteUri;
-				ImportCredentialManager.GetCredentials(testParameters.RelativityUserName, testParameters.RelativityPassword, runningContext);
+				ImportCredentialManager.GetCredentials(testParameters.RelativityUserName, testParameters.RelativityPassword, runningContext, () => nameof(RelativityVersionChecker));
 				cachedRelativityVersion = runningContext.RelativityVersion;
 				Console.WriteLine($"Relativity version of {ImportCredentialManager.WebServiceURL} is {cachedRelativityVersion}");
 			}

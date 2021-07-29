@@ -11,6 +11,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using System.Linq;
 	using System.Net;
 
+	using kCura.WinEDDS.Service;
+
 	using Relativity.DataExchange.TestFramework;
 
 	public static class FileExportHelper
@@ -36,7 +38,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		private static kCura.WinEDDS.Service.Export.ISearchManager CreateExportSearchManager()
 		{
 			var credentials = new NetworkCredential(AssemblySetup.TestParameters.RelativityUserName, AssemblySetup.TestParameters.RelativityPassword);
-			return new kCura.WinEDDS.Service.SearchManager(credentials, new CookieContainer());
+			return ManagerFactory.CreateSearchManager(credentials, new CookieContainer(), () => "TestCorrelationId");
 		}
 	}
 }

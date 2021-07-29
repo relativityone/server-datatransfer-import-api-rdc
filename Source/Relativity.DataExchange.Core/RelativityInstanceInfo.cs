@@ -12,7 +12,7 @@ namespace Relativity.DataExchange
 	/// <summary>
 	/// Represents a class object that contains the Relativity instance information. This class cannot be inherited.
 	/// </summary>
-	internal sealed class RelativityInstanceInfo
+	public sealed class RelativityInstanceInfo
 	{
 		private Uri host;
 		private Uri webApiServiceUrl;

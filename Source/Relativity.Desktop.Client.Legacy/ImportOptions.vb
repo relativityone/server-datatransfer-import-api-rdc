@@ -1,4 +1,5 @@
 ﻿Imports kCura.WinEDDS
+Imports kCura.WinEDDS.Service
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Service
 Imports Relativity.Desktop.Client
@@ -185,7 +186,7 @@ Public Class ImportOptions
 
 	Private Async Function SetCaseInfo(ByVal caseID As String) As Task
 		Try
-			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Await Global.Relativity.Desktop.Client.Application.Instance.GetCredentialsAsync(), Global.Relativity.Desktop.Client.Application.Instance.CookieContainer)
+			Dim caseManager As kCura.WinEDDS.Service.Replacement.ICaseManager = ManagerFactory.CreateCaseManager(Await Global.Relativity.Desktop.Client.Application.Instance.GetCredentialsAsync(), Global.Relativity.Desktop.Client.Application.Instance.CookieContainer, AddressOf Global.Relativity.Desktop.Client.Application.Instance.GetCorrelationId)
 			SelectedCaseInfo = caseManager.Read(Int32.Parse(caseID))
 		Catch ex As System.Exception
 			Throw New CaseArtifactIdException(caseID, ex)
@@ -323,7 +324,7 @@ Public Class ImportOptions
 					Dim deserializedSettings As ExportFile = settingsHelper.DeserializeExportFile(xml)
 					Dim artifactTypeID As Int32 = 0
 					If Not String.IsNullOrWhiteSpace(deserializedSettings.ObjectTypeName) Then
-						Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer)
+						Dim objectTypeManager As kCura.WinEDDS.Service.Replacement.IObjectTypeManager = ManagerFactory.CreateObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer, AddressOf _application.GetCorrelationId)
 						Dim uploadableObjectTypes As DataRow() = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Select()
 						Dim selectedObjectType As DataRow = uploadableObjectTypes.FirstOrDefault(Function(row) deserializedSettings.ObjectTypeName.Equals(row("Name").ToString(), StringComparison.InvariantCultureIgnoreCase))
 						If selectedObjectType IsNot Nothing Then
@@ -458,7 +459,7 @@ Public Class ImportOptions
 		If value Is Nothing OrElse value = "" Then
 			DestinationFolderID = SelectedCaseInfo.RootFolderID
 		Else
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Await Global.Relativity.Desktop.Client.Application.Instance.GetCredentialsAsync(), Global.Relativity.Desktop.Client.Application.Instance.CookieContainer)
+			Dim folderManager As kCura.WinEDDS.Service.Replacement.IFolderManager = ManagerFactory.CreateFolderManager(Await Global.Relativity.Desktop.Client.Application.Instance.GetCredentialsAsync(), Global.Relativity.Desktop.Client.Application.Instance.CookieContainer, AddressOf Global.Relativity.Desktop.Client.Application.Instance.GetCorrelationId)
 			Dim folderExists As Boolean = False
 			Try
 				folderExists = folderManager.Exists(SelectedCaseInfo.ArtifactID, Int32.Parse(value))

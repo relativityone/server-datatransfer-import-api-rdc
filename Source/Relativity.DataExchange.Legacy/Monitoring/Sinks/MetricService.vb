@@ -1,6 +1,6 @@
 ﻿Imports System.Collections.Generic
-Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Logger
+Imports Relativity.DataExchange.Service
 Imports Relativity.Services.ServiceProxy
 
 Namespace Monitoring.Sinks
@@ -23,10 +23,13 @@ Namespace Monitoring.Sinks
 		''' Create all sinks and setup their configuration
 		''' </summary>
 		''' <param name="metricSinkConfig">Sinks configuration.</param>
-		''' <param name="serviceFactory">Used to create proxies of Relativity Services.</param>
-		Public Sub New(metricSinkConfig As IMetricSinkConfig, serviceFactory As IServiceFactory)
+		''' <param name="keplerProxy">Kepler proxy.</param>
+		Public Sub New(metricSinkConfig As IMetricSinkConfig, keplerProxy As IKeplerProxy)
 			Me.MetricSinkConfig = metricSinkConfig
-			_sinks = New List(Of IMetricSink) From {New MetricSinkApm(serviceFactory, Me.MetricSinkConfig.SendApmMetrics), New MetricSinkSum(serviceFactory, New SumMetricFormatter, Me.MetricSinkConfig.SendSumMetrics), New MetricSinkRelativityLogging(RelativityLogger.Instance.IsEnabled)}
+			_sinks = New List(Of IMetricSink) From {
+				New MetricSinkApm(keplerProxy, Me.MetricSinkConfig.SendApmMetrics),
+				New MetricSinkSum(keplerProxy, New SumMetricFormatter, Me.MetricSinkConfig.SendSumMetrics),
+				New MetricSinkRelativityLogging(RelativityLogger.Instance.IsEnabled)}
 		End Sub
 
 		''' <inheritdoc/>
@@ -43,6 +46,6 @@ Namespace Monitoring.Sinks
 		End Sub
 
 		''' <inheritdoc/>
-		Public Readonly Property MetricSinkConfig As IMetricSinkConfig Implements IMetricService.MetricSinkConfig
+		Public ReadOnly Property MetricSinkConfig As IMetricSinkConfig Implements IMetricService.MetricSinkConfig
 	End Class
-End NameSpace
+End Namespace

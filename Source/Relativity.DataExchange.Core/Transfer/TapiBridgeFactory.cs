@@ -9,8 +9,11 @@
 
 namespace Relativity.DataExchange.Transfer
 {
+	using System;
 	using System.Threading;
 
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Service.WebApiVsKeplerSwitch;
 	using Relativity.Logging;
 	using Relativity.Transfer;
 
@@ -20,17 +23,31 @@ namespace Relativity.DataExchange.Transfer
 	internal static class TapiBridgeFactory
 	{
 		/// <summary>
+		/// Gets or sets UseLegacyWebApiInTests. Do not use. It is for testing purpose only.
+		/// </summary>
+		internal static bool? UseLegacyWebApiInTests { get; set; }
+
+		/// <summary>
 		/// Creates a <see cref="UploadTapiBridge2"/> instance that supports native file upload transfers.
 		/// </summary>
 		/// <param name="parameters">
-		/// The native file transfer parameters.
+		///     The native file transfer parameters.
 		/// </param>
 		/// <param name="logger">
-		/// The Relativity logging instance.
+		///     The Relativity logging instance.
 		/// </param>
 		/// <param name="authenticationTokenProvider">Auth token provider.</param>
 		/// <param name="token">
-		/// The cancellation token.
+		///     The cancellation token.
+		/// </param>
+		/// <param name="getCorrelationId">
+		///     Function to obtain correlationId.
+		/// </param>
+		/// <param name="webApiVsKeplerFactory">
+		///     IWebApiVsKeplerFactory.
+		/// </param>
+		/// <param name="relativityManagerServiceFactory">
+		///     Factory to create Relativity service manager.
 		/// </param>
 		/// <returns>
 		/// The <see cref="UploadTapiBridge2"/> instance.
@@ -39,29 +56,67 @@ namespace Relativity.DataExchange.Transfer
 			UploadTapiBridgeParameters2 parameters,
 			ILog logger,
 			IAuthenticationTokenProvider authenticationTokenProvider,
-			CancellationToken token)
+			CancellationToken token,
+			Func<string> getCorrelationId,
+			IWebApiVsKeplerFactory webApiVsKeplerFactory,
+			IRelativityManagerServiceFactory relativityManagerServiceFactory)
 		{
-			return new UploadTapiBridge2(parameters, logger, authenticationTokenProvider, token);
+			var useLegacyWebApi = UseLegacyWebApi(parameters, webApiVsKeplerFactory, getCorrelationId);
+			return new UploadTapiBridge2(parameters, logger, authenticationTokenProvider, token, useLegacyWebApi, relativityManagerServiceFactory);
 		}
 
 		/// <summary>
 		/// Creates a <see cref="DownloadTapiBridge2"/> instance that supports download transfers.
 		/// </summary>
 		/// <param name="parameters">
-		/// The native file transfer parameters.
+		///     The native file transfer parameters.
 		/// </param>
 		/// <param name="logger">
-		/// The Relativity logging instance.
+		///     The Relativity logging instance.
 		/// </param>
 		/// <param name="token">
-		/// The cancellation token.
+		///     The cancellation token.
+		/// </param>
+		/// <param name="getCorrelationId">
+		///     Function to obtain correlationId.
+		/// </param>
+		/// <param name="webApiVsKeplerFactory">
+		///     IWebApiVsKeplerFactory.
+		/// </param>
+		/// <param name="relativityManagerServiceFactory">
+		///     Factory to create Relativity service manager.
 		/// </param>
 		/// <returns>
 		/// The <see cref="DownloadTapiBridge2"/> instance.
 		/// </returns>
-		public static DownloadTapiBridge2 CreateDownloadBridge(DownloadTapiBridgeParameters2 parameters, ILog logger, CancellationToken token)
+		public static DownloadTapiBridge2 CreateDownloadBridge(
+			DownloadTapiBridgeParameters2 parameters,
+			ILog logger,
+			CancellationToken token,
+			Func<string> getCorrelationId,
+			IWebApiVsKeplerFactory webApiVsKeplerFactory,
+			IRelativityManagerServiceFactory relativityManagerServiceFactory)
 		{
-			return new DownloadTapiBridge2(parameters, logger, token);
+			bool useLegacyWebApi = UseLegacyWebApi(parameters, webApiVsKeplerFactory, getCorrelationId);
+			return new DownloadTapiBridge2(parameters, logger, token, useLegacyWebApi, relativityManagerServiceFactory);
+		}
+
+		private static bool UseLegacyWebApi(
+			TapiBridgeParameters2 parameters,
+			IWebApiVsKeplerFactory webApiVsKeplerFactory,
+			Func<string> getCorrelationId)
+		{
+			// In unit tests we want to return hardcoded value.
+			if (UseLegacyWebApiInTests.HasValue)
+			{
+				return UseLegacyWebApiInTests.Value;
+			}
+
+			IWebApiVsKepler webApiVsKepler = webApiVsKeplerFactory.Create(
+				new Uri(AppSettings.Instance.WebApiServiceUrl),
+				parameters.Credentials,
+				getCorrelationId);
+			return !webApiVsKepler.UseKepler();
 		}
 	}
 }

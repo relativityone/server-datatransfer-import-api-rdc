@@ -94,14 +94,17 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				TargetPath = targetPath,
 			};
 
-			ITapiObjectService objectService = new TapiObjectService();
+			bool useLegacyWebApi = false;
+			ITapiObjectService objectService = new TapiObjectService(new RelativityManagerServiceFactory(), useLegacyWebApi);
 			objectService.SetTapiClient(parameters, TapiClient.Web);
 
 			UploadTapiBridge2 bridge = new UploadTapiBridge2(
 				parameters,
 				new TestNullLogger(),
 				new NullAuthTokenProvider(),
-				CancellationToken.None);
+				CancellationToken.None,
+				useLegacyWebApi,
+				new RelativityManagerServiceFactory());
 			return bridge;
 		}
 

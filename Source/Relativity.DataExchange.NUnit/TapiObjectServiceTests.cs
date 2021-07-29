@@ -13,6 +13,7 @@ namespace Relativity.DataExchange.NUnit
 
 	using global::NUnit.Framework;
 
+	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Transfer;
@@ -20,10 +21,17 @@ namespace Relativity.DataExchange.NUnit
 	/// <summary>
 	/// Represents <see cref="TapiObjectService"/> tests.
 	/// </summary>
-	[TestFixture]
+	[TestFixture(false)]
+	[TestFixture(true)]
 	public class TapiObjectServiceTests
 	{
+		private readonly bool useLegacyWebApi;
 		private ITapiObjectService service;
+
+		public TapiObjectServiceTests(bool useLegacyWebApi)
+		{
+			this.useLegacyWebApi = useLegacyWebApi;
+		}
 
 		/// <summary>
 		/// The test setup.
@@ -31,7 +39,7 @@ namespace Relativity.DataExchange.NUnit
 		[SetUp]
 		public void Setup()
 		{
-			this.service = new TapiObjectService(new NullAuthTokenProvider());
+			this.service = new TapiObjectService(new NullAuthTokenProvider(), new RelativityManagerServiceFactory(), this.useLegacyWebApi);
 		}
 
 		[Test]
@@ -46,12 +54,12 @@ namespace Relativity.DataExchange.NUnit
 		{
 			if (!string.IsNullOrEmpty(expected))
 			{
-				string name = this.service.GetClientDisplayName(new Guid(clientId));
+				string name = TapiObjectService.GetClientDisplayName(new Guid(clientId));
 				Assert.That(name, Is.EqualTo(expected));
 			}
 			else
 			{
-				Assert.Throws<ArgumentException>(() => this.service.GetClientDisplayName(new Guid(clientId)));
+				Assert.Throws<ArgumentException>(() => TapiObjectService.GetClientDisplayName(new Guid(clientId)));
 			}
 		}
 

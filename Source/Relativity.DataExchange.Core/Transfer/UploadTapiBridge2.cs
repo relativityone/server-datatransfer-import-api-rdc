@@ -14,6 +14,7 @@ namespace Relativity.DataExchange.Transfer
 
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Resources;
+	using Relativity.DataExchange.Service;
 	using Relativity.Logging;
 	using Relativity.Transfer;
 	using Relativity.Transfer.Aspera;
@@ -37,17 +38,29 @@ namespace Relativity.DataExchange.Transfer
 		/// Initializes a new instance of the <see cref="UploadTapiBridge2"/> class.
 		/// </summary>
 		/// <param name="parameters">
-		/// The native file transfer parameters.
+		///     The native file transfer parameters.
 		/// </param>
 		/// <param name="logger">
-		/// The Relativity logger instance.
+		///     The Relativity logger instance.
 		/// </param>
 		/// <param name="authTokenProvider">Authentication token provider.</param>
 		/// <param name="token">
-		/// The cancellation token.
+		///     The cancellation token.
 		/// </param>
-		public UploadTapiBridge2(UploadTapiBridgeParameters2 parameters, ILog logger, IAuthenticationTokenProvider authTokenProvider, CancellationToken token)
-			: this(new TapiObjectService(authTokenProvider), parameters, logger, token)
+		/// <param name="useLegacyWebApi">
+		/// If true use WebApi, otherwise use Kepler.
+		/// </param>
+		/// <param name="relativityManagerServiceFactory">
+		///     Factory to create Relativity service manager.
+		/// </param>
+		public UploadTapiBridge2(
+			UploadTapiBridgeParameters2 parameters,
+			ILog logger,
+			IAuthenticationTokenProvider authTokenProvider,
+			CancellationToken token,
+			bool useLegacyWebApi,
+			IRelativityManagerServiceFactory relativityManagerServiceFactory)
+			: this(new TapiObjectService(authTokenProvider, relativityManagerServiceFactory, useLegacyWebApi), parameters, logger, useLegacyWebApi, token)
 		{
 		}
 
@@ -63,6 +76,9 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="logger">
 		/// The Relativity logger instance.
 		/// </param>
+		/// <param name="useLegacyWebApi">
+		/// If true use WebApi, otherwise use Kepler.
+		/// </param>
 		/// <param name="token">
 		/// The cancellation token.
 		/// </param>
@@ -70,8 +86,9 @@ namespace Relativity.DataExchange.Transfer
 			ITapiObjectService factory,
 			UploadTapiBridgeParameters2 parameters,
 			ILog logger,
+			bool useLegacyWebApi,
 			CancellationToken token)
-			: this(factory, parameters, null, logger, token)
+			: this(factory, parameters, null, logger, useLegacyWebApi, token)
 		{
 		}
 
@@ -90,6 +107,9 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="logger">
 		/// The Relativity logger instance.
 		/// </param>
+		/// <param name="useLegacyWebApi">
+		/// If true use WebApi, otherwise use Kepler.
+		/// </param>
 		/// <param name="token">
 		/// The cancellation token.
 		/// </param>
@@ -98,8 +118,9 @@ namespace Relativity.DataExchange.Transfer
 			UploadTapiBridgeParameters2 parameters,
 			TransferContext context,
 			ILog logger,
+			bool useLegacyWebApi,
 			CancellationToken token)
-			: base(factory, parameters, TransferDirection.Upload, context, logger, token)
+			: base(factory, parameters, TransferDirection.Upload, context, logger, useLegacyWebApi, token)
 		{
 			if (parameters == null)
 			{

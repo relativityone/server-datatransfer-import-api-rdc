@@ -13,9 +13,14 @@ namespace Relativity.DataExchange.Import.NUnit
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
+	using kCura.WinEDDS.Service;
+
 	using Moq;
 
 	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Service.WebApiVsKeplerSwitch;
+	using Relativity.DataExchange.Transfer;
+	using Relativity.Transfer;
 
 	/// <summary>
 	/// Represents <see cref="BulkLoadFileImporter"/> tests.
@@ -61,13 +66,35 @@ namespace Relativity.DataExchange.Import.NUnit
 		[TestCase("/some_file.txt", false, false)]
 		public void MetadataFileCountShouldBe0IfBatchCounterIsNot0(string outputNativePath, bool shouldCompleteJob, bool lastRun)
 		{
+			TapiBridgeFactory.UseLegacyWebApiInTests = false;
+
 			this.Setup();
 			AppSettings.Instance.IoErrorNumberOfRetries = 1;
 			AppSettings.Instance.IoErrorWaitTimeInSeconds = 1;
 			this.importer.SetTapiBridges();
 			this.importer.SetBatchCounter(20);
-			Assert.Throws<WebException>(() =>
-				this.importer.PushNativeBatchInvoker(outputNativePath, shouldCompleteJob, lastRun));
+
+			try
+			{
+				this.importer.PushNativeBatchInvoker(outputNativePath, shouldCompleteJob, lastRun);
+			}
+			catch (WebException)
+			{
+				// This exception is thrown when when WebAPI is used. RelativityManagerService.GetRelativityUrl
+				// tries to access WebAPI and it fails.
+			}
+			catch (TransferException ex) when (ex.InnerException?.InnerException is WebException)
+			{
+				// This exception is thrown when Kepler services are used. KeplerRelativityManagerService.GetRelativityUrl
+				// does not make a call to a Relativity, so it does not fail. Exception is thrown when TAPI tries to
+				// make a call to the Relativity.
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail($"Unexpected exception was thrown: {ex.Message}");
+				throw;
+			}
+
 			Assert.AreEqual(0, this.importer.GetMetadataFilesCount);
 		}
 
@@ -284,8 +311,13 @@ namespace Relativity.DataExchange.Import.NUnit
 
 		protected override void OnSetup()
 		{
+			var webApiVsKeplerMock = new Mock<IWebApiVsKepler>();
+			webApiVsKeplerMock.Setup(x => x.UseKepler()).Returns(true);
+			ManagerFactory._webApiVsKepler = webApiVsKeplerMock.Object;
+
 			this.args = new LoadFile();
 			this.args.CaseInfo = new Relativity.DataExchange.Service.CaseInfo { RootArtifactID = -1 };
+			this.args.Credentials = new NetworkCredential();
 			this.importer = new MockBulkLoadFileImporter(
 				this.args,
 				this.Context,

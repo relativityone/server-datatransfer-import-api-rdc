@@ -5,6 +5,9 @@ Imports System.Net.Security
 Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Credentials
+Imports kCura.WinEDDS.Service
+Imports kCura.WinEDDS.Service.Kepler
+Imports kCura.WinEDDS.Service.Replacement
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Export
@@ -15,6 +18,7 @@ Imports Relativity.DataExchange.Transfer
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
+Imports Relativity.Services.Exceptions
 Imports Relativity.Transfer
 
 Namespace Relativity.Desktop.Client
@@ -64,6 +68,7 @@ Namespace Relativity.Desktop.Client
 		Private _logger As Relativity.Logging.ILog
 		Private ReadOnly oAuth2ImplicitCredentialsHelper As Lazy(Of OAuth2ImplicitCredentialsHelper) = New Lazy(Of OAuth2ImplicitCredentialsHelper)(AddressOf CreateOAuth2ImplicitCredentialsHelper)
 		Private _metricService As IMetricService
+		Private _appInstanceId As Guid = Guid.NewGuid()
 #End Region
 
 #Region "Properties"
@@ -82,7 +87,7 @@ Namespace Relativity.Desktop.Client
 
 		Private Async Function GetFieldProviderCacheAsync() As Task(Of IFieldProviderCache)
 			If (_fieldProviderCache Is Nothing) Then
-				_fieldProviderCache = New FieldProviderCache(Await GetCredentialsAsync(), _CookieContainer)
+				_fieldProviderCache = New FieldProviderCache(Await GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId)
 			End If
 			Return _fieldProviderCache
 		End Function
@@ -121,7 +126,7 @@ Namespace Relativity.Desktop.Client
 		End Property
 
 		Public Async Function RefreshSelectedCaseInfoAsync(Optional ByVal caseInfo As CaseInfo = Nothing) As Task
-			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Await Me.GetCredentialsAsync(), _CookieContainer)
+			Dim caseManager As kCura.WinEDDS.Service.Replacement.ICaseManager = ManagerFactory.CreateCaseManager(Await Me.GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId)
 			If caseInfo Is Nothing Then
 				_selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
 			Else
@@ -150,14 +155,14 @@ Namespace Relativity.Desktop.Client
 		End Property
 
 		Public Async Function GetSendLoadNotificationEmailEnabledAsync() As Task(Of Boolean)
-			Return New kCura.WinEDDS.Service.RelativityManager(Await Me.GetCredentialsAsync, Me.CookieContainer).IsImportEmailNotificationEnabled
+			Return ManagerFactory.CreateRelativityManager(Await Me.GetCredentialsAsync, Me.CookieContainer, AddressOf GetCorrelationId).IsImportEmailNotificationEnabled
 		End Function
 
 		Public Async Function CurrentFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Task(Of DocumentFieldCollection)
 			Try
 				Return (Await GetFieldProviderCacheAsync()).CurrentFields(artifactTypeID, SelectedCaseInfo.ArtifactID, refresh)
 			Catch ex As System.Exception
-				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+				If IsReLoginRequired(ex) Then
 					NewLogin(False)
 				Else
 					Throw
@@ -170,7 +175,7 @@ Namespace Relativity.Desktop.Client
 			Try
 				Return (Await GetFieldProviderCacheAsync()).CurrentNonFileFields(artifactTypeID, SelectedCaseInfo.ArtifactID, refresh)
 			Catch ex As System.Exception
-				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+				If IsReLoginRequired(ex) Then
 					NewLogin(False)
 				Else
 					Throw
@@ -276,10 +281,10 @@ Namespace Relativity.Desktop.Client
 		Friend Async Function IsConnected() As Task(Of Boolean)
 			Dim retval = False
 			Try
-				Dim userManager As New kCura.WinEDDS.Service.UserManager(Await GetCredentialsAsync(), _CookieContainer)
+				Dim userManager As kCura.WinEDDS.Service.Replacement.IUserManager = ManagerFactory.CreateUserManager(Await GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId)
 				retval = userManager.LoggedIn()
 			Catch ex As System.Exception
-				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+				If IsReLoginRequired(ex) Then
 					NewLogin(False)
 				Else
 					Throw
@@ -332,7 +337,7 @@ Namespace Relativity.Desktop.Client
 				MsgBox("The key field [" & fieldName & "] is unmapped.  Please map it to continue", MsgBoxStyle.Critical, "Relativity Desktop Client")
 				Return isIdentifierMapped
 			End If
-			If Not forPreview AndAlso Not New kCura.WinEDDS.Service.FieldQuery(Await GetCredentialsAsync(), _CookieContainer).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, loadFile.IdentityFieldId) Then
+			If Not forPreview AndAlso Not ManagerFactory.CreateFieldQuery(Await GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, loadFile.IdentityFieldId) Then
 				Return MsgBox("There is no SQL index on the selected Overlay Identifier field.  " & vbNewLine & "Performing a load on an un-indexed SQL field will be drastically slower, " & vbNewLine & "and may negatively impact Relativity performance for all users." & vbNewLine & "Contact your SQL Administrator to have an index applied to the selected Overlay Identifier field.", MsgBoxStyle.OkCancel, "Relativity Desktop Client") = MsgBoxResult.Ok
 			Else
 				Return True
@@ -357,7 +362,7 @@ Namespace Relativity.Desktop.Client
 			Else
 				id = imageArgs.IdentityFieldId
 			End If
-			If Not forPreview AndAlso Not New kCura.WinEDDS.Service.FieldQuery(Await GetCredentialsAsync(), _CookieContainer).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, id) Then
+			If Not forPreview AndAlso Not ManagerFactory.CreateFieldQuery(Await GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, id) Then
 				Return MsgBox("There is no SQL index on the selected Overlay Identifier field.  " & vbNewLine & "Performing a load on an un-indexed SQL field will be drastically slower, " & vbNewLine & "and may negatively impact Relativity performance for all users." & vbNewLine & "Contact your SQL Administrator to have an index applied to the selected Overlay Identifier field.", MsgBoxStyle.OkCancel) = MsgBoxResult.Ok
 			Else
 				Return True
@@ -370,11 +375,11 @@ Namespace Relativity.Desktop.Client
 			Dim name As String = InputBox("Enter Folder Name", "Relativity Review")
 			If name <> String.Empty Then
 				Try
-					Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Await Me.GetCredentialsAsync(), _CookieContainer)
+					Dim folderManager As kCura.WinEDDS.Service.Replacement.IFolderManager = ManagerFactory.CreateFolderManager(Await Me.GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId)
 					Dim folderID As Int32 = folderManager.Create(Me.SelectedCaseInfo.ArtifactID, parentFolderID, name)
 					RaiseEvent OnEvent(New NewFolderEvent(parentFolderID, folderID, name))
 				Catch ex As System.Exception
-					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+					If IsReLoginRequired(ex) Then
 						NewLogin(False)
 					Else
 						Throw
@@ -400,7 +405,7 @@ Namespace Relativity.Desktop.Client
 
 		Public Async Function GetCaseFolders(ByVal caseID As Int32) As Task(Of System.Data.DataSet)
 			Try
-				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Await GetCredentialsAsync(), _CookieContainer)
+				Dim folderManager As kCura.WinEDDS.Service.Replacement.IFolderManager = ManagerFactory.CreateFolderManager(Await Me.GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId)
 				Dim retval As System.Data.DataSet = folderManager.RetrieveIntitialChunk(caseID)
 				Dim dt As System.Data.DataTable = retval.Tables(0)
 				Dim addOn As System.Data.DataTable
@@ -414,7 +419,7 @@ Namespace Relativity.Desktop.Client
 				Loop Until addOn Is Nothing OrElse addOn.Rows.Count = 0
 				Return retval
 			Catch ex As System.Exception
-				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+				If IsReLoginRequired(ex) Then
 					NewLogin(False)
 				Else
 					Throw
@@ -429,7 +434,7 @@ Namespace Relativity.Desktop.Client
 			Dim cache As IFieldProviderCache = Await GetFieldProviderCacheAsync()
 			cache.ResetCache()
 			Try
-				Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Await GetCredentialsAsync(), _CookieContainer)
+				Dim csMgr As kCura.WinEDDS.Service.Replacement.ICaseManager = ManagerFactory.CreateCaseManager(Await GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId)
 				_documentRepositoryList = csMgr.GetAllDocumentFolderPaths()
 				Dim dataset As System.Data.DataSet = csMgr.RetrieveAll()
 
@@ -456,7 +461,7 @@ Namespace Relativity.Desktop.Client
 
 				Return dataset
 			Catch ex As System.Exception
-				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+				If IsReLoginRequired(ex) Then
 					NewLogin(False)
 				Else
 					Throw
@@ -492,38 +497,50 @@ Namespace Relativity.Desktop.Client
 					End If
 				End Using
 			Catch MrSoapy As SoapException
-				Select Case MrSoapy.Detail("ExceptionType").InnerText
-					Case "Relativity.Core.Exception.WorkspaceVersion"
-						Dim x As New ErrorDialog With {.Text = "Relativity Desktop Client Error"}
-						_logger.LogError(MrSoapy, "Soap exception")
-						x.Initialize(MrSoapy)
-						If x.ShowDialog() <> DialogResult.OK Then
-							Environment.Exit(1)
-						End If
-					Case "kCura.EDDS.WebAPI.ServiceBase.NeedToReLoginException"
-						NewLogin(True)
-					Case Else
-						Me.ChangeWebServiceURL()
-				End Select
+				If IsReLoginRequired(MrSoapy) Then
+					NewLogin(True)
+				Else 
+					Select Case MrSoapy.Detail("ExceptionType").InnerText
+						Case "Relativity.Core.Exception.WorkspaceVersion"
+							Dim x As New ErrorDialog With {.Text = "Relativity Desktop Client Error"}
+							_logger.LogError(MrSoapy, "Soap exception")
+							x.Initialize(MrSoapy)
+							If x.ShowDialog() <> DialogResult.OK Then
+								Environment.Exit(1)
+							End If
+						Case "kCura.EDDS.WebAPI.ServiceBase.NeedToReLoginException"
+							NewLogin(True)
+						Case Else
+							Me.ChangeWebServiceURL()
+					End Select
+				End If
 			End Try
 		End Function
 
 		Public Async Function GetConnectionStatus() As Task(Of String)
-			Dim tapiObjectService As ITapiObjectService = New TapiObjectService()
-			Dim parameters = CreateTapiParametersAsync()
-			Dim clientName = Await tapiObjectService.GetWorkspaceClientDisplayNameAsync(Await parameters)
+			Dim parameters = Await CreateTapiParametersAsync()
+			Dim useLegacyWebApi As Boolean = Me.UseLegacyWebApi(parameters.Credentials)
+			Dim tapiObjectService As ITapiObjectService = New TapiObjectService(New RelativityManagerServiceFactory, useLegacyWebApi)
+			Dim clientName = Await tapiObjectService.GetWorkspaceClientDisplayNameAsync(parameters)
 			Return clientName
 		End Function
 
 		Public Async Function GetConnectionMode() As Task(Of Guid)
-			Dim tapiObjectService As ITapiObjectService = New TapiObjectService()
-			Dim parameters = CreateTapiParametersAsync()
-			Dim clientName = Await tapiObjectService.GetWorkspaceClientIdAsync(Await parameters)
+			Dim parameters = Await CreateTapiParametersAsync()
+			Dim useLegacyWebApi As Boolean = Me.UseLegacyWebApi(parameters.Credentials)
+			Dim tapiObjectService As ITapiObjectService = New TapiObjectService(New RelativityManagerServiceFactory, useLegacyWebApi)
+			Dim clientName = Await tapiObjectService.GetWorkspaceClientIdAsync(parameters)
 			Return clientName
 		End Function
 
 		Public Async Function IsUsingAsperaConnectionMode() As Task(Of Boolean)
 			Return (Await GetConnectionMode().ConfigureAwait(False)) = Guid.Parse(TransferClientConstants.AsperaClientId)
+		End Function
+
+		Private Function UseLegacyWebApi(ByVal credentials As NetworkCredential) As Boolean
+			Dim webApiVsKeplerFactory = New WebApiVsKeplerFactory(Me._logger)
+			Dim webApiVsKepler = webApiVsKeplerFactory.Create(New Uri(AppSettings.Instance.WebApiServiceUrl), credentials, AddressOf GetCorrelationId)
+			Return Not webApiVsKepler.UseKepler()
 		End Function
 
 		Private Async Function CreateTapiParametersAsync() As Task(Of TapiBridgeParameters2)
@@ -555,7 +572,7 @@ Namespace Relativity.Desktop.Client
 		Public Function CertificateTrusted() As Boolean
 			Dim isCertificateTrusted As Boolean = True
 			Dim cred As NetworkCredential = DirectCast(CredentialCache.DefaultCredentials, NetworkCredential)
-			Dim relativityManager As New Service.RelativityManager(cred, _CookieContainer)
+			Dim relativityManager As Service.Replacement.IRelativityManager = ManagerFactory.CreateRelativityManager(cred, _CookieContainer, AddressOf GetCorrelationId)
 
 			Try
 				' Only if this line bombs do we say the cert is untrusted
@@ -572,7 +589,7 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Public Async Function IsAssociatedSearchProviderAccessible(ByVal caseContextArtifactID As Int32, ByVal searchArtifactID As Int32) As Task(Of Boolean)
-			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Await Me.GetCredentialsAsync(), Me.CookieContainer)
+			Dim searchManager As ISearchManager = ManagerFactory.CreateSearchManager(Await Me.GetCredentialsAsync(), Me.CookieContainer, AddressOf GetCorrelationId)
 			Dim values As Boolean() = searchManager.IsAssociatedSearchProviderAccessible(caseContextArtifactID, searchArtifactID)
 			Dim isSearchProviderValid As Boolean = values(0) And values(1)
 			Dim message As New System.Text.StringBuilder
@@ -585,7 +602,7 @@ Namespace Relativity.Desktop.Client
 
 #Region "Utility"
 		Public Async Function AllUploadableArtifactTypes() As Task(Of System.Data.DataTable)
-			Return New kCura.WinEDDS.Service.ObjectTypeManager(Await Me.GetCredentialsAsync(), Me.CookieContainer).RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0)
+			Return ManagerFactory.CreateObjectTypeManager(Await Me.GetCredentialsAsync(), Me.CookieContainer, AddressOf GetCorrelationId).RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0)
 		End Function
 
 		Public Async Function HasFileField(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Task(Of Boolean)
@@ -601,7 +618,7 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Public Async Function GetObjectTypeName(ByVal artifactTypeID As Int32) As Task(Of String)
-			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Await Me.GetCredentialsAsync(), Me.CookieContainer)
+			Dim objectTypeManager As kCura.WinEDDS.Service.Replacement.IObjectTypeManager = ManagerFactory.CreateObjectTypeManager(Await Me.GetCredentialsAsync(), Me.CookieContainer, AddressOf GetCorrelationId)
 			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0).Rows
 			For Each objectType As System.Data.DataRow In uploadableObjectTypes
 				With New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String), CType(objectType("HasAddPermission"), Boolean))
@@ -616,7 +633,7 @@ Namespace Relativity.Desktop.Client
 			Dim importer As kCura.WinEDDS.BulkLoadFileImporter = Nothing
 
 			Try
-				importer = New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, Nothing, _logger, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Nothing, RunningContext)
+				importer = New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, Nothing, _logger, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Nothing, AddressOf GetCorrelationId, RunningContext)
 				Return importer.GetColumnNames(loadfile)
 			Finally
 				' All load files are auto-generated when the importer is constructed. This prevents excessive temp files from accumulating.
@@ -732,7 +749,7 @@ Namespace Relativity.Desktop.Client
 			Dim retval = False
 			If Not Me.SelectedCaseInfo Is Nothing Then
 				Try
-					Dim userManager As New kCura.WinEDDS.Service.UserManager(Await GetCredentialsAsync(), _CookieContainer)
+					Dim userManager As kCura.WinEDDS.Service.Replacement.IUserManager = ManagerFactory.CreateUserManager(Await GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId)
 					retval = userManager.LoggedIn()
 				Catch ex As System.Exception
 					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
@@ -855,7 +872,7 @@ Namespace Relativity.Desktop.Client
 				frm.ExportFile = exportFile
 				frm.Show()
 			Catch ex As System.Exception
-				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+				If IsReLoginRequired(ex) Then
 					NewLogin(False)
 					Return
 				Else
@@ -865,15 +882,15 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Public Async Function GetListOfProductionsForCase(ByVal caseInfo As CaseInfo) As Task(Of System.Data.DataTable)
-			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer)
+			Dim productionManager As kCura.WinEDDS.Service.Replacement.IProductionManager = ManagerFactory.CreateProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId)
 			Return productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
 		End Function
 
 
 		Public Async Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As Task(Of kCura.WinEDDS.ExportFile)
 			Dim exportFile As New kCura.WinEDDS.ExtendedExportFile(artifactTypeID)
-			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Await Me.GetCredentialsAsync(), _CookieContainer)
-			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer)
+			Dim searchManager As ISearchManager = ManagerFactory.CreateSearchManager(Await Me.GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId)
+			Dim productionManager As kCura.WinEDDS.Service.Replacement.IProductionManager = ManagerFactory.CreateProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId)
 			exportFile.ArtifactID = selectedFolderId
 			exportFile.CaseInfo = caseInfo
 			exportFile.Credential = Await Me.GetCredentialsAsync()
@@ -905,7 +922,7 @@ Namespace Relativity.Desktop.Client
 			Return exportFile
 		End Function
 
-		Friend Function GetSearchExportDataSource(ByVal searchManager As kCura.WinEDDS.Service.SearchManager, ByVal caseArtifactID As Int32, ByVal isArtifactSearch As Boolean, ByVal artifactType As Int32) As System.Data.DataTable
+		Friend Function GetSearchExportDataSource(ByVal searchManager As kCura.WinEDDS.Service.Replacement.ISearchManager, ByVal caseArtifactID As Int32, ByVal isArtifactSearch As Boolean, ByVal artifactType As Int32) As System.Data.DataTable
 			Dim searchExportDataSet As System.Data.DataSet
 			If isArtifactSearch Then
 				searchExportDataSet = searchManager.RetrieveViewsByContextArtifactID(caseArtifactID, artifactType, True)
@@ -962,7 +979,7 @@ Namespace Relativity.Desktop.Client
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.FullTextEncoding = System.Text.Encoding.Default
 				imageFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
-				Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer)
+				Dim productionManager As kCura.WinEDDS.Service.Replacement.IProductionManager = ManagerFactory.CreateProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId)
 				imageFile.ProductionTable = productionManager.RetrieveImportEligibleByContextArtifactID(caseinfo.ArtifactID).Tables(0)
 				imageFile.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
 				frm.ImageLoadFile = imageFile
@@ -1056,7 +1073,7 @@ Namespace Relativity.Desktop.Client
 				CursorDefault()
 				Return
 			End If
-			Dim proc As New kCura.WinEDDS.ConnectionDetailsProcess(Await Me.GetCredentialsAsync(), Me.CookieContainer, Me.SelectedCaseInfo, _logger)
+			Dim proc As New kCura.WinEDDS.ConnectionDetailsProcess(Await Me.GetCredentialsAsync(), Me.CookieContainer, Me.SelectedCaseInfo, _logger, AddressOf GetCorrelationId)
 			Dim form As New TextDisplayForm
 			form.Context = proc.Context
 			form.Text = "Relativity Desktop Client | Connectivity Tests"
@@ -1076,7 +1093,7 @@ Namespace Relativity.Desktop.Client
 				Return
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
-			Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess(formType, _logger)
+			Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess(formType, _logger, AddressOf GetCorrelationId)
 			loadFileToPreview.PreviewCodeCount.Clear()
 			Dim previewform As New LoadFilePreviewForm(formType, loadFileToPreview.MultiRecordDelimiter, loadFileToPreview.PreviewCodeCount)
 			Dim thrower As New ValueThrower
@@ -1109,11 +1126,11 @@ Namespace Relativity.Desktop.Client
 				CursorDefault()
 				Return
 			End If
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Await GetCredentialsAsync(), _CookieContainer)
+			Dim folderManager As kCura.WinEDDS.Service.Replacement.IFolderManager = ManagerFactory.CreateFolderManager(Await Me.GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId)
 			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
 					Dim frm As ProcessForm = CreateProcessForm()
-					Dim importer As New Processes.RdcImportLoadFileProcess(Await SetupMetricService(), RunningContext, _logger)
+					Dim importer As New Processes.RdcImportLoadFileProcess(Await SetupMetricService(), RunningContext, _logger, AddressOf GetCorrelationId)
 					importer.CaseInfo = SelectedCaseInfo
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
@@ -1162,7 +1179,7 @@ Namespace Relativity.Desktop.Client
 				Return
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
-			Dim importer As New Processes.RdcImportImageFileProcess(Await SetupMetricService(), Me.RunningContext, _logger)
+			Dim importer As New Processes.RdcImportImageFileProcess(Await SetupMetricService(), Me.RunningContext, _logger, AddressOf GetCorrelationId)
 			ImageLoadFile.CookieContainer = Me.CookieContainer
 			importer.CaseInfo = SelectedCaseInfo
 			importer.ImageLoadFile = ImageLoadFile
@@ -1184,7 +1201,7 @@ Namespace Relativity.Desktop.Client
 			End If
 			Dim frm As ProcessForm = CreateProcessForm()
 			frm.StatusRefreshRate = 0
-			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMetricService(), Me.RunningContext, _logger)
+			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMetricService(), Me.RunningContext, _logger, AddressOf GetCorrelationId)
 			exporter.UserNotification = New FormsUserNotification()
 			exporter.CaseInfo = SelectedCaseInfo
 			exporter.ExportFile = exportFile
@@ -1398,11 +1415,11 @@ Namespace Relativity.Desktop.Client
 			Dim credentials As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 
 			Try
-				Using relativityManager As kCura.WinEDDS.Service.RelativityManager = New kCura.WinEDDS.Service.RelativityManager(credentials, _CookieContainer)
+				Using relativityManager As kCura.WinEDDS.Service.Replacement.IRelativityManager = ManagerFactory.CreateRelativityManager(credentials, _CookieContainer, AddressOf GetCorrelationId)
 					If relativityManager.ValidateSuccessfulLogin() Then
 						' Note: the compatibility check cannot be executed via integrated security; rather, the OAuth token handler addresses it.
 						RelativityWebApiCredentialsProvider.Instance().SetProvider(New UserCredentialsProvider(credentials))
-						kCura.WinEDDS.Service.Settings.AuthenticationToken = New kCura.WinEDDS.Service.UserManager(credentials, _CookieContainer).GenerateDistributedAuthenticationToken()
+						kCura.WinEDDS.Service.Settings.AuthenticationToken = ManagerFactory.CreateUserManager(credentials, _CookieContainer, AddressOf GetCorrelationId).GenerateDistributedAuthenticationToken()
 						_lastCredentialCheckResult = CredentialCheckResult.Success
 					Else
 						_lastCredentialCheckResult = CredentialCheckResult.Fail
@@ -1423,8 +1440,8 @@ Namespace Relativity.Desktop.Client
 		''' Loads the workspace permissions into UserHasExportPermission and UserHasImportPermission.
 		''' </summary>
 		Public Async Function LoadWorkspacePermissions() As Task
-			UserHasExportPermission = New kCura.WinEDDS.Service.ExportManager(Await GetCredentialsAsync(), CookieContainer).HasExportPermissions(SelectedCaseInfo.ArtifactID)
-			UserHasImportPermission = New kCura.WinEDDS.Service.BulkImportManager(Await GetCredentialsAsync(), CookieContainer).HasImportPermissions(SelectedCaseInfo.ArtifactID)
+			UserHasExportPermission = ManagerFactory.CreateExportManager(Await GetCredentialsAsync(), CookieContainer, AddressOf GetCorrelationId).HasExportPermissions(SelectedCaseInfo.ArtifactID)
+			UserHasImportPermission = ManagerFactory.CreateBulkImportManager(Await GetCredentialsAsync(), CookieContainer, AddressOf GetCorrelationId).HasImportPermissions(SelectedCaseInfo.ArtifactID)
 		End Function
 
 		Private Sub CertificatePromptForm_Deny_Click() Handles _certificatePromptForm.DenyUntrustedCertificates
@@ -1452,14 +1469,14 @@ Namespace Relativity.Desktop.Client
 				_lastCredentialCheckResult = CredentialCheckResult.Fail
 				Return
 			Catch ex As System.Exception
-				Me.ChangeWebServiceUrl("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
+				Me.ChangeWebServiceUrl("An error occurred while validating the Relativity WebAPI URL. Check the URL and try again?")
 				_lastCredentialCheckResult = CredentialCheckResult.Fail
 				Return
 			End Try
 
 			Try
-				Using userManager As New kCura.WinEDDS.Service.UserManager(credential, _CookieContainer),
-					  relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, _CookieContainer)
+				Using userManager As kCura.WinEDDS.Service.Replacement.IUserManager = ManagerFactory.CreateUserManager(credential, _CookieContainer, AddressOf GetCorrelationId),
+					  relativityManager As kCura.WinEDDS.Service.Replacement.IRelativityManager = ManagerFactory.CreateRelativityManager(credential, _CookieContainer, AddressOf GetCorrelationId)
 
 					If userManager.Login(credential.UserName, credential.Password) Then
 						Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
@@ -1522,6 +1539,14 @@ Namespace Relativity.Desktop.Client
 			End If
 		End Sub
 
+		Public Sub HandleWebException(ex As ServiceInfrastructureException)
+			Me.ChangeWebServiceUrl("An error occurred while communicating Kepler endpoint. Check the URL and try again?")
+		End Sub
+
+		Public Sub HandleException(ex As Exception)
+			Me.ChangeWebServiceUrl("An error occurred while communicating Kepler endpoint. Check the URL and try again?")
+		End Sub
+
 		Public Sub HandleRelativityNotSupportedException(exception As Relativity.DataExchange.RelativityNotSupportedException)
 			' REL-324321: Expiring all cookies forces the version check loop to execute.
 			ClearAllCookies()
@@ -1548,7 +1573,7 @@ Namespace Relativity.Desktop.Client
 		Public Function DoLogin() As CredentialCheckResult
 			Try
 				Dim credentials As System.Net.NetworkCredential = RelativityWebApiCredentialsProvider.Instance.GetCredentials()
-				Dim userManager As New kCura.WinEDDS.Service.UserManager(credentials, _CookieContainer)
+				Dim userManager As kCura.WinEDDS.Service.Replacement.IUserManager = ManagerFactory.CreateUserManager(credentials, _CookieContainer, AddressOf GetCorrelationId)
 				If userManager.Login(credentials.UserName, credentials.Password) Then
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 					_timeZoneOffset = 0
@@ -1591,13 +1616,13 @@ Namespace Relativity.Desktop.Client
 		Public Function GetIdentityServerLocation() As String
 
 			Dim instanceInfo As New RelativityInstanceInfo With
-				    {
-				    .Credentials = System.Net.CredentialCache.DefaultCredentials,
-				    .CookieContainer = _CookieContainer,
-				    .WebApiServiceUrl = New Uri(AppSettings.Instance.WebApiServiceUrl)
-				    }
-
-			Dim service As RelativityManagerService = New RelativityManagerService(instanceInfo)
+					{
+					.Credentials = System.Net.CredentialCache.DefaultCredentials,
+					.CookieContainer = _CookieContainer,
+					.WebApiServiceUrl = New Uri(AppSettings.Instance.WebApiServiceUrl)
+					}
+			Dim useLegacyWebApi As Boolean = Me.UseLegacyWebApi(System.Net.CredentialCache.DefaultCredentials)
+			Dim service As Service.IRelativityManagerService = New RelativityManagerServiceFactory().Create(instanceInfo, useLegacyWebApi)
 			Dim relativityUrl As Uri = service.GetRelativityUrl()
 			Dim urlString As String = $"{relativityUrl.ToString().TrimTrailingSlashFromUrl()}/{"Identity"}"
 			Return urlString
@@ -1630,7 +1655,7 @@ Namespace Relativity.Desktop.Client
 #Region "Logout"
 		Public Async Function Logout() As Task
 			Try
-				Dim userManager As New kCura.WinEDDS.Service.UserManager(Await GetCredentialsAsync(), _CookieContainer)
+				Dim userManager As kCura.WinEDDS.Service.Replacement.IUserManager = ManagerFactory.CreateUserManager(Await GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId)
 				userManager.Logout()
 			Catch ex As Exception
 			End Try
@@ -1685,7 +1710,7 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Public Async Function GetSystemConfiguration() As Task(Of System.Data.DataTable)
-			Return New kCura.WinEDDS.Service.RelativityManager(Await Me.GetCredentialsAsync(), Me.CookieContainer).RetrieveRdcConfiguration().Tables(0)
+			Return ManagerFactory.CreateRelativityManager(Await Me.GetCredentialsAsync(), Me.CookieContainer, AddressOf GetCorrelationId).RetrieveRdcConfiguration().Tables(0)
 		End Function
 
 		Private Shared Function GetRegistryKey() As Microsoft.Win32.RegistryKey
@@ -1703,13 +1728,12 @@ Namespace Relativity.Desktop.Client
 #End Region
 
 		Public Overridable Async Function GetProductionPrecendenceList(ByVal caseInfo As CaseInfo) As Task(Of System.Data.DataTable)
-			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
 			Dim dt As System.Data.DataTable
 			Try
-				productionManager = New kCura.WinEDDS.Service.ProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer)
+				Dim productionManager As kCura.WinEDDS.Service.Replacement.IProductionManager = ManagerFactory.CreateProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer, AddressOf GetCorrelationId)
 				dt = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
 			Catch ex As System.Exception
-				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+				If IsReLoginRequired(ex) Then
 					NewLogin(False)
 					Return Nothing
 				Else
@@ -1770,7 +1794,7 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Public Async Function SetupMetricService() As Task(Of IMetricService)
-            If _metricService Is Nothing Then _metricService = New MetricService(New RdcMetricSinkConfig, ServiceFactoryFactory.Create(Await GetCredentialsAsync()))
+            If _metricService Is Nothing Then _metricService = New MetricService(New RdcMetricSinkConfig, KeplerProxyFactory.CreateKeplerProxy(Await GetCredentialsAsync()))
             Return _metricService
 		End Function
 
@@ -1787,7 +1811,7 @@ Namespace Relativity.Desktop.Client
 								.WebApiServiceUrl = New Uri(AppSettings.Instance.WebApiServiceUrl)
 								}
 
-						Return LoginHelper.ValidateVersionCompatibilityAsync(instanceInfo, _cancellationTokenSource.Token, Me.RunningContext, _logger)
+						Return LoginHelper.ValidateVersionCompatibilityAsync(instanceInfo, _cancellationTokenSource.Token, Me.RunningContext, _logger, AddressOf GetCorrelationId)
 					End Function,
 					_cancellationTokenSource.Token).ConfigureAwait(False)
 			Finally
@@ -1819,7 +1843,7 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Sub SetupRelativityLoggingWithHttpParameters(credential As NetworkCredential)
-			Dim secureLogFactory As ISecureLogFactory = new RdcSecureLogFactory(credential)
+			Dim secureLogFactory As ISecureLogFactory = New RdcSecureLogFactory(credential)
 			Dim secureLogger As Relativity.Logging.ILog = secureLogFactory.CreateSecureLogger()
 			' Storing the logger reference on the singleton ensures it will be used throughout (see RelativityLogFactory).
 			Relativity.Logging.Log.Logger = secureLogger
@@ -1827,5 +1851,15 @@ Namespace Relativity.Desktop.Client
 			Me._logger = secureLogger
 		End Sub
 
+		Public Function GetCorrelationId() As String
+			Return _appInstanceId.ToString()
+		End Function
+
+		Private Shared Function IsReLoginRequired(exception As Exception) As Boolean
+			If exception.InnerException IsNot Nothing And TypeOf exception.InnerException Is NotAuthorizedException Then
+				Return True
+			End If
+			Return exception.Message.IndexOf("Need To Re Login", StringComparison.InvariantCulture) <> -1
+		End Function
 	End Class
 End Namespace

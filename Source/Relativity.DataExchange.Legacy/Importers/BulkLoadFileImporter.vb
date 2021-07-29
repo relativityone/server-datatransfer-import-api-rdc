@@ -3,6 +3,7 @@ Imports System.Threading
 Imports System.Threading.Tasks
 
 Imports kCura.WinEDDS.Api
+Imports kCura.WinEDDS.Service
 Imports Monitoring
 
 Imports Relativity.DataExchange
@@ -42,8 +43,8 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _createErrorForEmptyNativeFile As Boolean
 
 		Protected Overwrite As ImportOverwriteType
-		Protected AuditManager As Service.AuditManager
-		Protected RelativityManager As Service.RelativityManager
+		Protected AuditManager As Service.Replacement.IAuditManager
+		Protected RelativityManager As Service.Replacement.IRelativityManager
 
 		Protected RecordCount As Int64 = -1
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
@@ -253,7 +254,7 @@ Namespace kCura.WinEDDS
 		Protected Overridable ReadOnly Property ParentArtifactTypeID As Int32
 			Get
 				If Not _parentArtifactTypeId.HasValue Then
-					Dim parentQuery As New Service.ObjectTypeManager(_settings.Credentials, _settings.CookieContainer)
+					Dim parentQuery As Service.Replacement.IObjectTypeManager = ManagerFactory.CreateObjectTypeManager(_settings.Credentials, _settings.CookieContainer, AddressOf GetCorrelationId)
 					_parentArtifactTypeId = CType(parentQuery.RetrieveParentArtifactTypeID(_settings.CaseInfo.ArtifactID, _settings.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
 				End If
 				Return _parentArtifactTypeId.Value
@@ -336,6 +337,7 @@ Namespace kCura.WinEDDS
 					   doRetryLogic As Boolean,
 					   bulkLoadFileFieldDelimiter As String,
 					   tokenSource As CancellationTokenSource,
+					   correlationIdFunc As Func(Of String),
 					   ByVal Optional runningContext As IRunningContext = Nothing)
 			Me.New(args,
 				   context,
@@ -349,6 +351,7 @@ Namespace kCura.WinEDDS
 				   bulkLoadFileFieldDelimiter,
 				   tokenSource,
 				   initializeArtifactReader:=True,
+				   correlationIdFunc:=correlationIdFunc,
 				   runningContext:=runningContext)
 		End Sub
 
@@ -379,6 +382,7 @@ Namespace kCura.WinEDDS
 					   doRetryLogic As Boolean,
 					   bulkLoadFileFieldDelimiter As String,
 					   tokenSource As CancellationTokenSource,
+					   correlationIdFunc As Func(Of String),
 					   ByVal Optional runningContext As IRunningContext = Nothing)
 			Me.New(args,
 				   context,
@@ -392,6 +396,7 @@ Namespace kCura.WinEDDS
 				   bulkLoadFileFieldDelimiter,
 				   tokenSource,
 				   initializeArtifactReader:=True,
+				   correlationIdFunc:=correlationIdFunc,
 				   runningContext:=runningContext)
 		End Sub
 
@@ -423,6 +428,7 @@ Namespace kCura.WinEDDS
 					   bulkLoadFileFieldDelimiter As String,
 					   tokenSource As CancellationTokenSource,
 					   initializeArtifactReader As Boolean,
+					   correlationIdFunc As Func(Of String),
 					   ByVal Optional runningContext As IRunningContext = Nothing)
 			MyBase.New(args,
 					   reporter,
@@ -432,7 +438,8 @@ Namespace kCura.WinEDDS
 					   autoDetect,
 					   tokenSource,
 					   initializeArtifactReader,
-			           runningContext:=runningContext)
+					   correlationIdFunc:=correlationIdFunc,
+					   runningContext:=runningContext)
 
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
 			_usePipeliningForNativeAndObjectImports = AppSettings.Instance.UsePipeliningForNativeAndObjectImports
@@ -489,7 +496,7 @@ Namespace kCura.WinEDDS
 
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
-			Dim gateway As Service.FileIO = New Service.FileIO(args.Credentials, args.CookieContainer)
+			Dim gateway As Replacement.IFileIO = ManagerFactory.CreateFileIO(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
 			Dim nativeParameters As UploadTapiBridgeParameters2 = New UploadTapiBridgeParameters2
 			nativeParameters.Application = AppSettings.Instance.ApplicationName
 			nativeParameters.BcpFileTransfer = False
@@ -538,7 +545,7 @@ Namespace kCura.WinEDDS
 
 			' Never preserve timestamps for BCP load files.
 			bcpParameters.PreserveFileTimestamps = False
-			CreateTapiBridges(nativeParameters, bcpParameters, args.WebApiCredential.TokenProvider)
+			CreateTapiBridges(nativeParameters, bcpParameters, args.WebApiCredential.TokenProvider, New RelativityManagerServiceFactory)
 		End Sub
 
 #End Region
@@ -766,9 +773,9 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub InitializeManagers(ByVal args As LoadFile)
 			MyBase.InitializeManagers(args)
-			AuditManager = New Service.AuditManager(args.Credentials, args.CookieContainer)
-			_documentManager = New Service.DocumentManager(args.Credentials, args.CookieContainer)
-			RelativityManager = New Service.RelativityManager(args.Credentials, args.CookieContainer)
+			AuditManager = ManagerFactory.CreateAuditManager(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
+			_documentManager = ManagerFactory.CreateDocumentManager(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
+			RelativityManager = ManagerFactory.CreateRelativityManager(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
 		End Sub
 
 		Protected Sub InitializeFolderManagement()
@@ -2218,7 +2225,7 @@ Namespace kCura.WinEDDS
 			Try
 				With Me.BulkImportManager.GenerateNonImageErrorFiles(_caseInfo.ArtifactID, _runId, artifactTypeID, True, _keyFieldID)
 					Me.WriteStatusLine(EventType2.Status, "Retrieving errors from server")
-					errorFileService = New ErrorFileService(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer)
+					errorFileService = New ErrorFileService(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer, AddressOf GetCorrelationId)
 					AddHandler errorFileService.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
 					Dim errorsLocation As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 					sr = AttemptErrorFileDownload(errorFileService, errorsLocation, .LogKey, _caseInfo)
@@ -2313,7 +2320,17 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
-			Return New kCura.WinEDDS.LoadFileReader(_settings, False, _executionSource)
+			Return New kCura.WinEDDS.LoadFileReader(_settings, False, AddressOf GetCorrelationId, _executionSource)
+		End Function
+
+		Protected Overrides Function GetCorrelationId() As String
+			' Return run id if already set
+			If Not String.IsNullOrEmpty(_runId) Then
+				Return _runId
+			End If
+
+			' Return 'injected' correlationIdFunc (passed from desktop application or import api)
+			Return CorrelationIdFunc?.Invoke()
 		End Function
 
 		Protected Sub OnFatalError(message As String, ex As Exception, runID As String)

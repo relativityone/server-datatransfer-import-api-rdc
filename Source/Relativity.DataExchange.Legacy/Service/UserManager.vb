@@ -5,6 +5,7 @@ Namespace kCura.WinEDDS.Service
 	Public Class UserManager
 		Inherits kCura.EDDS.WebAPI.UserManagerBase.UserManager
 		Implements IReLoginService
+		Implements Replacement.IUserManager
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			Me.New(credentials, cookieContainer, AppSettings.Instance.WebApiServiceUrl)
@@ -20,9 +21,13 @@ Namespace kCura.WinEDDS.Service
 		End Sub
 
 #Region " Shadow Methods "
-		Public Shadows Function Login(ByVal emailAddress As String, ByVal password As String) As Boolean
+		Public Shadows Function Login(ByVal emailAddress As String, ByVal password As String) As Boolean Implements Replacement.IUserManager.Login
 			Return RetryOnReLoginException(Function() Me.LoginInternal(emailAddress, password))
 		End Function
+
+		Public Shadows Sub Logout() Implements Replacement.IUserManager.Logout
+			MyBase.Logout()
+		End Sub
 
 		Private Function LoginInternal(ByVal emailAddress As String, ByVal password As String) As Boolean
 			Try
@@ -34,7 +39,7 @@ Namespace kCura.WinEDDS.Service
 			End Try
 		End Function
 
-		Public Shadows Function RetrieveAllAssignableInCase(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveAllAssignableInCase(ByVal caseContextArtifactID As Int32) As System.Data.DataSet Implements Replacement.IUserManager.RetrieveAllAssignableInCase
 			Return RetryOnReLoginException(Function() Me.RetrieveAllAssignableInCaseInternal(caseContextArtifactID))
 		End Function
 
@@ -46,8 +51,12 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.GenerateAuthenticationToken())
 		End Function
 
-		Public Shadows Function GenerateDistributedAuthenticationToken(Optional ByVal retryOnFailure As Boolean = True) As String
+		Public Shadows Function GenerateDistributedAuthenticationToken(Optional ByVal retryOnFailure As Boolean = True) As String Implements Replacement.IUserManager.GenerateDistributedAuthenticationToken
 			Return RetryOnReLoginException(Function() MyBase.GenerateDistributedAuthenticationToken(), retryOnFailure)
+		End Function
+
+		Public Shadows Function LoggedIn() As Boolean Implements Replacement.IUserManager.LoggedIn
+			Return MyBase.LoggedIn()
 		End Function
 
 #End Region
@@ -60,7 +69,7 @@ Namespace kCura.WinEDDS.Service
 					If String.IsNullOrEmpty(cred.Password) Then
 						Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, Me.CookieContainer)
 
-						relativityManager.ValidateSuccesfulLogin()
+						relativityManager.ValidateSuccessfulLogin()
 					Else
 						Me.Login(cred.UserName, cred.Password)
 					End If

@@ -195,8 +195,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				Relativity.Services.Objects.DataContracts.QueryResult result = client.QueryAsync(
 					parameters.WorkspaceId,
 					queryRequest,
-					1,
-					ServiceHelper.MaxItemsToFetch).GetAwaiter().GetResult();
+					start: 1,
+					length: 1).GetAwaiter().GetResult();
 				return result.TotalCount;
 			}
 		}

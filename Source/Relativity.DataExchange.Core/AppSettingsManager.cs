@@ -141,6 +141,10 @@ namespace Relativity.DataExchange
 				{
 					AssignEnum(settings, prop, null);
 				}
+				else if (prop.PropertyType == typeof(bool?))
+				{
+					AssignBoolNullable(settings, prop, null);
+				}
 				else
 				{
 					throw new InvalidOperationException($"The '{prop.Name}' property of type '{prop.PropertyType}' is not supported by the settings reader.");
@@ -426,6 +430,10 @@ namespace Relativity.DataExchange
 
 				AssignEnum(settings, prop, enumValue);
 			}
+			else if (prop.PropertyType == typeof(bool?))
+			{
+				AssignBoolNullable(settings, prop, value);
+			}
 			else
 			{
 				throw new InvalidOperationException($"The '{prop.Name}' property of type '{prop.PropertyType}' is not supported by the settings reader.");
@@ -468,6 +476,35 @@ namespace Relativity.DataExchange
 				if (!bool.TryParse(attribute.DefaultValue.ToString(), out defaultValue))
 				{
 					defaultValue = false;
+				}
+			}
+
+			if (!boolValue.HasValue)
+			{
+				boolValue = defaultValue;
+			}
+
+			AssignValue(settings, prop, boolValue);
+		}
+
+		private static void AssignBoolNullable(IAppSettings settings, PropertyInfo prop, object value)
+		{
+			bool? boolValue = null;
+			if (value != null)
+			{
+				if (bool.TryParse(value.ToString(), out bool temp))
+				{
+					boolValue = temp;
+				}
+			}
+
+			bool? defaultValue = null;
+			AppSettingAttribute attribute = GetAppSettingAttribute(GetPropertyKey(prop));
+			if (value == null && attribute?.DefaultValue != null)
+			{
+				if (bool.TryParse(attribute.DefaultValue.ToString(), out bool temp))
+				{
+					defaultValue = temp;
 				}
 			}
 

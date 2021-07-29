@@ -35,7 +35,7 @@ namespace Relativity.DataExchange.Import.NUnit
 		public void GetNullableDecimalUsesCurrentCultureOnRdc()
 		{
 			// Arrange
-			this.subjectUnderTest = new LoadFileReader(this.loadFileArgs, false, ExecutionSource.Rdc);
+			this.subjectUnderTest = new LoadFileReader(this.loadFileArgs, false, () => this.GetType().Name, ExecutionSource.Rdc);
 			CultureInfo.CurrentCulture = new CultureInfo(GermanCulture);
 
 			// Act
@@ -53,7 +53,7 @@ namespace Relativity.DataExchange.Import.NUnit
 		public void GetNullableDecimalNeglectsCurrentCultureOnOtherExecutionSources(ExecutionSource executionSource)
 		{
 			// Arrange
-			this.subjectUnderTest = new LoadFileReader(this.loadFileArgs, false, executionSource);
+			this.subjectUnderTest = new LoadFileReader(this.loadFileArgs, false, () => this.GetType().Name, executionSource);
 			CultureInfo.CurrentCulture = new CultureInfo(GermanCulture);
 
 			// Act

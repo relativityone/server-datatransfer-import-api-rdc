@@ -1,5 +1,6 @@
 Imports System.Collections.Generic
 Imports System.Threading
+Imports kCura.WinEDDS.Service
 
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Data
@@ -14,14 +15,14 @@ Namespace kCura.WinEDDS
 #Region "Members"
 
 		Protected _columnsAreInitialized As Boolean
-
-		Protected _documentManager As kCura.WinEDDS.Service.DocumentManager
-		Protected _codeManager As kCura.WinEDDS.Service.CodeManager
-		Protected _folderManager As kCura.WinEDDS.Service.FolderManager
-		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
-		Protected _bulkImportManager As kCura.WinEDDS.Service.IBulkImportManager
-		Protected _usermanager As kCura.WinEDDS.Service.UserManager
-		Protected _objectManager As kCura.WinEDDS.Service.ObjectManager
+		
+		Protected _documentManager As kCura.WinEDDS.Service.Replacement.IDocumentManager
+		Protected _codeManager As kCura.WinEDDS.Service.Replacement.ICodeManager
+		Protected _folderManager As kCura.WinEDDS.Service.Replacement.IFolderManager
+		Protected _fieldQuery As kCura.WinEDDS.Service.Replacement.IFieldQuery
+		Protected _bulkImportManager As kCura.WinEDDS.Service.Replacement.IBulkImportManager
+		Protected _usermanager As kCura.WinEDDS.Service.Replacement.IUserManager
+		Protected _objectManager As kCura.WinEDDS.Service.Replacement.IObjectManager
 
 		Protected _filePathColumn As String
 		Protected _filePathColumnIndex As Int32
@@ -114,15 +115,19 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected Overridable ReadOnly Property BulkImportManager As kCura.WinEDDS.Service.IBulkImportManager
+		Protected Overridable ReadOnly Property BulkImportManager As Service.Replacement.IBulkImportManager
 			Get
 				If _bulkImportManager Is Nothing Then
-					_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credentials, _settings.CookieContainer)
+					_bulkImportManager = ManagerFactory.CreateBulkImportManager(_settings.Credentials, _settings.CookieContainer, AddressOf GetCorrelationId)
 				End If
 
 				Return _bulkImportManager
 			End Get
 		End Property
+
+		Protected Overridable Function GetCorrelationId() As String
+			Return CorrelationIdFunc?.Invoke()
+		End Function
 
 #End Region
 
@@ -144,7 +149,8 @@ Namespace kCura.WinEDDS
 						  doRetryLogic As Boolean,
 						  autoDetect As Boolean,
 						  cancellationToken As CancellationTokenSource,
-		                  ByVal Optional runningContext As IRunningContext = Nothing)
+						  correlationIdFunc As Func(Of String),
+						  ByVal Optional runningContext As IRunningContext = Nothing)
 			Me.New(args,
 				   reporter,
 				   logger,
@@ -153,7 +159,8 @@ Namespace kCura.WinEDDS
 				   autoDetect,
 				   cancellationToken,
 				   initializeArtifactReader:=True,
-				   runningContext:= runningContext)
+				   correlationIdFunc:=correlationIdFunc,
+				   runningContext:=runningContext)
 		End Sub
 
 		Protected Sub New(args As LoadFile,
@@ -164,8 +171,9 @@ Namespace kCura.WinEDDS
 						  autoDetect As Boolean,
 						  cancellationToken As CancellationTokenSource,
 						  initializeArtifactReader As Boolean,
-		                  ByVal Optional runningContext As IRunningContext = Nothing)
-			MyBase.New(reporter, logger, cancellationToken)
+						  correlationIdFunc As Func(Of String),
+						  ByVal Optional runningContext As IRunningContext = Nothing)
+			MyBase.New(reporter, logger, cancellationToken, correlationIdFunc)
 
 			_settings = args
 			OIFileIdColumnName = args.OIFileIdColumnName
@@ -225,13 +233,13 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeManagers(ByVal args As LoadFile)
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer)
-			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer)
-			_usermanager = New kCura.WinEDDS.Service.UserManager(args.Credentials, args.CookieContainer)
+			_documentManager = ManagerFactory.CreateDocumentManager(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
+			_codeManager = ManagerFactory.CreateCodeManager(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
+			_folderManager = ManagerFactory.CreateFolderManager(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
+			_fieldQuery = ManagerFactory.CreateFieldQuery(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
+			_usermanager = ManagerFactory.CreateUserManager(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
 			'_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credentials, args.CookieContainer)
-			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer)
+			_objectManager = ManagerFactory.CreateObjectManager(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
 		End Sub
 
 #Region "Code Parsing"

@@ -13,28 +13,28 @@ namespace Relativity.DataExchange.NUnit
 
 	using Relativity.AutomatedWorkflows.Services.Interfaces;
 	using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
+	using Relativity.DataExchange.NUnit.Mocks;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.Services.ServiceProxy;
 
 	public class TriggerManagerTests
 	{
 		private const int WorkspaceId = 123456789;
 
 		private TriggerManager triggerManager;
-		private Mock<IServiceFactory> serviceFactory;
+		private Mock<IServiceProxyFactory> serviceFactory;
 		private Mock<IAutomatedWorkflowsService> automatedWorkflowService;
 
 		[SetUp]
 		public void Setup()
 		{
-			this.serviceFactory = new Mock<IServiceFactory>();
+			this.serviceFactory = new Mock<IServiceProxyFactory>();
 			this.automatedWorkflowService = new Mock<IAutomatedWorkflowsService>();
 
-			this.triggerManager = new TriggerManager(new TestNullLogger(), this.serviceFactory.Object);
+			this.triggerManager = new TriggerManager(new TestNullLogger(), new KeplerProxyMock(this.serviceFactory.Object));
 
 			this.serviceFactory.Setup(
-					x => x.CreateProxy<IAutomatedWorkflowsService>()).
+					x => x.CreateProxyInstance<IAutomatedWorkflowsService>()).
 				Returns(this.automatedWorkflowService.Object);
 
 			this.automatedWorkflowService.Setup(

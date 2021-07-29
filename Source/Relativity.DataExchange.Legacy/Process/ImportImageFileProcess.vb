@@ -1,3 +1,4 @@
+Imports kCura.WinEDDS.Service
 Imports Monitoring
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange
@@ -25,20 +26,20 @@ Namespace kCura.WinEDDS
 		Private _disableImageLocationValidation As Boolean?
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
-		Public Sub New()
-			Me.New(new MetricService(New ImportApiMetricSinkConfig), New RunningContext)
+		Public Sub New(correlationIdFunc As Func(Of String))
+			Me.New(New MetricService(New ImportApiMetricSinkConfig), New RunningContext, correlationIdFunc)
 		End Sub
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
-		Public Sub New (metricService As IMetricService, runningContext As IRunningContext)
-			Me.New(metricService, runningContext, RelativityLogger.Instance)
+		Public Sub New(metricService As IMetricService, runningContext As IRunningContext, correlationIdFunc As Func(Of String))
+			Me.New(metricService, runningContext, RelativityLogger.Instance, correlationIdFunc)
 		End Sub
 
-		Public Sub New (metricService As IMetricService, runningContext As IRunningContext, logger As Global.Relativity.Logging.ILog)
-			MyBase.New(metricService, runningContext, logger)
+		Public Sub New(metricService As IMetricService, runningContext As IRunningContext, logger As Global.Relativity.Logging.ILog, correlationIdFunc As Func(Of String))
+			MyBase.New(metricService, runningContext, logger, correlationIdFunc)
 		End Sub
 
-        Public WriteOnly Property DisableImageTypeValidation As Boolean
+		Public WriteOnly Property DisableImageTypeValidation As Boolean
 			Set(value As Boolean)
 				_disableImageTypeValidation = value
 			End Set
@@ -183,16 +184,17 @@ Namespace kCura.WinEDDS
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
 		    _ioReporterContext = New IoReporterContext(Me.FileSystem, Me.AppSettings, New WaitAndRetryPolicy(Me.AppSettings))
 		    Dim reporter As IIoReporter = Me.CreateIoReporter(_ioReporterContext)
-            Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(
-	            ImageLoadFile.DestinationFolderID, _
-	            ImageLoadFile, _
-	            Me.Context, _
-	            reporter, _
-	            logger, _
-	            Me.ProcessID, _
-	            True, _
-	            Me.CancellationTokenSource, _
-	            Me.RunningContext.ExecutionSource)
+			Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(
+				ImageLoadFile.DestinationFolderID,
+				ImageLoadFile,
+				Me.Context,
+				reporter,
+				Logger,
+				Me.ProcessId,
+				True,
+				Me.CancellationTokenSource,
+				_correlationIdFunc,
+				Me.RunningContext.ExecutionSource)
 			Return returnImporter
 		End Function
 
@@ -239,7 +241,7 @@ Namespace kCura.WinEDDS
 				retval.TotalFileSize = _imageFileImporter.Statistics.FileTransferredBytes
 				retval.TotalMetadataBytes = _imageFileImporter.Statistics.MetadataTransferredBytes
 				retval.SendNotification = ImageLoadFile.SendEmailOnLoadCompletion
-				Dim auditmanager As New kCura.WinEDDS.Service.AuditManager(ImageLoadFile.Credential, ImageLoadFile.CookieContainer)
+				Dim auditmanager As kCura.WinEDDS.Service.Replacement.IAuditManager = ManagerFactory.CreateAuditManager(ImageLoadFile.Credential, ImageLoadFile.CookieContainer, AddressOf GetCorrelationId)
 
 				auditmanager.AuditImageImport(ImageLoadFile.CaseInfo.ArtifactID, runID, _hasFatalErrorOccured, retval)
 			Catch ex As Exception

@@ -10,6 +10,7 @@
 namespace Relativity.DataExchange.Service
 {
 	using System;
+	using System.Net;
 
 	using Relativity.Services.ServiceProxy;
 
@@ -39,5 +40,17 @@ namespace Relativity.DataExchange.Service
 		{
 			get;
 		}
+
+		/// <summary>
+		/// Updates credentials used for authenticating in Kepler.
+		/// </summary>
+		/// <param name="credential">Credentials.</param>
+		void UpdateCredentials(NetworkCredential credential);
+
+		/// <summary>
+		/// Checks if current credentials has changed and refreshes them if needed.
+		/// </summary>
+		/// <returns>True if credentials has changed, otherwise false.</returns>
+		bool RefreshCredentials();
 	}
 }

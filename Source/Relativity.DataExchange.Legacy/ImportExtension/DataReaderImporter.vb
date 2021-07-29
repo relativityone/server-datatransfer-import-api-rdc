@@ -35,22 +35,24 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' was used to create the bulk load file. Line delimiters are a field
 		''' delimiter followed by a new line.</param>
 		''' <param name="runningContext">Optional parameter that represents running context of the import job.</param>
-		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, _
-		               ByVal context As ProcessContext, _
-		               ByVal ioReporterInstance As IIoReporter, _
-		               ByVal logger As ILog,
-		               ByVal bulkLoadFileFieldDelimiter As String, _
-		               ByVal tokenSource As CancellationTokenSource,
-		               ByVal Optional runningContext As IRunningContext = Nothing)
-			Me.New(loadFile, _
-			       context, _
-			       ioReporterInstance, _
-			       logger, _
-			       bulkLoadFileFieldDelimiter, _
-			       Nothing, _
-			       tokenSource, _
-			       initializeArtifactReader:=True, _
-			       runningContext:= runningContext)
+		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile,
+					   ByVal context As ProcessContext,
+					   ByVal ioReporterInstance As IIoReporter,
+					   ByVal logger As ILog,
+					   ByVal bulkLoadFileFieldDelimiter As String,
+					   ByVal tokenSource As CancellationTokenSource,
+					   correlationIdFunc As Func(Of String),
+					   ByVal Optional runningContext As IRunningContext = Nothing)
+			Me.New(loadFile,
+				   context,
+				   ioReporterInstance,
+				   logger,
+				   bulkLoadFileFieldDelimiter,
+				   Nothing,
+				   tokenSource,
+				   initializeArtifactReader:=True,
+				   correlationIdFunc:=correlationIdFunc,
+				   runningContext:=runningContext)
 		End Sub
 
 		''' <summary>
@@ -69,27 +71,29 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' <param name="initializeArtifactReader">If True, the ArtifactReader is created and initialized within the constructor.
 		''' If False, you should initialize the artifact reader later by calling Initialize().</param>
 		''' <param name="runningContext">Optional parameter that represents running context of the import job.</param>
-		Public Sub New(loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, _
-		               ByVal context As ProcessContext, _
-		               ByVal ioReporterInstance As IIoReporter, _
-		               ByVal logger As ILog,
-		               bulkLoadFileFieldDelimiter As String, _
-		               temporaryLocalDirectory As String, _
-		               ByVal tokenSource As CancellationTokenSource,
-		               initializeArtifactReader As Boolean,
-		               ByVal Optional runningContext As IRunningContext = Nothing)
-			MyBase.New(loadFile, _
-			           context, _
-			           ioReporterInstance, _
-			           logger, _
-			           0, _
-			           True, _
-			           True, _
-			           System.Guid.NewGuid, _
-			           True, _
-			           bulkLoadFileFieldDelimiter, _
-			           tokenSource, _
-			           runningContext)
+		Public Sub New(loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile,
+					   ByVal context As ProcessContext,
+					   ByVal ioReporterInstance As IIoReporter,
+					   ByVal logger As ILog,
+					   bulkLoadFileFieldDelimiter As String,
+					   temporaryLocalDirectory As String,
+					   ByVal tokenSource As CancellationTokenSource,
+					   initializeArtifactReader As Boolean,
+					   correlationIdFunc As Func(Of String),
+					   ByVal Optional runningContext As IRunningContext = Nothing)
+			MyBase.New(loadFile,
+					   context,
+					   ioReporterInstance,
+					   logger,
+					   0,
+					   True,
+					   True,
+					   System.Guid.NewGuid,
+					   True,
+					   bulkLoadFileFieldDelimiter,
+					   tokenSource,
+					   correlationIdFunc,
+					   runningContext)
 			Me.OIFileIdColumnName = loadFile.OIFileIdColumnName
 			Me.OIFileIdMapped = loadFile.OIFileIdMapped
 			Me.OIFileTypeColumnName = loadFile.OIFileTypeColumnName

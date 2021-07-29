@@ -43,15 +43,16 @@ Namespace kCura.WinEDDS
 		Private _trackErrorsInFieldValues As Boolean
 		Protected _executionSource As ExecutionSource
 		Private _currentIdentifier As String
+		Private _correlationIdFunc As Func(Of String)
 
 		Protected ReadOnly _settings As kCura.WinEDDS.LoadFile
 		Private ReadOnly _identifierFieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
-		
+
 #End Region
 
 #Region " Constructors "
 
-		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean, ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
+		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean, correlationIdFunc As Func(Of String), ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
 			MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter, True)
 			_settings = args
 			_identifierFieldMapItem = args.FieldMap.Identifier
@@ -77,6 +78,7 @@ Namespace kCura.WinEDDS
 			_previewCodeCount = args.PreviewCodeCount
 			_startLineNumber = args.StartLineNumber
 			_executionSource = executionSource
+			_correlationIdFunc = correlationIdFunc
 			MulticodeMatrix = New System.Collections.Hashtable
 			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> ImportOverwriteType.Overlay.ToString.ToLower Then
 				_keyFieldID = -1
@@ -284,7 +286,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Function CountRecords() As Long? Implements Api.IArtifactReader.CountRecords
-			_loadFilePreProcessor = New kCura.WinEDDS.LoadFilePreProcessor(_settings, _trackErrorsInFieldValues)
+			_loadFilePreProcessor = New kCura.WinEDDS.LoadFilePreProcessor(_settings, _trackErrorsInFieldValues, _correlationIdFunc)
 			_loadFilePreProcessor.CountLines()
 			Return _recordCount
 		End Function

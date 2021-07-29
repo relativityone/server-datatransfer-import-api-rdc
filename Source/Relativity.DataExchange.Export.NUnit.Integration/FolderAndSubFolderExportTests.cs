@@ -49,6 +49,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			await this.ThenTheExportedDocumentLoadFileIsAsExpectedAsync().ConfigureAwait(false);
 			await this.ThenTheExportedImageLoadFileIsAsExpectedAsync().ConfigureAwait(false);
+
+			this.ThenTheCorrelationIdWasRetrieved();
 		}
 
 		[IdentifiedTestCase("F8F28759-EC5A-4C03-95A3-70ACB005BCCE", false)]
@@ -69,6 +71,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			await this.ThenTheExportedDocumentLoadFileIsAsExpectedAsync().ConfigureAwait(false);
 			await this.ThenTheExportedImageLoadFileIsAsExpectedAsync().ConfigureAwait(false);
+
+			this.ThenTheCorrelationIdWasRetrieved();
 		}
 
 		[IdentifiedTest("77A786A1-58E5-45E3-B0BF-CB70D3FFCE62")]
@@ -89,6 +93,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			await this.ThenTheExportedDocumentLoadFileIsAsExpectedAsync().ConfigureAwait(false);
 			await this.ThenTheExportedImageLoadFileIsAsExpectedAsync().ConfigureAwait(false);
+
+			this.ThenTheCorrelationIdWasRetrieved();
 		}
 
 		[IdentifiedTest("8DFA89C0-EB36-446B-92BC-2A0D8314ECD8")]
@@ -107,6 +113,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			const bool ExpectedSearchResult = true;
 			this.ThenTheExportJobIsFatal(ExpectedSearchResult);
 			this.ThenTheMockSearchFileStorageAsyncIsVerified();
+
+			this.ThenTheCorrelationIdWasRetrieved();
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -130,6 +138,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			await this.ThenTheExportedDocumentLoadFileIsAsExpectedAsync().ConfigureAwait(false);
 			await this.ThenTheExportedImageLoadFileIsAsExpectedAsync().ConfigureAwait(false);
+
+			this.ThenTheCorrelationIdWasRetrieved();
 		}
 
 		/// <summary>
@@ -177,6 +187,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// This is the only way how can we currently combine specific download issue validation with total records processed count implementation in DownloadProgressManager class
 			ValidateNativeFileRequestIssue(fileExportRequests);
 			this.ThenTheExportJobIsNotSuccessful(TestData.SampleDocFiles.Count() + fileExportRequests.Count);
+
+			this.ThenTheCorrelationIdWasRetrieved();
 		}
 
 		/// <summary>
@@ -221,7 +233,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			{
 				((Func<LongTextExportRequest>)(() =>
 					{
-						LongTextExportRequest request = LongTextExportRequest.CreateRequestForLongText(
+						var request = LongTextExportRequest.CreateRequestForLongText(
 							new ObjectExportInfo
 								{
 									ArtifactID = 3,
@@ -242,11 +254,13 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			// ASSERT
 			// This is the only way how can we currently combine specific download issue validation with total records processed count implementation in DownloadProgressManager class
-			ValidateNativeFileRequestIssue(fileExportRequests);
+			this.ValidateNativeFileRequestIssue(fileExportRequests);
 			this.Logger.NullLoggerMock.Verify(
 				x => x.LogWarning(It.IsAny<ArgumentException>(), It.Is<string>(msg => msg.Contains(MsgTextFileDownloadIssueMsg)), longTextExportRequests[0].ArtifactId), Times.Once);
 
 			this.ThenTheExportJobIsNotSuccessful(TestData.SampleDocFiles.Count() + fileExportRequests.Count + longTextExportRequests.Count);
+
+			this.ThenTheCorrelationIdWasRetrieved();
 		}
 
 		private void ValidateNativeFileRequestIssue(List<ExportRequest> fileExportRequests)

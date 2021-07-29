@@ -17,7 +17,8 @@ namespace Relativity.DataExchange.NUnit
 
 	using Moq;
 
-	using Relativity.Services.ServiceProxy;
+	using Relativity.DataExchange.NUnit.Mocks;
+	using Relativity.DataExchange.Service;
 	using Relativity.Telemetry.DataContracts.Shared;
 	using Relativity.Telemetry.Services.Interface;
 	using Relativity.Telemetry.Services.Metrics;
@@ -29,7 +30,7 @@ namespace Relativity.DataExchange.NUnit
 		private long loggedSumMetricsCount;
 
 		private IMetricService metricService;
-		private Mock<IServiceFactory> mockServiceFactory;
+		private Mock<IServiceProxyFactory> mockServiceFactory;
 		private Mock<IMetricSinkConfig> mockMetricSinkConfig;
 
 		[SetUp]
@@ -47,10 +48,10 @@ namespace Relativity.DataExchange.NUnit
 				.Setup(
 					foo => foo.LogMetricsAsync(It.IsAny<List<MetricRef>>())).Callback(() => this.loggedSumMetricsCount++).Returns(Task.CompletedTask);
 
-			this.mockServiceFactory = new Mock<IServiceFactory>();
-			this.mockServiceFactory.Setup(foo => foo.CreateProxy<IAPMManager>()).Returns(mockApmManager.Object);
+			this.mockServiceFactory = new Mock<IServiceProxyFactory>();
+			this.mockServiceFactory.Setup(foo => foo.CreateProxyInstance<IAPMManager>()).Returns(mockApmManager.Object);
 
-			this.mockServiceFactory.Setup(foo => foo.CreateProxy<IMetricsManager>()).Returns(mockMetricsManager.Object);
+			this.mockServiceFactory.Setup(foo => foo.CreateProxyInstance<IMetricsManager>()).Returns(mockMetricsManager.Object);
 
 			this.mockMetricSinkConfig = new Mock<IMetricSinkConfig>();
 			this.mockMetricSinkConfig.Setup(foo => foo.ThrottleTimeout).Returns(TimeSpan.FromSeconds(30));
@@ -62,7 +63,7 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldLogApmMetricsWhenEnabled()
 		{
 			// Arrange
-			this.metricService = new MetricService(this.mockMetricSinkConfig.Object, this.mockServiceFactory.Object);
+			this.metricService = new MetricService(this.mockMetricSinkConfig.Object, new KeplerProxyMock(this.mockServiceFactory.Object));
 
 			// Act
 			this.metricService.Log(new MetricJobEndReport());
@@ -77,7 +78,7 @@ namespace Relativity.DataExchange.NUnit
 		public void ShouldLogSumMetricsWhenEnabled()
 		{
 			// Arrange
-			this.metricService = new MetricService(this.mockMetricSinkConfig.Object, this.mockServiceFactory.Object);
+			this.metricService = new MetricService(this.mockMetricSinkConfig.Object, new KeplerProxyMock(this.mockServiceFactory.Object));
 
 			// Act
 			this.metricService.Log(new MetricJobEndReport());
@@ -92,7 +93,7 @@ namespace Relativity.DataExchange.NUnit
 		{
 			// Arrange
 			this.mockMetricSinkConfig.Setup(foo => foo.SendApmMetrics).Returns(false);
-			this.metricService = new MetricService(this.mockMetricSinkConfig.Object, this.mockServiceFactory.Object);
+			this.metricService = new MetricService(this.mockMetricSinkConfig.Object, new KeplerProxyMock(this.mockServiceFactory.Object));
 
 			// Act
 			this.metricService.Log(new MetricJobEndReport());
@@ -108,7 +109,7 @@ namespace Relativity.DataExchange.NUnit
 		{
 			// Arrange
 			this.mockMetricSinkConfig.Setup(foo => foo.SendSumMetrics).Returns(false);
-			this.metricService = new MetricService(this.mockMetricSinkConfig.Object, this.mockServiceFactory.Object);
+			this.metricService = new MetricService(this.mockMetricSinkConfig.Object, new KeplerProxyMock(this.mockServiceFactory.Object));
 
 			// Act
 			this.metricService.Log(new MetricJobEndReport());

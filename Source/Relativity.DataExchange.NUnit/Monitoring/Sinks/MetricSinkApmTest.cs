@@ -11,7 +11,9 @@ namespace Relativity.DataExchange.NUnit
 	using global::NUnit.Framework;
 	using Monitoring;
 	using Moq;
-	using Relativity.Services.ServiceProxy;
+
+	using Relativity.DataExchange.NUnit.Mocks;
+	using Relativity.DataExchange.Service;
 	using Relativity.Telemetry.Services.Interface;
 	using Relativity.Telemetry.Services.Metrics;
 
@@ -28,10 +30,9 @@ namespace Relativity.DataExchange.NUnit
 			var mockApmManager = new Mock<IAPMManager>();
 			mockApmManager.Setup(foo => foo.LogCountAsync(It.IsAny<APMMetric>(), It.IsAny<long>())).Callback(
 				(APMMetric metric, long count) => this.lastLoggedMetric = metric).Returns(Task.CompletedTask);
-			var mockServiceFactory = new Mock<IServiceFactory>();
-			mockServiceFactory.Setup(foo => foo.CreateProxy<IAPMManager>()).Returns(mockApmManager.Object);
-
-			this.apmSink = new MetricSinkApm(mockServiceFactory.Object, true);
+			var mockServiceFactory = new Mock<IServiceProxyFactory>();
+			mockServiceFactory.Setup(foo => foo.CreateProxyInstance<IAPMManager>()).Returns(mockApmManager.Object);
+			this.apmSink = new MetricSinkApm(new KeplerProxyMock(mockServiceFactory.Object), true);
 			this.lastLoggedMetric = null;
 		}
 

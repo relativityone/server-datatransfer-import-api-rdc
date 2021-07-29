@@ -118,9 +118,6 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 
 		protected override void OnSetup()
 		{
-			// We need to re-login to make sure that authentication token is valid.
-			this.ReLogOn();
-
 			// We want to test that download works when file size is bigger than this value.
 			this.originalWebBasedFileDownloadChunkSize = this.AppSettings.WebBasedFileDownloadChunkSize;
 			this.AppSettings.WebBasedFileDownloadChunkSize = 1000;

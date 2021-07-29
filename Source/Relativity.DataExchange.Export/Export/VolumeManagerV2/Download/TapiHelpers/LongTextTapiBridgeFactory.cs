@@ -5,6 +5,12 @@ using Relativity.Logging;
 
 namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using System;
+
+	using kCura.WinEDDS.Service.Kepler;
+
+	using Relativity.DataExchange.Service;
+
 	public class LongTextTapiBridgeFactory : ITapiBridgeFactory
 	{
 		private readonly ILog _logger;
@@ -12,12 +18,16 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 		private readonly IAppSettings _settings;
 		private readonly CancellationToken _token;
 
+		private Func<string> _getCorrelationId;
+
 		public LongTextTapiBridgeFactory(
 			TapiBridgeParametersFactory tapiBridgeParametersFactory,
 			ILog logger,
-			CancellationToken token)
+			CancellationToken token,
+			Func<string> getCorrelationId)
 			: this(tapiBridgeParametersFactory, logger, AppSettings.Instance, token)
 		{
+			_getCorrelationId = getCorrelationId;
 		}
 
 		public LongTextTapiBridgeFactory(
@@ -44,7 +54,13 @@ namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 			// REL-345129: For large extracted text files, override with a more specialized timeout.
 			parameters.TimeoutSeconds = _settings.HttpExtractedTextTimeoutSeconds;
 
-			DownloadTapiBridge2 downloadTapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, _token);
+			DownloadTapiBridge2 downloadTapiBridge = TapiBridgeFactory.CreateDownloadBridge(
+				parameters,
+				this._logger,
+				this._token,
+				this._getCorrelationId,
+				new WebApiVsKeplerFactory(this._logger),
+				new RelativityManagerServiceFactory());
 			return downloadTapiBridge;
 		}
 	}

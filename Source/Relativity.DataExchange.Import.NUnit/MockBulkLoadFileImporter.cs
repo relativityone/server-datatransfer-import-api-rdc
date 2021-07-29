@@ -11,8 +11,12 @@ namespace Relativity.DataExchange.Import.NUnit
 	using System.Threading;
 	using kCura.EDDS.WebAPI.BulkImportManagerBase;
 	using kCura.WinEDDS;
+
+	using Moq;
+
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Process;
+	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
@@ -33,7 +37,7 @@ namespace Relativity.DataExchange.Import.NUnit
 			Guid processID,
 			bool doRetryLogic,
 			string bulkLoadFileFieldDelimiter,
-			kCura.WinEDDS.Service.IBulkImportManager manager,
+			kCura.WinEDDS.Service.Replacement.IBulkImportManager manager,
 			CancellationTokenSource tokenSource,
 			IRunningContext runningContext)
 			: base(
@@ -48,6 +52,7 @@ namespace Relativity.DataExchange.Import.NUnit
 				doRetryLogic,
 				bulkLoadFileFieldDelimiter,
 				tokenSource,
+				() => nameof(MockBulkLoadFileImporter),
 				runningContext)
 		{
 			this._bulkImportManager = manager;
@@ -124,7 +129,11 @@ namespace Relativity.DataExchange.Import.NUnit
 					                                         FileShare = "./somepath/",
 					                                         TimeoutSeconds = 0,
 				                                         };
-			this.CreateTapiBridges(parameters, parameters.ShallowCopy(), new NullAuthTokenProvider());
+			var relativityManagerServiceFactoryMock = new Mock<IRelativityManagerServiceFactory>();
+			relativityManagerServiceFactoryMock
+				.Setup(x => x.Create(It.IsAny<RelativityInstanceInfo>(), It.IsAny<bool>()))
+				.Returns<RelativityInstanceInfo, bool>((x, y) => new RelativityManagerService(x));
+			this.CreateTapiBridges(parameters, parameters.ShallowCopy(), new NullAuthTokenProvider(), relativityManagerServiceFactoryMock.Object);
 		}
 
 		public void SetBatchCounter(int numberToSet)

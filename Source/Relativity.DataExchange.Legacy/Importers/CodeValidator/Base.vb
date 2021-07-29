@@ -2,11 +2,11 @@ Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS.CodeValidator
 	Public MustInherit Class Base
-		Private _codeManager As kCura.WinEDDS.Service.CodeManager
+		Private _codeManager As kCura.WinEDDS.Service.Replacement.ICodeManager
 		Private _lookup As New System.Collections.Hashtable
 		Private _caseInfo As CaseInfo
 
-		Protected ReadOnly Property CodeManager() As kCura.WinEDDS.Service.CodeManager
+		Protected ReadOnly Property CodeManager() As kCura.WinEDDS.Service.Replacement.ICodeManager
 			Get
 				Return _codeManager
 			End Get
@@ -18,7 +18,7 @@ Namespace kCura.WinEDDS.CodeValidator
 			End Get
 		End Property
 
-		Protected Sub New(ByVal caseInfo As CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
+		Protected Sub New(ByVal caseInfo As CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.Replacement.ICodeManager)
 			_codeManager = codeManager
 			_caseInfo = caseInfo
 		End Sub
