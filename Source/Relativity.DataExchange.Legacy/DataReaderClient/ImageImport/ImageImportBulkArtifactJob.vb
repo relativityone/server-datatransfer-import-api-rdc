@@ -2,6 +2,7 @@ Imports System.Net
 Imports Relativity.DataExchange
 Imports kCura.WinEDDS
 Imports kCura.WinEDDS.ImportExtension
+Imports kCura.WinEDDS.Service
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
@@ -98,6 +99,8 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _cookieMonster As Net.CookieContainer
 		Private _jobReport As JobReport
 		Private _webApiCredential As WebApiCredential
+		Private _correlationIdFunc As Func(Of String)
+        Private _instanceId As Guid = Guid.NewGuid()
 #End Region
 
 #Region " Public Methods "
@@ -109,6 +112,7 @@ Namespace kCura.Relativity.DataReaderClient
 			_settings = New ImageSettings
 			_sourceData = New ImageSourceIDataReader
 			_cookieMonster = New Net.CookieContainer()
+			_correlationIdFunc = AddressOf GetDefaultCorrelationId
 		End Sub
 
 		''' <summary>
@@ -117,12 +121,14 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <param name="credentials">The credentials.</param>
 		''' <param name="cookieMonster">The cookie monster.</param>
 		''' <param name="runningContext">Contains information about the context in which jobs are executed.</param>
-		Friend Sub New(ByVal credentials As ICredentials, ByVal webApiCredential As WebApiCredential,  ByVal cookieMonster As Net.CookieContainer, runningContext As IRunningContext)
+		''' <param name="correlationIdFunc">Function retrieving correlation id related with import job.</param>
+		Friend Sub New(ByVal credentials As ICredentials, ByVal webApiCredential As WebApiCredential, ByVal cookieMonster As Net.CookieContainer, runningContext As IRunningContext, correlationIdFunc As Func(Of String))
 			Me.New()
 			_runningContext = runningContext
 			_credentials = credentials
 			_cookieMonster = cookieMonster
 			_webApiCredential = webApiCredential
+		    _correlationIdFunc = correlationIdFunc
 		End Sub
 
 		''' <summary>
@@ -135,7 +141,7 @@ Namespace kCura.Relativity.DataReaderClient
 			' Authenticate here instead of in CreateLoadFile
 			If _credentials Is Nothing Then
 				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
-				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword, _runningContext)
+				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword, _runningContext, _correlationIdFunc)
 				_credentials = creds.Credentials
 				_webApiCredential.Credential = creds.Credentials
 				_cookieMonster = creds.CookieMonster
@@ -144,9 +150,9 @@ Namespace kCura.Relativity.DataReaderClient
 			If IsSettingsValid() Then
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_webApiCredential.Credential))
+			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, KeplerProxyFactory.CreateKeplerProxy(_webApiCredential.Credential))
 				_runningContext.ApplicationName = Settings.ApplicationName
-			    Dim process As kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess = New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData, Settings, metricService, _runningContext)
+				Dim process As kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess = New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData, Settings, metricService, _runningContext, _correlationIdFunc)
 				_processContext = process.Context
 
 				If Settings.DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = Settings.DisableImageTypeValidation.Value
@@ -229,7 +235,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 			Dim credential As System.Net.NetworkCredential = DirectCast(_credentials, Net.NetworkCredential)
 
-			Dim casemanager As kCura.WinEDDS.Service.CaseManager = GetCaseManager(credential)
+			Dim casemanager As kCura.WinEDDS.Service.Replacement.ICaseManager = GetCaseManager(credential)
 			Dim tempLoadFile As New kCura.WinEDDS.ImageLoadFile
 
 			'These are ALL of the image file settings
@@ -283,7 +289,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Function GetDefaultIdentifierFieldID(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32) As Int32
 			Dim retval As Int32
-			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(credential, _cookieMonster).RetrievePotentialBeginBatesFields(caseArtifactID).Tables(0)
+			Dim dt As System.Data.DataTable = ManagerFactory.CreateFieldQuery(credential, _cookieMonster, _correlationIdFunc).RetrievePotentialBeginBatesFields(caseArtifactID).Tables(0)
 			For Each identifierRow As System.Data.DataRow In dt.Rows
 				If CType(identifierRow("FieldCategoryID"), FieldCategory) = FieldCategory.Identifier Then
 					retval = CType(identifierRow("ArtifactID"), Int32)
@@ -292,11 +298,13 @@ Namespace kCura.Relativity.DataReaderClient
 			Return retval
 		End Function
 
-		Private Function GetCaseManager(ByVal credentials As Net.ICredentials) As kCura.WinEDDS.Service.CaseManager
-			Return New kCura.WinEDDS.Service.CaseManager(credentials, _cookieMonster)
+		Private Function GetCaseManager(ByVal credentials As NetworkCredential) As kCura.WinEDDS.Service.Replacement.ICaseManager
+			Return ManagerFactory.CreateCaseManager(credentials, _cookieMonster, _correlationIdFunc)
 		End Function
 
-
+        Private Function GetDefaultCorrelationId() As String
+            Return _instanceId.ToString()
+        End Function
 #End Region
 
 #Region " Validation "

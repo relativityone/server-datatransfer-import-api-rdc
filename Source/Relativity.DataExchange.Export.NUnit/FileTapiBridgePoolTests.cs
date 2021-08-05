@@ -109,7 +109,8 @@ namespace Relativity.DataExchange.Export.NUnit
 				this._messageHandler.Object,
 				this._transferClientHandler.Object,
 				testNullLogger,
-				ForceCreatesTransferClient);
+				ForceCreatesTransferClient,
+				() => string.Empty);
 		}
 
 		[Test]
@@ -153,6 +154,8 @@ namespace Relativity.DataExchange.Export.NUnit
 		[Test]
 		public void ItShouldDisposeAllTapiBridges()
 		{
+			TapiBridgeFactory.UseLegacyWebApiInTests = false;
+
 			Mock<IRelativityFileShareSettings> settings1 = CreateMockRelativityFileShareSettings(1, @"\\files1\Files");
 			Mock<IRelativityFileShareSettings> settings2 = CreateMockRelativityFileShareSettings(1, @"\\files2\Files");
 			this._uut.Request(settings1.Object, CancellationToken.None);

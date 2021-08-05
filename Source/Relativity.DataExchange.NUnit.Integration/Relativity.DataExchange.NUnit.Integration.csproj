@@ -113,6 +113,11 @@
     </Compile>
     <Compile Include="KeplerServiceProxyFactoryTests.cs" />
     <Compile Include="LongTextStreamServiceTests.cs" />
+    <Compile Include="Mapping\KeplerFileIoExceptionMapperTests.cs" />
+    <Compile Include="Mapping\KeplerExportExceptionMapperTests.cs" />
+    <Compile Include="Mapping\KeplerBulkImportExceptionMapperTests.cs" />
+    <Compile Include="Mapping\ExceptionAssertHelper.cs" />
+    <Compile Include="Service\RelativityDistributed\KeplerDistributedReplacementTests.cs" />
     <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeTests.cs" />
     <Compile Include="TapiObjectServiceTests.cs" />
     <Compile Include="AssemblySetup.cs" />
@@ -199,18 +204,14 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
-    <When Condition="'$(Configuration)'!='Debug'">
-      <ItemGroup>
-        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
-          <Paket>True</Paket>
-        </Analyzer>
-        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
-          <Paket>True</Paket>
-        </Analyzer>
-      </ItemGroup>
-    </When>
-  </Choose>
+  <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
+    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+  </ItemGroup></When></Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -311,6 +312,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
+          <HintPath>..\..\packages\Relativity.DataTransfer.Legacy.SDK\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Kepler">
           <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
           <Private>True</Private>
@@ -324,6 +336,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Services.ServiceProxy">
           <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client.SDK\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

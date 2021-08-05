@@ -51,6 +51,7 @@ properties {
 	$DotCoverExe = Join-Path $PackagesDir "JetBrains.dotCover.CommandLineTools\tools\dotCover.exe"
 	$ReportGeneratorExe = Join-Path $PackagesDir "ReportGenerator\tools\net47\ReportGenerator.exe"
 	$ReportUnitExe = Join-Path $PackagesDir "ReportUnit\tools\ReportUnit.exe"
+	$nugetExe = Join-Path $PaketDir "nuget.exe"
 	$PaketExe = Join-Path $PaketDir "paket.exe"
 	$ProgetUrl = "https://proget.kcura.corp/nuget/NuGet"
 	$SqlComparerRunner = Join-Path $SourceDir "SQLDataComparer\SQLDataComparer.Runner\bin\Release\SQLDataComparer.Runner.exe"
@@ -264,7 +265,6 @@ task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
     folders\Initialize-Folder $LogsDir -Safe
     folders\Initialize-Folder $PackagesArtifactsDir -Safe
     $version = versioning\Get-ReleaseVersion "$Branch"
-	$nugetExe = Join-Path $PaketDir "nuget.exe"
 	
     Write-Host "Package version: $version"
     Write-Host "Working directory: $PSScriptRoot"
@@ -898,6 +898,13 @@ task UnitTestResults -Description "Retrieve the unit test results from the Xml f
 
 task LoadTestResults -Description "Retrieve the load test results from the Xml file" {
     testing\Write-TestResultsOutput $LoadTestsReportDir
+}
+
+task InstallDataTransferLegacyRap -Description "Installs DataTransfer.Legacy application in the application library." {
+	$relativityHost = [Paths.UriScheme]::GetHost($TestTarget)
+	exec { 
+		& $ScriptsDir\Install-DataTransferLegacy.ps1 -RelativityHost "$relativityHost" -RelativityUsername 'relativity.admin@kcura.com' -RelativityPassword 'Test1234!' -NugetExe "$NugetExe"
+	} -errorMessage "Installing DataTransfer.Legacy application failed"
 }
 
 task ReplaceTestVariables -Depends ReadSqlPassword -Description "Replace test variables in file" {

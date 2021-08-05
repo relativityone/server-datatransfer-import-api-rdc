@@ -34,15 +34,15 @@ Namespace Relativity.DataExchange.Import.NUnit
 		Private _importBatchSize As Int32
 
 		Public Sub New(ByVal args As ImageLoadFile, ByVal processContext As ProcessContext, ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager, ByVal tokenSource As CancellationTokenSource)
-			MyBase.new(0, args, processContext, ioReporterInstance, logger, processID, doRetryLogic, tokenSource)
+			MyBase.new(0, args, processContext, ioReporterInstance, logger, processID, doRetryLogic, tokenSource, AddressOf GetCorrelationIdFunc)
 			Me.WillThrowException = throwsException
 			_bulkImportManager = bulkManager
 			Me.ImportBatchSize = 500
 			Me.ImportBatchVolume = 1000000
 		End Sub
 
-		Public Sub New(ByVal importBatchSize As Int32, ByVal inputForStringReader As String, ByVal args As ImageLoadFile, ByVal processContext As ProcessContext, 
-                       ByVal ioReporter As IIoReporter, ByVal logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager,  ByVal tokenSource As CancellationTokenSource)
+		Public Sub New(ByVal importBatchSize As Int32, ByVal inputForStringReader As String, ByVal args As ImageLoadFile, ByVal processContext As ProcessContext,
+					   ByVal ioReporter As IIoReporter, ByVal logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager, ByVal tokenSource As CancellationTokenSource)
 			Me.New(args, processContext, ioReporter, logger, processID, doRetryLogic, throwsException, bulkManager, tokenSource)
 			_inputForStringReader = inputForStringReader
 			_importBatchSize = importBatchSize
@@ -105,5 +105,8 @@ Namespace Relativity.DataExchange.Import.NUnit
 			End Get
 		End Property
 
+		Private Shared Function GetCorrelationIdFunc() As String
+			Return NameOf(MockForLoweBatchSizeBulkImageFileImporter)
+		End Function
 	End Class
 End NameSpace

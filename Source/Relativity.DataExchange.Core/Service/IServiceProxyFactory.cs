@@ -10,6 +10,7 @@
 namespace Relativity.DataExchange.Service
 {
 	using System;
+	using System.Net;
 
 	/// <summary>
 	/// Represents an abstract class object to create web service proxy instances.
@@ -27,5 +28,11 @@ namespace Relativity.DataExchange.Service
 		/// </returns>
 		TProxy CreateProxyInstance<TProxy>()
 			where TProxy : class, IDisposable;
+
+		/// <summary>
+		/// Updates credentials used for authenticating in Kepler.
+		/// </summary>
+		/// <param name="credential">Credential.</param>
+		void UpdateCredentials(NetworkCredential credential);
 	}
 }

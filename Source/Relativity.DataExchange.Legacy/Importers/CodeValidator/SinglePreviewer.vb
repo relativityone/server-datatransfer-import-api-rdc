@@ -4,7 +4,7 @@ Namespace kCura.WinEDDS.CodeValidator
 	Public Class SinglePreviewer
 		Inherits Base
 
-		Public Sub New(ByVal caseInfo As CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
+		Public Sub New(ByVal caseInfo As CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.Replacement.ICodeManager)
 			MyBase.New(caseInfo, codeManager)
 		End Sub
 

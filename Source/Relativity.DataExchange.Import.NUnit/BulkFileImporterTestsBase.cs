@@ -7,18 +7,21 @@
 namespace Relativity.DataExchange.Import.NUnit
 {
 	using System;
+	using System.Net;
 	using System.Threading;
 
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS.Service;
+	using kCura.WinEDDS.Service.Replacement;
 
 	using Moq;
 
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Process;
-	using Relativity.DataExchange.Transfer;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Service.WebApiVsKeplerSwitch;
 	using Relativity.Logging;
 
 	/// <summary>
@@ -86,9 +89,25 @@ namespace Relativity.DataExchange.Import.NUnit
 			this.IoReporter = new IoReporter(new IoReporterContext(), this.MockLogger.Object, this.TokenSource.Token);
 			AppSettings.Instance.IoErrorWaitTimeInSeconds = 0;
 			AppSettings.Instance.ProgrammaticWebApiServiceUrl = "https://r1.kcura.com/RelativityWebAPI/";
+
+			SetupManagerFactory();
+
 			this.OnSetup();
 		}
 
 		protected abstract void OnSetup();
+
+		private static void SetupManagerFactory()
+		{
+			var webApiVsKeplerMock = new Mock<IWebApiVsKepler>();
+			webApiVsKeplerMock.Setup(x => x.UseKepler()).Returns(true);
+			ManagerFactory._webApiVsKepler = webApiVsKeplerMock.Object;
+			ManagerFactory._currentUrl = AppSettings.Instance.WebApiServiceUrl;
+			var emptyCredentials = new NetworkCredential();
+			ManagerFactory._currentCredentials = emptyCredentials;
+			ManagerFactory._connectionInfo = new KeplerServiceConnectionInfo(
+				new Uri(AppSettings.Instance.WebApiServiceUrl),
+				emptyCredentials);
+		}
 	}
 }

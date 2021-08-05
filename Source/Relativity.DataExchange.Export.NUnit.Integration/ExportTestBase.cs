@@ -80,6 +80,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected TestNullLogger Logger { get; private set; }
 
+		protected bool CorrelationIdRetrieved { get; set; }
+
 		[SetUp]
 		public void Setup()
 		{
@@ -88,7 +90,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			// This registers all components.
 			this.testContainer = new WindsorContainer();
-			ContainerFactoryProvider.ContainerFactory = new TestContainerFactory(this.testContainer, this.Logger);
+			ContainerFactoryProvider.ContainerFactory = new TestContainerFactory(this.testContainer, this.Logger, this.GetCorrelationId);
 
 			this.cookieContainer = new CookieContainer();
 			this.credentials = new NetworkCredential(TestParameters.RelativityUserName, TestParameters.RelativityPassword);
@@ -154,6 +156,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.exporterTestJobResult = new ExportTestJobResult();
 
 			AppSettingsManager.Default(AppSettings.Instance);
+
+			this.CorrelationIdRetrieved = false;
 		}
 
 		[TearDown]
@@ -264,7 +268,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				throw new ArgumentNullException(nameof(caseInfo));
 			}
 
-			using (var folderManager = new FolderManager(this.credentials, this.cookieContainer))
+			using (var folderManager = ManagerFactory.CreateFolderManager(this.credentials, this.cookieContainer, this.GetCorrelationId))
 			{
 				FolderCache folderCache = new FolderCache(this.Logger, folderManager, caseInfo.RootFolderID, caseInfo.ArtifactID);
 				int folderArtifactId = folderCache.GetFolderId(folderPath);
@@ -274,15 +278,15 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected void WhenCreatingTheExportFile()
 		{
-			using (var caseManager = new CaseManager(this.credentials, this.cookieContainer))
+			using (var caseManager = ManagerFactory.CreateCaseManager(this.credentials, this.cookieContainer, this.GetCorrelationId))
 			{
 				CaseInfo caseInfo = caseManager.Read(TestParameters.WorkspaceId);
 				this.ExtendedExportFile.CaseInfo = caseInfo;
 				this.ExtendedExportFile.ArtifactID = caseInfo.RootFolderID;
 			}
 
-			using (var searchManager = new SearchManager(this.credentials, this.cookieContainer))
-			using (var productionManager = new ProductionManager(this.credentials, this.cookieContainer))
+			using (var searchManager = ManagerFactory.CreateSearchManager(this.credentials, this.cookieContainer, this.GetCorrelationId))
+			using (var productionManager = ManagerFactory.CreateProductionManager(this.credentials, this.cookieContainer, this.GetCorrelationId))
 			{
 				this.ExtendedExportFile.ObjectTypeName = this.GetObjectTypeName(this.ExtendedExportFile.ArtifactTypeID);
 				switch (this.ExtendedExportFile.TypeOfExport)
@@ -335,7 +339,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				new ExportFileFormatterFactory(),
 				new ExportConfig(),
 				this.Logger,
-				this.cancellationTokenSource.Token);
+				this.cancellationTokenSource.Token,
+				this.GetCorrelationId);
 			try
 			{
 				exporter.InteractionManager = new EventBackedUserNotification(exporter);
@@ -478,6 +483,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			}
 		}
 
+		protected void ThenTheCorrelationIdWasRetrieved()
+		{
+			Assert.That(this.CorrelationIdRetrieved);
+		}
+
 		private static Dictionary<string, string> ToAuditDetails(ExtendedExportFile exportFile)
 		{
 			string ToYesNo(bool value)
@@ -521,7 +531,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			return ExportedFilesValidator.ValidateFileStringContentAsync(GetPathToExportedDocumentLoadFile(), string.Empty);
 		}
 
-		private DataTable GetSearchExportDataSource(SearchManager searchManager, bool isArtifactSearch, int artifactType)
+		private DataTable GetSearchExportDataSource(ISearchManager searchManager, bool isArtifactSearch, int artifactType)
 		{
 			DataSet dataset = searchManager.RetrieveViewsByContextArtifactID(
 				TestParameters.WorkspaceId,
@@ -532,7 +542,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		private string GetObjectTypeName(int artifactTypeId)
 		{
-			using (var objectTypeManager = new ObjectTypeManager(this.credentials, this.cookieContainer))
+			using (var objectTypeManager = ManagerFactory.CreateObjectTypeManager(this.credentials, this.cookieContainer, this.GetCorrelationId))
 			{
 				DataSet dataset = objectTypeManager.RetrieveAllUploadable(TestParameters.WorkspaceId);
 				DataRowCollection rows = dataset.Tables[0].Rows;
@@ -555,7 +565,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		private DocumentFieldCollection GetFields(int artifactTypeId)
 		{
 			var fields = new DocumentFieldCollection();
-			using (var fieldQuery = new FieldQuery(this.credentials, this.cookieContainer))
+			using (var fieldQuery = ManagerFactory.CreateFieldQuery(this.credentials, this.cookieContainer, this.GetCorrelationId))
 			{
 				foreach (Field field in fieldQuery.RetrieveAllAsArray(TestParameters.WorkspaceId, artifactTypeId))
 				{
@@ -756,5 +766,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				.PadLeft(this.ExtendedExportFile.SubdirectoryDigitPadding, '0');
 			return subDirectory;
 		}
+
+		private string GetCorrelationId()
+        {
+            this.CorrelationIdRetrieved = true;
+            return this.GetType().Name;
+        }
 	}
 }

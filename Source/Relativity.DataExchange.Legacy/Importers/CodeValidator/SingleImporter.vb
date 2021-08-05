@@ -5,7 +5,7 @@ Namespace kCura.WinEDDS.CodeValidator
 		Inherits Base
 		Private _createdCodeCount As Int32 = 0
 
-		Public Sub New(ByVal caseInfo As CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
+		Public Sub New(ByVal caseInfo As CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.Replacement.ICodeManager)
 			MyBase.New(caseInfo, codeManager)
 		End Sub
 

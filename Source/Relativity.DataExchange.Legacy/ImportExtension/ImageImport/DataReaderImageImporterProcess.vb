@@ -10,8 +10,8 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _reader As IDataReader
 		Private _imageSettings As ImageSettings
 
-		Public Sub New(ByVal sourceData As ImageSourceIDataReader, ByVal imageSettings As ImageSettings, ByVal metricService As IMetricService, ByVal runningContext As IRunningContext)
-			MyBase.New(metricService, runningContext)
+		Public Sub New(ByVal sourceData As ImageSourceIDataReader, ByVal imageSettings As ImageSettings, ByVal metricService As IMetricService, ByVal runningContext As IRunningContext, correlationIdFunc As Func(Of String))
+			MyBase.New(metricService, runningContext, correlationIdFunc)
 			_reader = sourceData.Reader
 			_imageSettings = imageSettings
 		End Sub
@@ -29,6 +29,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				Me.CancellationTokenSource,
 				_reader,
 				_imageSettings,
+				_correlationIdFunc,
 				Me.RunningContext.ExecutionSource)
 		End Function
 

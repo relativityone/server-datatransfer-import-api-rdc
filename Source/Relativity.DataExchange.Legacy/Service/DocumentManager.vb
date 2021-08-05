@@ -4,6 +4,7 @@ Imports Relativity.DataExchange.Service
 Namespace kCura.WinEDDS.Service
 	Public Class DocumentManager
 		Inherits kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
+		Implements Replacement.IDocumentManager
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
@@ -65,7 +66,7 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function RetrieveAllUnsupportedOiFileIds() As Int32()
+		Public Shadows Function RetrieveAllUnsupportedOiFileIds() As Int32() Implements Replacement.IDocumentManager.RetrieveAllUnsupportedOiFileIds
 			Return RetryOnReLoginException(Function() MyBase.RetrieveAllUnsupportedOiFileIds())
 		End Function
 

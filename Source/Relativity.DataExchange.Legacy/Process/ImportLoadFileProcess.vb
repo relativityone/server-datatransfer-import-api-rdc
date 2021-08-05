@@ -1,3 +1,4 @@
+Imports kCura.WinEDDS.Service
 Imports Monitoring
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange
@@ -28,17 +29,17 @@ Namespace kCura.WinEDDS
 		Private _auditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
-		Public Sub New()
-			Me.New(New MetricService(New ImportApiMetricSinkConfig), New RunningContext())
+		Public Sub New(correlationIdFunc As Func(Of String))
+			Me.New(New MetricService(New ImportApiMetricSinkConfig), New RunningContext(), correlationIdFunc)
 		End Sub
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
-		Public Sub New(metricService As IMetricService, runningContext As IRunningContext)
-			Me.New(metricService, runningContext, RelativityLogger.Instance)
+		Public Sub New(metricService As IMetricService, runningContext As IRunningContext, correlationIdFunc As Func(Of String))
+			Me.New(metricService, runningContext, RelativityLogger.Instance, correlationIdFunc)
 		End Sub
 
-		Public Sub New(metricService As IMetricService, runningContext As IRunningContext, logger As Global.Relativity.Logging.ILog)
-			MyBase.New(metricService, runningContext, logger)
+		Public Sub New(metricService As IMetricService, runningContext As IRunningContext, logger As Global.Relativity.Logging.ILog, correlationIdFunc As Func(Of String))
+			MyBase.New(metricService, runningContext, logger, correlationIdFunc)
 		End Sub
 
 		Public WriteOnly Property DisableNativeValidation As Boolean
@@ -126,16 +127,17 @@ Namespace kCura.WinEDDS
 			_IoReporterContext = New IoReporterContext(Me.FileSystem, Me.AppSettings, New WaitAndRetryPolicy(Me.AppSettings))
 			Dim reporter As IIoReporter = Me.CreateIoReporter(_IoReporterContext)
 			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(
-				LoadFile, _
-				Me.Context, _
-				reporter, _
-				logger, _
-				_timeZoneOffset, _
-				True, _
-				Me.ProcessID, _
-				True, _
-				BulkLoadFileFieldDelimiter, _
-				Me.CancellationTokenSource, _
+				LoadFile,
+				Me.Context,
+				reporter,
+				Logger,
+				_timeZoneOffset,
+				True,
+				Me.ProcessId,
+				True,
+				BulkLoadFileFieldDelimiter,
+				Me.CancellationTokenSource,
+				_correlationIdFunc,
 				Me.RunningContext)
 			Return returnImporter
 		End Function
@@ -384,7 +386,7 @@ Namespace kCura.WinEDDS
 				retval.StartLine = CType(System.Math.Min(LoadFile.StartLineNumber, Int32.MaxValue), Int32)
 				retval.TotalMetadataBytes = _loadFileImporter.Statistics.MetadataTransferredBytes
 				retval.SendNotification = LoadFile.SendEmailOnLoadCompletion
-				Dim auditManager As New kCura.WinEDDS.Service.AuditManager(LoadFile.Credentials, LoadFile.CookieContainer)
+				Dim auditManager As kCura.WinEDDS.Service.Replacement.IAuditManager = ManagerFactory.CreateAuditManager(LoadFile.Credentials, LoadFile.CookieContainer, AddressOf GetCorrelationId)
 
 				auditManager.AuditObjectImport(LoadFile.CaseInfo.ArtifactID, runID, _hasFatalErrorOccured, retval)
 			Catch ex As Exception

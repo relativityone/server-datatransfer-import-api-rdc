@@ -168,6 +168,9 @@
     <Content Include="oi\unmanaged\wvcore-R1.dll">
       <Paket>True</Paket>
     </Content>
+    <Compile Include="Service\Kepler\KeplerProxy.vb" />
+    <Compile Include="Service\Kepler\WebApiVsKeplerFactory.vb" />
+    <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeFactory.vb" />
     <Import Include="Microsoft.VisualBasic" />
     <Import Include="System" />
     <Import Include="System.Collections" />
@@ -205,6 +208,9 @@
     <Compile Include="FileValidation\TiffValidator.vb" />
     <Compile Include="Helpers\FileSizeHelper.vb" />
     <Compile Include="ImportExtension\ImageImport\ImageDataReader.vb" />
+    <Compile Include="Mapping\IServiceExceptionMapper.vb" />
+    <Compile Include="Mapping\KeplerExceptionMapper.vb" />
+    <Compile Include="Mapping\KeplerExceptionDetail.vb" />
     <Compile Include="Monitoring\BatchInformation.vb" />
     <Compile Include="Helpers\ClientInformationHelper.vb" />
     <Compile Include="Monitoring\MetricAuthenticationType.vb" />
@@ -426,7 +432,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
-    <Compile Include="Service\IBulkImportManager.vb" />
+    <Compile Include="Mapping\ITypeMapper.vb" />
+    <Compile Include="Mapping\KeplerTypeMapper.vb" />
+    <Compile Include="Service\Replacement\IUserManager.vb" />
+    <Compile Include="Service\Replacement\IRelativityManager.vb" />
+    <Compile Include="Service\Replacement\IProductionManager.vb" />
+    <Compile Include="Service\Replacement\IObjectTypeManager.vb" />
+    <Compile Include="Service\Replacement\IObjectManager.vb" />
+    <Compile Include="Service\Replacement\IFolderManager.vb" />
+    <Compile Include="Service\Replacement\IFileIO.vb" />
+    <Compile Include="Service\Replacement\IFieldQuery.vb" />
+    <Compile Include="Service\Replacement\IAuditManager.vb" />
+    <Compile Include="Service\Replacement\IBulkImportManager.vb" />
     <Compile Include="Service\ApplicationVersionService.vb" />
     <Compile Include="Importers\TimeKeeper\DefaultTimeKeeperManager.vb" />
     <Compile Include="Importers\TimeKeeper\DefaultTimerKeeper.vb" />
@@ -471,7 +488,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ReadFromExisting.vb" />
-    <Compile Include="ServiceFactoryFactory.vb" />
+    <Compile Include="KeplerProxyFactory.vb" />
     <Compile Include="Service\AuditManager.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -518,6 +535,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Service\Export\ICaseManager.vb" />
+    <Compile Include="Service\Replacement\ICaseManager.vb" />
+    <Compile Include="Service\Replacement\ICodeManager.vb" />
+    <Compile Include="Service\Replacement\IDocumentManager.vb" />
+    <Compile Include="Service\Replacement\IExportManager.vb" />
     <Compile Include="Service\IHierarchicArtifactManager.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -533,6 +554,27 @@
     <Compile Include="Service\RelativityManager.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Service\Replacement\IFieldManager.vb" />
+    <Compile Include="Service\Replacement\ISearchManager.vb" />
+    <Compile Include="Service\ManagerFactory.vb" />
+    <Compile Include="Service\Replacement\KeplerApplicationVersionService.vb" />
+    <Compile Include="Service\Replacement\KeplerAuditManager.vb" />
+    <Compile Include="Service\Replacement\KeplerBulkImportManager.vb" />
+    <Compile Include="Service\Replacement\KeplerCaseManager.vb" />
+    <Compile Include="Service\Replacement\KeplerCodeManager.vb" />
+    <Compile Include="Service\Replacement\KeplerDocumentManager.vb" />
+    <Compile Include="Service\Replacement\KeplerExportManager.vb" />
+    <Compile Include="Service\Replacement\KeplerFieldManager.vb" />
+    <Compile Include="Service\Replacement\KeplerFileIO.vb" />
+    <Compile Include="Service\Replacement\KeplerFolderManager.vb" />
+    <Compile Include="Service\Replacement\KeplerManager.vb" />
+    <Compile Include="Service\Replacement\KeplerFieldQuery.vb" />
+    <Compile Include="Service\Replacement\KeplerObjectManager.vb" />
+    <Compile Include="Service\Replacement\KeplerObjectTypeManager.vb" />
+    <Compile Include="Service\Replacement\KeplerProductionManager.vb" />
+    <Compile Include="Service\Replacement\KeplerRelativityManager.vb" />
+    <Compile Include="Service\Replacement\KeplerSearchManager.vb" />
+    <Compile Include="Service\Replacement\KeplerUserManager.vb" />
     <Compile Include="Service\SearchManager.vb">
       <SubType>code</SubType>
     </Compile>
@@ -1142,6 +1184,20 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Microsoft.CSharp">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="AutoMapper">
+          <HintPath>..\..\packages\AutoMapper\lib\net461\AutoMapper.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Castle.Core">
           <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
           <Private>True</Private>
@@ -1186,6 +1242,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
+          <HintPath>..\..\packages\Relativity.DataTransfer.Legacy.SDK\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Kepler">
           <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
           <Private>True</Private>
@@ -1199,6 +1266,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Services.ServiceProxy">
           <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client.SDK\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1257,9 +1335,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Microsoft.CSharp">
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="System.Data.DataSetExtensions">
           <Paket>True</Paket>
         </Reference>

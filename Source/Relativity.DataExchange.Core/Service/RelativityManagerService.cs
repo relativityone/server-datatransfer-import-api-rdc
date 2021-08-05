@@ -10,7 +10,6 @@
 namespace Relativity.DataExchange.Service
 {
 	using System;
-
 	using Polly;
 
 	/// <summary>
@@ -19,7 +18,7 @@ namespace Relativity.DataExchange.Service
 	/// <remarks>
 	/// This class exists in this assembly to provide minimal WebAPI functionality.
 	/// </remarks>
-	internal class RelativityManagerService : WebApiServiceBase
+	internal class RelativityManagerService : WebApiServiceBase, IRelativityManagerService
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RelativityManagerService"/> class.

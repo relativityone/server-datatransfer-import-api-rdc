@@ -154,6 +154,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			await this.ThenTheExportedDocumentLoadFileIsAsExpectedAsync().ConfigureAwait(false);
 			await this.ThenTheExportedImageLoadFileIsAsExpectedAsync().ConfigureAwait(false);
+
+			this.ThenTheCorrelationIdWasRetrieved();
 		}
 	}
 }

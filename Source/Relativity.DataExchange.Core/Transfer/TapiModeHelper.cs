@@ -23,11 +23,6 @@ namespace Relativity.DataExchange.Transfer
 	internal static class TapiModeHelper
 	{
 		/// <summary>
-		/// The singleton instance.
-		/// </summary>
-		private static readonly ITapiObjectService Instance = new TapiObjectService();
-
-		/// <summary>
 		/// Gets the dictionary that orders the Transfer API clients.
 		/// </summary>
 		private static IDictionary<TapiClient, int> TapiClientOrderMap =>
@@ -72,13 +67,13 @@ namespace Relativity.DataExchange.Transfer
 		/// Builds the import file transfer mode status text from the native and metadata transfer clients.
 		/// </summary>
 		/// <param name="nativeFilesCopied">
-		/// <see langword="true" /> to copy all natives; otherwise, <see langword="false" /> skips copying natives.
+		///     <see langword="true" /> to copy all natives; otherwise, <see langword="false" /> skips copying natives.
 		/// </param>
 		/// <param name="native">
-		/// Specify the client used to transfer native files.
+		///     Specify the client used to transfer native files.
 		/// </param>
 		/// <param name="metadata">
-		/// Specify the client used to transfer metadata files.
+		///     Specify the client used to transfer metadata files.
 		/// </param>
 		/// <returns>
 		/// The status text.
@@ -89,14 +84,12 @@ namespace Relativity.DataExchange.Transfer
 			TapiClient? metadata)
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			string nativeFilesMode = GetFileTransferModeText(
-				native != null ? new[] { native.Value } : new TapiClient[] { });
+			string nativeFilesMode = GetFileTransferModeText(native != null ? new[] { native.Value } : new TapiClient[] { });
 			sb.AppendFormat(
 				Strings.FileTransferStatusTextModePrefix,
 				nativeFilesCopied ? nativeFilesMode : Strings.FileTransferModeDisabled);
 			sb.Append(", ");
-			string metadataFilesMode = GetFileTransferModeText(
-				metadata != null ? new[] { metadata.Value } : new TapiClient[] { });
+			string metadataFilesMode = GetFileTransferModeText(metadata != null ? new[] { metadata.Value } : new TapiClient[] { });
 			sb.AppendFormat(Strings.FileTransferStatusTextMetadataPrefix, metadataFilesMode);
 			return sb.ToString();
 		}
@@ -105,10 +98,10 @@ namespace Relativity.DataExchange.Transfer
 		/// Builds the export file transfer mode status text from the list of native transfer clients.
 		/// </summary>
 		/// <param name="nativeFilesCopied">
-		/// <see langword="true" /> to copy all natives; otherwise, <see langword="false" /> skips copying natives.
+		///     <see langword="true" /> to copy all natives; otherwise, <see langword="false" /> skips copying natives.
 		/// </param>
 		/// <param name="natives">
-		/// The list of native transfer clients.
+		///     The list of native transfer clients.
 		/// </param>
 		/// <returns>
 		/// The status text.
@@ -165,7 +158,7 @@ namespace Relativity.DataExchange.Transfer
 		/// Gets the file transfer mode text for the specified client.
 		/// </summary>
 		/// <param name="clients">
-		/// The list of clients.
+		///     The list of clients.
 		/// </param>
 		/// <returns>
 		/// The text.
@@ -181,7 +174,7 @@ namespace Relativity.DataExchange.Transfer
 					sb.Append("/");
 				}
 
-				sb.Append(Instance.GetClientDisplayName(GetClientId(flaggedClient)));
+				sb.Append(TapiObjectService.GetClientDisplayName(GetClientId(flaggedClient)));
 			}
 
 			if (sb.Length == 0)

@@ -194,6 +194,7 @@ namespace Relativity.DataExchange
 		public const bool UseSynchronizedImportBatchModeDefaultValue = true;
 		public const string UseSearchablePdfKey = "UseSearchablePdf";
 		public const bool UseSearchablePdfDefaultValue = true;
+		public const string UseKeplerKey = "UseKepler";
 #pragma warning restore SA1600
 	}
 }

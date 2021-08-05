@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Generic
+Imports kCura.WinEDDS.Service
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Service
 
@@ -66,7 +67,7 @@ Namespace kCura.WinEDDS
 		Private _continue As Boolean
 		Dim _folders As System.Collections.Specialized.HybridDictionary
 		Dim _choicesTable As New Dictionary(Of Int32, Dictionary(Of String, Boolean))	 'Dictionary to track the choice values created per column index
-		Dim _codeManager As kCura.WinEDDS.Service.CodeManager
+		Dim _codeManager As kCura.WinEDDS.Service.Replacement.ICodeManager
 #End Region
 
 #Region "Event stuff"
@@ -95,12 +96,12 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean)
-			MyBase.New(args, trackErrorsAsFieldValues)
+		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean, correlationIdFunc As Func(Of String))
+			MyBase.New(args, trackErrorsAsFieldValues, correlationIdFunc)
 			_haltListener = New HaltListener
 			_continue = True
 			_folders = New System.Collections.Specialized.HybridDictionary
-			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
+			_codeManager = ManagerFactory.CreateCodeManager(args.Credentials, args.CookieContainer, correlationIdFunc)
 		End Sub
 
 		Private Function NeedToCheckFolders() As Boolean

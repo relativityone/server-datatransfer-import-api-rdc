@@ -13,25 +13,24 @@ namespace Relativity.DataExchange.Service
 	using Relativity.AutomatedWorkflows.Services.Interfaces;
 	using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
 	using Relativity.Logging;
-	using Relativity.Services.ServiceProxy;
 
 	/// <summary>
 	/// Contains methods for triggering the automated workflow.
 	/// </summary>
 	public class TriggerManager
 	{
-		private readonly IServiceFactory _serviceFactory;
+		private readonly IKeplerProxy _keplerProxy;
 		private readonly ILog _logger;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TriggerManager"/> class.
 		/// </summary>
 		/// <param name="logger">Logger.</param>
-		/// <param name="sf">Service factory for using the proxy.</param>
-		public TriggerManager(ILog logger, IServiceFactory sf)
+		/// <param name="keplerProxy">Kepler proxy.</param>
+		public TriggerManager(ILog logger, IKeplerProxy keplerProxy)
 		{
 			this._logger = logger;
-			this._serviceFactory = sf;
+			this._keplerProxy = keplerProxy;
 		}
 
 		/// <summary>
@@ -78,11 +77,17 @@ namespace Relativity.DataExchange.Service
 															},
 					State = state,
 				};
-				using (IAutomatedWorkflowsService triggerProcessor = this._serviceFactory.CreateProxy<IAutomatedWorkflowsService>())
+
+				async Task SendTrigger(IServiceProxyFactory serviceFactory)
 				{
-					await triggerProcessor.SendTriggerAsync(workSpaceId, triggerName, body).ConfigureAwait(false);
-					this._logger.LogInformation("Execution of trigger '{0}' in Workspace Id: {1} finished successfully.", triggerName, workSpaceId);
+					using (IAutomatedWorkflowsService triggerProcessor = serviceFactory.CreateProxyInstance<IAutomatedWorkflowsService>())
+					{
+						await triggerProcessor.SendTriggerAsync(workSpaceId, triggerName, body).ConfigureAwait(false);
+						this._logger.LogInformation("Execution of trigger '{0}' in Workspace Id: {1} finished successfully.", triggerName, workSpaceId);
+					}
 				}
+
+				await this._keplerProxy.ExecuteAsync(SendTrigger).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{

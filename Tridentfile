@@ -137,7 +137,14 @@ timestamps
 						echo "End of hopper variables"
 						vmInfo = tools.createHopperInstance(config.sutTemplate, params.relativityBranch)
 					}	
-					
+
+					stage('Install DataTransfer.Legacy app')
+					{
+						echo "Installing DataTransfer.Legacy app"
+						output = powershell ".\\build.ps1 InstallDataTransferLegacyRap -TestTarget '${(new URI(vmInfo.Url)).getHost()}'"
+						echo output
+					}
+
 					stage('Replace variables in build')
 					{
 					    echo "replacing test variables in build"

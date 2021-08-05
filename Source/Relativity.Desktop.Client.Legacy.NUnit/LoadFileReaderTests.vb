@@ -129,7 +129,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 					.NewlineDelimiter = Chr(174),
 					.FirstLineContainsHeaders = True}
 
-			Dim sut = New LoadFileReader(loadFile, False)
+			Dim sut = New LoadFileReader(loadFile, False, AddressOf GetTestCorrelationId)
 
 			sut.GetColumnNames(loadFile) 'It is required for proper LoadFile initialization
 			If sut.HasMoreRecords() Then
@@ -137,6 +137,10 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 			End If
 
 			Return sut
+		End Function
+
+		Private Shared Function GetTestCorrelationId() As String
+			Return NameOf(LoadFileReaderTests)
 		End Function
 	End Class
 End Namespace

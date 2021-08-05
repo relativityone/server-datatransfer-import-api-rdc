@@ -22,7 +22,8 @@ namespace Relativity.DataExchange.NUnit.Integration
 	/// <summary>
 	/// Represents <see cref="UploadTapiBridge2"/> tests.
 	/// </summary>
-	[TestFixture]
+	[TestFixture(true)]
+	[TestFixture(false)]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	[Feature.DataTransfer.TransferApi]
 	[TestType.MainFlow]
@@ -33,6 +34,11 @@ namespace Relativity.DataExchange.NUnit.Integration
 	public class UploadTapiBridgeTests : TapiBridgeTestBase
 	{
 		private UploadTapiBridge2 tapiBridge;
+
+		public UploadTapiBridgeTests(bool useLegacyWebApi)
+			: base(useLegacyWebApi)
+		{
+		}
 
 		protected override TapiBridgeBase2 TapiBridge => this.tapiBridge;
 

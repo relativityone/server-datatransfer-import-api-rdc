@@ -1429,6 +1429,10 @@ namespace Relativity.DataExchange.NUnit
 				{
 					prop.SetValue(settings, RandomHelper.NextBoolean());
 				}
+				else if (prop.PropertyType == typeof(bool?))
+				{
+					prop.SetValue(settings, RandomHelper.NextBoolean());
+				}
 				else if (prop.PropertyType == typeof(int))
 				{
 					prop.SetValue(settings, RandomHelper.NextInt32(1, 1000));
@@ -1473,6 +1477,12 @@ namespace Relativity.DataExchange.NUnit
 					Assert.That(value1, Is.EqualTo(value2), () => $"The property {prop.Name} is misconfigured.");
 				}
 				else if (prop.PropertyType == typeof(bool))
+				{
+					bool value1 = (bool)prop.GetValue(settings1);
+					bool value2 = (bool)prop.GetValue(settings2);
+					Assert.That(value1, Is.EqualTo(value2));
+				}
+				else if (prop.PropertyType == typeof(bool?))
 				{
 					bool value1 = (bool)prop.GetValue(settings1);
 					bool value2 = (bool)prop.GetValue(settings2);

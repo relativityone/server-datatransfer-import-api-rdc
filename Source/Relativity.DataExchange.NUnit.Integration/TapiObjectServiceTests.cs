@@ -18,6 +18,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 
 	using Moq;
 
+	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
@@ -27,14 +28,22 @@ namespace Relativity.DataExchange.NUnit.Integration
 	/// <summary>
 	/// Represents <see cref="TapiObjectService"/> integration tests.
 	/// </summary>
-	[TestFixture]
+	[TestFixture(false)]
+	[TestFixture(true)]
 	[Feature.DataTransfer.ImportApi]
 	[TestType.MainFlow]
 	public class TapiObjectServiceTests
 	{
+		private readonly bool useLegacyWebApi;
+
 		private TapiBridgeParameters2 parameters;
 		private Mock<Relativity.Logging.ILog> logger;
 		private ITapiObjectService service;
+
+		public TapiObjectServiceTests(bool useLegacyWebApi)
+		{
+			this.useLegacyWebApi = useLegacyWebApi;
+		}
 
 		/// <summary>
 		/// The test setup.
@@ -56,7 +65,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 					                  WebServiceUrl = testParameters.RelativityWebApiUrl.ToString(),
 					                  WorkspaceId = testParameters.WorkspaceId,
 				                  };
-			this.service = new TapiObjectService();
+			this.service = new TapiObjectService(new RelativityManagerServiceFactory(), this.useLegacyWebApi);
 		}
 
 		[IdentifiedTest("EE06BDD4-4A81-4499-B753-5225F2236793")]
@@ -66,8 +75,10 @@ namespace Relativity.DataExchange.NUnit.Integration
 			Assert.That(connectionInfo, Is.Not.Null);
 			Assert.That(connectionInfo.Credential, Is.Not.Null);
 			Assert.That(connectionInfo.Host, Is.Not.Null);
+#pragma warning disable 0618 // Obsolete Usage
 			Assert.That(connectionInfo.WebApiServiceUrl, Is.EqualTo(new Uri(this.parameters.WebServiceUrl)));
 			Assert.That(connectionInfo.WebApiServiceCredential, Is.Null);
+#pragma warning restore 0618 // Obsolete Usage
 			Assert.That(connectionInfo.WorkspaceId, Is.EqualTo(this.parameters.WorkspaceId));
 
 			// Sanity check.

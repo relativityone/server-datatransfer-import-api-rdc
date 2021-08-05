@@ -9,10 +9,15 @@
 
 namespace Relativity.DataExchange.Export.NUnit.Integration
 {
+	using System;
 	using System.Collections.Generic;
+
+	using kCura.WinEDDS.Service.Kepler;
 
 	using Moq;
 
+	using Relativity.DataExchange.Logger;
+	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Transfer;
 
@@ -24,7 +29,14 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		public static Mock<TapiObjectService> CreateMockTapiObjectService()
 		{
 			// The understanding is - accept all default methods and replace specific methods with a mock.
-			return new Mock<TapiObjectService> { CallBase = true };
+			return new Mock<TapiObjectService>(
+					   new NullAuthTokenProvider(),
+					   new RelativityManagerServiceFactory(),
+					   new WebApiVsKeplerFactory(RelativityLogger.Instance),
+					   (Func<string>)(() => string.Empty))
+			{
+				CallBase = true,
+			};
 		}
 
 		public static Mock<ITapiFileStorageSearchResults> CreateMockEmptyTapiFileStorageSearchResults(bool cloudInstance)

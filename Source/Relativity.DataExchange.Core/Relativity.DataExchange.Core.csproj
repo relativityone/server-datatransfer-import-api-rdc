@@ -108,6 +108,7 @@
     <Compile Include="Io\TempFileConstants.cs" />
     <Compile Include="IRunningContext.cs" />
     <Compile Include="IRelativityTokenProvider.cs" />
+    <Compile Include="IWebApiVsKeplerFactory.cs" />
     <Compile Include="JwtAuthToken.cs" />
     <Compile Include="Logging\LogExtensions.cs" />
     <Compile Include="Logger\AggregatingLoggerDecorator.cs" />
@@ -168,8 +169,13 @@
     <Compile Include="Process\ExportErrorEventArgs.cs" />
     <Compile Include="Process\RecordNumberEventArgs.cs" />
     <Compile Include="Process\ShowReportEventArgs.cs" />
+    <Compile Include="Service\IKeplerProxy.cs" />
+    <Compile Include="Service\IRelativityManagerService.cs" />
+    <Compile Include="Service\IRelativityManagerServiceFactory.cs" />
     <Compile Include="Service\IReLoginService.cs" />
+    <Compile Include="Service\KeplerRelativityManagerService.cs" />
     <Compile Include="Service\RelativityDistributed\FileDownloadRequest.cs" />
+    <Compile Include="Service\RelativityDistributed\KeplerDistributedReplacement.cs" />
     <Compile Include="Service\RelativityDistributed\RelativityDistributedFacade.cs" />
     <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeAuthenticationDecorator.cs" />
     <Compile Include="Service\RelativityDistributed\FileDownloadResponse.cs" />
@@ -184,9 +190,15 @@
     <Compile Include="Service\KeplerRetryPolicyFactory.cs" />
     <Compile Include="Service\KeplerServiceProxyFactory.cs" />
     <Compile Include="Service\RelativityDistributed\RelativityDistributedErrorType.cs" />
-    <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeFactory.cs" />
     <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeRetriesDecorator.cs" />
+    <Compile Include="Service\RelativityManagerServiceFactory.cs" />
     <Compile Include="Service\TriggerManager.cs" />
+    <Compile Include="Service\WebApiVsKeplerSwitch\IAPICommunicationModeManager.cs" />
+    <Compile Include="Service\WebApiVsKeplerSwitch\IIAPICommunicationModeManager.cs" />
+    <Compile Include="Service\WebApiVsKeplerSwitch\IServiceAvailabilityChecker.cs" />
+    <Compile Include="Service\WebApiVsKeplerSwitch\IWebApiVsKepler.cs" />
+    <Compile Include="Service\WebApiVsKeplerSwitch\ServiceAvailabilityChecker.cs" />
+    <Compile Include="Service\WebApiVsKeplerSwitch\WebApiVsKepler.cs" />
     <Compile Include="SettingsConstants.cs" />
     <Compile Include="Transfer\ILongTextStreamService.cs" />
     <Compile Include="Transfer\LongTextStreamProgressEventArgs.cs" />
@@ -399,18 +411,14 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <Choose>
-    <When Condition="'$(Configuration)'!='Debug'">
-      <ItemGroup>
-        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
-          <Paket>True</Paket>
-        </Analyzer>
-        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
-          <Paket>True</Paket>
-        </Analyzer>
-      </ItemGroup>
-    </When>
-  </Choose>
+  <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
+    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+  </ItemGroup></When></Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -447,6 +455,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
+          <HintPath>..\..\packages\Relativity.DataTransfer.Legacy.SDK\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Kepler">
           <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
           <Private>True</Private>
@@ -460,6 +479,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Services.ServiceProxy">
           <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client.SDK\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

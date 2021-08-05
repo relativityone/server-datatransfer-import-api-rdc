@@ -7,8 +7,8 @@ Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImporterProcess
 		Inherits kCura.WinEDDS.ImportLoadFileProcess
 
-		Public Sub New(ByVal metricService As IMetricService, ByVal runningContext As IRunningContext)
-			MyBase.New(metricService, runningContext)
+		Public Sub New(ByVal metricService As IMetricService, ByVal runningContext As IRunningContext, correlationIdFunc As Func(Of String))
+			MyBase.New(metricService, runningContext, correlationIdFunc)
 
 			' Use the default value for the delimiter because as a public class,
 			' users of this class may not know what value to set for this
@@ -44,22 +44,23 @@ Namespace kCura.WinEDDS.ImportExtension
 			LoadFile.FileSizeMapped = FileSizeMapped
 			LoadFile.FileNameColumn = FileNameColumn
 			LoadFile.SupportedByViewerColumn = SupportedByViewerColumn
-			
-            'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
+
+			'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
 			Dim importer As DataReaderImporter = New DataReaderImporter(
-				DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), _
-				Me.Context, _
-				reporter, _
-				Me.Logger, _
-				BulkLoadFileFieldDelimiter, _
-				_temporaryLocalDirectory, _
-				Me.CancellationTokenSource, _
-				initializeArtifactReader:=False, _
-				runningContext := Me.RunningContext) With
-				    {
+				DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile),
+				Me.Context,
+				reporter,
+				Me.Logger,
+				BulkLoadFileFieldDelimiter,
+				_temporaryLocalDirectory,
+				Me.CancellationTokenSource,
+				initializeArtifactReader:=False,
+				correlationIdFunc:=_correlationIdFunc,
+				runningContext:=Me.RunningContext) With
+					{
 						.OnBehalfOfUserToken = Me.OnBehalfOfUserToken,
 						.Timekeeper = Me.TimeKeeperManager
-				    }
+					}
 			importer.Initialize()
 
 			Dim dr As System.Data.IDataReader = importer.SourceData

@@ -41,21 +41,21 @@ Namespace kCura.WinEDDS
 		Public Property UserNotificationFactory As Func(Of Exporter, IUserNotification)
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
-		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
-			Me.New(loadFileHeaderFormatterFactory, exportConfig, RelativityLogger.Instance, New RunningContext())
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, correlationIdFunc As Func(Of String))
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, RelativityLogger.Instance, New RunningContext(), correlationIdFunc)
 		End Sub
 
-		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog, runningContext As IRunningContext)
-			Me.New(loadFileHeaderFormatterFactory, exportConfig, New MetricService(New ImportApiMetricSinkConfig), runningContext, logger)
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog, runningContext As IRunningContext, correlationIdFunc As Func(Of String))
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, New MetricService(New ImportApiMetricSinkConfig), runningContext, logger, correlationIdFunc)
 		End Sub
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
-		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService)
-			Me.New(loadFileHeaderFormatterFactory, exportConfig, metricService, New RunningContext(), RelativityLogger.Instance)
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService, correlationIdFunc As Func(Of String))
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, metricService, New RunningContext(), RelativityLogger.Instance, correlationIdFunc)
 		End Sub
 
-		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService, runningContext As IRunningContext, logger As ILog)
-			MyBase.New(metricService, runningContext, logger)
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService, runningContext As IRunningContext, logger As ILog, correlationIdFunc As Func(Of String))
+			MyBase.New(metricService, runningContext, logger, correlationIdFunc)
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
 			_exportConfig = exportConfig
 		End Sub
@@ -94,12 +94,12 @@ Namespace kCura.WinEDDS
 				Return _
 					New ExtendedExporter(TryCast(Me.ExportFile, ExtendedExportFile), Me.Context,
 										 New WebApiServiceFactory(Me.ExportFile),
-										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger, Me.CancellationTokenSource.Token) With {.InteractionManager = UserNotification}
+										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger, Me.CancellationTokenSource.Token, AddressOf GetCorrelationId) With {.InteractionManager = UserNotification}
 			Else
 				Return _
 					New Exporter(Me.ExportFile, Me.Context,
 										 New WebApiServiceFactory(Me.ExportFile),
-										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger, Me.CancellationTokenSource.Token) With {.InteractionManager = UserNotification}
+										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger, Me.CancellationTokenSource.Token, AddressOf GetCorrelationId) With {.InteractionManager = UserNotification}
 
 			End If
 		End Function

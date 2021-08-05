@@ -1,4 +1,5 @@
 Imports kCura.WinEDDS
+Imports kCura.WinEDDS.Service
 Imports Relativity.DataExchange.Service
 
 Namespace Relativity.Desktop.Client
@@ -59,7 +60,7 @@ Namespace Relativity.Desktop.Client
 				Me._buildFolderStructure.Text = "Folder Information Column"
 				ParentArtifactTypeID = 8
 			Else
-				Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer)
+				Dim parentQuery As kCura.WinEDDS.Service.Replacement.IObjectTypeManager = ManagerFactory.CreateObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer, AddressOf _application.GetCorrelationId)
 				ParentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(_application.SelectedCaseInfo.ArtifactID,
 				Me.LoadFile.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
 				Me.GroupBoxFolderInfo.Enabled = False

@@ -14,17 +14,17 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _nativeFileNameViewFieldHelper As INativeFileNameViewFieldsHelper = New NativeFileNameViewFieldsHelper()
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
-		Public Sub New(exportFile As ExtendedExportFile, context As ProcessContext, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
-			MyBase.New(exportFile, context, loadFileFormatterFactory)
+		Public Sub New(exportFile As ExtendedExportFile, context As ProcessContext, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, correlationIdFunc As Func(Of String))
+			MyBase.New(exportFile, context, loadFileFormatterFactory, correlationIdFunc)
 		End Sub
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
-		Public Sub New(exportFile As ExtendedExportFile, context As ProcessContext, serviceFactory As IServiceFactory, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
-			MyBase.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig)
+		Public Sub New(exportFile As ExtendedExportFile, context As ProcessContext, serviceFactory As IServiceFactory, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, correlationIdFunc As Func(Of String))
+			MyBase.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, correlationIdFunc)
 		End Sub
 
-		Public Sub New(exportFile As ExtendedExportFile, context As ProcessContext, serviceFactory As IServiceFactory, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog, cancellationToken As CancellationToken)
-			MyBase.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, logger, cancellationToken)
+		Public Sub New(exportFile As ExtendedExportFile, context As ProcessContext, serviceFactory As IServiceFactory, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog, cancellationToken As CancellationToken, correlationIdFunc As Func(Of String))
+			MyBase.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, logger, cancellationToken, correlationIdFunc)
 		End Sub
 
 		Protected Overrides Function CreateObjectExportInfo() As ObjectExportInfo

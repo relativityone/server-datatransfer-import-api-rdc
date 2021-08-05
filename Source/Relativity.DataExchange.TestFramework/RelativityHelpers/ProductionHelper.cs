@@ -7,7 +7,9 @@
 namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 {
 	using System;
+	using System.Collections.Generic;
 	using System.IO;
+	using System.Linq;
 	using System.Threading.Tasks;
 
 	using Newtonsoft.Json.Linq;
@@ -35,6 +37,19 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				}
 
 				return production;
+			}
+		}
+
+		public static async Task DeleteAllProductionsAsync(IntegrationTestParameters parameters)
+		{
+			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+
+			using (IProductionManager client =
+				ServiceHelper.GetServiceProxy<IProductionManager>(parameters))
+			{
+				List<Production> productions = await client.GetAllAsync(parameters.WorkspaceId, DataSourceReadMode.None).ConfigureAwait(false);
+				var deleteProductionsTasks = productions.Select(production => client.DeleteSingleAsync(parameters.WorkspaceId, production.ArtifactID));
+				await Task.WhenAll(deleteProductionsTasks).ConfigureAwait(false);
 			}
 		}
 

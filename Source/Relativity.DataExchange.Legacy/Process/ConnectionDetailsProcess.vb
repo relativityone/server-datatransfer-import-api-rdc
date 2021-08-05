@@ -1,7 +1,10 @@
+Imports kCura.WinEDDS.Service
+Imports kCura.WinEDDS.Service.Kepler
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
+Imports Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 Imports Relativity.DataExchange.Transfer
 
 Namespace kCura.WinEDDS
@@ -11,17 +14,22 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _credential As Net.NetworkCredential
 		Private ReadOnly _cookieContainer As Net.CookieContainer
 		Private ReadOnly _caseInfo As CaseInfo
+		Private ReadOnly _correlationIdFunc As Func(Of String)
+		Private ReadOnly _useLegacyWebApiLazy As Lazy(Of Boolean)
 
 		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
-		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As CaseInfo)
-			Me.New(credential, cookieContainer, caseInfo, RelativityLogger.Instance)
+		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As CaseInfo, correlationIdFunc As Func(Of String))
+			Me.New(credential, cookieContainer, caseInfo, RelativityLogger.Instance, correlationIdFunc)
 		End Sub
 
-		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As CaseInfo, logger As Global.Relativity.Logging.ILog)
+		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As CaseInfo, logger As Global.Relativity.Logging.ILog, correlationIdFunc As Func(Of String))
 			MyBase.New(logger)
 			_credential = credential
 			_cookieContainer = cookieContainer
 			_caseInfo = caseInfo
+			_correlationIdFunc = correlationIdFunc
+
+			_useLegacyWebApiLazy = New Lazy(Of Boolean)(AddressOf UseLegacyWebApi)
 		End Sub
 
 		Protected Overrides Sub OnExecute()
@@ -30,7 +38,7 @@ Namespace kCura.WinEDDS
 			Me.CheckDownloadHandlerURL()
 			Me.WriteStatus("")
 
-			Dim tapiObjectService As ITapiObjectService = New TapiObjectService
+			Dim tapiObjectService As ITapiObjectService = New TapiObjectService(New RelativityManagerServiceFactory, _useLegacyWebApiLazy.Value)
 			Dim parameters As TapiBridgeParameters2 = New TapiBridgeParameters2
 			parameters.Credentials = _credential
 			parameters.TimeoutSeconds = Me.AppSettings.HttpTimeoutSeconds
@@ -46,6 +54,7 @@ Namespace kCura.WinEDDS
 					' Reducing these values to more quickly publish error information to the user.
 					configuration.MaxHttpRetryAttempts = 1
 					configuration.MaxJobRetryAttempts = 2
+					configuration.UseLegacyWebApi = _useLegacyWebApiLazy.Value
 					Try
 						AddHandler context.DiagnosticMessage, AddressOf DiagnosticsContext_OnDiagnosticMessage
 						transferHost.ConnectionChecksAsync(configuration, System.Threading.CancellationToken.None).GetAwaiter().GetResult()
@@ -64,6 +73,18 @@ Namespace kCura.WinEDDS
 		
 		Private Sub CheckDownloadHandlerURL()
 			Me.WriteStatus("Validate Download URL:")
+
+			Try
+				If Not _useLegacyWebApiLazy.Value
+					Me.WriteStatus("URL validated")
+					Return
+				End If
+			Catch ex As Exception
+				Me.WriteStatus("Cannot find URL")
+				Me.WriteStatus(ex.ToString)
+				Return
+			End Try
+
 			Dim downloadUrl As String = UrlHelper.GetBaseUrlAndCombine(Me.AppSettings.WebApiServiceUrl, _caseInfo.DownloadHandlerURL)
 			Me.WriteStatus(downloadUrl)
 			Dim myReq As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(downloadUrl & "AccessDenied.aspx"), System.Net.HttpWebRequest)
@@ -89,7 +110,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub CheckBcp()
 			Me.WriteStatus("Checking Bulk Share Configuration")
-			Dim gateway As New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer)
+			Dim gateway As kCura.WinEDDS.Service.Replacement.IFileIO = ManagerFactory.CreateFileIO(_credential, _cookieContainer, _correlationIdFunc)
 
 			Dim bcpPath As String
 			Try
@@ -149,6 +170,12 @@ Namespace kCura.WinEDDS
 			Me.Context.PublishStatusEvent("", message)
 		End Sub
 
+		Private Function UseLegacyWebApi() As Boolean
+			Dim webApiServiceUrl As Uri = New Uri(Me.AppSettings.WebApiServiceUrl)
+			Dim webApiVsKeplerFactory As New WebApiVsKeplerFactory(logger)
+			Dim webApiVsKepler As IWebApiVsKepler = webApiVsKeplerFactory.Create(webApiServiceUrl, _credential, _correlationIdFunc)
+			Return Not webApiVsKepler.UseKepler()
+		End Function
 	End Class
 End Namespace
 

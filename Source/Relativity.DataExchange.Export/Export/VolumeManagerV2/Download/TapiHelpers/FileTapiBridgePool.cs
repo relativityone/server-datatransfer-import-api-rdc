@@ -29,6 +29,7 @@
 		private readonly bool _forceCreateTransferClient;
 		private IDownloadTapiBridge _nullSettingsTapiBridge;
 		private bool _disposed;
+		private readonly Func<string> _getCorrelationId;
 
 		public FileTapiBridgePool(
 			TapiBridgeParametersFactory factory,
@@ -37,7 +38,8 @@
 			FilesStatistics filesStatistics,
 			IMessagesHandler messageHandler,
 			ITransferClientHandler transferClientHandler,
-			ILog logger)
+			ILog logger,
+			Func<string> getCorrelationId)
 			: this(
 				factory,
 				tapiObjectService,
@@ -46,7 +48,8 @@
 				messageHandler,
 				transferClientHandler,
 				logger,
-				forceCreateTransferClient: true)
+				forceCreateTransferClient: true,
+				getCorrelationId: getCorrelationId)
 		{
 		}
 
@@ -54,29 +57,30 @@
 		/// Initializes a new instance of the <see cref="FileTapiBridgePool"/> class. This is used exclusively for testing.
 		/// </summary>
 		/// <param name="factory">
-		/// The factory used to create transfer bridge parameters.
+		///     The factory used to create transfer bridge parameters.
 		/// </param>
 		/// <param name="tapiObjectService">
-		/// The transfer object service.
+		///     The transfer object service.
 		/// </param>
 		/// <param name="downloadProgressManager">
-		/// The object that manages download progress.
+		///     The object that manages download progress.
 		/// </param>
 		/// <param name="filesStatistics">
-		/// The files statistics instance.
+		///     The files statistics instance.
 		/// </param>
 		/// <param name="messageHandler">
-		/// The object that handles common export messages.
+		///     The object that handles common export messages.
 		/// </param>
 		/// <param name="transferClientHandler">
-		/// The object that handles transfer client changes.
+		///     The object that handles transfer client changes.
 		/// </param>
 		/// <param name="logger">
-		/// The logger instance.
+		///     The logger instance.
 		/// </param>
 		/// <param name="forceCreateTransferClient">
-		/// <see langword="true" /> to force create the transfer client and raise the client change event immediately ; otherwise, <see langword="false" /> for deferred construction.
+		///     <see langword="true" /> to force create the transfer client and raise the client change event immediately ; otherwise, <see langword="false" /> for deferred construction.
 		/// </param>
+		/// <param name="getCorrelationId"></param>
 		internal FileTapiBridgePool(
 			TapiBridgeParametersFactory factory,
 			ITapiObjectService tapiObjectService,
@@ -85,7 +89,8 @@
 			IMessagesHandler messageHandler,
 			ITransferClientHandler transferClientHandler,
 			ILog logger,
-			bool forceCreateTransferClient)
+			bool forceCreateTransferClient,
+			Func<string> getCorrelationId)
 		{
 			_tapiBridgeParametersFactory = factory.ThrowIfNull(nameof(factory));
 			_tapiObjectService = tapiObjectService.ThrowIfNull(nameof(tapiObjectService));
@@ -95,6 +100,7 @@
 			_transferClientHandler = transferClientHandler.ThrowIfNull(nameof(transferClientHandler));
 			_logger = logger.ThrowIfNull(nameof(logger));
 			_forceCreateTransferClient = forceCreateTransferClient;
+			_getCorrelationId = getCorrelationId;
 		}
 
 		public int Count
@@ -141,11 +147,12 @@
 		private IDownloadTapiBridge CreateTapiBridge(IRelativityFileShareSettings settings, CancellationToken token)
 		{
 			ITapiBridgeFactory tapiBridgeFactory = new FilesTapiBridgeFactory(
-				_tapiBridgeParametersFactory,
-				_tapiObjectService,
-				_logger,
+				this._tapiBridgeParametersFactory,
+				this._tapiObjectService,
+				this._logger,
 				settings,
-				token);
+				token,
+				_getCorrelationId);
 			ITapiBridge bridge = tapiBridgeFactory.Create();
 			IProgressHandler progressHandler = new FileDownloadProgressHandler(_downloadProgressManager, _logger);
 			IDownloadTapiBridge downloadTapiBridgeForFiles = new DownloadTapiBridgeForFiles(

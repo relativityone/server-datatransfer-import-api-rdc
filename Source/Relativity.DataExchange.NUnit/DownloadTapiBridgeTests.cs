@@ -22,13 +22,19 @@ namespace Relativity.DataExchange.NUnit
 	/// <summary>
 	/// Represents <see cref="DownloadTapiBridge2"/> tests.
 	/// </summary>
-	[TestFixture]
+	[TestFixture(false)]
+	[TestFixture(true)]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
 		Justification = "The test class handles the disposal.")]
 	public class DownloadTapiBridgeTests : TapiBridgeTestsBase<DownloadTapiBridge2>
 	{
+		public DownloadTapiBridgeTests(bool useLegacyWebApi)
+			: base(useLegacyWebApi)
+		{
+		}
+
 		[Test]
 		[Category(TestCategories.TransferApi)]
 		public void ShouldThrowWhenTheConstructorArgsAreInvalid()
@@ -41,6 +47,7 @@ namespace Relativity.DataExchange.NUnit
 							null,
 							parameters,
 							this.MockLogger.Object,
+							this.UseLegacyWebApi,
 							this.CancellationTokenSource.Token))
 						{
 						}
@@ -53,6 +60,7 @@ namespace Relativity.DataExchange.NUnit
 							this.MockTapiObjectService.Object,
 							null,
 							this.MockLogger.Object,
+							this.UseLegacyWebApi,
 							this.CancellationTokenSource.Token))
 						{
 						}
@@ -66,6 +74,7 @@ namespace Relativity.DataExchange.NUnit
 							this.MockTapiObjectService.Object,
 							parameters,
 							this.MockLogger.Object,
+							this.UseLegacyWebApi,
 							this.CancellationTokenSource.Token))
 						{
 						}
@@ -79,6 +88,7 @@ namespace Relativity.DataExchange.NUnit
 							this.MockTapiObjectService.Object,
 							parameters,
 							this.MockLogger.Object,
+							this.UseLegacyWebApi,
 							this.CancellationTokenSource.Token))
 						{
 						}
@@ -143,6 +153,7 @@ namespace Relativity.DataExchange.NUnit
 				parameters,
 				this.TestTransferContext,
 				this.MockLogger.Object,
+				this.UseLegacyWebApi,
 				this.CancellationTokenSource.Token);
 			this.OnTapiBridgeCreated();
 		}

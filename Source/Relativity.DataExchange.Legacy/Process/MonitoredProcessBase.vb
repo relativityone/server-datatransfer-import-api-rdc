@@ -29,23 +29,25 @@ Public MustInherit Class MonitoredProcessBase
 	Protected _initialTapiClient As TapiClient = TapiClient.None
 	Protected Property RunId As String
 	Private _jobStatus As TelemetryConstants.JobStatus
+	Protected _correlationIdFunc As Func(Of String)
 
 	Public Property CaseInfo As CaseInfo
 
 	<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
-	Public Sub New(metricService As IMetricService, runningContext As IRunningContext)
-		Me.New(metricService, runningContext, RelativityLogger.Instance)
+	Public Sub New(metricService As IMetricService, runningContext As IRunningContext, correlationIdFunc As Func(Of String))
+		Me.New(metricService, runningContext, RelativityLogger.Instance, correlationIdFunc)
 	End Sub
 
-	Public Sub New(metricService As IMetricService, runningContext As IRunningContext, logger As ILog)
-		Me.New(metricService, runningContext, logger, New CancellationTokenSource())
+	Public Sub New(metricService As IMetricService, runningContext As IRunningContext, logger As ILog, correlationIdFunc As Func(Of String))
+		Me.New(metricService, runningContext, logger, New CancellationTokenSource(), correlationIdFunc)
 	End Sub
 
-	Public Sub New(metricService As IMetricService, runningContext As IRunningContext, logger As ILog, tokenSource As CancellationTokenSource)
+	Public Sub New(metricService As IMetricService, runningContext As IRunningContext, logger As ILog, tokenSource As CancellationTokenSource, correlationIdFunc As Func(Of String))
 		MyBase.New(logger, tokenSource)
 		Me.MetricService = metricService
-		_metricThrottling = metricService.MetricSinkConfig.ThrottleTimeout
+		_MetricThrottling = metricService.MetricSinkConfig.ThrottleTimeout
 		Me.RunningContext = runningContext
+		_correlationIdFunc = correlationIdFunc
 	End Sub
 
 	Protected Overrides Sub OnExecute()
@@ -282,5 +284,15 @@ Public MustInherit Class MonitoredProcessBase
 		Else
 			Return RunningContext.ExecutionSource.ToString()
 		End If
+	End Function
+
+	Protected Function GetCorrelationId() As String
+		' Return job id if already set
+		If Not JobGuid = Guid.Empty Then
+			Return JobGuid.ToString()
+		End If
+
+		' Return 'injected' correlationIdFunc (passed from desktop application or import api)
+		Return _correlationIdFunc?.Invoke()
 	End Function
 End Class

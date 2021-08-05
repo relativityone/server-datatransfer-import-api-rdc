@@ -28,6 +28,8 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _credentials As ICredentials
 		Private _webApiCredential As WebApiCredential
 		Private _cookieMonster As Net.CookieContainer
+		Private _correlationIdFunc As Func(Of String)
+		Private _instanceId As Guid = Guid.NewGuid()
 
 		Private ReadOnly _runningContext As IRunningContext
 
@@ -49,14 +51,17 @@ Namespace kCura.Relativity.DataReaderClient
 			_runningContext = New RunningContext()
 			_webApiCredential = New WebApiCredential()
 			_webApiCredential.TokenProvider = New NullAuthTokenProvider
+
+			_correlationIdFunc = AddressOf GetDefaultCorrelationId
 		End Sub
 
-		Friend Sub New(ByVal credentials As ICredentials, ByVal webApiCredential As WebApiCredential, ByVal cookieMonster As Net.CookieContainer, ByVal runningContext As IRunningContext)
+		Friend Sub New(ByVal credentials As ICredentials, ByVal webApiCredential As WebApiCredential, ByVal cookieMonster As Net.CookieContainer, ByVal runningContext As IRunningContext, correlationIdFunc As Func(Of String))
 			Me.New()
 			_runningContext = runningContext
 			_credentials = credentials
 			_webApiCredential = webApiCredential
 			_cookieMonster = cookieMonster
+		    _correlationIdFunc = correlationIdFunc
 		End Sub
 
 #End Region
@@ -109,7 +114,7 @@ Namespace kCura.Relativity.DataReaderClient
 			' authenticate here
 			If _credentials Is Nothing Then
 				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
-				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword, _runningContext)
+				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword, _runningContext, _correlationIdFunc)
 				_credentials = creds.Credentials
 				_webApiCredential.Credential = creds.Credentials
 				_cookieMonster = creds.CookieMonster
@@ -117,11 +122,11 @@ Namespace kCura.Relativity.DataReaderClient
 
 			If IsSettingsValid() Then
 
-				RaiseEvent OnMessage(New Status("Getting source data from database"))
-				Dim metricService As IMetricService = New MetricService(Settings.Telemetry, ServiceFactoryFactory.Create(_webApiCredential.Credential))
-				_runningContext.ApplicationName = Settings.ApplicationName
-				Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(metricService, _runningContext) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
-					_processContext = process.Context
+					RaiseEvent OnMessage(New Status("Getting source data from database"))
+					Dim metricService As IMetricService = New MetricService(Settings.Telemetry, KeplerProxyFactory.CreateKeplerProxy(_webApiCredential.Credential))
+					_runningContext.ApplicationName = Settings.ApplicationName
+					Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(metricService, _runningContext, _correlationIdFunc) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
+						_processContext = process.Context
 
 					If Settings.DisableNativeValidation.HasValue Then process.DisableNativeValidation = Settings.DisableNativeValidation.Value
 					If Settings.DisableNativeLocationValidation.HasValue Then process.DisableNativeLocationValidation = Settings.DisableNativeLocationValidation.Value
@@ -362,7 +367,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Function MapInputToSettingsFactory(ByVal clientSettings As Settings) As WinEDDS.DynamicObjectSettingsFactory
 			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory
 
-			dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(_credentials, _webApiCredential, _cookieMonster, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
+			dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(_credentials, _webApiCredential, _cookieMonster, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId, _correlationIdFunc)
 
 			_docIDFieldCollection = dosf_settings.DocumentIdentifierFields
 
@@ -502,6 +507,10 @@ Namespace kCura.Relativity.DataReaderClient
 				Throw New ImportSettingsException("MaximumErrorCount", "This must be greater than 0 and less than Int32.MaxValue.")
 			End If
 		End Sub
+
+        Private Function GetDefaultCorrelationId() As String
+            Return _instanceId.ToString()
+        End Function
 #End Region
 
 #Region "Event Handlers"

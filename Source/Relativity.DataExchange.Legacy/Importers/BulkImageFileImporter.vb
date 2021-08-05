@@ -3,6 +3,7 @@ Imports System.Collections.Generic
 Imports kCura.WinEDDS.Api
 
 Imports kCura.WinEDDS.Service
+Imports kCura.WinEDDS.Service.Replacement
 Imports Monitoring
 
 Imports Relativity.DataExchange
@@ -21,9 +22,9 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
 		Protected _imageReader As Api.IImageReader
-		Protected _fieldQuery As FieldQuery
-		Protected _productionManager As ProductionManager
-		Protected _bulkImportManager As IBulkImportManager
+		Protected _fieldQuery As IFieldQuery
+		Protected _productionManager As Replacement.IProductionManager
+		Protected _bulkImportManager As Replacement.IBulkImportManager
 		Private _folderID As Int32
 		Private _productionArtifactID As Int32
 		Private _overwrite As ImportOverwriteType
@@ -224,19 +225,21 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Constructors"
-		Public Sub New(folderID As Int32, _
-		               args As ImageLoadFile, _
-		               context As ProcessContext, _
-		               reporter As IIoReporter, _
-		               logger As Global.Relativity.Logging.ILog, _
-		               processID As Guid, _
-		               doRetryLogic As Boolean, _
-		               tokenSource As CancellationTokenSource, _
-		               Optional ByVal executionSource As ExecutionSource = ExecutionSource.Unknown)
-			MyBase.New(reporter, logger, tokenSource)
+		Public Sub New(folderID As Int32,
+					   args As ImageLoadFile,
+					   context As ProcessContext,
+					   reporter As IIoReporter,
+					   logger As Global.Relativity.Logging.ILog,
+					   processID As Guid,
+					   doRetryLogic As Boolean,
+					   tokenSource As CancellationTokenSource,
+					   correlationIdFunc As Func(Of String),
+					   Optional ByVal executionSource As ExecutionSource = ExecutionSource.Unknown)
+			MyBase.New(reporter, logger, tokenSource, correlationIdFunc)
 
 			_executionSource = executionSource
-			
+			Me.CorrelationIdFunc = correlationIdFunc
+
 			'TODO: generate runId  https://jira.kcura.com/browse/REL-414969
 			'_runId = System.Guid.NewGuid.ToString.Replace("-", "_")
 
@@ -254,10 +257,10 @@ Namespace kCura.WinEDDS
 			_productionArtifactID = args.ProductionArtifactID
 			Statistics.ImportObjectType = CType(IIf(_productionArtifactID = 0, TelemetryConstants.ImportObjectType.Image, TelemetryConstants.ImportObjectType.ProductionImage), TelemetryConstants.ImportObjectType)
 			InitializeDTOs(args)
-			If(args.Overwrite.IsNullOrEmpty)
+			If (args.Overwrite.IsNullOrEmpty) Then
 				_overwrite = ImportOverwriteType.Append
-			Else 
-				_overwrite = CType([Enum].Parse(GetType(ImportOverwriteType),args.Overwrite, True), ImportOverwriteType)
+			Else
+				_overwrite = CType([Enum].Parse(GetType(ImportOverwriteType), args.Overwrite, True), ImportOverwriteType)
 			End If
 			_replaceFullText = args.ReplaceFullText
 			_processContext = context
@@ -278,7 +281,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)
-			Dim gateway As FileIO = New FileIO(args.Credential, args.CookieContainer)
+			Dim gateway As IFileIO = ManagerFactory.CreateFileIO(args.Credential, args.CookieContainer, AddressOf GetCorrelationId)
 			Dim nativeParameters As UploadTapiBridgeParameters2 = New UploadTapiBridgeParameters2
 			nativeParameters.BcpFileTransfer = False
 			nativeParameters.AsperaBcpRootFolder = String.Empty
@@ -323,12 +326,12 @@ Namespace kCura.WinEDDS
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or AppSettings.Instance.TapiForceBcpHttpClient
 
 			' Never preserve timestamps for BCP load files.
-			bcpParameters.PreserveFileTimestamps = false
-			CreateTapiBridges(nativeParameters, bcpParameters, args.WebApiCredential.TokenProvider)
+			bcpParameters.PreserveFileTimestamps = False
+			CreateTapiBridges(nativeParameters, bcpParameters, args.WebApiCredential.TokenProvider, New RelativityManagerServiceFactory)
 		End Sub
 
 		Protected Overridable Sub InitializeDTOs(ByVal args As ImageLoadFile)
-			Dim fieldManager As FieldManager = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer)
+			Dim fieldManager As IFieldManager = ManagerFactory.CreateFieldManager(args.Credential, args.CookieContainer, AddressOf GetCorrelationId)
 
 			' slm- 10/10/2011 - fixed both of these to check for ID greater than zero
 			If _productionArtifactID > 0 Then
@@ -342,9 +345,9 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeManagers(ByVal args As ImageLoadFile)
-			_fieldQuery = New FieldQuery(args.Credential, args.CookieContainer)
-			_productionManager = New ProductionManager(args.Credential, args.CookieContainer)
-			_bulkImportManager = New BulkImportManager(args.Credential, args.CookieContainer)
+			_fieldQuery = ManagerFactory.CreateFieldQuery(args.Credential, args.CookieContainer, AddressOf GetCorrelationId)
+			_productionManager = ManagerFactory.CreateProductionManager(args.Credential, args.CookieContainer, AddressOf GetCorrelationId)
+			_bulkImportManager = ManagerFactory.CreateBulkImportManager(args.Credential, args.CookieContainer, AddressOf GetCorrelationId)
 		End Sub
 
 #End Region
@@ -375,20 +378,20 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As Exception
 					tries -= 1
-					If tries = 0
+					If tries = 0 Then
 						Me.LogFatal(ex, "The image bulk import service call failed and exceeded the max retry attempts.")
 						Throw
-					Else If IsTimeoutException(ex)
+					ElseIf IsTimeoutException(ex) Then
 						' A timeout exception can be retried.
 						Me.LogError(ex, "A fatal SQL or HTTP timeout error has occurred bulk importing the image batch.")
 						Throw
-					Else If Not ShouldImport
+					ElseIf Not ShouldImport Then
 						' Don't log cancel requests
 						Throw
-					Else If IsBulkImportSqlException(ex)
+					ElseIf IsBulkImportSqlException(ex) Then
 						Me.LogFatal(ex, "A fatal SQL error has occurred bulk importing the image batch.")
 						Throw
-					Else If IsInsufficientPermissionsForImportException(ex)
+					ElseIf IsInsufficientPermissionsForImportException(ex) Then
 						Me.LogFatal(ex, "A fatal insufficient permissions error has occurred bulk importing the image batch.")
 						Throw
 					Else
@@ -458,7 +461,7 @@ Namespace kCura.WinEDDS
 
 				Dim start As Int64 = System.DateTime.Now.Ticks
 
-				If ShouldImport
+				If ShouldImport Then
 					PushImageBatch(bulkLoadFilePath, dataGridFilePath, shouldCompleteMetadataJob, isFinal)
 				End If
 
@@ -486,7 +489,7 @@ Namespace kCura.WinEDDS
 					Throw
 				End If
 			End Try
-			
+
 			DeleteFiles(bulkLoadFilePath, dataGridFilePath)
 			If Not isFinal Then
 				Try
@@ -606,7 +609,7 @@ Namespace kCura.WinEDDS
 			_batchCount = 0
 			Const retry As Boolean = True
 			Me.Statistics.MetadataTransferredBytes += (Me.GetFileLength(bulkLoadFilePath, retry) + Me.GetFileLength(dataGridFilePath, retry))
-			
+
 			_uploadKey = Me.BulkLoadTapiBridge.AddPath(bulkLoadFilePath, Guid.NewGuid().ToString(), 1)
 			_uploadDataGridKey = Me.BulkLoadTapiBridge.AddPath(dataGridFilePath, Guid.NewGuid().ToString(), 2)
 
@@ -677,7 +680,7 @@ Namespace kCura.WinEDDS
 				_logger.LogUserContextInformation("Start import process", _settings.Credential)
 
 				Dim bulkLoadFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.NativeLoadFileNameSuffix)
-				Dim dataGridFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.DatagridLoadFileNameSuffix)
+				Dim dataGridFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.DataGridLoadFileNameSuffix)
 
 				_fileIdentifierLookup = New System.Collections.Hashtable
 				_totalProcessed = 0
@@ -703,7 +706,7 @@ Namespace kCura.WinEDDS
 					_timekeeper.MarkEnd("ReadFile_Init")
 
 					_timekeeper.MarkStart("ReadFile_Main")
-				
+
 					' This will safely force the status bar to update immediately.
 					Me.OnTapiClientChanged()
 					Me.LogInformation("Preparing to import images via WinEDDS.")
@@ -813,7 +816,7 @@ Namespace kCura.WinEDDS
 #Region "Worker Methods"
 
 		Public Function ProcessImageLine(ByVal imageRecord As Api.ImageRecord) As ImportStatus
-			_totalValidated += 1			
+			_totalValidated += 1
 			'check for existence
 			If imageRecord.BatesNumber.Trim = "" Then
 				Me.RaiseStatusEvent(EventType2.Error, "No image file or identifier specified on line.", CType((_totalValidated + _totalProcessed) / 2, Int64))
@@ -827,13 +830,13 @@ Namespace kCura.WinEDDS
 				Dim foundFileName As String = Me.GetExistingFilePath(imageFilePath, retry)
 				Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
 
-				If Not fileExists
+				If Not fileExists Then
 					Me.RaiseStatusEvent(EventType2.Error, $"Image file specified ( {imageRecord.FileLocation} ) does not exist.", CType((_totalValidated + _totalProcessed) / 2, Int64))
 					Return ImportStatus.FileSpecifiedDne
 				End If
 
-				If Not String.Equals(imageFilePath, foundFileName)
-					Me.RaiseStatusEvent(EventType2.Warning ,$"File {imageFilePath} does not exist. File {foundFileName} will be used instead.", CType((_totalValidated + _totalProcessed) / 2, Int64))
+				If Not String.Equals(imageFilePath, foundFileName) Then
+					Me.RaiseStatusEvent(EventType2.Warning, $"File {imageFilePath} does not exist. File {foundFileName} will be used instead.", CType((_totalValidated + _totalProcessed) / 2, Int64))
 					imageFilePath = foundFileName
 				End If
 			End If
@@ -855,7 +858,7 @@ Namespace kCura.WinEDDS
 				_verboseErrorCollection.AddError(imageRecord.OriginalIndex, ex)
 			Catch ex As Exception
 				Me.LogFatal(ex, "Unexpected failure to validate the {Path} image file.", imageFilePath.Secure())
-					Throw
+				Throw
 			End Try
 
 			Return retval
@@ -899,7 +902,7 @@ Namespace kCura.WinEDDS
 			Dim documentId As String = record.BatesNumber
 			Dim offset As Int64 = 0
 			For i As Int32 = 0 To lines.Count - 1
-				If Not ShouldImport Then 
+				If Not ShouldImport Then
 					Exit For
 				End If
 				record = lines(i)
@@ -909,7 +912,7 @@ Namespace kCura.WinEDDS
 				Dim foundFileName As String = Me.GetExistingFilePath(imageFilePath, retry)
 				Dim originalFileName As String = lines(i).FileName
 
-				If Not (foundFileName Is Nothing)
+				If Not (foundFileName Is Nothing) Then
 					imageFilePath = foundFileName
 				End If
 
@@ -967,7 +970,7 @@ Namespace kCura.WinEDDS
 				'no extracted text encodings, write "-1"
 				_bulkLoadFileWriter.Write($"{(-1)}{lastDivider}")
 			End If
-				
+
 			_bulkLoadFileWriter.Write(ServiceConstants.ENDLINETERMSTRING)
 			If _replaceFullText AndAlso Not _fullTextStorageIsInSql Then
 				_dataGridFileWriter.Write(ServiceConstants.ENDLINETERMSTRING)
@@ -1013,7 +1016,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub GetImageForDocument(ByVal imageFile As String, ByVal originalFileName As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As Int32, ByVal status As Int64, ByVal isStartRecord As Boolean)
 			_totalProcessed += 1
-			
+
 			Dim filename As String = If(Not originalFileName.IsNullOrEmpty(), originalFileName, imageFile.Substring(imageFile.LastIndexOf("\") + 1))
 			Dim extractedTextFileName As String = imageFile.Substring(0, imageFile.LastIndexOf("."c) + 1) & "txt"
 			Dim fileGuid As String = ""
@@ -1049,8 +1052,8 @@ Namespace kCura.WinEDDS
 			End If
 			_bulkLoadFileWriter.Write(If(isStartRecord, "1,", "0,"))
 			_bulkLoadFileWriter.Write(status & ",")
-			_bulkLoadFileWriter.Write("0,")	'IsNew
-			_bulkLoadFileWriter.Write("0,")	'ArtifactID
+			_bulkLoadFileWriter.Write("0,") 'IsNew
+			_bulkLoadFileWriter.Write("0,") 'ArtifactID
 			_bulkLoadFileWriter.Write(originalLineNumber & ",")
 			_bulkLoadFileWriter.Write(documentIdentifier & ",")
 			_bulkLoadFileWriter.Write(batesNumber & ",")
@@ -1171,7 +1174,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 #End Region
-		
+
 		Private Sub IoWarningHandler(ByVal sender As Object, e As IoWarningEventArgs)
 			Dim ioWarningEventArgs As New IoWarningEventArgs(e.Message, e.CurrentLineNumber)
 			Me.PublishIoWarningEvent(ioWarningEventArgs)
@@ -1179,13 +1182,13 @@ Namespace kCura.WinEDDS
 
 		Private Sub ManagePrePushErrors()
 			If Not _prePushErrors.Any Then Exit Sub
-			InitializeErrorFiles
+			InitializeErrorFiles()
 
 			Using stream As System.IO.StreamWriter = New System.IO.StreamWriter(_errorRowsFileLocation, True, System.Text.Encoding.Default)
 				For Each prePushError As Tuple(Of ImageRecord, String) In _prePushErrors
 					Dim record As ImageRecord = prePushError.Item1
 					Dim errorMessage As String = prePushError.Item2
-					Dim line As String() = new String() { record.OriginalIndex.ToString(), record.BatesNumber, record.FileName, errorMessage }
+					Dim line As String() = New String() {record.OriginalIndex.ToString(), record.BatesNumber, record.FileName, errorMessage}
 					ProcessError(line)
 					Dim newRecordMarker As String = If(record.IsNewDoc, "Y", String.Empty)
 					' must be the same format as returned from server 
@@ -1198,7 +1201,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub ManageErrors()
 			If Not _bulkImportManager.ImageRunHasErrors(_caseInfo.ArtifactID, _runId) Then Exit Sub
-			InitializeErrorFiles 
+			InitializeErrorFiles()
 
 			Dim w As System.IO.StreamWriter = Nothing
 			Dim r As System.IO.StreamReader = Nothing
@@ -1207,7 +1210,7 @@ Namespace kCura.WinEDDS
 			Try
 				With _bulkImportManager.GenerateImageErrorFiles(_caseInfo.ArtifactID, _runId, True, _keyFieldDto.ArtifactID)
 					Me.RaiseStatusEvent(EventType2.Status, "Retrieving errors from server", Me.CurrentLineNumber)
-					Dim errorFileService As New ErrorFileService(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer)
+					Dim errorFileService As New ErrorFileService(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer, AddressOf GetCorrelationId)
 					Dim errorsLocation As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 					sr = AttemptErrorFileDownload(errorFileService, errorsLocation, .LogKey, _caseInfo)
 
@@ -1273,7 +1276,7 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Private Sub InitializeErrorFiles 
+		Private Sub InitializeErrorFiles()
 			If _errorMessageFileLocation = "" Then
 				_errorMessageFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 			End If
@@ -1286,7 +1289,7 @@ Namespace kCura.WinEDDS
 		Private Sub ProcessError(ByVal line As String())
 			Dim originalIndex As Int64 = Int64.Parse(line(0))
 			Dim ht As New System.Collections.Hashtable
-			ht.Add("Line Number", Ctype(originalIndex,Int32))
+			ht.Add("Line Number", CType(originalIndex, Int32))
 			ht.Add("DocumentID", line(1))
 			ht.Add("FileID", line(2))
 			Dim errorMessages As String = line(3)
@@ -1303,7 +1306,7 @@ Namespace kCura.WinEDDS
 			Dim recordNumber As Long = originalIndex + ImportFilesCount
 			RaiseEvent StatusMessage(New StatusEventArgs(EventType2.Error, recordNumber - 1, _recordCount, "[Line " & line(0) & "]" & errorMessages, Nothing, Statistics))
 		End Sub
-		
+
 		Private Function AttemptErrorFileDownload(ByVal errorFileService As ErrorFileService, ByVal errorFileOutputPath As String, ByVal logKey As String, ByVal caseInfo As CaseInfo) As GenericCsvReader2
 			Dim triesLeft As Integer = 3
 			Dim sr As GenericCsvReader2 = Nothing
@@ -1401,5 +1404,16 @@ Namespace kCura.WinEDDS
 				End Try
 			End If
 		End Sub
+
+		Private Function GetCorrelationId() As String
+			' Return run id if already set
+			If Not String.IsNullOrEmpty(_runId) Then Return _runId
+
+			' Return local run id if already set
+			If Not String.IsNullOrEmpty(_localRunId) Then Return _localRunId
+
+			' Return 'injected' correlationIdFunc (passed from desktop application or import api)
+			Return CorrelationIdFunc?.Invoke()
+		End Function
 	End Class
 End Namespace

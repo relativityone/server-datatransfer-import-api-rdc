@@ -20,6 +20,8 @@ namespace kCura.Relativity.ImportAPI
 	using global::Relativity.DataExchange.Logging;
 	using global::Relativity.Logging;
 
+	using kCura.WinEDDS.Service.Replacement;
+
 	using IAuthenticationTokenProvider = global::Relativity.Transfer.IAuthenticationTokenProvider;
 	using Constants = global::Relativity.DataExchange.Constants;
 	using Monitoring;
@@ -35,7 +37,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <summary>
 		/// The lazy-loaded case manager instance.
 		/// </summary>
-		private CaseManager _caseManager;
+		private ICaseManager _caseManager;
 
 		/// <summary>
 		/// The current Transfer API credentials.
@@ -45,12 +47,12 @@ namespace kCura.Relativity.ImportAPI
 		/// <summary>
 		/// The lazy-loaded object type manager instance.
 		/// </summary>
-		private ObjectTypeManager _objectTypeManager;
+		private IObjectTypeManager _objectTypeManager;
 
 		/// <summary>
 		/// The lazy-loaded production manager instance.
 		/// </summary>
-		private ProductionManager _productionManager;
+		private IProductionManager _productionManager;
 
 		/// <summary>
 		/// Authentication token provider
@@ -65,6 +67,11 @@ namespace kCura.Relativity.ImportAPI
 		private ILog _logger = RelativityLogger.Instance;
 
 		/// <summary>
+		 /// API instance id.
+		/// </summary>
+		private Guid _apiInstanceId = Guid.NewGuid();
+
+		/// <summary>
 		/// Holds cookies for the current session.
 		/// </summary>
 		protected CookieContainer _cookieMonster;
@@ -72,7 +79,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <summary>
 		/// The current WebAPI credentials.
 		/// </summary>
-		protected ICredentials _credentials;
+		protected NetworkCredential _credentials;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ImportAPI"/> class.
@@ -283,11 +290,11 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID)
 		{
-			var fm = new WinEDDS.Service.FieldManager(_credentials, _cookieMonster);
+			var fq = ManagerFactory.CreateFieldQuery(_credentials, _cookieMonster, GetCorrelationId);
 
 			this._logger.LogUserContextInformation($"Call {nameof(ImportAPI)}.{nameof(GetWorkspaceFields)}", this._credentials);
 
-			var fields = fm.Query.RetrieveAllAsDocumentFieldCollection(workspaceArtifactID, artifactTypeID);
+			var fields = fq.RetrieveAllAsDocumentFieldCollection(workspaceArtifactID, artifactTypeID);
 
 			return (from DocumentField docField in fields
 					select new Field
@@ -318,7 +325,7 @@ namespace kCura.Relativity.ImportAPI
 		{
 			this._runningContext.CallingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName().Name;
 			this._runningContext.ExecutionSource = (ExecutionSource)this.ExecutionSource;
-			return new ImageImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, this._runningContext);
+			return new ImageImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, this._runningContext, GetCorrelationId);
 		}
 
 		/// <summary>
@@ -371,7 +378,7 @@ namespace kCura.Relativity.ImportAPI
 		{
 			this._runningContext.CallingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName().Name;
 			this._runningContext.ExecutionSource = (ExecutionSource)this.ExecutionSource;
-			var returnJob = new ImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, this._runningContext);
+			var returnJob = new ImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, this._runningContext, GetCorrelationId);
 			returnJob.Settings.ArtifactTypeId = artifactTypeId;
 			return returnJob;
 		}
@@ -431,6 +438,11 @@ namespace kCura.Relativity.ImportAPI
 			return importApi;
 		}
 
+		protected string GetCorrelationId()
+		{
+			return _apiInstanceId.ToString();
+		}
+
 		#endregion "Protected items"
 
 		#region "Private items"
@@ -468,7 +480,7 @@ namespace kCura.Relativity.ImportAPI
 			try
 			{
 				ImportCredentialManager.WebServiceURL = webServiceURL;
-				credentials = ImportCredentialManager.GetCredentials(userName, password, this._runningContext);
+				credentials = ImportCredentialManager.GetCredentials(userName, password, this._runningContext, GetCorrelationId);
 			}
 			catch (kCura.WinEDDS.Exceptions.CredentialsNotSupportedException)
 			{
@@ -516,7 +528,7 @@ namespace kCura.Relativity.ImportAPI
 
 		private void SendAuthenticationTypeMetric(NetworkCredential credentials, TelemetryConstants.AuthenticationMethod authenticationMethod)
 		{
-			Monitoring.Sinks.IMetricService metricService = new Monitoring.Sinks.MetricService(new Monitoring.Sinks.ImportApiMetricSinkConfig(), ServiceFactoryFactory.Create(credentials));
+			Monitoring.Sinks.IMetricService metricService = new Monitoring.Sinks.MetricService(new Monitoring.Sinks.ImportApiMetricSinkConfig(), KeplerProxyFactory.CreateKeplerProxy(credentials));
 			var logger = RelativityLogger.Instance;
 			var metric = new MetricAuthenticationType()
 							 {
@@ -554,31 +566,31 @@ namespace kCura.Relativity.ImportAPI
 			return returnRepoPath;
 		}
 
-		private CaseManager GetCaseManager()
+		private ICaseManager GetCaseManager()
 		{
 			if (_caseManager == null)
 			{
-				_caseManager = new CaseManager(_credentials, _cookieMonster);
+				_caseManager = ManagerFactory.CreateCaseManager(_credentials, _cookieMonster, GetCorrelationId);
 			}
 			this._logger.LogUserContextInformation($"Get {nameof(CaseManager)}", this._credentials);
 			return _caseManager;
 		}
 
-		private ObjectTypeManager GetObjectTypeManager()
+		private IObjectTypeManager GetObjectTypeManager()
 		{
 			if (_objectTypeManager == null)
 			{
-				_objectTypeManager = new ObjectTypeManager(_credentials, _cookieMonster);
+				_objectTypeManager = ManagerFactory.CreateObjectTypeManager(_credentials, _cookieMonster, GetCorrelationId);
 			}
 			this._logger.LogUserContextInformation($"Get {nameof(ObjectTypeManager)}", this._credentials);
 			return _objectTypeManager;
 		}
 
-		private ProductionManager GetProductionManager()
+		private IProductionManager GetProductionManager()
 		{
 			if (_productionManager == null)
 			{
-				_productionManager = new ProductionManager(_credentials, _cookieMonster);
+				_productionManager = ManagerFactory.CreateProductionManager(_credentials, _cookieMonster, GetCorrelationId);
 			}
 			this._logger.LogUserContextInformation($"Get {nameof(ProductionManager)}", this._credentials);
 			return _productionManager;

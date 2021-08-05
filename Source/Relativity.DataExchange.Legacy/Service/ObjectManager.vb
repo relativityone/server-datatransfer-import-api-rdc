@@ -3,6 +3,7 @@ Imports Relativity.DataExchange
 Namespace kCura.WinEDDS.Service
 	Public Class ObjectManager
 		Inherits kCura.EDDS.WebAPI.ObjectManagerBase.ObjectManager
+		Implements Replacement.IObjectManager
 
 #Region " Constructor and Initialization "
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
@@ -25,15 +26,15 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Shadow Implementations "
 
-		Public Shadows Function RetrieveArtifactIdOfMappedObject(ByVal caseContextArtifactID As Int32, ByVal textIdentifier As String, ByVal artifactTypeID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveArtifactIdOfMappedObject(ByVal caseContextArtifactID As Int32, ByVal textIdentifier As String, ByVal artifactTypeID As Int32) As System.Data.DataSet Implements Replacement.IObjectManager.RetrieveArtifactIdOfMappedObject
 			Return RetryOnReLoginException(Function() MyBase.RetrieveArtifactIdOfMappedObject(caseContextArtifactID, textIdentifier, artifactTypeID))
 		End Function
 
-		Public Shadows Function RetrieveTextIdentifierOfMappedObject(ByVal caseContextArtifactID As Int32, ByVal artifactId As Int32, ByVal artifactTypeID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveTextIdentifierOfMappedObject(ByVal caseContextArtifactID As Int32, ByVal artifactId As Int32, ByVal artifactTypeID As Int32) As System.Data.DataSet Implements Replacement.IObjectManager.RetrieveTextIdentifierOfMappedObject
 			Return RetryOnReLoginException(Function() MyBase.RetrieveTextIdentifierOfMappedObject(caseContextArtifactID, artifactId, artifactTypeID))
 		End Function
 
-		Public Shadows Function RetrieveArtifactIdOfMappedParentObject(ByVal caseContextArtifactID As Int32, ByVal textIdentifier As String, ByVal artifactTypeID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveArtifactIdOfMappedParentObject(ByVal caseContextArtifactID As Int32, ByVal textIdentifier As String, ByVal artifactTypeID As Int32) As System.Data.DataSet Implements Replacement.IObjectManager.RetrieveArtifactIdOfMappedParentObject
 			Return RetryOnReLoginException(Function() MyBase.RetrieveArtifactIdOfMappedParentObject(caseContextArtifactID, textIdentifier, artifactTypeID))
 		End Function
 

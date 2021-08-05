@@ -20,6 +20,7 @@ namespace Relativity.DataExchange.NUnit
 
 	using Moq;
 
+	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
@@ -37,7 +38,7 @@ namespace Relativity.DataExchange.NUnit
 		/// <summary>
 		/// The real object service backing.
 		/// </summary>
-		private readonly TapiObjectService realObjectService = new TapiObjectService();
+		private readonly TapiObjectService realObjectService;
 
 		private readonly object syncRoot = new object();
 
@@ -46,6 +47,12 @@ namespace Relativity.DataExchange.NUnit
 		private readonly List<TapiLargeFileProgressEventArgs> largeFileProgressEvents = new List<TapiLargeFileProgressEventArgs>();
 
 		private readonly List<JobTransferPath> queuedJobTransferPaths = new List<JobTransferPath>();
+
+		protected TapiBridgeTestsBase(bool useLegacyWebApi)
+		{
+			this.UseLegacyWebApi = useLegacyWebApi;
+			this.realObjectService = new TapiObjectService(new RelativityManagerServiceFactory(), useLegacyWebApi);
+		}
 
 		protected static TransferPath TestTransferPath =>
 			new TransferPath(
@@ -60,6 +67,8 @@ namespace Relativity.DataExchange.NUnit
 		protected static string TestSuccessMessage => "Success...";
 
 		protected static string TestErrorMessage => "Error...";
+
+		protected bool UseLegacyWebApi { get; }
 
 		protected Mock<ITapiObjectService> MockTapiObjectService { get; private set; }
 

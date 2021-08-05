@@ -11,6 +11,7 @@ namespace Relativity.DataExchange.Transfer
 {
 	using System;
 	using System.Globalization;
+	using System.Net;
 	using System.Threading;
 	using System.Threading.Tasks;
 
@@ -32,11 +33,19 @@ namespace Relativity.DataExchange.Transfer
 
 		private readonly IAuthenticationTokenProvider authenticationTokenProvider;
 
+		private readonly IRelativityManagerServiceFactory relativityManagerServiceFactory;
+
+		private readonly Func<string, NetworkCredential, bool> getUseLegacyWebApi;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TapiObjectService"/> class.
 		/// </summary>
-		public TapiObjectService()
-			: this(new NullAuthTokenProvider())
+		/// <param name="relativityManagerServiceFactory">Relativity manager service factory.</param>
+		/// <param name="useLegacyWebApi">If true use WebApi, otherwise use Kepler.</param>
+		public TapiObjectService(
+			IRelativityManagerServiceFactory relativityManagerServiceFactory,
+			bool useLegacyWebApi)
+			: this(new NullAuthTokenProvider(), relativityManagerServiceFactory, useLegacyWebApi)
 		{
 		}
 
@@ -44,11 +53,78 @@ namespace Relativity.DataExchange.Transfer
 		/// Initializes a new instance of the <see cref="TapiObjectService"/> class.
 		/// </summary>
 		/// <param name="authenticationTokenProvider">Authentication token provider.</param>
-		public TapiObjectService(IAuthenticationTokenProvider authenticationTokenProvider)
+		/// <param name="relativityManagerServiceFactory">Relativity manager service factory.</param>
+		/// <param name="webApiVsKeplerFactory">WebApiVsKeplerFactory.</param>
+		/// <param name="getCorrelationId">Function returning CorrelationId.</param>
+		/// <remarks>This constructor is used by the IoC container used in Export.</remarks>
+		public TapiObjectService(
+			IAuthenticationTokenProvider authenticationTokenProvider,
+			IRelativityManagerServiceFactory relativityManagerServiceFactory,
+			IWebApiVsKeplerFactory webApiVsKeplerFactory,
+			Func<string> getCorrelationId)
+			: this(authenticationTokenProvider, relativityManagerServiceFactory, GetUseLegacyWebApiValueFactory(webApiVsKeplerFactory, getCorrelationId))
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TapiObjectService"/> class.
+		/// </summary>
+		/// <param name="authenticationTokenProvider">Authentication token provider.</param>
+		/// <param name="relativityManagerServiceFactory">Relativity manager service factory.</param>
+		/// <param name="useLegacyWebApi">If true use WebApi, otherwise use Kepler.</param>
+		public TapiObjectService(
+			IAuthenticationTokenProvider authenticationTokenProvider,
+			IRelativityManagerServiceFactory relativityManagerServiceFactory,
+			bool useLegacyWebApi)
+			: this(authenticationTokenProvider, relativityManagerServiceFactory, (_, __) => useLegacyWebApi)
+		{
+		}
+
+		private TapiObjectService(
+			IAuthenticationTokenProvider authenticationTokenProvider,
+			IRelativityManagerServiceFactory relativityManagerServiceFactory,
+			Func<string, NetworkCredential, bool> getUseLegacyWebApi)
 		{
 			authenticationTokenProvider.ThrowIfNull(nameof(authenticationTokenProvider));
+			relativityManagerServiceFactory.ThrowIfNull(nameof(relativityManagerServiceFactory));
+			getUseLegacyWebApi.ThrowIfNull(nameof(getUseLegacyWebApi));
 
 			this.authenticationTokenProvider = authenticationTokenProvider;
+			this.relativityManagerServiceFactory = relativityManagerServiceFactory;
+			this.getUseLegacyWebApi = getUseLegacyWebApi;
+		}
+
+		/// <summary>
+		/// Gets the client display name associated with the specified transfer client identifier.
+		/// </summary>
+		/// <param name="clientId">
+		/// The transfer client identifier.
+		/// </param>
+		/// <returns>
+		/// The client display name.
+		/// </returns>
+		/// <exception cref="System.ArgumentException">
+		/// Thrown when the client doesn't exist.
+		/// </exception>
+		public static string GetClientDisplayName(Guid clientId)
+		{
+			if (clientId == Guid.Empty)
+			{
+				throw new ArgumentException("The client unique identifier must be non-empty.", nameof(clientId));
+			}
+
+			using (var transferLog = new RelativityTransferLog(RelativityLogger.Instance))
+			{
+				foreach (var clientMetadata in Relativity.Transfer.TransferClientHelper.SearchAvailableClients(transferLog))
+				{
+					if (new Guid(clientMetadata.Id) == clientId)
+					{
+						return clientMetadata.DisplayName;
+					}
+				}
+
+				throw new ArgumentException(Strings.ClientIdNotFoundExceptionMessage);
+			}
 		}
 
 		/// <inheritdoc />
@@ -125,50 +201,30 @@ namespace Relativity.DataExchange.Transfer
 			// REL-281370: Due to high SOI, this method takes on more responsibility
 			//             than it should but it limits the URL fetch to a single method.
 			RelativityInstanceInfo instanceInfo = new RelativityInstanceInfo
-				                                      {
-					                                      CookieContainer = parameters.WebCookieContainer,
-					                                      Credentials = parameters.Credentials,
-					                                      WebApiServiceUrl = new Uri(parameters.WebServiceUrl),
-				                                      };
+			{
+				CookieContainer = parameters.WebCookieContainer,
+				Credentials = parameters.Credentials,
+				WebApiServiceUrl = new Uri(parameters.WebServiceUrl),
+			};
 
-			RelativityManagerService service = new RelativityManagerService(instanceInfo);
-			Uri relativityUrl = service.GetRelativityUrl();
+			var service = relativityManagerServiceFactory.Create(instanceInfo, this.getUseLegacyWebApi(parameters.WebServiceUrl, parameters.Credentials));
+			var relativityUrl = service.GetRelativityUrl();
 
 			// REL-286484: There are several expectations on a normalized URL - especially extracted text downloads.
 			var host = new Uri(relativityUrl.GetLeftPart(UriPartial.Authority));
+#pragma warning disable 0618 // Obsolete Usage
 			return new Relativity.Transfer.RelativityConnectionInfo(
 				host,
 				httpCredential,
 				parameters.WorkspaceId,
 				new Uri(parameters.WebServiceUrl));
+#pragma warning restore 0618 // Obsolete Usage
 		}
 
 		/// <inheritdoc />
 		public virtual Relativity.Transfer.IRelativityTransferHost CreateRelativityTransferHost(Relativity.Transfer.RelativityConnectionInfo connectionInfo, ILog logger)
 		{
 			return new Relativity.Transfer.RelativityTransferHost(connectionInfo, new RelativityTransferLog(logger));
-		}
-
-		/// <inheritdoc />
-		public virtual string GetClientDisplayName(Guid clientId)
-		{
-			if (clientId == Guid.Empty)
-			{
-				throw new ArgumentException("The client unique identifier must be non-empty.", nameof(clientId));
-			}
-
-			using (var transferLog = new RelativityTransferLog(RelativityLogger.Instance))
-			{
-				foreach (var clientMetadata in Relativity.Transfer.TransferClientHelper.SearchAvailableClients(transferLog))
-				{
-					if (new Guid(clientMetadata.Id) == clientId)
-					{
-						return clientMetadata.DisplayName;
-					}
-				}
-
-				throw new ArgumentException(Strings.ClientIdNotFoundExceptionMessage);
-			}
 		}
 
 		/// <inheritdoc />
@@ -223,13 +279,15 @@ namespace Relativity.DataExchange.Transfer
 				throw new ArgumentNullException(nameof(parameters));
 			}
 
+			ClientConfiguration configuration = this.GetClientConfiguration(parameters);
+
 			using (ITransferLog transferLog = new RelativityTransferLog(logger))
 			using (IRelativityTransferHost transferHost = new RelativityTransferHost(
 				this.CreateRelativityConnectionInfo(parameters),
 				transferLog))
 			{
-				Workspace workspace = await transferHost.GetWorkspaceAsync(parameters.WorkspaceId, token)
-					                      .ConfigureAwait(false);
+				Workspace workspace = await transferHost.GetWorkspaceAsync(parameters.WorkspaceId, configuration, token)
+										  .ConfigureAwait(false);
 				if (workspace == null)
 				{
 					string message = string.Format(
@@ -275,12 +333,14 @@ namespace Relativity.DataExchange.Transfer
 				throw new ArgumentNullException(nameof(parameters));
 			}
 
+			ClientConfiguration configuration = this.GetClientConfiguration(parameters);
+
 			using (ITransferLog transferLog = new RelativityTransferLog(logger))
 			using (IRelativityTransferHost transferHost = new RelativityTransferHost(
 				this.CreateRelativityConnectionInfo(parameters),
 				transferLog))
 			{
-				IFileStorageSearch service = transferHost.CreateFileStorageSearch();
+				IFileStorageSearch service = transferHost.CreateFileStorageSearch(configuration);
 				FileStorageSearchContext context =
 					new FileStorageSearchContext { WorkspaceId = parameters.WorkspaceId };
 				FileStorageSearchResults results = await service.SearchAsync(context, token).ConfigureAwait(false);
@@ -312,6 +372,27 @@ namespace Relativity.DataExchange.Transfer
 			}
 		}
 
+		private static Func<string, NetworkCredential, bool> GetUseLegacyWebApiValueFactory(
+			IWebApiVsKeplerFactory webApiVsKeplerFactory,
+			Func<string> getCorrelationId)
+		{
+			return (webServiceUrl, credential) =>
+				{
+					var webApiVsKepler = webApiVsKeplerFactory.Create(new Uri(webServiceUrl), credential, getCorrelationId);
+					return !webApiVsKepler.UseKepler();
+				};
+		}
+
+		private ClientConfiguration GetClientConfiguration(TapiBridgeParameters2 parameters)
+		{
+			return new ClientConfiguration
+			{
+				CookieContainer = parameters.WebCookieContainer,
+				ClientId = this.GetClientId(parameters),
+				UseLegacyWebApi = this.getUseLegacyWebApi(parameters.WebServiceUrl, parameters.Credentials),
+			};
+		}
+
 		/// <summary>
 		/// Asynchronously gets the transfer client info that will be used for the given workspace.
 		/// </summary>
@@ -323,12 +404,7 @@ namespace Relativity.DataExchange.Transfer
 		/// </returns>
 		private async Task<Tuple<Guid, string>> GetWorkspaceTransferClientInfoAsync(TapiBridgeParameters2 parameters)
 		{
-			Relativity.Transfer.ClientConfiguration configuration = new Relativity.Transfer.ClientConfiguration
-				                                                        {
-					                                                        CookieContainer =
-						                                                        parameters.WebCookieContainer,
-					                                                        ClientId = this.GetClientId(parameters),
-				                                                        };
+			ClientConfiguration configuration = this.GetClientConfiguration(parameters);
 
 			using (RelativityTransferLog transferLog = new RelativityTransferLog(RelativityLogger.Instance))
 			using (RelativityTransferHost transferHost = new RelativityTransferHost(

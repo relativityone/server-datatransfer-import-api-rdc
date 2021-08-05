@@ -1,8 +1,8 @@
 Imports Relativity.DataExchange
-
 Namespace kCura.WinEDDS.Service
 	Public Class RelativityManager
 		Inherits kCura.EDDS.WebAPI.RelativityManagerBase.RelativityManager
+		Implements Replacement.IRelativityManager
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			Me.New(credentials, cookieContainer, AppSettings.Instance.WebApiServiceUrl)
@@ -28,15 +28,19 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-		Public Shadows Function ValidateSuccesfulLogin() As Boolean
+		Public Shadows Function RetrieveCurrencySymbol() As String Implements Replacement.IRelativityManager.RetrieveCurrencySymbol
+			Return RetryOnReLoginException(Function() MyBase.RetrieveCurrencySymbol())
+		End Function
+
+		Public Shadows Function ValidateSuccessfulLogin() As Boolean Implements Replacement.IRelativityManager.ValidateSuccessfulLogin
 			Return MyBase.ValidateSuccessfulLogin
 		End Function
 
-		Public Shadows Function IsImportEmailNotificationEnabled() As Boolean
+		Public Shadows Function IsImportEmailNotificationEnabled() As Boolean Implements Replacement.IRelativityManager.IsImportEmailNotificationEnabled
 			Return RetryOnReLoginException(Function() MyBase.IsImportEmailNotificationEnabled())
 		End Function
 
-		Public Shadows Function RetrieveRdcConfiguration() As System.Data.DataSet
+		Public Shadows Function RetrieveRdcConfiguration() As System.Data.DataSet Implements Replacement.IRelativityManager.RetrieveRdcConfiguration
 			Return RetryOnReLoginException(Function() MyBase.RetrieveRdcConfiguration())
 		End Function
 

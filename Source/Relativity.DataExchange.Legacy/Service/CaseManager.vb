@@ -1,11 +1,10 @@
-Imports kCura.WinEDDS.Service.Export
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS.Service
 	Public Class CaseManager
 		Inherits kCura.EDDS.WebAPI.CaseManagerBase.CaseManager
-        Implements ICaseManager
+		Implements Replacement.ICaseManager, Export.ICaseManager
 
         Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 	        Me.New(credentials, cookieContainer, AppSettings.Instance.WebApiServiceUrl, Settings.DefaultTimeOut)
@@ -43,16 +42,20 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Shadow Functions "
-		Public Shadows Function RetrieveAll() As System.Data.DataSet
+		Public Shadows Function RetrieveAll() As System.Data.DataSet Implements Replacement.ICaseManager.RetrieveAll
 			Return RetryOnReLoginException(Function() MyBase.RetrieveAllEnabled())
 		End Function
 
-		Public Shadows Function Read(ByVal caseArtifactID As Int32) As CaseInfo Implements ICaseManager.Read
+		Public Shadows Function Read(ByVal caseArtifactID As Int32) As CaseInfo Implements Replacement.ICaseManager.Read, Export.ICaseManager.Read
 			Return RetryOnReLoginException(Function() ConvertToCaseInfo(MyBase.Read(caseArtifactID)))
 		End Function
 
-		Public Shadows Function GetAllDocumentFolderPathsForCase(ByVal caseArtifactID As Int32) As String() Implements ICaseManager.GetAllDocumentFolderPathsForCase
+		Public Shadows Function GetAllDocumentFolderPathsForCase(ByVal caseArtifactID As Int32) As String() Implements Replacement.ICaseManager.GetAllDocumentFolderPathsForCase, Export.ICaseManager.GetAllDocumentFolderPathsForCase
 			Return RetryOnReLoginException(Function() MyBase.GetAllDocumentFolderPathsForCase(caseArtifactID))
+		End Function
+
+		Public Shadows Function GetAllDocumentFolderPaths() As String() Implements Replacement.ICaseManager.GetAllDocumentFolderPaths
+			Return RetryOnReLoginException(Function() MyBase.GetAllDocumentFolderPaths())
 		End Function
 #End Region
 

@@ -16,6 +16,8 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 
 	using global::NUnit.Framework;
 
+	using kCura.WinEDDS.Service;
+
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
@@ -678,7 +680,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		protected kCura.WinEDDS.Service.Export.ISearchManager CreateExportSearchManager()
 		{
 			var credentials = new NetworkCredential(this.TestParameters.RelativityUserName, this.TestParameters.RelativityPassword);
-			return new kCura.WinEDDS.Service.SearchManager(credentials, new CookieContainer());
+			return ManagerFactory.CreateSearchManager(credentials, new CookieContainer(), () => "TestCorrelationId");
 		}
 
 		protected Task<int> CreateFixedLengthTextFieldAsync(int objectArtifactTypeId, string fieldName, int length)

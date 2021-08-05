@@ -7,6 +7,7 @@
 Imports System.Threading
 
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
+Imports kCura.EDDS.WebAPI.DocumentManagerBase
 Imports kCura.WinEDDS
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
@@ -40,7 +41,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		Public PauseCalled As Int32 = 0
 
 		Public Sub New(ByVal args As ImageLoadFile, ByVal processController As ProcessContext, ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager, ByVal tokenSource As CancellationTokenSource)
-			MyBase.New(0, args, processController, ioReporterInstance, logger, processID, doRetryLogic, tokenSource)
+			MyBase.New(0, args, processController, ioReporterInstance, logger, processID, doRetryLogic, tokenSource, AddressOf GetCorrelationIdFunc)
 			Me.WillThrowException = throwsException
 			_bulkImportManager = bulkManager
 			Me.ImportBatchSize = 500
@@ -79,5 +80,8 @@ Namespace Relativity.DataExchange.Import.NUnit
 			End Get
 		End Property
 
+		Private Shared Function GetCorrelationIdFunc() As String
+			Return NameOf(MockBulkImageFileImporter)
+		End Function
 	End Class
 End Namespace

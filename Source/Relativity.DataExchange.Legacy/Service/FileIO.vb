@@ -6,6 +6,7 @@ Namespace kCura.WinEDDS.Service
 
 	Public Class FileIO
 		Inherits kCura.EDDS.WebAPI.FileIOBase.FileIO
+		Implements Replacement.IFileIO
 		Private Shared BCPCache As New MemoryCache("BCPCache")
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
@@ -106,15 +107,15 @@ Namespace kCura.WinEDDS.Service
 			ExecuteWithRetry(Sub() MyBase.RemoveFill(caseContextArtifactID, documentDirectory, fileName))
 		End Sub
 
-		Public Shadows Sub RemoveTempFile(ByVal caseContextArtifactID As Integer, ByVal fileName As String)
+		Public Shadows Sub RemoveTempFile(ByVal caseContextArtifactID As Integer, ByVal fileName As String) Implements Replacement.IFileIO.RemoveTempFile
 			ExecuteWithRetry(Sub() MyBase.RemoveTempFile(caseContextArtifactID, fileName))
 		End Sub
 
-		Public Shadows Function ValidateBcpShare(ByVal appID As Int32) As Boolean
+		Public Shadows Function ValidateBcpShare(ByVal appID As Int32) As Boolean Implements Replacement.IFileIO.ValidateBcpShare
 			Return ExecuteWithRetry(Function() MyBase.ValidateBcpShare(appID))
 		End Function
 
-		Public Shadows Function GetBcpShareSpaceReport(ByVal appID As Int32) As String()()
+		Public Shadows Function GetBcpShareSpaceReport(ByVal appID As Int32) As String()() Implements Replacement.IFileIO.GetBcpShareSpaceReport
 			Return ExecuteWithRetry(Function() MyBase.GetBcpShareSpaceReport(appID))
 		End Function
 
@@ -122,11 +123,11 @@ Namespace kCura.WinEDDS.Service
 			Return ExecuteWithRetry(Function() MyBase.GetDefaultRepositorySpaceReport(appID))
 		End Function
 
-		Public Shadows Function RepositoryVolumeMax() As Int32
+		Public Shadows Function RepositoryVolumeMax() As Int32 Implements Replacement.IFileIO.RepositoryVolumeMax
 			Return ExecuteWithRetry(Function() MyBase.RepositoryVolumeMax())
 		End Function
 
-		Public Shadows Function GetBcpSharePath(ByVal appID As Int32) As String
+		Public Shadows Function GetBcpSharePath(ByVal appID As Int32) As String Implements Replacement.IFileIO.GetBcpSharePath
 			Dim cacheVal As Object = BCPCache.Get(appID.ToString())
 			If (cacheVal IsNot Nothing) Then
 				Return cacheVal.ToString()

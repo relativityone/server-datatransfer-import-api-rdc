@@ -4,6 +4,7 @@
 
 namespace Relativity.DataExchange.TestFramework
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using NUnit.Framework;
@@ -17,6 +18,25 @@ namespace Relativity.DataExchange.TestFramework
 			// default value is TapiClient.None
 			TapiClient client = TestExecutionContext.CurrentContext.CurrentTest.Arguments.OfType<TapiClient>().SingleOrDefault();
 			InitializeTapiClient(client, parameters);
+		}
+
+		public static void InitializeTapiClient(TapiClient tapiClient, IntegrationTestParameters parameters)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			SkipTestIfModeNotAvailable(tapiClient, parameters);
+
+			if (tapiClient == TapiClient.None && parameters.SkipAsperaModeTests && parameters.SkipDirectModeTests)
+			{
+				ForceClient(TapiClient.Web);
+			}
+			else
+			{
+				ForceClient(tapiClient);
+			}
 		}
 
 		public static TapiClient[] GetAvailableTapiClients()
@@ -33,20 +53,6 @@ namespace Relativity.DataExchange.TestFramework
 			}
 
 			return availableClients.ToArray();
-		}
-
-		private static void InitializeTapiClient(TapiClient tapiClient, IntegrationTestParameters parameters)
-		{
-			SkipTestIfModeNotAvailable(tapiClient, parameters);
-
-			if (tapiClient == TapiClient.None && parameters.SkipAsperaModeTests && parameters.SkipDirectModeTests)
-			{
-				ForceClient(TapiClient.Web);
-			}
-			else
-			{
-				ForceClient(tapiClient);
-			}
 		}
 
 		private static void SkipTestIfModeNotAvailable(TapiClient client, IntegrationTestParameters parameters)

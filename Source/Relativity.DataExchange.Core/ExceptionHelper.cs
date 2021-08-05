@@ -190,7 +190,7 @@ namespace Relativity.DataExchange
 
 			var exceptionType = exception.GetType();
 			return FatalExceptionCandidates.Any(exceptionCandidateType => exceptionCandidateType.IsAssignableFrom(exceptionType))
-			       || IsFatalWebException(exception) || IsOutOfDiskSpaceException(exception);
+			       || IsFatalWebException(exception) || IsFatalServiceInfrastructureException(exception) || IsOutOfDiskSpaceException(exception);
 		}
 
 		/// <summary>
@@ -383,6 +383,11 @@ namespace Relativity.DataExchange
 		public static bool IsWebExceptionStatusCodeFatalError(WebExceptionStatus status)
 		{
 			return DefaultFatalWebExceptionStatusCodes.Any(x => x == status);
+		}
+
+		private static bool IsFatalServiceInfrastructureException(Exception exception)
+		{
+			return exception is ServiceNotFoundException;
 		}
 	}
 }

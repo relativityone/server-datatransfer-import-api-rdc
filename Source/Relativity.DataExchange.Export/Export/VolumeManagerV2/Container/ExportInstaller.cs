@@ -27,6 +27,7 @@
 	using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS.Exporters.Validator;
 	using kCura.WinEDDS.Service.Export;
+	using kCura.WinEDDS.Service.Kepler;
 
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
@@ -42,6 +43,9 @@
 	{
 		private readonly Exporter _exporter;
 		private readonly string[] _columnNamesInOrder;
+
+		private readonly Func<string> _correlationIdFunc;
+
 		private readonly ILoadFileHeaderFormatterFactory _loadFileHeaderFormatterFactory;
 		private readonly ILog _logger;
 
@@ -60,16 +64,21 @@
 		/// <param name="loadFileHeaderFormatterFactory">
 		/// The factory used to create <see cref="ILoadFileHeaderFormatter"/> instances.
 		/// </param>
+		/// <param name="correlationIdFunc">
+		///     Function to obtain correlationId
+		/// </param>
 		[Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")]
 		public ExportInstaller(
 			Exporter exporter,
 			string[] columnNamesInOrder,
-			ILoadFileHeaderFormatterFactory loadFileHeaderFormatterFactory)
+			ILoadFileHeaderFormatterFactory loadFileHeaderFormatterFactory,
+			Func<string> correlationIdFunc)
 			: this(
 				exporter,
 				columnNamesInOrder,
 				loadFileHeaderFormatterFactory,
-				RelativityLogger.Instance)
+				RelativityLogger.Instance,
+				correlationIdFunc)
 		{
 		}
 
@@ -82,27 +91,32 @@
 		/// Initializes a new instance of the <see cref="ExportInstaller"/> class.
 		/// </summary>
 		/// <param name="exporter">
-		/// The exporter instance.
+		///     The exporter instance.
 		/// </param>
 		/// <param name="columnNamesInOrder">
-		/// The ordered column name.
+		///     The ordered column name.
 		/// </param>
 		/// <param name="loadFileHeaderFormatterFactory">
-		/// The factory used to create <see cref="ILoadFileHeaderFormatter"/> instances.
+		///     The factory used to create <see cref="ILoadFileHeaderFormatter"/> instances.
 		/// </param>
 		/// <param name="logger">
-		/// The logger instance.
+		///     The logger instance.
+		/// </param>
+		/// <param name="correlationIdFunc">
+		///     Function to obtain correlationId
 		/// </param>
 		public ExportInstaller(
 			Exporter exporter,
 			string[] columnNamesInOrder,
 			ILoadFileHeaderFormatterFactory loadFileHeaderFormatterFactory,
-			ILog logger)
+			ILog logger,
+			Func<string> correlationIdFunc)
 		{
 			_exporter = exporter.ThrowIfNull(nameof(exporter));
 
 			// This parameter can be null!
 			_columnNamesInOrder = columnNamesInOrder;
+			_correlationIdFunc = correlationIdFunc;
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory.ThrowIfNull(nameof(loadFileHeaderFormatterFactory));
 			_logger = logger.ThrowIfNull(nameof(logger));
 		}
@@ -112,6 +126,8 @@
 			InstallFromWinEdds(container);
 			InstallConnectionToWinEdds(container);
 			InstallCustom(container);
+
+			container.Register(Component.For<Func<string>>().Instance(() => _correlationIdFunc()));
 
 			container.Register(Classes.FromThisAssembly().InNamespace("Relativity.DataExchange.Export", true).WithService.DefaultInterfaces().WithService.Self());
 			this.OnInstall(container, store);
@@ -164,6 +180,8 @@
 			container.Register(Component.For<ILog>().UsingFactoryMethod(k => _logger));
 			container.Register(Component.For<ITapiObjectService>().ImplementedBy<TapiObjectService>());
 			container.Register(Component.For<IAuthenticationTokenProvider>().ImplementedBy<NullAuthTokenProvider>());
+			container.Register(Component.For<IRelativityManagerServiceFactory>().ImplementedBy<RelativityManagerServiceFactory>());
+			container.Register(Component.For<IWebApiVsKeplerFactory>().ImplementedBy<WebApiVsKeplerFactory>());
 
 			container.Register(
 				Component.For<IExportRequestRetriever>().UsingFactoryMethod(k => new ExportRequestRetriever(

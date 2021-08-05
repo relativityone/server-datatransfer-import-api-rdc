@@ -4,19 +4,18 @@ Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Service.RelativityDistributed
 Imports Relativity.Logging
+Imports Relativity.DataExchange.Legacy.Service.RelativityDistributed
 
 Namespace kCura.WinEDDS
 	Public Class ErrorFileService
 
-		Private ReadOnly _fileIoService As FileIO
+		Private ReadOnly _fileIoService As Replacement.IFileIO
 		Private ReadOnly _relativityDistributedFacade As IRelativityDistributedFacade
 
-		Public Sub New(credentials As NetworkCredential, downloadHandlerUrl As String, cookieContainer As CookieContainer)
-			_fileIoService = New FileIO(credentials, cookieContainer) With {
-				.Timeout = Int32.MaxValue
-			}
+		Public Sub New(credentials As NetworkCredential, downloadHandlerUrl As String, cookieContainer As CookieContainer, correlationIdFunc As Func(Of String))
+			_fileIoService = ManagerFactory.CreateFileIO(credentials, cookieContainer, Int32.MaxValue, correlationIdFunc)
 
-			_relativityDistributedFacade = CreateRelativityDistributedFacade(credentials, downloadHandlerUrl, cookieContainer)
+			_relativityDistributedFacade = CreateRelativityDistributedFacade(credentials, downloadHandlerUrl, cookieContainer, correlationIdFunc)
 		End Sub
 
 		Public Function DownloadErrorFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As CaseInfo) As Boolean
@@ -59,8 +58,8 @@ Namespace kCura.WinEDDS
 			Throw New ApplicationException(specificErrorMessage & vbNewLine, fileDownloadResponse.Exception)
 		End Sub
 
-		Private Shared Function CreateRelativityDistributedFacade(credentials As NetworkCredential, downloadHandlerUrl As String, cookieContainer As CookieContainer) As IRelativityDistributedFacade
-			Dim reLoginService As IReLoginService = New UserManager(credentials, cookieContainer)
+		Private Shared Function CreateRelativityDistributedFacade(credentials As NetworkCredential, downloadHandlerUrl As String, cookieContainer As CookieContainer, correlationIdFunc As Func(Of String)) As IRelativityDistributedFacade
+			Dim reLoginService As IReLoginService = ManagerFactory.CreateUserManager(credentials, cookieContainer, correlationIdFunc)
 			Dim factory As RelativityDistributedFacadeFactory = New RelativityDistributedFacadeFactory(
 				Log.Logger,
 				AppSettings.Instance,
@@ -72,7 +71,8 @@ Namespace kCura.WinEDDS
 			Return factory.Create(
 				downloadHandlerUrl,
 				credentials,
-				cookieContainer
+				cookieContainer,
+				correlationIdFunc
 			)
 		End Function
 	End Class

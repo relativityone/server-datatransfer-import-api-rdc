@@ -61,6 +61,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			// ASSERT
 			this.ThenTheExportJobIsNotSuccessful(expectedDocsProcessed: expectedDocumentsCount, expectedErrorsCount: expectedMissingFilesCount);
 			ThenTheFilesAreExported(expectedExportedFilesCount);
+
+			this.ThenTheCorrelationIdWasRetrieved();
 		}
 
 		private async Task RemoveFileFromFileShare()

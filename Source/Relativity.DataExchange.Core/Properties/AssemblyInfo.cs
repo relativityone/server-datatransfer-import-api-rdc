@@ -24,6 +24,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("Relativity.DataExchange.Import")]
 [assembly: InternalsVisibleTo("Relativity.DataExchange.Import.NUnit")]
 [assembly: InternalsVisibleTo("Relativity.DataExchange.Import.NUnit.Integration")]
+[assembly: InternalsVisibleTo("Relativity.DataExchange.Import.NUnit.LoadTests")]
 [assembly: InternalsVisibleTo("Relativity.DataExchange.NUnit")]
 [assembly: InternalsVisibleTo("Relativity.DataExchange.NUnit.Integration")]
 [assembly: InternalsVisibleTo("Relativity.DataExchange.Legacy")]
