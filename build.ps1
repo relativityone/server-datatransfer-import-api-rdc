@@ -262,11 +262,11 @@ if ("Clean" -in $TaskList) {
 
 if (-Not (Test-Path $PaketExe -PathType Leaf)) {
 	[Net.ServicePointManager]::SecurityProtocol = ([Net.SecurityProtocolType]::Tls12)
-    Invoke-WebRequest "https://relativity.jfrog.io/relativity/misc-files-local/paket.exe" -OutFile $PaketExe
+    Invoke-WebRequest "https://relativity.jfrog.io/relativity/misc-files-local/paket.exe" -OutFile $PaketExe -UserAgent "curl/7.58.0"
 }
 if (-Not (Test-Path $NuGetExe -PathType Leaf)) {
 	[Net.ServicePointManager]::SecurityProtocol = ([Net.SecurityProtocolType]::Tls12)
-    Invoke-WebRequest "https://relativity.jfrog.io/artifactory/nuget-download/v5.3.0/nuget.exe" -OutFile $NuGetExe
+    Invoke-WebRequest "https://relativity.jfrog.io/artifactory/nuget-download/v5.3.0/nuget.exe" -OutFile $NuGetExe -UserAgent "curl/7.58.0"
 }
 
 

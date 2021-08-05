@@ -63,7 +63,6 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 			return this.DownloadFileAsync(this.validCredentials);
 		}
 
-		[Ignore("REL-577406 Kepler returns incorrect exception.")]
 		[IdentifiedTest("1471957f-7c70-46be-bbe8-25d94be8c573")]
 		[TestType.Error]
 		public void ShouldReturnNotFoundForFileWhichDoesNotExist()

@@ -41,7 +41,7 @@ NUGET
     Relativity.Audit.Services.SDK (17.2.3)
       Relativity.ObjectManager (>= 10.0.318.5)
     Relativity.AutomatedWorkflows.Services.Interfaces (0.1.1-pre-4)
-    Relativity.DataTransfer.Legacy.SDK (0.1.23)
+    Relativity.DataTransfer.Legacy.SDK (0.1.26)
     Relativity.Kepler (2.15.2)
     Relativity.Kepler.Client (2.9.2)
       Relativity.Kepler (>= 2.9.2)

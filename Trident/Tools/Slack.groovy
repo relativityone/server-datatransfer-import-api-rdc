@@ -4,7 +4,7 @@ def SendSlackNotification(String serverUnderTestName, String version, String bra
 
     def script = this
 	def email = powershell(returnStdout: true, script: "git --no-pager show -s --format='%ae'").trim()
-	def channel = "iapi-pipeline-" + "${slackChannel}"
+	def channel = "notify-iapi-pipeline-" + "${slackChannel}"
     echo "*************************************************" +
         "\n" +
         "\n" + "sendCDSlackNotification Parameters: " +
