@@ -28,6 +28,18 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
+		public static async Task AddGroupToAdminAsync(IntegrationTestParameters parameters, int groupId)
+		{
+			using (IPermissionManager permissionManager = ServiceHelper.GetServiceProxy<IPermissionManager>(parameters))
+			{
+				GroupRef group = new GroupRef(groupId);
+				GroupSelector groupSelector = await permissionManager.GetAdminGroupSelectorAsync().ConfigureAwait(false);
+				groupSelector.DisabledGroups.Remove(group);
+				groupSelector.EnabledGroups.Add(group);
+				await permissionManager.AddRemoveAdminGroupsAsync(groupSelector).ConfigureAwait(false);
+			}
+		}
+
 		public static async Task SetWorkspaceOtherSettingsAsync(
 			IntegrationTestParameters parameters,
 			int groupId,
@@ -90,6 +102,26 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
+		public static async Task SetAdminObjectSecurityAsync(
+			IntegrationTestParameters parameters,
+			int groupId,
+			List<string> permissionNames,
+			bool value)
+		{
+			using (IPermissionManager permissionManager = ServiceHelper.GetServiceProxy<IPermissionManager>(parameters))
+			{
+				GroupPermissions adminPermission = await permissionManager
+													   .GetAdminGroupPermissionsAsync(new GroupRef(groupId))
+													   .ConfigureAwait(false);
+
+				SetObjectAndSubPermissions(adminPermission.ObjectPermissions, permission => permissionNames.Contains(permission.Name), value);
+
+				await permissionManager
+					.SetAdminGroupPermissionsAsync(adminPermission)
+					.ConfigureAwait(false);
+			}
+		}
+
 		public static async Task ApplyItemLevelSecurityAsync(
 			IntegrationTestParameters parameters,
 			int artifactId,
@@ -99,7 +131,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			using (IPermissionManager permissionManager = ServiceHelper.GetServiceProxy<IPermissionManager>(parameters))
 			{
 				ItemLevelSecurity itemLevelSecurity = await permissionManager.GetItemLevelSecurityAsync(parameters.WorkspaceId, artifactId)
-					                                      .ConfigureAwait(false);
+														  .ConfigureAwait(false);
 
 				itemLevelSecurity.Enabled = true;
 
@@ -107,7 +139,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					.ConfigureAwait(false);
 
 				GroupSelector selector = await permissionManager.GetItemGroupSelectorAsync(parameters.WorkspaceId, artifactId)
-					                         .ConfigureAwait(false);
+											 .ConfigureAwait(false);
 
 				var groupRef = new GroupRef(groupId);
 
