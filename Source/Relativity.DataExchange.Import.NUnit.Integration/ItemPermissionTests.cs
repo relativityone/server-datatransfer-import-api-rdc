@@ -78,6 +78,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				this.groupId = await GroupHelper.CreateNewGroupAsync(this.TestParameters, Guid.NewGuid().ToString()).ConfigureAwait(false);
 				await GroupHelper.AddMemberAsync(this.TestParameters, this.groupId, this.userId).ConfigureAwait(false);
 				await PermissionsHelper.AddGroupToWorkspaceAsync(this.TestParameters, this.groupId).ConfigureAwait(false);
+				await PermissionsHelper.AddGroupToAdminAsync(this.TestParameters, this.groupId).ConfigureAwait(false);
 
 				await PermissionsHelper.SetAllWorkspaceOtherSettingsAsync(
 						this.TestParameters,
@@ -90,6 +91,14 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 						this.TestParameters,
 						this.groupId,
 						new List<string> { "Allow Import" },
+						true)
+					.ConfigureAwait(false);
+
+				await PermissionsHelper
+					.SetAdminObjectSecurityAsync(
+						this.TestParameters,
+						this.groupId,
+						new List<string> { "InstanceSetting" },
 						true)
 					.ConfigureAwait(false);
 
