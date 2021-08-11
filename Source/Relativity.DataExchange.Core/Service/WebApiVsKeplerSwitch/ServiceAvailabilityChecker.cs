@@ -115,6 +115,9 @@ namespace Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 				// Before login to relativity there are few places where ManagerFactory is used and it checks if Kepler or WebApi should be used by calling Kepler service.
 				// Because Kepler does not support anonymous calls we got NotAuthorizedException but even though we treat Kepler service as available.
 				this.isKeplerAvailable = true;
+
+				// In commit 2b6e09da4bc this behavior was changed and this function is not called before user is authenticated.
+				this.logger?.LogWarning("NotAuthorizedException was thrown when reading communication mode.");
 			}
 			catch (Exception ex)
 			{

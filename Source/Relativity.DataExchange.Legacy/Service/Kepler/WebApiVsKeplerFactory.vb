@@ -1,4 +1,5 @@
-﻿Imports System.Net
+﻿Imports System.Collections.Concurrent
+Imports System.Net
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Service.WebApiVsKeplerSwitch
@@ -8,6 +9,8 @@ Namespace kCura.WinEDDS.Service.Kepler
 	Public Class WebApiVsKeplerFactory
 		Implements IWebApiVsKeplerFactory
 
+		Private ReadOnly Shared Cache As ConcurrentDictionary(Of String, IWebApiVsKepler) = New ConcurrentDictionary(Of String,IWebApiVsKepler)()
+
 		Private ReadOnly _logger As ILog
 
 		Public Sub New(logger As ILog)
@@ -16,9 +19,17 @@ Namespace kCura.WinEDDS.Service.Kepler
 
 		Public Function Create(webApiUrl As Uri, credentials As NetworkCredential, getCorrelationId As Func(Of String)) As IWebApiVsKepler _
 			Implements IWebApiVsKeplerFactory.Create
-
-			Return New WebApiVsKeplerInternal(function() UseKepler(webApiUrl, credentials, getCorrelationId))
+			
+			Dim cacheKey As String = $"WebApiVsKepler." + webApiUrl.ToString()
+			Dim instance As IWebApiVsKepler = Cache.GetOrAdd(
+				cacheKey, 
+				function(x) New WebApiVsKeplerInternal(function() UseKepler(webApiUrl, credentials, getCorrelationId)))
+			Return Instance
 		End Function
+
+		Public Shared Sub InvalidateCache()
+			Cache.Clear()
+		End Sub
 
 		Private Function UseKepler(webApiUrl As Uri, credentials As NetworkCredential, getCorrelationId As Func(Of String)) As Boolean
 			Dim connectionInfo As IServiceConnectionInfo = New KeplerServiceConnectionInfo(webApiUrl, credentials)

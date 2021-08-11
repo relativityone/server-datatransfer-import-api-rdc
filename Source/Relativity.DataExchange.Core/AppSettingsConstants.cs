@@ -195,6 +195,10 @@ namespace Relativity.DataExchange
 		public const string UseSearchablePdfKey = "UseSearchablePdf";
 		public const bool UseSearchablePdfDefaultValue = true;
 		public const string UseKeplerKey = "UseKepler";
+		public const string ReadCommunicationModeErrorNumberOfRetriesKey = "ReadCommunicationModeErrorNumberOfRetries";
+		public const int ReadCommunicationModeErrorNumberOfRetriesDefaultValue = 1;
+		public const string ReadCommunicationModeErrorWaitTimeInSecondsKey = "ReadCommunicationModeErrorWaitTimeInSeconds";
+		public const int ReadCommunicationModeErrorWaitTimeInSecondsDefaultValue = 1;
 #pragma warning restore SA1600
 	}
 }
