@@ -111,6 +111,7 @@
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
+    <Compile Include="CertificateValidatorTests.cs" />
     <Compile Include="KeplerServiceProxyFactoryTests.cs" />
     <Compile Include="LongTextStreamServiceTests.cs" />
     <Compile Include="Mapping\KeplerFileIoExceptionMapperTests.cs" />

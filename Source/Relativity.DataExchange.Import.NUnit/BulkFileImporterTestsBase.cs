@@ -101,7 +101,7 @@ namespace Relativity.DataExchange.Import.NUnit
 		{
 			var webApiVsKeplerMock = new Mock<IWebApiVsKepler>();
 			webApiVsKeplerMock.Setup(x => x.UseKepler()).Returns(true);
-			ManagerFactory._webApiVsKepler = webApiVsKeplerMock.Object;
+			ManagerFactory._webApiVsKeplerLazy = new Lazy<IWebApiVsKepler>(() => webApiVsKeplerMock.Object);
 			ManagerFactory._currentUrl = AppSettings.Instance.WebApiServiceUrl;
 			var emptyCredentials = new NetworkCredential();
 			ManagerFactory._currentCredentials = emptyCredentials;
