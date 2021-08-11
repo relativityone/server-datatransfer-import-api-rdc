@@ -261,7 +261,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 
 			Dim webApiVsKeplerMock = New Mock(Of IWebApiVsKepler)
 			webApiVsKeplerMock.Setup(Function(c) c.UseKepler()).Returns(True)
-			ManagerFactory._webApiVsKepler = webApiVsKeplerMock.Object
+			ManagerFactory._webApiVsKeplerLazy = New Lazy(Of IWebApiVsKepler)(Function() webApiVsKeplerMock.Object)
 			ManagerFactory._currentUrl = AppSettings.Instance.WebApiServiceUrl
 
 			ManagerFactory._currentCredentials = _args.Credential

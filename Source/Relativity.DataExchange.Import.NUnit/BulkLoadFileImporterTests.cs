@@ -313,7 +313,7 @@ namespace Relativity.DataExchange.Import.NUnit
 		{
 			var webApiVsKeplerMock = new Mock<IWebApiVsKepler>();
 			webApiVsKeplerMock.Setup(x => x.UseKepler()).Returns(true);
-			ManagerFactory._webApiVsKepler = webApiVsKeplerMock.Object;
+			ManagerFactory._webApiVsKeplerLazy = new Lazy<IWebApiVsKepler>(() => webApiVsKeplerMock.Object);
 
 			this.args = new LoadFile();
 			this.args.CaseInfo = new Relativity.DataExchange.Service.CaseInfo { RootArtifactID = -1 };

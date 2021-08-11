@@ -20,6 +20,7 @@ namespace kCura.Relativity.ImportAPI
 	using global::Relativity.DataExchange.Logging;
 	using global::Relativity.Logging;
 
+	using kCura.WinEDDS.Service.Kepler;
 	using kCura.WinEDDS.Service.Replacement;
 
 	using IAuthenticationTokenProvider = global::Relativity.Transfer.IAuthenticationTokenProvider;
@@ -137,6 +138,11 @@ namespace kCura.Relativity.ImportAPI
 		public ImportAPI(string userName, string password, string webServiceUrl)
 		{
 			ExecutionSource = ExecutionSourceEnum.ImportAPI;
+
+			// we need to refresh communication mode when new ImportAPI instance is created
+			WebApiVsKeplerFactory.InvalidateCache();
+			ManagerFactory.InvalidateCache();
+
 			this.PerformLogin(userName, password, webServiceUrl);
 			this.SetUpSecureLogger();
 		}

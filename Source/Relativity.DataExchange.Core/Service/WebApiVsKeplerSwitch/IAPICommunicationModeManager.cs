@@ -19,8 +19,8 @@ namespace Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 	/// <inheritdoc/>
 	public class IAPICommunicationModeManager : IIAPICommunicationModeManager
 	{
-		private const int DefaultRetryCount = 5;
-		private const int DefaultSleepDurationTimeInSeconds = 5;
+		private const int DefaultRetryCount = 1;
+		private const int DefaultSleepDurationTimeInSeconds = 1;
 
 		private readonly IKeplerProxy keplerProxy;
 		private readonly IAppSettings settings;
@@ -48,7 +48,7 @@ namespace Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 		/// <param name="keplerProxy">Kepler proxy.</param>
 		/// <param name="correlationIdFunc">Function retrieving correlation id related with Kepler request.</param>
 		public IAPICommunicationModeManager(IKeplerProxy keplerProxy, Func<string> correlationIdFunc)
-			: this(keplerProxy, correlationIdFunc, null, RelativityLogger.Instance)
+			: this(keplerProxy, correlationIdFunc, AppSettings.Instance, RelativityLogger.Instance)
 		{
 		}
 
@@ -70,8 +70,8 @@ namespace Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 
 		private RetryPolicy GetRetryPolicy()
 		{
-			var maxRetryCount = this.settings?.HttpErrorNumberOfRetries ?? DefaultRetryCount;
-			var sleepDurationTime = TimeSpan.FromSeconds(this.settings?.HttpErrorWaitTimeInSeconds ?? DefaultSleepDurationTimeInSeconds);
+			var maxRetryCount = this.settings?.ReadCommunicationModeErrorNumberOfRetries ?? DefaultRetryCount;
+			var sleepDurationTime = TimeSpan.FromSeconds(this.settings?.ReadCommunicationModeErrorWaitTimeInSeconds ?? DefaultSleepDurationTimeInSeconds);
 
 			return Policy
 				.Handle<ServiceNotFoundException>()
@@ -80,7 +80,11 @@ namespace Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 					i => sleepDurationTime,
 					(exception, timeSpan, retryCount, context) =>
 						{
-							this.logger?.LogWarning($"Service connection failed. Retry policy triggered... Attempt #{retryCount}");
+							this.logger?.LogWarning(
+								"Service connection failed. Retry policy triggered... Attempt #{retryCount} out of {maxRetryCount}. Wait time between retries: {waitTime}",
+								retryCount,
+								maxRetryCount,
+								sleepDurationTime);
 						});
 		}
 	}

@@ -24,7 +24,7 @@ namespace Relativity.DataExchange.NUnit.Service
 		[SetUp]
 		public void SetUp()
 		{
-			this.ResetManagerFactory();
+			ManagerFactory.InvalidateCache();
 		}
 
 		[Test]
@@ -105,14 +105,6 @@ namespace Relativity.DataExchange.NUnit.Service
 			// assert
 			Assert.That(ManagerFactory._connectionInfo, Is.Not.Null);
 			Assert.That(ManagerFactory._currentCredentials, Is.SameAs(usernamePasswordCredentials));
-		}
-
-		private void ResetManagerFactory()
-		{
-			ManagerFactory._connectionInfo = null;
-			ManagerFactory._currentUrl = null;
-			ManagerFactory._currentCredentials = null;
-			ManagerFactory._webApiVsKepler = null;
 		}
 	}
 }

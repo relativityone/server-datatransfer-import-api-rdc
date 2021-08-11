@@ -168,6 +168,7 @@
     <Content Include="oi\unmanaged\wvcore-R1.dll">
       <Paket>True</Paket>
     </Content>
+    <Compile Include="CertificateValidator.vb" />
     <Compile Include="Service\Kepler\KeplerProxy.vb" />
     <Compile Include="Service\Kepler\WebApiVsKeplerFactory.vb" />
     <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeFactory.vb" />
