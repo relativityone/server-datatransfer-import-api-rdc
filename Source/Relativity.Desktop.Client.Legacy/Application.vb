@@ -499,7 +499,7 @@ Namespace Relativity.Desktop.Client
 			Catch MrSoapy As SoapException
 				If IsReLoginRequired(MrSoapy) Then
 					NewLogin(True)
-				Else 
+				Else
 					Select Case MrSoapy.Detail("ExceptionType").InnerText
 						Case "Relativity.Core.Exception.WorkspaceVersion"
 							Dim x As New ErrorDialog With {.Text = "Relativity Desktop Client Error"}
@@ -570,22 +570,8 @@ Namespace Relativity.Desktop.Client
 		''' <returns>True if the certificate is trusted. False otherwise.</returns>
 		''' <remarks></remarks>
 		Public Function CertificateTrusted() As Boolean
-			Dim isCertificateTrusted As Boolean = True
-			Dim cred As NetworkCredential = DirectCast(CredentialCache.DefaultCredentials, NetworkCredential)
-			Dim relativityManager As Service.Replacement.IRelativityManager = ManagerFactory.CreateRelativityManager(cred, _CookieContainer, AddressOf GetCorrelationId)
-
-			Try
-				' Only if this line bombs do we say the cert is untrusted
-				relativityManager.ValidateSuccessfulLogin()
-			Catch ex As WebException
-				If (ex.Status = WebExceptionStatus.TrustFailure) Then
-					isCertificateTrusted = False
-				Else
-					Throw
-				End If
-			End Try
-
-			Return isCertificateTrusted
+			Dim validator = New CertificateValidator(AppSettings.Instance, _CookieContainer, Me._logger, AddressOf GetCorrelationId)
+			Return validator.IsCertificateTrusted()
 		End Function
 
 		Public Async Function IsAssociatedSearchProviderAccessible(ByVal caseContextArtifactID As Int32, ByVal searchArtifactID As Int32) As Task(Of Boolean)
@@ -1412,11 +1398,18 @@ Namespace Relativity.Desktop.Client
 		''' true if successful, else false
 		''' </returns>
 		Friend Function AttemptWindowsAuthentication() As CredentialCheckResult
+			If AppSettings.Instance.UseKepler Then
+				' Windows authentication is not supported when Kepler services are used.
+				Me._logger.LogInformation("Skipping windows authentication because UseKepler setting is set to true.")
+				_lastCredentialCheckResult = CredentialCheckResult.Fail
+				Return _lastCredentialCheckResult
+			End If
+
 			Dim credentials As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 
 			Try
-				Using relativityManager As kCura.WinEDDS.Service.Replacement.IRelativityManager = ManagerFactory.CreateRelativityManager(credentials, _CookieContainer, AddressOf GetCorrelationId)
-					If relativityManager.ValidateSuccessfulLogin() Then
+				Using webApiRelativityManager As kCura.WinEDDS.Service.Replacement.IRelativityManager = ManagerFactory.CreateRelativityManager(credentials, _CookieContainer, AddressOf GetCorrelationId, useKepler:=False)
+					If webApiRelativityManager.ValidateSuccessfulLogin() Then
 						' Note: the compatibility check cannot be executed via integrated security; rather, the OAuth token handler addresses it.
 						RelativityWebApiCredentialsProvider.Instance().SetProvider(New UserCredentialsProvider(credentials))
 						kCura.WinEDDS.Service.Settings.AuthenticationToken = ManagerFactory.CreateUserManager(credentials, _CookieContainer, AddressOf GetCorrelationId).GenerateDistributedAuthenticationToken()
@@ -1621,8 +1614,9 @@ Namespace Relativity.Desktop.Client
 					.CookieContainer = _CookieContainer,
 					.WebApiServiceUrl = New Uri(AppSettings.Instance.WebApiServiceUrl)
 					}
-			Dim useLegacyWebApi As Boolean = Me.UseLegacyWebApi(System.Net.CredentialCache.DefaultCredentials)
-			Dim service As Service.IRelativityManagerService = New RelativityManagerServiceFactory().Create(instanceInfo, useLegacyWebApi)
+			' Kepler implementation of the IRelativityManagerService.GetRelativityUrl method does not connect to the Relativity
+			' So it is safe to use it,. even if DataTransfer.Legacy is not installed.
+			Dim service As Service.IRelativityManagerService = New RelativityManagerServiceFactory().Create(instanceInfo, useLegacyWebApi:=False)
 			Dim relativityUrl As Uri = service.GetRelativityUrl()
 			Dim urlString As String = $"{relativityUrl.ToString().TrimTrailingSlashFromUrl()}/{"Identity"}"
 			Return urlString
@@ -1794,8 +1788,8 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Public Async Function SetupMetricService() As Task(Of IMetricService)
-            If _metricService Is Nothing Then _metricService = New MetricService(New RdcMetricSinkConfig, KeplerProxyFactory.CreateKeplerProxy(Await GetCredentialsAsync()))
-            Return _metricService
+			If _metricService Is Nothing Then _metricService = New MetricService(New RdcMetricSinkConfig, KeplerProxyFactory.CreateKeplerProxy(Await GetCredentialsAsync()))
+			Return _metricService
 		End Function
 
 		Private Async Function ValidateVersionCompatibilityAsync(ByVal credential As System.Net.NetworkCredential) As Task

@@ -179,9 +179,14 @@ Namespace kCura.WinEDDS.Service
 			Return New ProductionManager(credentials, cookieContainer)
 		End Function
 
-		Public Shared Function CreateRelativityManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As IRelativityManager
+		Public Shared Function CreateRelativityManager(
+		                                               ByVal credentials As NetworkCredential,
+		                                               ByVal cookieContainer As System.Net.CookieContainer,
+		                                               correlationIdFunc As Func(Of String),
+		                                               Optional useKepler As Boolean? = Nothing) As IRelativityManager
 			Initialize(credentials, correlationIdFunc)
-			If _webApiVsKepler.UseKepler() Then
+			Dim useKeplerValue As Boolean = If(useKepler, _webApiVsKepler.UseKepler())
+			If useKeplerValue Then
 				Return New KeplerRelativityManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), new KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New RelativityManager(credentials, cookieContainer)

@@ -22,7 +22,7 @@
         <dependency id="AutoMapper" version="10.1.1" />
         <dependency id="Newtonsoft.Json" version="6.0.8" />
         <dependency id="Polly" version="5.7.0" />
-        <dependency id="Relativity.DataTransfer.Legacy.SDK" version="0.1.27" />
+        <dependency id="Relativity.DataTransfer.Legacy.SDK" version="0.1.28" />
         <dependency id="Relativity.Logging" version="2019.5.1" />
         <dependency id="Relativity.ObjectManager" version="12.1.171.20" />
         <dependency id="Relativity.OutsideIn" version="2021.7.0" />

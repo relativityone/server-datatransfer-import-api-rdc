@@ -66,7 +66,7 @@ nuget relativity.telemetry.datacontracts.shared ~> 3000.0.1
 nuget relativity.telemetry.services.interface ~> 3000.0.1
 nuget relativity.transfer.client ~> 7.4.0
 nuget relativity.services.interfaces.private = 11.3.11.1
-nuget Relativity.DataTransfer.Legacy.SDK = 0.1.27
+nuget Relativity.DataTransfer.Legacy.SDK = 0.1.28
 
 # The Relativity packages below are required ONLY for test projects!
 nuget kcura.relativity.client = 11.2.8.6-DEV
