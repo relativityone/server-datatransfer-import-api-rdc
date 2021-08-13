@@ -3,7 +3,6 @@ moq
 nbuilder
 newtonsoft.json
 nunit
-Relativity.DataTransfer.Legacy.SDK
 relativity.kepler.client
 relativity.logging
 relativity.services.datacontracts
