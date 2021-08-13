@@ -16,6 +16,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Productions.Services;
+	using Relativity.Services.Exceptions;
 
 	/// <summary>
 	/// Defines static helper methods to manage productions.
@@ -47,9 +48,35 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			using (IProductionManager client =
 				ServiceHelper.GetServiceProxy<IProductionManager>(parameters))
 			{
+				async Task DeleteProduction(int productionId)
+				{
+					await client.DeleteSingleAsync(parameters.WorkspaceId, productionId).ConfigureAwait(false);
+
+					// DeleteSingleAsync returns before production is deleted from the workspace
+					Production production;
+					do
+					{
+						try
+						{
+							production = await client.ReadSingleAsync(
+											 parameters.WorkspaceId,
+											 productionId,
+											 DataSourceReadMode.None).ConfigureAwait(false);
+							await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+						}
+						catch (ValidationException ex) when (ex.Message == "Production specified is invalid.")
+						{
+							production = null;
+						}
+					}
+					while (production != null);
+				}
+
 				List<Production> productions = await client.GetAllAsync(parameters.WorkspaceId, DataSourceReadMode.None).ConfigureAwait(false);
-				var deleteProductionsTasks = productions.Select(production => client.DeleteSingleAsync(parameters.WorkspaceId, production.ArtifactID));
-				await Task.WhenAll(deleteProductionsTasks).ConfigureAwait(false);
+				foreach (var productionId in productions.Select(x => x.ArtifactID))
+				{
+					await DeleteProduction(productionId).ConfigureAwait(false);
+				}
 			}
 		}
 
