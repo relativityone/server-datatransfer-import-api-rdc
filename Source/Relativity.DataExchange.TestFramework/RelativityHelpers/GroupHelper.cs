@@ -23,6 +23,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	/// </summary>
 	public static class GroupHelper
 	{
+		public const int EveryoneGroupId = 1015005;
+
 		public static async Task<int> CreateNewGroupAsync(IntegrationTestParameters parameters, string name)
 		{
 			return RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.Lanceleaf)

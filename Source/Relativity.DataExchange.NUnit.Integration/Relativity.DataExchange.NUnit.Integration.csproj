@@ -119,6 +119,8 @@
     <Compile Include="Mapping\KeplerBulkImportExceptionMapperTests.cs" />
     <Compile Include="Mapping\ExceptionAssertHelper.cs" />
     <Compile Include="Service\ApplicationVersionServiceTests.cs" />
+    <Compile Include="Service\KeplerServiceTestBase.cs" />
+    <Compile Include="Service\KeplerUserManagerTests.cs" />
     <Compile Include="Service\RelativityDistributed\KeplerDistributedReplacementTests.cs" />
     <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeTests.cs" />
     <Compile Include="TapiObjectServiceTests.cs" />
@@ -206,14 +208,18 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup></When></Choose>
+  <Choose>
+    <When Condition="'$(Configuration)'!='Debug'">
+      <ItemGroup>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

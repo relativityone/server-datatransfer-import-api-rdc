@@ -115,8 +115,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			var userIdentifier = new ObjectIdentifier { ArtifactID = userArtifactId };
 			using (var groupManager = ServiceHelper.GetServiceProxy<IGroupManager>(parameters))
 			{
-				const int EveryoneGroupId = 1015005;
-				foreach (int groupArtifactId in groupArtifactIds.Where(x => x != EveryoneGroupId))
+				foreach (int groupArtifactId in groupArtifactIds.Where(x => x != GroupHelper.EveryoneGroupId))
 				{
 					await groupManager.AddMembersAsync(groupArtifactId, userIdentifier).ConfigureAwait(false);
 				}

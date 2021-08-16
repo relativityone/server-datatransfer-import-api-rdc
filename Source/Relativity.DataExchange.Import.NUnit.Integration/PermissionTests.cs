@@ -46,14 +46,13 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				this.oldUsername = this.TestParameters.RelativityUserName;
 				this.oldPassword = this.TestParameters.RelativityPassword;
 
-				const int EveryoneGroupId = 1015005;
 				this.newUsername = $"ImportAPI.{Guid.NewGuid().ToString()}@relativity.com";
 				this.newPassword = "Test1234!";
 				this.userId = await UsersHelper.CreateNewUserAsync(
 					              this.TestParameters,
 					              this.newUsername,
 					              this.newPassword,
-					              new List<int> { EveryoneGroupId }).ConfigureAwait(false);
+					              new List<int> { GroupHelper.EveryoneGroupId }).ConfigureAwait(false);
 
 				ImportHelper.ImportDefaultTestData(this.TestParameters);
 			}

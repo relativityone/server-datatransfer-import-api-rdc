@@ -52,7 +52,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				this.oldUsername = this.TestParameters.RelativityUserName;
 				this.oldPassword = this.TestParameters.RelativityPassword;
 
-				const int EveryoneGroupId = 1015005;
 				string lastName = Guid.NewGuid().ToString();
 				this.newUsername = $"ImportAPI.{lastName}@relativity.com";
 				this.newPassword = "Test1234!";
@@ -60,7 +59,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 								  this.TestParameters,
 								  this.newUsername,
 								  this.newPassword,
-								  new List<int> { EveryoneGroupId }).ConfigureAwait(false);
+								  new List<int> { GroupHelper.EveryoneGroupId }).ConfigureAwait(false);
 
 				var rootArtifactId = await FolderHelper.GetWorkspaceRootArtifactIdAsync(this.TestParameters).ConfigureAwait(false);
 				List<int> folderIds = await FolderHelper.CreateFolders(this.TestParameters, new List<string> { "TestFolder" }, rootArtifactId).ConfigureAwait(false);
