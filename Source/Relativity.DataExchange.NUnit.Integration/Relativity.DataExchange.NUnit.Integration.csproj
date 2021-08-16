@@ -121,6 +121,7 @@
     <Compile Include="Service\ApplicationVersionServiceTests.cs" />
     <Compile Include="Service\KeplerServiceTestBase.cs" />
     <Compile Include="Service\KeplerUserManagerTests.cs" />
+    <Compile Include="Service\AuditManagerTests.cs" />
     <Compile Include="Service\RelativityDistributed\KeplerDistributedReplacementTests.cs" />
     <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeTests.cs" />
     <Compile Include="TapiObjectServiceTests.cs" />
