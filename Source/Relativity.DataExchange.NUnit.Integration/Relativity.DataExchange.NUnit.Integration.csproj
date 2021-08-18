@@ -120,6 +120,7 @@
     <Compile Include="Mapping\ExceptionAssertHelper.cs" />
     <Compile Include="Service\ApplicationVersionServiceTests.cs" />
     <Compile Include="Service\KeplerFieldManagerTests.cs" />
+    <Compile Include="Service\KeplerDocumentManagerTests.cs" />
     <Compile Include="Service\KeplerServiceTestBase.cs" />
     <Compile Include="Service\KeplerRelativityManagerTests.cs" />
     <Compile Include="Service\KeplerUserManagerTests.cs" />
