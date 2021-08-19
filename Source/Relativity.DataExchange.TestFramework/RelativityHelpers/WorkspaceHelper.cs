@@ -19,6 +19,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Interfaces.Shared;
 	using Relativity.Services.Interfaces.Shared.Models;
+	using Relativity.Services.Interfaces.SystemArtifact;
 	using Relativity.Services.Interfaces.Workspace;
 	using Relativity.Services.Interfaces.Workspace.Models;
 	using Relativity.Services.Objects.DataContracts;
@@ -308,6 +309,21 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			using (IFieldManager fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(parameters))
 			{
 				await fieldManager.UpdateLongTextFieldAsync(workspaceId, fieldId, longTextFieldRequest).ConfigureAwait(false);
+			}
+		}
+
+		/// <summary>
+		/// This method gets ArtifactID of root object for workspace (object with artifact type 8).
+		/// </summary>
+		/// <param name="parameters">Test context parameters.</param>
+		/// <param name="workspaceId">WorkspaceId.</param>
+		/// <returns>ArtifactID of root object, usually 1003663.</returns>
+		public static async Task<int> ReadRootArtifactId(IntegrationTestParameters parameters, int workspaceId)
+		{
+			// The RootArtifactID is a system artifact named "System" can be looked up using the api
+			using (ISystemArtifactManager systemArtifactManager = ServiceHelper.GetServiceProxy<ISystemArtifactManager>(parameters))
+			{
+				return await systemArtifactManager.ReadArtifactIDAsync(workspaceId, "System").ConfigureAwait(false);
 			}
 		}
 

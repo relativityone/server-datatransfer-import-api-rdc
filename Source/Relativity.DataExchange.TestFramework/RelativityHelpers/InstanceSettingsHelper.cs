@@ -80,5 +80,30 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 			return wasChanged;
 		}
+
+		/// <summary>
+		/// This method gets value of given instance setting.
+		/// </summary>
+		/// <param name="parameters">Test context parameters.</param>
+		/// <param name="section">Instance setting section.</param>
+		/// <param name="name">Instance setting name.</param>
+		/// <returns>Instance setting value.</returns>
+		public static async Task<string> QueryInstanceSetting(
+			IntegrationTestParameters parameters,
+			string section,
+			string name)
+		{
+			using (var instanceSettingManager = ServiceHelper.GetServiceProxy<IInstanceSettingManager>(parameters))
+			{
+				var query = new Query
+				{
+					Condition = $"'Section' == '{section}' AND 'Name' == '{name}'",
+				};
+				InstanceSettingQueryResultSet results = await instanceSettingManager.QueryAsync(query).ConfigureAwait(false);
+				InstanceSetting setting = results.Results.Single().Artifact;
+
+				return setting.Value;
+			}
+		}
 	}
 }

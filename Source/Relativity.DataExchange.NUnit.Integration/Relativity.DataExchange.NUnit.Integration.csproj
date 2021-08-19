@@ -119,6 +119,8 @@
     <Compile Include="Mapping\KeplerBulkImportExceptionMapperTests.cs" />
     <Compile Include="Mapping\ExceptionAssertHelper.cs" />
     <Compile Include="Service\ApplicationVersionServiceTests.cs" />
+    <Compile Include="Service\KeplerCaseManagerTests.cs" />
+    <Compile Include="Service\KeplerCodeManagerTests.cs" />
     <Compile Include="Service\KeplerFieldManagerTests.cs" />
     <Compile Include="Service\KeplerDocumentManagerTests.cs" />
     <Compile Include="Service\KeplerFieldQueryManagerTest.cs" />
