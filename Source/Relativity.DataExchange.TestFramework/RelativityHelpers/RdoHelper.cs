@@ -22,14 +22,12 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using Relativity.Services.Objects;
 	using Relativity.Services.Objects.DataContracts;
 
-	using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
-
 	/// <summary>
 	/// Defines static helper methods to manage Relativity Dynamic Objects.
 	/// </summary>
 	public static class RdoHelper
 	{
-		private const int WorkspaceArtifactTypeId = 8;
+		public const int WorkspaceArtifactTypeId = 8;
 
 		private static readonly RelativityVersion ObjectTypeManagerReleaseVersion = RelativityVersion.Blazingstar;
 
@@ -45,6 +43,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return CanUseObjectTypeManagerKepler(parameters)
 				       ? CreateObjectTypeUsingKeplerAsync(parameters, objectTypeName, workspaceId)
 				       : Task.FromResult(CreateObjectTypeUsingRSAPI(parameters, objectTypeName, workspaceId));
+		}
+
+		public static Task<ObjectType> CreateObjectTypeAsync(IntegrationTestParameters parameters, string objectTypeName, int workspaceId, int parentArtifactId)
+		{
+			return CreateObjectTypeUsingKeplerAsync(parameters, objectTypeName, workspaceId, parentArtifactId);
 		}
 
 		public static int CreateObjectTypeInstance(
@@ -280,26 +283,39 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		private static async Task<int> CreateObjectTypeUsingKeplerAsync(IntegrationTestParameters parameters, string objectTypeName, int workspaceId)
+		public static async Task DeleteObjectTypeAsync(IntegrationTestParameters parameters, int artifactTypeId)
+		{
+			using (var objectManager = ServiceHelper.GetServiceProxy<IObjectTypeManager>(parameters))
+			{
+				await objectManager.DeleteAsync(parameters.WorkspaceId, artifactTypeId).ConfigureAwait(false);
+			}
+		}
+
+		private static async Task<ObjectType> CreateObjectTypeUsingKeplerAsync(IntegrationTestParameters parameters, string objectTypeName, int workspaceId, int parentArtifactId)
 		{
 			using (var objectManager = ServiceHelper.GetServiceProxy<IObjectTypeManager>(parameters))
 			{
 				var request = new ObjectTypeRequest
 				{
 					Name = objectTypeName,
-					ParentObjectType = new Securable<ObjectTypeIdentifier>(new ObjectTypeIdentifier { ArtifactTypeID = WorkspaceArtifactTypeId }),
+					ParentObjectType = new Securable<ObjectTypeIdentifier>(new ObjectTypeIdentifier { ArtifactTypeID = parentArtifactId }),
 				};
 
 				int newObjectId = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
 
 				ObjectTypeResponse objectTypeResponse = await objectManager.ReadAsync(workspaceId, newObjectId).ConfigureAwait(false);
-				return objectTypeResponse.ArtifactTypeID;
+				return new ObjectType(objectTypeResponse.ArtifactID, objectTypeResponse.ArtifactTypeID);
 			}
 		}
 
 		private static async Task<int> CreateObjectTypeUsingKeplerAsync(IntegrationTestParameters parameters, string objectTypeName)
 		{
-			return await CreateObjectTypeUsingKeplerAsync(parameters, objectTypeName, parameters.WorkspaceId).ConfigureAwait(false);
+			return (await CreateObjectTypeUsingKeplerAsync(parameters, objectTypeName, parameters.WorkspaceId, WorkspaceArtifactTypeId).ConfigureAwait(false)).ArtifactTypeId;
+		}
+
+		private static async Task<int> CreateObjectTypeUsingKeplerAsync(IntegrationTestParameters parameters, string objectTypeName, int workspaceId)
+		{
+			return (await CreateObjectTypeUsingKeplerAsync(parameters, objectTypeName, workspaceId, WorkspaceArtifactTypeId).ConfigureAwait(false)).ArtifactTypeId;
 		}
 
 		private static int CreateObjectTypeUsingRSAPI(IntegrationTestParameters parameters, string objectTypeName, int workspaceId)
@@ -315,19 +331,19 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			{
 				client.APIOptions.WorkspaceID = workspaceId;
 
-				var query = new Query<ObjectType>
+				var query = new Query<kCura.Relativity.Client.DTOs.ObjectType>
 				{
 					Condition = new TextCondition("Name", TextConditionEnum.EqualTo, objectTypeName),
 					Fields = FieldValue.AllFields,
 				};
-				Result<ObjectType> objectType = client.Repositories.ObjectType.Query(query).Results.FirstOrDefault();
+				Result<kCura.Relativity.Client.DTOs.ObjectType> objectType = client.Repositories.ObjectType.Query(query).Results.FirstOrDefault();
 
 				if (objectType != null)
 				{
 					return objectType.Artifact.DescriptorArtifactTypeID.Value;
 				}
 
-				var objectTypeDto = new ObjectType
+				var objectTypeDto = new kCura.Relativity.Client.DTOs.ObjectType
 				{
 					Name = objectTypeName,
 					ParentArtifactTypeID = 8,
@@ -340,7 +356,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				};
 				int artifactId = client.Repositories.ObjectType.CreateSingle(objectTypeDto);
 
-				ObjectType createdObjectType = client.Repositories.ObjectType.ReadSingle(artifactId);
+				kCura.Relativity.Client.DTOs.ObjectType createdObjectType = client.Repositories.ObjectType.ReadSingle(artifactId);
 				return createdObjectType.DescriptorArtifactTypeID.Value;
 			}
 		}
