@@ -18,6 +18,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 	using Relativity.DataExchange.TestFramework.Extensions;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 
 	public static class ImportHelper
 	{
@@ -95,6 +96,51 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				var job = importApi.NewProductionImportJob(productionId);
 				ApplyDefaultsForProductionImport(job.Settings);
 				return job;
+			}
+		}
+
+		public static void ImportDocumentsMetadata<T>(IntegrationTestParameters parameters, ImportDataSource<T> dataSource)
+		{
+			parameters.ThrowIfNull(nameof(parameters));
+			var importApi = CreateImportApi(parameters);
+			var job = importApi.NewNativeDocumentImportJob();
+			var settings = job.Settings;
+
+			settings.CaseArtifactId = parameters.WorkspaceId;
+			ApplyDefaultBaseSettings(settings);
+			settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
+			ConfigureJobErrorEvents(job);
+
+			using (var dataReader = new ImportDataSourceToDataReaderAdapter<T>(dataSource))
+			{
+				job.SourceData.Reader = dataReader;
+				job.Execute();
+			}
+		}
+
+		public static void ImportObjectsMetadataWithFiles<T>(
+			IntegrationTestParameters parameters,
+			int objectArtifactTypeId,
+			ImportDataSource<T> dataSource)
+		{
+			parameters.ThrowIfNull(nameof(parameters));
+			var importApi = CreateImportApi(parameters);
+			var job = importApi.NewObjectImportJob(objectArtifactTypeId);
+			var settings = job.Settings;
+
+			settings.CaseArtifactId = parameters.WorkspaceId;
+			settings.SelectedIdentifierFieldName = WellKnownFields.RdoIdentifier;
+			settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
+			settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
+			settings.OIFileIdMapped = false;
+			settings.FileSizeMapped = false;
+
+			ConfigureJobErrorEvents(job);
+
+			using (var dataReader = new ImportDataSourceToDataReaderAdapter<T>(dataSource))
+			{
+				job.SourceData.Reader = dataReader;
+				job.Execute();
 			}
 		}
 

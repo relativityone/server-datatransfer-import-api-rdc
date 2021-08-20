@@ -360,7 +360,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return CreateFieldAsync(testParameters, request);
 		}
 
-		public static Task CreateFileFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId)
+		public static Task<int> CreateFileFieldAsync(IntegrationTestParameters testParameters, string fieldName, int destinationRdoArtifactTypeId)
 		{
 			var request = new FileFieldRequest()
 			{

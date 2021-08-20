@@ -130,6 +130,7 @@
     <Compile Include="Service\KeplerUserManagerTests.cs" />
     <Compile Include="Service\AuditManagerTests.cs" />
     <Compile Include="Service\RelativityDistributed\KeplerDistributedReplacementTests.cs" />
+    <Compile Include="Service\KeplerSearchManagerTests.cs" />
     <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeTests.cs" />
     <Compile Include="TapiObjectServiceTests.cs" />
     <Compile Include="AssemblySetup.cs" />

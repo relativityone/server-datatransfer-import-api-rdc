@@ -137,6 +137,7 @@
     <Compile Include="RelativityHelpers\NonDefaultCollationWorkspaceHelper.cs" />
     <Compile Include="RelativityHelpers\ObjectType.cs" />
     <Compile Include="RelativityHelpers\PermissionsHelper.cs" />
+    <Compile Include="RelativityHelpers\SearchHelper.cs" />
     <Compile Include="RelativityHelpers\SqlQueryHelper.cs" />
     <Compile Include="RelativityHelpers\ViewHelper.cs" />
     <Compile Include="RelativityVersions\RelativityVersionChecker.cs" />

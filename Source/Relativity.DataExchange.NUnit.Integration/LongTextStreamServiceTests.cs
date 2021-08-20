@@ -55,6 +55,12 @@ namespace Relativity.DataExchange.NUnit.Integration
 		private int fieldArtifactId;
 		private TestDirectoryManager testDirectoryManager;
 
+		[OneTimeTearDown]
+		public Task OneTimeTearDownAsync()
+		{
+			return RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)Relativity.ArtifactType.Document);
+		}
+
 		[IdentifiedTestCase("9A0B34BA-6DCE-4F81-8D0C-E1C194B9AE86", 1)]
 		[IdentifiedTestCase("BE2A3EB6-74AF-4706-876B-861EB48C42A3", 4)]
 		[IdentifiedTestCase("020B62C6-45E9-40DB-BF61-863E79DCD343", 8)]

@@ -19,6 +19,12 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 
 	public class KeplerServiceTestBase
 	{
+		protected const int NonExistingWorkspaceId = 0;
+		protected const int NonExistingProductionId = 0;
+		protected const int NonExistingArtifactTypeId = 0;
+		protected const int NonExistingSearchId = 0;
+		protected const int NonExistingArtifactId = 0;
+
 		private bool? useKeplerOriginalValue;
 
 		public KeplerServiceTestBase(bool useKepler)

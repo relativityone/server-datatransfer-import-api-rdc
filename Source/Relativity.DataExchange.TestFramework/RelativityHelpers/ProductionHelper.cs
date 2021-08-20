@@ -14,9 +14,13 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 	using Newtonsoft.Json.Linq;
 
+	using NUnit.Framework;
+
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Productions.Services;
+	using Relativity.Productions.Services.Interfaces.DTOs;
 	using Relativity.Services.Exceptions;
+	using Relativity.Services.Search;
 
 	/// <summary>
 	/// Defines static helper methods to manage productions.
@@ -89,6 +93,65 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.Goatsbeard)
 					? await CreateProductionUsingHttpClientAsync(parameters, productionName, batesPrefix).ConfigureAwait(false)
 					: await CreateProductionUsingKeplerAsync(parameters, productionName, batesPrefix).ConfigureAwait(false);
+		}
+
+		public static async Task AddDataSourceAsync(
+			IntegrationTestParameters parameters,
+			int productionId,
+			int savedSearchId)
+		{
+			using (var client = ServiceHelper.GetServiceProxy<IProductionDataSourceManager>(parameters))
+			{
+				var dataSource = new ProductionDataSource
+				{
+					Name = "From Saved search",
+					SavedSearch = new SavedSearchRef(savedSearchId),
+					ProductionType = ProductionType.ImagesAndNatives,
+					BurnRedactions = false,
+				};
+				await client.CreateSingleAsync(parameters.WorkspaceId, productionId, dataSource).ConfigureAwait(false);
+			}
+		}
+
+		public static async Task<bool> StageAndRunAsync(IntegrationTestParameters parameters, int productionId)
+		{
+			using (var client = ServiceHelper.GetServiceProxy<IProductionManager>(parameters))
+			{
+				var stageResult = await client.StageProductionAsync(parameters.WorkspaceId, productionId, automaticallyRun: true).ConfigureAwait(false);
+				if (!stageResult.WasJobCreated || stageResult.Errors.Any())
+				{
+					TestContext.WriteLine($"Staging and running production failed: {string.Join(";", stageResult.Errors)}");
+					return false;
+				}
+
+				await WaitForStatus(client, parameters, productionId, ProductionStatus.Produced, timeout: TimeSpan.FromMinutes(5)).ConfigureAwait(false);
+				return true;
+			}
+		}
+
+		private static async Task WaitForStatus(
+			IProductionManager client,
+			IntegrationTestParameters parameters,
+			int productionId,
+			ProductionStatus expectedStatus,
+			TimeSpan timeout)
+		{
+			async Task WaitIndefinitelyForStatus()
+			{
+				ProductionJobStatusResult status;
+				do
+				{
+					status = await client.GetJobStatus(parameters.WorkspaceId, productionId).ConfigureAwait(false);
+				}
+				while (status.Status != expectedStatus);
+			}
+
+			Task waitIndefinitelyForStatus = WaitIndefinitelyForStatus();
+			var completedTask = await Task.WhenAny(waitIndefinitelyForStatus, Task.Delay(timeout)).ConfigureAwait(false);
+			if (completedTask != waitIndefinitelyForStatus)
+			{
+				throw new TimeoutException($"Timeout occurred while waiting for '{expectedStatus}' production status.");
+			}
 		}
 
 		private static async Task<int> CreateProductionUsingKeplerAsync(
