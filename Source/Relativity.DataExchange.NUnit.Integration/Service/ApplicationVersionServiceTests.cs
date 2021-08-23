@@ -13,8 +13,11 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	using global::NUnit.Framework;
 	using kCura.WinEDDS.Service;
 
+	using Relativity.Testing.Identification;
+
 	[TestFixture(true)]
 	[TestFixture(false)]
+	[Feature.DataTransfer.ImportApi]
 	public class ApplicationVersionServiceTests : KeplerServiceTestBase
 	{
 		public ApplicationVersionServiceTests(bool useKepler)
@@ -22,7 +25,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		{
 		}
 
-		[Test]
+		[IdentifiedTest("7da5b27f-9c88-4ee9-8164-ea4e7c77a443")]
 		public async Task ShouldRetrieveRelativityVersion()
 		{
 			// Arrange
@@ -40,7 +43,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			Assert.That(actualVersion, Is.Not.Null);
 		}
 
-		[Test]
+		[IdentifiedTest("8a5d194a-657f-428b-8e79-816bb3bdd43a")]
 		public void ShouldFailToRetrieveRelativityVersionWhenInvalidCredentialsPassed()
 		{
 			// Arrange
@@ -70,7 +73,7 @@ Detail: This error is considered fatal and suggests the client is unauthorized f
 			Assert.That(exception.Message, Is.EqualTo(ExpectedErrorMessage));
 		}
 
-		[Test]
+		[IdentifiedTest("f70b88dc-b6b1-4d5b-9d07-3f463ad32cd7")]
 		public void ShouldFailToRetrieveRelativityVersionWhenInvalidWebApiUri()
 		{
 			// Arrange

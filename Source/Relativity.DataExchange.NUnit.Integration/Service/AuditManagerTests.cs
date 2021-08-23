@@ -17,9 +17,11 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	using kCura.WinEDDS.Service.Replacement;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.Testing.Identification;
 
 	[TestFixture(true)]
 	[TestFixture(false)]
+	[Feature.DataTransfer.ImportApi]
 	public class AuditManagerTests : KeplerServiceTestBase
 	{
 		private const int WorkspaceRootFolderId = 1003697;
@@ -29,7 +31,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		{
 		}
 
-		[Test]
+		[IdentifiedTest("69dd3fa0-eaee-4684-9b5e-ec9354d185b5")]
 		public void ShouldAuditImageImport()
 		{
 			// Arrange
@@ -70,7 +72,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("d96c218f-13ff-41cf-beb6-97c2d7844754")]
 		public void ShouldThrowExceptionWhenCallingAuditImageImportWithInvalidWorkspaceId()
 		{
 			// Arrange
@@ -84,7 +86,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			Assert.That(() => sut.AuditImageImport(InvalidWorkspaceId, runId, IsFatalError, new ImageImportStatistics()), this.GetExpectedExceptionConstraintForNonExistingWorkspace(InvalidWorkspaceId));
 		}
 
-		[Test]
+		[IdentifiedTest("613513fb-1828-4895-82d6-2ba072672488")]
 		public void ShouldThrowExceptionWhenCallingAuditImageImportWithNullImportStats()
 		{
 			// Arrange
@@ -96,7 +98,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			Assert.That(() => sut.AuditImageImport(this.TestParameters.WorkspaceId, runId, IsFatalError, null), this.GetExceptionConstraintForNullReferenceException("AuditImageImportAsync"));
 		}
 
-		[Test]
+		[IdentifiedTest("97869acf-02df-4750-84be-3c1d98ef00f3")]
 		public void ShouldThrowExceptionWhenCallingAuditImageImportWithNullRunId()
 		{
 			// Arrange
@@ -107,7 +109,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			Assert.That(() => sut.AuditImageImport(this.TestParameters.WorkspaceId, null, IsFatalError, new ImageImportStatistics()), this.GetExceptionConstraintForNullReferenceException("AuditImageImportAsync"));
 		}
 
-		[Test]
+		[IdentifiedTest("7dae96af-28c8-4764-963e-084f4389daa0")]
 		public void ShouldAuditObjectImport()
 		{
 			// Arrange
@@ -160,7 +162,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("bc1f131b-53bb-4af0-84ab-b3e3d3e63776")]
 		public void ShouldThrowExceptionWhenCallingAuditObjectImportWithInvalidWorkspaceId()
 		{
 			// Arrange
@@ -174,7 +176,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			Assert.That(() => sut.AuditObjectImport(InvalidWorkspaceId, runId, IsFatalError, new ObjectImportStatistics()), this.GetExpectedExceptionConstraintForNonExistingWorkspace(InvalidWorkspaceId));
 		}
 
-		[Test]
+		[IdentifiedTest("28492990-5a58-463e-abb2-97f32e2ff218")]
 		public void ShouldThrowExceptionWhenCallingAuditObjectImportWithNullImportStats()
 		{
 			// Arrange
@@ -186,7 +188,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			Assert.That(() => sut.AuditObjectImport(this.TestParameters.WorkspaceId, runId, IsFatalError, null), this.GetExceptionConstraintForNullReferenceException("AuditObjectImportAsync"));
 		}
 
-		[Test]
+		[IdentifiedTest("65fe783f-4173-4009-b23f-540ee2c2dee1")]
 		public void ShouldThrowExceptionWhenCallingAuditObjectImportWithNullRunId()
 		{
 			// Arrange
@@ -197,7 +199,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			Assert.That(() => sut.AuditObjectImport(this.TestParameters.WorkspaceId, null, IsFatalError, new ObjectImportStatistics()), this.GetExceptionConstraintForNullReferenceException("AuditObjectImportAsync"));
 		}
 
-		[Test]
+		[IdentifiedTest("012765dc-3900-48df-b42a-e7840ea7c94a")]
 		public void ShouldAuditExport()
 		{
 			// Arrange
@@ -262,7 +264,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("2d1a8986-00a9-43e7-b23a-4c5e815acdc0")]
 		public void ShouldThrowExceptionWhenCallingAuditExportWithInvalidWorkspaceId()
 		{
 			// Arrange
@@ -275,7 +277,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			Assert.That(() => sut.AuditExport(InvalidWorkspaceId, IsFatalError, new ExportStatistics()), this.GetExpectedExceptionConstraintForNonExistingWorkspace(InvalidWorkspaceId));
 		}
 
-		[Test]
+		[IdentifiedTest("d279ff5c-ebd8-4f00-8121-9cc83c12061f")]
 		public void ShouldThrowExceptionWhenCallingAuditExportWithNullExportStats()
 		{
 			// Arrange
@@ -286,7 +288,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			Assert.That(() => sut.AuditExport(this.TestParameters.WorkspaceId, IsFatalError, null), this.GetExceptionConstraintForNullReferenceException("AuditExportAsync"));
 		}
 
-		[Test]
+		[IdentifiedTest("18729c37-06e1-4a79-80ea-82e7fb6781ab")]
 		public void ShouldNotThrowExceptionWhenCallingDeleteAuditTokenWithNull()
 		{
 			// Arrange
@@ -296,7 +298,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			Assert.DoesNotThrow(() => sut.DeleteAuditToken(null));
 		}
 
-		[Test]
+		[IdentifiedTest("2c481b50-6ea3-48cc-ad1f-d6a917b493c8")]
 		public void ShouldNotThrowExceptionWhenCallingDeleteAuditTokenWithInvalidGuid()
 		{
 			// Arrange

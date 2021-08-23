@@ -12,8 +12,11 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	using kCura.WinEDDS.Service;
 	using kCura.WinEDDS.Service.Replacement;
 
+	using Relativity.Testing.Identification;
+
 	[TestFixture(true)]
 	[TestFixture(false)]
+	[Feature.DataTransfer.ImportApi]
 	public class KeplerCaseManagerTests : KeplerServiceTestBase
 	{
 		public KeplerCaseManagerTests(bool useKepler)
@@ -21,7 +24,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		{
 		}
 
-		[Test]
+		[IdentifiedTest("44cbeb2f-6648-4492-abe7-9e31dae413c5")]
 		public void ShouldGetAllDocumentFolderPaths()
 		{
 			// arrange
@@ -38,7 +41,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("dac8979a-5f39-47f3-a99b-d09669a02ebd")]
 		public void ShouldGetAllDocumentFolderPathsForCase()
 		{
 			// arrange
@@ -55,7 +58,30 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("660577a1-ef8d-4943-bbcb-e5331ef96896")]
+		public void ShouldNotGetAllDocumentFolderPathsForCaseWhenParametersAreInvalid()
+		{
+			// arrange
+			using (ICaseManager sut = ManagerFactory.CreateCaseManager(
+				this.Credential,
+				this.CookieContainer,
+				this.CorrelationIdFunc))
+			{
+				// act && assert
+				// TODO: remove inconsistency between Kepler and WebAPI REL-586780
+				if (this.UseKepler)
+				{
+					Assert.That(() => sut.GetAllDocumentFolderPathsForCase(NonExistingWorkspaceId), this.GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
+				}
+				else
+				{
+					string[] documentFolderPaths = sut.GetAllDocumentFolderPathsForCase(NonExistingWorkspaceId);
+					Assert.That(documentFolderPaths, Does.Contain(this.TestParameters.FileShareUncPath));
+				}
+			}
+		}
+
+		[IdentifiedTest("52d461ae-0908-4011-ad61-c7160976ef5b")]
 		public void ShouldRead()
 		{
 			// arrange
@@ -73,7 +99,21 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("61b8460a-3391-410b-93b1-42f386a0e25e")]
+		public void ShouldNotReadWhenParametersAreInvalid()
+		{
+			// arrange
+			using (ICaseManager sut = ManagerFactory.CreateCaseManager(
+				this.Credential,
+				this.CookieContainer,
+				this.CorrelationIdFunc))
+			{
+				// act && assert
+				Assert.That(() => sut.Read(NonExistingWorkspaceId), this.GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
+			}
+		}
+
+		[IdentifiedTest("341a9156-a756-475e-891c-05fb9069d0f3")]
 		public void ShouldRetrieveAll()
 		{
 			// arrange
@@ -93,7 +133,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 					actualWorkspaceNames.Add(workspaceName);
 				}
 
-				Assert.That(actualWorkspaceNames, Does.Contain(this.TestParameters.WorkspaceName), "Should contain current workspace.");
+				Assert.That(actualWorkspaceNames, Does.Contain(this.TestParameters.WorkspaceName));
 			}
 		}
 	}

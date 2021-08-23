@@ -17,9 +17,11 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	using kCura.WinEDDS.Service.Replacement;
 
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.Testing.Identification;
 
 	[TestFixture(true)]
 	[TestFixture(false)]
+	[Feature.DataTransfer.ImportApi]
 	public class KeplerUserManagerTests : KeplerServiceTestBase
 	{
 		private const string AssignableUserEmail = "assignable.user@test.com";
@@ -65,7 +67,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("e2c396c2-46d3-42b5-962f-551c91451780")]
 		public void ShouldRetrieveAllAssignableInCase()
 		{
 			// arrange
@@ -101,7 +103,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("fbffb953-6e65-47dd-b5b7-ded13b5d70b2")]
 		public void ShouldRetrieveAllAssignableInCaseForNonExistingWorkspace()
 		{
 			// arrange
@@ -118,7 +120,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("02c4b0ad-244b-4920-9d7f-81b0019c9ddd")]
 		public void ShouldRetrieveAllAssignableInCaseWhenUserDoesNotHaveAccessToTheWorkspace()
 		{
 			// arrange

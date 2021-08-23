@@ -13,9 +13,11 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	using kCura.WinEDDS.Service;
 	using kCura.WinEDDS.Service.Replacement;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.Testing.Identification;
 
 	[TestFixture(true)]
 	[TestFixture(false)]
+	[Feature.DataTransfer.ImportApi]
 	public class KeplerFieldManagerTests : KeplerServiceTestBase
 	{
 		private const int TestFieldObjectArtifactTypeID = 10;
@@ -35,7 +37,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		public async Task KeplerFieldManagerTestsOneTimeTearDownAsync() =>
 			await FieldHelper.DeleteFieldAsync(this.TestParameters, this._testFieldArtifactID).ConfigureAwait(false);
 
-		[Test]
+		[IdentifiedTest("c06f4b06-9caf-479c-b7b8-1964e2fc0ee8")]
 		public void ShouldRetrieveControlNumberField()
 		{
 			// arrange
@@ -55,7 +57,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("0f8ac7ab-d4c1-4054-b5cd-39344ceb399d")]
 		public void ShouldCatchExceptionWhenFieldDoesNotExist()
 		{
 			// arrange
@@ -69,7 +71,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("b5254969-e21c-433a-aaab-e98a9d1f1f99")]
 		public void ShouldCatchExceptionWhenWorkspaceDoesNotExist()
 		{
 			// arrange

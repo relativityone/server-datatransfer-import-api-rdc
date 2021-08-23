@@ -17,13 +17,18 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.Testing.Identification;
 
 	[TestFixture(true)]
 	[TestFixture(false)]
+	[Feature.DataTransfer.ImportApi]
 	public class KeplerCodeManagerTests : KeplerServiceTestBase
 	{
 		private const string EmptySingleChoiceFieldName = "EmptySingleChoiceField";
 		private const string PopulatedSingleChoiceFieldName = "PopulatedSingleChoiceField";
+		private const string NonExistingChoiceName = "NotExitingChoiceName";
+		private const int NonExistingCodeTypeId = -1;
+		private const int NonExistingParentId = -1;
 		private const int ChoicesCount = 10;
 
 		private int emptySingleChoiceFieldId;
@@ -81,7 +86,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		[OneTimeSetUp]
 		public async Task OneTimeSetUpAsync()
 		{
-			parentId = await WorkspaceHelper.ReadRootArtifactId(this.TestParameters, this.TestParameters.WorkspaceId).ConfigureAwait(false);
+			this.parentId = await WorkspaceHelper.ReadRootArtifactId(this.TestParameters, this.TestParameters.WorkspaceId).ConfigureAwait(false);
 
 			this.emptySingleChoiceFieldId = await FieldHelper.CreateSingleChoiceFieldAsync(
 				                                    this.TestParameters,
@@ -110,7 +115,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			await FieldHelper.DeleteFieldAsync(this.TestParameters, this.emptySingleChoiceFieldId).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("6a239075-617b-4c76-97e9-fb28f6effeff")]
 		public void ShouldCreate()
 		{
 			// arrange
@@ -137,7 +142,91 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("64beffce-bc1c-4233-8bde-cc2ce4acfa84")]
+		public void ShouldNotCreateCodeThatAlreadyExists()
+		{
+			// arrange
+			string choiceValue = $"Duplicated choice value {(this.UseKepler ? "Kepler" : "WebApi")}";
+
+			using (ICodeManager sut = ManagerFactory.CreateCodeManager(
+				this.Credential,
+				this.CookieContainer,
+				this.CorrelationIdFunc))
+			{
+				var code = new kCura.EDDS.WebAPI.CodeManagerBase.Code()
+					           {
+						           Name = choiceValue,
+						           Order = 2000,
+						           ParentArtifactID = this.parentId,
+						           CodeType = this.EmptySingleChoiceFieldCodeTypeId,
+					           };
+
+				var secondCode = new kCura.EDDS.WebAPI.CodeManagerBase.Code()
+					           {
+						           Name = choiceValue,
+						           Order = 2000,
+						           ParentArtifactID = this.parentId,
+						           CodeType = this.EmptySingleChoiceFieldCodeTypeId,
+					           };
+
+				// act
+				var resultCode = sut.Create(this.TestParameters.WorkspaceId, code);
+				var resultSecondCode = sut.Create(this.TestParameters.WorkspaceId, secondCode);
+
+				// assert
+				Assert.That((int)resultCode, Is.EqualTo((int)resultSecondCode));
+			}
+		}
+
+		[IdentifiedTest("f04bf873-d9f4-48c1-a96a-5c40cdfe8ff2")]
+		public void ShouldNotCreateWhenParametersAreInvalid()
+		{
+			// arrange
+			string choiceValue = $"Choice Value {(this.UseKepler ? "Kepler" : "WebApi")}";
+
+			using (ICodeManager sut = ManagerFactory.CreateCodeManager(
+				this.Credential,
+				this.CookieContainer,
+				this.CorrelationIdFunc))
+			{
+				// act && assert
+				var code = new kCura.EDDS.WebAPI.CodeManagerBase.Code()
+					           {
+						           Name = choiceValue,
+						           Order = 2000,
+						           ParentArtifactID = this.parentId,
+						           CodeType = this.EmptySingleChoiceFieldCodeTypeId,
+					           };
+
+				Assert.That(() => sut.Create(NonExistingWorkspaceId, code), this.GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
+
+				code = new kCura.EDDS.WebAPI.CodeManagerBase.Code()
+					           {
+						           Name = choiceValue,
+						           Order = 2000,
+						           ParentArtifactID = NonExistingParentId,
+						           CodeType = this.EmptySingleChoiceFieldCodeTypeId,
+					           };
+
+				var result = sut.Create(this.TestParameters.WorkspaceId, code);
+
+				Assert.That((string)result, Does.Contain("SqlException: The INSERT statement conflicted with the FOREIGN KEY constraint \"FK_ArtifactAncestry_Artifact1\""));
+
+				code = new kCura.EDDS.WebAPI.CodeManagerBase.Code()
+					           {
+						           Name = choiceValue,
+						           Order = 2000,
+						           ParentArtifactID = this.parentId,
+						           CodeType = NonExistingCodeTypeId,
+					           };
+
+				result = sut.Create(this.TestParameters.WorkspaceId, code);
+
+				Assert.That((string)result, Does.Contain("SqlException: The INSERT statement conflicted with the FOREIGN KEY constraint \"FK_Code_CodeType\""));
+			}
+		}
+
+		[IdentifiedTest("cd750f8b-91e8-4014-8d4c-670ebf264970")]
 		public void ShouldCreateNewCodeDTOProxy()
 		{
 			// arrange
@@ -160,7 +249,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("547362bf-caa2-4efd-8366-b485ecd1fb6c")]
 		public void ShouldGetAllForHierarchical()
 		{
 			// arrange
@@ -186,7 +275,32 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("d4468ee3-842c-4cba-b7f6-b93d9a002cd7")]
+		public void ShouldNotGetAllForHierarchicalWhenParametersAreInvalid()
+		{
+			// arrange
+			using (ICodeManager sut = ManagerFactory.CreateCodeManager(
+				this.Credential,
+				this.CookieContainer,
+				this.CorrelationIdFunc))
+			{
+				// act && assert
+				Assert.That(() => sut.GetAllForHierarchical(NonExistingWorkspaceId, this.PopulatedSingleChoiceFieldCodeTypeId), this.GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
+
+				DataSet results = sut.GetAllForHierarchical(this.TestParameters.WorkspaceId, NonExistingCodeTypeId);
+				List<string> choices = results
+					.Tables[0]
+					.Rows
+					.OfType<DataRow>()
+					.Select(row => row.Field<string>(0))
+					.ToList();
+
+				List<string> expected = new List<string> { string.Empty };
+				Assert.That(choices, Is.EquivalentTo(expected));
+			}
+		}
+
+		[IdentifiedTest("a68ff829-f020-4f4f-962e-5e4030e81e6e")]
 		public async Task ShouldGetChoiceLimitForUI()
 		{
 			// arrange
@@ -208,7 +322,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("dcdd9a91-9c05-4713-a8ee-0360af915e6a")]
 		public void ShouldReadID()
 		{
 			// arrange
@@ -225,8 +339,33 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
-		public void SholdRetrieveAllCodesOfType()
+		[IdentifiedTest("d3be3d5b-62bb-4f67-af79-1932a2d56aea")]
+		public void ShouldNotReadIDWhenParametersAreInvalid()
+		{
+			// arrange
+			using (ICodeManager sut = ManagerFactory.CreateCodeManager(
+				this.Credential,
+				this.CookieContainer,
+				this.CorrelationIdFunc))
+			{
+				// act && assert
+				Assert.That(
+					() => sut.ReadID(NonExistingWorkspaceId, this.parentId, this.PopulatedSingleChoiceFieldCodeTypeId, this.uniqueValues[0]),
+					this.GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
+
+				int result = sut.ReadID(this.TestParameters.WorkspaceId, NonExistingParentId, this.PopulatedSingleChoiceFieldCodeTypeId, this.uniqueValues[0]);
+				Assert.That(result, Is.EqualTo(-1));
+
+				result = sut.ReadID(this.TestParameters.WorkspaceId, this.parentId, NonExistingCodeTypeId, this.uniqueValues[0]);
+				Assert.That(result, Is.EqualTo(-1));
+
+				result = sut.ReadID(this.TestParameters.WorkspaceId, this.parentId, this.PopulatedSingleChoiceFieldCodeTypeId, NonExistingChoiceName);
+				Assert.That(result, Is.EqualTo(-1));
+			}
+		}
+
+		[IdentifiedTest("275bef10-4a29-4a86-b070-090ee53719b7")]
+		public void ShouldRetrieveAllCodesOfType()
 		{
 			// arrange
 			using (ICodeManager sut = ManagerFactory.CreateCodeManager(
@@ -244,7 +383,28 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("f6298c0a-2449-4082-a83e-eb15475ed099")]
+		public void ShouldNotRetrieveAllCodesOfTypeWhenParametersAreInvalid()
+		{
+			// arrange
+			using (ICodeManager sut = ManagerFactory.CreateCodeManager(
+				this.Credential,
+				this.CookieContainer,
+				this.CorrelationIdFunc))
+			{
+				// act && assert
+				Assert.That(
+					() => sut.RetrieveAllCodesOfType(NonExistingWorkspaceId, this.PopulatedSingleChoiceFieldCodeTypeId),
+					this.GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
+
+				Relativity.DataExchange.Service.ChoiceInfo[] results = sut.RetrieveAllCodesOfType(
+					this.TestParameters.WorkspaceId, NonExistingCodeTypeId);
+
+				Assert.That(results.Length, Is.EqualTo(0));
+			}
+		}
+
+		[IdentifiedTest("0d7a8fd4-d29a-4300-9bde-15516471e3e7")]
 		public void ShouldRetrieveCodeByNameAndTypeID()
 		{
 			// arrange
@@ -264,7 +424,40 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("0d7a8fd4-d29a-4300-9bde-15516471e3e7")]
+		public void ShouldNotRetrieveCodeByNameAndTypeIDWhenParametersAreInvalid()
+		{
+			// arrange
+			using (ICodeManager sut = ManagerFactory.CreateCodeManager(
+				this.Credential,
+				this.CookieContainer,
+				this.CorrelationIdFunc))
+			{
+				// act  && assert
+				Assert.That(
+					() => sut.RetrieveCodeByNameAndTypeID(
+						NonExistingWorkspaceId,
+						this.PopulatedSingleChoiceFieldCodeType,
+						this.uniqueValues[0]),
+					this.GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
+
+				Assert.That(
+					() => sut.RetrieveCodeByNameAndTypeID(
+						NonExistingWorkspaceId,
+						null,
+						this.uniqueValues[0]),
+					Throws.Exception);
+
+				Relativity.DataExchange.Service.ChoiceInfo result = sut.RetrieveCodeByNameAndTypeID(
+					this.TestParameters.WorkspaceId,
+					this.PopulatedSingleChoiceFieldCodeType,
+					NonExistingChoiceName);
+
+				Assert.That(result, Is.Null);
+			}
+		}
+
+		[IdentifiedTest("4f917dff-c81c-41b0-8703-b29b70ea4bcb")]
 		public void ShouldRetrieveCodesAndTypesForCase()
 		{
 			// arrange
@@ -286,6 +479,20 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 					.ToArray();
 
 				Assert.That(codes.Length, Is.EqualTo(ChoicesCount));
+			}
+		}
+
+		[IdentifiedTest("5d065aa6-4e94-4ca4-8e6e-051908487688")]
+		public void ShouldNotRetrieveCodesAndTypesForCaseWhenParametersAreInvalid()
+		{
+			// arrange
+			using (ICodeManager sut = ManagerFactory.CreateCodeManager(
+				this.Credential,
+				this.CookieContainer,
+				this.CorrelationIdFunc))
+			{
+				// act && assert
+				Assert.That(() => sut.RetrieveCodesAndTypesForCase(NonExistingWorkspaceId), this.GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
 			}
 		}
 

@@ -9,8 +9,11 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	using kCura.WinEDDS.Service;
 	using kCura.WinEDDS.Service.Replacement;
 
+	using Relativity.Testing.Identification;
+
 	[TestFixture(true)]
 	[TestFixture(false)]
+	[Feature.DataTransfer.ImportApi]
 	public class KeplerRelativityManagerTests : KeplerServiceTestBase
 	{
 		public KeplerRelativityManagerTests(bool useKepler)
@@ -18,7 +21,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		{
 		}
 
-		[Test]
+		[IdentifiedTest("7f156cab-8c20-45e9-8721-bd301bc3bffe")]
 		public void ShouldReturnFalseForCheckIfEmailNotificationEnabled()
 		{
 			// arrange
@@ -32,7 +35,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("35aae7c9-0eeb-4625-8d73-451415e39332")]
 		public void ShouldReturnCurrencySymbol()
 		{
 			// arrange
@@ -46,7 +49,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("978c6af5-0d81-4c7e-b0ec-2f840f96a7d6")]
 		public void ShouldReturnFalseForValidateSuccessfulLogForValidCredentials()
 		{
 			// arrange
@@ -60,7 +63,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("d7a0725c-3e4e-430c-b77b-7557d1f7f672")]
 		public void ShouldReturnFalseForValidateSuccessfulLogForInvalidCredentials()
 		{
 			// Arrange
@@ -77,7 +80,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("65eb76d6-702b-4ead-bcfd-ec3d76efc37d")]
 		public void ShouldReturnCorrectRdcConfiguration()
 		{
 			// arrange

@@ -19,9 +19,11 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.Testing.Identification;
 
 	[TestFixture(true)]
 	[TestFixture(false)]
+	[Feature.DataTransfer.ImportApi]
 	public class KeplerFieldQueryManagerTest : KeplerServiceTestBase
 	{
 		private const int TestFieldObjectArtifactTypeID = (int)ArtifactType.Document;
@@ -60,7 +62,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			await FieldHelper.DeleteFieldAsync(this.TestParameters, this._testFixLenTextFieldArtifactID).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("7807e119-5f78-44ec-a737-68e8f4a33078")]
 		public void ShouldRetrieveAllMappable()
 		{
 			// arrange
@@ -81,7 +83,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("c8e2560a-0a6c-4c8c-8413-6f452f9aa753")]
 		public void ShouldThrowExceptionWhenWorkspaceDoesNotExist()
 		{
 			// arrange
@@ -97,7 +99,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("6107e5e2-002f-4c5b-adaa-1e7d83f1d15b")]
 		public void ShouldReturnEmptyTableWhenArtifactTypeIdDoesNotExist()
 		{
 			// arrange
@@ -115,7 +117,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("57f84294-c213-4f50-ac96-df6dbe276c9c")]
 		public void ShouldRetreiveDataSetFromRetrievePotentialBeginBatesFields()
 		{
 			// arrange
@@ -136,7 +138,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("2061ebdf-65d1-44b8-ad6b-8424362dbeb9")]
 		public void ShouldThrowExceptionWhenWorkspaceDoesNotExistFromRetrievePotentialBeginBatesFields()
 		{
 			// arrange
@@ -152,7 +154,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("eed6fb78-ba39-410e-acdb-119ce7cfcfaa")]
 		public void ShouldTReturnFalseFromIsFieldIndexed()
 		{
 			// arrange
@@ -169,7 +171,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("3883e0fc-c4a8-43d1-a725-046beca6e6b0")]
 		public void ShouldReturnTrueForControlNumberFromIsFieldIndexed()
 		{
 			// arrange
@@ -186,7 +188,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("0733468a-b400-44d1-83fc-eb32d9d9d733")]
 		public void ShouldThrowExceptionWhenWorkspaceDoesNotExistFromIsFieldIndexed()
 		{
 			// arrange
@@ -202,7 +204,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("0744dac1-a6a1-452a-b866-06772279be82")]
 		public void ShouldReturnFalseWhenFieldDoesNotExistFromIsFieldIndexed()
 		{
 			// arrange
@@ -219,7 +221,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("c3b1bc63-3ea9-46c4-a8f2-389d21ca6671")]
 		public void ShouldReturnCollectionFromRetrieveAllAsDocumentFieldCollection()
 		{
 			// arrange
@@ -237,7 +239,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("9365196a-14c3-4afa-b8c6-6b4acc3856e6")]
 		public void ShouldReturnEmptyWithNonExistingArtifactTypeIdFromRetrieveAllAsDocumentFieldCollection()
 		{
 			// arrange
@@ -254,7 +256,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("1011b113-814d-4461-b8d1-45b19b433b07")]
 		public void ShouldThrowExceptionFromRetrieveAllAsDocumentFieldCollection()
 		{
 			// arrange
@@ -270,7 +272,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("1070ccac-481e-4f6e-b230-209f403670c8")]
 		[TestCase(true)]
 		[TestCase(false)]
 		public void ShouldReturnCollectionFromRetrieveAllAsDocumentFieldCollection(bool includeUnmappable)
@@ -290,7 +292,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("43c83022-716e-4379-92a0-ca7e1b400989")]
 		[TestCase(true)]
 		[TestCase(false)]
 		public void ShouldReturnEmptyWithNonExistingArtifactTypeIdForRetrieveAllAsArray(bool includeUnmappable)
@@ -309,7 +311,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("ab44eae2-9f15-4a5c-b150-e817b3dc3f55")]
 		[TestCase(true)]
 		[TestCase(false)]
 		public void ShouldThrowExceptionForRetrieveAllAsArray(bool includeUnmappable)
