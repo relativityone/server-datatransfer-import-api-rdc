@@ -4,11 +4,14 @@
 
 namespace Relativity.DataExchange.NUnit.Integration.Service
 {
+	using System.Threading.Tasks;
+
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS.Service;
 	using kCura.WinEDDS.Service.Replacement;
 
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.Testing.Identification;
 
 	[TestFixture(true)]
@@ -22,8 +25,13 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		}
 
 		[IdentifiedTest("7f156cab-8c20-45e9-8721-bd301bc3bffe")]
-		public void ShouldReturnFalseForCheckIfEmailNotificationEnabled()
+		public async Task ShouldReturnFalseForCheckIfEmailNotificationEnabled()
 		{
+			var instanceSettingValue = await InstanceSettingsHelper.QueryInstanceSetting(
+				                      this.TestParameters,
+				                      "Relativity.Core",
+				                      "SendNotificationOnImportCompletion").ConfigureAwait(false);
+
 			// arrange
 			using (IRelativityManager sut = ManagerFactory.CreateRelativityManager(
 				this.Credential,
@@ -31,7 +39,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 				this.CorrelationIdFunc))
 			{
 				// act & assert
-				Assert.That(sut.IsImportEmailNotificationEnabled(), Is.False);
+				Assert.That(sut.IsImportEmailNotificationEnabled().ToString(), Is.EqualTo(instanceSettingValue));
 			}
 		}
 
@@ -59,7 +67,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 				this.CorrelationIdFunc))
 			{
 				// act & assert
-				Assert.That(sut.ValidateSuccessfulLogin(), Is.EqualTo(false));
+				Assert.That(sut.ValidateSuccessfulLogin(), Is.False);
 			}
 		}
 

@@ -107,7 +107,6 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		public void ShouldRetrieveAllAssignableInCaseForNonExistingWorkspace()
 		{
 			// arrange
-			const int NonExistingWorkspaceId = 123456789;
 			using (IUserManager sut = ManagerFactory.CreateUserManager(
 				this.Credential,
 				this.CookieContainer,
