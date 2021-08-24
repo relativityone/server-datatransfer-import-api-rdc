@@ -127,6 +127,7 @@
     <Compile Include="Service\KeplerObjectTypeManagerTests.cs" />
     <Compile Include="Service\KeplerProductionManagerTests.cs" />
     <Compile Include="Service\KeplerFileIOTests.cs" />
+    <Compile Include="Service\KeplerFolderManagerTests.cs" />
     <Compile Include="Service\KeplerServiceTestBase.cs" />
     <Compile Include="Service\KeplerRelativityManagerTests.cs" />
     <Compile Include="Service\KeplerUserManagerTests.cs" />

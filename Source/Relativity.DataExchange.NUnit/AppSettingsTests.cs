@@ -1048,6 +1048,17 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheWaitTimeBetweenReLogOnSetting()
+		{
+			Assert.That(
+				this.settings.WaitTimeBetweenReLogOn,
+				Is.EqualTo(DataExchange.AppSettingsConstants.WaitTimeBetweenReLogOnDefaultValue));
+			int expectedValue = RandomHelper.NextInt32(1, 1000);
+			this.settings.WaitTimeBetweenReLogOn = expectedValue;
+			Assert.That(this.settings.WaitTimeBetweenReLogOn, Is.EqualTo(expectedValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheWebApiOperationTimeoutSetting()
 		{
 			Assert.That(

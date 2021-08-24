@@ -24,6 +24,8 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		protected const int NonExistingArtifactTypeId = 0;
 		protected const int NonExistingSearchId = 0;
 		protected const int NonExistingArtifactId = 0;
+		protected const int NonExistingFolderId = 0;
+		protected const int WorkspaceRootFolderId = 1003697;
 
 		private bool? useKeplerOriginalValue;
 
@@ -60,6 +62,10 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 
 			this.useKeplerOriginalValue = AppSettings.Instance.UseKepler;
 			AppSettings.Instance.UseKepler = this.UseKepler;
+
+			// This will reduce the time of tests for WebApi
+			AppSettings.Instance.WaitBeforeReconnect = 0;
+			AppSettings.Instance.WaitTimeBetweenReLogOn = 0;
 
 			ManagerFactory.InvalidateCache();
 			WebApiVsKeplerFactory.InvalidateCache();

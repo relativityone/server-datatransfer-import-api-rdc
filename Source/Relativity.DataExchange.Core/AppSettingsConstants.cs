@@ -189,6 +189,8 @@ namespace Relativity.DataExchange
 		public const int ValueRefreshThresholdDefaultValue = 10000;
 		public const string WaitBeforeReconnectKey = "WaitBeforeReconnect";
 		public const int WaitBeforeReconnectDefaultValue = 2000;
+		public const string WaitTimeBetweenReLogOnKey = "WaitTimeBetweenReLogOn";
+		public const int WaitTimeBetweenReLogOnDefaultValue = 1000;
 		public const string WebApiOperationTimeoutKey = "WebAPIOperationTimeout";
 		public const int WebApiOperationTimeoutDefaultValue = 600000;
 		public const string WebBasedFileDownloadChunkSizeKey = "WebBasedFileDownloadChunkSize";

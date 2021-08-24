@@ -24,8 +24,6 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	[Feature.DataTransfer.ImportApi]
 	public class AuditManagerTests : KeplerServiceTestBase
 	{
-		private const int WorkspaceRootFolderId = 1003697;
-
 		public AuditManagerTests(bool useKepler)
 			: base(useKepler)
 		{

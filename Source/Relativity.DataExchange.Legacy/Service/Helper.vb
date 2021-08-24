@@ -1,13 +1,14 @@
 Imports System.Net
 Imports System.Threading.Tasks
 Imports kCura.WinEDDS.Credentials
+Imports Relativity.DataExchange
 
 Namespace kCura.WinEDDS.Service
 	Public Class Helper
 
 		'TODO: Precious tests! We needs it, we wants it! 
 		Public Shared Sub AttemptReLogin(ByVal credentials As System.Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal tryNumber As Int32, Optional ByVal retryOnFailure As Boolean = True)
-			System.Threading.Thread.CurrentThread.Join(1000 * (tryNumber + 1))
+			System.Threading.Thread.CurrentThread.Join(AppSettings.Instance.WaitTimeBetweenReLogOn * (tryNumber + 1))
 			Dim newCredentials As NetworkCredential = GetUpdatedCredentials(credentials)
 
 			' This is used only by legacy WebApi Soap services to re login (it is not used by any Kepler service) so we don't need to set correlation id.

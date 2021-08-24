@@ -1009,6 +1009,18 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets the time, in milliseconds, to wait before ReLogin.
+		/// </summary>
+		/// <value>
+		/// The total number of milliseconds.
+		/// </value>
+		int WaitTimeBetweenReLogOn
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the timeout, in seconds, before a WebAPI service call throws a timeout exception.
 		/// </summary>
 		/// <value>

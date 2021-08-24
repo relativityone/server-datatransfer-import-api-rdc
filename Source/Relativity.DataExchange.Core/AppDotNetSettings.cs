@@ -1201,6 +1201,17 @@ namespace Relativity.DataExchange
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
+			AppSettingsConstants.WaitTimeBetweenReLogOnKey,
+			AppSettingsConstants.WaitTimeBetweenReLogOnDefaultValue)]
+		int IAppSettings.WaitTimeBetweenReLogOn
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.WebApiOperationTimeoutKey,
 			AppSettingsConstants.WebApiOperationTimeoutDefaultValue)]
 		int IAppSettings.WebApiOperationTimeout

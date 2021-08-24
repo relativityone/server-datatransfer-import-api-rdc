@@ -10,6 +10,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using System.Linq;
 	using System.Threading.Tasks;
 
+	using Relativity.Services;
 	using Relativity.Services.Folder;
 	using Relativity.Services.Group;
 	using Relativity.Services.Permission;
@@ -22,6 +23,22 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			{
 				var folder = await folderManager.GetWorkspaceRootAsync(parameters.WorkspaceId).ConfigureAwait(false);
 				return folder.ArtifactID;
+			}
+		}
+
+		public static async Task<FolderResultSet> DeleteUnusedFoldersAsync(IntegrationTestParameters parameters)
+		{
+			using (IFolderManager folderManager = ServiceHelper.GetServiceProxy<IFolderManager>(parameters))
+			{
+				return await folderManager.DeleteUnusedFoldersAsync(parameters.WorkspaceId).ConfigureAwait(false);
+			}
+		}
+
+		public static async Task<FolderResultSet> QueryAsync(IntegrationTestParameters parameters, Query query)
+		{
+			using (IFolderManager folderManager = ServiceHelper.GetServiceProxy<IFolderManager>(parameters))
+			{
+				return await folderManager.QueryAsync(parameters.WorkspaceId, query).ConfigureAwait(false);
 			}
 		}
 
