@@ -55,6 +55,15 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			int artifactTypeId,
 			IDictionary<string, object> fields)
 		{
+			return CreateObjectTypeInstance(parameters, artifactTypeId, fields, null);
+		}
+
+		public static int CreateObjectTypeInstance(
+			IntegrationTestParameters parameters,
+			int artifactTypeId,
+			IDictionary<string, object> fields,
+			int? parentArtifactId)
+		{
 			if (parameters == null)
 			{
 				throw new ArgumentNullException(nameof(parameters));
@@ -72,6 +81,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 														Value = fields[key],
 													}),
 				};
+				if (parentArtifactId.HasValue)
+				{
+					request.ParentObject = new RelativityObjectRef { ArtifactID = parentArtifactId.Value };
+				}
+
 				Relativity.Services.Objects.DataContracts.CreateResult result =
 					objectManager.CreateAsync(parameters.WorkspaceId, request).GetAwaiter().GetResult();
 				List<InvalidOperationException> innerExceptions = result.EventHandlerStatuses.Where(x => !x.Success)
