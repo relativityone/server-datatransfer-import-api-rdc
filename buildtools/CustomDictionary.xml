@@ -13,6 +13,7 @@
       <Word>uploadable</Word>
       <Word>workspaces</Word>
       <Word>WebAPI</Word>
+      <Word>CorrelationId</Word>
     </Recognized>    
   </Words>
 </Dictionary>

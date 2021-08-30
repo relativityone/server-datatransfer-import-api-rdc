@@ -25,10 +25,16 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
-	[TestFixture]
+	[TestFixture(true)]
+	[TestFixture(false)]
 	[Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
 	public class FolderAndSubFolderExportTests : ExportTestBase
 	{
+		public FolderAndSubFolderExportTests(bool useKepler)
+			: base(useKepler)
+		{
+		}
+
 		protected override IntegrationTestParameters TestParameters => AssemblySetup.TestParameters;
 
 		[IdentifiedTestCase("3B50E3A9-0A28-4FA4-9ACD-5FB878DEF97A", false)]

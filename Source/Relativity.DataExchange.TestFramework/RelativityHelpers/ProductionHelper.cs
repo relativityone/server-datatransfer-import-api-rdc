@@ -19,7 +19,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Productions.Services;
 	using Relativity.Productions.Services.Interfaces.DTOs;
-	using Relativity.Services.Exceptions;
 	using Relativity.Services.Search;
 
 	/// <summary>
@@ -45,42 +44,24 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
+		/// <summary>Deletes all productions from the workspace.</summary>
+		/// <param name="parameters">Test parameters.</param>
+		/// <returns>A Task which completes when all productions are added to the delete queue.</returns>
+		/// <remarks>Productions are deleted asynchronously be the agent. Task returned by this method
+		/// completes before productions are physically removed from the database.</remarks>>
 		public static async Task DeleteAllProductionsAsync(IntegrationTestParameters parameters)
 		{
 			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
 
-			using (IProductionManager client =
-				ServiceHelper.GetServiceProxy<IProductionManager>(parameters))
+			List<Production> productions;
+			using (IProductionManager client = ServiceHelper.GetServiceProxy<IProductionManager>(parameters))
 			{
-				async Task DeleteProduction(int productionId)
-				{
-					await client.DeleteSingleAsync(parameters.WorkspaceId, productionId).ConfigureAwait(false);
+				productions = await client.GetAllAsync(parameters.WorkspaceId, DataSourceReadMode.None).ConfigureAwait(false);
+			}
 
-					// DeleteSingleAsync returns before production is deleted from the workspace
-					Production production;
-					do
-					{
-						try
-						{
-							production = await client.ReadSingleAsync(
-											 parameters.WorkspaceId,
-											 productionId,
-											 DataSourceReadMode.None).ConfigureAwait(false);
-							await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
-						}
-						catch (ValidationException ex) when (ex.Message == "Production specified is invalid.")
-						{
-							production = null;
-						}
-					}
-					while (production != null);
-				}
-
-				List<Production> productions = await client.GetAllAsync(parameters.WorkspaceId, DataSourceReadMode.None).ConfigureAwait(false);
-				foreach (var productionId in productions.Select(x => x.ArtifactID))
-				{
-					await DeleteProduction(productionId).ConfigureAwait(false);
-				}
+			foreach (var productionId in productions.Select(x => x.ArtifactID))
+			{
+				await RdoHelper.DeleteObjectAsync(parameters, productionId).ConfigureAwait(false);
 			}
 		}
 

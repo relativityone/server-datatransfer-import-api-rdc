@@ -121,7 +121,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		}
 
 		[IdentifiedTest("04b61be7-5965-4f15-a461-e38695e2061c")]
-		public void ShouldReturnEmptyDataSetWhenRetrieveNativesForSearchForDocumentsWithoutNatives()
+		public async Task ShouldReturnEmptyDataSetWhenRetrieveNativesForSearchForDocumentsWithoutNativesAsync()
 		{
 			// arrange
 			string[] controlNumbersWithoutNatives =
@@ -159,7 +159,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 
 			foreach (var artifactId in documentWithoutNativesArtifactIds)
 			{
-				RdoHelper.DeleteObject(this.TestParameters, artifactId);
+				await RdoHelper.DeleteObjectAsync(this.TestParameters, artifactId).ConfigureAwait(false);
 			}
 		}
 
@@ -352,7 +352,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		}
 
 		[IdentifiedTest("1728832e-8229-40b1-9954-20fe792b226c")]
-		public void ShouldReturnEmptyDataSetWhenRetrieveImagesForSearchForDocumentsWithoutImages()
+		public async Task ShouldReturnEmptyDataSetWhenRetrieveImagesForSearchForDocumentsWithoutImagesAsync()
 		{
 			// arrange
 			string[] controlNumbersWithoutImages =
@@ -389,7 +389,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 
 			foreach (var artifactId in documentWithoutImagesArtifactIds)
 			{
-				RdoHelper.DeleteObject(this.TestParameters, artifactId);
+				await RdoHelper.DeleteObjectAsync(this.TestParameters, artifactId).ConfigureAwait(false);
 			}
 		}
 

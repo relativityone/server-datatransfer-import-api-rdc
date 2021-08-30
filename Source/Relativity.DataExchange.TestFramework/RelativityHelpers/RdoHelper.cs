@@ -100,7 +100,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
-		public static void DeleteObject(IntegrationTestParameters parameters, int artifactId)
+		public static async Task DeleteObjectAsync(IntegrationTestParameters parameters, int artifactId)
 		{
 			if (parameters == null)
 			{
@@ -110,12 +110,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			using (IObjectManager objectManager = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
 			{
 				DeleteRequest request = new DeleteRequest
-				{
-					Object = new RelativityObjectRef { ArtifactID = artifactId },
-				};
+					                        {
+						                        Object = new RelativityObjectRef { ArtifactID = artifactId },
+					                        };
 
-				Relativity.Services.Objects.DataContracts.DeleteResult result =
-					objectManager.DeleteAsync(parameters.WorkspaceId, request).GetAwaiter().GetResult();
+				DeleteResult result = await objectManager.DeleteAsync(parameters.WorkspaceId, request).ConfigureAwait(false);
 				if (result.Report.DeletedItems.Count == 0)
 				{
 					throw new InvalidOperationException($"Failed to delete the {artifactId} object.");
