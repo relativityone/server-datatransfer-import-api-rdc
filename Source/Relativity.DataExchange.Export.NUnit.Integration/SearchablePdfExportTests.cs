@@ -21,12 +21,18 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
-	[TestFixture]
+	[TestFixture(true)]
+	[TestFixture(false)]
 	[Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
 	[TestType.MainFlow]
 	public class SearchablePdfExportTests : ExportTestBase
 	{
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.MayappleExportPDFs;
+
+		public SearchablePdfExportTests(bool useKepler)
+			: base(useKepler)
+		{
+		}
 
 		protected override IntegrationTestParameters TestParameters => AssemblySetup.TestParameters;
 

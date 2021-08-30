@@ -34,7 +34,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[OneTimeSetUp]
 		public static async Task SetupAsync()
 		{
-			TestParameters = IntegrationTestHelper.Create();
+			TestParameters = IntegrationTestHelper.Create().DeepCopy();
 
 			if (TestParameters.SkipIntegrationTests)
 			{

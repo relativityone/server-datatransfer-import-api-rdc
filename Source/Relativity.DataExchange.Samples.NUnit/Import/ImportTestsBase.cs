@@ -346,11 +346,11 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		}
 
 		[TearDown]
-		public void Teardown()
+		public Task TeardownAsync()
 		{
 			this.DataSource?.Dispose();
 			AppSettings.Instance.CreateFoldersInWebApi = true;
-			this.OnTearDown();
+			return this.OnTearDownAsync();
 		}
 
 		/// <summary>
@@ -729,18 +729,18 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			return artifactId;
 		}
 
-		protected void DeleteObjects(IList<int> artifacts)
+		protected async Task DeleteObjectsAsync(IList<int> artifacts)
 		{
 			foreach (int artifactId in artifacts.ToList())
 			{
-				this.DeleteObject(artifactId);
+				await this.DeleteObjectAsync(artifactId).ConfigureAwait(false);
 				artifacts.Remove(artifactId);
 			}
 		}
 
-		protected void DeleteObject(int artifactId)
+		protected Task DeleteObjectAsync(int artifactId)
 		{
-			RdoHelper.DeleteObject(this.TestParameters, artifactId);
+			return RdoHelper.DeleteObjectAsync(this.TestParameters, artifactId);
 		}
 
 		/// <summary>
@@ -945,8 +945,9 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		{
 		}
 
-		protected virtual void OnTearDown()
+		protected virtual Task OnTearDownAsync()
 		{
+			return Task.CompletedTask;
 		}
 	}
 }

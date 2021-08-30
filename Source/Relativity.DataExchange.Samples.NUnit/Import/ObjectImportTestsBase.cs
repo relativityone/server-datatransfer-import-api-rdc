@@ -315,13 +315,13 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		{
 		}
 
-		protected override void OnTearDown()
+		protected override async Task OnTearDownAsync()
 		{
-			base.OnTearDown();
+			await base.OnTearDownAsync().ConfigureAwait(false);
 
 			// Note: this removes the artifacts from the supplied list.
-			this.DeleteObjects(this.dataSourceArtifacts);
-			this.DeleteObjects(this.detailArtifacts);
+			await this.DeleteObjectsAsync(this.dataSourceArtifacts).ConfigureAwait(false);
+			await this.DeleteObjectsAsync(this.detailArtifacts).ConfigureAwait(false);
 		}
 
 		private async Task CreateTransferObjectTypeAsync()
