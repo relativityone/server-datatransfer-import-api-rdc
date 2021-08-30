@@ -31,6 +31,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS.Service;
 	using kCura.WinEDDS.Service.Export;
+	using kCura.WinEDDS.Service.Kepler;
 
 	using Moq;
 
@@ -43,22 +44,25 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.Transfer;
 
-	using ArtifactType = Relativity.DataExchange.Service.ArtifactType;
 	using Field = kCura.EDDS.WebAPI.DocumentManagerBase.Field;
-	using FieldType = Relativity.DataExchange.Service.FieldType;
 	using File = System.IO.File;
 
 	[TestFixture]
 	public abstract class ExportTestBase : IDisposable
 	{
+		private readonly bool useKepler;
+
 		private ExportTestJobResult exporterTestJobResult;
 		private WindsorContainer testContainer;
 		private CookieContainer cookieContainer;
 		private NetworkCredential credentials;
 		private CancellationTokenSource cancellationTokenSource;
+		private bool? originalUseKeplerValue;
 
-		protected ExportTestBase()
+		protected ExportTestBase(bool useKepler)
 		{
+			this.useKepler = useKepler;
+
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
@@ -82,6 +86,18 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected bool CorrelationIdRetrieved { get; set; }
 
+		[OneTimeSetUp]
+		public void OneTimeSetUpBase()
+		{
+			this.originalUseKeplerValue = AppSettings.Instance.UseKepler;
+		}
+
+		[OneTimeTearDown]
+		public void OneTimeTearDownBase()
+		{
+			AppSettings.Instance.UseKepler = this.originalUseKeplerValue;
+		}
+
 		[SetUp]
 		public void Setup()
 		{
@@ -98,55 +114,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			this.TempDirectory = new TempDirectory2();
 			this.TempDirectory.Create();
 
-			this.ExtendedExportFile = new ExtendedExportFile((int)ArtifactType.Document)
-			{
-				CookieContainer = this.cookieContainer,
-				Credential = this.credentials,
-
-				TypeOfExport = ExportFile.ExportType.ParentSearch,
-				FolderPath = this.TempDirectory.Directory,
-				TextFileEncoding = Encoding.UTF8,
-
-				// settings for exporting natives
-				ExportNative = true,
-				TypeOfExportedFilePath = kCura.WinEDDS.ExportFile.ExportedFilePathType.Absolute,
-
-				IdentifierColumnName = WellKnownFields.ControlNumber,
-				LoadFileEncoding = Encoding.UTF8,
-				LoadFilesPrefix = "Documents",
-				LoadFileExtension = "dat",
-				MultiRecordDelimiter = ';',
-				NestedValueDelimiter = '\\',
-				NewlineDelimiter = '@',
-				QuoteDelimiter = 'þ',
-				RecordDelimiter = '¶',
-				ViewID = ViewId,
-				SelectedViewFields = new kCura.WinEDDS.ViewFieldInfo[] { },
-
-				// settings for exporting images
-				ExportImages = true,
-				LogFileFormat = LoadFileType.FileFormat.Opticon,
-				TypeOfImage = kCura.WinEDDS.ExportFile.ImageType.Pdf,
-				ImagePrecedence = new[]
-					{
-						new Pair("-1", "Original"),
-						new Pair("-1", "Original"),
-					},
-
-				// settings for volumes and subdirectories
-				SubdirectoryDigitPadding = 3,
-				VolumeDigitPadding = 2,
-				VolumeInfo = new VolumeInfo
-				{
-					CopyImageFilesFromRepository = true,
-					CopyNativeFilesFromRepository = true,
-					SubdirectoryStartNumber = 1,
-					SubdirectoryMaxSize = 500,
-					VolumeStartNumber = 1,
-					VolumeMaxSize = 650,
-					VolumePrefix = "VOL",
-				},
-			};
+			this.ExtendedExportFile = this.CreateExtendedExportFile();
 
 			this.MockExportRequestRetriever = new Mock<IExportRequestRetriever>();
 			this.MockFileShareSettingsService = new Mock<IFileShareSettingsService>();
@@ -157,6 +125,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			AppSettingsManager.Default(AppSettings.Instance);
 
+			AppSettings.Instance.UseKepler = this.useKepler;
+			WebApiVsKeplerFactory.InvalidateCache();
+			ManagerFactory.InvalidateCache();
 			this.CorrelationIdRetrieved = false;
 		}
 
@@ -485,7 +456,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected void ThenTheCorrelationIdWasRetrieved()
 		{
-			Assert.That(this.CorrelationIdRetrieved);
+			if (this.useKepler)
+			{
+				Assert.That(this.CorrelationIdRetrieved, "CorrelationId should be retrieved");
+			}
 		}
 
 		private static Dictionary<string, string> ToAuditDetails(ExtendedExportFile exportFile)
@@ -768,9 +742,62 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		}
 
 		private string GetCorrelationId()
-        {
-            this.CorrelationIdRetrieved = true;
-            return this.GetType().Name;
-        }
+		{
+			this.CorrelationIdRetrieved = true;
+			return this.GetType().Name;
+		}
+
+		private ExtendedExportFile CreateExtendedExportFile()
+		{
+			return new ExtendedExportFile((int)ArtifactType.Document)
+			{
+				CookieContainer = this.cookieContainer,
+				Credential = this.credentials,
+
+				TypeOfExport = ExportFile.ExportType.ParentSearch,
+				FolderPath = this.TempDirectory.Directory,
+				TextFileEncoding = Encoding.UTF8,
+
+				// settings for exporting natives
+				ExportNative = true,
+				TypeOfExportedFilePath = kCura.WinEDDS.ExportFile.ExportedFilePathType.Absolute,
+
+				IdentifierColumnName = WellKnownFields.ControlNumber,
+				LoadFileEncoding = Encoding.UTF8,
+				LoadFilesPrefix = "Documents",
+				LoadFileExtension = "dat",
+				MultiRecordDelimiter = ';',
+				NestedValueDelimiter = '\\',
+				NewlineDelimiter = '@',
+				QuoteDelimiter = 'þ',
+				RecordDelimiter = '¶',
+				ViewID = ViewId,
+				SelectedViewFields = new kCura.WinEDDS.ViewFieldInfo[] { },
+
+				// settings for exporting images
+				ExportImages = true,
+				LogFileFormat = LoadFileType.FileFormat.Opticon,
+				TypeOfImage = kCura.WinEDDS.ExportFile.ImageType.Pdf,
+				ImagePrecedence = new[]
+												 {
+													 new Pair("-1", "Original"),
+													 new Pair("-1", "Original"),
+												 },
+
+				// settings for volumes and subdirectories
+				SubdirectoryDigitPadding = 3,
+				VolumeDigitPadding = 2,
+				VolumeInfo = new VolumeInfo
+				{
+					CopyImageFilesFromRepository = true,
+					CopyNativeFilesFromRepository = true,
+					SubdirectoryStartNumber = 1,
+					SubdirectoryMaxSize = 500,
+					VolumeStartNumber = 1,
+					VolumeMaxSize = 650,
+					VolumePrefix = "VOL",
+				},
+			};
+		}
 	}
 }

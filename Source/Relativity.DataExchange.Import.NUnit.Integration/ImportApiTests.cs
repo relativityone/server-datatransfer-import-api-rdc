@@ -4,6 +4,7 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Net;
@@ -69,6 +70,12 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				this.testParameters.RelativityUserName,
 				this.testParameters.RelativityPassword,
 				this.testParameters.RelativityWebApiUrl.ToString());
+		}
+
+		[OneTimeTearDown]
+		public Task OneTimeTearDown()
+		{
+			return ProductionHelper.DeleteAllProductionsAsync(this.testParameters);
 		}
 
 		[IdentifiedTest("101ec706-f7bd-4189-9ece-9d59ea1dfed3")]
@@ -170,11 +177,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// arrange
 			(string productionName, string batesPrefix)[] expectedProductions =
 			{
-				("ProductionA", "PREFIX"),
-				("Second Production", "PRE_"),
+				($"{Guid.NewGuid():N}", "PREFIX"),
+				($"{Guid.NewGuid():N}", "PRE_"),
 			};
 
-			await ProductionHelper.DeleteAllProductionsAsync(this.testParameters).ConfigureAwait(false);
 			foreach (var (productionName, batesPrefix) in expectedProductions)
 			{
 				await ProductionHelper.CreateProductionAsync(this.testParameters, productionName, batesPrefix).ConfigureAwait(false);
@@ -184,11 +190,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			ProductionSet[] actualProductions = this.sut.GetProductionSets(this.testParameters.WorkspaceId).ToArray();
 
 			// assert
-			Assert.That(actualProductions, Has.Exactly(expectedProductions.Length).Items, "Should return all productions");
-
 			var actualProductionNames = actualProductions.Select(x => x.Name);
 			var expectedProductionNames = expectedProductions.Select(x => x.productionName);
-			Assert.That(actualProductionNames, Is.EquivalentTo(expectedProductionNames), "Productions should have correct names.");
+			Assert.That(actualProductionNames, Is.SupersetOf(expectedProductionNames), "Should return all productions with correct names.");
 		}
 
 		[IdentifiedTest("61285e70-9054-4d62-baa2-433d4d6c5c0d")]
