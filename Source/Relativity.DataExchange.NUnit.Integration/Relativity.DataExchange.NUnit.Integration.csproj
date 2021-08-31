@@ -119,6 +119,13 @@
     <Compile Include="Mapping\KeplerBulkImportExceptionMapperTests.cs" />
     <Compile Include="Mapping\ExceptionAssertHelper.cs" />
     <Compile Include="Service\ApplicationVersionServiceTests.cs" />
+    <Compile Include="Service\BulkImport\KeplerBulkImportProductionImagesTests.cs" />
+    <Compile Include="Service\BulkImport\KeplerBulkImportManagerBase.cs" />
+    <Compile Include="Service\BulkImport\KeplerBulkImportImagesTests.cs" />
+    <Compile Include="Service\BulkImport\KeplerBulkImportPermissionTests.cs" />
+    <Compile Include="Service\BulkImport\KeplerBulkImportNegativeTests.cs" />
+    <Compile Include="Service\BulkImport\KeplerBulkImportNativesTests.cs" />
+    <Compile Include="Service\BulkImport\KeplerBulkImportObjectsTests.cs" />
     <Compile Include="Service\KeplerCaseManagerTests.cs" />
     <Compile Include="Service\KeplerCodeManagerTests.cs" />
     <Compile Include="Service\KeplerExportManagerTests.cs" />
@@ -607,6 +614,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

@@ -86,7 +86,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		[OneTimeSetUp]
 		public async Task OneTimeSetUpAsync()
 		{
-			this.parentId = await WorkspaceHelper.ReadRootArtifactId(this.TestParameters, this.TestParameters.WorkspaceId).ConfigureAwait(false);
+			this.parentId = await WorkspaceHelper.ReadRootArtifactIdAsync(this.TestParameters, this.TestParameters.WorkspaceId).ConfigureAwait(false);
 
 			this.emptySingleChoiceFieldId = await FieldHelper.CreateSingleChoiceFieldAsync(
 				                                    this.TestParameters,

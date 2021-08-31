@@ -25,6 +25,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		protected const int NonExistingSearchId = 0;
 		protected const int NonExistingArtifactId = 0;
 		protected const int NonExistingFolderId = 0;
+		protected const int NonExistingFieldId = 0;
 		protected const int WorkspaceRootFolderId = 1003697;
 
 		private bool? useKeplerOriginalValue;

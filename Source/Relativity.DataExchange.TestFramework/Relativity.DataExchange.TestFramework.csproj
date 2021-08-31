@@ -112,6 +112,8 @@
     <Compile Include="RelativityHelpers\AgentHelper.cs" />
     <Compile Include="RelativityHelpers\AuditHelper.cs" />
     <Compile Include="RelativityHelpers\BatchSetHelper.cs" />
+    <Compile Include="RelativityHelpers\BcpFileHelper.cs" />
+    <Compile Include="RelativityHelpers\FieldsRandomHelper.cs" />
     <Compile Include="RelativityHelpers\MassImportImprovementsToggleHelper.cs" />
     <Compile Include="NUnitExtensions\PerformanceAttribute.cs" />
     <Compile Include="NUnitExtensions\CollectDeadlocksAttribute.cs" />

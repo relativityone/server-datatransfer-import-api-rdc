@@ -472,6 +472,47 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return ro.FieldValues[0].Value as string;
 		}
 
+		public static async Task<RelativityObject> QueryIdentifierRelativityObjectAsync(IntegrationTestParameters parameters, string artifactTypeName)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			var result = await QuerySingleFieldForType(
+					             parameters,
+					             $"'{ArtifactTypeNames.ObjectType}' == '{artifactTypeName}' AND '{FieldFieldNames.IsIdentifier}' == true")
+				             .ConfigureAwait(false);
+
+			if (result.TotalCount != 1)
+			{
+				throw new InvalidOperationException(
+					$"Failed to retrieve the identifier Relativity object for the '{artifactTypeName}' artifact type.");
+			}
+
+			return result.Objects[0];
+		}
+
+		public static async Task<RelativityObject> QueryFieldForTypeByNameAsync(IntegrationTestParameters parameters, string artifactTypeName, string fieldName)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			var result = await QuerySingleFieldForType(
+					          parameters,
+					          $"'{ArtifactTypeNames.ObjectType}' == '{artifactTypeName}' AND '{FieldFieldNames.Name}' == '{fieldName}'")
+				          .ConfigureAwait(false);
+			if (result.TotalCount != 1)
+			{
+				throw new InvalidOperationException(
+					$"Failed to retrieve the single Relativity object for the '{artifactTypeName}' artifact type and field name {fieldName}.");
+			}
+
+			return result.Objects[0];
+		}
+
 		public static async Task<int> GetFieldArtifactIdAsync(IntegrationTestParameters parameters, int workspaceId, Relativity.Logging.ILog logger, string fieldName)
 		{
 			QueryResult result = await QueryFieldByNameAsync(parameters, workspaceId, logger, fieldName).ConfigureAwait(false);
@@ -584,34 +625,6 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			return ExecuteMethodForFieldType(parameters, methodsWithReturnValues, fieldRequest);
 		}
 
-		private static RelativityObject QueryIdentifierRelativityObject(IntegrationTestParameters parameters, string artifactTypeName)
-		{
-			using (IObjectManager client = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
-			{
-				QueryRequest queryRequest = new QueryRequest
-				{
-					Condition = $"'{ArtifactTypeNames.ObjectType}' == '{artifactTypeName}' AND '{FieldFieldNames.IsIdentifier}' == true",
-					Fields = new List<FieldRef>
-					{
-						new FieldRef { Name = FieldFieldNames.Name },
-					},
-					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
-				};
-				Relativity.Services.Objects.DataContracts.QueryResult result = client.QueryAsync(
-					parameters.WorkspaceId,
-					queryRequest,
-					1,
-					ServiceHelper.MaxItemsToFetch).GetAwaiter().GetResult();
-				if (result.TotalCount != 1)
-				{
-					throw new InvalidOperationException(
-						$"Failed to retrieve the identifier Relativity object for the '{artifactTypeName}' artifact type.");
-				}
-
-				return result.Objects[0];
-			}
-		}
-
 		private static async Task<QueryResult> QueryFieldByNameAsync(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string fieldName)
 		{
 			return await QueryFieldByNameAsync(parameters, parameters.WorkspaceId, logger, fieldName).ConfigureAwait(false);
@@ -686,6 +699,34 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 								  .ExecuteAsync(() => method(fieldManager)).ConfigureAwait(false);
 				return fieldId;
 			}
+		}
+
+		private static async Task<QueryResult> QuerySingleFieldForType(IntegrationTestParameters parameters, string condition)
+		{
+			using (IObjectManager client = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
+			{
+				QueryRequest queryRequest = new QueryRequest
+					                            {
+						                            Condition = condition,
+						                            Fields = new List<FieldRef>
+							                                     {
+								                                     new FieldRef { Name = FieldFieldNames.Name },
+							                                     },
+						                            ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
+					                            };
+				return await client.QueryAsync(parameters.WorkspaceId, queryRequest, 1, ServiceHelper.MaxItemsToFetch)
+					       .ConfigureAwait(false);
+			}
+		}
+
+		private static RelativityObject QueryIdentifierRelativityObject(IntegrationTestParameters parameters, string artifactTypeName)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			return QueryIdentifierRelativityObjectAsync(parameters, artifactTypeName).GetAwaiter().GetResult();
 		}
 	}
 }

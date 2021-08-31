@@ -65,6 +65,17 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			}
 		}
 
+		public static async Task DeleteProductionAsync(IntegrationTestParameters parameters, int productionId)
+		{
+			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+
+			using (IProductionManager client =
+				ServiceHelper.GetServiceProxy<IProductionManager>(parameters))
+			{
+				await client.DeleteSingleAsync(parameters.WorkspaceId, productionId).ConfigureAwait(false);
+			}
+		}
+
 		public static async Task<int> CreateProductionAsync(
 			IntegrationTestParameters parameters,
 			string productionName,

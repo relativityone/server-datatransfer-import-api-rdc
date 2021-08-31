@@ -318,7 +318,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		/// <param name="parameters">Test context parameters.</param>
 		/// <param name="workspaceId">WorkspaceId.</param>
 		/// <returns>ArtifactID of root object, usually 1003663.</returns>
-		public static async Task<int> ReadRootArtifactId(IntegrationTestParameters parameters, int workspaceId)
+		public static async Task<int> ReadRootArtifactIdAsync(IntegrationTestParameters parameters, int workspaceId)
 		{
 			// The RootArtifactID is a system artifact named "System" can be looked up using the api
 			using (ISystemArtifactManager systemArtifactManager = ServiceHelper.GetServiceProxy<ISystemArtifactManager>(parameters))

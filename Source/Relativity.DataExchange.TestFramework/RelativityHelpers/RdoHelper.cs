@@ -227,18 +227,31 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				throw new ArgumentNullException(nameof(parameters));
 			}
 
+			return QueryRelativityObjectsAsync(parameters, artifactTypeId, fields).GetAwaiter().GetResult();
+		}
+
+		public static async Task<IList<RelativityObject>> QueryRelativityObjectsAsync(
+			IntegrationTestParameters parameters,
+			int artifactTypeId,
+			IEnumerable<string> fields)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
 			using (IObjectManager client = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
 			{
 				QueryRequest queryRequest = new QueryRequest
-				{
-					Fields = fields?.Select(x => new FieldRef { Name = x }),
-					ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId },
-				};
-				Relativity.Services.Objects.DataContracts.QueryResult result = client.QueryAsync(
-					parameters.WorkspaceId,
-					queryRequest,
-					1,
-					ServiceHelper.MaxItemsToFetch).GetAwaiter().GetResult();
+					                            {
+						                            Fields = fields?.Select(x => new FieldRef { Name = x }),
+						                            ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId },
+					                            };
+				Services.Objects.DataContracts.QueryResult result = await client.QueryAsync(
+					                                                               parameters.WorkspaceId,
+					                                                               queryRequest,
+					                                                               1,
+					                                                               ServiceHelper.MaxItemsToFetch).ConfigureAwait(false);
 				return result.Objects;
 			}
 		}
@@ -317,7 +330,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				int newObjectId = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
 
 				ObjectTypeResponse objectTypeResponse = await objectManager.ReadAsync(workspaceId, newObjectId).ConfigureAwait(false);
-				return new ObjectType(objectTypeResponse.ArtifactID, objectTypeResponse.ArtifactTypeID);
+				return new ObjectType(objectTypeResponse.ArtifactID, objectTypeResponse.ArtifactTypeID, objectTypeResponse.Name);
 			}
 		}
 
