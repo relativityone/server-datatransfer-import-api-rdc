@@ -371,7 +371,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 					logger.LogInformation("Creating the {WorkspaceName} workspace...", newWorkspaceName);
 
 					WorkspaceResponse createResponse =
-						await workspaceManager.CreateAsync(createRequest).ConfigureAwait(false);
+						await workspaceManager.CreateAsync(createRequest).WithTimeout(TimeSpan.FromMinutes(5), "CreateWorkspace").ConfigureAwait(false);
 					logger.LogInformation("Completed the create workspace process.");
 
 					if (parameters.EnableDataGrid)

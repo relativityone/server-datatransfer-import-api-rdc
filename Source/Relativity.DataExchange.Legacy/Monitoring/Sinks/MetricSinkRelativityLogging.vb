@@ -16,7 +16,7 @@ Namespace Monitoring.Sinks
             ' For now only log MetricJobStarted
 	        Dim metricJobStarted As MetricJobStarted = TryCast(metric, MetricJobStarted)
             If Not metricJobStarted Is Nothing Then
-	            Relativity.Logging.Log.Logger.LogWarning("Relativity.DataExchange metric. Bucket: {bucketName}, value: {@Metrics}", metricJobStarted.BucketName, metricJobStarted.CustomData)
+                Relativity.Logging.Log.Logger.LogWarning("Relativity.DataExchange metric. Bucket: {bucketName}, value: {@Metrics}", metricJobStarted.BucketName, metricJobStarted.CustomData)
             End If
         End Sub
 
