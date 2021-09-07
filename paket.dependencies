@@ -55,7 +55,7 @@ nuget System.Reactive = 4.0.0
 nuget EWSoftware.SHFB = 2019.8.24
 
 # The Relativity packages below are required by the SDK projects.
-nuget Relativity.OutsideIn = 2021.6.0
+nuget Relativity.OutsideIn = 2021.8.0
 nuget relativity.logging.interfaces = 2019.5.1
 nuget Relativity.ObjectManager = 12.1.171.20
 nuget relativity.kepler.client = 2.9.2
