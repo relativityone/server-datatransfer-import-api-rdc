@@ -59,7 +59,7 @@ NUGET
       Relativity.OAuth2Client.Interfaces (>= 1.0)
     Relativity.OAuth2Client.Interfaces (1.5.2)
     Relativity.ObjectManager (12.1.171.20)
-    Relativity.OutsideIn (2021.7.0)
+    Relativity.OutsideIn (2021.8.0)
       Relativity.Logging (>= 2019.5.1)
     Relativity.Productions.Services.Interfaces (11.0.7)
     Relativity.SecretCatalog (1.0.19)
