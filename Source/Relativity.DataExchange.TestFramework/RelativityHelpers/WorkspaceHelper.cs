@@ -15,6 +15,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
+	using Relativity.Services.Exceptions;
 	using Relativity.Services.Folder;
 	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Interfaces.Shared;
@@ -390,6 +391,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 
 					return (createResponse.ArtifactID, newWorkspaceName);
 				}
+			}
+			catch (InvalidInputException ex)
+			{
+				logger.LogError(string.Join(", ", ex.Errors.Select(x => $"PropertyName: {x.PropertyName}, ErrorMessage: {x.ErrorMessage}")));
+				throw;
 			}
 			catch (Exception ex)
 			{
