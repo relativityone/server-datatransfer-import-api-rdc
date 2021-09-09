@@ -64,7 +64,15 @@ namespace Relativity.DataExchange
 		/// The list of Kepler specific fatal exception candidates.
 		/// </summary>
 		public static readonly IReadOnlyList<Type> FatalKeplerExceptionCandidates = new List<Type>(
-			new[] { typeof(NotAuthorizedException), typeof(WireProtocolMismatchException), });
+			new[] { typeof(NotAuthorizedException), typeof(WireProtocolMismatchException), typeof(NotFoundException) });
+
+		/// <summary>
+		/// Array of fatal kepler exception messages.
+		/// </summary>
+		private static readonly string[] FatalKeplerExceptionMessagesFragments =
+		{
+			"InvalidAppArtifactID",
+		};
 
 		/// <summary>
 		/// Gets the default HTTP status codes that are considered fatal [BadRequest,Forbidden,Unauthorized].
@@ -190,7 +198,7 @@ namespace Relativity.DataExchange
 
 			var exceptionType = exception.GetType();
 			return FatalExceptionCandidates.Any(exceptionCandidateType => exceptionCandidateType.IsAssignableFrom(exceptionType))
-			       || IsFatalWebException(exception) || IsFatalServiceInfrastructureException(exception) || IsOutOfDiskSpaceException(exception);
+				   || IsFatalWebException(exception) || IsFatalServiceInfrastructureException(exception) || IsOutOfDiskSpaceException(exception);
 		}
 
 		/// <summary>
@@ -213,8 +221,18 @@ namespace Relativity.DataExchange
 			}
 
 			var exceptionType = exception.GetType();
-			return FatalKeplerExceptionCandidates.Any(
-				exceptionCandidateType => exceptionCandidateType.IsAssignableFrom(exceptionType));
+			if (FatalKeplerExceptionCandidates.Any(
+				exceptionCandidateType => exceptionCandidateType.IsAssignableFrom(exceptionType)))
+			{
+				return true;
+			}
+
+			if (FatalKeplerExceptionMessagesFragments.Any(fragment => exception.Message.Contains(fragment)))
+			{
+				return true;
+			}
+
+			return false;
 		}
 
 		/// <summary>

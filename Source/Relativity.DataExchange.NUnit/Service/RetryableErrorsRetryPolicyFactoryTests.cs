@@ -1,13 +1,13 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="KeplerRetryPolicyFactoryTests.cs" company="Relativity ODA LLC">
+// <copyright file="RetryableErrorsRetryPolicyFactoryTests.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents <see cref="KeplerRetryPolicyFactory"/> tests.
+//   Represents <see cref="RetryableErrorsRetryPolicyFactory"/> tests.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.DataExchange.NUnit
+namespace Relativity.DataExchange.NUnit.Service
 {
 	using System;
 	using System.Collections;
@@ -23,23 +23,32 @@ namespace Relativity.DataExchange.NUnit
 	using Polly;
 
 	using Relativity.DataExchange.Service;
+	using Relativity.Logging;
 
 	/// <summary>
-	/// Represents <see cref="KeplerRetryPolicyFactory"/> tests.
+	/// Represents <see cref="RetryableErrorsRetryPolicyFactory"/> tests.
 	/// </summary>
-	[TestFixture]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
 		Justification = "The test class handles the disposal.")]
-	public class KeplerRetryPolicyFactoryTests
+	[TestFixture(true)]
+	[TestFixture(false)]
+	public class RetryableErrorsRetryPolicyFactoryTests
 	{
 		private const string RetryCountKey = "TestRetryCount";
 		private const int MaxRetryCount = 3;
+		private readonly bool useCustomOnRetry;
 		private Mock<IAppSettings> settings;
+		private Mock<ILog> logger;
 		private IAsyncPolicy policy;
 		private CancellationTokenSource cancellationTokenSource;
 		private Context context;
+
+		public RetryableErrorsRetryPolicyFactoryTests(bool useCustomOnRetry)
+		{
+			this.useCustomOnRetry = useCustomOnRetry;
+		}
 
 		private static IEnumerable FatalExceptions
 		{
@@ -55,7 +64,6 @@ namespace Relativity.DataExchange.NUnit
 			get
 			{
 				yield return new Relativity.Services.Exceptions.ServiceException("Test");
-				yield return new System.Net.Http.HttpRequestException("Test");
 				yield return new System.Net.HttpListenerException((int)HttpStatusCode.BadGateway, "Test");
 				yield return new WebException("Test", WebExceptionStatus.ConnectFailure);
 			}
@@ -67,10 +75,13 @@ namespace Relativity.DataExchange.NUnit
 			this.cancellationTokenSource = new CancellationTokenSource();
 			this.context = new Context("test");
 			this.settings = new Mock<IAppSettings>();
+			this.logger = new Mock<ILog>();
+
 			this.settings.SetupGet(x => x.HttpErrorWaitTimeInSeconds).Returns(0);
 			this.settings.SetupGet(x => x.HttpErrorNumberOfRetries).Returns(MaxRetryCount);
-			this.policy = new KeplerRetryPolicyFactory(this.settings.Object).CreateAsyncPolicy(
-				(exception, duration, retryCount, ctx) => { ctx[RetryCountKey] = retryCount; });
+			this.policy = this.useCustomOnRetry ?
+				              new RetryableErrorsRetryPolicyFactory(this.settings.Object, this.logger.Object, (exception, duration, retryCount, ctx) => { ctx[RetryCountKey] = retryCount; }).CreateRetryPolicy() :
+				              new RetryableErrorsRetryPolicyFactory(this.settings.Object, this.logger.Object).CreateRetryPolicy();
 		}
 
 		[TearDown]
@@ -84,17 +95,17 @@ namespace Relativity.DataExchange.NUnit
 		{
 			// ACT
 			int result = await this.policy.ExecuteAsync(
-				             (ctx, ct) => Task.FromResult(1),
-				             this.context,
-				             this.cancellationTokenSource.Token).ConfigureAwait(false);
+							 (ctx, ct) => Task.FromResult(1),
+							 this.context,
+							 this.cancellationTokenSource.Token).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.That(result, Is.EqualTo(1));
-			Assert.That(this.context.ContainsKey(RetryCountKey), Is.False);
+			this.ThenOnRetryWasExecuted(0);
 		}
 
 		[TestCaseSource(nameof(NonFatalHttpExceptions))]
-		public void ShouldExecuteWithRetryOnNonFatalHttpException(Exception exception)
+		public void ShouldExecuteWithRetryOnNonFatalException(Exception exception)
 		{
 			// ARRANGE
 			Assert.That(exception, Is.Not.Null);
@@ -103,41 +114,41 @@ namespace Relativity.DataExchange.NUnit
 			Assert.ThrowsAsync(
 				exception.GetType(),
 				async () =>
-					{
-						await this.policy.ExecuteAsync(
-							(ctx, ct) => throw exception,
-							this.context,
-							this.cancellationTokenSource.Token).ConfigureAwait(false);
-					});
+				{
+					await this.policy.ExecuteAsync(
+						(ctx, ct) => throw exception,
+						this.context,
+						this.cancellationTokenSource.Token).ConfigureAwait(false);
+				});
 
 			// ASSERT
-			Assert.That(this.context.ContainsKey(RetryCountKey), Is.True);
-			Assert.That(this.context[RetryCountKey], Is.EqualTo(MaxRetryCount));
+			this.ThenOnRetryWasExecuted(MaxRetryCount);
 		}
 
 		[TestCaseSource(nameof(NonFatalHttpExceptions))]
-		public async Task ShouldExecuteWithFailureThenSuccessOnNonFatalHttpExceptionAsync(Exception exception)
+		public async Task ShouldExecuteWithFailureThenSuccessOnNonFatalExceptionAsync(Exception exception)
 		{
 			// ARRANGE
 			Assert.That(exception, Is.Not.Null);
+			bool shouldThrowException = true;
 
 			// ACT
 			await this.policy.ExecuteAsync(
 				(ctx, ct) =>
+				{
+					if (shouldThrowException)
 					{
-						if (!ctx.ContainsKey(RetryCountKey))
-						{
-							throw exception;
-						}
+						shouldThrowException = false;
+						throw exception;
+					}
 
-						return Task.CompletedTask;
-					},
+					return Task.CompletedTask;
+				},
 				this.context,
 				this.cancellationTokenSource.Token).ConfigureAwait(false);
 
 			// ASSERT
-			Assert.That(this.context.ContainsKey(RetryCountKey), Is.True);
-			Assert.That(this.context[RetryCountKey], Is.EqualTo(1));
+			this.ThenOnRetryWasExecuted(1);
 		}
 
 		[TestCaseSource(nameof(FatalExceptions))]
@@ -149,15 +160,15 @@ namespace Relativity.DataExchange.NUnit
 			Assert.ThrowsAsync(
 				exception.GetType(),
 				async () =>
-					{
-						await this.policy.ExecuteAsync(
-							(ctx, ct) => throw exception,
-							this.context,
-							this.cancellationTokenSource.Token).ConfigureAwait(false);
-					});
+				{
+					await this.policy.ExecuteAsync(
+						(ctx, ct) => throw exception,
+						this.context,
+						this.cancellationTokenSource.Token).ConfigureAwait(false);
+				});
 
 			// ASSERT
-			Assert.That(this.context.ContainsKey(RetryCountKey), Is.False);
+			this.ThenOnRetryWasExecuted(0);
 		}
 
 		[Test]
@@ -169,12 +180,32 @@ namespace Relativity.DataExchange.NUnit
 			// ACT
 			Assert.ThrowsAsync<OperationCanceledException>(
 				async () => await this.policy.ExecuteAsync(
-					            (ctx, ct) => Task.FromResult(1),
-					            this.context,
-					            this.cancellationTokenSource.Token).ConfigureAwait(false));
+								(ctx, ct) => Task.FromResult(1),
+								this.context,
+								this.cancellationTokenSource.Token).ConfigureAwait(false));
 
 			// ASSERT
-			Assert.That(this.context.ContainsKey(RetryCountKey), Is.False);
+			this.ThenOnRetryWasExecuted(0);
+		}
+
+		private void ThenOnRetryWasExecuted(int numberOfExpectedRetries)
+		{
+			if (this.useCustomOnRetry)
+			{
+				if (numberOfExpectedRetries > 0)
+				{
+					Assert.That(this.context.ContainsKey(RetryCountKey), Is.True);
+					Assert.That(this.context[RetryCountKey], Is.EqualTo(numberOfExpectedRetries));
+				}
+				else
+				{
+					Assert.That(this.context.ContainsKey(RetryCountKey), Is.False);
+				}
+			}
+			else
+			{
+				this.logger.Verify(x => x.LogWarning(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()), Times.Exactly(numberOfExpectedRetries));
+			}
 		}
 	}
 }
