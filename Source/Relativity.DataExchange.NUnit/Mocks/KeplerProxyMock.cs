@@ -5,7 +5,10 @@
 namespace Relativity.DataExchange.NUnit.Mocks
 {
 	using System;
+	using System.Threading;
 	using System.Threading.Tasks;
+
+	using Polly;
 
 	using Relativity.DataExchange.Service;
 
@@ -30,6 +33,11 @@ namespace Relativity.DataExchange.NUnit.Mocks
 			}
 
 			return func(this.serviceProxyFactory);
+		}
+
+		public Task<T> ExecuteAsync<T>(Context context, CancellationToken cancellationToken, Func<Context, CancellationToken, IServiceProxyFactory, Task<T>> func)
+		{
+			throw new NotImplementedException();
 		}
 
 		public Task ExecuteAsync(Func<IServiceProxyFactory, Task> func)

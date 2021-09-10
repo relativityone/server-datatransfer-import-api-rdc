@@ -170,6 +170,8 @@
     </Content>
     <Compile Include="CertificateValidator.vb" />
     <Compile Include="Service\Kepler\KeplerProxy.vb" />
+    <Compile Include="Service\Kepler\LongTextStreamService.vb" />
+    <Compile Include="Service\Kepler\ReLoginRetryPolicyFactory.vb" />
     <Compile Include="Service\Kepler\WebApiVsKeplerFactory.vb" />
     <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeFactory.vb" />
     <Import Include="Microsoft.VisualBasic" />
@@ -1181,6 +1183,7 @@
       <Name>Relativity.DataExchange.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

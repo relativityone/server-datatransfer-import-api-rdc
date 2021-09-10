@@ -136,6 +136,7 @@
     <Compile Include="ByteSize\ParsingMethods.cs" />
     <Compile Include="ByteSize\ToStringMethod.cs" />
     <Compile Include="ChoiceInfoTests.cs" />
+    <Compile Include="Service\HttpErrorRetryPolicyFactoryTests.cs" />
     <Compile Include="ImageValidatorTests.cs" />
     <Compile Include="Helpers\HashingHelperTestCases.cs" />
     <Compile Include="Helpers\HashingHelperTests.cs" />
@@ -143,7 +144,6 @@
     <Compile Include="HttpServiceExceptionTests.cs" />
     <Compile Include="ImageConverterServiceTests.cs" />
     <Compile Include="ImageLoadFileDeserializationTests.cs" />
-    <Compile Include="KeplerRetryPolicyFactoryTests.cs" />
     <Compile Include="KeplerServiceConnectionInfoTests.cs" />
     <Compile Include="LogExtensionsTests.cs" />
     <Compile Include="ExceptionHelperTests.cs" />
@@ -170,7 +170,8 @@
     <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
     <Compile Include="ErrorMessageFormatterTests.cs" />
     <Compile Include="Mapping\KeplerTypeMapperTests.cs" />
-    <Compile Include="Service\KeplerProxyTests.cs" />
+    <Compile Include="Service\RetryableErrorsRetryPolicyFactoryTests.cs" />
+    <Compile Include="Service\ReLoginRetryPolicyFactoryTests.cs" />
     <Compile Include="Service\ManagerFactoryTests.cs" />
     <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeAuthenticationDecoratorTests.cs" />
     <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeRetriesDecoratorTests.cs" />
@@ -420,14 +421,18 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup></When></Choose>
+  <Choose>
+    <When Condition="'$(Configuration)'!='Debug'">
+      <ItemGroup>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

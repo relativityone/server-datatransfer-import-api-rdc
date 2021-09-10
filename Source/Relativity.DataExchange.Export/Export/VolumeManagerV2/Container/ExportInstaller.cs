@@ -259,7 +259,7 @@
 			container.Register(Component.For<IDelimiter>().UsingFactoryMethod(k => k.Resolve<DelimiterFactory>().Create(ExportSettings)));
 			container.Register(Component.For<ILongTextStreamFormatterFactory>().UsingFactoryMethod(k => k.Resolve<LongTextStreamFormatterFactoryFactory>().Create(ExportSettings)));
 			container.Register(Component.For<IFileDownloadSubscriber>().ImplementedBy<LongTextEncodingConverter>());
-			container.Register(Component.For<IServiceRetryPolicyFactory>().ImplementedBy<KeplerRetryPolicyFactory>());
+			container.Register(Component.For<IKeplerProxy>().ImplementedBy<KeplerProxy>());
 			container.Register(Component.For<IServiceProxyFactory>().ImplementedBy<KeplerServiceProxyFactory>());
 			container.Register(Component.For<IServiceConnectionInfo>().UsingFactoryMethod(a => new KeplerServiceConnectionInfo(new Uri(AppSettings.Instance.WebApiServiceUrl), ExportSettings.Credential)));
 			if (AppSettings.Instance.ExportLongTextObjectManagerEnabled)
