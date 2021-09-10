@@ -22,6 +22,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
+	using kCura.WinEDDS.Service.Kepler;
 
 	using Moq;
 
@@ -167,7 +168,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 			this.serviceNotification = new Mock<IServiceNotification>();
 			this.longTextStreamService = new LongTextStreamService(
 				this.serviceProxyFactory,
-				new KeplerRetryPolicyFactory(this.AppSettings),
 				this.serviceNotification.Object,
 				this.AppSettings,
 				FileSystem.Instance,

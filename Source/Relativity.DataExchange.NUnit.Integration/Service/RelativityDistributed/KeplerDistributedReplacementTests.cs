@@ -15,7 +15,6 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 	using kCura.WinEDDS.Credentials;
 	using kCura.WinEDDS.Service.Kepler;
 
-	using Moq;
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.Service.RelativityDistributed;
@@ -24,7 +23,6 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Kepler.Transport;
-	using Relativity.Logging;
 	using Relativity.Services.FileSystem;
 	using Relativity.Testing.Identification;
 
@@ -119,15 +117,14 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 			Justification = "It is disposed in tests")]
 		private (KeplerDistributedReplacement, IDisposable) CreateSut(NetworkCredential credential)
 		{
-			var loggerMock = new Mock<ILog>();
 			var connectionInfo = new KeplerServiceConnectionInfo(this.testParameters.RelativityWebApiUrl, credential);
 			var serviceProxyFactory = new KeplerServiceProxyFactory(connectionInfo);
-			var keplerProxy = new KeplerProxy(serviceProxyFactory, loggerMock.Object);
+			var keplerProxy = new KeplerProxy(serviceProxyFactory, IntegrationTestHelper.Logger);
 
 			var sut = new KeplerDistributedReplacement(
 				keplerProxy,
 				FileSystem.Instance.File,
-				loggerMock.Object,
+				IntegrationTestHelper.Logger,
 				() => string.Empty);
 
 			return (sut, serviceProxyFactory);

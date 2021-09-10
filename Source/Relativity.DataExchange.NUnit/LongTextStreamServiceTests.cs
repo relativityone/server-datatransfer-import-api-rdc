@@ -20,6 +20,8 @@ namespace Relativity.DataExchange.NUnit
 
 	using global::NUnit.Framework;
 
+	using kCura.WinEDDS.Service.Kepler;
+
 	using Moq;
 
 	using Relativity.DataExchange;
@@ -115,7 +117,6 @@ namespace Relativity.DataExchange.NUnit
 			this.factory.Setup(x => x.CreateProxyInstance<IObjectManager>()).Returns(this.objectManager.Object);
 			this.sut = new LongTextStreamService(
 				this.factory.Object,
-				new KeplerRetryPolicyFactory(this.settings.Object),
 				this.serviceNotification.Object,
 				this.settings.Object,
 				this.fileSystem,
@@ -223,7 +224,6 @@ namespace Relativity.DataExchange.NUnit
 			mockFileSystem.SetupGet(x => x.File).Returns(mockFile.Object);
 			this.sut = new LongTextStreamService(
 				this.factory.Object,
-				new KeplerRetryPolicyFactory(this.settings.Object),
 				this.serviceNotification.Object,
 				this.settings.Object,
 				mockFileSystem.Object,
@@ -282,7 +282,6 @@ namespace Relativity.DataExchange.NUnit
 			this.settings.SetupGet(x => x.ExportLongTextLargeFileProgressRateSeconds).Returns(int.MaxValue);
 			this.sut = new LongTextStreamService(
 				this.factory.Object,
-				new KeplerRetryPolicyFactory(this.settings.Object),
 				this.serviceNotification.Object,
 				this.settings.Object,
 				this.fileSystem,
@@ -303,34 +302,6 @@ namespace Relativity.DataExchange.NUnit
 			this.VerifyNoErrorsAreLogged();
 			this.VerifyNoWarningsAreLogged();
 			this.VerifyNoNotificationMessagesArePublished();
-		}
-
-		[Test]
-		public async Task ShouldRetryFailedObjectManagerCreationAsync()
-		{
-			// ARRANGE
-			this.factory.SetupSequence(x => x.CreateProxyInstance<IObjectManager>())
-				.Throws(new ServiceException())
-				.Throws(new ServiceException())
-				.Returns(this.objectManager.Object);
-			LongTextStreamRequest request = this.CreateLongTextStreamRequest();
-
-			// ACT
-			LongTextStreamResult result = await this.sut
-				                              .SaveLongTextStreamAsync(
-					                              request,
-					                              this.cancellationTokenSource.Token,
-					                              this.progress).ConfigureAwait(false);
-
-			// ASSERT
-			this.VerifyTheSuccessfulLongTextResult(request, result, 0);
-			this.VerifyTheStreamLongTextMethodIsCalled(1);
-			this.VerifyProgressEventsArePublished(result.Length);
-			this.VerifyTheErrorsAreLogged(2);
-			this.VerifyNoWarningsAreLogged();
-			this.VerifyTheStatusNotificationMessagesArePublished(2);
-			this.VerifyNoWarningNotificationMessagesArePublished();
-			this.VerifyNoErrorNotificationMessagesArePublished();
 		}
 
 		[Test]
