@@ -3,5 +3,5 @@
   <!-- The DEV team is responsible to manually update the version when preparing a new release! -->
   <?define ProductMajorVersion ="12" ?>
   <?define ProductMinorVersion ="2" ?>
-  <?define ProductVersion ="12.2.9" ?>
+  <?define ProductVersion ="12.2.10" ?>
 </Include>
