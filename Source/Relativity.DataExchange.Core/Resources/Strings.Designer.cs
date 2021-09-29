@@ -577,7 +577,7 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The input value from the {0} source field has a length of {1} character(s). This exceeds the limit for the {0} destination field, which is currently set to {2} character(s)..
+        ///   Looks up a localized string similar to There was an error attempting to import this record due to the length of a metadata field not being large enough. The maximum length of the &quot;{0}&quot; field is currently set to {2} characters, but the records metadata&apos;s length is {1} characters. Increase the maximum length of the &quot;{0}&quot; field to at least {1} characters and retry..
         /// </summary>
         internal static string StringImporterMaxLengthExWithFieldErrorAdditionalInfo {
             get {
