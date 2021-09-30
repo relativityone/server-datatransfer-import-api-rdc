@@ -770,8 +770,11 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 
-			If Not nativeRow Is Nothing AndAlso nativeRow("Filename").ToString.IndexOf(".") <> -1  Then
-				artifact.NativeExtension = nativeRow("Filename").ToString.Substring(nativeRow("Filename").ToString.LastIndexOf(".") + 1)
+			If Not nativeRow Is Nothing Then
+				Dim extension As String= Me.GetFileExtension(nativeRow("Filename").ToString, documentArtifactID)
+				If extension <> String.Empty Then
+					artifact.NativeExtension = extension
+				End If
 			End If
 
 			If Not pdfRow Is Nothing Then
@@ -863,10 +866,7 @@ Namespace kCura.WinEDDS
 					image.PageOffset = NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dr("ByteRange"))
 					image.BatesNumber = dr("BatesNumber").ToString
 					image.SourceLocation = dr("Location").ToString
-					Dim filenameExtension As String = ""
-					If image.FileName.IndexOf(".") <> -1 Then
-						filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
-					End If
+					Dim filenameExtension As String = Me.GetFileExtensionWithDot(image.FileName, documentArtifactID)
 					Dim filename As String = image.BatesNumber
 					If i = 0 Then
 						firstImageFileName = filename
@@ -925,10 +925,7 @@ Namespace kCura.WinEDDS
 								image.ArtifactID = documentArtifactID
 								image.BatesNumber = drv("BatesNumber").ToString
 								image.PageOffset = NullableTypesHelper.DBNullConvertToNullable(Of Int32)(drv("ByteRange"))
-								Dim filenameExtension As String = ""
-								If image.FileName.IndexOf(".") <> -1 Then
-									filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
-								End If
+								Dim filenameExtension As String = Me.GetFileExtensionWithDot(image.FileName, documentArtifactID)
 								Dim filename As String = image.BatesNumber
 								If i = 0 Then
 									firstImageFileName = filename
@@ -971,10 +968,7 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 					'image.BatesNumber = drv("Identifier").ToString
-					Dim filenameExtension As String = ""
-					If image.FileName.IndexOf(".") <> -1 Then
-						filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
-					End If
+					Dim filenameExtension As String = Me.GetFileExtensionWithDot(image.FileName, documentArtifactID)
 					image.FileName = Global.Relativity.DataExchange.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(image.BatesNumber.ToString & filenameExtension)
 					image.SourceLocation = drv("Location").ToString
 					retval.Add(image)
@@ -1417,5 +1411,30 @@ Namespace kCura.WinEDDS
 
 			Return New FileNameProviderContainer(Settings, fileNameProvidersDictionary)
 		End Function
-	End Class
+
+		Private Function GetFileExtension(fileName As String, documentArtifactId As Int32) As String
+			Dim extension As String = String.Empty
+			If fileName.IndexOf(".") <> -1 Then
+				extension = fileName.Substring(fileName.LastIndexOf(".") + 1)
+				extension = SanitizeFileExtension(extension, documentArtifactID)
+			End If
+			Return extension
+		End Function
+
+		Private Function GetFileExtensionWithDot(fileName As String, documentArtifactId As Int32) As String
+			Dim extension As String = GetFileExtension(fileName, documentArtifactId)
+			If extension <> String.Empty Then
+				extension = "." & extension
+			End If
+			Return extension
+		End Function
+
+		Private Function SanitizeFileExtension(extension As String, documentArtifactId As Int32) As String
+			Dim sanitizedExtension As String = extension.TrimEnd()
+			If sanitizedExtension <> extension Then
+				Me._logger.LogWarning("Filename column contains trailing whitespaces. Document: {documentArtifactID}", documentArtifactId)
+			End If
+			Return sanitizedExtension
+		End Function
+		End Class
 End Namespace

@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="Dto\DelimiterDto.cs" />
     <Compile Include="Dto\ExportTypeDto.cs" />
+    <Compile Include="InvalidFileNameExportTests.cs" />
     <Compile Include="SearchablePdfExportTests.cs" />
     <Compile Include="SearchablePdfTestHelper.cs" />
     <Compile Include="ExportTestJobResult.cs" />
