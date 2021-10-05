@@ -26,7 +26,7 @@
         <dependency id="Relativity.ObjectManager" version="12.1.171.20" />
         <dependency id="Relativity.OutsideIn" version="2021.8.0" />
         <dependency id="Relativity.Telemetry.Services.Interface" version="3000.0.1" />
-        <dependency id="Relativity.Transfer.Client" version="[7.4.2, 7.5.0)" />
+        <dependency id="Relativity.Transfer.Client" version="[7.4.4, 7.5.0)" />
       </group>
     </dependencies>
     <frameworkAssemblies>
