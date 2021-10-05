@@ -50,14 +50,12 @@ namespace Relativity.DataExchange.Service.RelativityDistributed
 			Justification = "Exception is included in the response")]
 		public FileDownloadResponse DownloadFile(FileDownloadRequest request)
 		{
-			int workspaceId;
-			if (!int.TryParse(request.WorkspaceId, out workspaceId))
+			if (!int.TryParse(request.WorkspaceId, out var workspaceId))
 			{
 				throw new ArgumentException("WorkspaceID is not integer", nameof(request));
 			}
 
-			Guid remoteFileGuid;
-			if (!Guid.TryParse(request.RemoteFileGuid, out remoteFileGuid))
+			if (!Guid.TryParse(request.RemoteFileGuid, out var remoteFileGuid))
 			{
 				throw new ArgumentException("Remote File Guid is not valid guid", nameof(request));
 			}
@@ -90,7 +88,7 @@ namespace Relativity.DataExchange.Service.RelativityDistributed
 				LogError(ex, request);
 				return new FileDownloadResponse(RelativityDistributedErrorType.Authentication, ex);
 			}
-			catch (NotFoundException ex)
+			catch (ConflictException ex)
 			{
 				LogError(ex, request);
 				return new FileDownloadResponse(RelativityDistributedErrorType.NotFound, ex);
