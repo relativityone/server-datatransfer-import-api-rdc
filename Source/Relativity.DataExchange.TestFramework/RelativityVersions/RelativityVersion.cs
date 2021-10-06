@@ -108,5 +108,10 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 		/// Relativity 12.2.
 		/// </summary>
 		PrairieSmoke0,
+
+		/// <summary>
+		/// Relativity 13.0.
+		/// </summary>
+		TigerLily,
 	}
 }

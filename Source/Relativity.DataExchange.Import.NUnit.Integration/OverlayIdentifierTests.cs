@@ -6,6 +6,7 @@
 
 namespace Relativity.DataExchange.Import.NUnit.Integration
 {
+	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Threading.Tasks;
@@ -85,6 +86,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[TestType.Error]
 		public void ShouldNotOverlayControlNumber([Values(OverwriteModeEnum.AppendOverlay, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode)
 		{
+			// ARRANGE
 			DocumentWithKeyFieldDto[] initialData =
 			{
 				new DocumentWithKeyFieldDto("11", "A"),
@@ -101,7 +103,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				new DocumentWithKeyFieldDto("24", "D"),
 			};
 
-			// ARRANGE && ACT
+			// ACT
 			var results = ArrangeAndActOverlayIndetifierTest(ArtifactType.Document, overwriteMode, initialData, importData);
 
 			// ASSERT
@@ -109,6 +111,39 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(jobException, Is.Not.Null);
 			Assert.That(jobException, Is.TypeOf<ImportSettingsException>());
 			Assert.That(jobException.Message, Contains.Substring("The field marked [identifier] cannot be part of a field map when it's not the Overlay Identifier field must be set"));
+		}
+
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
+		[IdentifiedTest("d3681251-0ae6-4922-85e4-3df8fe28f78f")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+		[TestType.Error]
+		public void ShouldNotOverlayIdentifierWhenIsNull([Values(OverwriteModeEnum.AppendOverlay, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode)
+		{
+			// This test documents current behavior, which could be improved.
+			// Instead of throwing job unhandled exception, which fails whole job,
+			// item level errors should be created for a invalid records.
+
+			// ARRANGE
+			DocumentWithKeyFieldDto[] initialData =
+				{
+					new DocumentWithKeyFieldDto("11", "A"),
+					new DocumentWithKeyFieldDto("12", "B"),
+				};
+
+			DocumentWithKeyFieldDto[] importData =
+				{
+					new DocumentWithKeyFieldDto("21", "A"),
+					new DocumentWithKeyFieldDto(null, "B"),
+					new DocumentWithKeyFieldDto(null, "C"),
+				};
+
+			// ACT
+			var results = ArrangeAndActOverlayIndetifierTest(ArtifactType.ObjectType, overwriteMode, initialData, importData);
+
+			// ASSERT
+			var jobException = results.JobFatalExceptions.FirstOrDefault();
+			Assert.That(jobException, Is.Not.Null);
+			Assert.That(jobException, Is.TypeOf<NullReferenceException>());
 		}
 
 		[TestCaseSource(typeof(OverlayIdentifierTestCases), nameof(OverlayIdentifierTestCases.ShouldOverlayIdentifierTestCaseData))]
@@ -141,7 +176,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		}
 
 		[TestCaseSource(typeof(OverlayIdentifierTestCases), nameof(OverlayIdentifierTestCases.ShouldOverlayIdentifierWithErrorTestCaseData))]
-		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IdentifiedTest("76377061-b274-4c22-abce-b0fa05aba143")]
 		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
 		[TestType.Error]
@@ -153,9 +187,17 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			DocumentWithKeyFieldDto[] initialData,
 			DocumentWithKeyFieldDto[] importData,
 			DocumentWithKeyFieldDto[] expectedData,
-			string errorMessage)
+			string errorMessage,
+			RelativityVersion minSupportedVersion,
+			bool requiresMassImportImprovements)
 		{
 			// ARRANGE && ACT
+			RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(IntegrationTestHelper.IntegrationTestParameters, minSupportedVersion);
+			if (requiresMassImportImprovements)
+			{
+				MassImportImprovementsToggleHelper.SkipTestIfMassImportImprovementsToggleHasValue(IntegrationTestHelper.IntegrationTestParameters, false);
+			}
+
 			ImportTestJobResult results = ArrangeAndActOverlayIndetifierTest(ArtifactType.ObjectType, overwriteMode, initialData, importData);
 
 			// ASSERT

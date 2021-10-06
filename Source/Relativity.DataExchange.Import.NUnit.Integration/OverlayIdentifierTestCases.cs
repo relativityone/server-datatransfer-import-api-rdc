@@ -13,6 +13,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	using kCura.Relativity.DataReaderClient;
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 
 	[SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1118:ParameterMustNotSpanMultipleLines", Justification = "Reviewed.")]
 	public static class OverlayIdentifierTestCases
@@ -159,7 +160,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 						new DocumentWithKeyFieldDto("100013", "DDD"),
 						new DocumentWithKeyFieldDto("100014", "EEE"),
 					},
-					"Identity value not set");
+					"Identity value not set",
+					RelativityVersion.Foxglove,
+					false);
 
 				yield return new TestCaseData(
 					"Overlay object type identifier with doubled key field values",
@@ -180,7 +183,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 						new DocumentWithKeyFieldDto("200013", "DDD"),
 						new DocumentWithKeyFieldDto("100014", "EEE"),
 					},
-					"Document '(BBB)' has been previously processed in this file on line 2.");
+					"Document '(BBB)' has been previously processed in this file on line 2.",
+					RelativityVersion.Foxglove,
+					false);
 
 				yield return new TestCaseData(
 					"Overlay object type identifier with initially doubled key field values",
@@ -208,7 +213,36 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 						new DocumentWithKeyFieldDto("100013", "DDD"),
 						new DocumentWithKeyFieldDto("100014", "DDD"),
 					},
-					" - This record's Overlay Identifier is shared by multiple documents in the case, and cannot be imported");
+					" - This record's Overlay Identifier is shared by multiple documents in the case, and cannot be imported",
+					RelativityVersion.Foxglove,
+					false);
+
+				yield return new TestCaseData(
+					"Overlay object type with empty identifier",
+					OverwriteModeEnum.AppendOverlay,
+					new[]
+						{
+							new DocumentWithKeyFieldDto("100010", "AAA"),
+							new DocumentWithKeyFieldDto("100011", "BBB"),
+							new DocumentWithKeyFieldDto("100012", "CCC"),
+						},
+					new[]
+						{
+							new DocumentWithKeyFieldDto("200010", "AAA"),
+							new DocumentWithKeyFieldDto(string.Empty, "BBB"),
+							new DocumentWithKeyFieldDto("200013", "DDD"),
+							new DocumentWithKeyFieldDto(string.Empty, "EEE"),
+						},
+					new[]
+						{
+							new DocumentWithKeyFieldDto("200010", "AAA"),
+							new DocumentWithKeyFieldDto("100011", "BBB"),
+							new DocumentWithKeyFieldDto("100012", "CCC"),
+							new DocumentWithKeyFieldDto("200013", "DDD"),
+						},
+					" - The identifier field for this row is either empty or unmapped",
+					RelativityVersion.TigerLily,
+					true);
 			}
 		}
 	}
