@@ -79,7 +79,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 
 			// assert
 			Assert.That(actualResponse.IsSuccess, Is.False, "It should fail, because file does not exist");
-			Assert.That(actualResponse.ErrorType, Is.EqualTo(RelativityDistributedErrorType.NotFound));
+			Assert.That(actualResponse.ErrorType, Is.EqualTo(RelativityDistributedErrorType.InternalServerError));
 		}
 
 		[IdentifiedTest("eefa8d95-b355-4e12-9a9c-5969e66590b6")]

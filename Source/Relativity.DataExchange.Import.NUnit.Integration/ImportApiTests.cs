@@ -214,7 +214,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			if (this.useKepler)
 			{
 				expectedExceptionMessage =
-					"Error during call PermissionCheckInterceptor." +
+					"Error during interceptor action PermissionCheckInterceptor." +
 					" InnerExceptionType: Relativity.Core.Exception.InvalidAppArtifactID," +
 					$" InnerExceptionMessage: Could not retrieve ApplicationID #{workspaceId}.";
 			}
