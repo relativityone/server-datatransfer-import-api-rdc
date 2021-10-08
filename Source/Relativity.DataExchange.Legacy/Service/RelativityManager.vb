@@ -1,3 +1,4 @@
+Imports kCura.WinEDDS.Service.Replacement
 Imports Relativity.DataExchange
 Namespace kCura.WinEDDS.Service
 	Public Class RelativityManager
@@ -34,6 +35,10 @@ Namespace kCura.WinEDDS.Service
 
 		Public Shadows Function ValidateSuccessfulLogin() As Boolean Implements Replacement.IRelativityManager.ValidateSuccessfulLogin
 			Return MyBase.ValidateSuccessfulLogin
+		End Function
+
+		Public Function ValidateCertificate() As Boolean Implements IRelativityManager.ValidateCertificate
+			Return ValidateSuccessfulLogin()
 		End Function
 
 		Public Shadows Function IsImportEmailNotificationEnabled() As Boolean Implements Replacement.IRelativityManager.IsImportEmailNotificationEnabled

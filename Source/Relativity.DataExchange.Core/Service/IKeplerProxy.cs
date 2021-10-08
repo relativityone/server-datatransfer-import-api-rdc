@@ -25,6 +25,14 @@ namespace Relativity.DataExchange.Service
 		Task ExecuteAsync(Func<IServiceProxyFactory, Task> func);
 
 		/// <summary>
+		/// Provides <see cref="IServiceProxyFactory"/> and executes call to Kepler service without any Retry policy.
+		/// </summary>
+		/// <typeparam name="T">Type of the result.</typeparam>
+		/// <param name="func">Function calling Kepler service.</param>
+		/// <returns>Task to await.</returns>
+		Task<T> ExecuteAsyncWithoutRetries<T>(Func<IServiceProxyFactory, Task<T>> func);
+
+		/// <summary>
 		/// Provides <see cref="IServiceProxyFactory"/> and executes call to Kepler service.
 		/// </summary>
 		/// <typeparam name="T">Type of the result.</typeparam>

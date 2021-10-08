@@ -31,6 +31,10 @@ Namespace kCura.WinEDDS.Service.Kepler
 			_retryPolicyFactories.Add(new HttpErrorRetryPolicyFactory(AppSettings.Instance, logger, onRetry))
 		End Sub
 
+		Public Function ExecuteAsyncWithoutRetries(Of T)(func As Func(Of IServiceProxyFactory, Task(Of T))) As Task(Of T) Implements IKeplerProxy.ExecuteAsyncWithoutRetries
+			Return func(_serviceProxyFactory)
+		End Function
+
 		Public Function ExecuteAsync(Of T)(func As Func(Of IServiceProxyFactory, Task(Of T))) As Task(Of T) Implements IKeplerProxy.ExecuteAsync
 			Return Policy _
 				.WrapAsync(_retryPolicyFactories.Select(Function(retryPolicyFactory) retryPolicyFactory.CreateRetryPolicy(Of T)()).ToArray()) _
