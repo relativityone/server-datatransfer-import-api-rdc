@@ -5,5 +5,6 @@ Namespace kCura.WinEDDS.Service.Replacement
         Shadows Function IsImportEmailNotificationEnabled() As Boolean
         Shadows Function RetrieveRdcConfiguration() As System.Data.DataSet
         Shadows Function ValidateSuccessfulLogin() As Boolean
-    end interface
+        Shadows Function ValidateCertificate() As Boolean
+    End interface
 End NameSpace

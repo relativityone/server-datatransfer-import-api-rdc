@@ -25,6 +25,11 @@ namespace Relativity.DataExchange.NUnit.Mocks
 		{
 		}
 
+		public Task<T> ExecuteAsyncWithoutRetries<T>(Func<IServiceProxyFactory, Task<T>> func)
+		{
+			throw new NotImplementedException();
+		}
+
 		public Task<T> ExecuteAsync<T>(Func<IServiceProxyFactory, Task<T>> func)
 		{
 			if (func == null)

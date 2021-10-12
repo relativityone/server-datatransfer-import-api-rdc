@@ -82,6 +82,7 @@
     <Compile Include="Data\ImporterException.cs" />
     <Compile Include="Data\IntegerImporterException.cs" />
     <Compile Include="Data\ObjectNameImporterException.cs" />
+    <Compile Include="Data\RestartableFileStream.cs" />
     <Compile Include="Data\StringImporterException.cs" />
     <Compile Include="Data\TrimOption.cs" />
     <Compile Include="TaskExtensions.cs" />

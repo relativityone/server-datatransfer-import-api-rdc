@@ -27,7 +27,11 @@ Namespace kCura.WinEDDS.Service.Replacement
         End Sub
 
         Protected Function Execute(Of T)(func As Func(Of IServiceProxyFactory, Task(Of T))) As T
-	        Return ExecuteAsync(func).GetAwaiter().GetResult()
+            Return ExecuteAsync(func).GetAwaiter().GetResult()
+        End Function
+
+        Protected Function ExecuteWithoutRetries(Of T)(func As Func(Of IServiceProxyFactory, Task(Of T))) As T
+            Return ExecuteWithoutRetriesAsync(func).GetAwaiter().GetResult()
         End Function
 
         Protected Function Execute(func As Func(Of IServiceProxyFactory, Task(Of DataSetWrapper))) As DataSet
@@ -35,15 +39,27 @@ Namespace kCura.WinEDDS.Service.Replacement
         End Function
 
         Private Async Function ExecuteAsync(Of T)(func As Func(Of IServiceProxyFactory, Task(Of T))) As Task(Of T)
-	        Try
-		        Return Await Me._keplerProxy.ExecuteAsync(func).ConfigureAwait(False)
-	        Catch serviceException As ServiceException
-		        Dim soapException As SoapException = _exceptionMapper.Map(serviceException)
-		        UnpackSoapException(soapException)
-		        Throw soapException
-	        Catch ex As Exception
-		        Throw
-	        End Try
+            Try
+                Return Await Me._keplerProxy.ExecuteAsync(func).ConfigureAwait(False)
+            Catch serviceException As ServiceException
+                Dim soapException As SoapException = _exceptionMapper.Map(serviceException)
+                UnpackSoapException(soapException)
+                Throw soapException
+            Catch ex As Exception
+                Throw
+            End Try
+        End Function
+
+        Private Async Function ExecuteWithoutRetriesAsync(Of T)(func As Func(Of IServiceProxyFactory, Task(Of T))) As Task(Of T)
+            Try
+                Return Await Me._keplerProxy.ExecuteAsyncWithoutRetries(func).ConfigureAwait(False)
+            Catch serviceException As ServiceException
+                Dim soapException As SoapException = _exceptionMapper.Map(serviceException)
+                UnpackSoapException(soapException)
+                Throw soapException
+            Catch ex As Exception
+                Throw
+            End Try
         End Function
 
         Protected Function Map(Of T)(o As Object) As T

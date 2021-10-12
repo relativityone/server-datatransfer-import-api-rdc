@@ -48,7 +48,7 @@ Namespace kCura.WinEDDS
 		Private Function ValidateKeplerCertificate(credential As NetworkCredential, ByRef exceptionFromKepler As Exception) As Boolean?
 			Dim keplerRelativityManager As IRelativityManager = ManagerFactory.CreateRelativityManager(credential, _cookieContainer, _correlationIdProvider, useKepler:=True)
 			Try
-				keplerRelativityManager.RetrieveCurrencySymbol() ' We need to call any Kepler endpoint
+				keplerRelativityManager.ValidateCertificate() ' We need to call a Kepler endpoint without multiple retries
 				Return True
 			Catch ex As SoapException When ex.Message = "The service endpoint denied the request."
 				Me._logger.LogVerbose(ex, "Expected authorization exception was thrown when validating certificate.")
@@ -64,13 +64,14 @@ Namespace kCura.WinEDDS
 				Me._logger.LogError(ex, "Unexpected error occurred when validating Kepler certificate.")
 				Return Nothing
 			End Try
+
 		End Function
 
 		Private Function ValidateWebApiCertificate(credential As NetworkCredential, ByRef exceptionFromWebApi As Exception) As Boolean?
 			Dim webApiRelativityManager As IRelativityManager = ManagerFactory.CreateRelativityManager(credential, _cookieContainer, _correlationIdProvider, useKepler:=False)
 			Try
 				' Only if this line bombs do we say the cert is untrusted
-				webApiRelativityManager.ValidateSuccessfulLogin()
+				webApiRelativityManager.ValidateCertificate()
 				Return True
 			Catch ex As WebException
 				If (ex.Status = WebExceptionStatus.TrustFailure) Then
