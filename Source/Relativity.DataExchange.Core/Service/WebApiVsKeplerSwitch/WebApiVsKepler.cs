@@ -50,6 +50,7 @@ namespace Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 			    var useKepler = this.GetKeplerUsageByCommunicationModeAndAppSettings();
 			    if (useKepler)
 			    {
+				    this.logger?.LogWarning("Kepler service is available. Kepler will be used.");
 				    return true;
 			    }
 		    }
@@ -58,6 +59,7 @@ namespace Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 		    var isWebApiAvailable = this.serviceAvailabilityChecker.IsWebApiAvailable();
 		    if (isWebApiAvailable)
 		    {
+			    this.logger?.LogWarning("WebApi service is available. WebApi will be used.");
 			    return false;
 		    }
 
@@ -79,7 +81,14 @@ namespace Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 	        var iApiCommunicationMode = this.serviceAvailabilityChecker.ReadImportApiCommunicationMode();
 	        var keplerUsageLocalSettingsValue = AppSettings.Instance.UseKepler;
 
-	        // override local settings if 'ForceKepler'
+	        string iApiCommunicationModeString =
+		        iApiCommunicationMode.HasValue ? $"is set to {iApiCommunicationMode.Value.ToString()}" : "not set";
+	        string keplerUsageLocalSettingsValueString =
+		        keplerUsageLocalSettingsValue.HasValue ? $"is set to {keplerUsageLocalSettingsValue.Value.ToString()}" : "not set";
+
+	        this.logger?.LogWarning("Instance Setting IAPICommunicationMode {iApiCommunicationModeString}. Application setting UseKepler {keplerUsageLocalSettingsValueString}.", iApiCommunicationModeString, keplerUsageLocalSettingsValueString);
+
+			// override local settings if 'ForceKepler'
 	        if (iApiCommunicationMode == IAPICommunicationMode.ForceKepler)
 	        {
 	            return true;

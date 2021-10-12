@@ -160,7 +160,7 @@ namespace Relativity.DataExchange
 			Version importExportWebApiVersion = await this.applicationVersionService
 													.GetImportExportWebApiVersionAsync(token).ConfigureAwait(false);
 			this.runningContext.ImportExportWebApiVersion = importExportWebApiVersion;
-			this.log.LogInformation(
+			this.log.LogWarning(
 				"Successfully retrieved the import/export WebAPI version {ImportExportWebApiVersion} for Relativity instance {RelativityHost}.",
 				importExportWebApiVersion,
 				this.instanceInfo.Host.Secure());
