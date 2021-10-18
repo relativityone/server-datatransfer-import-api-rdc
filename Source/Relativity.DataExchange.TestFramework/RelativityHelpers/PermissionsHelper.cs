@@ -87,14 +87,22 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			IntegrationTestParameters parameters,
 			int groupId,
 			List<string> permissionNames,
-			bool value)
+			bool canAdd,
+			bool canEdit,
+			bool subPermissionSelected)
 		{
 			using (IPermissionManager permissionManager = ServiceHelper.GetServiceProxy<IPermissionManager>(parameters))
 			{
-				GroupPermissions workspacePermission =
-					await permissionManager.GetWorkspaceGroupPermissionsAsync(parameters.WorkspaceId, new GroupRef(groupId)).ConfigureAwait(false);
+				GroupPermissions workspacePermission = await permissionManager
+					                                       .GetWorkspaceGroupPermissionsAsync(parameters.WorkspaceId, new GroupRef(groupId))
+					                                       .ConfigureAwait(false);
 
-				SetObjectAndSubPermissions(workspacePermission.ObjectPermissions, permission => permissionNames.Contains(permission.Name), value);
+				SetObjectAndSubPermissions(
+					workspacePermission.ObjectPermissions,
+					permission => permissionNames.Contains(permission.Name),
+					canAdd,
+					canEdit,
+					subPermissionSelected);
 
 				await permissionManager
 					.SetWorkspaceGroupPermissionsAsync(parameters.WorkspaceId, workspacePermission)
@@ -106,7 +114,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			IntegrationTestParameters parameters,
 			int groupId,
 			List<string> permissionNames,
-			bool value)
+			bool canAdd,
+			bool canEdit,
+			bool subPermissionSelected)
 		{
 			using (IPermissionManager permissionManager = ServiceHelper.GetServiceProxy<IPermissionManager>(parameters))
 			{
@@ -114,7 +124,12 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 													   .GetAdminGroupPermissionsAsync(new GroupRef(groupId))
 													   .ConfigureAwait(false);
 
-				SetObjectAndSubPermissions(adminPermission.ObjectPermissions, permission => permissionNames.Contains(permission.Name), value);
+				SetObjectAndSubPermissions(
+					adminPermission.ObjectPermissions,
+					permission => permissionNames.Contains(permission.Name),
+					canAdd,
+					canEdit,
+					subPermissionSelected);
 
 				await permissionManager
 					.SetAdminGroupPermissionsAsync(adminPermission)
@@ -173,20 +188,17 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		private static void SetObjectAndSubPermissions(
 			List<ObjectPermission> availablePermissions,
 			Func<ObjectPermission, bool> predicate,
-			bool value)
+			bool canAdd,
+			bool canEdit,
+			bool subPermissionSelected)
 		{
 			foreach (var permission in availablePermissions.Where(predicate))
 			{
-				permission.AddEditable = value;
-				permission.AddSelected = value;
-				permission.EditEditable = value;
-				permission.EditSelected = value;
-				permission.DeleteEditable = value;
-				permission.ViewSelected = value;
-
+				permission.AddSelected = canAdd;
+				permission.EditSelected = canEdit;
 				foreach (PermissionDetail subPermission in permission.SubPermissions)
 				{
-					subPermission.Selected = value;
+					subPermission.Selected = subPermissionSelected;
 				}
 			}
 		}

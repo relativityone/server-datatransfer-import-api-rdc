@@ -20,6 +20,7 @@ namespace Relativity.DataExchange.NUnit
 	using Newtonsoft.Json.Serialization;
 
 	using Relativity.Services.Exceptions;
+	using Relativity.Services.Objects.Exceptions;
 
 	/// <summary>
 	/// Represents Object Manager specific error data that can be used by unit tests.
@@ -64,6 +65,10 @@ namespace Relativity.DataExchange.NUnit
 				yield return SerializeErrorDetails(new ValidationException());
 				yield return SerializeErrorDetails(new ValidationException("Error"));
 				yield return SerializeErrorDetails(new ValidationException("Error1", new ServiceException("Error2")));
+
+				yield return SerializeErrorDetails(new PermissionDeniedException());
+				yield return SerializeErrorDetails(new PermissionDeniedException("Invalid Permissions"));
+				yield return SerializeErrorDetails(new PermissionDeniedException("Invalid Permissions", new ServiceException("Invalid Permissions 2")));
 
 				// General
 				yield return SerializeErrorDetails(new InvalidInputException());
@@ -155,9 +160,19 @@ namespace Relativity.DataExchange.NUnit
 			{
 				List<Exception> exceptions = new List<Exception>();
 				exceptions.AddRange(
-					ExceptionHelper.FatalExceptionCandidates.Where(x => x != typeof(ThreadAbortException))
-						.Concat(ExceptionHelper.FatalKeplerExceptionCandidates).Select(Activator.CreateInstance)
+					ExceptionHelper.FatalExceptionCandidates
+						.Where(x => x != typeof(ThreadAbortException))
+						.Select(Activator.CreateInstance)
 						.Cast<Exception>());
+
+				// PermissionDeniedException is a part of test NonFatalInvalidParameterErrors and is handled the same as ValidationException
+				// we exclude it from the list to keep the logic of ObjectManagerExceptionHelper unchanged
+				exceptions.AddRange(
+					ExceptionHelper.FatalKeplerExceptionCandidates
+						.Where(x => x != typeof(PermissionDeniedException))
+						.Select(Activator.CreateInstance)
+						.Cast<Exception>());
+
 				exceptions.AddRange(
 					new[]
 						{

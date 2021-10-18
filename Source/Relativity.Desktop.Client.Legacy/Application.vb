@@ -2,6 +2,7 @@ Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
+Imports System.Xml
 Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Credentials
@@ -196,7 +197,7 @@ Namespace Relativity.Desktop.Client
 
 		Public Property UserHasExportPermission() As Boolean
 
-		Public ReadOnly Property RunningContext As IRunningContext = New RunningContext() With { .ExecutionSource = ExecutionSource.Rdc, .CallingAssembly = Reflection.Assembly.GetCallingAssembly().GetName().Name }
+		Public ReadOnly Property RunningContext As IRunningContext = New RunningContext() With {.ExecutionSource = ExecutionSource.Rdc, .CallingAssembly = Reflection.Assembly.GetCallingAssembly().GetName().Name}
 
 #End Region
 
@@ -510,8 +511,10 @@ Namespace Relativity.Desktop.Client
 							End If
 						Case "kCura.EDDS.WebAPI.ServiceBase.NeedToReLoginException"
 							NewLogin(True)
+						Case "Relativity.Services.Objects.Exceptions.PermissionDeniedException"
+							Me.ChangeWebServiceUrl("An error occurred while validating the user Import and Export permissions. Check the URL and try again?")
 						Case Else
-							Me.ChangeWebServiceURL()
+							Me.ChangeWebServiceUrl("An error occurred reading the case information. Check the URL and try again?")
 					End Select
 				End If
 			End Try
@@ -1005,13 +1008,6 @@ Namespace Relativity.Desktop.Client
 			AddHandler frm.ExitApplication, AddressOf Me.ExitApplication
 			frm.Required = True
 			frm.ShowDialog()
-			CursorDefault()
-		End Sub
-
-		Public Sub ChangeWebServiceURL()
-			CursorWait()
-			Dim frm As New SetWebServiceURL
-			frm.Show()
 			CursorDefault()
 		End Sub
 
@@ -1528,7 +1524,7 @@ Namespace Relativity.Desktop.Client
 			ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 404") = -1 AndAlso ex.Source = "System.Web.Services" Then
 				Me.ChangeWebServiceUrl("The current Relativity WebAPI URL was not found. Try a new URL?")
 			Else
-				Me.ChangeWebServiceUrl("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
+				Me.ChangeWebServiceUrl("An error occurred while validating the Relativity WebAPI URL. Check the URL and try again?")
 			End If
 		End Sub
 

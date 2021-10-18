@@ -65,5 +65,13 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 				await permissionManager.SetItemGroupPermissionsAsync(parameters.WorkspaceId, groupPermissions).ConfigureAwait(false);
 			}
 		}
+
+		public static async Task<FolderResultSet> DeleteUnusedFoldersAsync(IntegrationTestParameters parameters)
+		{
+			using (IFolderManager folderManager = ServiceHelper.GetServiceProxy<IFolderManager>(parameters))
+			{
+				return await folderManager.DeleteUnusedFoldersAsync(parameters.WorkspaceId).ConfigureAwait(false);
+			}
+		}
 	}
 }
