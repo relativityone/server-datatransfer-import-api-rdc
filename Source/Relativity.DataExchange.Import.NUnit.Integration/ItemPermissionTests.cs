@@ -52,24 +52,29 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				this.oldUsername = this.TestParameters.RelativityUserName;
 				this.oldPassword = this.TestParameters.RelativityPassword;
 
-				string lastName = Guid.NewGuid().ToString();
-				this.newUsername = $"ImportAPI.{lastName}@relativity.com";
+				this.newUsername = $"ImportAPI.ItemPermissionTests.{Guid.NewGuid()}@relativity.com";
 				this.newPassword = "Test1234!";
 				this.userId = await UsersHelper.CreateNewUserAsync(
 								  this.TestParameters,
 								  this.newUsername,
 								  this.newPassword,
-								  new List<int> { GroupHelper.EveryoneGroupId }).ConfigureAwait(false);
+								  new List<int> { GroupHelper.EveryoneGroupId })
+					              .ConfigureAwait(false);
 
 				var rootArtifactId = await FolderHelper.GetWorkspaceRootArtifactIdAsync(this.TestParameters).ConfigureAwait(false);
-				List<int> folderIds = await FolderHelper.CreateFolders(this.TestParameters, new List<string> { "TestFolder" }, rootArtifactId).ConfigureAwait(false);
+				List<int> folderIds = await FolderHelper.CreateFolders(this.TestParameters, new List<string> { "ItemPermissionTestFolder" }, rootArtifactId)
+					                      .ConfigureAwait(false);
 
 				this.folderId = folderIds.First();
 
 				ImportHelper.ImportDefaultTestDataToFolderByArtifactId(this.TestParameters, this.folderId);
 
 				string[] fieldsToValidate = { WellKnownFields.ControlNumber, WellKnownFields.ArtifactId };
-				this.importedDocuments = RdoHelper.QueryRelativityObjects(this.TestParameters, (int)ArtifactTypeID.Document, fieldsToValidate)
+				this.importedDocuments = (await RdoHelper.QueryRelativityObjectsAsync(
+					                          this.TestParameters,
+					                          (int)ArtifactTypeID.Document,
+					                          fieldsToValidate).
+					                          ConfigureAwait(false))
 					.Select(ro => new DocumentWithArtifactFieldDto((string)ro.FieldValues[0].Value, ro.ArtifactID))
 					.ToArray();
 
@@ -77,7 +82,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				this.groupId = await GroupHelper.CreateNewGroupAsync(this.TestParameters, Guid.NewGuid().ToString()).ConfigureAwait(false);
 				await GroupHelper.AddMemberAsync(this.TestParameters, this.groupId, this.userId).ConfigureAwait(false);
 				await PermissionsHelper.AddGroupToWorkspaceAsync(this.TestParameters, this.groupId).ConfigureAwait(false);
-				await PermissionsHelper.AddGroupToAdminAsync(this.TestParameters, this.groupId).ConfigureAwait(false);
 
 				await PermissionsHelper.SetAllWorkspaceOtherSettingsAsync(
 						this.TestParameters,
@@ -92,17 +96,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 						new List<string> { "Allow Import" },
 						true)
 					.ConfigureAwait(false);
-
-				await PermissionsHelper
-					.SetAdminObjectSecurityAsync(
-						this.TestParameters,
-						this.groupId,
-						new List<string> { "InstanceSetting" },
-						true)
-					.ConfigureAwait(false);
-
-				await PermissionsHelper.ApplyItemLevelSecurityAsync(TestParameters, this.folderId, this.groupId, false).ConfigureAwait(false);
-				await PermissionsHelper.ApplyItemLevelSecurityAsync(TestParameters, this.importedDocuments[0].ArtifactId, this.groupId, false).ConfigureAwait(false);
 			}
 		}
 
@@ -115,6 +108,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				await UsersHelper.RemoveUserAsync(this.TestParameters, this.userId).ConfigureAwait(false);
 				await GroupHelper.RemoveGroupAsync(this.TestParameters, this.groupId).ConfigureAwait(false);
 				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
+				await FolderHelper.DeleteUnusedFoldersAsync(this.TestParameters).ConfigureAwait(false);
 			}
 		}
 
@@ -123,7 +117,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		public async Task ShouldPreventAppendWhenFolderIsSecured()
 		{
 			// ARRANGE
+			this.WithOriginalUser();
 			await PermissionsHelper.ApplyItemLevelSecurityAsync(TestParameters, this.folderId, this.groupId, false).ConfigureAwait(false);
+			await PermissionsHelper.ApplyItemLevelSecurityAsync(TestParameters, this.importedDocuments[0].ArtifactId, this.groupId, false).ConfigureAwait(false);
 
 			this.WithNewUser();
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
@@ -146,35 +142,17 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		}
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
-		[IdentifiedTest("E87C404D-EA4B-47C4-806B-C5F04ACBE8D8")]
-		public void ShouldPreventOverlayWhenFolderIsSecured([Values(OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode)
+		[IdentifiedTestCase("959A95A6-4319-46C8-A1A6-B9642C1C4112", OverwriteModeEnum.Overlay, true, false)]
+		[IdentifiedTestCase("B28B85E6-7CD2-4E30-9126-99B15FD58FC7", OverwriteModeEnum.Overlay, false, true)]
+		[IdentifiedTestCase("AF640A56-542C-4A22-914F-0DC586D54E8F", OverwriteModeEnum.AppendOverlay, true, false)]
+		[IdentifiedTestCase("567D5B0F-C8E4-4204-BDDB-FAF789426C6C", OverwriteModeEnum.AppendOverlay, false, true)]
+		public async Task ShouldPreventOverlayWhenObjectIsSecured(OverwriteModeEnum overwriteMode, bool isFolderSecured, bool isDocumentSecured)
 		{
 			// ARRANGE
-			this.WithNewUser();
-			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
-			settings.OverwriteMode = overwriteMode;
-			settings.DestinationFolderArtifactID = this.folderId;
+			this.WithOriginalUser();
+			await PermissionsHelper.ApplyItemLevelSecurityAsync(TestParameters, this.folderId, this.groupId, isFolderSecured).ConfigureAwait(false);
+			await PermissionsHelper.ApplyItemLevelSecurityAsync(TestParameters, this.importedDocuments[0].ArtifactId, this.groupId, isDocumentSecured).ConfigureAwait(false);
 
-			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
-
-			DocumentDto[] importData =
-				{
-					new DocumentDto(this.importedDocuments[0].ControlNumber),
-				};
-
-			// ACT
-			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
-
-			// ASSERT
-			this.ThenTheImportJobCompletedWithErrors(results, 1, 1);
-			this.ValidateJobMessagesContainsText(results, "[Record Info: 0] Error - [Line 1] - The document specified has been secured for editing");
-		}
-
-		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
-		[IdentifiedTest("480C870C-18E4-4220-A7B8-E669E3EF61C2")]
-		public void ShouldPreventOverlayWhenDocumentIsSecured([Values(OverwriteModeEnum.Overlay, OverwriteModeEnum.AppendOverlay)] OverwriteModeEnum overwriteMode)
-		{
-			// ARRANGE
 			this.WithNewUser();
 			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
 			settings.OverwriteMode = overwriteMode;

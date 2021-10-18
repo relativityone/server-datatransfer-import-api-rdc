@@ -55,7 +55,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		private ExportTestJobResult exporterTestJobResult;
 		private WindsorContainer testContainer;
 		private CookieContainer cookieContainer;
-		private NetworkCredential credentials;
 		private CancellationTokenSource cancellationTokenSource;
 		private bool? originalUseKeplerValue;
 
@@ -86,6 +85,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected bool CorrelationIdRetrieved { get; set; }
 
+		private NetworkCredential Credentials =>
+			new NetworkCredential(TestParameters.RelativityUserName, TestParameters.RelativityPassword);
+
 		[OneTimeSetUp]
 		public void OneTimeSetUpBase()
 		{
@@ -109,7 +111,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			ContainerFactoryProvider.ContainerFactory = new TestContainerFactory(this.testContainer, this.Logger, this.GetCorrelationId);
 
 			this.cookieContainer = new CookieContainer();
-			this.credentials = new NetworkCredential(TestParameters.RelativityUserName, TestParameters.RelativityPassword);
 
 			this.TempDirectory = new TempDirectory2();
 			this.TempDirectory.Create();
@@ -239,7 +240,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				throw new ArgumentNullException(nameof(caseInfo));
 			}
 
-			using (var folderManager = ManagerFactory.CreateFolderManager(this.credentials, this.cookieContainer, this.GetCorrelationId))
+			using (var folderManager = ManagerFactory.CreateFolderManager(this.Credentials, this.cookieContainer, this.GetCorrelationId))
 			{
 				FolderCache folderCache = new FolderCache(this.Logger, folderManager, caseInfo.RootFolderID, caseInfo.ArtifactID);
 				int folderArtifactId = folderCache.GetFolderId(folderPath);
@@ -249,15 +250,15 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected void WhenCreatingTheExportFile()
 		{
-			using (var caseManager = ManagerFactory.CreateCaseManager(this.credentials, this.cookieContainer, this.GetCorrelationId))
+			using (var caseManager = ManagerFactory.CreateCaseManager(this.Credentials, this.cookieContainer, this.GetCorrelationId))
 			{
 				CaseInfo caseInfo = caseManager.Read(TestParameters.WorkspaceId);
 				this.ExtendedExportFile.CaseInfo = caseInfo;
 				this.ExtendedExportFile.ArtifactID = caseInfo.RootFolderID;
 			}
 
-			using (var searchManager = ManagerFactory.CreateSearchManager(this.credentials, this.cookieContainer, this.GetCorrelationId))
-			using (var productionManager = ManagerFactory.CreateProductionManager(this.credentials, this.cookieContainer, this.GetCorrelationId))
+			using (var searchManager = ManagerFactory.CreateSearchManager(this.Credentials, this.cookieContainer, this.GetCorrelationId))
+			using (var productionManager = ManagerFactory.CreateProductionManager(this.Credentials, this.cookieContainer, this.GetCorrelationId))
 			{
 				this.ExtendedExportFile.ObjectTypeName = this.GetObjectTypeName(this.ExtendedExportFile.ArtifactTypeID);
 				switch (this.ExtendedExportFile.TypeOfExport)
@@ -516,7 +517,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		private string GetObjectTypeName(int artifactTypeId)
 		{
-			using (var objectTypeManager = ManagerFactory.CreateObjectTypeManager(this.credentials, this.cookieContainer, this.GetCorrelationId))
+			using (var objectTypeManager = ManagerFactory.CreateObjectTypeManager(this.Credentials, this.cookieContainer, this.GetCorrelationId))
 			{
 				DataSet dataset = objectTypeManager.RetrieveAllUploadable(TestParameters.WorkspaceId);
 				DataRowCollection rows = dataset.Tables[0].Rows;
@@ -539,7 +540,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		private DocumentFieldCollection GetFields(int artifactTypeId)
 		{
 			var fields = new DocumentFieldCollection();
-			using (var fieldQuery = ManagerFactory.CreateFieldQuery(this.credentials, this.cookieContainer, this.GetCorrelationId))
+			using (var fieldQuery = ManagerFactory.CreateFieldQuery(this.Credentials, this.cookieContainer, this.GetCorrelationId))
 			{
 				foreach (Field field in fieldQuery.RetrieveAllAsArray(TestParameters.WorkspaceId, artifactTypeId))
 				{
@@ -752,7 +753,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			return new ExtendedExportFile((int)ArtifactType.Document)
 			{
 				CookieContainer = this.cookieContainer,
-				Credential = this.credentials,
+				Credential = this.Credentials,
 
 				TypeOfExport = ExportFile.ExportType.ParentSearch,
 				FolderPath = this.TempDirectory.Directory,

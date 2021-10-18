@@ -81,7 +81,7 @@
     <Compile Include="MoveDocumentsTests.cs" />
     <Compile Include="OverlayIdentifierTestCases.cs" />
     <Compile Include="OverlayIdentifierTests.cs" />
-    <Compile Include="PermissionTests.cs" />
+    <Compile Include="PermissionImportTests.cs" />
     <Compile Include="PositiveImageImportJobTests.cs" />
     <Compile Include="ChoicesValidator.cs" />
     <Compile Include="ObjectsValidator.cs" />

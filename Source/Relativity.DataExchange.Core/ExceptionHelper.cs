@@ -18,6 +18,7 @@ namespace Relativity.DataExchange
 	using Relativity.DataExchange.Resources;
 	using Relativity.Kepler.Exceptions;
 	using Relativity.Services.Exceptions;
+	using Relativity.Services.Objects.Exceptions;
 
 	/// <summary>
 	/// Defines static helper methods to perform common exception handling.
@@ -64,7 +65,7 @@ namespace Relativity.DataExchange
 		/// The list of Kepler specific fatal exception candidates.
 		/// </summary>
 		public static readonly IReadOnlyList<Type> FatalKeplerExceptionCandidates = new List<Type>(
-			new[] { typeof(NotAuthorizedException), typeof(WireProtocolMismatchException), typeof(NotFoundException) });
+			new[] { typeof(NotAuthorizedException), typeof(WireProtocolMismatchException), typeof(NotFoundException), typeof(PermissionDeniedException) });
 
 		/// <summary>
 		/// Array of fatal kepler exception messages.
