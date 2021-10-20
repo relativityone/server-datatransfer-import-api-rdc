@@ -54,5 +54,10 @@ namespace Relativity.DataExchange.NUnit.Mocks
 
 			return func(this.serviceProxyFactory);
 		}
+
+		public Task<string> ExecutePostAsync(string endpointAddress, string body)
+		{
+			return this.serviceProxyFactory.ExecutePostAsync(endpointAddress, body);
+		}
 	}
 }

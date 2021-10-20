@@ -49,5 +49,13 @@ namespace Relativity.DataExchange.Service
 		/// <param name="func">Function calling Kepler service.</param>
 		/// <returns>Task to await.</returns>
 		Task<T> ExecuteAsync<T>(Context context, CancellationToken cancellationToken, Func<Context, CancellationToken, IServiceProxyFactory, Task<T>> func);
+
+		/// <summary>
+		/// Provides <see cref="IServiceProxyFactory"/> Used to provide method for specific api call.
+		/// </summary>
+		/// <param name="endpointAddress">Relativity kepler service address. E.g. '/Relativity.Rest/api/Relativity.Services.InstanceDetails.IInstanceDetailsModule/...'.</param>
+		/// <param name="body">body of request.</param>
+		/// <returns>Task to await.</returns>
+		Task<string> ExecutePostAsync(string endpointAddress, string body);
 	}
 }

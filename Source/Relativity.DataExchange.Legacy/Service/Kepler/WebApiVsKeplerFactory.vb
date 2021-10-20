@@ -34,7 +34,7 @@ Namespace kCura.WinEDDS.Service.Kepler
 		Private Function UseKepler(webApiUrl As Uri, credentials As NetworkCredential, getCorrelationId As Func(Of String)) As Boolean
 			Dim connectionInfo As IServiceConnectionInfo = New KeplerServiceConnectionInfo(webApiUrl, credentials)
 
-			Using serviceProxyFactory As New KeplerServiceProxyFactory(connectionInfo)
+			Using serviceProxyFactory As New KeplerServiceProxyFactory(connectionInfo, Me._logger)
 				Dim keplerProxy As IKeplerProxy = New KeplerProxy(serviceProxyFactory, Me._logger)
 				Dim iApiCommunicationModeManager As IIAPICommunicationModeManager = New IAPICommunicationModeManager(keplerProxy, getCorrelationId)
 				Dim serviceAvailabilityChecker As IServiceAvailabilityChecker = New ServiceAvailabilityChecker(iApiCommunicationModeManager)

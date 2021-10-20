@@ -1446,7 +1446,7 @@ Namespace Relativity.Desktop.Client
 
 		Private Async Sub OnOAuth2ImplicitAccessTokenRetrieved(source As ITokenProvider, args As ITokenResponseEventArgs)
 			Dim credential = Await GetCredentialsAsync()
-
+		    RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.StartOfConnectionModeCheck))
 			Try
 				Await Me.ValidateVersionCompatibilityAsync(credential).ConfigureAwait(False)
 			Catch ex As System.Net.WebException
@@ -1804,6 +1804,7 @@ Namespace Relativity.Desktop.Client
 						Return LoginHelper.ValidateVersionCompatibilityAsync(instanceInfo, _cancellationTokenSource.Token, Me.RunningContext, _logger, AddressOf GetCorrelationId)
 					End Function,
 					_cancellationTokenSource.Token).ConfigureAwait(False)
+			    RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.EndOfConnectionModeCheck))
 			Finally
 				Me.CursorDefaultWhichWorks()
 			End Try

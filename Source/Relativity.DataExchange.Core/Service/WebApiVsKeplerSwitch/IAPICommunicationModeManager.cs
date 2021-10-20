@@ -22,6 +22,8 @@ namespace Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 		private const int DefaultRetryCount = 1;
 		private const int DefaultSleepDurationTimeInSeconds = 1;
 
+		private const string GetRelativityVersionUrl = "/Relativity.Rest/api/Relativity.Services.InstanceDetails.IInstanceDetailsModule/InstanceDetailsService/GetRelativityVersionAsync";
+
 		private readonly IKeplerProxy keplerProxy;
 		private readonly IAppSettings settings;
 		private readonly ILog logger;
@@ -53,19 +55,43 @@ namespace Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 		}
 
 		/// <inheritdoc/>
-		public Task<IAPICommunicationMode> ReadImportApiCommunicationMode()
+		public async Task<IAPICommunicationMode> ReadImportApiCommunicationMode()
 		{
-			var retryPolicy = this.GetRetryPolicy();
-			return retryPolicy.ExecuteAsync(() => this.keplerProxy.ExecuteAsync(
-				async serviceProxyFactory =>
-					{
-						using (var service =
-							serviceProxyFactory.CreateProxyInstance<IIAPICommunicationModeService>())
-						{
-							return await service.GetIAPICommunicationModeAsync(this.correlationIdFunc?.Invoke())
-									   .ConfigureAwait(false);
-						}
-					}));
+			Version currentVersion = null;
+			RetryPolicy retryPolicy = this.GetRetryPolicy();
+			try
+			{
+				string currentRelativityVersionString = await this.keplerProxy.ExecutePostAsync(GetRelativityVersionUrl, string.Empty).ConfigureAwait(false);
+				currentRelativityVersionString = currentRelativityVersionString.Replace("\"", string.Empty);
+				currentVersion = new Version(currentRelativityVersionString);
+			}
+			catch (Exception e)
+			{
+				this.logger.LogWarning("Could not retrieve current Relativity Version - failed with exception: {e.Message}", e.Message);
+				return await GetIAPICommunicationMode(retryPolicy).ConfigureAwait(false);
+			}
+
+			if (currentVersion.CompareTo(VersionConstants.PrairieSmokeVersion) >= 0)
+			{
+				return await GetIAPICommunicationMode(retryPolicy).ConfigureAwait(false);
+			}
+
+			return IAPICommunicationMode.ForceWebAPI;
+		}
+
+		private Task<IAPICommunicationMode> GetIAPICommunicationMode(RetryPolicy retryPolicy)
+		{
+			return retryPolicy.ExecuteAsync(
+				       () => this.keplerProxy.ExecuteAsync(
+					       async serviceProxyFactory =>
+						       {
+							       using (var service =
+								       serviceProxyFactory.CreateProxyInstance<IIAPICommunicationModeService>())
+							       {
+								       return await service.GetIAPICommunicationModeAsync(this.correlationIdFunc?.Invoke())
+									              .ConfigureAwait(false);
+							       }
+						       }));
 		}
 
 		private RetryPolicy GetRetryPolicy()

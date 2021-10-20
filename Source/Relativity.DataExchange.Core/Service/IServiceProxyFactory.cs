@@ -11,6 +11,7 @@ namespace Relativity.DataExchange.Service
 {
 	using System;
 	using System.Net;
+	using System.Threading.Tasks;
 
 	/// <summary>
 	/// Represents an abstract class object to create web service proxy instances.
@@ -34,5 +35,13 @@ namespace Relativity.DataExchange.Service
 		/// </summary>
 		/// <param name="credential">Credential.</param>
 		void UpdateCredentials(NetworkCredential credential);
+
+		/// <summary>
+		/// Provides <see cref="IServiceProxyFactory"/> Executes call to Kepler service.
+		/// </summary>
+		/// <param name="endpointAddress"> Relativity kepler service address. E.g. '/Relativity.Rest/api/Relativity.Services.InstanceDetails.IInstanceDetailsModule/...'.</param>
+		/// <param name="body">body of request.</param>
+		/// <returns>Task to await.</returns>
+		Task<string> ExecutePostAsync(string endpointAddress, string body);
 	}
 }

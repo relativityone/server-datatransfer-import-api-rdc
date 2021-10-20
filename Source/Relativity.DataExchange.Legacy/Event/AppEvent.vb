@@ -11,6 +11,8 @@ Namespace kCura.WinEDDS
             NewFolder = 4
             LogOnForm = 5
 			LogOnRequested = 6
+		    StartOfConnectionModeCheck = 7
+		    EndOfConnectionModeCheck = 8
         End Enum
 
 		Public ReadOnly Property EventType() As AppEventType

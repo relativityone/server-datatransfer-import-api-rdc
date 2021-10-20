@@ -47,10 +47,14 @@ Namespace kCura.WinEDDS.Service.Kepler
 				.ExecuteAsync(Function(ctx As Context, ct As CancellationToken) func(context, cancellationToken, _serviceProxyFactory), context, cancellationToken)
 		End Function
 
-		Public Function ExecuteAsync(func As Func(Of IServiceProxyFactory, Task)) As Task Implements IKeplerProxy.ExecuteAsync
+        Public Function ExecuteAsync(func As Func(Of IServiceProxyFactory, Task)) As Task Implements IKeplerProxy.ExecuteAsync
 			Return Policy _
 				.WrapAsync(_retryPolicyFactories.Select(Function(retryPolicyFactory) retryPolicyFactory.CreateRetryPolicy()).ToArray()) _
 				.ExecuteAsync(Function() func(_serviceProxyFactory))
 		End Function
-	End Class
+
+        Public Function ExecutePostAsync(endpointAddress As String, body As String) As Task(Of String) Implements IKeplerProxy.ExecutePostAsync
+            Return _serviceProxyFactory.ExecutePostAsync(endpointAddress, body)
+        End Function
+    End Class
 End Namespace
