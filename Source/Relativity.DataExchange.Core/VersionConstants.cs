@@ -50,5 +50,13 @@ namespace Relativity.DataExchange
 		/// The <see cref="Version"/> instance.
 		/// </value>
 		public static Version AssociatedDocsImportServerSideSupportFromWebApiVersion { get; } = new Version(1, 1);
+
+		/// <summary>
+		/// Gets minimal Prairie Smoke Relativity version.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Version"/> instance.
+		/// </value>
+		public static Version PrairieSmokeVersion { get; } = new Version(12, 2);
 	}
 }

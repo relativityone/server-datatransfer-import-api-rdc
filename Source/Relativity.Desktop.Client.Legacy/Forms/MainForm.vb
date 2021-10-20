@@ -432,6 +432,10 @@ Namespace Relativity.Desktop.Client
 					'' if in doubt what it means please try to input several times invalid web api url from main form settings and check call stack while having breakpoint on the following line
 					'' TODO: this shloud be rewritten to use simple while-like loop
 					Await CheckCertificateAsync()
+			    Case AppEvent.AppEventType.StartOfConnectionModeCheck
+			        Me.UpdateStatus("Connection Mode Check...")
+			    Case AppEvent.AppEventType.EndOfConnectionModeCheck
+			        Me.UpdateStatus("")
 			End Select
 		End Function
 

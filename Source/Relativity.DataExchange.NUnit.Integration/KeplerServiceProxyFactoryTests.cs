@@ -9,6 +9,7 @@
 
 namespace Relativity.DataExchange.NUnit.Integration
 {
+	using System;
 	using System.Net;
 	using System.Threading.Tasks;
 
@@ -94,6 +95,28 @@ namespace Relativity.DataExchange.NUnit.Integration
 					await proxy.QueryAsync(new Query()).ConfigureAwait(false);
 					Assert.Pass("Valid credentials were used.");
 				}
+			}
+		}
+
+		[IdentifiedTest("6C4BBEB5-28A7-4EB0-9305-C42E7252E951")]
+		public static async Task ShouldExecutePostAsync()
+		{
+			// arrange
+			IntegrationTestParameters testParameters = AssemblySetup.TestParameters.DeepCopy();
+			var validCredentials = new NetworkCredential(
+				testParameters.RelativityUserName,
+				testParameters.RelativityPassword);
+			var connectionInfo = new KeplerServiceConnectionInfo(testParameters.RelativityWebApiUrl, validCredentials);
+			using (KeplerServiceProxyFactory serviceProxyFactory = new KeplerServiceProxyFactory(connectionInfo))
+			{
+				// act
+				string relativityVersionString = await serviceProxyFactory.ExecutePostAsync(
+					        @"/Relativity.Rest/api/Relativity.Services.InstanceDetails.IInstanceDetailsModule/InstanceDetailsService/GetRelativityVersionAsync",
+					        string.Empty).ConfigureAwait(false);
+
+				// assert
+				Assert.That(relativityVersionString, Is.Not.Null);
+				Assert.That(relativityVersionString, Is.Not.Empty);
 			}
 		}
 	}

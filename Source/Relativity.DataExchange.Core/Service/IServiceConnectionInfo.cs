@@ -42,6 +42,17 @@ namespace Relativity.DataExchange.Service
 		}
 
 		/// <summary>
+		/// Gets the base credentials.
+		/// </summary>
+		/// <value>
+		/// The <see cref="NetworkCredential"/> instance.
+		/// </value>
+		NetworkCredential NetworkCredential
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Updates credentials used for authenticating in Kepler.
 		/// </summary>
 		/// <param name="credential">Credentials.</param>

@@ -45,6 +45,7 @@ namespace Relativity.DataExchange.NUnit.Service
 			this.iApiCommunicationModeServiceMock
 				.Setup(m => m.GetIAPICommunicationModeAsync(It.IsAny<string>()))
 				.Throws<NotAuthorizedException>();
+			this.serviceProxyFactoryMock.Setup(m => m.ExecutePostAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync("12.3.3");
 
 			// act
 			var isKeplerAvailable = this.serviceAvailabilityChecker.IsKeplerAvailable();

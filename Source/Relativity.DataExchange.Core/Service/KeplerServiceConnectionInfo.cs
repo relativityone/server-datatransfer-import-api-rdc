@@ -57,6 +57,15 @@ namespace Relativity.DataExchange.Service
 		}
 
 		/// <inheritdoc />
+		public NetworkCredential NetworkCredential
+		{
+			get
+			{
+				return this.originalCredentials;
+			}
+		}
+
+		/// <inheritdoc />
 		public Uri WebServiceBaseUrl
 		{
 			get;
