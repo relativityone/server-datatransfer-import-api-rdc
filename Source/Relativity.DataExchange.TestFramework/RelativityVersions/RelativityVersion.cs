@@ -110,6 +110,11 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 		PrairieSmoke0,
 
 		/// <summary>
+		/// Relativity 12.3.
+		/// </summary>
+		Sundrop,
+
+		/// <summary>
 		/// Relativity 13.0.
 		/// </summary>
 		TigerLily,

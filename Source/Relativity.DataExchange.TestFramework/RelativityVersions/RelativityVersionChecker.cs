@@ -34,6 +34,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 			[RelativityVersion.Osier] = new Version(12, 1),
 			[RelativityVersion.PrairieSmoke] = new Version(12, 2),
 			[RelativityVersion.PrairieSmoke0] = new Version(12, 2, 168),
+			[RelativityVersion.Sundrop] = new Version(12, 3),
 			[RelativityVersion.TigerLily] = new Version(13, 0),
 		};
 
