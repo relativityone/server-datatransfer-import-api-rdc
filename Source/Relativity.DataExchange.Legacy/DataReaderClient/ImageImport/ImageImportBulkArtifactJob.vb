@@ -56,6 +56,12 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Event OnProgress(ByVal completedRow As Long) Implements IImportNotifier.OnProgress
 
 		''' <summary>
+		''' Occurs when a batch is processed.
+		''' </summary>
+		''' <param name="batchReport">The batch report.</param>
+		Public Event OnBatchComplete(ByVal batchReport As BatchReport) Implements IImportNotifier.OnBatchComplete
+
+		''' <summary>
 		''' Gets or sets the current options for imaging files.
 		''' </summary>
 		''' <value>
@@ -426,6 +432,10 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub _processContext_IncrementRecordCount(ByVal sender As Object, ByVal e As RecordCountEventArgs) Handles _processContext.RecordCountIncremented
 			_jobReport.TotalRows += 1
+		End Sub
+
+		Private Sub _processContext_OnBatchCompleted(sender As Object, e As BatchCompletedEventArgs) Handles _processContext.BatchCompleted
+			RaiseEvent OnBatchComplete(new BatchReport(e.BatchOrdinalNumber, e.NumberOfFiles, e.NumberOfRecords, e.NumberOfRecordsWithErrors))
 		End Sub
 #End Region
 		

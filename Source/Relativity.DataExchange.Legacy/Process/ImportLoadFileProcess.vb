@@ -495,6 +495,7 @@ Namespace kCura.WinEDDS
 			batchInformation.NumberOfRecordsWithErrors = _perBatchErrorCount
 			_perBatchErrorCount = 0
 			SendMetricJobBatch(batchInformation)
+			Me.Context.PublishBatchCompleted(batchInformation.OrdinalNumber, batchInformation.NumberOfFilesProcessed, batchInformation.NumberOfRecords, batchInformation.NumberOfRecordsWithErrors)
 		End Sub
 
 		Dim isDisposed as Boolean

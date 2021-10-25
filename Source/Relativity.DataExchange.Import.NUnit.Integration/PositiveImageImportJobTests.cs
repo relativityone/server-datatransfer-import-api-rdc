@@ -38,6 +38,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
 		private static readonly TapiClient[] AvailableTapiClients = TapiClientModeAvailabilityChecker.GetAvailableTapiClients();
+		private readonly int initialBatchSize = AppSettings.Instance.ImportBatchSize;
 
 		[OneTimeSetUp]
 		public Task OneTimeSetUp()
@@ -48,6 +49,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[TearDown]
 		public Task TearDown()
 		{
+			AppSettings.Instance.ImportBatchSize = this.initialBatchSize;
 			return RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document);
 		}
 
@@ -314,6 +316,48 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			const int ExpectedNumberOfImportedImages = NumberOfDocumentsToImport * NumberOfImagesPerDocument;
 			this.ThenTheImportJobIsSuccessful(testResult, ExpectedNumberOfImportedImages);
 			await this.ThenTheAuditsContainExtractedTextDetails(importData, NumberOfImagesPerDocument, executionTime).ConfigureAwait(false);
+		}
+
+		[IdentifiedTest("0d331774-f9d8-4384-b167-196fae723a71")]
+		[TestType.MainFlow]
+		public void ShouldImportImagesInBatches()
+		{
+			const int BatchSize = 50;
+			const int NumberOfDocumentsToImport = 20;
+			const int NumberOfImagesPerDocument = 10;
+			const int NumberOfErrorsPerBatch = 20;
+			const int ExpectedNumberOfBatches = NumberOfDocumentsToImport * NumberOfImagesPerDocument / BatchSize;
+
+			AppSettings.Instance.ImportBatchSize = BatchSize;
+			var imageSettingsBuilder = new ImageSettingsBuilder()
+				.WithDefaultFieldNames()
+				.WithOverlayMode(OverwriteModeEnum.Append);
+
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, imageSettingsBuilder);
+			this.JobExecutionContext.UseFileNames = true;
+
+			IEnumerable<ImageImportWithFileNameDto> importData = new ImageImportWithFileNameDtoBuilder(
+				this.TempDirectory.Directory,
+				NumberOfDocumentsToImport,
+				NumberOfImagesPerDocument,
+				ImageFormat.Jpeg).Build().ToList();
+
+			IEnumerable<ImageImportWithFileNameDto> importDataErrors = importData.Where((_, i) => i % BatchSize < NumberOfErrorsPerBatch).ToList();
+			this.JobExecutionContext.Execute(importDataErrors);
+
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importData);
+
+			// ASSERT
+			Assert.That(results.JobReportMetadataBytes, Is.Positive);
+			Assert.That(results.BatchReports, Has.Count.EqualTo(ExpectedNumberOfBatches));
+
+			foreach (BatchReport batchReport in results.BatchReports)
+			{
+				Assert.That(batchReport.NumberOfFiles, Is.EqualTo(BatchSize - NumberOfErrorsPerBatch));
+				Assert.That(batchReport.NumberOfRecords, Is.EqualTo((BatchSize - NumberOfErrorsPerBatch) / NumberOfImagesPerDocument));
+				Assert.That(batchReport.NumberOfRecordsWithErrors, Is.EqualTo(NumberOfErrorsPerBatch));
+			}
 		}
 
 		private static IEnumerable<TestCaseData> GetExtractedTextDataSource()

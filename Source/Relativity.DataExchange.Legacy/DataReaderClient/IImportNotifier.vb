@@ -23,6 +23,10 @@
 		''' Occurs when a status message needs to be presented to the user related to the Process.
 		''' </summary>
 		Event OnProcessProgress(ByVal processStatus As FullStatus)
-
+		''' <summary>
+		''' Occurs when a batch is processed.
+		''' </summary>
+		''' <param name="batchReport">The batch report.</param>
+		Event OnBatchComplete(ByVal batchReport As BatchReport)
 	End Interface
 End Namespace

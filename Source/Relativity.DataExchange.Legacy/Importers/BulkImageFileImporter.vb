@@ -660,7 +660,8 @@ Namespace kCura.WinEDDS
 
 				Dim batchInformation As New BatchInformation With {
 						.OrdinalNumber = Statistics.BatchCount,
-						.NumberOfRecords = runResults.FilesProcessed,
+						.NumberOfFilesProcessed = runResults.FilesProcessed,
+						.NumberOfRecords = runResults.ArtifactsCreated + runResults.ArtifactsUpdated,
 						.MassImportDuration = batchDuration
 						}
 				MyBase.OnBatchCompleted(batchInformation)

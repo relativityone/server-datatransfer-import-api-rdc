@@ -81,6 +81,7 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 			this.ImportJob.OnComplete += this.ImportJobOnComplete;
 			this.ImportJob.OnProgress += this.ImportJobOnProgress;
 			this.ImportJob.OnFatalException += this.ImportJobOnFatalException;
+			this.ImportJob.OnBatchComplete += this.OnBatchComplete;
 		}
 
 		public virtual void SetUpImportApi(IntegrationTestParameters parameters, ISettingsBuilder<TSettings> settingsBuilder)
@@ -103,6 +104,7 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 
 		public ImportTestJobResult Execute<T>(ImportDataSource<T> importData)
 		{
+			this.TestJobResult.BatchReports.Clear();
 			using (var dataReader = new ImportDataSourceToDataReaderAdapter<T>(importData))
 			{
 				return this.Execute(dataReader);
@@ -165,6 +167,7 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 					this.ImportJob.OnComplete -= this.ImportJobOnComplete;
 					this.ImportJob.OnProgress -= this.ImportJobOnProgress;
 					this.ImportJob.OnFatalException -= this.ImportJobOnFatalException;
+					this.ImportJob.OnBatchComplete -= this.OnBatchComplete;
 				}
 
 				this.TestJobResult = null;
@@ -203,6 +206,16 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 			}
 
 			this.Logger.LogError(jobReport.FatalException, "Job Fatal Exception");
+		}
+
+		private void OnBatchComplete(BatchReport batchReport)
+		{
+			lock (this.testJobResultLock)
+			{
+				this.TestJobResult.BatchReports.Add(batchReport);
+			}
+
+			this.Logger.LogInformation("Batch Complete");
 		}
 
 		private void DisconnectFromRemoteObject()

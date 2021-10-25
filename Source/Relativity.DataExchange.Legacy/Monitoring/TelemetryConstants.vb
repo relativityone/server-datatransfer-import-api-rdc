@@ -63,6 +63,7 @@
 			Public Const BATCH_NUMBER As String = "BatchNumber"
 			Public Const MASS_IMPORT_DURATION As String = "MassImportDurationMilliseconds"
 			Public Const NUMBER_OF_RECORDS As String = "NumberOfRecords"
+			Public Const NUMBER_OF_FILES As String = "NumberOfFiles"
 			Public Const JOB_START_TIMESTAMP As String = "JobStartTimeStamp"
 			Public Const JOB_END_TIMESTAMP As String = "JobEndTimeStamp"
 			Public Const JOB_RUN_ID As String = "JobRunId"

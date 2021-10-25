@@ -33,6 +33,8 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 
 		public List<IDictionary> ErrorRows { get; } = new List<IDictionary>();
 
+		public List<BatchReport> BatchReports { get; } = new List<BatchReport>();
+
 		public long NumberOfJobMessages { get; set; }
 
 		public bool SwitchedToWebMode { get; private set; }

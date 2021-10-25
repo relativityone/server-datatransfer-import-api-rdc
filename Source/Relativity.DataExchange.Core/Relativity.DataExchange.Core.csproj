@@ -138,6 +138,7 @@
     <Compile Include="Media\MultiPageTiffConversionException.cs" />
     <Compile Include="MemoryCacheRepository.cs" />
     <Compile Include="NullAuthTokenProvider.cs" />
+    <Compile Include="Process\BatchCompletedEventArgs.cs" />
     <Compile Include="Process\EventType2.cs" />
     <Compile Include="Process\ProcessBase2.cs" />
     <Compile Include="Process\NullProcessEventWriter.cs" />

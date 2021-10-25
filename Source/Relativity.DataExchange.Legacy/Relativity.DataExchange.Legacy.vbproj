@@ -169,6 +169,7 @@
       <Paket>True</Paket>
     </Content>
     <Compile Include="CertificateValidator.vb" />
+    <Compile Include="DataReaderClient\BatchReport.vb" />
     <Compile Include="Service\Kepler\KeplerProxy.vb" />
     <Compile Include="Service\Kepler\LongTextStreamService.vb" />
     <Compile Include="Service\Kepler\ReLoginRetryPolicyFactory.vb" />

@@ -19,6 +19,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 	using global::NUnit.Framework;
 	using kCura.Relativity.DataReaderClient;
+
+	using Relativity.DataExchange.Export.VolumeManagerV2;
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
@@ -55,6 +57,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "This field is used as ValueSource")]
 		private static readonly TapiClient[] AvailableTapiClients = TapiClientModeAvailabilityChecker.GetAvailableTapiClients();
+		private readonly int initialBatchSize = AppSettings.Instance.ImportBatchSize;
 
 		private bool testsSkipped = false;
 
@@ -87,6 +90,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[TearDown]
 		public async Task TearDownAsync()
 		{
+			AppSettings.Instance.ImportBatchSize = this.initialBatchSize;
 			if (!testsSkipped)
 			{
 				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, createdObjectArtifactTypeId).ConfigureAwait(false);
@@ -632,6 +636,49 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 											 .ConfigureAwait(false);
 
 			ThenTheAuditActionsAreCorrect(audits, ExpectedAction);
+		}
+
+		[IdentifiedTest("496fd13b-958e-433a-b870-edfedece92f5")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+		public void ShouldImportDocumentsInBatches(
+			[Values(ArtifactType.Document, ArtifactType.ObjectType)] ArtifactType artifactType)
+		{
+			// ARRANGE
+			const int NumberOfDocumentsToImport = 200;
+			const int BatchSize = 50;
+			const int NumberOfErrorsPerBatch = 20;
+			const int ExpectedNumberOfBatches = NumberOfDocumentsToImport / BatchSize;
+			AppSettings.Instance.ImportBatchSize = BatchSize;
+
+			int artifactTypeId = GetArtifactTypeIdForTest(artifactType);
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings(artifactTypeId);
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+
+			IEnumerable<string> controlNumber = GetIdentifiersEnumerable(NumberOfDocumentsToImport, nameof(this.ShouldImportDocumentsInBatches)).ToList();
+			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, controlNumber)
+				.Build();
+
+			var controlNumberErrors = controlNumber.Where((_, i) => i % BatchSize < NumberOfErrorsPerBatch).ToList();
+			ImportDataSource<object[]> importDataSourceErrors = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, controlNumberErrors)
+				.Build();
+
+			this.JobExecutionContext.Execute(importDataSourceErrors);
+
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
+
+			// ASSERT
+			Assert.That(results.JobReportTotalRows, Is.EqualTo(NumberOfDocumentsToImport));
+			Assert.That(results.BatchReports, Has.Count.EqualTo(ExpectedNumberOfBatches));
+
+			foreach (BatchReport batchReport in results.BatchReports)
+			{
+				Assert.That(batchReport.NumberOfFiles, Is.Zero);
+				Assert.That(batchReport.NumberOfRecords, Is.EqualTo(BatchSize - NumberOfErrorsPerBatch));
+				Assert.That(batchReport.NumberOfRecordsWithErrors, Is.EqualTo(NumberOfErrorsPerBatch));
+			}
 		}
 
 		private static void ThenTheAuditActionsAreCorrect(IList<string> audits, string expectedAction)

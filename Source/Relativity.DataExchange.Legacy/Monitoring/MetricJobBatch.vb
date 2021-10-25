@@ -56,5 +56,18 @@
 				CustomData.Item(TelemetryConstants.KeyName.RECORDS_WITH_ERRORS) = Value
 			End Set
 		End Property
+
+		''' <summary>
+		''' Gets or sets number of files in batch.
+		''' </summary>
+		''' <returns>Number of files in batch.</returns>
+		Public Property NumberOfFiles As Integer
+			Get
+				Return GetValueOrDefault(Of Integer)(TelemetryConstants.KeyName.NUMBER_OF_FILES)
+			End Get
+			Set
+				CustomData.Item(TelemetryConstants.KeyName.NUMBER_OF_FILES) = Value
+			End Set
+		End Property
 	End Class
 End NameSpace

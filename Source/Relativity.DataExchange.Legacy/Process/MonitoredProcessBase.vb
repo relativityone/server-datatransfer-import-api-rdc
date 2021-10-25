@@ -206,6 +206,7 @@ Public MustInherit Class MonitoredProcessBase
 		metric.BatchNumber = batchInformation.OrdinalNumber
 		metric.NumberOfRecords = batchInformation.NumberOfRecords
 		metric.NumberOfRecordsWithErrors = batchInformation.NumberOfRecordsWithErrors
+		metric.NumberOfFiles = batchInformation.NumberOfFilesProcessed
 
 		SetBaseMetrics(metric)
 

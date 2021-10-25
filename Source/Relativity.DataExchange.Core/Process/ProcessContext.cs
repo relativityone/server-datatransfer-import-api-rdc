@@ -189,6 +189,11 @@ namespace Relativity.DataExchange.Process
 		public event EventHandler<StatusBarEventArgs> StatusBarChanged;
 
 		/// <summary>
+		/// Occurs when batch is completed.
+		/// </summary>
+		public event EventHandler<BatchCompletedEventArgs> BatchCompleted;
+
+		/// <summary>
 		/// Gets or sets input arguments.
 		/// </summary>
 		/// <value>
@@ -630,6 +635,19 @@ namespace Relativity.DataExchange.Process
 		{
 			StatusBarEventArgs args = new StatusBarEventArgs(message, popupText);
 			this.StatusBarChanged?.Invoke(this, args);
+		}
+
+		/// <summary>
+		/// Publish batch complete event.
+		/// </summary>
+		/// <param name="ordinalNumber">Ordinal batch number.</param>
+		/// <param name="numberOfFiles">Number of files.</param>
+		/// <param name="numberOfRecords">Number of records.</param>
+		/// <param name="numberOfRecordsWithErrors">Number of records with errors.</param>
+		public void PublishBatchCompleted(int ordinalNumber, int numberOfFiles, int numberOfRecords, int numberOfRecordsWithErrors)
+		{
+			BatchCompletedEventArgs args = new BatchCompletedEventArgs(ordinalNumber, numberOfFiles, numberOfRecords, numberOfRecordsWithErrors);
+			this.BatchCompleted?.Invoke(this, args);
 		}
 
 		/// <summary>

@@ -12,10 +12,17 @@
 		Public Property OrdinalNumber As Integer
 
 		''' <summary>
-		''' Gets or sets number of records in batch.
+		''' Gets or sets number of records in batch. This value is
+		''' a sum of all created and updated artifacts in the batch.
 		''' </summary>
 		''' <returns>Number of records.</returns>
 		Public Property NumberOfRecords As Integer
+
+		''' <summary>
+		''' Gets or sets number of files in batch.
+		''' </summary>
+		''' <returns>Number of files.</returns>
+		Public Property NumberOfFilesProcessed As Integer
 
 		''' <summary>
 		''' Gets or sets number of records with errors in batch.
