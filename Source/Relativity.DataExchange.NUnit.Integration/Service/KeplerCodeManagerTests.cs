@@ -16,7 +16,9 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	using kCura.WinEDDS.Service.Replacement;
 
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Testing.Identification;
 
 	[TestFixture(true)]
@@ -204,6 +206,32 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 					           {
 						           Name = choiceValue,
 						           Order = 2000,
+						           ParentArtifactID = this.parentId,
+						           CodeType = NonExistingCodeTypeId,
+					           };
+
+				var result = sut.Create(this.TestParameters.WorkspaceId, code);
+
+				Assert.That((string)result, Does.Contain("SqlException: The INSERT statement conflicted with the FOREIGN KEY constraint \"FK_Code_CodeType\""));
+			}
+		}
+
+		[IdentifiedTest("C4AE7AD5-F12C-44F7-85FD-C48071A99D7B")]
+		[IgnoreIfVersionGreaterOrEqual(RelativityVersion.Sundrop)]
+		public void ShouldNotCreateWhenParentArtifactIDIsInvalidPrairieSmokeAndOlder()
+		{
+			// arrange
+			string choiceValue = $"Choice Value {(this.UseKepler ? "Kepler" : "WebApi")}";
+
+			using (ICodeManager sut = ManagerFactory.CreateCodeManager(
+				this.Credential,
+				this.CookieContainer,
+				this.CorrelationIdFunc))
+			{
+				var code = new kCura.EDDS.WebAPI.CodeManagerBase.Code()
+					           {
+						           Name = choiceValue,
+						           Order = 2000,
 						           ParentArtifactID = NonExistingParentId,
 						           CodeType = this.EmptySingleChoiceFieldCodeTypeId,
 					           };
@@ -211,18 +239,32 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 				var result = sut.Create(this.TestParameters.WorkspaceId, code);
 
 				Assert.That((string)result, Does.Contain("SqlException: The INSERT statement conflicted with the FOREIGN KEY constraint \"FK_ArtifactAncestry_Artifact1\""));
+			}
+		}
 
-				code = new kCura.EDDS.WebAPI.CodeManagerBase.Code()
+		[IdentifiedTest("50742D63-E938-439B-B7B7-B5D0B5FC7671")]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Sundrop)]
+		public void ShouldNotCreateWhenParentArtifactIDIsInvalidSundropAndNewer()
+		{
+			// arrange
+			string choiceValue = $"Choice Value {(this.UseKepler ? "Kepler" : "WebApi")}";
+
+			using (ICodeManager sut = ManagerFactory.CreateCodeManager(
+				this.Credential,
+				this.CookieContainer,
+				this.CorrelationIdFunc))
+			{
+				var code = new kCura.EDDS.WebAPI.CodeManagerBase.Code()
 					           {
 						           Name = choiceValue,
 						           Order = 2000,
-						           ParentArtifactID = this.parentId,
-						           CodeType = NonExistingCodeTypeId,
+						           ParentArtifactID = NonExistingParentId,
+						           CodeType = this.EmptySingleChoiceFieldCodeTypeId,
 					           };
 
-				result = sut.Create(this.TestParameters.WorkspaceId, code);
+				var result = sut.Create(this.TestParameters.WorkspaceId, code);
 
-				Assert.That((string)result, Does.Contain("SqlException: The INSERT statement conflicted with the FOREIGN KEY constraint \"FK_Code_CodeType\""));
+				Assert.That((string)result, Does.Contain("System.InvalidOperationException: Nullable object must have a value."));
 			}
 		}
 
