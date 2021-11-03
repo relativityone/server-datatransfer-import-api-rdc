@@ -10,8 +10,8 @@ Namespace kCura.WinEDDS.Service.Replacement
 
         Private _folderCreationCount As Int32 = 0
 
-        Public Sub New(serviceProxyFactory As IServiceProxyFactory, typeMapper As ITypeMapper, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
-            MyBase.New(serviceProxyFactory, typeMapper, exceptionMapper, correlationIdFunc)
+        Public Sub New(serviceProxyFactory As IServiceProxyFactory, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
+            MyBase.New(serviceProxyFactory, exceptionMapper, correlationIdFunc)
         End Sub
 
         Public ReadOnly Property CreationCount As Integer Implements IFolderManager.CreationCount
@@ -24,7 +24,7 @@ Namespace kCura.WinEDDS.Service.Replacement
             Return Execute(Async Function(s)
                 Using service As IFolderService = s.CreateProxyInstance(Of IFolderService)
                                    Dim result As Models.Folder = Await service.ReadAsync(caseContextArtifactID, folderArtifactID, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
-                                   Return Map(Of Folder)(result)
+                                   Return KeplerTypeMapper.Map(result)
                                End Using
                            End Function)
         End Function

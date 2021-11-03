@@ -1,258 +1,152 @@
-﻿// <copyright file="KeplerTypeMapperTests.cs" company="Relativity ODA LLC">
-// © Relativity All Rights Reserved.
+﻿// -----------------------------------------------------------------------------------------------------
+// <copyright file="KeplerTypeMapperTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
 // </copyright>
+// <summary>
+//   Represents <see cref="KeplerTypeMapperTests"/> tests.
+// </summary>
+// -----------------------------------------------------------------------------------------------------
 
 namespace Relativity.DataExchange.NUnit.Mapping
 {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
+	using System.Collections;
 
+	using AutoFixture;
+    using AutoMapper;
 	using FluentAssertions;
 
 	using global::NUnit.Framework;
 
+	using kCura.Vendor.Castle.MicroKernel.ModelBuilder.Descriptors;
 	using kCura.WinEDDS.Mapping;
-	using kCura.WinEDDS.Service.Replacement;
+	using RelativityDataExchange = Relativity.DataExchange.Service;
+	using RelativityDataTransferLegacySDK = Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 
-	using Newtonsoft.Json;
-	using Newtonsoft.Json.Converters;
-
-	using Relativity.DataExchange.NUnit.Utils;
-
-	[TestFixture]
+    [TestFixture]
 	public class KeplerTypeMapperTests
 	{
-		private KeplerTypeMapper mapper;
+		private IMapper mapper;
+		private Fixture fixture;
 
-		private RandomObjectGenerator randomObjectGenerator;
-
-		[SetUp]
-		public void SetUp()
+		[OneTimeSetUp]
+        public void OneTimeSetUp()
 		{
-			this.mapper = new KeplerTypeMapper();
-			this.randomObjectGenerator = new RandomObjectGenerator();
+			MapperConfiguration config = new MapperConfiguration(this.ConfigureMapper);
+			this.mapper = config.CreateMapper();
+			this.fixture = new Fixture();
 		}
 
-		[Test]
-		public void AuditManagerModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<IAuditManager>();
+        [TestCaseSource(typeof(MappingCases))]
+        public void MapWithDefaultValuesTest<TSource, TDestination>(Func<TSource, TDestination> mapFunc)
+	        where TSource : new()
+        {
+	        // arrange
+	        TSource source = new TSource();
+	        var expected = this.mapper.Map<TDestination>(source);
+
+	        // act
+	        var result = mapFunc(source);
+
+	        // assert
+	        result.Should().BeEquivalentTo(expected);
+        }
+
+		[TestCaseSource(typeof(MappingCases))]
+        public void MapWithRandomValuesTest<TSource, TDestination>(Func<TSource, TDestination> mapFunc)
+        {
+	        // arrange
+	        TSource source = this.fixture.Create<TSource>();
+	        var expected = this.mapper.Map<TDestination>(source);
+
+	        // act
+	        var result = mapFunc(source);
+
+	        // assert
+	        result.Should().BeEquivalentTo(expected);
 		}
 
-		[Test]
-		public void BulkImportManagerModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<IBulkImportManager>();
-		}
+        private void ConfigureMapper(IMapperConfigurationExpression config)
+        {
+	        config.AllowNullCollections = true;
+	        this.ConfigureParameterTypeMappings(config);
+            this.ConfigureReturnTypeMappings(config);
+        }
 
-		[Test]
-		public void CaseManagerModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<ICaseManager>();
-		}
+        private void ConfigureParameterTypeMappings(IMapperConfigurationExpression config)
+        {
+	        config.CreateMap<kCura.EDDS.WebAPI.AuditManagerBase.ImageImportStatistics, RelativityDataTransferLegacySDK.ImageImportStatistics>();
+            config.CreateMap<kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics, RelativityDataTransferLegacySDK.ObjectImportStatistics>();
+            config.CreateMap<kCura.EDDS.WebAPI.AuditManagerBase.ExportStatistics, RelativityDataTransferLegacySDK.ExportStatistics>();
+            config.CreateMap<kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo, RelativityDataTransferLegacySDK.ImageLoadInfo>();
+            config.CreateMap<kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, RelativityDataTransferLegacySDK.NativeLoadInfo>();
 
-		[Test]
-		public void CodeManagerModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<ICodeManager>();
-		}
+            config.CreateMap<kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo, RelativityDataTransferLegacySDK.ObjectLoadInfo>();
+            config.CreateMap<kCura.EDDS.WebAPI.BulkImportManagerBase.LoadRange, RelativityDataTransferLegacySDK.LoadRange>();
+            config.CreateMap<kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo, RelativityDataTransferLegacySDK.FieldInfo>();
+            config.CreateMap<kCura.EDDS.WebAPI.CodeManagerBase.Code, RelativityDataTransferLegacySDK.Code>();
+            config.CreateMap<kCura.EDDS.WebAPI.CodeManagerBase.KeyboardShortcut, RelativityDataTransferLegacySDK.KeyboardShortcut>();
+        }
 
-		[Test]
-		public void DocumentManagerModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<IDocumentManager>();
-		}
+        private void ConfigureReturnTypeMappings(IMapperConfigurationExpression config)
+        {
+            config.CreateMap<RelativityDataTransferLegacySDK.MassImportResults, kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults>();
+            config.CreateMap<RelativityDataTransferLegacySDK.SoapExceptionDetail, kCura.EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail>();
+            config.CreateMap<RelativityDataTransferLegacySDK.ErrorFileKey, RelativityDataExchange.ErrorFileKey>();
+            config.CreateMap<RelativityDataTransferLegacySDK.CaseInfo, RelativityDataExchange.CaseInfo>();
+            config.CreateMap<RelativityDataTransferLegacySDK.ChoiceInfo, RelativityDataExchange.ChoiceInfo>();
 
-		[Test]
-		public void ExportManagerModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<IExportManager>();
-		}
+            config.CreateMap<RelativityDataTransferLegacySDK.KeyboardShortcut, kCura.EDDS.WebAPI.CodeManagerBase.KeyboardShortcut>();
+            config.CreateMap<RelativityDataTransferLegacySDK.InitializationResults, kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults>();
+            config.CreateMap<RelativityDataTransferLegacySDK.Field, kCura.EDDS.WebAPI.FieldManagerBase.Field>();
+            config.CreateMap<RelativityDataTransferLegacySDK.KeyboardShortcut, kCura.EDDS.WebAPI.FieldManagerBase.KeyboardShortcut>();
+            config.CreateMap<RelativityDataTransferLegacySDK.RelationalFieldPane, kCura.EDDS.WebAPI.FieldManagerBase.RelationalFieldPane>();
 
-		[Test]
-		public void FieldManagerModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<IFieldManager>();
-		}
+            config.CreateMap<RelativityDataTransferLegacySDK.ObjectsFieldParameters, kCura.EDDS.WebAPI.FieldManagerBase.ObjectsFieldParameters>();
+            config.CreateMap<RelativityDataTransferLegacySDK.KeyboardShortcut, kCura.EDDS.WebAPI.DocumentManagerBase.KeyboardShortcut>();
+            config.CreateMap<RelativityDataTransferLegacySDK.RelationalFieldPane, kCura.EDDS.WebAPI.DocumentManagerBase.RelationalFieldPane>();
+            config.CreateMap<RelativityDataTransferLegacySDK.ObjectsFieldParameters, kCura.EDDS.WebAPI.DocumentManagerBase.ObjectsFieldParameters>();
+            config.CreateMap<RelativityDataTransferLegacySDK.Folder, kCura.EDDS.WebAPI.FolderManagerBase.Folder>();
 
-		[Test]
-		public void FieldQueryModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<IFieldQuery>();
-		}
+            config.CreateMap<RelativityDataTransferLegacySDK.ProductionInfo, kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo>();
+        }
 
-		[Test]
-		public void FileIoModelShouldBeCorrectlyMapped()
+        public class MappingCases : IEnumerable
 		{
-			this.EnsureMapping<IFileIO>();
-		}
-
-		[Test]
-		public void FolderManagerModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<IFolderManager>();
-		}
-
-		[Test]
-		public void ObjectManagerModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<IObjectManager>();
-		}
-
-		[Test]
-		public void IObjectTypeManagerModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<IObjectTypeManager>();
-		}
-
-		[Test]
-		public void ProductionManagerModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<IProductionManager>();
-		}
-
-		[Test]
-		public void RelativityManagerModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<IRelativityManager>();
-		}
-
-		[Test]
-		public void SearchManagerModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<ISearchManager>();
-		}
-
-		[Test]
-		public void UserManagerModelShouldBeCorrectlyMapped()
-		{
-			this.EnsureMapping<IUserManager>();
-		}
-
-		private void EnsureMapping<TManager>()
-		{
-			this.EnsureParameterTypeMapping<TManager>();
-			this.EnsureReturnTypeMapping<TManager>();
-		}
-
-		private void EnsureParameterTypeMapping<TManager>()
-		{
-			var parameterTypes = this.GetParameterTypesForManagerMethods<TManager>();
-
-			foreach (var webApiParameterType in parameterTypes)
+			public IEnumerator GetEnumerator()
 			{
-				var keplerParameterType = Type.GetType($"Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models.{webApiParameterType.Name}, Relativity.DataTransfer.Legacy.SDK");
+				yield return new object[] { (Func<kCura.EDDS.WebAPI.AuditManagerBase.ImageImportStatistics, RelativityDataTransferLegacySDK.ImageImportStatistics>)KeplerTypeMapper.Map };
+				yield return new object[] { (Func<kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics, RelativityDataTransferLegacySDK.ObjectImportStatistics>)KeplerTypeMapper.Map };
+				yield return new object[] { (Func<kCura.EDDS.WebAPI.AuditManagerBase.ExportStatistics, RelativityDataTransferLegacySDK.ExportStatistics>)KeplerTypeMapper.Map };
+				yield return new object[] { (Func<kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo, RelativityDataTransferLegacySDK.ImageLoadInfo>)KeplerTypeMapper.Map };
+				yield return new object[] { (Func<kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, RelativityDataTransferLegacySDK.NativeLoadInfo>)KeplerTypeMapper.Map };
+				yield return new object[] { (Func<kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo, RelativityDataTransferLegacySDK.ObjectLoadInfo>)KeplerTypeMapper.Map };
 
-				TestContext.WriteLine($"Map '{webApiParameterType.FullName}' -> '{keplerParameterType?.FullName}'");
+				yield return new object[] { (Func<kCura.EDDS.WebAPI.BulkImportManagerBase.LoadRange, RelativityDataTransferLegacySDK.LoadRange>)KeplerTypeMapper.Map };
+				yield return new object[] { (Func<kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo, RelativityDataTransferLegacySDK.FieldInfo>)KeplerTypeMapper.Map };
+				yield return new object[] { (Func<kCura.EDDS.WebAPI.CodeManagerBase.Code, RelativityDataTransferLegacySDK.Code>)KeplerTypeMapper.Map };
+				yield return new object[] { (Func<kCura.EDDS.WebAPI.CodeManagerBase.KeyboardShortcut, RelativityDataTransferLegacySDK.KeyboardShortcut>)KeplerTypeMapper.Map };
 
-				// Arrange - generate object for WebApi parameter type
-				var webApiObject = this.randomObjectGenerator.Generate(webApiParameterType);
-				Assert.NotNull(webApiObject, $"{webApiParameterType} object should not be null");
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.MassImportResults, kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults>)KeplerTypeMapper.Map };
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.SoapExceptionDetail, kCura.EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail>)KeplerTypeMapper.Map };
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.ErrorFileKey, RelativityDataExchange.ErrorFileKey>)KeplerTypeMapper.Map };
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.CaseInfo, RelativityDataExchange.CaseInfo>)KeplerTypeMapper.Map };
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.ChoiceInfo, RelativityDataExchange.ChoiceInfo>)KeplerTypeMapper.Map };
 
-				// Act - map WebApi to Kepler object
-				var keplerObject = this.mapper.Map(webApiObject, webApiParameterType, keplerParameterType);
-				Assert.NotNull(keplerObject, $"{keplerParameterType} object should not be null");
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.KeyboardShortcut, kCura.EDDS.WebAPI.CodeManagerBase.KeyboardShortcut>)KeplerTypeMapper.MapToCodeManagerBaseKeyboardShortcut };
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.InitializationResults, kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults>)KeplerTypeMapper.Map };
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.Field, kCura.EDDS.WebAPI.FieldManagerBase.Field>)KeplerTypeMapper.MapToFieldManagerBaseField };
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.KeyboardShortcut, kCura.EDDS.WebAPI.FieldManagerBase.KeyboardShortcut>)KeplerTypeMapper.MapToFieldManagerBaseKeyboardShortcut };
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.RelationalFieldPane, kCura.EDDS.WebAPI.FieldManagerBase.RelationalFieldPane>)KeplerTypeMapper.MapToFieldManagerBaseRelationalFieldPane };
 
-				// Assert - ensure WebApi and Kepler objects are the same
-				this.EnsureObjectsAreEqual(webApiObject, keplerObject, keplerParameterType);
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.ObjectsFieldParameters, kCura.EDDS.WebAPI.FieldManagerBase.ObjectsFieldParameters>)KeplerTypeMapper.MapToFieldManagerBaseObjectsFieldParameters };
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.KeyboardShortcut, kCura.EDDS.WebAPI.DocumentManagerBase.KeyboardShortcut>)KeplerTypeMapper.MapToDocumentManagerBaseKeyboardShortcut };
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.RelationalFieldPane, kCura.EDDS.WebAPI.DocumentManagerBase.RelationalFieldPane>)KeplerTypeMapper.MapToDocumentManagerBaseRelationalFieldPane };
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.ObjectsFieldParameters, kCura.EDDS.WebAPI.DocumentManagerBase.ObjectsFieldParameters>)KeplerTypeMapper.MapToDocumentManagerBaseObjectsFieldParameters };
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.Folder, kCura.EDDS.WebAPI.FolderManagerBase.Folder>)KeplerTypeMapper.Map };
+
+				yield return new object[] { (Func<RelativityDataTransferLegacySDK.ProductionInfo, kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo>)KeplerTypeMapper.Map };
 			}
-		}
-
-		private void EnsureReturnTypeMapping<TManager>()
-		{
-			var returnTypes = this.GetReturnTypesForManagerMethods<TManager>();
-
-			foreach (var webApiReturnType in returnTypes)
-			{
-				var keplerReturnType = Type.GetType($"Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models.{webApiReturnType.Name}, Relativity.DataTransfer.Legacy.SDK");
-
-				TestContext.WriteLine($"Map '{keplerReturnType?.FullName}' -> '{webApiReturnType.FullName}'");
-
-				// Arrange - generate object for Kepler return type
-				var keplerObject = this.randomObjectGenerator.Generate(keplerReturnType);
-				Assert.NotNull(keplerObject, $"{keplerReturnType} object should not be null");
-
-				// Act - map Kepler to WebApi object
-				var webApiObject = this.mapper.Map(keplerObject, keplerReturnType, webApiReturnType);
-				Assert.NotNull(webApiObject, $"{webApiReturnType} object should not be null");
-
-				// Assert - ensure Kepler and WebApi objects are the same
-				this.EnsureObjectsAreEqual(keplerObject, webApiObject, webApiReturnType);
-			}
-		}
-
-		private Type[] GetParameterTypesForManagerMethods<TManager>()
-		{
-			var parameterTypesToMap = new List<Type>();
-			var parameterTypesSkipped = new List<Type>();
-
-			var methods = typeof(TManager).GetMethods();
-			foreach (var method in methods)
-			{
-				var parameters = method.GetParameters();
-				foreach (var parameter in parameters)
-				{
-					if (this.ShouldIncludeType(parameter.ParameterType))
-					{
-						parameterTypesToMap.Add(parameter.ParameterType);
-					}
-					else
-					{
-						parameterTypesSkipped.Add(parameter.ParameterType);
-					}
-				}
-			}
-
-			TestContext.WriteLine($"Skip mapping test for {typeof(TManager).Name} parameter types: {string.Join(",", parameterTypesSkipped.Distinct().Select(t => t.Name))}");
-
-			return parameterTypesToMap.Distinct().ToArray();
-		}
-
-		private Type[] GetReturnTypesForManagerMethods<TManager>()
-		{
-			var returnTypesToMap = new List<Type>();
-			var returnTypesSkipped = new List<Type>();
-
-			var managerMethods = typeof(TManager).GetMethods();
-			foreach (var method in managerMethods)
-			{
-				var returnType = method.ReturnType;
-				if (this.ShouldIncludeType(returnType))
-				{
-					returnTypesToMap.Add(returnType);
-				}
-				else
-				{
-					returnTypesSkipped.Add(returnType);
-				}
-			}
-
-			TestContext.WriteLine($"Skip mapping test for {typeof(TManager).Name} return types: {string.Join(",", returnTypesSkipped.Distinct().Select(t => t.Name))}");
-
-			return returnTypesToMap.Distinct().ToArray();
-		}
-
-		private void EnsureObjectsAreEqual(object source, object actualDestination, Type destinationType)
-		{
-			Assert.NotNull(source);
-			Assert.NotNull(actualDestination);
-
-			var jsonSettings = new JsonSerializerSettings();
-			jsonSettings.NullValueHandling = NullValueHandling.Ignore;
-			jsonSettings.Converters.Add(new StringEnumConverter());
-
-			var sourceJson = JsonConvert.SerializeObject(source, jsonSettings);
-			var expectedDestination = JsonConvert.DeserializeObject(sourceJson, destinationType, jsonSettings);
-
-			expectedDestination.Should().BeEquivalentTo(actualDestination);
-		}
-
-		private bool ShouldIncludeType(Type type)
-		{
-			return type.FullName.Contains("kCura.EDDS.WebAPI") ||
-			       type.FullName.Contains("Relativity.DataExchange.Service") ||
-			       type.FullName.Contains("Relativity.DataTransfer.Legacy.SDK");
 		}
 	}
 }

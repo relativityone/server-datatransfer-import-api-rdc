@@ -9,8 +9,8 @@ Namespace kCura.WinEDDS.Service.Replacement
         Inherits KeplerManager
         Implements IExportManager
 
-        Public Sub New(serviceProxyFactory As IServiceProxyFactory, typeMapper As ITypeMapper, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
-            MyBase.New(serviceProxyFactory, typeMapper, exceptionMapper, correlationIdFunc)
+        Public Sub New(serviceProxyFactory As IServiceProxyFactory, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
+            MyBase.New(serviceProxyFactory, exceptionMapper, correlationIdFunc)
         End Sub
 
         Public Function RetrieveResultsBlockStartingFromIndex(appID As Integer, runId As Guid, artifactTypeID As Integer, avfIds() As Integer, chunkSize As Integer, displayMulticodesAsNested As Boolean, multiValueDelimiter As Char, nestedValueDelimiter As Char, textPrecedenceAvfIds() As Integer, index As Integer) As Object() Implements IExportManager.RetrieveResultsBlockStartingFromIndex, Export.IExportManager.RetrieveResultsBlockStartingFromIndex
@@ -35,7 +35,7 @@ Namespace kCura.WinEDDS.Service.Replacement
             Return Execute(Async Function(s)
                                Using service As IExportService = s.CreateProxyInstance(Of IExportService)
                                    Dim result As Models.InitializationResults = Await service.InitializeFolderExportAsync(appID, viewArtifactID, parentArtifactID, includeSubFolders, avfIds, startAtRecord, artifactTypeID, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
-                                   Return Map(Of kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults)(result)
+                                   Return KeplerTypeMapper.Map(result)
                                End Using
                            End Function)
         End Function
@@ -44,7 +44,7 @@ Namespace kCura.WinEDDS.Service.Replacement
             Return Execute(Async Function(s)
                                Using service As IExportService = s.CreateProxyInstance(Of IExportService)
                                    Dim result As Models.InitializationResults = Await service.InitializeProductionExportAsync(appID, productionArtifactID, avfIds, startAtRecord, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
-                                   Return Map(Of kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults)(result)
+                                   Return KeplerTypeMapper.Map(result)
                                End Using
                            End Function)
         End Function
@@ -53,7 +53,7 @@ Namespace kCura.WinEDDS.Service.Replacement
             Return Execute(Async Function(s)
                                Using service As IExportService = s.CreateProxyInstance(Of IExportService)
                                    Dim result As Models.InitializationResults = Await service.InitializeSearchExportAsync(appID, searchArtifactID, avfIds, startAtRecord, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
-                                   Return Map(Of kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults)(result)
+                                   Return KeplerTypeMapper.Map(result)
                                End Using
                            End Function)
         End Function

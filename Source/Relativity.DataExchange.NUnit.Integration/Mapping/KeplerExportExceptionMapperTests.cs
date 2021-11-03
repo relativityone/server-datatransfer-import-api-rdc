@@ -119,7 +119,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Mapping
 			var keplerServiceConnectionInfo = new KeplerServiceConnectionInfo(this.RelativityInstance.WebApiServiceUrl, this.RelativityInstance.Credentials as NetworkCredential);
 			using (var keplerServiceProxyFactory = new KeplerServiceProxyFactory(keplerServiceConnectionInfo))
 			{
-				using (var keplerExportManager = new KeplerExportManager(keplerServiceProxyFactory, new KeplerTypeMapper(), new KeplerExceptionMapper(), () => nameof(KeplerExportExceptionMapperTests)))
+				using (var keplerExportManager = new KeplerExportManager(keplerServiceProxyFactory, new KeplerExceptionMapper(), () => nameof(KeplerExportExceptionMapperTests)))
 				{
 					action?.Invoke(keplerExportManager);
 				}

@@ -435,7 +435,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
-    <Compile Include="Mapping\ITypeMapper.vb" />
     <Compile Include="Mapping\KeplerTypeMapper.vb" />
     <Compile Include="Service\Replacement\IUserManager.vb" />
     <Compile Include="Service\Replacement\IRelativityManager.vb" />
@@ -1189,11 +1188,6 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Microsoft.CSharp">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="AutoMapper">
-          <HintPath>..\..\packages\AutoMapper\lib\net461\AutoMapper.dll</HintPath>
-          <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
