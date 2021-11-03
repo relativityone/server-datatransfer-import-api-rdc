@@ -39,7 +39,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Mapping
 			var keplerServiceConnectionInfo = new KeplerServiceConnectionInfo(this.RelativityInstance.WebApiServiceUrl, this.RelativityInstance.Credentials as NetworkCredential);
 			using (var keplerServiceProxyFactory = new KeplerServiceProxyFactory(keplerServiceConnectionInfo))
 			{
-				using (var keplerFileIo = new KeplerFileIO(keplerServiceProxyFactory, new KeplerTypeMapper(), new KeplerExceptionMapper(), () => nameof(KeplerExportExceptionMapperTests)))
+				using (var keplerFileIo = new KeplerFileIO(keplerServiceProxyFactory, new KeplerExceptionMapper(), () => nameof(KeplerExportExceptionMapperTests)))
 				{
 					keplerException = Assert.Throws<SoapException>(() => keplerFileIo.ValidateBcpShare(appId));
 				}

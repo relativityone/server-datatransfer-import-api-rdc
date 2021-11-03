@@ -11,8 +11,8 @@ Namespace kCura.WinEDDS.Service.Replacement
         Inherits KeplerManager
         Implements ICodeManager
 
-        Public Sub New(serviceProxyFactory As IServiceProxyFactory, typeMapper As ITypeMapper, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
-            MyBase.New(serviceProxyFactory, typeMapper, exceptionMapper, correlationIdFunc)
+        Public Sub New(serviceProxyFactory As IServiceProxyFactory, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
+            MyBase.New(serviceProxyFactory, exceptionMapper, correlationIdFunc)
         End Sub
 
         Public Function RetrieveCodesAndTypesForCase(caseContextArtifactID As Integer) As DataSet Implements ICodeManager.RetrieveCodesAndTypesForCase
@@ -28,7 +28,7 @@ Namespace kCura.WinEDDS.Service.Replacement
                                Using service As ICodeService = s.CreateProxyInstance(Of ICodeService)
                                    Dim eName As String = HttpServerUtility.UrlTokenEncode(System.Text.Encoding.UTF8.GetBytes(code.Name))
                                    code.Name = eName
-                                   Dim result As Object = Await service.CreateEncodedAsync(caseContextArtifactID, Map(Of Code)(code), CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
+                                   Dim result As Object = Await service.CreateEncodedAsync(caseContextArtifactID, KeplerTypeMapper.Map(code), CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
                                    If TypeOf result Is Long Then
                                        'Unfortunately Kepler treats numbers as Long if not specified otherwise
                                        Return CType(result, Int32)
@@ -88,7 +88,7 @@ Namespace kCura.WinEDDS.Service.Replacement
                                Using service As ICodeService = s.CreateProxyInstance(Of ICodeService)
                                    Dim eName As String = HttpServerUtility.UrlTokenEncode(System.Text.Encoding.UTF8.GetBytes(name))
                                    Dim result As Models.ChoiceInfo = Await service.RetrieveCodeByNameAndTypeIDEncodedAsync(caseContextArtifactID, codeType.CodeTypeID, eName, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
-                                   Return Map(Of Global.Relativity.DataExchange.Service.ChoiceInfo)(result)
+                                   Return KeplerTypeMapper.Map(result)
                                End Using
                            End Function)
         End Function

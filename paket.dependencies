@@ -2,6 +2,8 @@ framework: net462
 source https://relativity.jfrog.io/relativity/api/nuget/v3/nuget-anthology
 
 nuget AutoMapper = 10.1.1
+nuget AutoFixture = 4.17.0
+nuget Fare = 2.1.1
 
 # Note: do NOT change the Castle version due to SOI with RIP and potentially other consumers.
 nuget castle.core = 3.3.3

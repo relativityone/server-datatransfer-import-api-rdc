@@ -7,8 +7,8 @@ Namespace kCura.WinEDDS.Service.Replacement
         Inherits KeplerManager
         Implements IDocumentManager
 
-        Public Sub New(serviceProxyFactory As IServiceProxyFactory, typeMapper As ITypeMapper, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
-            MyBase.New(serviceProxyFactory, typeMapper, exceptionMapper, correlationIdFunc)
+        Public Sub New(serviceProxyFactory As IServiceProxyFactory, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
+            MyBase.New(serviceProxyFactory, exceptionMapper, correlationIdFunc)
         End Sub
 
         Public Function RetrieveAllUnsupportedOiFileIds() As Integer() Implements IDocumentManager.RetrieveAllUnsupportedOiFileIds

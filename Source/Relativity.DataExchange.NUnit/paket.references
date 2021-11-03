@@ -1,6 +1,9 @@
 AutoBogus
+AutoMapper
+AutoFixture
 Bogus
 csvhelper
+Fare
 FluentAssertions
 Relativity.OutsideIn
 moq

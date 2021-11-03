@@ -12,8 +12,8 @@ Public Class KeplerFileIO
 
     Private Shared BCPCache As New MemoryCache("BCPCache")
 
-    Public Sub New(serviceProxyFactory As IServiceProxyFactory, typeMapper As ITypeMapper, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
-        MyBase.New(serviceProxyFactory, typeMapper, exceptionMapper, correlationIdFunc)
+    Public Sub New(serviceProxyFactory As IServiceProxyFactory, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
+        MyBase.New(serviceProxyFactory, exceptionMapper, correlationIdFunc)
     End Sub
 
     Public Sub RemoveTempFile(caseContextArtifactID As Integer, fileName As String) Implements IFileIO.RemoveTempFile
