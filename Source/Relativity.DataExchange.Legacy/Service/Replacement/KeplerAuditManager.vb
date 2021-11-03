@@ -8,8 +8,8 @@ Namespace kCura.WinEDDS.Service.Replacement
         Inherits KeplerManager
         Implements IAuditManager
 
-        Public Sub New(serviceProxyFactory As IServiceProxyFactory, typeMapper As ITypeMapper, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
-            MyBase.New(serviceProxyFactory, typeMapper, exceptionMapper, correlationIdFunc)
+        Public Sub New(serviceProxyFactory As IServiceProxyFactory, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
+            MyBase.New(serviceProxyFactory, exceptionMapper, correlationIdFunc)
         End Sub
 
         Public Sub DeleteAuditToken(token As String) Implements IAuditManager.DeleteAuditToken
@@ -24,7 +24,7 @@ Namespace kCura.WinEDDS.Service.Replacement
         Public Function AuditImageImport(appID As Integer, runId As String, isFatalError As Boolean, importStats As ImageImportStatistics) As Boolean Implements IAuditManager.AuditImageImport
             Return Execute(Async Function(s)
                                Using auditService As IAuditService = s.CreateProxyInstance(Of IAuditService)
-                                   Return Await auditService.AuditImageImportAsync(appID, runId, isFatalError, Map(Of Models.ImageImportStatistics)(importStats), CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
+                                   Return Await auditService.AuditImageImportAsync(appID, runId, isFatalError, KeplerTypeMapper.Map(importStats), CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
                                End Using
                            End Function)
         End Function
@@ -32,7 +32,7 @@ Namespace kCura.WinEDDS.Service.Replacement
         Public Function AuditObjectImport(appID As Integer, runId As String, isFatalError As Boolean, importStats As ObjectImportStatistics) As Boolean Implements IAuditManager.AuditObjectImport
             Return Execute(Async Function(s)
                                Using auditService As IAuditService = s.CreateProxyInstance(Of IAuditService)
-                                   Return Await auditService.AuditObjectImportAsync(appID, runId, isFatalError, Map(Of Models.ObjectImportStatistics)(importStats), CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
+                                   Return Await auditService.AuditObjectImportAsync(appID, runId, isFatalError, KeplerTypeMapper.Map(importStats), CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
                                End Using
                            End Function)
         End Function
@@ -40,7 +40,7 @@ Namespace kCura.WinEDDS.Service.Replacement
         Public Function AuditExport(appID As Integer, isFatalError As Boolean, exportStats As EDDS.WebAPI.AuditManagerBase.ExportStatistics) As Boolean Implements IAuditManager.AuditExport, Export.IAuditManager.AuditExport
             Return Execute(Async Function(s)
                                Using auditService As IAuditService = s.CreateProxyInstance(Of IAuditService)
-                                   Return Await auditService.AuditExportAsync(appID, isFatalError, Map(Of Models.ExportStatistics)(exportStats), CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
+                                   Return Await auditService.AuditExportAsync(appID, isFatalError, KeplerTypeMapper.Map(exportStats), CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
                                End Using
                            End Function)
         End Function

@@ -19,7 +19,6 @@
     <tags>Relativity DataExchange IAPI ImportAPI Import Export ExportAPI ninebark-ea</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.6.2">
-        <dependency id="AutoMapper" version="10.1.1" />
         <dependency id="Newtonsoft.Json" version="6.0.8" />
         <dependency id="Polly" version="5.7.0" />
         <dependency id="Relativity.Logging" version="2019.5.1" />

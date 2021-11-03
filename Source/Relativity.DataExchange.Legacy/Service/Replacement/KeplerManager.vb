@@ -13,15 +13,13 @@ Namespace kCura.WinEDDS.Service.Replacement
 
         Private ReadOnly _serviceProxyFactory As IServiceProxyFactory
         Private ReadOnly _keplerProxy As IKeplerProxy
-        Private ReadOnly _typeMapper As ITypeMapper
         Private ReadOnly _exceptionMapper As IServiceExceptionMapper
 
         Protected ReadOnly CorrelationIdFunc As Func(Of String)
 
-        Public Sub New(serviceProxyFactory As IServiceProxyFactory, typeMapper As ITypeMapper, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
+        Public Sub New(serviceProxyFactory As IServiceProxyFactory, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
             Me._serviceProxyFactory = serviceProxyFactory
             Me._keplerProxy = New KeplerProxy(serviceProxyFactory, Log.Logger)
-            Me._typeMapper = typeMapper
             Me._exceptionMapper = exceptionMapper
             Me.CorrelationIdFunc = correlationIdFunc
         End Sub
@@ -60,10 +58,6 @@ Namespace kCura.WinEDDS.Service.Replacement
             Catch ex As Exception
                 Throw
             End Try
-        End Function
-
-        Protected Function Map(Of T)(o As Object) As T
-            Return _typeMapper.Map(Of T)(o)
         End Function
 
         ''' <summary>

@@ -77,7 +77,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateAuditManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As IAuditManager
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerAuditManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerAuditManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New AuditManager(credentials, cookieContainer)
 		End Function
@@ -85,7 +85,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateBulkImportManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As IBulkImportManager
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerBulkImportManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), credentials, correlationIdFunc)
+				Return New KeplerBulkImportManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), credentials, correlationIdFunc)
 			End If
 			Return New BulkImportManager(credentials, cookieContainer)
 		End Function
@@ -93,7 +93,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateCaseManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As ICaseManager
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerCaseManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerCaseManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New CaseManager(credentials, cookieContainer)
 		End Function
@@ -101,7 +101,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateCodeManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As ICodeManager
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerCodeManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerCodeManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New CodeManager(credentials, cookieContainer)
 		End Function
@@ -109,7 +109,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateDocumentManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As IDocumentManager
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerDocumentManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerDocumentManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New DocumentManager(credentials, cookieContainer)
 		End Function
@@ -117,7 +117,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateExportManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As IExportManager
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerExportManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerExportManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New ExportManager(credentials, cookieContainer)
 		End Function
@@ -125,7 +125,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateFieldManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As IFieldManager
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerFieldManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerFieldManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New FieldManager(credentials, cookieContainer)
 		End Function
@@ -133,7 +133,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateFieldQuery(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As IFieldQuery
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerFieldQuery(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerFieldQuery(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New FieldQuery(credentials, cookieContainer)
 		End Function
@@ -141,7 +141,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateFileIO(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As IFileIO
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerFileIO(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerFileIO(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New FileIO(credentials, cookieContainer)
 		End Function
@@ -149,7 +149,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateFileIO(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal timeout As Int32, correlationIdFunc As Func(Of String)) As IFileIO
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerFileIO(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerFileIO(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New FileIO(credentials, cookieContainer) With {
 				.Timeout = timeout
@@ -159,7 +159,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateFolderManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As IFolderManager
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerFolderManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerFolderManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New FolderManager(credentials, cookieContainer)
 		End Function
@@ -167,7 +167,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateObjectManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As IObjectManager
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerObjectManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerObjectManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New ObjectManager(credentials, cookieContainer)
 		End Function
@@ -175,7 +175,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateObjectTypeManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As IObjectTypeManager
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerObjectTypeManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerObjectTypeManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New ObjectTypeManager(credentials, cookieContainer)
 		End Function
@@ -183,7 +183,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateProductionManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As IProductionManager
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerProductionManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerProductionManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New ProductionManager(credentials, cookieContainer)
 		End Function
@@ -196,7 +196,7 @@ Namespace kCura.WinEDDS.Service
 			Initialize(credentials, correlationIdFunc)
 			Dim useKeplerValue As Boolean = If(useKepler, _webApiVsKeplerLazy.Value.UseKepler())
 			If useKeplerValue Then
-				Return New KeplerRelativityManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), new KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerRelativityManager(New KeplerServiceProxyFactory(_connectionInfo), new KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New RelativityManager(credentials, cookieContainer)
 		End Function
@@ -204,7 +204,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateSearchManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As ISearchManager
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerSearchManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerSearchManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New SearchManager(credentials, cookieContainer)
 		End Function
@@ -212,7 +212,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateUserManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, correlationIdFunc As Func(Of String)) As IUserManager
 			Initialize(credentials, correlationIdFunc)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerUserManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerUserManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New UserManager(credentials, cookieContainer)
 		End Function
@@ -220,7 +220,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shared Function CreateUserManager(ByVal credentials As NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal webServiceUrl As String, correlationIdFunc As Func(Of String)) As IUserManager
 			Initialize(credentials, correlationIdFunc, webServiceUrl)
 			If _webApiVsKeplerLazy.Value.UseKepler() Then
-				Return New KeplerUserManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerTypeMapper(), New KeplerExceptionMapper(), correlationIdFunc)
+				Return New KeplerUserManager(New KeplerServiceProxyFactory(_connectionInfo), New KeplerExceptionMapper(), correlationIdFunc)
 			End If
 			Return New UserManager(credentials, cookieContainer, webServiceUrl)
 		End Function

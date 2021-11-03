@@ -137,6 +137,7 @@
     <Compile Include="ByteSize\ToStringMethod.cs" />
     <Compile Include="ChoiceInfoTests.cs" />
     <Compile Include="IAPICommunicationModeManagerTests.cs" />
+    <Compile Include="Mapping\KeplerTypeMapperTests.cs" />
     <Compile Include="RestartableFileStreamTests.cs" />
     <Compile Include="Service\HttpErrorRetryPolicyFactoryTests.cs" />
     <Compile Include="ImageValidatorTests.cs" />
@@ -171,7 +172,6 @@
     <Compile Include="Monitoring\Sinks\SumMetricFormatterTest.cs" />
     <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
     <Compile Include="ErrorMessageFormatterTests.cs" />
-    <Compile Include="Mapping\KeplerTypeMapperTests.cs" />
     <Compile Include="Service\RetryableErrorsRetryPolicyFactoryTests.cs" />
     <Compile Include="Service\ReLoginRetryPolicyFactoryTests.cs" />
     <Compile Include="Service\ManagerFactoryTests.cs" />
@@ -401,9 +401,31 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="AutoFixture">
+          <HintPath>..\..\packages\AutoFixture\lib\net452\AutoFixture.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Microsoft.CSharp">
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="AutoMapper">
+          <HintPath>..\..\packages\AutoMapper\lib\net461\AutoMapper.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Bogus">
           <HintPath>..\..\packages\Bogus\lib\net40\Bogus.dll</HintPath>
           <Private>True</Private>
@@ -423,23 +445,30 @@
       </ItemGroup>
     </When>
   </Choose>
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+  </ItemGroup>
   <Choose>
-    <When Condition="'$(Configuration)'!='Debug'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
+        <Reference Include="CsvHelper">
+          <HintPath>..\..\packages\CsvHelper\lib\net45\CsvHelper.dll</HintPath>
+          <Private>True</Private>
           <Paket>True</Paket>
-        </Analyzer>
-        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
-          <Paket>True</Paket>
-        </Analyzer>
+        </Reference>
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="CsvHelper">
-          <HintPath>..\..\packages\CsvHelper\lib\net45\CsvHelper.dll</HintPath>
+        <Reference Include="Fare">
+          <HintPath>..\..\packages\Fare\lib\net35\Fare.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

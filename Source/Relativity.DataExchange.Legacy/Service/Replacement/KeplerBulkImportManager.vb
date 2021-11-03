@@ -13,8 +13,8 @@ Namespace kCura.WinEDDS.Service.Replacement
         Private ReadOnly _credentials As NetworkCredential
         Private ReadOnly _cookieContainer As CookieContainer
 
-        Public Sub New(serviceProxyFactory As IServiceProxyFactory, typeMapper As ITypeMapper, exceptionMapper As IServiceExceptionMapper, credentials As NetworkCredential, correlationIdFunc As Func(Of String))
-            MyBase.New(serviceProxyFactory, typeMapper, exceptionMapper, correlationIdFunc)
+        Public Sub New(serviceProxyFactory As IServiceProxyFactory, exceptionMapper As IServiceExceptionMapper, credentials As NetworkCredential, correlationIdFunc As Func(Of String))
+            MyBase.New(serviceProxyFactory, exceptionMapper, correlationIdFunc)
             _credentials = credentials
         End Sub
 
@@ -34,8 +34,8 @@ Namespace kCura.WinEDDS.Service.Replacement
             Return ExecuteImport(Function()
                 Return Execute(Async Function(s)
                     Using importer As IBulkImportService = s.CreateProxyInstance(Of IBulkImportService)
-                                       Dim result As Models.MassImportResults = Await importer.BulkImportImageAsync(appID, Map(Of Models.ImageLoadInfo)(settings), inRepository, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
-                                       Return Map(Of MassImportResults)(result)
+                                       Dim result As Models.MassImportResults = Await importer.BulkImportImageAsync(appID, KeplerTypeMapper.Map(settings), inRepository, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
+                                       Return KeplerTypeMapper.Map(result)
                                    End Using
                                End Function)
                                  End Function)
@@ -45,8 +45,8 @@ Namespace kCura.WinEDDS.Service.Replacement
             Return ExecuteImport(Function()
                                      Return Execute(Async Function(s)
                                                         Using importer As IBulkImportService = s.CreateProxyInstance(Of IBulkImportService)
-                                                            Dim result As Models.MassImportResults = Await importer.BulkImportProductionImageAsync(appID, Map(Of Models.ImageLoadInfo)(settings), productionKeyFieldArtifactID, inRepository, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
-                                                            Return Map(Of MassImportResults)(result)
+                                                            Dim result As Models.MassImportResults = Await importer.BulkImportProductionImageAsync(appID, KeplerTypeMapper.Map(settings), productionKeyFieldArtifactID, inRepository, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
+                                                            Return KeplerTypeMapper.Map(result)
                                                         End Using
                                                     End Function)
                                  End Function)
@@ -56,8 +56,8 @@ Namespace kCura.WinEDDS.Service.Replacement
             Return ExecuteImport(Function()
                                      Return Execute(Async Function(s)
                                                         Using importer As IBulkImportService = s.CreateProxyInstance(Of IBulkImportService)
-                                                            Dim result As Models.MassImportResults = Await importer.BulkImportNativeAsync(appID, Map(Of Models.NativeLoadInfo)(settings), inRepository, includeExtractedTextEncoding, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
-                                                            Return Map(Of MassImportResults)(result)
+                                                            Dim result As Models.MassImportResults = Await importer.BulkImportNativeAsync(appID, KeplerTypeMapper.Map(settings), inRepository, includeExtractedTextEncoding, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
+                                                            Return KeplerTypeMapper.Map(result)
                                                         End Using
                                                     End Function)
                                  End Function)
@@ -67,8 +67,8 @@ Namespace kCura.WinEDDS.Service.Replacement
             Return ExecuteImport(Function()
                                      Return Execute(Async Function(s)
                                                         Using importer As IBulkImportService = s.CreateProxyInstance(Of IBulkImportService)
-                                                            Dim result As Models.MassImportResults = Await importer.BulkImportObjectsAsync(appID, Map(Of Models.ObjectLoadInfo)(settings), inRepository, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
-                                                            Return Map(Of MassImportResults)(result)
+                                                            Dim result As Models.MassImportResults = Await importer.BulkImportObjectsAsync(appID, KeplerTypeMapper.Map(settings), inRepository, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
+                                                            Return KeplerTypeMapper.Map(result)
                                                         End Using
                                                     End Function)
                                  End Function)
@@ -94,7 +94,7 @@ Namespace kCura.WinEDDS.Service.Replacement
             Return Execute(Async Function(s)
                                Using importer As IBulkImportService = s.CreateProxyInstance(Of IBulkImportService)
                                    Dim result As Models.ErrorFileKey = Await importer.GenerateImageErrorFilesAsync(appID, importKey, writeHeader, keyFieldID, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
-                                   Return Map(Of Global.Relativity.DataExchange.Service.ErrorFileKey)(result)
+                                   Return KeplerTypeMapper.Map(result)
                                End Using
                            End Function)
         End Function
@@ -103,7 +103,7 @@ Namespace kCura.WinEDDS.Service.Replacement
             Return Execute(Async Function(s)
                                Using importer As IBulkImportService = s.CreateProxyInstance(Of IBulkImportService)
                                    Dim result As Models.ErrorFileKey = Await importer.GenerateNonImageErrorFilesAsync(appID, runID, artifactTypeID, writeHeader, keyFieldID, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
-                                   Return Map(Of Global.Relativity.DataExchange.Service.ErrorFileKey)(result)
+                                   Return KeplerTypeMapper.Map(result)
                                End Using
                            End Function)
         End Function

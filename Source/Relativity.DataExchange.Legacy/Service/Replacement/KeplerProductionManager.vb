@@ -8,8 +8,8 @@ Namespace kCura.WinEDDS.Service.Replacement
         Inherits KeplerManager
         Implements IProductionManager
 
-        Public Sub New(serviceProxyFactory As IServiceProxyFactory, typeMapper As ITypeMapper, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
-            MyBase.New(serviceProxyFactory, typeMapper, exceptionMapper, correlationIdFunc)
+        Public Sub New(serviceProxyFactory As IServiceProxyFactory, exceptionMapper As IServiceExceptionMapper, correlationIdFunc As Func(Of String))
+            MyBase.New(serviceProxyFactory, exceptionMapper, correlationIdFunc)
         End Sub
 
         Public Sub DoPostImportProcessing(contextArtifactID As Integer, productionArtifactID As Integer) Implements IProductionManager.DoPostImportProcessing
@@ -34,7 +34,7 @@ Namespace kCura.WinEDDS.Service.Replacement
             Return Execute(Async Function(s)
                                Using service As IProductionService = s.CreateProxyInstance(Of IProductionService)
                                    Dim result As Models.ProductionInfo = Await service.ReadAsync(caseContextArtifactID, productionArtifactID, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
-                                   Return Map(Of kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo)(result)
+                                   Return KeplerTypeMapper.Map(result)
                                End Using
                            End Function)
         End Function
