@@ -7,25 +7,25 @@ def SendSlackNotification(String serverUnderTestName, String version, String bra
 	def channel = "notify-iapi-pipeline-" + "${slackChannel}"
     // Url are defined in the Import API slack application https://api.slack.com/apps/A028WEQG63F
     def url = "https://hooks.slack.com/services/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"
-    switch(slackChannel) {
+    switch(channel) {
         case "notify-iapi-pipeline-build":
             url = "https://hooks.slack.com/services/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"
-        break
+        break;
         case "notify-iapi-pipeline-compatibility":
             url = "https://hooks.slack.com/services/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"
-        break
+        break;
         case "notify-iapi-pipeline-load-tests":
             url = "https://hooks.slack.com/services/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"
-        break
+        break;
         case "notify-iapi-pipeline-mass-import-verification":
             url = "https://hooks.slack.com/services/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"
-        break
+        break;
         case "notify-iapi-pipeline-regression":
             url = "https://hooks.slack.com/services/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"
-        break
+        break;
         case "notify-iapi-pipeline-release-branches":
             url = "https://hooks.slack.com/services/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"
-        break
+        break;
     }
 
     echo "*************************************************" +
