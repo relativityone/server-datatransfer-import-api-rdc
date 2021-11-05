@@ -16,18 +16,23 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 	using kCura.WinEDDS.Service;
 	using kCura.WinEDDS.Service.Replacement;
 
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Testing.Identification;
 
 	[TestFixture(true)]
 	[TestFixture(false)]
 	[Feature.DataTransfer.ImportApi]
+	[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 	public class KeplerBulkImportPermissionTests : KeplerServiceTestBase
 	{
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Lanceleaf;
 		private const string TestUserPassword = "!4321tseT";
 		private string _testUserEmail;
 		private int _testUserId;
 		private int _workspaceGroupId;
+		private bool testsSkipped;
 
 		public KeplerBulkImportPermissionTests(bool useKepler)
 			: base(useKepler)
@@ -37,22 +42,32 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 		[OneTimeSetUp]
 		public async Task OneTimeSetUpAsync()
 		{
-			this._testUserEmail = $"test.user.{Guid.NewGuid()}@test.com";
-			this._workspaceGroupId = await GroupHelper.CreateNewGroupAsync(this.TestParameters, Guid.NewGuid().ToString()).ConfigureAwait(false);
-			await PermissionsHelper.AddGroupToWorkspaceAsync(this.TestParameters, this._workspaceGroupId).ConfigureAwait(false);
-			await PermissionsHelper.SetWorkspaceOtherSettingsAsync(this.TestParameters, this._workspaceGroupId, new List<string>() { "Allow Export" }, true).ConfigureAwait(false);
-			this._testUserId = await UsersHelper.CreateNewUserAsync(
-								   this.TestParameters,
-								   this._testUserEmail,
-								   TestUserPassword,
-								   new[] { GroupHelper.EveryoneGroupId, this._workspaceGroupId }).ConfigureAwait(false);
+			testsSkipped = RelativityVersionChecker.VersionIsLowerThan(
+				this.TestParameters,
+				MinSupportedVersion);
+
+			if (!testsSkipped)
+			{
+				this._testUserEmail = $"test.user.{Guid.NewGuid()}@test.com";
+				this._workspaceGroupId = await GroupHelper.CreateNewGroupAsync(this.TestParameters, Guid.NewGuid().ToString()).ConfigureAwait(false);
+				await PermissionsHelper.AddGroupToWorkspaceAsync(this.TestParameters, this._workspaceGroupId).ConfigureAwait(false);
+				await PermissionsHelper.SetWorkspaceOtherSettingsAsync(this.TestParameters, this._workspaceGroupId, new List<string>() { "Allow Export" }, true).ConfigureAwait(false);
+				this._testUserId = await UsersHelper.CreateNewUserAsync(
+					                   this.TestParameters,
+					                   this._testUserEmail,
+					                   TestUserPassword,
+					                   new[] { GroupHelper.EveryoneGroupId, this._workspaceGroupId }).ConfigureAwait(false);
+			}
 		}
 
 		[OneTimeTearDown]
 		public async Task OneTimeTearDownAsync()
 		{
-			await UsersHelper.RemoveUserAsync(this.TestParameters, this._testUserId).ConfigureAwait(false);
-			await GroupHelper.RemoveGroupAsync(this.TestParameters, this._workspaceGroupId).ConfigureAwait(false);
+			if (!testsSkipped)
+			{
+				await UsersHelper.RemoveUserAsync(this.TestParameters, this._testUserId).ConfigureAwait(false);
+				await GroupHelper.RemoveGroupAsync(this.TestParameters, this._workspaceGroupId).ConfigureAwait(false);
+			}
 		}
 
 		[IdentifiedTest("315C0D85-4ABD-479A-8FA0-3CB5B0EF5855")]

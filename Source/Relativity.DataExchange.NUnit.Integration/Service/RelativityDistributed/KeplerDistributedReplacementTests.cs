@@ -55,14 +55,16 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 
 		[IdentifiedTest("4bb77ae9-aa39-4d4c-8412-8fc012192e49")]
 		[TestType.MainFlow]
-		[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // IFileSystemManager exists since Indigo release
+		[IgnoreIfVersionLowerThan(RelativityVersion.Sundrop)]
 		public Task ShouldDownloadFileAsync()
 		{
 			return this.DownloadFileAsync(this.validCredentials);
 		}
 
+		// Behaviour of this test changed between in Sundrop because of DataTransfer.Legacy 0.1.35 and 0.1.38 version update
 		[IdentifiedTest("1471957f-7c70-46be-bbe8-25d94be8c573")]
 		[TestType.Error]
+		[IgnoreIfVersionLowerThan(RelativityVersion.TigerLily)]
 		public void ShouldReturnNotFoundForFileWhichDoesNotExist()
 		{
 			// arrange
@@ -105,6 +107,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 
 		[IdentifiedTest("d603b18b-8cf8-437d-9aca-463ab7045393")]
 		[TestType.EdgeCase]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Sundrop)]
 		public Task ShouldUpdateInvalidCredentials()
 		{
 			RelativityWebApiCredentialsProvider.Instance().SetProvider(new TokenProvider(this.validCredentials));

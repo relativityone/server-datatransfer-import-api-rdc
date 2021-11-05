@@ -19,7 +19,9 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Services.Objects.DataContracts;
 	using Relativity.Testing.Identification;
 
@@ -163,6 +165,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
+		[IgnoreIfVersionLowerThan(RelativityVersion.MayappleExportPDFs)] // Method RetrievePdfForSearch was added in this version
 		[IdentifiedTest("1833063a-aac9-4dca-8d6e-599c0a9e166f")]
 		public void ShouldReturnEmptyDataSetWhenRetrievePdfForSearchForDocumentsWithoutPdfs()
 		{
@@ -181,6 +184,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
+		[IgnoreIfVersionLowerThan(RelativityVersion.MayappleExportPDFs)] // Method RetrievePdfForSearch was added in this version
 		[IdentifiedTest("05628321-3d7e-4d8e-99eb-37eca243bc3e")]
 		public void ShouldReturnEmptyDataSetWhenRetrievePdfForSearchForNonExistingDocuments()
 		{
@@ -198,6 +202,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
+		[IgnoreIfVersionLowerThan(RelativityVersion.MayappleExportPDFs)] // Method RetrievePdfForSearch was added in this version
 		[IdentifiedTest("dbbc2bb5-6ed9-4057-8196-231118caee01")]
 		public void ShouldThrowExceptionWhenRetrievePdfForSearchForNonExistingWorkspace()
 		{

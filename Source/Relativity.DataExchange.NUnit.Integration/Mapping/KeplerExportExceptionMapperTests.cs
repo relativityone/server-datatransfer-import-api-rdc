@@ -15,11 +15,14 @@ namespace Relativity.DataExchange.NUnit.Integration.Mapping
 	using kCura.WinEDDS.Service.Replacement;
 
 	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Testing.Identification;
 
 	[TestFixture]
 	[Feature.DeveloperPlatform.ExtensibilityPoints.Api.Kepler]
 	[TestType.MainFlow]
+	[IgnoreIfVersionLowerThan(RelativityVersion.Sundrop)]
 	public class KeplerExportExceptionMapperTests : WebServiceTestsBase
 	{
 		[IdentifiedTest("C90661C1-A231-4A68-A47C-B96E0E290B71")]

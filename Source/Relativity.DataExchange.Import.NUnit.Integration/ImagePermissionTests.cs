@@ -28,7 +28,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	[TestType.Error]
 	public class ImagePermissionTests : ImportJobTestBase<ImageImportExecutionContext>
 	{
-		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Lanceleaf;
 
 		private bool testsSkipped;
 

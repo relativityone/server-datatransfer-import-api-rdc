@@ -20,6 +20,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 	using Relativity.Transfer;
@@ -69,6 +70,10 @@ namespace Relativity.DataExchange.NUnit.Integration
 		protected TapiBridgeTestBase(bool useLegacyWebApi)
 		{
 			this.useLegacyWebApi = useLegacyWebApi;
+			if (!this.useLegacyWebApi)
+			{
+				RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(IntegrationTestHelper.IntegrationTestParameters, RelativityVersion.Sundrop);
+			}
 		}
 
 		/// <summary>

@@ -6,8 +6,8 @@ public enum BranchType {
     FeatureBranch,
     Trident,
 	PerformancePipeline,
-	ComplexCases,
-	ReleaseBranches
+	ReleaseBranches,
+    PipelineTest
 }
 '@ -Language CSharp
 
@@ -37,6 +37,10 @@ Function Get-CurrentBranchType{
         }
         return [BranchType]::Release
     }
+	elseif ($currentBranch.ToString().StartsWith("pipeline-test-")) 
+    {
+        return [BranchType]::PipelineTest
+    }
     elseif (![string]::IsNullOrEmpty($jiraVersionNumber)) 
     {
         if(!$currentBranch.StartsWith($jiraVersionNumber))
@@ -48,10 +52,6 @@ Function Get-CurrentBranchType{
     elseif ($currentBranch.ToString() -eq "Trident" ) 
     {
         return [BranchType]::Trident
-    }
-	elseif ($currentBranch.ToString() -eq "ComplexCases" ) 
-    {
-        return [BranchType]::ComplexCases
     }
     else
     {

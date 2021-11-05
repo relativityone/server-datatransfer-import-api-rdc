@@ -17,6 +17,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	using kCura.WinEDDS.Service.Replacement;
 
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Testing.Identification;
 
 	[TestFixture(true)]
@@ -40,6 +41,9 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		[OneTimeSetUp]
 		public async Task OneTimeSetUpAsync()
 		{
+			// in older version we cannot create user with empty groups
+			RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(this.TestParameters, RelativityVersion.Osier);
+
 			await this.CreateUserAsync(NoneGroupUserEmail, Enumerable.Empty<int>()).ConfigureAwait(false);
 			await this.CreateUserAsync(EveryoneOnlyGroupUserEmail, new[] { GroupHelper.EveryoneGroupId }).ConfigureAwait(false);
 

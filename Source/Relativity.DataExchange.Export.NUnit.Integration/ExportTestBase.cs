@@ -42,6 +42,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.DataExchange.Transfer;
 
 	using Field = kCura.EDDS.WebAPI.DocumentManagerBase.Field;
@@ -50,8 +51,6 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	[TestFixture]
 	public abstract class ExportTestBase : IDisposable
 	{
-		private readonly bool useKepler;
-
 		private ExportTestJobResult exporterTestJobResult;
 		private WindsorContainer testContainer;
 		private CookieContainer cookieContainer;
@@ -60,7 +59,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected ExportTestBase(bool useKepler)
 		{
-			this.useKepler = useKepler;
+			this.UseKepler = useKepler;
+			if (useKepler)
+			{
+				RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(IntegrationTestHelper.IntegrationTestParameters, RelativityVersion.Sundrop);
+			}
 
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
@@ -84,6 +87,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		protected TestNullLogger Logger { get; private set; }
 
 		protected bool CorrelationIdRetrieved { get; set; }
+
+		protected bool UseKepler { get; }
 
 		private NetworkCredential Credentials =>
 			new NetworkCredential(TestParameters.RelativityUserName, TestParameters.RelativityPassword);
@@ -126,7 +131,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			AppSettingsManager.Default(AppSettings.Instance);
 
-			AppSettings.Instance.UseKepler = this.useKepler;
+			AppSettings.Instance.UseKepler = this.UseKepler;
 			WebApiVsKeplerFactory.InvalidateCache();
 			ManagerFactory.InvalidateCache();
 			this.CorrelationIdRetrieved = false;
@@ -457,7 +462,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected void ThenTheCorrelationIdWasRetrieved()
 		{
-			if (this.useKepler)
+			if (this.UseKepler)
 			{
 				Assert.That(this.CorrelationIdRetrieved, "CorrelationId should be retrieved");
 			}

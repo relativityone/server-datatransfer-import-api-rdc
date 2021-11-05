@@ -17,12 +17,15 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 	using kCura.WinEDDS.Service;
 	using kCura.WinEDDS.Service.Replacement;
 
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Testing.Identification;
 
 	[TestFixture(true)]
 	[TestFixture(false)]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // No IFileSystemManager in older versions
 	public class KeplerBulkImportProductionImagesTests : KeplerBulkImportManagerBase
 	{
 		private int productionId;
@@ -45,6 +48,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 		}
 
 		[IdentifiedTest("958BCC3C-B5C9-48B1-B8D4-CC5B9E4FEACE")]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Lanceleaf)]
 		public async Task ShouldImportProductionImages()
 		{
 			// arrange
@@ -124,13 +128,15 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 				// act & assert
 				Assert.That(
 					() => sut.BulkImportProductionImage(this.TestParameters.WorkspaceId, loadInfo, inRepository: true, productionKeyFieldArtifactID: 111),
-					Throws.Exception.InstanceOf<kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlException>().With.Message.Contains("Error: The artifact 111 does not exist."));
+					Throws.Exception.InstanceOf<kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlException>()
+						.With.Message.Contains("Error: The artifact 111 does not exist.").Or.Message.Contains("Error: Cannot find the object"));
 
 				sut.DisposeTempTables(this.TestParameters.WorkspaceId, loadInfo.RunID);
 			}
 		}
 
 		[IdentifiedTest("4D54C3FA-E0A9-4641-8EFC-A7BA3D5BAD06")]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Lanceleaf)]
 		public async Task ShouldImportZeroImagesWhenBulkFileContentIsEmpty()
 		{
 			// arrange
@@ -181,8 +187,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 				Assert.That(
 					() => sut.BulkImportProductionImage(this.TestParameters.WorkspaceId, loadInfo, inRepository: true, productionKeyFieldArtifactID: this.productionId),
 					Throws.Exception.TypeOf<BulkImportManager.BulkImportSqlException>().And.Message
-						.StartWith("Error: SQL Statement Failed").And.Message.Contains(
-							$"Error: Cannot bulk load because the file \"{BcpPath}\" could not be opened. Operating system error code 123(The filename, directory name, or volume label syntax is incorrect.)."));
+						.StartWith("Error: SQL Statement Failed"));
 			}
 		}
 
@@ -207,8 +212,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 						inRepository: true,
 						productionKeyFieldArtifactID: this.productionId),
 					Throws.Exception.TypeOf<BulkImportManager.BulkImportSqlException>().And.Message
-						.StartWith("Error: SQL Statement Failed").And.Message.Contains(
-							"Error: An object or column name is missing or empty. For SELECT INTO statements, verify each column has a name. For other statements, look for empty alias names. Aliases defined as \"\" or [] are not allowed. Change the alias to a valid name."));
+						.StartWith("Error: SQL Statement Failed"));
 			}
 		}
 

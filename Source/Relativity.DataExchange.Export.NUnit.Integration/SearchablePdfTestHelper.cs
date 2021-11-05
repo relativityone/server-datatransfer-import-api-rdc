@@ -20,10 +20,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 	public static class SearchablePdfTestHelper
 	{
-		public static void SetupTestData(IntegrationTestParameters testParameters)
+		public static void SetupTestData(IntegrationTestParameters testParameters, bool useKepler)
 		{
 			var documentArtifactIds = GetUniqueDocumentArtifactIds(testParameters);
-			var remoteFilePaths = UploadSamplePdfFiles(testParameters);
+			var remoteFilePaths = UploadSamplePdfFiles(testParameters, useKepler);
 			InsertSamplePdfFilesToDatabase(testParameters, remoteFilePaths, documentArtifactIds);
 		}
 
@@ -48,9 +48,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			return documentArtifactIds;
 		}
 
-		private static List<string> UploadSamplePdfFiles(IntegrationTestParameters testParameters)
+		private static List<string> UploadSamplePdfFiles(IntegrationTestParameters testParameters, bool useKepler)
 		{
-			var bridge = SetupTapiBridge(testParameters);
+			var bridge = SetupTapiBridge(testParameters, useKepler);
 
 			List<string> sourcePaths = TestData.SampleSearchablePdfTestFiles.ToList();
 			for (int order = 0; order < sourcePaths.Count; order++)
@@ -72,7 +72,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			return uploadedFiles;
 		}
 
-		private static UploadTapiBridge2 SetupTapiBridge(IntegrationTestParameters testParameters)
+		private static UploadTapiBridge2 SetupTapiBridge(IntegrationTestParameters testParameters, bool useKepler)
 		{
 			string workspaceDirectory = $"EDDS{testParameters.WorkspaceId}";
 			string targetPath = Path.Combine(testParameters.FileShareUncPath, workspaceDirectory);
@@ -94,7 +94,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				TargetPath = targetPath,
 			};
 
-			bool useLegacyWebApi = false;
+			bool useLegacyWebApi = !useKepler;
 			ITapiObjectService objectService = new TapiObjectService(new RelativityManagerServiceFactory(), useLegacyWebApi);
 			objectService.SetTapiClient(parameters, TapiClient.Web);
 

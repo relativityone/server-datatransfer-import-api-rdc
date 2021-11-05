@@ -27,7 +27,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	[TestExecutionCategory.CI]
 	public class ItemPermissionTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
-		private const RelativityVersion MinSupportedVersion = RelativityVersion.Juniper;
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Lanceleaf;
 		private bool testsSkipped;
 
 		private int groupId;
