@@ -18,17 +18,19 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 	using kCura.WinEDDS.Service;
 	using kCura.WinEDDS.Service.Replacement;
 
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Testing.Identification;
 
 	using BulkImportManager = kCura.WinEDDS.Service.BulkImportManager;
-	using ErrorFileKey = Relativity.DataExchange.Service.ErrorFileKey;
 	using FieldCategory = kCura.EDDS.WebAPI.BulkImportManagerBase.FieldCategory;
 	using FieldType = kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType;
 
 	[TestFixture(true)]
 	[TestFixture(false)]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // No IFileSystemManager in older versions
 	public class KeplerBulkImportNativesTests : KeplerBulkImportManagerBase
 	{
 		private const int NumberOfCustomFields = 10;
@@ -68,6 +70,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 		}
 
 		[IdentifiedTest("940C2DCA-9B49-4DEE-AEFC-B1EFCF2362BF")]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // IFileSystemManager exists since Indigo release
 		public async Task ShouldImportDocuments()
 		{
 			// arrange
@@ -104,6 +107,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 		}
 
 		[IdentifiedTest("5A183C8D-DBA1-4DB8-A34D-82A6475A1495")]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // IFileSystemManager exists since Indigo release
 		public async Task ShouldImportZeroDocumentsWhenLoadFileIsEmpty()
 		{
 			// arrange
@@ -153,7 +157,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 						includeExtractedTextEncoding: false),
 					Throws.Exception.TypeOf<BulkImportManager.BulkImportSqlException>().And.Message.StartWith(
 							@"Error: Error occured while executing 'ImportMetadataFilesToStagingTablesStage'. Category: 'Unknown', message: 'The BCP file name cannot be null or empty.")
-						.And.Message.Contain("Parameter name: bulkFileName'"));
+						.Or.Message.StartWith("Error: The BCP file name cannot be null or empty"));
 
 				// act
 				var disposeResult = sut.DisposeTempTables(this.TestParameters.WorkspaceId, loadInfo.RunID);
@@ -181,7 +185,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 						includeExtractedTextEncoding: false),
 					Throws.Exception.TypeOf<BulkImportManager.BulkImportSqlException>().And.Message.StartWith(
 							@"Error: Error occured while executing 'PopulateCacheStage'. Category: 'Sql', message: 'SQL Statement Failed'")
-						.And.Message.Contain("Error: Incorrect syntax near ')'"));
+						.Or.Message.StartWith("Error: SQL Statement Failed"));
 
 				// act
 				var disposeResult = sut.DisposeTempTables(this.TestParameters.WorkspaceId, loadInfo.RunID);

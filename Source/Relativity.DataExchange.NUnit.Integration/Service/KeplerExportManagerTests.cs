@@ -18,15 +18,19 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	using kCura.WinEDDS.Service.Replacement;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Services.Objects.DataContracts;
 	using Relativity.Testing.Identification;
 
 	[TestFixture(true)]
 	[TestFixture(false)]
 	[Feature.DataTransfer.RelativityDesktopClient.Export]
+	[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 	public class KeplerExportManagerTests : KeplerServiceTestBase
 	{
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Lanceleaf;
 		private const string TestUserPassword = "!4321tseT";
 		private const int ResultsObjectCollectionRowsCount = 1;
 		private const int ResultsObjectCollectionRowElementCount = 2;
@@ -41,6 +45,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		private int _viewArtifactId;
 		private int _workspaceRootArtifactId;
 		private int _workspaceGroupId;
+		private bool testsSkipped;
 
 		public KeplerExportManagerTests(bool useKepler)
 			: base(useKepler)
@@ -50,50 +55,63 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		[OneTimeSetUp]
 		public async Task OneTimeSetUpAsync()
 		{
-			this._workspaceGroupId = await GroupHelper.CreateNewGroupAsync(this.TestParameters, Guid.NewGuid().ToString()).ConfigureAwait(false);
-			await PermissionsHelper.AddGroupToWorkspaceAsync(this.TestParameters, this._workspaceGroupId).ConfigureAwait(false);
-			await PermissionsHelper.SetWorkspaceOtherSettingsAsync(this.TestParameters, this._workspaceGroupId, new List<string>() { "Allow Import" }, true).ConfigureAwait(false);
-			this._testUserId = await UsersHelper.CreateNewUserAsync(
-				                   this.TestParameters,
-				                   this._testUserEmail,
-				                   TestUserPassword,
-				                   new[] { GroupHelper.EveryoneGroupId, this._workspaceGroupId }).ConfigureAwait(false);
-
-			this.ImportTestData();
-			this._firstDocumentControlNumber = this._controlNumberToArtifactIdMapping.First().Key;
-			string firstSearchName = "Single document Search";
-			this._searchWithDocumentId = await SearchHelper.CreateSavedSearchWithSingleDocument(
-												 this.TestParameters,
-												 firstSearchName,
-												 this._firstDocumentControlNumber).ConfigureAwait(false);
-
-			this._productionWithDocumentId = await ProductionHelper.CreateProductionAsync(
-				                                 this.TestParameters,
-				                                 "TestProductionName",
-				                                 "TestBatesProductionPrefix").ConfigureAwait(false);
-			await ProductionHelper.AddDataSourceAsync(
+			testsSkipped = RelativityVersionChecker.VersionIsLowerThan(
 				this.TestParameters,
-				this._productionWithDocumentId,
-				this._searchWithDocumentId).ConfigureAwait(false);
-			await ProductionHelper.StageAndRunAsync(this.TestParameters, this._productionWithDocumentId)
-				.ConfigureAwait(false);
+				MinSupportedVersion);
 
-			this._viewArtifactId = await ViewHelper.CreateViewAsync(
-				                       this.TestParameters,
-				                       "folderView",
-				                       WellKnownArtifactTypes.DocumentArtifactTypeId,
-				                       new[] { WellKnownFields.ControlNumberId }).ConfigureAwait(false);
+			RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(this.TestParameters, MinSupportedVersion);
 
-			this._workspaceRootArtifactId = await FolderHelper.GetWorkspaceRootArtifactIdAsync(this.TestParameters).ConfigureAwait(false);
+			if (!testsSkipped)
+			{
+				this._workspaceGroupId = await GroupHelper.CreateNewGroupAsync(this.TestParameters, Guid.NewGuid().ToString()).ConfigureAwait(false);
+				await PermissionsHelper.AddGroupToWorkspaceAsync(this.TestParameters, this._workspaceGroupId).ConfigureAwait(false);
+				await PermissionsHelper.SetWorkspaceOtherSettingsAsync(this.TestParameters, this._workspaceGroupId, new List<string>() { "Allow Import" }, true).ConfigureAwait(false);
+				this._testUserId = await UsersHelper.CreateNewUserAsync(
+									   this.TestParameters,
+									   this._testUserEmail,
+									   TestUserPassword,
+									   new[] { GroupHelper.EveryoneGroupId, this._workspaceGroupId }).ConfigureAwait(false);
+
+				this.ImportTestData();
+				this._firstDocumentControlNumber = this._controlNumberToArtifactIdMapping.First().Key;
+				string firstSearchName = "Single document Search";
+				this._searchWithDocumentId = await SearchHelper.CreateSavedSearchWithSingleDocument(
+													 this.TestParameters,
+													 firstSearchName,
+													 this._firstDocumentControlNumber).ConfigureAwait(false);
+
+				this._productionWithDocumentId = await ProductionHelper.CreateProductionAsync(
+													 this.TestParameters,
+													 "TestProductionName",
+													 "TestBatesProductionPrefix").ConfigureAwait(false);
+				await ProductionHelper.AddDataSourceAsync(
+					this.TestParameters,
+					this._productionWithDocumentId,
+					this._searchWithDocumentId).ConfigureAwait(false);
+				await ProductionHelper.StageAndRunAsync(this.TestParameters, this._productionWithDocumentId)
+					.ConfigureAwait(false);
+
+				this._viewArtifactId = await ViewHelper.CreateViewAsync(
+										   this.TestParameters,
+										   "folderView",
+										   WellKnownArtifactTypes.DocumentArtifactTypeId,
+										   new[] { WellKnownFields.ControlNumberId }).ConfigureAwait(false);
+
+				this._workspaceRootArtifactId = await FolderHelper.GetWorkspaceRootArtifactIdAsync(this.TestParameters).ConfigureAwait(false);
+			}
 		}
 
 		[OneTimeTearDown]
 		public async Task OneTimeTearDownAsync()
 		{
-			await ProductionHelper.DeleteAllProductionsAsync(this.TestParameters).ConfigureAwait(false);
-			await UsersHelper.RemoveUserAsync(this.TestParameters, this._testUserId).ConfigureAwait(false);
-			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
-			await GroupHelper.RemoveGroupAsync(this.TestParameters, this._workspaceGroupId).ConfigureAwait(false);
+			if (!testsSkipped)
+			{
+				await ProductionHelper.DeleteAllProductionsAsync(this.TestParameters).ConfigureAwait(false);
+				await UsersHelper.RemoveUserAsync(this.TestParameters, this._testUserId).ConfigureAwait(false);
+				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document)
+					.ConfigureAwait(false);
+				await GroupHelper.RemoveGroupAsync(this.TestParameters, this._workspaceGroupId).ConfigureAwait(false);
+			}
 		}
 
 		[Test]
@@ -116,6 +134,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 
 		[Test]
 		[IdentifiedTest("CD76562E-7C0D-4805-9133-1C53895C355C")]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Lanceleaf)]
 		public void ShouldReturnFalseWhenHasNoPermissionForHasExportPermissions()
 		{
 			// arrange

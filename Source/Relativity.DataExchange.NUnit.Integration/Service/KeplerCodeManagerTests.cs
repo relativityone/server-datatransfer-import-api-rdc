@@ -24,6 +24,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	[TestFixture(true)]
 	[TestFixture(false)]
 	[Feature.DataTransfer.ImportApi]
+	[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // IChoiceManager does not exist in old versions
 	public class KeplerCodeManagerTests : KeplerServiceTestBase
 	{
 		private const string EmptySingleChoiceFieldName = "EmptySingleChoiceField";
@@ -36,6 +37,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		private int emptySingleChoiceFieldId;
 		private int populatedSingleChoiceFieldId;
 		private int parentId;
+		private bool testsSkipped;
 
 		private kCura.EDDS.WebAPI.DocumentManagerBase.Field emptySingleChoiceFieldCodeType;
 		private kCura.EDDS.WebAPI.DocumentManagerBase.Field populatedSingleChoiceFieldCodeType;
@@ -88,33 +90,42 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		[OneTimeSetUp]
 		public async Task OneTimeSetUpAsync()
 		{
-			this.parentId = await WorkspaceHelper.ReadRootArtifactIdAsync(this.TestParameters, this.TestParameters.WorkspaceId).ConfigureAwait(false);
-
-			this.emptySingleChoiceFieldId = await FieldHelper.CreateSingleChoiceFieldAsync(
-				                                    this.TestParameters,
-				                                    EmptySingleChoiceFieldName,
-				                                    (int)ArtifactType.Document,
-				                                    isOpenToAssociations: false).ConfigureAwait(false);
-
-			this.populatedSingleChoiceFieldId = await FieldHelper.CreateSingleChoiceFieldAsync(
-				                              this.TestParameters,
-				                              PopulatedSingleChoiceFieldName,
-				                              (int)ArtifactType.Document,
-				                              isOpenToAssociations: false).ConfigureAwait(false);
-
-			var choicesValueSource = ChoicesValueSource.CreateSingleChoiceSource(ChoicesCount);
-			await ChoiceHelper.ImportValuesIntoChoiceAsync(
+			this.testsSkipped = RelativityVersionChecker.VersionIsLowerThan(
 				this.TestParameters,
-				this.populatedSingleChoiceFieldId,
-				choicesValueSource).ConfigureAwait(false);
-			this.uniqueValues = choicesValueSource.UniqueValues;
+				RelativityVersion.Indigo);
+			if (!this.testsSkipped)
+			{
+				this.parentId = await WorkspaceHelper.ReadRootArtifactIdAsync(this.TestParameters, this.TestParameters.WorkspaceId).ConfigureAwait(false);
+
+				this.emptySingleChoiceFieldId = await FieldHelper.CreateSingleChoiceFieldAsync(
+					                                this.TestParameters,
+					                                EmptySingleChoiceFieldName,
+					                                (int)ArtifactType.Document,
+					                                isOpenToAssociations: false).ConfigureAwait(false);
+
+				this.populatedSingleChoiceFieldId = await FieldHelper.CreateSingleChoiceFieldAsync(
+					                                    this.TestParameters,
+					                                    PopulatedSingleChoiceFieldName,
+					                                    (int)ArtifactType.Document,
+					                                    isOpenToAssociations: false).ConfigureAwait(false);
+
+				var choicesValueSource = ChoicesValueSource.CreateSingleChoiceSource(ChoicesCount);
+				await ChoiceHelper.ImportValuesIntoChoiceAsync(
+					this.TestParameters,
+					this.populatedSingleChoiceFieldId,
+					choicesValueSource).ConfigureAwait(false);
+				this.uniqueValues = choicesValueSource.UniqueValues;
+			}
 		}
 
 		[OneTimeTearDown]
 		public async Task OneTimeTearDownAsync()
 		{
-			await FieldHelper.DeleteFieldAsync(this.TestParameters, this.populatedSingleChoiceFieldId).ConfigureAwait(false);
-			await FieldHelper.DeleteFieldAsync(this.TestParameters, this.emptySingleChoiceFieldId).ConfigureAwait(false);
+			if (!this.testsSkipped)
+			{
+				await FieldHelper.DeleteFieldAsync(this.TestParameters, this.populatedSingleChoiceFieldId).ConfigureAwait(false);
+				await FieldHelper.DeleteFieldAsync(this.TestParameters, this.emptySingleChoiceFieldId).ConfigureAwait(false);
+			}
 		}
 
 		[IdentifiedTest("6a239075-617b-4c76-97e9-fb28f6effeff")]

@@ -14,6 +14,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using kCura.WinEDDS.Service;
 	using kCura.WinEDDS.Service.Replacement;
 
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Kepler.Transport;
 	using Relativity.Services.FileSystem;
 
@@ -28,6 +29,12 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		/// <returns>File name.</returns>
 		public static async Task<string> CreateAsync(IntegrationTestParameters parameters, string content, string bcpPath)
 		{
+			if (RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.Indigo))
+			{
+				throw new Exception(
+					"This method uses IFileSystemManager that was added in RelativityVersion.Indigo and current version is older");
+			}
+
 			UnicodeEncoding encoding = new UnicodeEncoding(false, true);
 			byte[] contentBytes = encoding.GetPreamble().Concat(encoding.GetBytes(content)).ToArray();
 

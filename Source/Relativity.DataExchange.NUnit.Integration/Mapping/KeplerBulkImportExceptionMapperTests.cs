@@ -15,6 +15,8 @@ namespace Relativity.DataExchange.NUnit.Integration.Mapping
 	using kCura.WinEDDS.Service.Replacement;
 
 	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Testing.Identification;
 
 	using BulkImportManager = kCura.WinEDDS.Service.BulkImportManager;
@@ -22,6 +24,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Mapping
 	[TestFixture]
 	[Feature.DeveloperPlatform.ExtensibilityPoints.Api.Kepler]
 	[TestType.MainFlow]
+	[IgnoreIfVersionLowerThan(RelativityVersion.Sundrop)]
 	public class KeplerBulkImportExceptionMapperTests : WebServiceTestsBase
 	{
 		[IdentifiedTest("7D3013C2-2A36-428E-A6D4-ED81CA1142FB")]

@@ -18,7 +18,9 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	using kCura.WinEDDS.Service.Replacement;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Kepler.Transport;
 	using Relativity.Services.FileSystem;
 	using Relativity.Testing.Identification;
@@ -166,6 +168,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 
 		[TestType.MainFlow]
 		[IdentifiedTest("FB4E34B8-7D62-40BD-9D06-F695AB7EF001")]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // IFileSystemManager exists since Indigo release
 		public async Task ShouldRemoveTempFile()
 		{
 			// arrange
@@ -253,11 +256,11 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			if (this.UseKepler)
 			{
 				expectedExceptionMessage =
-					"Error during interceptor action PermissionCheckInterceptor." +
+					"PermissionCheckInterceptor." +
 					" InnerExceptionType: Relativity.Core.Exception.InvalidAppArtifactID," +
 					$" InnerExceptionMessage: Could not retrieve ApplicationID #{workspaceId}.";
 				return Throws.Exception.InstanceOf<SoapException>()
-					.With.Message.EqualTo(expectedExceptionMessage);
+					.With.Message.Contains(expectedExceptionMessage);
 			}
 			else
 			{

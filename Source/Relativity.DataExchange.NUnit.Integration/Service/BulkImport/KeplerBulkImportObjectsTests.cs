@@ -16,7 +16,9 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 	using kCura.WinEDDS.Service;
 	using kCura.WinEDDS.Service.Replacement;
 
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Services.Objects.DataContracts;
 	using Relativity.Testing.Identification;
 
@@ -28,6 +30,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 	[TestFixture(true)]
 	[TestFixture(false)]
 	[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+	[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // No IFileSystemManager in older versions
 	public class KeplerBulkImportObjectsTests : KeplerBulkImportManagerBase
 	{
 		private ObjectType customObjectType;
@@ -120,7 +123,9 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 						includeExtractedTextEncoding: false),
 					Throws.Exception.TypeOf<BulkImportManager.BulkImportSqlException>().And.Message.StartWith(
 							@"Error: Error occured while executing 'ImportNativesStage'. Category: 'Sql', message: 'SQL Statement Failed'")
-						.And.Message.Contain("Error: Invalid column name 'Name'."));
+						.And.Message.Contain("Error: Invalid column name 'Name'.")
+						.Or.Message.StartWith("Error: SQL Statement Failed")
+						.And.Message.Contains("Error: Invalid column name 'Name'"));
 
 				// act
 				var disposeResult = sut.DisposeTempTables(this.TestParameters.WorkspaceId, loadInfo.RunID);
@@ -149,7 +154,9 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 						includeExtractedTextEncoding: false),
 					Throws.Exception.TypeOf<BulkImportManager.BulkImportSqlException>().And.Message.StartWith(
 							@"Error: Error occured while executing 'ImportMetadataFilesToStagingTablesStage'. Category: 'Unknown', message: 'The BCP file name cannot be null or empty.")
-						.And.Message.Contain("Parameter name: bulkFileName'"));
+						.And.Message.Contain("Parameter name: bulkFileName")
+						.Or.Message.StartWith("Error: The BCP file name cannot be null or empty.")
+						.And.Message.Contain("Parameter name: bulkFileName"));
 
 				// act
 				var disposeResult = sut.DisposeTempTables(this.TestParameters.WorkspaceId, loadInfo.RunID);
@@ -177,6 +184,8 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 						includeExtractedTextEncoding: false),
 					Throws.Exception.TypeOf<BulkImportManager.BulkImportSqlException>().And.Message.StartWith(
 							@"Error: Error occured while executing 'PopulateCacheStage'. Category: 'Sql', message: 'SQL Statement Failed'")
+						.And.Message.Contain("Error: Incorrect syntax near ')'")
+						.Or.Message.StartWith("Error: SQL Statement Failed")
 						.And.Message.Contain("Error: Incorrect syntax near ')'"));
 
 				// act
@@ -203,9 +212,11 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 						loadInfo,
 						inRepository: true,
 						includeExtractedTextEncoding: false),
-					Throws.Exception.TypeOf<BulkImportManager.BulkImportSqlException>().And.Message.StartWith(
-							@"Error: Error occured while executing 'ImportNativesStage'. Category: 'Sql', message: 'SQL Statement Failed'")
-						.And.Message.Contain("Error: Invalid column name 'Name'."));
+					Throws.Exception.TypeOf<BulkImportManager.BulkImportSqlException>()
+						.And.Message.StartWith(@"Error: Error occured while executing 'ImportNativesStage'. Category: 'Sql', message: 'SQL Statement Failed'")
+						.And.Message.Contains("Error: Invalid column name 'Name'")
+						.Or.Message.StartWith("Error: SQL Statement Failed")
+						.And.Message.Contains("Error: Invalid column name 'Name'"));
 
 				// act
 				var disposeResult = sut.DisposeTempTables(this.TestParameters.WorkspaceId, loadInfo.RunID);

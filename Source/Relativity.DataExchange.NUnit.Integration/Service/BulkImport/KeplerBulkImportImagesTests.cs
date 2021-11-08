@@ -17,12 +17,15 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 	using kCura.WinEDDS.Service;
 	using kCura.WinEDDS.Service.Replacement;
 
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Testing.Identification;
 
 	[TestFixture(true)]
 	[TestFixture(false)]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // No IFileSystemManager in older versions
 	public class KeplerBulkImportImagesTests : KeplerBulkImportManagerBase
 	{
 		public KeplerBulkImportImagesTests(bool useKepler)
@@ -31,6 +34,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 		}
 
 		[IdentifiedTest("C888DAC1-38F2-4E06-A4F5-48F4BA1FF4AC")]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Lanceleaf)]
 		public async Task ShouldImportImages()
 		{
 			// arrange
@@ -94,6 +98,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 		}
 
 		[IdentifiedTest("90697834-F013-4831-8B05-32653BAA4DA7")]
+		[IgnoreIfVersionLowerThan(RelativityVersion.Lanceleaf)]
 		public async Task ShouldImportZeroImagesWhenBulkFileContentIsEmpty()
 		{
 			// arrange
@@ -145,7 +150,8 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 					() => sut.BulkImportImage(this.TestParameters.WorkspaceId, loadInfo, inRepository: true),
 					Throws.Exception.TypeOf<BulkImportManager.BulkImportSqlException>().And.Message
 						.StartWith("Error: SQL Statement Failed").And.Message.Contains(
-							$"Error: Cannot bulk load because the file \"{BcpPath}\" could not be opened. Operating system error code 123(The filename, directory name, or volume label syntax is incorrect.)."));
+							$"Error: Cannot bulk load because the file \"{BcpPath}\" could not be opened. Operating system error code 123(The filename, directory name, or volume label syntax is incorrect.).")
+						.Or.Message.Contains("Error: Cannot find the object"));
 			}
 		}
 
@@ -165,7 +171,9 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 				// act & assert
 				Assert.That(
 					() => sut.BulkImportImage(this.TestParameters.WorkspaceId, loadInfo, inRepository: true),
-					Throws.Exception.TypeOf<BulkImportManager.BulkImportSqlException>().And.Message.StartWith("Error: Object reference not set to an instance of an object."));
+					Throws.Exception.TypeOf<BulkImportManager.BulkImportSqlException>().And.Message
+						.StartWith("Error: Object reference not set to an instance of an object.").Or.Message
+						.StartWith("Error: SQL Statement Failed"));
 			}
 		}
 

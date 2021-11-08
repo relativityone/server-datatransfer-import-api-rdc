@@ -24,7 +24,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	public class PermissionImportTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
-		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Lanceleaf;
 		private bool testsSkipped;
 
 		private int groupId;

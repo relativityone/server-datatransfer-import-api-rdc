@@ -50,12 +50,12 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			this.Credential.UserName = "INVALID USERNAME";
 			this.Credential.Password = "INVALID PASSWORD";
 
-			const string ExpectedErrorMessage =
-				@"The 'query Relativity get version' HTTP Web service 'POST' method failed with an HTTP 401 status code.
-
-Error: Failed to retrieve the Relativity version. Contact your system administrator for assistance if this problem persists.
-
-Detail: This error is considered fatal and suggests the client is unauthorized from making the HTTP Web service call and is likely a problem with expired credentials or authentication.";
+			string[] expectedErrorMessages =
+			{
+				"The 'query Relativity get version' HTTP Web service 'POST' method failed with an HTTP 401 status code.",
+				"Error: Failed to retrieve the Relativity version. Contact your system administrator for assistance if this problem persists.",
+				"Detail: This error is considered fatal and suggests the client is unauthorized from making the HTTP Web service call and is likely a problem with expired credentials or authentication.",
+			};
 
 			IApplicationVersionService sut = ManagerFactory.CreateApplicationVersionService(
 				this.RelativityInstanceInfo,
@@ -70,7 +70,9 @@ Detail: This error is considered fatal and suggests the client is unauthorized f
 			// Assert
 			Assert.That(exception.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
 			Assert.That(exception.Fatal, Is.True);
-			Assert.That(exception.Message, Is.EqualTo(ExpectedErrorMessage));
+			Assert.That(exception.Message, Contains.Substring(expectedErrorMessages[0]));
+			Assert.That(exception.Message, Contains.Substring(expectedErrorMessages[1]));
+			Assert.That(exception.Message, Contains.Substring(expectedErrorMessages[2]));
 		}
 
 		[IdentifiedTest("f70b88dc-b6b1-4d5b-9d07-3f463ad32cd7")]
@@ -78,13 +80,12 @@ Detail: This error is considered fatal and suggests the client is unauthorized f
 		{
 			// Arrange
 			this.RelativityInstanceInfo.WebApiServiceUrl = new Uri("https://invaliduri");
-
-			const string ExpectedErrorMessage =
-				@"The 'query Relativity get version' HTTP Web service 'POST' method failed with a web exception 1 status code.
-
-Error: Failed to retrieve the Relativity version. Contact your system administrator for assistance if this problem persists.
-
-Detail: The remote name could not be resolved: 'invaliduri'";
+			string[] expectedErrorMessages =
+            {
+                "The 'query Relativity get version' HTTP Web service 'POST' method failed with a web exception 1 status code.",
+                "Error: Failed to retrieve the Relativity version. Contact your system administrator for assistance if this problem persists.",
+                "Detail: The remote name could not be resolved: 'invaliduri'",
+            };
 
 			IApplicationVersionService sut = ManagerFactory.CreateApplicationVersionService(
 				this.RelativityInstanceInfo,
@@ -99,7 +100,9 @@ Detail: The remote name could not be resolved: 'invaliduri'";
 			// Assert
 			Assert.That(exception.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
 			Assert.That(exception.Fatal, Is.False);
-			Assert.That(exception.Message, Is.EqualTo(ExpectedErrorMessage));
+			Assert.That(exception.Message, Contains.Substring(expectedErrorMessages[0]));
+			Assert.That(exception.Message, Contains.Substring(expectedErrorMessages[1]));
+			Assert.That(exception.Message, Contains.Substring(expectedErrorMessages[2]));
 		}
 	}
 }

@@ -15,6 +15,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	using kCura.WinEDDS.Service.Kepler;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Logging;
 
 	public class KeplerServiceTestBase
@@ -33,6 +34,10 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		public KeplerServiceTestBase(bool useKepler)
 		{
 			this.UseKepler = useKepler;
+			if (useKepler)
+			{
+				RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(IntegrationTestHelper.IntegrationTestParameters, RelativityVersion.Sundrop);
+			}
 
 			this.Logger = new TestNullLogger();
 		}
@@ -102,7 +107,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			if (this.UseKepler)
 			{
 				expectedExceptionMessage =
-					"Error during interceptor action PermissionCheckInterceptor." +
+					"PermissionCheckInterceptor." +
 					" InnerExceptionType: Relativity.Core.Exception.InvalidAppArtifactID," +
 					$" InnerExceptionMessage: Could not retrieve ApplicationID #{workspaceId}.";
 			}
@@ -112,7 +117,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 
 			return Throws.Exception.InstanceOf<SoapException>()
-				.With.Message.EqualTo(expectedExceptionMessage);
+				.With.Message.Contains(expectedExceptionMessage);
 		}
 	}
 }
