@@ -19,7 +19,9 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
 	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport.FieldValueSources;
+	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 	using Relativity.OAuth2Client.Interfaces;
@@ -34,6 +36,7 @@ namespace Relativity.DataExchange.Import.NUnit.LoadTests
 	[Feature.DataTransfer.ImportApi.Authentication]
 	[TestType.EdgeCase]
 	[TestExecutionCategory.CI]
+	[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // IOAuth2ClientManager had different implementation, but is used only in test setup
 	public class TokenRefreshTests
 	{
 		private readonly IntegrationTestParameters testParameters = IntegrationTestHelper.IntegrationTestParameters;

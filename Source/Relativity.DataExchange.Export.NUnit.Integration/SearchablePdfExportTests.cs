@@ -41,7 +41,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		{
 			if (!IntegrationTestHelper.IsRegressionEnvironment())
 			{
-				SearchablePdfTestHelper.SetupTestData(this.TestParameters);
+				SearchablePdfTestHelper.SetupTestData(this.TestParameters, this.UseKepler);
 			}
 		}
 

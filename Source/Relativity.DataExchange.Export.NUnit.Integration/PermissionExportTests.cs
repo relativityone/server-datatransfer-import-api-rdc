@@ -25,7 +25,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	[Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
 	public class PermissionExportTests : ExportTestBase
 	{
-		private const RelativityVersion MinSupportedVersion = RelativityVersion.Foxglove;
+		private const RelativityVersion MinSupportedVersion = RelativityVersion.Lanceleaf;
 		private bool testsSkipped;
 		private int groupId;
 		private int userId;
