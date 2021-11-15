@@ -14,9 +14,9 @@
     <iconUrl>https://www.relativity.com/images/relativity-nuget-logo.png</iconUrl>
     <description>The Relativity data exchange client SDK .NET package.</description>
     <summary>The Relativity data exchange API provides functionality for programmatically importing large numbers of documents, images, and Relativity Dynamic Objects (RDOs) into a Relativity workspace.</summary>
-    <releaseNotes>https://platform.relativity.com/RelativityOne/Content/Import_API/Import_API_release_notes.htm</releaseNotes>
+    <releaseNotes>https://github.com/relativitydev/relativity-api-documentation/blob/master/Relativity.DataExchange.Client.SDK.md</releaseNotes>
     <copyright>Copyright (c) Relativity</copyright>
-    <tags>Relativity DataExchange IAPI ImportAPI Import Export ExportAPI ninebark-ea</tags>
+    <tags>Relativity DataExchange IAPI ImportAPI Import Export ExportAPI</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.6.2">
         <dependency id="Newtonsoft.Json" version="6.0.8" />
