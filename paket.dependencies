@@ -64,7 +64,7 @@ nuget relativity.kepler.client = 2.9.2
 nuget relativity.oauth2client = 1.5.2
 nuget relativity.oauth2client.implicit = 1.5.2
 nuget relativity.oauth2client.interfaces = 1.5.2
-nuget relativity.telemetry.services.interface ~> 3003.0.1
+nuget relativity.telemetry.services.interface ~> 3003.0.2
 nuget relativity.transfer.client ~> 7.4.6
 nuget relativity.services.interfaces.private = 11.3.11.1
 
