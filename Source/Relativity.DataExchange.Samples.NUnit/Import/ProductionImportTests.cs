@@ -109,6 +109,8 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 				Assert.That(hasNativeField, Is.False);
 				int? relativityImageCount = GetInt32FieldValue(document, WellKnownFields.RelativityImageCount);
 				Assert.That(relativityImageCount, Is.Null);
+				string extractedText = GetStringFieldValue(document, WellKnownFields.ExtractedText);
+				Assert.That(extractedText, Is.Null);
 			}
 
 			// Assert that importing doesn't add a file record.
@@ -129,7 +131,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			Assert.That(productionSet, Is.Not.Null);
 			kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job =
 				importApi.NewProductionImportJob(productionSet.ArtifactID);
-			this.ConfigureJobSettings(job);
+			this.ConfigureJobSettings(job, withExtractedText: false);
 			job.Settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.DoNotImportNativeFiles;
 			this.ConfigureJobEvents(job);
 			this.DataSource.Columns.AddRange(new[]

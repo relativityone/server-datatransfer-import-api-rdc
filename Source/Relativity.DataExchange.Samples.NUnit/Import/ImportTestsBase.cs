@@ -894,8 +894,13 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			return this.QueryDocuments(
 				new[]
 					{
-						WellKnownFields.ArtifactId, WellKnownFields.ControlNumber, WellKnownFields.HasImages,
-						WellKnownFields.HasNative, WellKnownFields.BatesNumber, WellKnownFields.RelativityImageCount,
+						WellKnownFields.ArtifactId,
+						WellKnownFields.ControlNumber,
+						WellKnownFields.HasImages,
+						WellKnownFields.HasNative,
+						WellKnownFields.BatesNumber,
+						WellKnownFields.RelativityImageCount,
+						WellKnownFields.ExtractedText,
 					});
 		}
 

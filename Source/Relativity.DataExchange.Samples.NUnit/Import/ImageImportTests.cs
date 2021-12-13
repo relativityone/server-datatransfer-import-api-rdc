@@ -19,7 +19,6 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	/// <summary>
 	/// Represents a test that imports images and validates the results.
 	/// </summary>
-	[TestFixture]
 	[Feature.DataTransfer.ImportApi.Operations.ImportImages]
 	[TestType.MainFlow]
 	public class ImageImportTests : ImageImportTestsBase
@@ -31,7 +30,9 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			// Arrange
 			kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job = importApi.NewImageImportJob();
-			this.ConfigureJobSettings(job);
+
+			// The file with Extracted Text must have the same name and location as image but .txt extension.
+			this.ConfigureJobSettings(job, withExtractedText: true);
 			this.ConfigureJobEvents(job);
 			string file = ResourceFileHelper.GetImagesResourceFilePath(fileName);
 			this.DataSource.Columns.AddRange(new[]
@@ -98,6 +99,9 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			Assert.That(hasNativeField, Is.False);
 			int? relativityImageCount = GetInt32FieldValue(document, WellKnownFields.RelativityImageCount);
 			Assert.That(relativityImageCount, Is.Positive);
+			string extractedText = GetStringFieldValue(document, WellKnownFields.ExtractedText);
+			Assert.That(extractedText, Is.Not.Null);
+			Assert.That(extractedText, Is.Not.Empty);
 
 			// Assert that importing adds a file record and all properties match the expected values.
 			IList<FileDto> documentImages = this.QueryImageFileInfo(document.ArtifactID).ToList();

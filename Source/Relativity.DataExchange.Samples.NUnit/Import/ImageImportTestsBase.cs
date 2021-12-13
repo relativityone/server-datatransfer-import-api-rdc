@@ -18,8 +18,13 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	/// </summary>
 	public abstract class ImageImportTestsBase : ImportTestsBase
 	{
-		protected void ConfigureJobSettings(kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job)
+		protected void ConfigureJobSettings(kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job, bool withExtractedText)
 		{
+			if (job == null)
+			{
+				throw new ArgumentNullException(nameof(job));
+			}
+
 			kCura.Relativity.DataReaderClient.ImageSettings settings = job.Settings;
 			settings.ArtifactTypeId = this.ArtifactTypeId;
 			settings.AutoNumberImages = false;
@@ -32,8 +37,8 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			settings.DisableImageTypeValidation = false;
 			settings.DisableUserSecurityCheck = true;
 			settings.DocumentIdentifierField = this.IdentifierFieldName;
-			settings.ExtractedTextEncoding = Encoding.Unicode;
-			settings.ExtractedTextFieldContainsFilePath = false;
+			settings.ExtractedTextEncoding = Encoding.UTF8;
+			settings.ExtractedTextFieldContainsFilePath = withExtractedText;
 			settings.FileLocationField = WellKnownFields.FileLocation;
 			settings.FolderPathSourceFieldName = null;
 			settings.IdentityFieldId = this.IdentifierFieldId;
