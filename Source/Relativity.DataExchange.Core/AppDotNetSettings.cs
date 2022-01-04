@@ -608,6 +608,17 @@ namespace Relativity.DataExchange
 
 		/// <inheritdoc />
 		[AppSetting(
+			AppSettingsConstants.SectionLegacyUtility,
+			AppSettingsConstants.RetryInTheOriginalTransferModeKey,
+			AppSettingsConstants.RetryInTheOriginalTransferModeValue)]
+		bool IAppSettings.RetryInTheOriginalTransferMode
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.JobCompleteBatchSizeKey,
 			AppSettingsConstants.JobCompleteBatchSizeDefaultValue)]
