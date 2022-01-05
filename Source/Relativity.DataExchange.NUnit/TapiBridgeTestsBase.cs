@@ -17,6 +17,7 @@ namespace Relativity.DataExchange.NUnit
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
+	using global::NUnit.Framework.Constraints;
 
 	using Moq;
 
@@ -522,8 +523,14 @@ namespace Relativity.DataExchange.NUnit
 
 		[Test]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldWaitForJobTransfersWhenTheFirstJobIsFatal()
+		[Category(TestCategories.TransferApi)]
+		[Category(TestCategories.TransferApi)]
+		[TestCase(true, 0, TapiClient.Direct)]
+		[TestCase(false, 1, TapiClient.Web)]
+		public void ShouldWaitForJobTransfersWhenTheFirstJobIsFatal(bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
 		{
+			AppSettings.Instance.RetryInTheOriginalTransferMode = retryInTheOriginalMode;
+
 			// The job is fatal on the first attempt and successful on the second.
 			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
 				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Fatal } as ITransferResult))
@@ -546,22 +553,20 @@ namespace Relativity.DataExchange.NUnit
 				TestErrorMessage,
 				KeepJobAlive);
 
-			// Retrying the job forces a switch to web mode.
-			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
-			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
-			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
-			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			// Retrying the job in web and the original mode
+			this.VerifyTotalsAndClientMode(totals, expectedTotals, client);
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Exactly(2));
 		}
 
 		[Test]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldWaitForJobTransfersWhenTheFirstJobIsFailedWithNoIssues()
+		[Category(TestCategories.TransferApi)]
+		[TestCase(true, 0, TapiClient.Direct)]
+		[TestCase(false, 1, TapiClient.Web)]
+		public void ShouldWaitForJobTransfersWhenTheFirstJobIsFailedWithNoIssues(bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
 		{
+			AppSettings.Instance.RetryInTheOriginalTransferMode = retryInTheOriginalMode;
+
 			// The job is fatal on the first attempt and successful on the second.
 			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
 				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Failed } as ITransferResult))
@@ -584,15 +589,8 @@ namespace Relativity.DataExchange.NUnit
 				TestErrorMessage,
 				KeepJobAlive);
 
-			// Retrying the job forces a switch to web mode.
-			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
-			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
-			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
-			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			// Retrying the job in web and the original mode
+			this.VerifyTotalsAndClientMode(totals, expectedTotals, client);
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Exactly(2));
 		}
 
@@ -644,8 +642,12 @@ namespace Relativity.DataExchange.NUnit
 		// https://jira.kcura.com/browse/REL-548265
 		[Test]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldTreatCompleteFailedWithErrorsAsFailed()
+		[TestCase(true, 0, TapiClient.Direct)]
+		[TestCase(false, 1, TapiClient.Web)]
+		public void ShouldTreatCompleteFailedWithErrorsAsFailed(bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
 		{
+			AppSettings.Instance.RetryInTheOriginalTransferMode = retryInTheOriginalMode;
+
 			// The job is fatal on the first attempt and successful on the second.
 			IssueAttributes attr1 = IssueAttributes.File | IssueAttributes.FileNotFound | IssueAttributes.Io | IssueAttributes.Warning;
 			IssueAttributes attr2 = IssueAttributes.Job | IssueAttributes.FileNotFound | IssueAttributes.Io | IssueAttributes.Warning;
@@ -677,26 +679,24 @@ namespace Relativity.DataExchange.NUnit
 				TestErrorMessage,
 				KeepJobAlive);
 
-			// Retrying the job forces a switch to web mode.
-			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
-			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
-			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
-			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			// Retrying the job in web and the original mode
+			this.VerifyTotalsAndClientMode(totals, expectedTotals, client);
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Exactly(2));
 		}
 
 		// https://jira.kcura.com/browse/REL-548265
 		[Test]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldTreatCompleteFailedWithWarningsWithoutIoAsFailed()
+		[Category(TestCategories.TransferApi)]
+		[TestCase(true, 0, TapiClient.Direct)]
+		[TestCase(false, 1, TapiClient.Web)]
+		public void ShouldTreatCompleteFailedWithWarningsWithoutIoAsFailed(bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
 		{
+			AppSettings.Instance.RetryInTheOriginalTransferMode = retryInTheOriginalMode;
+
 			// The job is fatal on the first attempt and successful on the second.
 			IssueAttributes attr1 = IssueAttributes.File | IssueAttributes.FileNotFound | IssueAttributes.Io
-			                        | IssueAttributes.Warning;
+									| IssueAttributes.Warning;
 			IssueAttributes attr2 = IssueAttributes.Job | IssueAttributes.FileNotFound | IssueAttributes.Io
 			                        | IssueAttributes.Warning;
 			IssueAttributes attr3 = IssueAttributes.File | IssueAttributes.FileNotFound | IssueAttributes.Warning;
@@ -725,23 +725,20 @@ namespace Relativity.DataExchange.NUnit
 				TestErrorMessage,
 				KeepJobAlive);
 
-			// Retrying the job forces a switch to web mode.
-			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
-			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
-			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
-			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			// Retrying the job in web and the original mode
+			this.VerifyTotalsAndClientMode(totals, expectedTotals, client);
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Exactly(2));
 		}
 
 		// https://jira.kcura.com/browse/REL-548265
 		[Test]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldTreatCompleteFailedWithWarningsWithoutFileNotFoundAsFailed()
+		[TestCase(true, 0, TapiClient.Direct)]
+		[TestCase(false, 1, TapiClient.Web)]
+		public void ShouldTreatCompleteFailedWithWarningsWithoutFileNotFoundAsFailed(bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
 		{
+			AppSettings.Instance.RetryInTheOriginalTransferMode = retryInTheOriginalMode;
+
 			// The job is fatal on the first attempt and successful on the second.
 			IssueAttributes attr1 = IssueAttributes.File | IssueAttributes.FileNotFound | IssueAttributes.Io | IssueAttributes.Warning;
 			IssueAttributes attr2 = IssueAttributes.Job | IssueAttributes.FileNotFound | IssueAttributes.Io | IssueAttributes.Warning;
@@ -773,15 +770,8 @@ namespace Relativity.DataExchange.NUnit
 				TestErrorMessage,
 				KeepJobAlive);
 
-			// Retrying the job forces a switch to web mode.
-			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
-			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
-			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
-			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			// Retrying the job in web and the original mode
+			this.VerifyTotalsAndClientMode(totals, expectedTotals, client);
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Exactly(2));
 		}
 
@@ -1059,10 +1049,14 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		[TestCase(false)]
-		[TestCase(true)]
-		public void ShouldAddPathsAndHandleNonFatalExceptions(bool keepJobAlive)
+		[TestCase(false, true, 1, TapiClient.Direct)]
+		[TestCase(false, false, 1, TapiClient.Web)]
+		[TestCase(true, true, 1, TapiClient.Direct)]
+		[TestCase(true, false, 1, TapiClient.Web)]
+		public void ShouldAddPathsAndHandleNonFatalExceptions(bool keepJobAlive, bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
 		{
+			AppSettings.Instance.RetryInTheOriginalTransferMode = retryInTheOriginalMode;
+
 			// Note: recent Moq releases allow sequencing void methods; however, it requires Castle v4 and is incompatible with our legacy version of Castle :(
 			bool firstTime = true;
 			this.queuedJobTransferPaths.Clear();
@@ -1094,14 +1088,7 @@ namespace Relativity.DataExchange.NUnit
 				TestSuccessMessage,
 				TestErrorMessage,
 				keepJobAlive);
-			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(1));
-			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(1));
-			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
-			Assert.That(this.ChangedTapiClient, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(TapiClient.Web));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(1));
-			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(1));
+			this.VerifyTotalsAndClientMode(totals, expectedTotals, client);
 			this.MockTransferJob.Verify(x => x.Dispose(), keepJobAlive ? Times.Once() : Times.Exactly(2));
 		}
 
@@ -1284,6 +1271,38 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.ChangedTapiClient, Is.Not.EqualTo(TapiClient.None));
 		}
 
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldRetryInTheOriginalTransferMode(
+			[Values(true, false)] bool retryInTheOriginalMode,
+			[Values(WellKnownTransferClient.FileShare, WellKnownTransferClient.Aspera)] WellKnownTransferClient client)
+		{
+			// ARRANGE
+			AppSettings.Instance.RetryInTheOriginalTransferMode = retryInTheOriginalMode;
+			this.MockLogger.ResetCalls();
+
+			this.MockTransferJob.Setup(x => x.AddPath(It.IsAny<TransferPath>(), It.IsAny<CancellationToken>()))
+				.Throws(new TransferException());
+
+			this.CreateTapiBridge(client);
+
+			// ACT
+			Assert.Catch(() => this.TapiBridgeInstance.AddPath(TestTransferPath));
+
+			// ASSERT
+			if (retryInTheOriginalMode)
+			{
+				TapiClient tapiClient = this.WellKnownTransferClientToTapiClient(client);
+
+				this.MockLogger.Verify(x => x.LogInformation("Successfully switched to {tapiClient} mode.", tapiClient), Times.Exactly(2));
+				this.MockLogger.Verify(x => x.LogInformation("Successfully switched to {tapiClient} mode.", TapiClient.Web), Times.Once);
+			}
+			else
+			{
+				this.MockLogger.Verify(x => x.LogInformation("Successfully switched to {tapiClient} mode.", TapiClient.Web), Times.Once);
+			}
+		}
+
 		protected abstract void CreateTapiBridge(WellKnownTransferClient client);
 
 		protected abstract void CreateTapiBridge(WellKnownTransferClient client, TapiBridgeParameters2 parameters);
@@ -1380,6 +1399,33 @@ namespace Relativity.DataExchange.NUnit
 			path.TargetPath = RandomHelper.NextString(50, 100);
 			path.Order = order;
 			return path;
+		}
+
+		private TapiClient WellKnownTransferClientToTapiClient(WellKnownTransferClient client)
+		{
+			switch (client)
+			{
+				case WellKnownTransferClient.FileShare:
+					return TapiClient.Direct;
+				case WellKnownTransferClient.Aspera:
+					return TapiClient.Aspera;
+				case WellKnownTransferClient.Http:
+					return TapiClient.Web;
+				default:
+					return (TapiClient)client;
+			}
+		}
+
+		private void VerifyTotalsAndClientMode(TapiTotals totals, int expectedTotals, TapiClient client)
+		{
+			Assert.That(totals.TotalCompletedFileTransfers, Is.EqualTo(expectedTotals));
+			Assert.That(totals.TotalFileTransferRequests, Is.EqualTo(expectedTotals));
+			Assert.That(totals.TotalSuccessfulFileTransfers, Is.EqualTo(expectedTotals));
+			Assert.That(this.ChangedTapiClient, Is.EqualTo(client));
+			Assert.That(this.TapiBridgeInstance.Client, Is.EqualTo(client));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalCompletedFileTransfers, Is.EqualTo(expectedTotals));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalFileTransferRequests, Is.EqualTo(expectedTotals));
+			Assert.That(this.TapiBridgeInstance.JobTotals.TotalSuccessfulFileTransfers, Is.EqualTo(expectedTotals));
 		}
 	}
 }

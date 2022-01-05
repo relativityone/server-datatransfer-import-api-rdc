@@ -466,6 +466,18 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether gets or sets the value indicating whether the transfer client mode will attempt retries in the original mode before switching to the web mode.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> attempt the retries in the original transfer mode first; otherwise, <see langword="false" />.
+		/// </value>
+		bool RetryInTheOriginalTransferMode
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the total of bytes for a single batch.
 		/// </summary>
 		/// <value>
