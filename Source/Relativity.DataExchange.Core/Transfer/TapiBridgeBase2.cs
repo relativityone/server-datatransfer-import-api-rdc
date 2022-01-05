@@ -409,7 +409,7 @@ namespace Relativity.DataExchange.Transfer
 
 			try
 			{
-				const int RetryAttempts = 2;
+				const int RetryAttempts = 3;
 				Exception transferException = null;
 				var result = Policy.Handle<TransferException>().Retry(
 					RetryAttempts,
@@ -427,13 +427,12 @@ namespace Relativity.DataExchange.Transfer
 						else
 						{
 							this.Logger.LogError(
-								exception,
-								"Failed to add a path to the {TransferJobId} transfer job.",
-								this.jobRequest?.JobId);
+							exception,
+							"Failed to add a path to the {TransferJobId} transfer job.",
+							this.jobRequest?.JobId);
 						}
 
-						// Note: if the switch is successful, the path will get added below.
-						this.SwitchToWebMode(exception);
+						this.SwitchTapiClientMode(exception, count < RetryAttempts ? this.Client : TapiClient.Web);
 					}).Execute(
 						() =>
 						{
@@ -1031,16 +1030,17 @@ namespace Relativity.DataExchange.Transfer
 					throw;
 				}
 
-				this.SwitchToWebMode(e);
+				this.SwitchTapiClientMode(e, TapiClient.Web);
 			}
 		}
 
 		/// <summary>
-		/// Creates the HTTP client. Those settings need to be reset after fallback to web instead of empty HttpClientConfiguration.
+		/// Creates a transfer client configuration.
 		/// </summary>
-		private void CreateHttpClient()
+		private void CreateTransferClient<T>()
+			where T : ClientConfiguration, new()
 		{
-			this.CreateTransferClient(new Relativity.Transfer.Http.HttpClientConfiguration
+			this.CreateTransferClient(new T
 			{
 				TransferLogDirectory = this.parameters.TransferLogDirectory,
 				BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
@@ -1231,16 +1231,32 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
-		/// Switch to web mode and re-queue all paths that previously failed.
+		/// Switch to specific mode and re-queue all paths that previously failed.
 		/// </summary>
 		/// <param name="exception">
 		/// The optional exception that forced the switch.
 		/// </param>
+		/// <param name="tapiClient">
+		/// specifies the TAPI Client mode.
+		/// </param>
 		/// <exception cref="TransferException">
 		/// Thrown when the existing job failed due to permissions or switching itself failed.
 		/// </exception>
-		private void SwitchToWebMode(Exception exception)
+		private void SwitchTapiClientMode(Exception exception, TapiClient tapiClient)
 		{
+			this.Logger.LogWarning(
+				"Switching Tapi Client mode to {tapiClient}."
+				+ " Retrying in the original transfer mode value: {AppSettings.Instance.RetryInTheOriginalTransferMode}."
+				+ " With exception: {exception}",
+				tapiClient,
+				AppSettings.Instance.RetryInTheOriginalTransferMode,
+				exception);
+
+			if (!AppSettings.Instance.RetryInTheOriginalTransferMode)
+			{
+				tapiClient = TapiClient.Web;
+			}
+
 			// Note: permission issues are fatal and cannot be "fixed" by switching to web mode.
 			// this check will prevent unnecessary spinning and force an immediate job failure.
 			const bool Fatal = true;
@@ -1260,8 +1276,6 @@ namespace Relativity.DataExchange.Transfer
 				throw new TransferException(Strings.WebModeFallbackAlreadyWebModeFatalExceptionMessage, exception, Fatal);
 			}
 
-			this.Logger.LogWarning("Preparing to fallback to web mode.");
-
 			// Ensure the fallback mode is acknowledged via Warning message.
 			var message = string.Format(
 				CultureInfo.CurrentCulture,
@@ -1277,28 +1291,51 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			this.PublishWarningMessage(message, TapiConstants.NoLineNumber);
-			var retryablePaths = this.GetRetryableTransferPaths();
-			if (retryablePaths.Count == 0)
-			{
-				this.Logger.LogInformation("The current transfer job is switching to web mode and no retryable paths exist.");
-			}
 
 			this.DestroyTransferJob();
 			this.DestroyTransferClient();
-			this.CreateHttpClient();
-			this.PublishClientChanged(ClientChangeReason.HttpFallback);
-			this.CreateTransferJob(true);
-			foreach (TransferPath path in retryablePaths)
-			{
-				// Restore the original path before adding to the web mode job.
-				path.RevertPaths();
 
-				// Do NOT call AddPath since this would introduce infinite recursion.
-				// Do NOT call IncrementTotalFileTransferRequests since these have already been counted!
-				this.TransferJob.AddPath(path, this.cancellationToken);
+			this.CreateTapiClient(tapiClient);
+			this.CreateTransferJob(webModeSwitch: tapiClient == TapiClient.Web);
+
+			var retryablePaths = this.GetRetryableTransferPaths();
+			if (retryablePaths.Count == 0)
+			{
+				this.Logger.LogInformation("No retryable paths exist.");
+			}
+			else
+			{
+				foreach (TransferPath path in retryablePaths)
+				{
+					// Restore the original path.
+					path.RevertPaths();
+
+					// Do NOT call TapiBridgeBase2.AddPath since this would introduce infinite recursion.
+					// Do NOT call IncrementTotalFileTransferRequests since these have already been counted!
+					this.TransferJob.AddPath(path, this.cancellationToken);
+				}
+			}
+		}
+
+		private void CreateTapiClient(TapiClient tapiClient)
+		{
+			switch (tapiClient)
+			{
+				case TapiClient.Aspera:
+					this.CreateTransferClient<Relativity.Transfer.Aspera.AsperaClientConfiguration>();
+					this.PublishClientChanged(ClientChangeReason.BestFit);
+					break;
+				case TapiClient.Direct:
+					this.CreateTransferClient<Relativity.Transfer.FileShare.FileShareClientConfiguration>();
+					this.PublishClientChanged(ClientChangeReason.BestFit);
+					break;
+				default:
+					this.CreateTransferClient<Relativity.Transfer.Http.HttpClientConfiguration>();
+					this.PublishClientChanged(ClientChangeReason.HttpFallback);
+					break;
 			}
 
-			this.Logger.LogInformation("Successfully switched to web mode.");
+			this.Logger.LogInformation("Successfully switched to {tapiClient} mode.", tapiClient);
 		}
 
 		/// <summary>
@@ -1642,23 +1679,25 @@ namespace Relativity.DataExchange.Transfer
 				// 1. Stop as soon as all file transfers are completed.
 				// 2. Stop as soon as cancellation is requested and rethrow OperationCanceledException.
 				// 3. Stop as soon as a permission issue is raised.
-				// 4. Switch to web mode when the transfer job is no longer valid or the inactivity time is exceeded.
+				// 4. Retry in the original transfer mode when the transfer job is no longer valid or the inactivity time is exceeded. Finally switch to Web mode.
 				// 5. All non-cancellation exceptions force switching to web mode.
 				// 6. When all else fails, call WaitForCompletedTransferJob.
 				const int WaitTimeBetweenChecks = 250;
+				const int RetryAttempts = 2;
+				int originalClientModeRetryCounter = 0;
 				Policy.HandleResult(false).WaitAndRetryForever(
 					i => TimeSpan.FromMilliseconds(WaitTimeBetweenChecks),
 					(result, span) =>
 					{
-						// Do nothing.
+						originalClientModeRetryCounter++;
 					}).Execute(
 					() =>
 					{
 						try
 						{
-							if (!this.CheckValidTransferJobStatus())
+							if (!this.CheckValidTransferJobStatus() && originalClientModeRetryCounter < RetryAttempts)
 							{
-								this.SwitchToWebMode(null);
+								this.SwitchTapiClientMode(null, this.Client);
 							}
 
 							this.cancellationToken.ThrowIfCancellationRequested();
@@ -1685,7 +1724,7 @@ namespace Relativity.DataExchange.Transfer
 								e,
 								"An exception was thrown waiting for the {TransferJobId} file transfers to complete.",
 								this.jobRequest?.JobId);
-							this.SwitchToWebMode(e);
+							this.SwitchTapiClientMode(e, TapiClient.Web);
 							return true;
 						}
 					});
@@ -1736,11 +1775,13 @@ namespace Relativity.DataExchange.Transfer
 					(exception, count) =>
 					{
 						handledException = exception;
+
 						this.Logger.LogWarning(
 							exception,
 							"An unexpected error has occurred attempting to wait for transfer job {TransferJobId} to complete.",
 							this.jobRequest?.JobId);
-						this.SwitchToWebMode(exception);
+
+						this.SwitchTapiClientMode(exception, count < RetryAttempts ? this.Client : TapiClient.Web);
 					}).Execute(
 					() =>
 					{
