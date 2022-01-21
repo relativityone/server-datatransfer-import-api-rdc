@@ -524,6 +524,48 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		}
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
+		[IdentifiedTest("84C31F9C-6F36-4221-9FC4-C6AD448252CF")]
+		[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+		public void ShouldUseAppendOverlayToUpdateOneField()
+		{
+			// ARRANGE
+			int artifactTypeId = GetArtifactTypeIdForTest(ArtifactType.Document);
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings(artifactTypeId);
+
+			// Prepare data for import under test
+			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+
+			List<string> controlNumber = new List<string>() { "First to update", "Second to update" };
+			List<string> initialEmailSubject = new List<string> { "subject 1", "subject 2" };
+			List<string> initialAttachmentNameValues = new List<string> { "attachment name 1", "attachment name 2" };
+
+			ImportDataSource<object[]> initialImportDataSource = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, controlNumber)
+				.AddField("Attachment Name", initialAttachmentNameValues)
+				.AddField("Email Subject", initialEmailSubject).Build();
+			ImportTestJobResult initialResults = this.JobExecutionContext.Execute(initialImportDataSource);
+			IList<RelativityObject> initialRelativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, artifactTypeId, fields: new[] { WellKnownFields.ControlNumber, "Attachment Name", "Email Subject" });
+			List<string> overwrittenValues = new List<string> { "changed attachment name 1", "changed attachment name 2" };
+			ImportDataSource<object[]> appendOverlayImportDataSource = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, controlNumber)
+				.AddField("Attachment Name", overwrittenValues).Build();
+
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(appendOverlayImportDataSource);
+
+			// ASSERT
+			IList<RelativityObject> relativityObjects = RdoHelper.QueryRelativityObjects(this.TestParameters, artifactTypeId, fields: new[] { WellKnownFields.ControlNumber, "Attachment Name", "Email Subject" });
+
+			for (int i = 0; i < relativityObjects.Count; i++)
+			{
+				Assert.That(relativityObjects[i].FieldValues[0].Value, Is.EqualTo(controlNumber[i]));
+				Assert.That(relativityObjects[i].FieldValues[1].Value, Is.EqualTo(overwrittenValues[i]));
+				Assert.That(relativityObjects[i].FieldValues[2].Value, Is.EqualTo(initialEmailSubject[i]));
+			}
+		}
+
+		[IgnoreIfVersionLowerThan(MinSupportedVersion)]
 		[IgnoreIfMassImportImprovementsToggleHasValue(isEnabled: false)]
 		[IdentifiedTest("13dc1d17-4a2b-4b48-9015-b61e58bc5168")]
 		public async Task ShouldImportObjectsWithAssociatedChildDocuments(
