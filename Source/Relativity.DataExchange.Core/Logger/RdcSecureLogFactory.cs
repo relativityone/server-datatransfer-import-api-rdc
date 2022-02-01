@@ -55,7 +55,7 @@ namespace Relativity.DataExchange.Logger
 		[SuppressMessage("Microsoft.Design", "CA1031:Do not catch general exception types", Justification = "After Relativity.Logging update we have to update this code but we don't want to introduce any change in behavior or possible exceptions.")]
 		public ILog CreateSecureLogger()
 		{
-			LoggerOptions options = CreateLoggerOptions(this.credential);
+			LoggerOptions options = CreateLoggerOptions(this.credential, GetConfigFileName());
 			ILog secureLogger;
 			if (options != null)
 			{
@@ -69,7 +69,10 @@ namespace Relativity.DataExchange.Logger
 				{
 					LoggingLevel minimumLoggingLevel = MinimumLoggingLevel(relativityLogConfiguration);
 					LogConfiguration localLogConfiguration = CreateLocalLogConfiguration(minimumLoggingLevel);
-					ILog localLogger = LogFactory.GetLogger(options, localLogConfiguration);
+
+					// passing empty path will force logger to create another log file in %tmp%
+					LoggerOptions hashedLoggerOptions = CreateLoggerOptions(this.credential, string.Empty);
+					ILog localLogger = LogFactory.GetLogger(hashedLoggerOptions, localLogConfiguration);
 
 					secureLogger = new AggregatingLoggerDecorator(
 						new HashingLoggerDecorator(secureLogger, minimumLoggingLevel),
@@ -119,12 +122,11 @@ namespace Relativity.DataExchange.Logger
 			return configuration;
 		}
 
-		private static LoggerOptions CreateLoggerOptions(NetworkCredential credential)
+		private static string GetConfigFileName()
 		{
 			string configFileName = AppSettings.Instance.LogConfigXmlFileName;
 			if (string.IsNullOrWhiteSpace(configFileName) || !Path.IsPathRooted(configFileName) || !File.Exists(configFileName))
 			{
-				configFileName = null;
 				Assembly assembly = Assembly.GetCallingAssembly();
 				if (assembly != null)
 				{
@@ -135,17 +137,27 @@ namespace Relativity.DataExchange.Logger
 						return null;
 					}
 
-					configFileName = path;
+					return path;
 				}
 			}
 
-			var options = new LoggerOptions()
+			return configFileName;
+		}
+
+		private static LoggerOptions CreateLoggerOptions(NetworkCredential credential, string configFileName)
+		{
+			if (configFileName == null)
 			{
-				Application = RdcLoggingApplication,
-				System = RdcLoggingSystem,
-				SubSystem = RdcLoggingSubSystem,
-				ConfigurationFileLocation = configFileName,
-			};
+				return null;
+			}
+
+			var options = new LoggerOptions()
+				              {
+					              Application = RdcLoggingApplication,
+					              System = RdcLoggingSystem,
+					              SubSystem = RdcLoggingSubSystem,
+					              ConfigurationFileLocation = configFileName,
+				              };
 
 			if (credential != null && !credential.Password.IsNullOrEmpty() && !credential.UserName.IsNullOrEmpty())
 			{
