@@ -2,6 +2,7 @@ Imports System.Net
 Imports System.Threading.Tasks
 Imports kCura.WinEDDS.Credentials
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logger
 
 Namespace kCura.WinEDDS.Service
 	Public Class Helper
@@ -23,13 +24,14 @@ Namespace kCura.WinEDDS.Service
 			Try
 				If(Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet())
 					result = DirectCast(defaultCredentials, System.Net.NetworkCredential)
-				Else 
+				Else
 					dim updatedWebApiCredentials As System.Net.NetworkCredential = Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
 					Dim originalCredential As NetworkCredential = DirectCast(defaultCredentials, System.Net.NetworkCredential)
 					originalCredential.Password = updatedWebApiCredentials.Password
 					result = updatedWebApiCredentials
 				End If
 			Catch ex As Exception
+				RelativityLogger.Instance.LogError(ex, "Error occurred while getting updated credentials.")
 				result = DirectCast(defaultCredentials, System.Net.NetworkCredential)
 			End Try
 
@@ -47,6 +49,7 @@ Namespace kCura.WinEDDS.Service
 					result = updatedWebApiCredentials
 				End If
 			Catch ex As Exception
+				RelativityLogger.Instance.LogError(ex, "Error occurred while getting updated credentials.")
 				result = DirectCast(defaultCredentials, System.Net.NetworkCredential)
 			End Try
 
