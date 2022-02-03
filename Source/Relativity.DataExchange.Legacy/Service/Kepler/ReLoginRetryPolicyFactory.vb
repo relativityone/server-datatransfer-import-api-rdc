@@ -56,6 +56,7 @@ Namespace kCura.WinEDDS.Service.Kepler
 			If Not credentials Is emptyCredentials Then
 				Me._serviceProxyFactory.UpdateCredentials(credentials)
 			Else
+				Me._logger.LogError("Token not refreshed. Credentials were empty.")
 				Me._canRetryOnNotAuthorizedException = False ' RelativityWebApiCredentialsProvider failed to refresh token
 			End If
 		End Function

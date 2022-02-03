@@ -55,7 +55,8 @@ namespace Relativity.DataExchange.NUnit.Service
 			get
 			{
 				return ExceptionHelper.FatalExceptionCandidates.Where(x => x != typeof(ThreadAbortException))
-					.Concat(ExceptionHelper.FatalKeplerExceptionCandidates).Select(Activator.CreateInstance);
+					.Concat(ExceptionHelper.FatalKeplerExceptionCandidates).Select(Activator.CreateInstance)
+                    .Concat(new[] { new ArgumentException("Bearer token should not be null or empty.") });
 			}
 		}
 

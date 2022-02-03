@@ -197,9 +197,16 @@ namespace Relativity.DataExchange
 				throw new ArgumentNullException(nameof(exception));
 			}
 
-			var exceptionType = exception.GetType();
-			return FatalExceptionCandidates.Any(exceptionCandidateType => exceptionCandidateType.IsAssignableFrom(exceptionType))
-				   || IsFatalWebException(exception) || IsFatalServiceInfrastructureException(exception) || IsOutOfDiskSpaceException(exception);
+			Func<Exception, bool>[] isFatalExceptionPredicates =
+			{
+				e => FatalExceptionCandidates.Any(exceptionCandidateType => exceptionCandidateType.IsInstanceOfType(e)),
+				IsFatalWebException,
+				IsFatalServiceInfrastructureException,
+				IsOutOfDiskSpaceException,
+				e => e.Message.Contains("Bearer token should not be null or empty"),
+			};
+
+			return isFatalExceptionPredicates.Any(predicate => predicate(exception));
 		}
 
 		/// <summary>
