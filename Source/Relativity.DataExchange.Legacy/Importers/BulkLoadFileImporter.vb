@@ -1707,6 +1707,7 @@ Namespace kCura.WinEDDS
 											Catch
 											End Try
 										End If
+										OutputFileWriter.ReportFullTextSizeOnServer(fileSize)
 										outputWriter.Write(field.Value)
 									Else
 										'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file

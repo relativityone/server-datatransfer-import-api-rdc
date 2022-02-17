@@ -74,6 +74,7 @@
     <Compile Include="Import\JobExecutionContext\IExecutionContext.cs" />
     <Compile Include="Import\JobExecutionContext\ImportTestJobResult.cs" />
     <Compile Include="Import\SimpleFieldsImport\FieldValueSources\IFieldValueSourceWithPrefix.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\MultipleValueSource.cs" />
     <Compile Include="Import\SimpleFieldsImport\FieldValueSources\OneValueSource.cs" />
     <Compile Include="Import\SimpleFieldsImport\SingleObjectImporter.cs" />
     <Compile Include="Import\RdoStructureImport\FieldDefinition.cs" />

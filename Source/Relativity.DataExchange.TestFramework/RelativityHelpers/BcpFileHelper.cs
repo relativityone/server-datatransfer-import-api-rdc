@@ -25,9 +25,9 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		/// </summary>
 		/// <param name="parameters">Parameters with credentials.</param>
 		/// <param name="content">File content.</param>
-		/// <param name="bcpPath">BCP Path for workspace.</param>
+		/// <param name="destinationPath">Destination path on the server.</param>
 		/// <returns>File name.</returns>
-		public static async Task<string> CreateAsync(IntegrationTestParameters parameters, string content, string bcpPath)
+		public static async Task<string> CreateAsync(IntegrationTestParameters parameters, string content, string destinationPath)
 		{
 			if (RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.Indigo))
 			{
@@ -44,7 +44,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			{
 				string fileName = Guid.NewGuid().ToString();
 
-				await fileSystemManager.UploadFileAsync(keplerStream, Path.Combine(bcpPath, fileName)).ConfigureAwait(false);
+				await fileSystemManager.UploadFileAsync(keplerStream, Path.Combine(destinationPath, fileName)).ConfigureAwait(false);
 
 				return fileName;
 			}

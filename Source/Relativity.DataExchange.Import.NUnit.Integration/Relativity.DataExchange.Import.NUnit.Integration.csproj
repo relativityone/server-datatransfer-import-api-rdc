@@ -75,6 +75,7 @@
     <Compile Include="DevTests\ImportProfilingTests.cs" />
     <Compile Include="DevTests\CreateWorkspaceWithManyFieldsTests.cs" />
     <Compile Include="Dto\ImageImportWithFileNameDtoBuilder.cs" />
+    <Compile Include="ExtractedTextTests.cs" />
     <Compile Include="FileExportHelper.cs" />
     <Compile Include="ImagePermissionTests.cs" />
     <Compile Include="ImportApiTests.cs" />

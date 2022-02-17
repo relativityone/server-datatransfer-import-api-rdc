@@ -63,6 +63,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 			Assert.That(Sub() _sut.MarkRollbackPosition(), Throws.TypeOf(Of ObjectDisposedException))
 			Assert.That(Sub() _sut.Open(), Throws.TypeOf(Of ObjectDisposedException))
 			Assert.That(Sub() _sut.RollbackDocumentLineWrites(), Throws.TypeOf(Of ObjectDisposedException))
+			Assert.That(Sub() _sut.ReportFullTextSizeOnServer(100), Throws.TypeOf(Of ObjectDisposedException))
 		End Sub
 
 		<Test()>
@@ -145,7 +146,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 			' Act
 			_sut.Open()
 
-			' Arrange
+			' Assert
 			Assert.That(_sut.OutputDataGridFilePath, [Is].Not.Null.Or.Empty)
 			Assert.That(_sut.OutputDataGridFilePath, Does.Exist)
 			Assert.That(_sut.OutputNativeFilePath, [Is].Not.Null.Or.Empty)
@@ -154,6 +155,62 @@ Namespace Relativity.DataExchange.Import.NUnit
 			Assert.That(_sut.OutputCodeFilePath, Does.Exist)
 			Assert.That(_sut.OutputObjectFilePath, [Is].Not.Null.Or.Empty)
 			Assert.That(_sut.OutputObjectFilePath, Does.Exist)
+		End Sub
+		
+
+		<Test()>
+		Public Sub CombinedStreamLengthShouldBePositive()
+			' Arrange
+			_sut.Open()
+			_sut.OutputNativeFileWriter.Write("Test")
+			_sut.OutputDataGridFileWriter.Write("Test")
+			_sut.OutputNativeFileWriter.Flush()
+			_sut.OutputDataGridFileWriter.Flush()
+			' Assert
+			Assert.That(_sut.CombinedStreamLength, [Is].Not.Null.Or.Empty)
+			Assert.That(_sut.CombinedStreamLength, [Is].GreaterThan(0))
+			Assert.That(_sut.CombinedStreamLength, [Is].EqualTo(20))
+		End Sub
+
+		<Test()>
+		Public Sub CombinedStreamLengthShouldBeFourAfterOpenAndFlush()
+			' Arrange
+			_sut.Open()
+			_sut.OutputNativeFileWriter.Flush()
+			_sut.OutputDataGridFileWriter.Flush()
+
+			' Flush will add 2 bytes per writer even when file is empty
+			' Assert
+			Assert.That(_sut.CombinedStreamLength, [Is].Not.Null.Or.Empty)
+			Assert.That(_sut.CombinedStreamLength, [Is].EqualTo(4))
+		End Sub
+
+		<Test()>
+		Public Sub CombinedStreamLengthShouldIncludeReportFullTextSizeOnServer()
+			' Arrange
+			_sut.Open()
+			_sut.OutputNativeFileWriter.Flush()
+			_sut.OutputDataGridFileWriter.Flush()
+			_sut.ReportFullTextSizeOnServer(100)
+
+			' Flush will add 2 bytes per writer even when file is empty
+			' Assert
+			Assert.That(_sut.CombinedStreamLength, [Is].Not.Null.Or.Empty)
+			Assert.That(_sut.CombinedStreamLength, [Is].EqualTo(104))
+		End Sub
+
+		<Test()>
+		Public Sub CombinedStreamLengthShouldIncludeStreamsAndReportFullTextSizeOnServer()
+			' Arrange
+			_sut.Open()
+			_sut.OutputNativeFileWriter.Write("Test")
+			_sut.OutputDataGridFileWriter.Write("Test")
+			_sut.OutputNativeFileWriter.Flush()
+			_sut.OutputDataGridFileWriter.Flush()
+			_sut.ReportFullTextSizeOnServer(100)
+			' Assert
+			Assert.That(_sut.CombinedStreamLength, [Is].Not.Null.Or.Empty)
+			Assert.That(_sut.CombinedStreamLength, [Is].EqualTo(120))
 		End Sub
 
 		<Test()>
