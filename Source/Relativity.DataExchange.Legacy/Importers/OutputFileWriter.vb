@@ -18,6 +18,7 @@ Namespace kCura.WinEDDS
 		Private _filesOpened As Boolean
 		Private _nativeFileWriterRollbackPos As Long
 		Private _dataGridFileWriterRollbackPos As Long
+		Private _fullTextOnServerLength As Long
 		Private _disposed As Boolean
 
 		''' <summary>
@@ -175,7 +176,7 @@ Namespace kCura.WinEDDS
 						Return 0
 					End If
 
-					Return Me.OutputNativeFileWriter.BaseStream.Length + Me.OutputDataGridFileWriter.BaseStream.Length
+					Return Me.OutputNativeFileWriter.BaseStream.Length + Me.OutputDataGridFileWriter.BaseStream.Length + Me._fullTextOnServerLength
 				End SyncLock
 			End Get
 		End Property
@@ -213,7 +214,8 @@ Namespace kCura.WinEDDS
 			Me._outputDataGridFileWriter = _fileSystem.CreateStreamWriter(Me.OutputDataGridFilePath, append, System.Text.Encoding.Unicode)
 			Me._outputCodeFileWriter = _fileSystem.CreateStreamWriter(Me.OutputCodeFilePath, append, System.Text.Encoding.Unicode)
 			Me._outputObjectFileWriter = _fileSystem.CreateStreamWriter(Me.OutputObjectFilePath, append, System.Text.Encoding.Unicode)
-
+			
+			Me._fullTextOnServerLength = 0
 			Me._filesOpened = True
 		End Sub
 
@@ -279,6 +281,14 @@ Namespace kCura.WinEDDS
 				fs.SetLength(_dataGridFileWriterRollbackPos)
 				fs.Close()
 			End Using
+		End Sub
+
+		
+		Public Sub ReportFullTextSizeOnServer(length As Long)
+			SyncLock Me._syncRoot
+				Me.CheckDispose()
+				Me._fullTextOnServerLength += length
+			End SyncLock
 		End Sub
 
 		Private Sub CreateTempFiles()
