@@ -51,11 +51,12 @@ try{
 	Import-Module RAPTools -Force
 	Install-RelativityLibraryApplication -HostName "$RelativityHost" -FilePath "$rapPath" -RelativityCredential $credential
 
+	Get-Module -ListAvailable -Name R1Ops.Relativity
 	if(-not (Get-Module -ListAvailable -Name R1Ops.Relativity))
 	{
-		Install-Module R1Ops.Relativity -Force
+		Install-Module R1Ops.Relativity -MaximumVersion 1.4.4 -Force
 	}
-	Import-Module R1Ops.Relativity -Force
+	Import-Module R1Ops.Relativity -MaximumVersion 1.4.4 -Force 
 	Set-R1OpsInstanceSetting -Section 'DataTransfer.Legacy' -Name 'IAPICommunicationMode' -Value 'Kepler' -ValueType 'Text' -Uri "https://$RelativityHost" -Credential $credential
 }
 finally{

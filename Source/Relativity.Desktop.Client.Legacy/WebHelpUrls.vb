@@ -23,7 +23,7 @@
 			If cloudInstance OrElse productVersion Is Nothing Then
 				Return $"{UrlPrefix}RelativityOne/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm"
 			Else
-				Return $"{UrlPrefix}{productVersion.Major}.{productVersion.Minor}/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm"
+				Return $"{UrlPrefix}"
 			End If
 		End Function
 
