@@ -39,7 +39,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 				RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(IntegrationTestHelper.IntegrationTestParameters, RelativityVersion.Sundrop);
 			}
 
-			this.Logger = new TestNullLogger();
+			this.Logger = new RelativityTestLogger(new TestNullLogger());
 		}
 
 		protected bool UseKepler { get; }
@@ -86,6 +86,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 		[SetUp]
 		public void Setup()
 		{
+			Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - {TestContext.CurrentContext.Test.FullName} - Started");
 			this.Credential = new NetworkCredential(
 				this.TestParameters.RelativityUserName,
 				this.TestParameters.RelativityPassword);
@@ -99,6 +100,12 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 
 			string correlationId = Guid.NewGuid().ToString();
 			this.CorrelationIdFunc = () => correlationId;
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - {TestContext.CurrentContext.Test.FullName} - Finished");
 		}
 
 		protected IResolveConstraint GetExpectedExceptionConstraintForNonExistingWorkspace(int workspaceId)

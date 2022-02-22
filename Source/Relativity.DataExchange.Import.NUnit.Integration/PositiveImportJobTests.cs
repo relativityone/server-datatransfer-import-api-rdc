@@ -20,7 +20,6 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using global::NUnit.Framework;
 	using kCura.Relativity.DataReaderClient;
 
-	using Relativity.DataExchange.Export.VolumeManagerV2;
 	using Relativity.DataExchange.Import.NUnit.Integration.Dto;
 	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.TestFramework.Extensions;
@@ -93,6 +92,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			AppSettings.Instance.ImportBatchSize = this.initialBatchSize;
 			if (!testsSkipped)
 			{
+				Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - {TestContext.CurrentContext.Test.FullName} - Start to remove all documents and objects");
 				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, createdObjectArtifactTypeId).ConfigureAwait(false);
 				await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int)ArtifactType.Document).ConfigureAwait(false);
 			}
@@ -191,7 +191,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				numOfDifferentPaths: 100,
 				maxPathDepth: 100);
 
-			const int NumberOfDocumentsToImport = 2010;
+			const int NumberOfDocumentsToImport = 100;
 			IEnumerable<FolderImportDto> importData = randomFolderGenerator.ToFolders(NumberOfDocumentsToImport)
 				.Select((p, i) => new FolderImportDto($"{i}-{nameof(this.ShouldImportFolders)}", p));
 
@@ -572,7 +572,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			[Values(OverwriteModeEnum.Append, OverwriteModeEnum.AppendOverlay, OverwriteModeEnum.Overlay)] OverwriteModeEnum overwriteMode)
 		{
 			// ARRANGE
-			int recordCount = 2000;
+			int recordCount = 20;
 			List<string> controlNumberValues = GetIdentifiersEnumerable(
 				recordCount,
 				$"{nameof(this.ShouldImportObjectsWithAssociatedChildDocuments)}{overwriteMode}").ToList();

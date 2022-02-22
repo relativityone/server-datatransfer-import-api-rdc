@@ -1343,6 +1343,28 @@ namespace Relativity.DataExchange
 			set;
 		}
 
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.ReadRelativityVersionErrorNumberOfRetriesKey,
+			AppSettingsConstants.ReadRelativityVersionErrorNumberOfRetriesDefaultValue)]
+		int IAppSettings.ReadRelativityVersionErrorNumberOfRetries
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.ReadRelativityVersionErrorWaitTimeInSecondsKey,
+			AppSettingsConstants.ReadRelativityVersionErrorWaitTimeInSecondsDefaultValue)]
+		int IAppSettings.ReadRelativityVersionErrorWaitTimeInSeconds
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Validates that the URI is valid and returns a properly formatted URI string.
 		/// </summary>

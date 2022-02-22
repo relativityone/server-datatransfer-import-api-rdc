@@ -108,6 +108,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		[SetUp]
 		public void Setup()
 		{
+			Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - {TestContext.CurrentContext.Test.FullName} - Started");
 			TapiClientModeAvailabilityChecker.InitializeTapiClient(this.TestParameters);
 			this.Logger = new TestNullLogger();
 
@@ -158,6 +159,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				this.cancellationTokenSource.Dispose();
 				this.cancellationTokenSource = null;
 			}
+
+			Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - {TestContext.CurrentContext.Test.FullName} - Finished");
 		}
 
 		public void Dispose()

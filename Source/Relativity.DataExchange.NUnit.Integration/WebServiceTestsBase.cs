@@ -6,6 +6,7 @@
 
 namespace Relativity.DataExchange.NUnit.Integration
 {
+	using System;
 	using System.Net;
 	using System.Threading;
 
@@ -94,6 +95,8 @@ namespace Relativity.DataExchange.NUnit.Integration
 		[SetUp]
 		public void Setup()
 		{
+			Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - {TestContext.CurrentContext.Test.FullName} - Started");
+
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
@@ -124,6 +127,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		public void Teardown()
 		{
 			this.OnTeardown();
+			Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - {TestContext.CurrentContext.Test.FullName} - Finished");
 		}
 
 		/// <summary>

@@ -20,9 +20,29 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	[Feature.DataTransfer.ImportApi]
 	public class ApplicationVersionServiceTests : KeplerServiceTestBase
 	{
+		private int originalRetries;
+		private int originalWait;
+
 		public ApplicationVersionServiceTests(bool useKepler)
 			: base(useKepler)
 		{
+		}
+
+		[OneTimeSetUp]
+		public void ApplicationVersionServiceOneTimeSetup()
+		{
+			this.originalRetries = AppSettings.Instance.ReadRelativityVersionErrorNumberOfRetries;
+			this.originalWait = AppSettings.Instance.ReadRelativityVersionErrorWaitTimeInSeconds;
+
+			AppSettings.Instance.ReadRelativityVersionErrorNumberOfRetries = 1;
+			AppSettings.Instance.ReadRelativityVersionErrorWaitTimeInSeconds = 1;
+		}
+
+		[OneTimeTearDown]
+		public void ApplicationVersionServiceOneTimeTearDown()
+		{
+			AppSettings.Instance.ReadRelativityVersionErrorNumberOfRetries = this.originalRetries;
+			AppSettings.Instance.ReadRelativityVersionErrorWaitTimeInSeconds = this.originalWait;
 		}
 
 		[IdentifiedTest("7da5b27f-9c88-4ee9-8164-ea4e7c77a443")]

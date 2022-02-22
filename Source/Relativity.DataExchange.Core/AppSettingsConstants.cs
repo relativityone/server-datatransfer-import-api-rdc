@@ -207,6 +207,10 @@ namespace Relativity.DataExchange
 		public const int ReadCommunicationModeErrorNumberOfRetriesDefaultValue = 1;
 		public const string ReadCommunicationModeErrorWaitTimeInSecondsKey = "ReadCommunicationModeErrorWaitTimeInSeconds";
 		public const int ReadCommunicationModeErrorWaitTimeInSecondsDefaultValue = 1;
+		public const string ReadRelativityVersionErrorNumberOfRetriesKey = "ReadRelativityVersionErrorNumberOfRetries";
+		public const int ReadRelativityVersionErrorNumberOfRetriesDefaultValue = 3;
+		public const string ReadRelativityVersionErrorWaitTimeInSecondsKey = "ReadRelativityVersionErrorWaitTimeInSeconds";
+		public const int ReadRelativityVersionErrorWaitTimeInSecondsDefaultValue = 5;
 		public const string RetryInTheOriginalTransferModeKey = "RetryInTheOriginalTransferMode";
 		public const bool RetryInTheOriginalTransferModeValue = true;
 #pragma warning restore SA1600

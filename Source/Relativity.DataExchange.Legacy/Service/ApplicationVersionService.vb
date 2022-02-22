@@ -22,8 +22,8 @@ Namespace kCura.WinEDDS.Service
 
 		Public Async Function GetRelativityVersionAsync(ByVal token As CancellationToken) As Task(Of Version) Implements IApplicationVersionService.GetRelativityVersionAsync
 			' This check should fail more quickly than other web service calls.
-			Const RetryCount As Integer = 3
-			Const WaitSeconds As Integer = 5
+			Dim RetryCount As Integer = _appSettings.ReadRelativityVersionErrorNumberOfRetries
+			Dim WaitSeconds As Integer = _appSettings.ReadRelativityVersionErrorWaitTimeInSeconds
 			Dim client As New RestClient(_instance, _logger, _appSettings.HttpTimeoutSeconds, RetryCount)
 			Dim relVersionString As String = Await client.RequestPostStringAsync(
 			InstanceDetailsServiceRelPath,

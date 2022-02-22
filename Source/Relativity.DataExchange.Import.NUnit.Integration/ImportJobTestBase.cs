@@ -61,6 +61,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[SetUp]
 		public async Task SetupAsync()
 		{
+			Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - {TestContext.CurrentContext.Test.FullName} - Started");
 			TapiClientModeAvailabilityChecker.InitializeTapiClient(TestParameters);
 			await this.OnSetUpAsync().ConfigureAwait(false);
 			kCura.WinEDDS.Config.ConfigSettings["BadPathErrorsRetry"] = false;
@@ -92,6 +93,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 			this.JobExecutionContext?.Dispose();
 			this.JobExecutionContext = null;
+			Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - {TestContext.CurrentContext.Test.FullName} - Finished");
 		}
 
 		public void Dispose()

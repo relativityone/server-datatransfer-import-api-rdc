@@ -1130,6 +1130,30 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets the number of retry attempts for reading Relativity version.
+		/// </summary>
+		/// <value>
+		/// The total number of retries.
+		/// </value>
+		int ReadRelativityVersionErrorNumberOfRetries
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the number of seconds to wait between retry attempts for reading Relativity version.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int ReadRelativityVersionErrorWaitTimeInSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Performs a deep copy of this instance.
 		/// </summary>
 		/// <returns>
