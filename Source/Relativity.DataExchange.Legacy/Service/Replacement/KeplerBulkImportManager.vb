@@ -32,7 +32,7 @@ Namespace kCura.WinEDDS.Service.Replacement
 
         Public Function BulkImportImage(appID As Integer, settings As ImageLoadInfo, inRepository As Boolean) As MassImportResults Implements IBulkImportManager.BulkImportImage
             Return ExecuteImport(Function()
-                Return Execute(Async Function(s)
+                Return ExecuteWithoutRetries(Async Function(s)
                     Using importer As IBulkImportService = s.CreateProxyInstance(Of IBulkImportService)
                                        Dim result As Models.MassImportResults = Await importer.BulkImportImageAsync(appID, KeplerTypeMapper.Map(settings), inRepository, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
                                        Return KeplerTypeMapper.Map(result)
@@ -43,7 +43,7 @@ Namespace kCura.WinEDDS.Service.Replacement
 
         Public Function BulkImportProductionImage(appID As Integer, settings As ImageLoadInfo, productionKeyFieldArtifactID As Integer, inRepository As Boolean) As MassImportResults Implements IBulkImportManager.BulkImportProductionImage
             Return ExecuteImport(Function()
-                                     Return Execute(Async Function(s)
+                                     Return ExecuteWithoutRetries(Async Function(s)
                                                         Using importer As IBulkImportService = s.CreateProxyInstance(Of IBulkImportService)
                                                             Dim result As Models.MassImportResults = Await importer.BulkImportProductionImageAsync(appID, KeplerTypeMapper.Map(settings), productionKeyFieldArtifactID, inRepository, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
                                                             Return KeplerTypeMapper.Map(result)
@@ -54,7 +54,7 @@ Namespace kCura.WinEDDS.Service.Replacement
 
         Public Function BulkImportNative(appID As Integer, settings As NativeLoadInfo, inRepository As Boolean, includeExtractedTextEncoding As Boolean) As MassImportResults Implements IBulkImportManager.BulkImportNative
             Return ExecuteImport(Function()
-                                     Return Execute(Async Function(s)
+                                     Return ExecuteWithoutRetries(Async Function(s)
                                                         Using importer As IBulkImportService = s.CreateProxyInstance(Of IBulkImportService)
                                                             Dim result As Models.MassImportResults = Await importer.BulkImportNativeAsync(appID, KeplerTypeMapper.Map(settings), inRepository, includeExtractedTextEncoding, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
                                                             Return KeplerTypeMapper.Map(result)
@@ -65,7 +65,7 @@ Namespace kCura.WinEDDS.Service.Replacement
 
         Public Function BulkImportObjects(appID As Integer, settings As ObjectLoadInfo, inRepository As Boolean) As MassImportResults Implements IBulkImportManager.BulkImportObjects
             Return ExecuteImport(Function()
-                                     Return Execute(Async Function(s)
+                                     Return ExecuteWithoutRetries(Async Function(s)
                                                         Using importer As IBulkImportService = s.CreateProxyInstance(Of IBulkImportService)
                                                             Dim result As Models.MassImportResults = Await importer.BulkImportObjectsAsync(appID, KeplerTypeMapper.Map(settings), inRepository, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
                                                             Return KeplerTypeMapper.Map(result)
