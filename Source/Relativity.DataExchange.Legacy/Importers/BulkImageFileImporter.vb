@@ -757,7 +757,8 @@ Namespace kCura.WinEDDS
 					Me.LogFatal(ex, "A serious unexpected error has occurred importing images.")
 					Me.CompleteError(ex)
 				Finally
-					RaiseEvent EndRun(_runId)
+					'audit will throw error when run id is empty, but it might be any guid if no batch was executed
+					RaiseEvent EndRun(If(String.IsNullOrEmpty(_runId), _localRunId, _runId))
 					'has to be called after Raise EndRun event
 					Me.LogStatistics()
 					_timekeeper.MarkStart("ReadFile_CleanupTempTables")
@@ -798,7 +799,12 @@ Namespace kCura.WinEDDS
 				Me.LogWarning(ex, "Failed to close the image reader before raising the image import fatal error.")
 			End Try
 			Try
-				Me.ManageErrors()
+				'When runId is empty then there was no any batch imported so there is no error on server side
+				If Not String.IsNullOrEmpty(_runId) Then
+					Me.ManageErrors()
+				Else
+					Me.LogInformation("There was no any Bulk Import execution so there are no errors to get from DB.")
+				End If
 			Catch ex As Exception
 				Me.LogWarning(ex, "Failed to manage errors before raising the image import fatal error.")
 			End Try
