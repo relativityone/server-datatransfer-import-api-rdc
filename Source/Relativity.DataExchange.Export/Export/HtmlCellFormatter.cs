@@ -17,12 +17,14 @@
 		private const string COLUMN_SUFFIX = "</td>";
 
 		private readonly IFilePathTransformer _filePathTransformer;
+		private readonly IFileNameProvider _fileNameProvider;
 		private readonly ExportFile _settings;
 
-		public HtmlCellFormatter(ExportFile settings, IFilePathTransformer filePathTransformer)
+		public HtmlCellFormatter(ExportFile settings, IFilePathTransformer filePathTransformer, IFileNameProvider fileNameProvider)
 		{
 			this._settings = settings;
 			this._filePathTransformer = filePathTransformer;
+			this._fileNameProvider = fileNameProvider;
 		}
 
 		public string TransformToCell(string contents)
@@ -67,7 +69,7 @@
 				return string.Empty;
 			}
 
-			string nativeFileName = artifact.NativeFileName(this._settings.AppendOriginalFileName);
+			string nativeFileName = _fileNameProvider.GetName(artifact);
 			return this.GetLink(location, nativeFileName);
 		}
 
@@ -78,7 +80,7 @@
 				return string.Empty;
 			}
 
-			string pdfFileName = artifact.PdfFileName(artifact.IdentifierValue, this._settings.AppendOriginalFileName);
+			string pdfFileName = _fileNameProvider.GetPdfName(artifact);
 			return this.GetLink(location, pdfFileName);
 		}
 
