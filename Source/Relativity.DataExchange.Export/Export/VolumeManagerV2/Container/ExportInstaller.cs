@@ -143,7 +143,10 @@
 			container.Register(Component.For<IImageConverter>().ImplementedBy<ImageConverterService>());
 			container.Register(Component.For<ILoadFileHeaderFormatterFactory>().Instance(_loadFileHeaderFormatterFactory));
 			container.Register(Component.For<ITransferClientHandler, IExportFileDownloaderStatus, ExportFileDownloaderStatus>().ImplementedBy<ExportFileDownloaderStatus>());
-			container.Register(Component.For<ILoadFileCellFormatter>().UsingFactoryMethod(k => k.Resolve<LoadFileCellFormatterFactory>().Create(ExportSettings, k.Resolve<FilePathTransformerFactory>().Create(ExportSettings, container))));
+			container.Register(Component.For<ILoadFileCellFormatter>().UsingFactoryMethod(k => k.Resolve<LoadFileCellFormatterFactory>().Create(
+				ExportSettings, 
+				k.Resolve<FilePathTransformerFactory>().Create(ExportSettings, container),
+				k.Resolve<IFileNameProvider>())));
 			container.Register(Component.For<ExportStatistics, kCura.WinEDDS.Statistics>().Instance(_exporter.Statistics));
 		}
 

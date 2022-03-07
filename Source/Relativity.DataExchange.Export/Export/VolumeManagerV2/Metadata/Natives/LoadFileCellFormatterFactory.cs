@@ -9,11 +9,11 @@
 
 	public class LoadFileCellFormatterFactory
 	{
-		public ILoadFileCellFormatter Create(ExportFile exportSettings, IFilePathTransformer filePathTransformer)
+		public ILoadFileCellFormatter Create(ExportFile exportSettings, IFilePathTransformer filePathTransformer, IFileNameProvider fileNameProvider)
 		{
 			if (exportSettings.LoadFileIsHtml)
 			{
-				return new HtmlCellFormatter(exportSettings, filePathTransformer);
+				return new HtmlCellFormatter(exportSettings, filePathTransformer, fileNameProvider);
 			}
 
 			return new DelimitedCellFormatter(exportSettings);
