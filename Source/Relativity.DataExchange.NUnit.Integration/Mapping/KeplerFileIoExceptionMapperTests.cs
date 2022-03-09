@@ -22,6 +22,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Mapping
 	[Feature.DeveloperPlatform.ExtensibilityPoints.Api.Kepler]
 	[TestType.MainFlow]
 	[IgnoreIfVersionLowerThan(RelativityVersion.Sundrop)]
+	[IgnoreIfVersionGreaterOrEqual(RelativityVersion.WhiteSedge)]
 	public class KeplerFileIoExceptionMapperTests : WebServiceTestsBase
 	{
 		[IdentifiedTest("836BD458-670C-409C-ACA4-19ED30AA77B5")]
