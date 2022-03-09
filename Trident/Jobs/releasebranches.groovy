@@ -138,7 +138,7 @@ timestamps
 					}
 					finally
 					{
-						if(globalVmInfo != null) 
+						if(globalVmInfo != null && numberOfErrors == 0) 
 						{
 							tools.deleteHopperInstance(globalVmInfo.Id)
 						}	
