@@ -118,5 +118,10 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 		/// Relativity 13.0.
 		/// </summary>
 		TigerLily,
+
+		/// <summary>
+		/// Relativity 13.1. - version with disabled WebAPI
+		/// </summary>
+		WhiteSedge,
 	}
 }

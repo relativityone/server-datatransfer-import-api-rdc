@@ -39,6 +39,11 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 				RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(IntegrationTestHelper.IntegrationTestParameters, RelativityVersion.Sundrop);
 			}
 
+			if (!useKepler)
+			{
+				RelativityVersionChecker.SkipTestIfRelativityVersionIsGreaterOrEqual(IntegrationTestHelper.IntegrationTestParameters, RelativityVersion.WhiteSedge);
+			}
+
 			this.Logger = new RelativityTestLogger(new TestNullLogger());
 		}
 

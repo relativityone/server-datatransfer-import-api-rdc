@@ -65,6 +65,11 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(IntegrationTestHelper.IntegrationTestParameters, RelativityVersion.Sundrop);
 			}
 
+			if (!useKepler)
+			{
+				RelativityVersionChecker.SkipTestIfRelativityVersionIsGreaterOrEqual(IntegrationTestHelper.IntegrationTestParameters, RelativityVersion.WhiteSedge);
+			}
+
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
