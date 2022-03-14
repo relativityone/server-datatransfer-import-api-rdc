@@ -36,6 +36,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 			[RelativityVersion.PrairieSmoke0] = new Version(12, 2, 168),
 			[RelativityVersion.Sundrop] = new Version(12, 3),
 			[RelativityVersion.TigerLily] = new Version(13, 0),
+			[RelativityVersion.WhiteSedge] = new Version(13, 1),
 		};
 
 		private static Version cachedRelativityVersion;

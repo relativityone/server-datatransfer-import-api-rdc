@@ -74,6 +74,11 @@ namespace Relativity.DataExchange.NUnit.Integration
 			{
 				RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(IntegrationTestHelper.IntegrationTestParameters, RelativityVersion.Sundrop);
 			}
+
+			if (this.useLegacyWebApi)
+			{
+				RelativityVersionChecker.SkipTestIfRelativityVersionIsGreaterOrEqual(IntegrationTestHelper.IntegrationTestParameters, RelativityVersion.WhiteSedge);
+			}
 		}
 
 		/// <summary>
