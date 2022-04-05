@@ -33,7 +33,9 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overrides Sub OnExecute()
-			Me.CheckBcp()
+			If _useLegacyWebApiLazy.Value Then
+			    Me.CheckBcp()
+			End If
 			Me.WriteStatus("")
 			Me.CheckDownloadHandlerURL()
 			Me.WriteStatus("")
