@@ -389,7 +389,6 @@ Namespace kCura.WinEDDS
 			AddHandler _fileTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
 
 			_bulkLoadTapiBridge = TapiBridgeFactory.CreateUploadBridge(bulkLoadParameters, Me.Logger, authTokenProvider, Me.CancellationToken, CorrelationIdFunc, New WebApiVsKeplerFactory(Logger), managerServiceFactory)
-			_bulkLoadTapiBridge.TargetPath = bulkLoadParameters.FileShare
 			AddHandler _bulkLoadTapiBridge.TapiClientChanged, AddressOf BulkLoadOnTapiClientChanged
 			AddHandler _bulkLoadTapiBridge.TapiStatistics, AddressOf BulkLoadOnTapiStatistics
 			AddHandler _bulkLoadTapiBridge.TapiFatalError, AddressOf OnTapiFatalError

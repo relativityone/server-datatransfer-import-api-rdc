@@ -555,6 +555,9 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private billableField As Boolean
         
+        ' It was addded by hand to reflect this property addded to the Mass Import SDK
+        Private bulkFileSharePathField As String
+
         '''<remarks/>
         Public Property DisableUserSecurityCheck() As Boolean
             Get
@@ -692,6 +695,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.billableField = value
+            End Set
+        End Property
+
+        '''<remarks/>
+        Public Property BulkFileSharePath() As String
+            Get
+                Return Me.bulkFileSharePathField
+            End Get
+            Set
+                Me.bulkFileSharePathField = value
             End Set
         End Property
     End Class
@@ -1106,6 +1119,9 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         Private executionSourceField As ExecutionSource
         
         Private billableField As Boolean
+
+        ' It was addded by hand to reflect this property addded to the Mass Import SDK
+        Private bulkFileSharePathField As String
         
         '''<remarks/>
         Public Property Range() As LoadRange
@@ -1346,6 +1362,17 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
                 Me.billableField = value
             End Set
         End Property
+        
+        '''<remarks/>
+        Public Property BulkFileSharePath() As String
+            Get
+                Return Me.bulkFileSharePathField
+            End Get
+            Set
+                Me.bulkFileSharePathField = value
+            End Set
+        End Property
+
     End Class
     
     '''<remarks/>
