@@ -4,6 +4,7 @@ Imports System.Threading.Tasks
 
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Service
+Imports kCura.WinEDDS.Service.Replacement
 Imports Monitoring
 
 Imports Relativity.DataExchange
@@ -82,6 +83,7 @@ Namespace kCura.WinEDDS
 		Private _parentArtifactTypeId As Int32?
 		Private _unmappedRelationalFields As System.Collections.ArrayList
 		Private _cancelledByUser As Boolean
+        Private _bulkFilesImportPath  As String
 
 		Protected BulkLoadFileFieldDelimiter As String
 
@@ -466,7 +468,7 @@ Namespace kCura.WinEDDS
 					Next
 				End If
 			End If
-			If initializeUploaders Then
+		    If initializeUploaders Then
 				CreateUploaders(args)
 			End If
 			_copyFileToRepository = args.CopyFilesToDocumentRepository
@@ -496,7 +498,9 @@ Namespace kCura.WinEDDS
 
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
-			Dim gateway As Replacement.IFileIO = ManagerFactory.CreateFileIO(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
+		    InitializeBulkFilesImportPath(args)
+
+		    Dim gateway As Replacement.IFileIO = ManagerFactory.CreateFileIO(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
 			Dim nativeParameters As UploadTapiBridgeParameters2 = New UploadTapiBridgeParameters2
 			nativeParameters.Application = AppSettings.Instance.ApplicationName
 			nativeParameters.BcpFileTransfer = False
@@ -536,9 +540,19 @@ Namespace kCura.WinEDDS
 
 			' Copying the parameters and tweaking just a few BCP specific parameters.
 			Dim bcpParameters As UploadTapiBridgeParameters2 = nativeParameters.ShallowCopy()
-			bcpParameters.BcpFileTransfer = True
 			bcpParameters.AsperaBcpRootFolder = AppSettings.Instance.TapiAsperaBcpRootFolder
-			bcpParameters.FileShare = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
+			
+		    If BulkImportManager.GetType() Is GetType(KeplerBulkImportManager) Then
+		        bcpParameters.BcpFileTransfer = False
+		        bcpParameters.TargetPath = _bulkFilesImportPath
+		    Else 
+		        bcpParameters.BcpFileTransfer = True
+
+				Dim bcpSharePath As String = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
+		        bcpParameters.FileShare = bcpSharePath
+		        bcpParameters.TargetPath = bcpSharePath
+		    End If
+			
 			bcpParameters.SupportCheckPath = bcpParameters.FileShare
 			bcpParameters.SortIntoVolumes = False
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or AppSettings.Instance.TapiForceBcpHttpClient
@@ -547,6 +561,19 @@ Namespace kCura.WinEDDS
 			bcpParameters.PreserveFileTimestamps = False
 			CreateTapiBridges(nativeParameters, bcpParameters, args.WebApiCredential.TokenProvider, New RelativityManagerServiceFactory)
 		End Sub
+
+        Private Sub InitializeBulkFilesImportPath(args As LoadFile)
+            If BulkImportManager.GetType() Is GetType(KeplerBulkImportManager) Then
+                Dim suffix AS String = "EDDS" + args.CaseInfo.ArtifactID.ToString() + "\"
+                Dim fileSharePath As String
+                If String.IsNullOrEmpty(args.SelectedCasePath) Then
+                    fileSharePath = System.IO.Path.Combine(args.CaseDefaultPath, suffix)
+                Else 
+                    fileSharePath = System.IO.Path.Combine(args.SelectedCasePath, suffix)
+                End If
+                _bulkFilesImportPath = System.IO.Path.Combine(fileSharePath, BulkFileConstants.ImportApiBulkFilesFolderName)
+            End If
+        End Sub
 
 #End Region
 
@@ -1320,10 +1347,11 @@ Namespace kCura.WinEDDS
 
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
 			settings.UseBulkDataImport = True
-			Dim nativeFileUploadKey As String = BulkLoadTapiBridge.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
-			Dim codeFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
-			Dim objectFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
-			Dim dataGridFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
+
+            Dim nativeFileUploadKey As String = BulkLoadTapiBridge.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
+		    Dim codeFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
+		    Dim objectFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
+		    Dim dataGridFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
 
 			' keep track of the total count of added files
 			MetadataFilesCount += 4
@@ -1371,6 +1399,8 @@ Namespace kCura.WinEDDS
 			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 			settings.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
 			settings.Billable = _settings.Billable
+			settings.BulkFileSharePath = _bulkFilesImportPath
+
 			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing Then
 				WaitOnPushBatchTask()
 				_task = Nothing

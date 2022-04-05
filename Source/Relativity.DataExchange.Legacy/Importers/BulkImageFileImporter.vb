@@ -74,6 +74,7 @@ Namespace kCura.WinEDDS
 		Private _verboseErrorCollection As New ClientSideErrorCollection
 		Private _prePushErrors As New List(Of Tuple(Of ImageRecord, String))
 		Private _cancelledByUser As Boolean = False
+        Private _bulkFilesImportPath  As String
 
 		Private Property _imageValidator As IImageValidator = New ImageValidator()
 		Private Property _tiffValidator As ITiffValidator = New TiffValidator()
@@ -281,6 +282,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)
+		    InitializeBulkFilesImportPath(args)
+
 			Dim gateway As IFileIO = ManagerFactory.CreateFileIO(args.Credential, args.CookieContainer, AddressOf GetCorrelationId)
 			Dim nativeParameters As UploadTapiBridgeParameters2 = New UploadTapiBridgeParameters2
 			nativeParameters.BcpFileTransfer = False
@@ -321,9 +324,19 @@ Namespace kCura.WinEDDS
 
 			' Copying the parameters and tweaking just a few BCP specific parameters.
 			Dim bcpParameters As UploadTapiBridgeParameters2 = nativeParameters.ShallowCopy()
-			bcpParameters.BcpFileTransfer = True
 			bcpParameters.AsperaBcpRootFolder = AppSettings.Instance.TapiAsperaBcpRootFolder
-			bcpParameters.FileShare = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
+			
+			If _bulkImportManager.GetType() Is GetType(KeplerBulkImportManager) Then
+				bcpParameters.BcpFileTransfer = False
+			    bcpParameters.TargetPath = _bulkFilesImportPath
+			Else
+				bcpParameters.BcpFileTransfer = True
+			    
+			    Dim bcpSharePath As String = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
+			    bcpParameters.FileShare = bcpSharePath
+			    bcpParameters.TargetPath = bcpSharePath
+			End If
+			
 			bcpParameters.SortIntoVolumes = False
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or AppSettings.Instance.TapiForceBcpHttpClient
 
@@ -331,6 +344,19 @@ Namespace kCura.WinEDDS
 			bcpParameters.PreserveFileTimestamps = False
 			CreateTapiBridges(nativeParameters, bcpParameters, args.WebApiCredential.TokenProvider, New RelativityManagerServiceFactory)
 		End Sub
+
+        Private Sub InitializeBulkFilesImportPath(args As ImageLoadFile)
+            If _bulkImportManager.GetType() Is GetType(KeplerBulkImportManager) Then
+                Dim suffix AS String = "EDDS" + args.CaseInfo.ArtifactID.ToString() + "\"
+                Dim fileSharePath As String
+                If String.IsNullOrEmpty(args.SelectedCasePath) Then
+                    fileSharePath = System.IO.Path.Combine(args.CaseDefaultPath, suffix)
+                Else 
+                    fileSharePath = System.IO.Path.Combine(args.SelectedCasePath, suffix)
+                End If
+                _bulkFilesImportPath = System.IO.Path.Combine(fileSharePath, BulkFileConstants.ImportApiBulkFilesFolderName)
+            End If
+        End Sub
 
 		Protected Overridable Sub InitializeDTOs(ByVal args As ImageLoadFile)
 			Dim fieldManager As IFieldManager = ManagerFactory.CreateFieldManager(args.Credential, args.CookieContainer, AddressOf GetCorrelationId)
@@ -411,6 +437,7 @@ Namespace kCura.WinEDDS
 			settings.UseBulkDataImport = useBulk
 			settings.Overlay = overwrite
 			settings.Billable = _settings.Billable
+		    settings.BulkFileSharePath = _bulkFilesImportPath
 
 			If _productionArtifactID = 0 Then
 				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, settings, _copyFilesToRepository)

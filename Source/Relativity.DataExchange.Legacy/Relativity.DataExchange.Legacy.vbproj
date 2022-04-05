@@ -169,6 +169,7 @@
       <Paket>True</Paket>
     </Content>
     <Compile Include="CertificateValidator.vb" />
+    <Compile Include="Constants\BulkFileConstants.vb" />
     <Compile Include="DataReaderClient\BatchReport.vb" />
     <Compile Include="Service\Kepler\KeplerProxy.vb" />
     <Compile Include="Service\Kepler\LongTextStreamService.vb" />
@@ -1183,6 +1184,7 @@
       <Name>Relativity.DataExchange.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
