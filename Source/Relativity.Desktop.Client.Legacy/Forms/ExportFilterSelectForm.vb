@@ -43,20 +43,30 @@ Namespace Relativity.Desktop.Client
 
 		Protected Overrides Sub LoadItems(ByVal searchText As String)
 			Me.Cursor = Cursors.WaitCursor
+			ItemListView.BeginUpdate()
+			' This is a hack for disabling sorting when adding new items
+			' By default sort is executed when adding new item to ListView
+			Dim sorter = ItemListView.ListViewItemSorter
+			ItemListView.ListViewItemSorter = Nothing
 			ItemListView.Items.Clear()
 			If _itemListTable Is Nothing Then
 				Me.Cursor = Cursors.Default
 				Me.Close()
 				Exit Sub
 			End If
+			Dim searchTextTrimmed = searchText.Trim.ToLower
 			For Each row As DataRow In _itemListTable.Rows
-				If String.IsNullOrEmpty(searchText.Trim) OrElse CType(row.Item("Name"), String).ToLower.IndexOf(searchText.Trim.ToLower) <> -1 Then
+				Dim nameText = CType(row.Item("Name"), String)
+				If String.IsNullOrEmpty(searchTextTrimmed) OrElse nameText.IndexOf(searchTextTrimmed, StringComparison.OrdinalIgnoreCase) <> -1 Then
 					Dim listItem As New System.Windows.Forms.ListViewItem
-					listItem.Text = CType(row.Item("Name"), String)
+					listItem.Text = nameText
 					listItem.Tag = CType(row.Item("ArtifactID"), Int32)
 					ItemListView.Items.Add(listItem)
 				End If
 			Next
+			ItemListView.ListViewItemSorter = sorter
+			ItemListView.Sort()
+			ItemListView.EndUpdate()
 			NameColumnHeader.Width = ItemListView.Width - 6
 			Me.Cursor = Cursors.Default
 		End Sub
