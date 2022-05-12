@@ -22,6 +22,9 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 		private Encoding extractedTextEncoding;
 		private bool disableExtractedTextEncodingCheck;
 		private OverwriteModeEnum overwriteMode = OverwriteModeEnum.Append;
+		private int? productionArtifactId;
+		private int? beginBatesFieldArtifactId;
+		private int? identityFieldArtifactId;
 
 		public ImageSettings Build()
 		{
@@ -53,12 +56,46 @@ namespace Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport
 				settings.DisableExtractedTextEncodingCheck = this.disableExtractedTextEncodingCheck;
 			}
 
+			if (this.productionArtifactId.HasValue)
+			{
+				settings.ForProduction = true;
+				settings.ProductionArtifactID = this.productionArtifactId.Value;
+			}
+
+			if (this.beginBatesFieldArtifactId.HasValue)
+			{
+				settings.BeginBatesFieldArtifactID = this.beginBatesFieldArtifactId.Value;
+			}
+
+			if (this.identityFieldArtifactId.HasValue)
+			{
+				settings.IdentityFieldId = this.identityFieldArtifactId.Value;
+			}
+
 			return settings;
+		}
+
+		public ImageSettingsBuilder ForProduction(int artifactId)
+		{
+			this.productionArtifactId = artifactId;
+			return this;
 		}
 
 		public ImageSettingsBuilder WithOverlayMode(OverwriteModeEnum mode)
 		{
 			this.overwriteMode = mode;
+			return this;
+		}
+
+		public ImageSettingsBuilder WithBeginBatesField(int fieldArtifactId)
+		{
+			this.beginBatesFieldArtifactId = fieldArtifactId;
+			return this;
+		}
+
+		public ImageSettingsBuilder WithIdentityField(int fieldArtifactId)
+		{
+			this.identityFieldArtifactId = fieldArtifactId;
 			return this;
 		}
 

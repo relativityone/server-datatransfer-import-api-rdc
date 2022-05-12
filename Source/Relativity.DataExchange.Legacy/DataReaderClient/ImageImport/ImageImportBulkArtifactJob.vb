@@ -263,8 +263,11 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.ReplaceFullText = Settings.ExtractedTextFieldContainsFilePath
 			If tempLoadFile.Overwrite = OverwriteModeEnum.Overlay.ToString Then
 				tempLoadFile.IdentityFieldId = Settings.IdentityFieldId 'e.x Control Number
+				tempLoadFile.BeginBatesFieldArtifactID = Settings.BeginBatesFieldArtifactID
 			Else
-				tempLoadFile.IdentityFieldId = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
+				Dim identifierFieldId As Integer = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
+				tempLoadFile.IdentityFieldId = identifierFieldId
+				tempLoadFile.BeginBatesFieldArtifactID = identifierFieldId
 			End If
 
 			tempLoadFile.ProductionArtifactID = Settings.ProductionArtifactID
@@ -276,7 +279,6 @@ Namespace kCura.Relativity.DataReaderClient
 
 			tempLoadFile.SendEmailOnLoadCompletion = False
 			tempLoadFile.StartLineNumber = Settings.StartRecordNumber
-			tempLoadFile.BeginBatesFieldArtifactID = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
 			tempLoadFile.Billable = Settings.Billable
 
 			Return tempLoadFile
