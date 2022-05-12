@@ -64,7 +64,10 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 		protected override ImageImportBulkArtifactJob CreateJobWithSettings(ImageSettings settings)
 		{
 			settings.ThrowIfNull(nameof(settings));
-			var importJob = this.ImportApi.NewImageImportJob();
+
+			ImageImportBulkArtifactJob importJob = settings.ForProduction
+				? this.ImportApi.NewProductionImportJob(settings.ProductionArtifactID)
+				: this.ImportApi.NewImageImportJob();
 
 			settings.CopyTo(importJob.Settings);
 
