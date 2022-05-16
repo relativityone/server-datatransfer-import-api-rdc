@@ -23,6 +23,8 @@
 		ReadOnly Property HttpErrorWaitTimeInSeconds As Int32
 
 		ReadOnly Property TapiForceHttpClient As Boolean
+
+		ReadOnly Property WebApiServiceUrl As String
 	End Interface
 
 End Namespace
