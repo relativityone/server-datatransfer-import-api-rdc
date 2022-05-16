@@ -155,6 +155,98 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			Assert.That(results.JobReportMetadataBytes, Is.Positive);
 		}
 
+		[IdentifiedTest("77b7d0a8-a968-4e16-841f-6b123f050e90")]
+		[TestType.MainFlow]
+		public async Task ShouldOverlayImagesUsingIdentityField()
+		{
+			// ARRANGE
+			const int NumberOfDocumentsToImport = 2;
+			const int NumberOfImagesPerDocument = 2;
+
+			List<ImageImportWithFileNameDto> imagesToImport = new ImageImportWithFileNameDtoBuilder(
+				this.TempDirectory.Directory,
+				NumberOfDocumentsToImport,
+				NumberOfImagesPerDocument,
+				ImageFormat.Jpeg).Build().ToList();
+
+			// append documents
+			string[] beginBates = imagesToImport.Select(x => x.DocumentIdentifier).Distinct().ToArray();
+			string[] controlNumbers = beginBates.Select(bates => $"Different than begin bates: {bates}").ToArray();
+
+			var dataSource = new ImportDataSourceBuilder()
+				.AddField(WellKnownFields.ControlNumber, controlNumbers)
+				.AddField(WellKnownFields.BatesNumber, beginBates)
+				.Build();
+
+			ImportHelper.ImportDocumentsMetadata(this.TestParameters, dataSource);
+
+			// overlay images
+			var batesNumberFieldId = await FieldHelper.GetFieldArtifactIdAsync(this.TestParameters, WellKnownFields.BatesNumber).ConfigureAwait(false);
+
+			var imageSettingsBuilder = new ImageSettingsBuilder()
+				.WithDefaultFieldNames()
+				.WithOverlayMode(OverwriteModeEnum.Overlay)
+				.WithIdentityField(batesNumberFieldId);
+
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, imageSettingsBuilder);
+			this.JobExecutionContext.UseFileNames = true;
+
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(imagesToImport);
+
+			// ASSERT
+			this.ThenTheImportJobIsSuccessful(results, expectedTotalRows: NumberOfDocumentsToImport * NumberOfImagesPerDocument);
+		}
+
+		[IdentifiedTest("b5acca4f-fea7-4353-9d42-46b32307fbf7")]
+		[TestType.MainFlow]
+		public async Task ShouldOverlayProductionImagesUsingBatesNumberField()
+		{
+			// ARRANGE
+			const int NumberOfDocumentsToImport = 2;
+			const int NumberOfImagesPerDocument = 2;
+
+			var productionArtifactId = await ProductionHelper.CreateProductionAsync(
+				                           this.TestParameters,
+				                           productionName: "ProductionToImport",
+				                           batesPrefix: "BatesPrefix").ConfigureAwait(false);
+
+			List<ImageImportWithFileNameDto> imagesToImport = new ImageImportWithFileNameDtoBuilder(
+				this.TempDirectory.Directory,
+				NumberOfDocumentsToImport,
+				NumberOfImagesPerDocument,
+				ImageFormat.Jpeg).Build().ToList();
+
+			// append documents
+			string[] beginBates = imagesToImport.Select(x => x.DocumentIdentifier).Distinct().ToArray();
+			string[] controlNumbers = beginBates.Select(bates => $"Different than begin bates: {bates}").ToArray();
+
+			var dataSource = new ImportDataSourceBuilder()
+				.AddField(WellKnownFields.ControlNumber, controlNumbers)
+				.AddField(WellKnownFields.BatesNumber, beginBates)
+				.Build();
+
+			ImportHelper.ImportDocumentsMetadata(this.TestParameters, dataSource);
+
+			// overlay images
+			var batesNumberFieldId = await FieldHelper.GetFieldArtifactIdAsync(this.TestParameters, WellKnownFields.BatesNumber).ConfigureAwait(false);
+
+			var imageSettingsBuilder = new ImageSettingsBuilder()
+				.ForProduction(productionArtifactId)
+				.WithDefaultFieldNames()
+				.WithOverlayMode(OverwriteModeEnum.Overlay)
+				.WithBeginBatesField(batesNumberFieldId);
+
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, imageSettingsBuilder);
+			this.JobExecutionContext.UseFileNames = true;
+
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(imagesToImport);
+
+			// ASSERT
+			this.ThenTheImportJobIsSuccessful(results, expectedTotalRows: NumberOfDocumentsToImport * NumberOfImagesPerDocument);
+		}
+
 		[IdentifiedTest("6bfb799e-5c8f-4a5c-8092-c9042af62072")]
 		[TestType.Error]
 		[Pairwise]

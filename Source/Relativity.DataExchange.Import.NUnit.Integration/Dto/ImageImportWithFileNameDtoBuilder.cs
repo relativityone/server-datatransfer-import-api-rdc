@@ -42,10 +42,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration.Dto
 
 			for (int documentIndex = 1; documentIndex <= this.numberOfDocumentsToImport; documentIndex++)
 			{
-				string documentIdentifier = this.useInvalidDocumentIdentifier ? $"{documentIndex}," : $"{documentIndex}";
+				string documentIdentifierPrefix = this.useInvalidDocumentIdentifier ? $"{documentIndex}," : $"{documentIndex}";
+				string documentIdentifier = $"{documentIdentifierPrefix}_1";  // document identifier and bates number of the first image has to be equal
 				for (int imageIndex = 1; imageIndex <= this.numberOfImagesPerDocument; imageIndex++)
 				{
-					string batesNumber = $"{documentIdentifier}_{imageIndex}";
+					string batesNumber = $"{documentIdentifierPrefix}_{imageIndex}";
 					string fileName = batesNumber;
 					FileInfo imageFile = RandomHelper.NextImageFile(this.imageFormat, this.directory, ImageWidth, ImageHeight, fileName);
 					aggregateFileSizeBytes(imageFile.Length);

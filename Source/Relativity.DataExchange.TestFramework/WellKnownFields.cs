@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// <summary>
 		/// The bates number field name.
 		/// </summary>
-		public const string BatesNumber = "bates number";
+		public const string BatesNumber = "Bates Beg";
 
 		/// <summary>
 		/// The control number field name.
