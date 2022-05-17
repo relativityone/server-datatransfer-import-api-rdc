@@ -312,7 +312,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			if (this.UseKepler)
 			{
 				expectedErrorMessage =
-					$"Error during call {methodName}." +
+					$"Error during call AuditService.{methodName}." +
 					" InnerExceptionType: System.NullReferenceException," +
 					" InnerExceptionMessage: Object reference not set to an instance of an object.";
 			}

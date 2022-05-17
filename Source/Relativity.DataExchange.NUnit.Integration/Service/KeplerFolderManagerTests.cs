@@ -120,7 +120,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 				// act & assert
 				Assert.That(
 					() => sut.Create(this.TestParameters.WorkspaceId, NonExistingFolderId, folderName),
-					this.GetExpectedExceptionConstraintForNonExistingFolder(NonExistingFolderId, "CreateAsync"));
+					GetExpectedExceptionConstraintForNonExistingFolder(NonExistingFolderId, "CreateAsync"));
 			}
 		}
 
@@ -257,7 +257,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 				// act & assert
 				Assert.That(
 					() => sut.Read(this.TestParameters.WorkspaceId, NonExistingFolderId),
-					this.GetExpectedExceptionConstraintForNonExistingFolder(NonExistingFolderId, "ReadAsync"));
+					GetExpectedExceptionConstraintForNonExistingFolder(NonExistingFolderId, "ReadAsync"));
 			}
 		}
 
@@ -318,22 +318,11 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			}
 		}
 
-		private EqualConstraint GetExpectedExceptionConstraintForNonExistingFolder(int folderId, string callName)
+		private static ContainsConstraint GetExpectedExceptionConstraintForNonExistingFolder(int folderId, string callName)
 		{
-			string expectedExceptionMessage;
-			if (UseKepler)
-			{
-				expectedExceptionMessage =
-					$"Error during call {callName}. InnerExceptionType: Relativity.Core.Exception.BaseException,"
-					+ $" InnerExceptionMessage: ArtifactID {folderId} does not exist.";
-			}
-			else
-			{
-				expectedExceptionMessage = $"ArtifactID {folderId} does not exist.";
-			}
-
 			return Throws.Exception.InstanceOf<SoapException>()
-				.With.Message.EqualTo(expectedExceptionMessage);
+				.With.Message.Contains($"ArtifactID {folderId} does not exist.")
+				.And.Message.Contains(callName);
 		}
 
 		private async Task AssertFolderExists(string folderName, int folderId)

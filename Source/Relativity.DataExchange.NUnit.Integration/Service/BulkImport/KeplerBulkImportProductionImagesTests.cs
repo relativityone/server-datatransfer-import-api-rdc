@@ -216,15 +216,18 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 			}
 		}
 
-		private EqualConstraint GetExpectedException(string method, string message, string exceptionType)
+		private ContainsConstraint GetExpectedException(string method, string message, string exceptionType)
 		{
 			if (this.UseKepler)
 			{
-				message =
-					$"Error during call {method}. InnerExceptionType: {exceptionType}, InnerExceptionMessage: {message}";
+				return Throws.Exception.InstanceOf<SoapException>()
+					.With.Message.Contains(message)
+					.And.Message.Contains($"InnerExceptionType: {exceptionType}")
+					.And.Message.Contains("Error during call")
+					.And.Message.Contains(method);
 			}
 
-			return Throws.Exception.InstanceOf<SoapException>().With.Message.EqualTo(message);
+			return Throws.Exception.InstanceOf<SoapException>().With.Message.Contains(message);
 		}
 	}
 }
