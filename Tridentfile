@@ -9,7 +9,7 @@ properties([
         choice(defaultValue: 'DEV',choices: ["DEV", "GOLD - RDC AND SDK", "GOLD - RDC ONLY", "GOLD - SDK ONLY"], description: "Choose your build type, only gold can produce production packages.", name: 'buildType'),
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-        string(defaultValue: '', description: 'Relativity branch to test against, leave null for latest hopper image', name: 'relativityBranch'),
+        string(defaultValue: 'release-13.2-yarrow', description: 'Relativity branch to test against, leave null for latest hopper image', name: 'relativityBranch'),
         booleanParam(defaultValue: true, description: "Enable or disable running unit tests", name: 'runUnitTests'),
         booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests'),
         booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport'),
@@ -49,7 +49,7 @@ if(isReleaseBranch && (relativityBranch == null || relativityBranch.isEmpty()))
 }
 
 def config = [
-	sutTemplate: "aio-whitesedge-ea",
+	sutTemplate: "aio-whitesedge-eau",
 	hopperApiUrl: "https://api.hopper.relativity.com/",
 	hopperApiUsername: "homeimprovement@relativity.com"
 ]
