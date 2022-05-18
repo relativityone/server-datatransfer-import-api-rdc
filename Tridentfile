@@ -49,7 +49,7 @@ if(isReleaseBranch && (relativityBranch == null || relativityBranch.isEmpty()))
 }
 
 def config = [
-	sutTemplate: "aio-whitesedge-ea",
+	sutTemplate: "aio-whitesedge-eau",
 	hopperApiUrl: "https://api.hopper.relativity.com/",
 	hopperApiUsername: "homeimprovement@relativity.com"
 ]
