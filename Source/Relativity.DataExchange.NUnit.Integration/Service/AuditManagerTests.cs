@@ -308,20 +308,16 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 
 		private IResolveConstraint GetExceptionConstraintForNullReferenceException(string methodName)
 		{
-			string expectedErrorMessage;
+			string expectedErrorMessage = "Object reference not set to an instance of an object.";
 			if (this.UseKepler)
 			{
-				expectedErrorMessage =
-					$"Error during call AuditService.{methodName}." +
-					" InnerExceptionType: System.NullReferenceException," +
-					" InnerExceptionMessage: Object reference not set to an instance of an object.";
-			}
-			else
-			{
-				expectedErrorMessage = "Object reference not set to an instance of an object.";
+				return Throws.Exception.InstanceOf<SoapException>()
+					.With.Message.Contains(expectedErrorMessage)
+					.And.Message.Contains(methodName)
+					.And.Message.Contains("InnerExceptionType: System.NullReferenceException");
 			}
 
-			return Throws.Exception.InstanceOf<SoapException>().With.Message.EqualTo(expectedErrorMessage);
+			return Throws.Exception.InstanceOf<SoapException>().With.Message.Contains(expectedErrorMessage);
 		}
 	}
 }
