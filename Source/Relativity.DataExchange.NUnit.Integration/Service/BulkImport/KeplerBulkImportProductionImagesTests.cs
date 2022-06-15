@@ -25,7 +25,6 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 	[TestFixture(true)]
 	[TestFixture(false)]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-	[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // No IFileSystemManager in older versions
 	public class KeplerBulkImportProductionImagesTests : KeplerBulkImportManagerBase
 	{
 		private int productionId;

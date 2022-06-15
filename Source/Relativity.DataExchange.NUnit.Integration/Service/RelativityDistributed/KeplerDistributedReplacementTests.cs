@@ -6,6 +6,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 {
 	using System;
 	using System.IO;
+	using System.Linq;
 	using System.Net;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
+	using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
 	using Relativity.Kepler.Transport;
 	using Relativity.Services.FileSystem;
 	using Relativity.Testing.Identification;
@@ -139,18 +141,20 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 			string downloadedFilePath = "localFile.txt";
 			string remoteFileName = Guid.NewGuid().ToString();
 			string documentFolder = await WorkspaceHelper.GetDefaultFileRepositoryAsync(this.testParameters).ConfigureAwait(false);
-			string remoteFilePath = Path.Combine(documentFolder, remoteFileName);
 			var uploadedFilePath = ResourceFileHelper.GetResourceFilePath("Media", "AZIPPER_0011111.jpg");
+			var contentBytes = File.ReadAllBytes(uploadedFilePath);
 
-			using (var fileSystemManager = ServiceHelper.GetServiceProxy<IFileSystemManager>(this.testParameters))
+			using (var service = ServiceHelper.GetServiceProxy<IFileIOService>(this.testParameters))
 			{
+				var correlationId = Guid.NewGuid().ToString();
 				try
 				{
-					using (var fileStream = File.Open(uploadedFilePath, FileMode.Open, FileAccess.Read))
-					using (var keplerStream = new KeplerStream(fileStream))
-					{
-						await fileSystemManager.UploadFileAsync(keplerStream, remoteFilePath).ConfigureAwait(false);
-					}
+					await service.BeginFillAsync(
+						this.testParameters.WorkspaceId,
+						contentBytes.Concat(new byte[] { 0x49 }).ToArray(),
+						documentFolder,
+						remoteFileName,
+						correlationId).ConfigureAwait(false);
 
 					var downloadRequest = new FileDownloadRequest(
 						downloadedFilePath,
@@ -174,8 +178,11 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.RelativityDistribute
 				}
 				finally
 				{
-					// clean
-					await fileSystemManager.DeleteAsync(remoteFilePath, recursive: false).ConfigureAwait(false);
+					await service.RemoveFillAsync(
+						this.testParameters.WorkspaceId,
+						documentFolder,
+						remoteFileName,
+						correlationId).ConfigureAwait(false);
 					File.Delete(downloadedFilePath);
 				}
 			}

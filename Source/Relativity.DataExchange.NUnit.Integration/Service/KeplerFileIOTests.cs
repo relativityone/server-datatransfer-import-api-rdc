@@ -21,6 +21,7 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 	using Relativity.DataExchange.TestFramework.NUnitExtensions;
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
+	using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
 	using Relativity.Kepler.Transport;
 	using Relativity.Services.FileSystem;
 	using Relativity.Testing.Identification;
@@ -168,7 +169,6 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 
 		[TestType.MainFlow]
 		[IdentifiedTest("FB4E34B8-7D62-40BD-9D06-F695AB7EF001")]
-		[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // IFileSystemManager exists since Indigo release
 		public async Task ShouldRemoveTempFile()
 		{
 			// arrange
@@ -176,17 +176,17 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 			string documentFolder = await WorkspaceHelper.GetDefaultFileRepositoryAsync(this.TestParameters).ConfigureAwait(false);
 			string remoteFilePath = Path.Combine(documentFolder, remoteFileName);
 			var uploadedFilePath = ResourceFileHelper.GetResourceFilePath("Media", "AZIPPER_0011111.jpg");
+			var correlation = Guid.NewGuid();
+			var contentBytes = File.ReadAllBytes(uploadedFilePath);
 
-			using (var fileSystemManager = ServiceHelper.GetServiceProxy<IFileSystemManager>(this.TestParameters))
+			using (var service = ServiceHelper.GetServiceProxy<IFileIOService>(this.TestParameters))
 			{
-				using (var fileStream = File.Open(uploadedFilePath, FileMode.Open, FileAccess.Read))
-				using (var keplerStream = new KeplerStream(fileStream))
-				{
-					await fileSystemManager.UploadFileAsync(keplerStream, remoteFilePath).ConfigureAwait(false);
-				}
-
-				var files = await fileSystemManager.ListAsync(documentFolder, recursive: false).ConfigureAwait(false);
-				Assert.That(files, Does.Contain(remoteFilePath), $"File {remoteFilePath} should exist");
+				await service.BeginFillAsync(
+					this.TestParameters.WorkspaceId,
+					contentBytes,
+					documentFolder,
+					remoteFileName,
+					correlation.ToString()).ConfigureAwait(false);
 
 				using (IFileIO sut = ManagerFactory.CreateFileIO(
 					this.Credential,
@@ -196,10 +196,14 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 					// act
 					sut.RemoveTempFile(this.TestParameters.WorkspaceId, remoteFileName);
 				}
+			}
 
-				var timeout = DateTime.UtcNow.AddSeconds(60);
-				bool fileExist = true;
+			var timeout = DateTime.UtcNow.AddSeconds(60);
+			var fileExist = true;
 
+			// IWebDistributedService is used to check if file was removed
+			using (var service = ServiceHelper.GetServiceProxy<IWebDistributedService>(this.TestParameters))
+			{
 				while (fileExist)
 				{
 					if (DateTime.UtcNow > timeout)
@@ -207,11 +211,16 @@ namespace Relativity.DataExchange.NUnit.Integration.Service
 						Assert.Fail($"File {remoteFilePath} was not removed in 60 seconds");
 					}
 
-					files = await fileSystemManager.ListAsync(documentFolder, recursive: false).ConfigureAwait(false);
-					fileExist = files.Contains(remoteFilePath);
-					if (fileExist)
+					try
 					{
-						Thread.Sleep(2000);
+						using (var keplerStream = await service.DownloadTempFileAsync(this.TestParameters.WorkspaceId, Guid.Parse(remoteFileName), correlation.ToString()).ConfigureAwait(false))
+						{
+							Thread.Sleep(2000);
+						}
+					}
+					catch
+					{
+						fileExist = false;
 					}
 				}
 			}
