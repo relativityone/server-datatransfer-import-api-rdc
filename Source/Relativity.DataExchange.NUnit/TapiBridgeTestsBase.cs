@@ -1264,7 +1264,7 @@ namespace Relativity.DataExchange.NUnit
 
 		[Test]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldForceCreatTheTransferClient([Values]WellKnownTransferClient client)
+		public void ShouldForceCreateTheTransferClient([Values]WellKnownTransferClient client)
 		{
 			this.CreateTapiBridge(client);
 			this.TapiBridgeInstance.CreateTransferClient();
@@ -1301,6 +1301,35 @@ namespace Relativity.DataExchange.NUnit
 			{
 				this.MockLogger.Verify(x => x.LogInformation("Successfully switched to {tapiClient} mode.", TapiClient.Web), Times.Once);
 			}
+		}
+
+		[Test]
+		[Category(TestCategories.TransferApi)]
+		public void ShouldRevertPreResolvedPathBeforeAddPathToTransferJob(
+			[Values(WellKnownTransferClient.FileShare, WellKnownTransferClient.Aspera, WellKnownTransferClient.Http, WellKnownTransferClient.ThirdParty)] WellKnownTransferClient client)
+		{
+			// ARRANGE
+			var transferPath =
+				new TransferPath(
+					"original-source-path",
+					TransferPathAttributes.File,
+					"original-target-path",
+					TransferDirection.Upload,
+					"target file name")
+					{ Bytes = RandomHelper.NextInt64(1000, 100000), Order = 1 };
+
+			// below assignment copies original Target(Source)Path to PreResolvedTarget(Source)Path
+			transferPath.TargetPath = @"resolved-target-path";
+			transferPath.SourcePath = @"resolved-source-path";
+
+			this.MockTransferJob.Setup(x => x.AddPath(It.IsAny<TransferPath>(), It.IsAny<CancellationToken>()));
+			this.CreateTapiBridge(client);
+
+			// ACT
+			this.TapiBridgeInstance.AddPath(transferPath);
+
+			// ASSERT
+			this.MockTransferJob.Verify(x => x.AddPath(It.Is<TransferPath>(tp => tp.TargetPath == "original-target-path" && tp.SourcePath == "original-source-path"), It.IsAny<CancellationToken>()), Times.Once);
 		}
 
 		protected abstract void CreateTapiBridge(WellKnownTransferClient client);
