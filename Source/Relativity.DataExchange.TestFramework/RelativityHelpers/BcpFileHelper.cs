@@ -15,6 +15,7 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using kCura.WinEDDS.Service.Replacement;
 
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
+	using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
 	using Relativity.Kepler.Transport;
 	using Relativity.Services.FileSystem;
 
@@ -29,25 +30,22 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 		/// <returns>File name.</returns>
 		public static async Task<string> CreateAsync(IntegrationTestParameters parameters, string content, string destinationPath)
 		{
-			if (RelativityVersionChecker.VersionIsLowerThan(parameters, RelativityVersion.Indigo))
-			{
-				throw new Exception(
-					"This method uses IFileSystemManager that was added in RelativityVersion.Indigo and current version is older");
-			}
-
 			UnicodeEncoding encoding = new UnicodeEncoding(false, true);
 			byte[] contentBytes = encoding.GetPreamble().Concat(encoding.GetBytes(content)).ToArray();
 
-			using (var fileSystemManager = ServiceHelper.GetServiceProxy<IFileSystemManager>(parameters))
-			using (var stream = new MemoryStream(contentBytes))
-			using (var keplerStream = new KeplerStream(stream))
+			string fileName = Guid.NewGuid().ToString();
+			using (var fileIOService = ServiceHelper.GetServiceProxy<IFileIOService>(parameters))
 			{
-				string fileName = Guid.NewGuid().ToString();
-
-				await fileSystemManager.UploadFileAsync(keplerStream, Path.Combine(destinationPath, fileName)).ConfigureAwait(false);
-
-				return fileName;
+				await fileIOService.BeginFillAsync(
+					parameters.WorkspaceId,
+					contentBytes.Concat(new byte[] { 0x49 }).ToArray(),
+					destinationPath + "\\",
+					fileName,
+					Guid.NewGuid().ToString())
+					.ConfigureAwait(false);
 			}
+
+			return fileName;
 		}
 
 		public static Task<string> CreateEmptyAsync(IntegrationTestParameters parameters, string bcpPath)

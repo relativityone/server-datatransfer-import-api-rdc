@@ -266,7 +266,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// ASSERT
 			ThenTheImportJobCompletedWithErrors(results, RowsWithNonExistingObjects, TotalRows);
 			Assert.That(results.NumberOfJobMessages, Is.Positive, () => "Wrong number of job messages.");
-			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - An object field references an artifact ID which doesn't exist for the object.");
+			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - An object field (referencetoobject) references an ArtifactID (-1) which doesn't exist for the object type (AssociateObjectsTestsObject)");
 		}
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]

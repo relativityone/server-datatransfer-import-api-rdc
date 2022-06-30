@@ -441,6 +441,10 @@ namespace Relativity.DataExchange.Transfer
 							{
 								try
 								{
+									// REL-697223
+									// Revert path to pre-resolved for path not yet added to the queue
+									// to prevent from Aspera resolved path be used in retried Web mode
+									path.RevertPaths();
 									this.TransferJob.AddPath(path, this.cancellationToken);
 									this.IncrementTotalFileTransferRequests();
 								}

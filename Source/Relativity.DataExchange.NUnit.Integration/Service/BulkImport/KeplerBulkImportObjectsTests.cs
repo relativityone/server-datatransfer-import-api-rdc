@@ -30,7 +30,6 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 	[TestFixture(true)]
 	[TestFixture(false)]
 	[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
-	[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // No IFileSystemManager in older versions
 	public class KeplerBulkImportObjectsTests : KeplerBulkImportManagerBase
 	{
 		private ObjectType customObjectType;

@@ -30,7 +30,6 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 	[TestFixture(true)]
 	[TestFixture(false)]
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-	[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // No IFileSystemManager in older versions
 	public class KeplerBulkImportNativesTests : KeplerBulkImportManagerBase
 	{
 		private const int NumberOfCustomFields = 10;
@@ -70,7 +69,6 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 		}
 
 		[IdentifiedTest("940C2DCA-9B49-4DEE-AEFC-B1EFCF2362BF")]
-		[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // IFileSystemManager exists since Indigo release
 		public async Task ShouldImportDocuments()
 		{
 			// arrange
@@ -107,7 +105,6 @@ namespace Relativity.DataExchange.NUnit.Integration.Service.BulkImport
 		}
 
 		[IdentifiedTest("5A183C8D-DBA1-4DB8-A34D-82A6475A1495")]
-		[IgnoreIfVersionLowerThan(RelativityVersion.Indigo)] // IFileSystemManager exists since Indigo release
 		public async Task ShouldImportZeroDocumentsWhenLoadFileIsEmpty()
 		{
 			// arrange
