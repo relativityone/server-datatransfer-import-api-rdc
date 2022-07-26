@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Generic
+Imports System.IO
 Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Service
 Imports Relativity.Services.ServiceProxy
@@ -40,6 +41,9 @@ Namespace Monitoring.Sinks
 						sink.Log(metric)
 					Catch ex As Exception
 						RelativityLogger.Instance.LogWarning(ex, "Failed to submit {metricType}", metric.GetType())
+						If TypeOf ex Is FileNotFoundException Then
+							Throw
+						End If
 					End Try
 				End If
 			Next
