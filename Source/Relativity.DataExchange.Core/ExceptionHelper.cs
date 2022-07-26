@@ -8,6 +8,7 @@ namespace Relativity.DataExchange
 {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
 	using System.Linq;
 	using System.Net;
 	using System.Security;
@@ -58,7 +59,7 @@ namespace Relativity.DataExchange
 					typeof(DivideByZeroException), typeof(DllNotFoundException), typeof(EntryPointNotFoundException),
 					typeof(InsufficientMemoryException), typeof(NullReferenceException), typeof(OutOfMemoryException),
 					typeof(OverflowException), typeof(SecurityException), typeof(StackOverflowException),
-					typeof(ThreadAbortException),
+					typeof(ThreadAbortException), typeof(FileNotFoundException),
 				});
 
 		/// <summary>
