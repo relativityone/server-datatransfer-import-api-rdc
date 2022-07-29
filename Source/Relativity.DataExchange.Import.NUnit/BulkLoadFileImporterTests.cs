@@ -69,8 +69,8 @@ namespace Relativity.DataExchange.Import.NUnit
 			TapiBridgeFactory.UseLegacyWebApiInTests = false;
 
 			this.Setup();
-			AppSettings.Instance.IoErrorNumberOfRetries = 1;
-			AppSettings.Instance.IoErrorWaitTimeInSeconds = 1;
+			AppSettings.Instance.HttpErrorNumberOfRetries = 1;
+			AppSettings.Instance.HttpErrorWaitTimeInSeconds = 1;
 			this.importer.SetTapiBridges();
 			this.importer.SetBatchCounter(20);
 

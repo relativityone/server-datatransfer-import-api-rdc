@@ -2010,11 +2010,21 @@ Namespace kCura.WinEDDS
 			Dim errorRecord As ErrorBeforeMassImportArgs = New ErrorBeforeMassImportArgs(currentLineNumber)
 			prePushErrorWriter.WriteErrorMessage(errorRecord)
 
-			Dim ht As New Hashtable From {
-				{"Message", line},
-				{"Line Number", currentLineNumber},
-				{"Identifier", _artifactReader.SourceIdentifierValue}
-			}
+		    Dim ht As Hashtable 
+		    If line.Contains("Malware exception") Then
+		        ht = New Hashtable From {
+		            {"Message", "Malware exception"},' use only general message without path
+		            {"Line Number", currentLineNumber},
+		            {"Identifier", _artifactReader.SourceIdentifierValue},
+		            {"Malware", line.Replace("Malware exception ","")} ' pass only the path
+		        }
+		    Else
+		        ht = New Hashtable From {
+		            {"Message", line},
+		            {"Line Number", currentLineNumber},
+		            {"Identifier", _artifactReader.SourceIdentifierValue}
+		        }
+		    End If
 
 			RaiseReportError(ht, _artifactReader.SourceIdentifierValue, "client")
 			WriteStatusLine(EventType2.Error, line)
