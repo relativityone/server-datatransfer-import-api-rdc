@@ -132,9 +132,12 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="lineNumber">
 		/// The line number.
 		/// </param>
-		protected void PublishErrorMessage(string message, int lineNumber)
+		/// <param name="isMalwareError">
+		/// Information if this is a malware error.
+        /// </param>
+		protected void PublishErrorMessage(string message, int lineNumber, bool isMalwareError)
 		{
-			this.ErrorMessage?.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+			this.ErrorMessage?.Invoke(this, new TapiMessageEventArgs(message, lineNumber, isMalwareError));
 		}
 
 		/// <summary>

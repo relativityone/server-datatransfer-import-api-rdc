@@ -41,7 +41,14 @@
 
 		private void OnErrorMessage(object sender, TapiMessageEventArgs e)
 		{
-			_status.WriteError(e.Message);
+            if (e.IsMalwareError)
+            {
+                _status.WriteError($"Malware Exception for line {e.LineNumber}");
+			}
+            else
+            {
+				_status.WriteError(e.Message);
+			}
 		}
 
 		private void OnStatusMessage(object sender, TapiMessageEventArgs e)
