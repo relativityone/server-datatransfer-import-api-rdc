@@ -570,7 +570,11 @@ Namespace kCura.WinEDDS
 			SyncLock _syncRoot
 				If ShouldImport Then
 					Me.OnWriteStatusMessage(EventType2.Error, e.Message, e.LineNumber, e.LineNumber)
-					Me.LogError(e.Message)
+					If(e.IsMalwareError)
+						Me.LogError("Malware Exception for line {Line}", e.LineNumber)
+					Else 
+					    Me.LogError(e.Message) 
+					End If
 				End If
 			End SyncLock
 		End Sub

@@ -132,10 +132,11 @@ namespace Relativity.DataExchange.Transfer
 
 			var jobMessage = string.Format(
 				CultureInfo.CurrentCulture,
-				"Job {0} statistics - Files: {1}/{2} - Progress: {3:0.00}% - Rate: {4:0.00}/sec",
+				"Job {0} statistics - Files: {1}/{2} - Files identified as malware {3} - Progress: {4:0.00}% - Rate: {5:0.00}/sec",
 				e.Request.JobId,
 				e.Statistics.TotalTransferredFiles,
 				e.Statistics.TotalRequestFiles,
+				e.Statistics.TotalFilesIdentifiedAsMalware,
 				e.Statistics.Progress,
 				ToFileSize(transferRateBytesPerSecond));
 			this.Logger.LogInformation(jobMessage);

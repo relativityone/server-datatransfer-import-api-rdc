@@ -1324,11 +1324,15 @@ Namespace kCura.WinEDDS
 
 		Private Sub ProcessError(ByVal line As String())
 			Dim originalIndex As Int64 = Int64.Parse(line(0))
-			Dim ht As New System.Collections.Hashtable
-			ht.Add("Line Number", CType(originalIndex, Int32))
-			ht.Add("DocumentID", line(1))
-			ht.Add("FileID", line(2))
+			Dim ht As New System.Collections.Hashtable From {
+				{"Line Number", CType(originalIndex, Int32)},
+				{"DocumentID", line(1)},
+				{"FileID", line(2)}
+			}
 			Dim errorMessages As String = line(3)
+		    If errorMessages.Contains("Malware exception") Then
+		        ht.Add("Malware", errorMessages.Replace("Malware exception ", "")) ' pass only the path
+		    End If
 			If _verboseErrorCollection.ContainsLine(originalIndex) Then
 				Dim sb As New System.Text.StringBuilder
 				For Each message As String In _verboseErrorCollection(originalIndex)
@@ -1336,7 +1340,13 @@ Namespace kCura.WinEDDS
 				Next
 				errorMessages = sb.ToString.TrimEnd(ChrW(10))
 			End If
-			ht.Add("Message", errorMessages)
+		    If errorMessages.Contains("Malware exception") Then
+		        ht.Add("Message", "Malware exception") ' use only general message without path
+		    Else
+		        ht.Add("Message", errorMessages)
+		    End If
+			
+
 			RaiseReportError(ht)
 			'TODO: track stats
 			Dim recordNumber As Long = originalIndex + ImportFilesCount

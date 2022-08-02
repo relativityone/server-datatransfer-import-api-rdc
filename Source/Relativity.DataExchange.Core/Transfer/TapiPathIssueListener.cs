@@ -202,6 +202,11 @@ namespace Relativity.DataExchange.Transfer
 			}
 			else
 			{
+				if (issue.Attributes.HasFlag(IssueAttributes.Malware))
+				{
+					this.PublishErrorMessage($"Malware exception {issue.Path.SourcePath}", issue.Path.Order, isMalwareError: true);
+				}
+
 				const bool JobLevelIssue = false;
 				string message = FormatIssueMessage(
 					this.ClientDisplayName,

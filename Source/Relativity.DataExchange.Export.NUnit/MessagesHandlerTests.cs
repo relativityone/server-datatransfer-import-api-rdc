@@ -34,19 +34,33 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance = new MessagesHandler(this._status.Object, new TestNullLogger());
 		}
 
-		[Test]
-		public void ItShouldWriteErrorMessage()
-		{
-			const string message = "error_message";
+        [Test]
+        public void ItShouldWriteErrorMessage()
+        {
+            const string message = "error_message";
 
-			this._instance.Subscribe(this._tapiBridge.Object);
+            this._instance.Subscribe(this._tapiBridge.Object);
 
-			// ACT
-			this._tapiBridge.Raise(x => x.TapiErrorMessage += null, new TapiMessageEventArgs(message, 0));
+            // ACT
+            this._tapiBridge.Raise(x => x.TapiErrorMessage += null, new TapiMessageEventArgs(message, 0));
 
-			// ASSERT
-			this._status.Verify(x => x.WriteError(message), Times.Once);
+            // ASSERT
+            this._status.Verify(x => x.WriteError(message), Times.Once);
 		}
+
+        [Test]
+        public void ItShouldWriteConstErrorMessageForMalware()
+        {
+            const string message = "error_message_with_some_malware";
+
+            this._instance.Subscribe(this._tapiBridge.Object);
+
+            // ACT
+            this._tapiBridge.Raise(x => x.TapiErrorMessage += null, new TapiMessageEventArgs(message, 0, isMalwareError: true));
+
+            // ASSERT
+            this._status.Verify(x => x.WriteError("Malware Exception for line 0"), Times.Once);
+        }
 
 		[Test]
 		public void ItShouldWriteWarningMessage()
