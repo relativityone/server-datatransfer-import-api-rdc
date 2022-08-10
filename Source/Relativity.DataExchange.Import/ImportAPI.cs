@@ -96,6 +96,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="password">
 		/// The Relativity login password.
 		/// </param>
+		/// <param name="logger">Custom logger.</param>
 		/// <exception cref="kCura.WinEDDS.Exceptions.CredentialsNotSupportedException">
 		/// Thrown when integrated security is not supported when running within a service process.
 		/// </exception>
@@ -105,7 +106,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <exception cref="RelativityNotSupportedException">
 		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
 		/// </exception>
-		public ImportAPI(string userName, string password) : this(userName, password, string.Empty)
+		public ImportAPI(string userName, string password, ILog logger = null) : this(userName, password, string.Empty, logger)
 		{
 		}
 
@@ -126,6 +127,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="webServiceUrl">
 		/// The URL to the Relativity WebAPI instance.
 		/// </param>
+		/// <param name="logger">Custom logger.</param>
 		/// <exception cref="kCura.WinEDDS.Exceptions.CredentialsNotSupportedException">
 		/// Thrown when integrated security is not supported when running within a service process.
 		/// </exception>
@@ -135,7 +137,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <exception cref="RelativityNotSupportedException">
 		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
 		/// </exception>
-		public ImportAPI(string userName, string password, string webServiceUrl)
+		public ImportAPI(string userName, string password, string webServiceUrl, ILog logger = null)
 		{
 			ExecutionSource = ExecutionSourceEnum.ImportAPI;
 
@@ -144,7 +146,7 @@ namespace kCura.Relativity.ImportAPI
 			ManagerFactory.InvalidateCache();
 
 			this.PerformLogin(userName, password, webServiceUrl);
-			this.SetUpSecureLogger();
+			this.SetUpSecureLogger(logger);
 		}
 
 		/// <summary>
@@ -155,6 +157,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="webServiceUrl">
 		/// The URL to the Relativity WebAPI instance.
 		/// </param>
+		/// <param name="logger">Custom logger.</param>
 		/// <returns>
 		/// The <see cref="ImportAPI"/> instance.
 		/// </returns>
@@ -167,9 +170,9 @@ namespace kCura.Relativity.ImportAPI
 		/// <exception cref="RelativityNotSupportedException">
 		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
 		/// </exception>
-		public static ImportAPI CreateByRsaBearerToken(string webServiceUrl)
+		public static ImportAPI CreateByRsaBearerToken(string webServiceUrl, ILog logger = null)
 		{
-			return CreateByTokenProvider(webServiceUrl, new RsaBearerTokenAuthenticationProvider());
+			return CreateByTokenProvider(webServiceUrl, new RsaBearerTokenAuthenticationProvider(), logger);
 		}
 
 		/// <summary>
@@ -182,6 +185,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="bearerToken">
 		/// The bearer token used to authenticate both WebAPI and REST API endpoints.
 		/// </param>
+		/// <param name="logger">Custom logger.</param>
 		/// <returns>
 		/// The <see cref="ImportAPI"/> instance.
 		/// </returns>
@@ -191,9 +195,9 @@ namespace kCura.Relativity.ImportAPI
 		/// <exception cref="RelativityNotSupportedException">
 		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
 		/// </exception>
-		public static ImportAPI CreateByBearerToken(string webServiceUrl, string bearerToken)
+		public static ImportAPI CreateByBearerToken(string webServiceUrl, string bearerToken, ILog logger = null)
 		{
-			return new ImportAPI(Constants.OAuthWebApiBearerTokenUserName, bearerToken, webServiceUrl);
+			return new ImportAPI(Constants.OAuthWebApiBearerTokenUserName, bearerToken, webServiceUrl, logger);
 		}
 
 		/// <summary>
@@ -433,11 +437,11 @@ namespace kCura.Relativity.ImportAPI
 
 		#region "Protected items"
 
-		protected static ImportAPI CreateByTokenProvider(string webServiceUrl, IRelativityTokenProvider relativityTokenProvider)
+		protected static ImportAPI CreateByTokenProvider(string webServiceUrl, IRelativityTokenProvider relativityTokenProvider, ILog logger = null)
 		{
 			var token = GetToken(relativityTokenProvider);
 
-			ImportAPI importApi = CreateByBearerToken(webServiceUrl, token);
+			ImportAPI importApi = CreateByBearerToken(webServiceUrl, token, logger);
 
 			// Here we override token provider so Tapi can refresh credentials on token expiration event
 			importApi.webApiCredential.TokenProvider = new AuthTokenProviderAdapter(relativityTokenProvider);
@@ -453,10 +457,10 @@ namespace kCura.Relativity.ImportAPI
 
 		#region "Private items"
 
-		private void SetUpSecureLogger()
+		private void SetUpSecureLogger(ILog logger)
 		{
 			ISecureLogFactory secureLogFactory = new ImportApiSecureLogFactory();
-			RelativityLogger.Instance = secureLogFactory.CreateSecureLogger();
+			RelativityLogger.Instance = logger ?? secureLogFactory.CreateSecureLogger();
 		}
 
 		private static string GetToken(IRelativityTokenProvider relativityTokenProvider)
