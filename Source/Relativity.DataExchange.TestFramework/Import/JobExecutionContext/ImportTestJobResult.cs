@@ -37,6 +37,10 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 
 		public long NumberOfJobMessages { get; set; }
 
+		/// <summary>
+		/// Gets a value indicating whether Switch to web mode was executed.
+		/// UNIT TESTS ONLY.
+		/// </summary>
 		public bool SwitchedToWebMode { get; private set; }
 
 		/// <summary>

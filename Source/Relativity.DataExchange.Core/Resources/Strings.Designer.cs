@@ -685,6 +685,15 @@ namespace Relativity.DataExchange.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Switching transfer mode to &apos;{0}&apos; due to a serious error within the &apos;{1}&apos; transfer job. Error: {2}.
+        /// </summary>
+        internal static string TransferFallbackWarningMessage {
+            get {
+                return ResourceManager.GetString("TransferFallbackWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error downloading file: {0}.
         /// </summary>
         internal static string TransferFileDownloadFatalMessage {

@@ -424,4 +424,7 @@ Detail: {4}</value>
   <data name="WebServiceNotFatalRetryMessage" xml:space="preserve">
     <value>A non-fatal issue occurred attempting to call the '{0}' web service: {1}.</value>
   </data>
+  <data name="TransferFallbackWarningMessage" xml:space="preserve">
+    <value>Switching transfer mode to '{0}' due to a serious error within the '{1}' transfer job. Error: {2}</value>
+  </data>
 </root>
