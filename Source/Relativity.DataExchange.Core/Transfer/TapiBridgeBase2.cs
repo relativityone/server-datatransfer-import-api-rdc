@@ -22,8 +22,6 @@ namespace Relativity.DataExchange.Transfer
 
 	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Resources;
-	using Relativity.DataExchange.Service;
-	using Relativity.DataExchange.Service.WebApiVsKeplerSwitch;
 	using Relativity.Logging;
 	using Relativity.Transfer;
 	using Relativity.Transfer.Aspera;
@@ -401,7 +399,7 @@ namespace Relativity.DataExchange.Transfer
 
 			this.ValidateTransferPath(path);
 			this.CheckDispose();
-			this.CreateTransferJob(false);
+			this.CreateTransferJob(webModeSwitch: false, isRetry: false);
 			if (this.TransferJob == null)
 			{
 				throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
@@ -954,11 +952,14 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="webModeSwitch">
 		/// Specify whether the job is created when switching to web mode.
 		/// </param>
+		/// <param name="isRetry">
+		/// Specify whether the job is created for the first time or because of fallback.
+		/// </param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
 			"Microsoft.Design",
 			"CA1031:DoNotCatchGeneralExceptionTypes",
 			Justification = "Never fail due to retrieving process info.")]
-		private void CreateTransferJob(bool webModeSwitch)
+		private void CreateTransferJob(bool webModeSwitch, bool isRetry)
 		{
 			this.CheckDispose();
 			if (this.TransferJob != null)
@@ -966,21 +967,22 @@ namespace Relativity.DataExchange.Transfer
 				return;
 			}
 
-			this.Logger.LogInformation("Create job started...");
+			var newJobId = Guid.NewGuid();
+			this.Logger.LogInformation("Create job {jobId} started...", newJobId);
 			this.CreateTransferClient();
 			lock (this.syncRoot)
 			{
 				this.transferActivityTimestamp = DateTime.Now;
 			}
 
-			// Never reset the counts when switching to web mode.
-			if (!webModeSwitch)
+			// Never reset the counts when retrying
+			if (!isRetry)
 			{
 				this.ClearAllTotals();
 			}
 
 			this.currentJobNumber++;
-			this.currentJobId = Guid.NewGuid();
+			this.currentJobId = newJobId;
 			this.RaisedPermissionIssue = false;
 			this.RaisedPermissionIssueMessage = null;
 			this.jobRequest = this.CreateTransferRequestForJob(this.transferContext);
@@ -1017,7 +1019,7 @@ namespace Relativity.DataExchange.Transfer
 			{
 				var task = this.transferClient.CreateJobAsync(this.jobRequest, this.cancellationToken);
 				this.TransferJob = task.GetAwaiter().GetResult();
-				this.Logger.LogInformation("Create job ended.");
+				this.Logger.LogInformation("Create job ended. {JobId}", this.jobRequest.JobId);
 			}
 			catch (OperationCanceledException)
 			{
@@ -1250,7 +1252,7 @@ namespace Relativity.DataExchange.Transfer
 		{
 			this.Logger.LogWarning(
 				"Switching Tapi Client mode to {tapiClient}."
-				+ " Retrying in the original transfer mode value: {AppSettings.Instance.RetryInTheOriginalTransferMode}."
+				+ " Retrying in the original transfer mode value: {RetryInTheOriginalTransferMode}."
 				+ " With exception: {exception}",
 				tapiClient,
 				AppSettings.Instance.RetryInTheOriginalTransferMode,
@@ -1266,6 +1268,7 @@ namespace Relativity.DataExchange.Transfer
 			const bool Fatal = true;
 			if (this.RaisedPermissionIssue)
 			{
+				this.Logger.LogError("Destroy transfer job {currentJobId} because of RaisedPermissionIssue=True", this.currentJobId);
 				this.DestroyTransferJob();
 				string permissionMessage = string.Format(
 					CultureInfo.CurrentCulture,
@@ -1276,6 +1279,7 @@ namespace Relativity.DataExchange.Transfer
 
 			if (this.transferClient?.Id == new Guid(TransferClientConstants.HttpClientId))
 			{
+				this.Logger.LogError("Destroy transfer job {currentJobId} because it was already WebMode", this.currentJobId);
 				this.DestroyTransferJob();
 				throw new TransferException(Strings.WebModeFallbackAlreadyWebModeFatalExceptionMessage, exception, Fatal);
 			}
@@ -1285,30 +1289,44 @@ namespace Relativity.DataExchange.Transfer
 				CultureInfo.CurrentCulture,
 				Strings.WebModeFallbackNoErrorWarningMessage,
 				this.ClientDisplayName);
-			if (exception != null)
+			if (tapiClient != TapiClient.Web)
 			{
 				message = string.Format(
 					CultureInfo.CurrentCulture,
-					Strings.WebModeFallbackWarningMessage,
+					Strings.TransferFallbackWarningMessage,
+					tapiClient,
 					this.ClientDisplayName,
-					exception.Message);
+					exception == null ? "(null)" : exception.Message);
+			}
+			else
+			{
+				if (exception != null)
+				{
+					message = string.Format(
+						CultureInfo.CurrentCulture,
+						Strings.WebModeFallbackWarningMessage,
+						this.ClientDisplayName,
+						exception.Message);
+				}
 			}
 
 			this.PublishWarningMessage(message, TapiConstants.NoLineNumber);
 
+			// GetRetryableTransferPaths needs to be executed before DestroyTransferJob
+			var retryablePaths = this.GetRetryableTransferPaths();
+
 			this.DestroyTransferJob();
 			this.DestroyTransferClient();
 
-			this.CreateTapiClient(tapiClient);
-			this.CreateTransferJob(webModeSwitch: tapiClient == TapiClient.Web);
-
-			var retryablePaths = this.GetRetryableTransferPaths();
+			this.CreateFallbackTapiClient(tapiClient);
+			this.CreateTransferJob(webModeSwitch: tapiClient == TapiClient.Web, isRetry: true);
 			if (retryablePaths.Count == 0)
 			{
 				this.Logger.LogInformation("No retryable paths exist.");
 			}
 			else
 			{
+				this.Logger.LogInformation("Adding {count} retryable paths.", retryablePaths.Count);
 				foreach (TransferPath path in retryablePaths)
 				{
 					// Restore the original path.
@@ -1321,17 +1339,17 @@ namespace Relativity.DataExchange.Transfer
 			}
 		}
 
-		private void CreateTapiClient(TapiClient tapiClient)
+		private void CreateFallbackTapiClient(TapiClient tapiClient)
 		{
 			switch (tapiClient)
 			{
 				case TapiClient.Aspera:
 					this.CreateTransferClient<Relativity.Transfer.Aspera.AsperaClientConfiguration>();
-					this.PublishClientChanged(ClientChangeReason.BestFit);
+					this.PublishClientChanged(ClientChangeReason.HttpFallback);
 					break;
 				case TapiClient.Direct:
 					this.CreateTransferClient<Relativity.Transfer.FileShare.FileShareClientConfiguration>();
-					this.PublishClientChanged(ClientChangeReason.BestFit);
+					this.PublishClientChanged(ClientChangeReason.HttpFallback);
 					break;
 				default:
 					this.CreateTransferClient<Relativity.Transfer.Http.HttpClientConfiguration>();
@@ -1339,6 +1357,7 @@ namespace Relativity.DataExchange.Transfer
 					break;
 			}
 
+			this.OptimizeClient();
 			this.Logger.LogInformation("Successfully switched to {tapiClient} mode.", tapiClient);
 		}
 
@@ -1374,13 +1393,21 @@ namespace Relativity.DataExchange.Transfer
 			var paths = new List<TransferPath>();
 			if (this.TransferJob != null)
 			{
-				paths.AddRange(this.TransferJob.JobService.GetRetryableRequestTransferPaths());
+				var retryable = this.TransferJob.JobService.GetRetryableRequestTransferPaths();
+				paths.AddRange(retryable);
+				this.Logger.LogInformation("Number of retryable paths from tapi: {paths}", retryable.Count);
 
 				// Note: potentially adding fatal error because the job service doesn't consider it retryable.
-				paths.AddRange(
-					this.TransferJob.JobService.GetJobTransferPaths()
-						.Where(x => x.Status == TransferPathStatus.Fatal && !paths.Contains(x.Path))
-						.Select(jobPath => jobPath.Path));
+				var fatal = this.TransferJob.JobService.GetJobTransferPaths()
+					.Where(x => x.Status == TransferPathStatus.Fatal && !paths.Contains(x.Path))
+					.Select(jobPath => jobPath.Path).ToArray();
+
+				this.Logger.LogInformation("Number of failed Fatal paths from tapi: {paths}", fatal.Length);
+				paths.AddRange(fatal);
+			}
+			else
+			{
+				this.Logger.LogWarning("Trying to get retryable paths but TransferJob is null");
 			}
 
 			this.Logger.LogInformation("Total number of retryable paths: {TotalRetryablePaths:n0}", paths.Count);

@@ -1,8 +1,4 @@
-﻿Imports Relativity.Services.ServiceProxy
-Imports Relativity.Telemetry.Services.Interface
-Imports Relativity.Telemetry.Services.Metrics
-
-Namespace Monitoring.Sinks
+﻿Namespace Monitoring.Sinks
     Public Class MetricSinkRelativityLogging
         Implements IMetricSink
 
@@ -13,10 +9,9 @@ Namespace Monitoring.Sinks
         ''' <inheritdoc/>
         Sub Log(metric As MetricBase) Implements IMetricSink.Log
             ' For now log as warning because information is not logged from RDC to Splunk
-            ' For now only log MetricJobStarted
-	        Dim metricJobStarted As MetricJobStarted = TryCast(metric, MetricJobStarted)
-            If Not metricJobStarted Is Nothing Then
-                Relativity.Logging.Log.Logger.LogWarning("Relativity.DataExchange metric. Bucket: {bucketName}, value: {@Metrics}", metricJobStarted.BucketName, metricJobStarted.CustomData)
+            ' For now only log MetricJobStarted and MetricJobEndReport
+            If TypeOf metric Is MetricJobStarted OrElse TypeOf metric Is MetricJobEndReport Then
+                Relativity.Logging.Log.Logger.LogWarning("Relativity.DataExchange metric. Bucket: {bucketName}, value: {@Metrics}", metric.BucketName, metric.CustomData)
             End If
         End Sub
 
