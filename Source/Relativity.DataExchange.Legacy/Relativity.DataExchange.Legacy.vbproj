@@ -120,6 +120,9 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="oi\unmanaged\libchardet.dll">
+      <Paket>True</Paket>
+    </Content>
     <Content Include="oi\unmanaged\cmmap000.bin">
       <Paket>True</Paket>
     </Content>
@@ -1184,7 +1187,6 @@
       <Name>Relativity.DataExchange.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

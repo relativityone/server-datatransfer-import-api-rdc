@@ -47,6 +47,9 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="oi\unmanaged\libchardet.dll">
+      <Paket>True</Paket>
+    </Content>
     <Content Include="oi\unmanaged\cmmap000.bin">
       <Paket>True</Paket>
     </Content>
