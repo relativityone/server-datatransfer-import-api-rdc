@@ -190,7 +190,7 @@ namespace Relativity.DataExchange.TestFramework
 		{
 			var parser = new MessageTemplateParser();
 			var template = parser.Parse(messageTemplate);
-			var properties = template.Tokens.OfType<PropertyToken>().Distinct().Zip(propertyValues, Tuple.Create)
+			var properties = template.Tokens.OfType<PropertyToken>().Distinct().Zip(propertyValues ?? new object[] { }, Tuple.Create)
 				.ToDictionary(p => p.Item1.PropertyName, p => new ScalarValue(GetItemValue(p.Item2)) as LogEventPropertyValue);
 			var message = template.Render(properties);
 

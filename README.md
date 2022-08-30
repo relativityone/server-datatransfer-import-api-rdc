@@ -48,6 +48,12 @@ Generally speaking, PowerShell is used to perform initial and pre-commit builds 
 .\build.ps1 Build -Target Rebuild -Configuration Debug
 ```
 
+```bash
+# Builds the solution, creates Relativity.DataExchange.Client.SDK.dll merged assembly and creates nuget package to be used locally e.g. Relativity.DataExchange.Client.SDK.version-branchName.nupkg.
+.\build.ps1 -ILMerge
+.\build.ps1 Build,BuildSdkPackages
+```
+
 ### Visual Studio
 1. Open the *Master.sln* solution
 2. Open the .paket solution folder

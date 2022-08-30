@@ -52,8 +52,14 @@ namespace Relativity.DataExchange.Logger
 		}
 
 		/// <inheritdoc/>
-		[SuppressMessage("Microsoft.Design", "CA1031:Do not catch general exception types", Justification = "After Relativity.Logging update we have to update this code but we don't want to introduce any change in behavior or possible exceptions.")]
 		public ILog CreateSecureLogger()
+		{
+			return this.CreateSecureLogger(null);
+		}
+
+		/// <inheritdoc/>
+		[SuppressMessage("Microsoft.Design", "CA1031:Do not catch general exception types", Justification = "After Relativity.Logging update we have to update this code but we don't want to introduce any change in behavior or possible exceptions.")]
+		public ILog CreateSecureLogger(ILog logger)
 		{
 			LoggerOptions options = CreateLoggerOptions(this.credential, GetConfigFileName());
 			ILog secureLogger;

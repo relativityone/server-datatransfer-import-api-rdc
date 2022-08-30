@@ -20,5 +20,12 @@ namespace Relativity.DataExchange.Logger
 		/// </summary>
 		/// <returns>A Relativity.Logging.ILog instance implementing security requirements.</returns>
 		ILog CreateSecureLogger();
+
+		/// <summary>
+		/// Create Relativity.Logging.ILog instance having in mind security requirements.
+		/// </summary>
+		/// <param name="logger">External optional logger provided by the user. </param>
+		/// <returns>A Relativity.Logging.ILog instance implementing security requirements.</returns>
+		ILog CreateSecureLogger(ILog logger);
 	}
 }

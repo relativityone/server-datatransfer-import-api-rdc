@@ -460,7 +460,7 @@ namespace kCura.Relativity.ImportAPI
 		private void SetUpSecureLogger(ILog logger)
 		{
 			ISecureLogFactory secureLogFactory = new ImportApiSecureLogFactory();
-			RelativityLogger.Instance = logger ?? secureLogFactory.CreateSecureLogger();
+			RelativityLogger.Instance = secureLogFactory.CreateSecureLogger(logger);
 		}
 
 		private static string GetToken(IRelativityTokenProvider relativityTokenProvider)
