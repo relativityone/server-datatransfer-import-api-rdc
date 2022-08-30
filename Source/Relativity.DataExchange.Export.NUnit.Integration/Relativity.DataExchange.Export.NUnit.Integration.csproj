@@ -70,6 +70,9 @@
     <Compile Include="Dto\PaddingDto.cs" />
     <Compile Include="TestContainerFactory.cs" />
     <Compile Include="MockObjectFactory.cs" />
+    <Content Include="oi\unmanaged\libchardet.dll">
+      <Paket>True</Paket>
+    </Content>
     <Content Include="oi\unmanaged\cmmap000.bin">
       <Paket>True</Paket>
     </Content>

@@ -72,8 +72,8 @@ namespace Relativity.DataExchange.Service
 			{
 				this.logger.LogWarning(
 					exception,
-					"Call to Kepler service failed due to HttpRequestException. Currently on attempt {RetryCount} out of {MaxRetries} and waiting {WaitSeconds} seconds before the next retry attempt.",
-					nameof(exception),
+					"Call to Kepler service failed due to {ExceptionType}. Currently on attempt {RetryCount} out of {MaxRetries} and waiting {WaitSeconds} seconds before the next retry attempt.",
+					exception.GetType(),
 					retryCount,
 					AppSettings.Instance.HttpErrorNumberOfRetries,
 					duration.TotalSeconds);

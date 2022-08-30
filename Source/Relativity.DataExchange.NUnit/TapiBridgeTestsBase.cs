@@ -523,11 +523,11 @@ namespace Relativity.DataExchange.NUnit
 
 		[Test]
 		[Category(TestCategories.TransferApi)]
-		[Category(TestCategories.TransferApi)]
-		[Category(TestCategories.TransferApi)]
-		[TestCase(true, 0, TapiClient.Direct)]
-		[TestCase(false, 1, TapiClient.Web)]
-		public void ShouldWaitForJobTransfersWhenTheFirstJobIsFatal(bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
+        [TestCase(WellKnownTransferClient.FileShare, true, 1, TapiClient.Direct)]
+        [TestCase(WellKnownTransferClient.FileShare, false, 1, TapiClient.Web)]
+        [TestCase(WellKnownTransferClient.Aspera, true, 1, TapiClient.Aspera)]
+        [TestCase(WellKnownTransferClient.Aspera, false, 1, TapiClient.Web)]
+		public void ShouldWaitForJobTransfersWhenTheFirstJobIsFatal(WellKnownTransferClient initialClient, bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
 		{
 			AppSettings.Instance.RetryInTheOriginalTransferMode = retryInTheOriginalMode;
 
@@ -535,7 +535,7 @@ namespace Relativity.DataExchange.NUnit
 			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
 				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Fatal } as ITransferResult))
 				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
-			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+			this.CreateTapiBridge(initialClient);
 			this.TapiBridgeInstance.AddPath(TestTransferPath);
 			this.TestTransferContext.PublishTransferPathProgress(
 				new TransferRequest(),
@@ -561,9 +561,11 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		[Category(TestCategories.TransferApi)]
 		[Category(TestCategories.TransferApi)]
-		[TestCase(true, 0, TapiClient.Direct)]
-		[TestCase(false, 1, TapiClient.Web)]
-		public void ShouldWaitForJobTransfersWhenTheFirstJobIsFailedWithNoIssues(bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
+        [TestCase(WellKnownTransferClient.FileShare, true, 1, TapiClient.Direct)]
+        [TestCase(WellKnownTransferClient.FileShare, false, 1, TapiClient.Web)]
+        [TestCase(WellKnownTransferClient.Aspera, true, 1, TapiClient.Aspera)]
+        [TestCase(WellKnownTransferClient.Aspera, false, 1, TapiClient.Web)]
+		public void ShouldWaitForJobTransfersWhenTheFirstJobIsFailedWithNoIssues(WellKnownTransferClient initialClient, bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
 		{
 			AppSettings.Instance.RetryInTheOriginalTransferMode = retryInTheOriginalMode;
 
@@ -571,7 +573,7 @@ namespace Relativity.DataExchange.NUnit
 			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
 				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Failed } as ITransferResult))
 				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
-			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+			this.CreateTapiBridge(initialClient);
 			this.TapiBridgeInstance.AddPath(TestTransferPath);
 			this.TestTransferContext.PublishTransferPathProgress(
 				new TransferRequest(),
@@ -642,9 +644,11 @@ namespace Relativity.DataExchange.NUnit
 		// https://jira.kcura.com/browse/REL-548265
 		[Test]
 		[Category(TestCategories.TransferApi)]
-		[TestCase(true, 0, TapiClient.Direct)]
-		[TestCase(false, 1, TapiClient.Web)]
-		public void ShouldTreatCompleteFailedWithErrorsAsFailed(bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
+		[TestCase(WellKnownTransferClient.FileShare, true, 1, TapiClient.Direct)]
+		[TestCase(WellKnownTransferClient.FileShare, false, 1, TapiClient.Web)]
+		[TestCase(WellKnownTransferClient.Aspera, true, 1, TapiClient.Aspera)]
+		[TestCase(WellKnownTransferClient.Aspera, false, 1, TapiClient.Web)]
+		public void ShouldTreatCompleteFailedWithErrorsAsFailed(WellKnownTransferClient initialClient, bool retryInTheOriginalMode, int expectedTotals, TapiClient expectedClient)
 		{
 			AppSettings.Instance.RetryInTheOriginalTransferMode = retryInTheOriginalMode;
 
@@ -661,7 +665,7 @@ namespace Relativity.DataExchange.NUnit
 			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
 				.Returns(Task.FromResult((ITransferResult)result))
 				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
-			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+			this.CreateTapiBridge(initialClient);
 			this.TapiBridgeInstance.AddPath(TestTransferPath);
 			this.TestTransferContext.PublishTransferPathProgress(
 				new TransferRequest(),
@@ -680,7 +684,7 @@ namespace Relativity.DataExchange.NUnit
 				KeepJobAlive);
 
 			// Retrying the job in web and the original mode
-			this.VerifyTotalsAndClientMode(totals, expectedTotals, client);
+			this.VerifyTotalsAndClientMode(totals, expectedTotals, expectedClient);
 			this.MockTransferJob.Verify(x => x.Dispose(), Times.Exactly(2));
 		}
 
@@ -688,9 +692,11 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		[Category(TestCategories.TransferApi)]
 		[Category(TestCategories.TransferApi)]
-		[TestCase(true, 0, TapiClient.Direct)]
-		[TestCase(false, 1, TapiClient.Web)]
-		public void ShouldTreatCompleteFailedWithWarningsWithoutIoAsFailed(bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
+        [TestCase(WellKnownTransferClient.FileShare, true, 1, TapiClient.Direct)]
+        [TestCase(WellKnownTransferClient.FileShare, false, 1, TapiClient.Web)]
+        [TestCase(WellKnownTransferClient.Aspera, true, 1, TapiClient.Aspera)]
+        [TestCase(WellKnownTransferClient.Aspera, false, 1, TapiClient.Web)]
+		public void ShouldTreatCompleteFailedWithWarningsWithoutIoAsFailed(WellKnownTransferClient initialClient, bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
 		{
 			AppSettings.Instance.RetryInTheOriginalTransferMode = retryInTheOriginalMode;
 
@@ -709,7 +715,7 @@ namespace Relativity.DataExchange.NUnit
 			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
 				.Returns(Task.FromResult((ITransferResult)result)).Returns(
 					Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
-			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+			this.CreateTapiBridge(initialClient);
 			this.TapiBridgeInstance.AddPath(TestTransferPath);
 			this.TestTransferContext.PublishTransferPathProgress(
 				new TransferRequest(),
@@ -733,9 +739,11 @@ namespace Relativity.DataExchange.NUnit
 		// https://jira.kcura.com/browse/REL-548265
 		[Test]
 		[Category(TestCategories.TransferApi)]
-		[TestCase(true, 0, TapiClient.Direct)]
-		[TestCase(false, 1, TapiClient.Web)]
-		public void ShouldTreatCompleteFailedWithWarningsWithoutFileNotFoundAsFailed(bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
+        [TestCase(WellKnownTransferClient.FileShare, true, 1, TapiClient.Direct)]
+        [TestCase(WellKnownTransferClient.FileShare, false, 1, TapiClient.Web)]
+        [TestCase(WellKnownTransferClient.Aspera, true, 1, TapiClient.Aspera)]
+        [TestCase(WellKnownTransferClient.Aspera, false, 1, TapiClient.Web)]
+		public void ShouldTreatCompleteFailedWithWarningsWithoutFileNotFoundAsFailed(WellKnownTransferClient initialClient, bool retryInTheOriginalMode, int expectedTotals, TapiClient client)
 		{
 			AppSettings.Instance.RetryInTheOriginalTransferMode = retryInTheOriginalMode;
 
@@ -752,7 +760,7 @@ namespace Relativity.DataExchange.NUnit
 			this.MockTransferJob.SetupSequence(x => x.CompleteAsync(It.IsAny<CancellationToken>()))
 				.Returns(Task.FromResult((ITransferResult)result))
 				.Returns(Task.FromResult(new TransferResult { Status = TransferStatus.Successful } as ITransferResult));
-			this.CreateTapiBridge(WellKnownTransferClient.FileShare);
+			this.CreateTapiBridge(initialClient);
 			this.TapiBridgeInstance.AddPath(TestTransferPath);
 			this.TestTransferContext.PublishTransferPathProgress(
 				new TransferRequest(),
