@@ -323,6 +323,9 @@
     <Compile Include="Transfer\TapiStatisticsListener.cs" />
     <Compile Include="WaitAndRetryPolicy.cs" />
     <Compile Include="DefaultImageFieldNames.cs" />
+    <Content Include="oi\unmanaged\libchardet.dll">
+      <Paket>True</Paket>
+    </Content>
     <Content Include="oi\unmanaged\cmmap000.bin">
       <Paket>True</Paket>
     </Content>
