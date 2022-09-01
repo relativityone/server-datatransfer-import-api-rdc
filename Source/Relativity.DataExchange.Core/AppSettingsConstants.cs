@@ -111,7 +111,7 @@ namespace Relativity.DataExchange
 		public const string LogConfigXmlFileNameKey = "LogConfigFile";
 		public const string LogConfigXmlFileNameDefaultValue = "LogConfig.xml";
 		public const string LogHashingEnabledKey = "LogHashingEnabled";
-		public const bool LogHashingEnabledDefaultValue = false;
+		public const bool LogHashingEnabledDefaultValue = true;
 		public const string LogHashingLevelKey = "LogHashingLevel";
 		public const string LogHashingLevelDefaultValue = "Error";
 		public const string MinBatchSizeKey = "MinimumBatchSize";

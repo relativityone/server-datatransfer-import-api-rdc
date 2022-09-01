@@ -16,16 +16,21 @@ namespace Relativity.DataExchange.Logger
 	public class ImportApiSecureLogFactory : ISecureLogFactory
 	{
 		/// <inheritdoc/>
-		public ILog CreateSecureLogger()
+		public ILog CreateSecureLogger(ILog logger)
 		{
-			ILog currentLogger = Log.Logger;
-
+			ILog currentLogger = logger ?? Log.Logger;
 			if (!AppSettings.Instance.LogHashingEnabled)
 			{
 				return currentLogger;
 			}
 
 			return new HashingLoggerDecorator(currentLogger);
+		}
+
+		/// <inheritdoc/>
+		public ILog CreateSecureLogger()
+		{
+			return this.CreateSecureLogger(null);
 		}
 	}
 }
