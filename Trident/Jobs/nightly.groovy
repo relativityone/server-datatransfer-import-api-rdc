@@ -9,7 +9,7 @@ properties([
 	parameters([
 		choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
 		choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-		string(defaultValue: 'aio-server2021-juniper-11.1-sp1,aio-osier-2,aio-sundrop-0,aio-tigerlily-2,aio-whitesedge-eau', description: 'Comma separated list of SUT templates', name: 'temlatesStr')
+		string(defaultValue: 'aio-server2022-GA,aio-yarrow-eau', description: 'Comma separated list of SUT templates', name: 'temlatesStr')
 	]),
 	pipelineTriggers([cron(cronString)])
 ])
