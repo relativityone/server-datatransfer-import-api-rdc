@@ -1,4 +1,7 @@
-﻿Imports Relativity.DataExchange
+﻿Imports System.Collections.Generic
+Imports System.IO
+Imports System.Xml
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS.Helpers
@@ -17,7 +20,7 @@ Public Module FieldValueHelper
 		End If
 		Dim fieldValue As String = NullableTypesHelper.ToEmptyStringOrValue(NullableTypesHelper.DBNullString(val))
 		If field.IsMultiValueField Then
-			fieldValue = GetMultivalueString(fieldValue, field, multiRecordDelimiter)
+			fieldValue = GetMultivalueString(fieldValue, field.FieldType, field.FormatString, multiRecordDelimiter)
 		ElseIf field.IsCodeOrMulticodeField Then
 			fieldValue = GetCodeValueString(fieldValue, multiRecordDelimiter)
 		End If
@@ -25,37 +28,34 @@ Public Module FieldValueHelper
 				
 	End Function
 
-	Public Function GetMultivalueString(ByVal input As String, ByVal field As ViewFieldInfo, multiRecordDelimiter As Char) As String
-			Dim retVal As String = input
-			If input.Contains("<object>") Then
-				Dim xr As New System.Xml.XmlTextReader(New System.IO.StringReader("<objects>" & input & "</objects>"))
-				Dim firstTimeThrough As Boolean = True
-				Dim sb As New System.Text.StringBuilder
-				While xr.Read
-					If xr.Name = "object" And xr.IsStartElement Then
-						xr.Read()
-						If firstTimeThrough Then
-							firstTimeThrough = False
-						Else
-							sb.Append(multiRecordDelimiter)
-						End If
-						Dim cleanval As String = xr.Value.Trim
-						Select Case field.FieldType
-							Case FieldType.Code, FieldType.MultiCode
-								cleanval = GetCodeValueString(cleanval, multiRecordDelimiter)
-							Case FieldType.Date
-								cleanval = ToExportableDateString(cleanval, field.FormatString)
-						End Select
-						'If isCodeOrMulticodeField Then cleanval = Me.GetCodeValueString(cleanval)
-						sb.Append(cleanval)
-					End If
-				End While
-				xr.Close()
-				retVal = sb.ToString
-			End If
-			Return retVal
+    Public Function GetMultiValueString(ByVal input As String, ByVal fieldType As FieldType, ByVal fieldFormatString As String, multiRecordDelimiter As Char) As String
+        Dim retVal As String = input
+		Dim xml As String = "<objects>" & input & "</objects>"
+		Dim values As New List(Of String)
 
-	End Function
+			Using stringReader as StringReader =  New StringReader(xml)
+			Using xmlTextReader as XmlTextReader =  New XmlTextReader(stringReader)
+
+				While (xmlTextReader.Read())
+				    If xmlTextReader.IsEmptyElement Or xmlTextReader.NodeType = XmlNodeType.Text
+
+				        Dim value As String = xmlTextReader.Value.Trim
+				        Select Case fieldType
+				            Case FieldType.Code, FieldType.MultiCode
+				                value = GetCodeValueString(value, multiRecordDelimiter)
+				            Case FieldType.Date
+				                value = ToExportableDateString(value, fieldFormatString)
+				        End Select
+						values.Add(value)
+				    End If
+				End While
+			End Using
+			End Using
+
+        retVal = String.Join(multiRecordDelimiter, values)
+        Return retVal
+
+    End Function
 
 	Public Function GetCodeValueString(ByVal input As String, multiRecordDelimiter As Char) As String
 			input = System.Web.HttpUtility.HtmlDecode(input)

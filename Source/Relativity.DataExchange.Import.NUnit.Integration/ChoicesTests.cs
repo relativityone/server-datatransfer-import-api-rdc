@@ -28,6 +28,9 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	[TestType.MainFlow]
 	[TestExecutionCategory.CI]
+
+	// Skipped because of issues on build pipeline for yarrow release. REL-753906
+	[IgnoreIfVersionGreaterOrEqual(RelativityVersion.Yarrow)]
 	public class ChoicesTests : ImportJobTestBase<NativeImportExecutionContext>
 	{
 		private const int NumberOfDocumentsToImport = 10;

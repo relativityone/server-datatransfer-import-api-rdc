@@ -123,5 +123,10 @@ namespace Relativity.DataExchange.TestFramework.RelativityVersions
 		/// Relativity 13.1. - version with disabled WebAPI
 		/// </summary>
 		WhiteSedge,
+
+		/// <summary>
+		/// Relativity 13.2.
+		/// </summary>
+		Yarrow,
 	}
 }
