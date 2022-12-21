@@ -195,9 +195,9 @@ Namespace kCura.WinEDDS
 			End If
 
 			If SkipExtractedTextEncodingCheck.HasValue AndAlso SkipExtractedTextEncodingCheck Then
-				_loadFileImporter.SkipExtractedTextEncodingCheck = True
+				_loadFileImporter.SkipExtractedTextEncodingAndSizeCheck = True
 			End If
-			_loadFileImporter.SkipExtractedTextEncodingCheck = (_loadFileImporter.SkipExtractedTextEncodingCheck OrElse Me.AppSettings.DisableTextFileEncodingCheck)
+			_loadFileImporter.SkipExtractedTextEncodingAndSizeCheck = (_loadFileImporter.SkipExtractedTextEncodingAndSizeCheck OrElse Me.AppSettings.DisableTextFileEncodingCheck)
 
 			_loadFileImporter.DisableExtractedTextFileLocationValidation = DisableExtractedTextFileLocationValidation
 			_loadFileImporter.AuditLevel = _auditLevel

@@ -1713,13 +1713,14 @@ Namespace kCura.WinEDDS
 								Function(token) As System.Text.Encoding
 									Dim encoding As System.Text.Encoding = extractedTextEncoding
 									Dim fileStream As System.IO.Stream
-									Dim fileSize As Long = Me.GetFileLength(field.ValueAsString, retry)
-									If fileSize > GetMaxExtractedTextLength(encoding) Then
-										Throw New ExtractedTextTooLargeException
-									End If
 
 									If Me.LoadImportedFullTextFromServer Then
-										If Not SkipExtractedTextEncodingCheck Then
+										If Not SkipExtractedTextEncodingAndSizeCheck Then
+											Dim fileSize As Long = Me.GetFileLength(field.ValueAsString, retry)
+											If fileSize > GetMaxExtractedTextLength(encoding) Then
+												Throw New ExtractedTextTooLargeException
+											End If
+
 											Dim determinedEncodingStream As DeterminedEncodingStream = Utility.DetectEncoding(field.ValueAsString, False)
 											fileStream = determinedEncodingStream.UnderlyingStream
 
@@ -1736,15 +1737,16 @@ Namespace kCura.WinEDDS
 												fileStream.Close()
 											Catch
 											End Try
+
+											OutputFileWriter.ReportFullTextSizeOnServer(fileSize)
 										End If
-										OutputFileWriter.ReportFullTextSizeOnServer(fileSize)
 										outputWriter.Write(field.Value)
 									Else
 										'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
 										' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
 										' across the network for the file, so this override allows that check to be skipped.
 										' -Phil S. 07/27/2012
-										If Not SkipExtractedTextEncodingCheck Then
+										If Not SkipExtractedTextEncodingAndSizeCheck Then
 											Dim determinedEncodingStream As DeterminedEncodingStream = Utility.DetectEncoding(field.ValueAsString, False)
 											fileStream = determinedEncodingStream.UnderlyingStream
 
