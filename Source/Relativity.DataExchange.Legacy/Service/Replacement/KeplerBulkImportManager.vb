@@ -32,12 +32,12 @@ Namespace kCura.WinEDDS.Service.Replacement
 
         Public Function BulkImportImage(appID As Integer, settings As ImageLoadInfo, inRepository As Boolean) As MassImportResults Implements IBulkImportManager.BulkImportImage
             Return ExecuteImport(Function()
-                Return Execute(Async Function(s)
-                    Using importer As IBulkImportService = s.CreateProxyInstance(Of IBulkImportService)
-                                       Dim result As Models.MassImportResults = Await importer.BulkImportImageAsync(appID, KeplerTypeMapper.Map(settings), inRepository, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
-                                       Return KeplerTypeMapper.Map(result)
-                                   End Using
-                               End Function)
+                                     Return Execute(Async Function(s)
+                                                        Using importer As IBulkImportService = s.CreateProxyInstance(Of IBulkImportService)
+                                                            Dim result As Models.MassImportResults = Await importer.BulkImportImageAsync(appID, KeplerTypeMapper.Map(settings), inRepository, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
+                                                            Return KeplerTypeMapper.Map(result)
+                                                        End Using
+                                                    End Function)
                                  End Function)
         End Function
 
@@ -121,13 +121,13 @@ Namespace kCura.WinEDDS.Service.Replacement
                                Using importer As IBulkImportService = s.CreateProxyInstance(Of IBulkImportService)
                                    Return Await importer.HasImportPermissionsAsync(appID, CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
                                End Using
-            End Function)
+                           End Function)
         End Function
 
         Private Function ExecuteImport(f As Func(Of MassImportResults)) As MassImportResults
-	        Dim retval As MassImportResults = f()
-	        Me.CheckResultsForException(retval)
-	        Return retval
+            Dim retval As MassImportResults = f()
+            Me.CheckResultsForException(retval)
+            Return retval
         End Function
 
         Private Sub CheckResultsForException(ByVal results As MassImportResults)
@@ -146,9 +146,9 @@ Namespace kCura.WinEDDS.Service.Replacement
         End Sub
 
         Protected Overrides Function ConvertSoapExceptionToRelativityException(soapException As SoapException) As Exception
-	        If soapException.Detail.SelectNodes("ExceptionType").Item(0).InnerText = "Relativity.Core.Exception.InsufficientAccessControlListPermissions" Then
-		        Return New BulkImportManager.InsufficientPermissionsForImportException(soapException.Detail.SelectNodes("ExceptionMessage")(0).InnerText, soapException)
-	        End If
+            If soapException.Detail.SelectNodes("ExceptionType").Item(0).InnerText = "Relativity.Core.Exception.InsufficientAccessControlListPermissions" Then
+                Return New BulkImportManager.InsufficientPermissionsForImportException(soapException.Detail.SelectNodes("ExceptionMessage")(0).InnerText, soapException)
+            End If
 
             Return MyBase.ConvertSoapExceptionToRelativityException(soapException)
         End Function

@@ -8,12 +8,22 @@ namespace kCura.Relativity.ImportAPI {
 
 	public class ExtendedImportAPI : ImportAPI, IExtendedImportAPI
 	{
-		public ExtendedImportAPI(string userName, string password, ILog logger = null)
-			: base(userName, password, logger) {
+		public ExtendedImportAPI(string userName, string password)
+			: base(userName, password) {
 		}
 
-		public ExtendedImportAPI(string userName, string password, string webServiceUrl, ILog logger = null)
-			: base(userName, password, webServiceUrl, logger) {
+		public ExtendedImportAPI(string userName, string password, ILog logger)
+			: base(userName, password, logger)
+		{
+		}
+
+		public ExtendedImportAPI(string userName, string password, string webServiceUrl)
+			: base(userName, password, webServiceUrl) {
+		}
+
+		public ExtendedImportAPI(string userName, string password, string webServiceUrl, ILog logger)
+			: base(userName, password, webServiceUrl, logger)
+		{
 		}
 
 		/// <summary>

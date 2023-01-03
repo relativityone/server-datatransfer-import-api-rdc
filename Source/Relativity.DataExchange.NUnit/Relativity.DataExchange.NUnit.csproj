@@ -131,6 +131,7 @@
     <Compile Include="Monitoring\Sinks\SumMetricFormatterTest.cs" />
     <Compile Include="OutsideInFileTypeIdentifierServiceTests.cs" />
     <Compile Include="ErrorMessageFormatterTests.cs" />
+    <Compile Include="Service\BatchInProgressErrorPolicyFactoryTests.cs" />
     <Compile Include="Service\RetryableErrorsRetryPolicyFactoryTests.cs" />
     <Compile Include="Service\ReLoginRetryPolicyFactoryTests.cs" />
     <Compile Include="Service\ManagerFactoryTests.cs" />

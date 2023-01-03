@@ -96,6 +96,33 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="password">
 		/// The Relativity login password.
 		/// </param>
+		/// <exception cref="kCura.WinEDDS.Exceptions.CredentialsNotSupportedException">
+		/// Thrown when integrated security is not supported when running within a service process.
+		/// </exception>
+		/// <exception cref="kCura.WinEDDS.Exceptions.InvalidLoginException">
+		/// Thrown when an authentication failure occurs.
+		/// </exception>
+		/// <exception cref="RelativityNotSupportedException">
+		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
+		/// </exception>
+		public ImportAPI(string userName, string password) : this(userName, password, string.Empty, null)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ImportAPI"/> class.
+		/// Uses the Password Authentication provider when <paramref name="userName"/> and <paramref name="password"/> are specified; otherwise, Integrated Authentication provider.
+		/// </summary>
+		/// <remarks>
+		/// User name and password are required (unless using Integrated Security) and will be validated.
+		/// The ImportAPI tries to resolve the server name by reading the WebServiceURL key from the local app.config file.  If this fails, it checks the Windows Registry for the location set by the Relativity Desktop Client.
+		/// </remarks>
+		/// <param name="userName">
+		/// The Relativity login user name.
+		/// </param>
+		/// <param name="password">
+		/// The Relativity login password.
+		/// </param>
 		/// <param name="logger">Custom logger.</param>
 		/// <exception cref="kCura.WinEDDS.Exceptions.CredentialsNotSupportedException">
 		/// Thrown when integrated security is not supported when running within a service process.
@@ -106,7 +133,37 @@ namespace kCura.Relativity.ImportAPI
 		/// <exception cref="RelativityNotSupportedException">
 		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
 		/// </exception>
-		public ImportAPI(string userName, string password, ILog logger = null) : this(userName, password, string.Empty, logger)
+		public ImportAPI(string userName, string password, ILog logger) : this(userName, password, string.Empty, logger)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ImportAPI"/> class.
+		/// Uses the Password Authentication provider when <paramref name="userName"/> and <paramref name="password"/> are specified; otherwise, Integrated Authentication provider.
+		/// </summary>
+		/// <remarks>
+		/// User name and password are required (unless using Integrated Security) and will be validated
+		/// against the Relativity WebAPI instance located at <paramref name="webServiceUrl"/>.
+		/// </remarks>
+		/// <param name="userName">
+		/// The Relativity login user name.
+		/// </param>
+		/// <param name="password">
+		/// The Relativity login password.
+		/// </param>
+		/// <param name="webServiceUrl">
+		/// The URL to the Relativity WebAPI instance.
+		/// </param>
+		/// <exception cref="kCura.WinEDDS.Exceptions.CredentialsNotSupportedException">
+		/// Thrown when integrated security is not supported when running within a service process.
+		/// </exception>
+		/// <exception cref="kCura.WinEDDS.Exceptions.InvalidLoginException">
+		/// Thrown when an authentication failure occurs.
+		/// </exception>
+		/// <exception cref="RelativityNotSupportedException">
+		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
+		/// </exception>
+		public ImportAPI(string userName, string password, string webServiceUrl) : this(userName, password, webServiceUrl, null)
 		{
 		}
 
@@ -137,7 +194,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <exception cref="RelativityNotSupportedException">
 		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
 		/// </exception>
-		public ImportAPI(string userName, string password, string webServiceUrl, ILog logger = null)
+		public ImportAPI(string userName, string password, string webServiceUrl, ILog logger)
 		{
 			ExecutionSource = ExecutionSourceEnum.ImportAPI;
 
